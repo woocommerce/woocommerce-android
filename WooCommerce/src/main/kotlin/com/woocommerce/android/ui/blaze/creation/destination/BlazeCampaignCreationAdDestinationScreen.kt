@@ -143,12 +143,14 @@ fun TargetUrlDialog(
                 mutableStateOf(viewState.targetUrl)
             }
 
-            UrlOption(
-                url = viewState.productUrl,
-                targetUrl = targetUrl,
-                title = R.string.blaze_campaign_edit_ad_destination_product_url_option
-            ) {
-                targetUrl = viewState.productUrl
+            viewState.productUrl?.let { productUrl ->
+                UrlOption(
+                    url = productUrl,
+                    targetUrl = targetUrl,
+                    title = R.string.blaze_campaign_edit_ad_destination_product_url_option
+                ) {
+                    targetUrl = productUrl
+                }
             }
 
             UrlOption(

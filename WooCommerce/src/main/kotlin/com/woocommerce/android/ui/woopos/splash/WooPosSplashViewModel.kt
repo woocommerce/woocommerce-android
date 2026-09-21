@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersInMemoryCache
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
+import com.woocommerce.android.ui.woopos.tab.WooPosLaunchabilityRefreshPolicy
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CatalogBlockedContinueWithBasicSyncTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.Loaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogBlockedFellBackToRemote
@@ -52,7 +53,7 @@ class WooPosSplashViewModel @Inject constructor(
         viewModelScope.launch {
             preferencesRepository.setLastUsedTimestamp()
 
-            val launchability = posCanBeLaunchedInTab()
+            val launchability = posCanBeLaunchedInTab(WooPosLaunchabilityRefreshPolicy.UseCacheAndRefresh)
 
             if (launchability is WooPosLaunchability.NotLaunchable) {
                 _state.value = WooPosSplashState.NotEligible(launchability.reason)

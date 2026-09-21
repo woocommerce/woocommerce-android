@@ -4,6 +4,7 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -15,6 +16,7 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class ProductShippingViewModelTest : BaseUnitTest() {
@@ -58,6 +60,33 @@ class ProductShippingViewModelTest : BaseUnitTest() {
             )
         )
     }
+
+    @Test
+    fun `given the shipping class is in the database, when the view state is observed, then its name is shown`() =
+        testBlocking {
+            whenever(productDetailRepository.getProductShippingClassByRemoteId(1))
+                .thenReturn(ShippingClass(name = "Heavy items", slug = "heavy-items", remoteShippingClassId = 1))
+            var actual: String? = null
+
+            viewModel.viewStateData.observeForever { _, new ->
+                actual = new.shippingClassName
+            }
+
+            Assertions.assertThat(actual).isEqualTo("Heavy items")
+        }
+
+    @Test
+    fun `given the shipping class is missing, when the view state is observed, then the slug is shown`() =
+        testBlocking {
+            whenever(productDetailRepository.getProductShippingClassByRemoteId(1)).thenReturn(null)
+            var actual: String? = null
+
+            viewModel.viewStateData.observeForever { _, new ->
+                actual = new.shippingClassName
+            }
+
+            Assertions.assertThat(actual).isEqualTo(initialData.shippingClassSlug)
+        }
 
     @Test
     fun `Test that the initial data is displayed correctly`() = testBlocking {

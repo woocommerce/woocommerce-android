@@ -8,12 +8,13 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
-import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -41,15 +42,28 @@ class ProductShippingViewModel @Inject constructor(
         ViewState(
             shippingData = navArgs.shippingData,
             isShippingClassSectionVisible = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_SHIPPING
-        )
+        ),
+        onChange = { old, new ->
+            if (old?.shippingData?.shippingClassId != new.shippingData.shippingClassId) {
+                refreshShippingClassName()
+            }
+        }
     )
     private var viewState by viewStateData
 
-    val parameters: SiteParameters by lazy {
-        parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
-    }
-
     private val originalShippingData = navArgs.shippingData
+
+    private var shippingClassNameJob: Job? = null
+
+    init {
+        launch {
+            val parameters = parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
+            viewState = viewState.copy(
+                weightUnit = parameters.weightUnit,
+                dimensionUnit = parameters.dimensionUnit
+            )
+        }
+    }
 
     val shippingData
         get() = viewState.shippingData
@@ -99,9 +113,18 @@ class ProductShippingViewModel @Inject constructor(
         }
     }
 
-    suspend fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
-        productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
-            ?: shippingData.shippingClassSlug ?: ""
+    private fun refreshShippingClassName() {
+        val remoteShippingClassId = shippingData.shippingClassId ?: return
+        // The view is re-observed on every recreation, so a refresh for the previous class can still be
+        // in flight when the selected one changes. Cancel it, otherwise the stale name can land last.
+        shippingClassNameJob?.cancel()
+        shippingClassNameJob = launch {
+            viewState = viewState.copy(
+                shippingClassName = productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
+                    ?: shippingData.shippingClassSlug ?: ""
+            )
+        }
+    }
 
     override fun onCleared() {
         super.onCleared()
@@ -111,7 +134,10 @@ class ProductShippingViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val shippingData: ShippingData = ShippingData(),
-        val isShippingClassSectionVisible: Boolean? = null
+        val isShippingClassSectionVisible: Boolean? = null,
+        @IgnoredOnParcel val shippingClassName: String? = null,
+        val weightUnit: String? = null,
+        val dimensionUnit: String? = null
     ) : Parcelable {
         @IgnoredOnParcel
         val isOneTimeShippingSectionVisible = shippingData.subscriptionShippingData != null

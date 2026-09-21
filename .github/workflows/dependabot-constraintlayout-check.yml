@@ -7,13 +7,14 @@ on:
 jobs:
   add-pos-reminder:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     if: github.actor == 'dependabot[bot]'
 
     steps:
       # Check if PR contains the constraintlayout dependency
       - name: Check for ConstraintLayout Compose dependency
         id: check-dependency
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         with:
           script: |
             const title = context.payload.pull_request.title;
@@ -31,7 +32,7 @@ jobs:
       # Add comment if dependency is found
       - name: Comment on PR
         if: steps.check-dependency.outputs.result == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         with:
           script: |
             // Check if comment already exists to avoid duplicates

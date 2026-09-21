@@ -86,7 +86,7 @@ class HasUnsupportedBundledProductsTest : BaseUnitTest() {
         whenever(getBundledProducts.invoke(eq(BUNDLE_ID))).thenReturn(flowOf(children.toList()))
     }
 
-    private fun child(productId: Long, type: String, customStatus: String? = null): BundledProduct {
+    private suspend fun child(productId: Long, type: String, customStatus: String? = null): BundledProduct {
         val product = ProductTestUtils.generateProduct(
             productId = productId,
             productType = type,
@@ -97,7 +97,7 @@ class HasUnsupportedBundledProductsTest : BaseUnitTest() {
         return bundledProduct(productId, type)
     }
 
-    private fun unresolvedChild(productId: Long): BundledProduct {
+    private suspend fun unresolvedChild(productId: Long): BundledProduct {
         whenever(productDetailRepository.getProduct(productId)).thenReturn(null)
 
         return bundledProduct(productId, type = "")

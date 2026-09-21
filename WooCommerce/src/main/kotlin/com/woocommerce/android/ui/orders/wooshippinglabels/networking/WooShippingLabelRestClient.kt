@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 
 import com.google.gson.JsonObject
 import com.woocommerce.android.extensions.filterNotNull
-import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.ShippingLabelPrintingResponse
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.ShippingRateSurchargeDTO

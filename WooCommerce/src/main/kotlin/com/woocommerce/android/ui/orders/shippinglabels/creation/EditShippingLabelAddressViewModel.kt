@@ -79,7 +79,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
 
     private val countries: List<Location>
         get() {
-            val fullCountriesList = dataStore.getCountries()
+            val fullCountriesList = dataStore.getCountriesBlocking()
             val supportedCountries = if (arguments.addressType == ORIGIN) {
                 fullCountriesList.filter { ACCEPTED_USPS_ORIGIN_COUNTRIES.contains(it.code) }
             } else {
@@ -89,7 +89,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         }
 
     private val states: List<Location>
-        get() = dataStore.getStates(viewState.countryField.location.code).map { it.toAppModel() }
+        get() = dataStore.getStatesBlocking(viewState.countryField.location.code).map { it.toAppModel() }
 
     init {
         viewState = viewState.copy(

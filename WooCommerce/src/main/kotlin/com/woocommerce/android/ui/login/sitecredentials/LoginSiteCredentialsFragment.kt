@@ -30,13 +30,23 @@ import javax.inject.Inject
 class LoginSiteCredentialsFragment : Fragment() {
     companion object {
         const val TAG = "LoginSiteCredentialsFragment"
-        fun newInstance(siteAddress: String, isJetpackConnected: Boolean, username: String?, password: String?) =
+        fun newInstance(
+            siteAddress: String,
+            isJetpackConnected: Boolean,
+            username: String?,
+            password: String?,
+            wasUrlNormalizedToHttps: Boolean = false,
+        ) =
             LoginSiteCredentialsFragment().apply {
                 arguments = Bundle().apply {
                     putString(LoginSiteCredentialsViewModel.SITE_ADDRESS_KEY, siteAddress)
                     putBoolean(LoginSiteCredentialsViewModel.IS_JETPACK_CONNECTED_KEY, isJetpackConnected)
                     putString(LoginSiteCredentialsViewModel.USERNAME_KEY, username.orEmpty())
                     putString(LoginSiteCredentialsViewModel.PASSWORD_KEY, password.orEmpty())
+                    putBoolean(
+                        LoginSiteCredentialsViewModel.WAS_URL_NORMALIZED_TO_HTTPS_KEY,
+                        wasUrlNormalizedToHttps,
+                    )
                 }
             }
     }
@@ -83,7 +93,11 @@ class LoginSiteCredentialsFragment : Fragment() {
                 is ShowHelpScreen -> loginListener.helpUsernamePassword(it.siteAddress, it.username, false)
                 is ShowSnackbar -> uiMessageResolver.showSnack(it.message)
                 is ShowApplicationPasswordTutorialScreen ->
-                    passwordTutorialListener?.onApplicationPasswordHelpRequired(it.url, it.errorMessage)
+                    passwordTutorialListener?.onApplicationPasswordHelpRequired(
+                        verifiedLoginUrl = it.verifiedLoginUrl,
+                        applicationPasswordAuthorizationUrl = it.applicationPasswordAuthorizationUrl,
+                        errorMessage = it.errorMessage
+                    )
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(it.message)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
             }
@@ -109,7 +123,7 @@ class LoginSiteCredentialsFragment : Fragment() {
             ApplicationPasswordTutorialFragment.WEB_NAVIGATION_RESULT,
             viewLifecycleOwner
         ) { _, result ->
-            result.getString(ApplicationPasswordTutorialFragment.URL_KEY)
+            result.getString(ApplicationPasswordTutorialFragment.WEB_NAVIGATION_RESULT_URL_KEY)
                 ?.takeIf { it.isNotEmpty() }
                 ?.let { viewModel.onWebAuthorizationUrlLoaded(it) }
                 ?: viewModel.onPasswordTutorialAborted()
@@ -117,6 +131,10 @@ class LoginSiteCredentialsFragment : Fragment() {
     }
 
     interface Listener {
-        fun onApplicationPasswordHelpRequired(url: String, errorMessage: String)
+        fun onApplicationPasswordHelpRequired(
+            verifiedLoginUrl: String?,
+            applicationPasswordAuthorizationUrl: String,
+            errorMessage: String
+        )
     }
 }

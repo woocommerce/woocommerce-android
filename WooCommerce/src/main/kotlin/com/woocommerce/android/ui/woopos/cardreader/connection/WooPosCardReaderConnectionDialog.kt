@@ -62,6 +62,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderOnboardingActivity
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveredReader
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveryTransport
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderExplainerContent
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderHintStrip
@@ -82,7 +83,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.WooPermissionUtils
 import kotlinx.coroutines.delay
+import java.net.InetAddress
 
 @Composable
 fun WooPosCardReaderConnectionDialog(
@@ -146,9 +149,16 @@ private fun WooPosCardReaderDialogInternal(
     ) { granted ->
         val shouldShowRationale = ActivityCompat.shouldShowRequestPermissionRationale(
             context as Activity,
-            Manifest.permission.ACCESS_FINE_LOCATION
+            WooPermissionUtils.cardReaderLocationPermission()
         )
         viewModel.onLocationPermissionResult(granted, shouldShowRationale)
+    }
+
+    val localNetworkPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        val shouldShowRationale = WooPermissionUtils.shouldShowLocalNetworkPermissionRationale(context as Activity)
+        viewModel.onLocalNetworkPermissionResult(granted, shouldShowRationale)
     }
 
     val locationSettingsLauncher = rememberLauncherForActivityResult(
@@ -214,7 +224,10 @@ private fun WooPosCardReaderDialogInternal(
                         bluetoothEnableLauncher.launch(enableBtIntent)
                     }
                     WooPosCardReaderConnectionViewModel.Event.RequestLocationPermission -> {
-                        locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                        WooPermissionUtils.requestCardReaderLocationPermission(locationPermissionLauncher)
+                    }
+                    WooPosCardReaderConnectionViewModel.Event.RequestLocalNetworkPermission -> {
+                        WooPermissionUtils.requestLocalNetworkPermission(localNetworkPermissionLauncher)
                     }
                     WooPosCardReaderConnectionViewModel.Event.RequestEnableLocation -> {
                         val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
@@ -354,6 +367,15 @@ fun WooPosCardReaderConnectionDialogContent(
                     MissingPermissionContent(
                         title = stringResource(R.string.woopos_card_reader_location_permission_title),
                         message = stringResource(R.string.woopos_card_reader_location_permission_message),
+                        onRequestPermissionClicked = currentState.onRequestPermissionClicked,
+                        onCancelClicked = currentState.onCancelClicked,
+                        onHintClick = onHintClick,
+                    )
+                }
+                is WooPosCardReaderConnectionState.MissingLocalNetworkPermission -> {
+                    MissingPermissionContent(
+                        title = stringResource(R.string.woopos_card_reader_local_network_permission_title),
+                        message = stringResource(R.string.woopos_card_reader_local_network_permission_message),
                         onRequestPermissionClicked = currentState.onRequestPermissionClicked,
                         onCancelClicked = currentState.onCancelClicked,
                         onHintClick = onHintClick,
@@ -1301,6 +1323,31 @@ fun WooPosCardReaderConnectionDialogMissingBluetoothPermissionPreview() {
         WooPosCardReaderConnectionDialogContent(
             isVisible = true,
             state = WooPosCardReaderConnectionState.MissingBluetoothPermission(
+                onRequestPermissionClicked = {},
+                onCancelClicked = {},
+            ),
+            onBackPressed = {},
+            onDismiss = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosCardReaderConnectionDialogMissingLocalNetworkPermissionPreview() {
+    WooPosTheme {
+        WooPosCardReaderConnectionDialogContent(
+            isVisible = true,
+            state = WooPosCardReaderConnectionState.MissingLocalNetworkPermission(
+                phone = WooPosDiscoveredReader.Phone(
+                    serviceName = "woopos-remote-1a2b",
+                    deviceId = "device-id",
+                    name = "Pixel 9",
+                    host = InetAddress.getLoopbackAddress(),
+                    port = 8443,
+                    fingerprintBase64 = "AAAA",
+                    siteHash = "site-hash",
+                ),
                 onRequestPermissionClicked = {},
                 onCancelClicked = {},
             ),

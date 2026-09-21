@@ -1,5 +1,6 @@
 package com.woocommerce.android
 
+import android.content.Context
 import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
@@ -13,7 +14,10 @@ import org.junit.Test
 class AppPrefsTest {
     @Before
     fun setup() {
-        AppPrefs.init(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext)
+        val context = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
+        context.getSharedPreferences("${context.packageName}_deletable_preferences", Context.MODE_PRIVATE)
+            .edit().clear().commit()
+        AppPrefs.init(context)
         AppPrefs.getPreferences().edit().clear().commit()
     }
 
@@ -640,5 +644,65 @@ class AppPrefsTest {
         AppPrefs.isWooPosSurveyNotificationPotentialUserShown = false
 
         assertThat(AppPrefs.isWooPosSurveyNotificationPotentialUserShown).isFalse
+    }
+
+    @Test
+    fun givenPosFeatureSwitchNeverStoredThenReturnNull() {
+        assertThat(
+            AppPrefs.getPOSFeatureSwitchEnabledForSite(localSiteId = 1, remoteSiteId = 2L, selfHostedSiteId = 0L)
+        ).isNull()
+    }
+
+    @Test
+    fun givenPosFeatureSwitchStoredAsFalseThenReturnFalseRatherThanNull() {
+        AppPrefs.setPOSFeatureSwitchEnabledForSite(
+            localSiteId = 1,
+            remoteSiteId = 2L,
+            selfHostedSiteId = 0L,
+            enabled = false
+        )
+
+        assertThat(
+            AppPrefs.getPOSFeatureSwitchEnabledForSite(localSiteId = 1, remoteSiteId = 2L, selfHostedSiteId = 0L)
+        ).isFalse()
+    }
+
+    @Test
+    fun givenTwoSelfHostedSitesWithoutRemoteIdsThenPosFeatureSwitchDoesNotCollide() {
+        AppPrefs.setPOSFeatureSwitchEnabledForSite(
+            localSiteId = 1,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 11L,
+            enabled = false
+        )
+        AppPrefs.setPOSFeatureSwitchEnabledForSite(
+            localSiteId = 2,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 22L,
+            enabled = true
+        )
+
+        assertThat(
+            AppPrefs.getPOSFeatureSwitchEnabledForSite(localSiteId = 1, remoteSiteId = 0L, selfHostedSiteId = 11L)
+        ).isFalse()
+        assertThat(
+            AppPrefs.getPOSFeatureSwitchEnabledForSite(localSiteId = 2, remoteSiteId = 0L, selfHostedSiteId = 22L)
+        ).isTrue()
+    }
+
+    @Test
+    fun whenUserPreferencesAreResetThenPosFeatureSwitchIsCleared() {
+        AppPrefs.setPOSFeatureSwitchEnabledForSite(
+            localSiteId = 1,
+            remoteSiteId = 2L,
+            selfHostedSiteId = 0L,
+            enabled = false
+        )
+
+        AppPrefs.resetUserPreferences()
+
+        assertThat(
+            AppPrefs.getPOSFeatureSwitchEnabledForSite(localSiteId = 1, remoteSiteId = 2L, selfHostedSiteId = 0L)
+        ).isNull()
     }
 }

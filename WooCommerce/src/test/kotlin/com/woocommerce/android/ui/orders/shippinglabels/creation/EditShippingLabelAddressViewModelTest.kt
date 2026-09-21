@@ -84,9 +84,9 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        whenever(dataStore.getCountries()).thenReturn(countries)
-        whenever(dataStore.getStates("US")).thenReturn(states)
-        whenever(dataStore.getStates("VI")).thenReturn(emptyList())
+        whenever(dataStore.getCountriesBlocking()).thenReturn(countries)
+        whenever(dataStore.getStatesBlocking("US")).thenReturn(states)
+        whenever(dataStore.getStatesBlocking("VI")).thenReturn(emptyList())
         val resourceProviderAnswer = { i: InvocationOnMock -> i.arguments[0].toString() }
         whenever(resourceProvider.getString(any())).thenAnswer(resourceProviderAnswer)
         whenever(resourceProvider.getString(any(), anyVararg())).thenAnswer(resourceProviderAnswer)

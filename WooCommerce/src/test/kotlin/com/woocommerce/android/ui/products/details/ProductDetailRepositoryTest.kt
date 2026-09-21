@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products.details
 
 import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -35,8 +34,7 @@ class ProductDetailRepositoryTest : BaseUnitTest() {
         productStore = productStore,
         globalAttributeStore = mock<WCGlobalAttributeStore>(),
         selectedSite = selectedSite,
-        taxStore = mock<WCTaxStore>(),
-        coroutineDispatchers = mock<CoroutineDispatchers>()
+        taxStore = mock<WCTaxStore>()
     )
 
     @Test

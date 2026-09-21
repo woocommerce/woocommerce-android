@@ -13,7 +13,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import kotlin.test.Test
@@ -43,7 +45,9 @@ class BlazeCampaignCreationAdDestinationViewModelTest : BaseUnitTest() {
     fun setupTests() {
         whenever(product.permalink).thenReturn("https://woocommerce.com")
         whenever(selectedSite.get()).thenReturn(SiteModel().apply { url = "https://woo2.com" })
-        whenever(productDetailRepository.getProduct(any())).thenReturn(product)
+        productDetailRepository.stub {
+            on { getProduct(any()) } doReturn product
+        }
     }
 
     @Test

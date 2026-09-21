@@ -40,6 +40,16 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
     public static final int ORIGIN_XMLRPC = 2;
     public static final int ORIGIN_WPAPI = 3;
 
+    @Retention(SOURCE)
+    @IntDef({HTTPS_CONFIGURATION_UNKNOWN, HTTPS_CONFIGURATION_SECURE,
+            HTTPS_CONFIGURATION_REQUIRES_HTTPS})
+    public @interface HttpsConfigurationState {
+    }
+
+    public static final int HTTPS_CONFIGURATION_UNKNOWN = 0;
+    public static final int HTTPS_CONFIGURATION_SECURE = 1;
+    public static final int HTTPS_CONFIGURATION_REQUIRES_HTTPS = 2;
+
     public static final long VIP_PLAN_ID = 31337;
 
     @PrimaryKey
@@ -129,6 +139,8 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
     // Comma-separated list of active features in the site's plan
     @Column
     private String mPlanActiveFeatures;
+    @Column
+    private int mHttpsConfigurationState = HTTPS_CONFIGURATION_UNKNOWN;
 
     @Override
     public int getId() {
@@ -440,6 +452,15 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
         this.mPlanActiveFeatures = planActiveFeatures;
     }
 
+    @HttpsConfigurationState
+    public int getHttpsConfigurationState() {
+        return mHttpsConfigurationState;
+    }
+
+    public void setHttpsConfigurationState(@HttpsConfigurationState int httpsConfigurationState) {
+        mHttpsConfigurationState = httpsConfigurationState;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof SiteModel)) return false;
@@ -459,6 +480,7 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
                 mIsPrivate == siteModel.mIsPrivate &&
                 mPlanId == siteModel.mPlanId &&
                 mHasCapabilityManageOptions == siteModel.mHasCapabilityManageOptions &&
+                mHttpsConfigurationState == siteModel.mHttpsConfigurationState &&
                 Objects.equals(mUrl, siteModel.mUrl) &&
                 Objects.equals(mAdminUrl, siteModel.mAdminUrl) &&
                 Objects.equals(mLoginUrl, siteModel.mLoginUrl) &&
@@ -515,6 +537,7 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
                 mJetpackModules,
                 mApplicationPasswordsAuthorizeUrl,
                 mCanBlaze,
-                mPlanActiveFeatures);
+                mPlanActiveFeatures,
+                mHttpsConfigurationState);
     }
 }

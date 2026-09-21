@@ -5,15 +5,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderDetailProductItemView
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.ViewAddonClickListener
+import com.woocommerce.android.ui.products.ProductImageLoader
 import java.math.BigDecimal
 
 class OrderDetailProductListAdapter(
     private val orderItems: List<Order.Item>,
-    private val productImageMap: ProductImageMap,
+    private val productImageLoaderFactory: ProductImageLoader.Factory,
     private val formatCurrencyForDisplay: (BigDecimal) -> String,
     private val productItemListener: OrderProductActionListener,
     private val onViewAddonsClick: ViewAddonClickListener? = null
@@ -29,10 +29,9 @@ class OrderDetailProductListAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = orderItems[position]
-        val productImage = productImageMap.get(item.uniqueId)
         (holder as ProductViewHolder).view.initView(
-            orderItems[position],
-            productImage,
+            item,
+            productImageLoaderFactory,
             formatCurrencyForDisplay,
             onViewAddonsClick
         )
@@ -46,12 +45,4 @@ class OrderDetailProductListAdapter(
     }
 
     override fun getItemCount() = orderItems.size
-
-    fun notifyProductChanged(productId: Long) {
-        for (position in orderItems.indices) {
-            if (orderItems[position].productId == productId) {
-                notifyItemChanged(position)
-            }
-        }
-    }
 }

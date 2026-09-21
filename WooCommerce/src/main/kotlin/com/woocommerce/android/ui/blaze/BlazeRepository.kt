@@ -193,14 +193,15 @@ class BlazeRepository @Inject constructor(
             productId = productId,
             tagLine = product.name,
             description = description.fastStripHtml(),
-            campaignImage = product.images.firstOrNull().let {
-                val imageDetails = it?.source?.let { uri -> getImageDetails(uri) }
-                if (imageDetails?.isValidAdImage() == true) {
-                    BlazeCampaignImage.RemoteImage(it.source, imageDetails.mimeType)
-                } else {
-                    BlazeCampaignImage.None
+            campaignImage = product.images.firstOrNull()?.let { image ->
+                when (val validationResult = getImageDetails(image.source).validateAdImage()) {
+                    is AdImageValidationResult.Valid ->
+                        BlazeCampaignImage.RemoteImage(image.source, validationResult.mimeType)
+
+                    AdImageValidationResult.InvalidSize,
+                    AdImageValidationResult.UnsupportedMimeType -> BlazeCampaignImage.None
                 }
-            },
+            } ?: BlazeCampaignImage.None,
             budget = getDefaultBudget(),
             targetingParameters = TargetingParameters(),
             destinationParameters = DestinationParameters(
@@ -399,15 +400,16 @@ class BlazeRepository @Inject constructor(
 
     suspend fun getImageDetails(uri: String) = mediaFilesRepository.getImageDetails(uri)
 
-    fun MediaFilesRepository.ImageDetails.isValidAdImage() = validateAdImage() == AdImageValidationResult.Valid
-
     fun MediaFilesRepository.ImageDetails.validateAdImage(): AdImageValidationResult {
-        val normalizedMimeType = mimeType.trim().lowercase(Locale.US)
+        val normalizedMimeType = mimeType?.trim()?.lowercase(Locale.US)
         return when {
-            normalizedMimeType !in SUPPORTED_BLAZE_IMAGE_MIME_TYPES -> AdImageValidationResult.UnsupportedMimeType
+            normalizedMimeType == null ||
+                normalizedMimeType !in SUPPORTED_BLAZE_IMAGE_MIME_TYPES -> AdImageValidationResult.UnsupportedMimeType
+
             width < BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS ||
                 height < BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS -> AdImageValidationResult.InvalidSize
-            else -> AdImageValidationResult.Valid
+
+            else -> AdImageValidationResult.Valid(normalizedMimeType)
         }
     }
 
@@ -421,10 +423,10 @@ class BlazeRepository @Inject constructor(
         appPrefsWrapper.blazeCampaignSelectedObjective = objectiveId
     }
 
-    enum class AdImageValidationResult {
-        Valid,
-        InvalidSize,
-        UnsupportedMimeType
+    sealed interface AdImageValidationResult {
+        data class Valid(val mimeType: String) : AdImageValidationResult
+        data object InvalidSize : AdImageValidationResult
+        data object UnsupportedMimeType : AdImageValidationResult
     }
 
     @Parcelize

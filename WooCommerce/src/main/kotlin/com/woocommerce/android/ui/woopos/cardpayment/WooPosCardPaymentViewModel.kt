@@ -230,7 +230,9 @@ class WooPosCardPaymentViewModel @Inject constructor(
                     is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment,
                     is CardReaderPaymentState.PrintingReceipt,
                     CardReaderPaymentState.SharingReceipt -> {
-                        throw IllegalArgumentException("Payment state: $paymentState not compatible with POS")
+                        throw IllegalArgumentException(
+                            "Payment state: ${paymentState::class.simpleName} not compatible with POS"
+                        )
                     }
                 }
             }

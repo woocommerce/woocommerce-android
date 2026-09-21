@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.payments.hub.payoutsummary
 
-import com.woocommerce.android.extensions.formatToDDMMMYYYY
+import com.woocommerce.android.extensions.formatToLocalizedMonthDayYear
 import com.woocommerce.android.util.CurrencyFormatter
 import org.wordpress.android.fluxc.model.payments.woo.WooPaymentsDepositsOverview
 import java.util.Date
@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 class PaymentsHubPayoutSummaryStateMapper @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
-    private val dateFormatter: DateToDDMMMYYYYStringFormatter
+    private val dateFormatter: PayoutDateStringFormatter
 ) {
     fun mapPayoutOverviewToViewModelOverviews(
         overview: WooPaymentsDepositsOverview
@@ -104,6 +104,6 @@ class PaymentsHubPayoutSummaryStateMapper @Inject constructor(
     }
 }
 
-class DateToDDMMMYYYYStringFormatter @Inject constructor() {
-    operator fun invoke(date: Date): String = date.formatToDDMMMYYYY()
+class PayoutDateStringFormatter @Inject constructor() {
+    operator fun invoke(date: Date): String = date.formatToLocalizedMonthDayYear()
 }

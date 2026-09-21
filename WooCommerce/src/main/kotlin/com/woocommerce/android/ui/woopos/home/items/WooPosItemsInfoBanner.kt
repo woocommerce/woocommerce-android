@@ -113,8 +113,8 @@ fun WooPosItemsInfoBannerPreview() {
     WooPosTheme {
         WooPosItemsInfoBanner(
             visible = true,
-            title = "Update WooCommerce soon",
-            message = "Starting August 1, 2026, Point of Sale will require WooCommerce 10.5.0 or later.",
+            title = "Heads up",
+            message = "This is an informational banner shown at the top of the items list.",
             dismissContentDescription = "Dismiss",
             onDismiss = {}
         )

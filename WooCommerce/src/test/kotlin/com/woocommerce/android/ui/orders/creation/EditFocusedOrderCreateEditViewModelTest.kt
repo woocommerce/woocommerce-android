@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.orders.creation
 
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DEVICE_TYPE_COMPACT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DEVICE_TYPE_REGULAR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
+import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.CurrencyMatchResult
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
@@ -22,6 +24,7 @@ import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -827,4 +830,101 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         val event = lastReceivedEvent as OrderCreateEditNavigationTarget.SelectItems
         assertThat(event.orderCurrency).isNull()
     }
+
+    @Test
+    fun `given editable order, when a gift card is applied, then reflect the synced total and discount`() = testBlocking {
+        val order = defaultOrderValue.copy(isEditable = true)
+        val discountedOrder = order.copy(
+            total = BigDecimal("5.00"),
+            giftCards = listOf(GiftCardSummary(id = 1L, code = "1234-5678-9012-3456", used = BigDecimal("10.00")))
+        )
+        orderDetailRepository.stub {
+            on { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        createUpdateOrderUseCase = mock {
+            on { invoke(any(), any()) } doReturn flowOf(Succeeded(discountedOrder))
+        }
+        createSut()
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever { orderDraft = it }
+
+        sut.onGiftCardSelected("1234-5678-9012-3456")
+
+        assertThat(orderDraft?.selectedGiftCard).isEqualTo("1234-5678-9012-3456")
+        assertThat(orderDraft?.giftCardDiscountedAmount).isEqualTo(BigDecimal("10.00"))
+        assertThat(orderDraft?.total).isEqualTo(BigDecimal("5.00"))
+    }
+
+    @Test
+    fun `given editable order, when the store rejects a used gift card, then clear it and notify the merchant`() =
+        testBlocking {
+            val order = defaultOrderValue.copy(isEditable = true)
+            val syncResult = MutableSharedFlow<CreateUpdateOrder.OrderUpdateStatus>(replay = 1)
+            orderDetailRepository.stub {
+                on { getOrderById(defaultOrderValue.id) }.doReturn(order)
+            }
+            createUpdateOrderUseCase = mock {
+                on { invoke(any(), any()) } doReturn syncResult
+            }
+            createSut()
+            var orderDraft: Order? = null
+            sut.orderDraft.observeForever { orderDraft = it }
+            var lastEvent: Event? = null
+            sut.event.observeForever { lastEvent = it }
+
+            sut.onGiftCardSelected("9999-9999-9999-9999")
+            // The store accepts the request but applies no gift card (used/invalid): giftCards stays empty.
+            syncResult.emit(Succeeded(order))
+
+            assertThat(orderDraft?.selectedGiftCard).isEmpty()
+            assertThat(orderDraft?.giftCardDiscountedAmount).isNull()
+            assertThat(lastEvent).isEqualTo(Event.ShowSnackbar(R.string.order_creation_gift_card_not_applied))
+        }
+
+    @Test
+    fun `given an order with an applied gift card, when loaded, then show it from the synced order`() = testBlocking {
+        val giftCard = GiftCardSummary(id = 1L, code = "1234-5678-9012-3456", used = BigDecimal("10.00"))
+        val order = defaultOrderValue.copy(isEditable = true, giftCards = listOf(giftCard))
+        orderDetailRepository.stub {
+            on { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        createUpdateOrderUseCase = mock {
+            on { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+        createSut()
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever { orderDraft = it }
+
+        // The card is shown from the loaded order's giftCards, without any nav argument or user selection.
+        assertThat(orderDraft?.selectedGiftCard).isEqualTo("1234-5678-9012-3456")
+        assertThat(orderDraft?.giftCardDiscountedAmount).isEqualTo(BigDecimal("10.00"))
+    }
+
+    @Test
+    fun `given an applied gift card, when a later sync still returns it, then keep it and show no snackbar`() =
+        testBlocking {
+            val giftCard = GiftCardSummary(id = 1L, code = "1234-5678-9012-3456", used = BigDecimal("10.00"))
+            val order = defaultOrderValue.copy(isEditable = true)
+            val orderWithGiftCard = order.copy(giftCards = listOf(giftCard))
+            val syncResult = MutableSharedFlow<CreateUpdateOrder.OrderUpdateStatus>(replay = 1)
+            orderDetailRepository.stub {
+                on { getOrderById(defaultOrderValue.id) }.doReturn(order)
+            }
+            createUpdateOrderUseCase = mock {
+                on { invoke(any(), any()) } doReturn syncResult
+            }
+            createSut()
+            var orderDraft: Order? = null
+            sut.orderDraft.observeForever { orderDraft = it }
+            var lastEvent: Event? = null
+            sut.event.observeForever { lastEvent = it }
+
+            sut.onGiftCardSelected("1234-5678-9012-3456")
+            syncResult.emit(Succeeded(orderWithGiftCard))
+            // A later unrelated change syncs and the store still returns the applied card.
+            syncResult.emit(Succeeded(orderWithGiftCard))
+
+            assertThat(orderDraft?.selectedGiftCard).isEqualTo("1234-5678-9012-3456")
+            assertThat(lastEvent).isNotEqualTo(Event.ShowSnackbar(R.string.order_creation_gift_card_not_applied))
+        }
 }

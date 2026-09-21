@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.dashboard.domain
 import android.icu.text.SimpleDateFormat
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.extensions.formatToMMMMyyyy
+import com.woocommerce.android.extensions.formatToLocalizedMonthYear
 import com.woocommerce.android.extensions.formatToYYYY
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
@@ -19,7 +19,7 @@ class DashboardDateRangeFormatter @Inject constructor(private val dateUtils: Dat
 
         return when (rangeSelection.selectionType) {
             SelectionType.TODAY -> dateFormatter.format(startDate)
-            SelectionType.MONTH_TO_DATE -> startDate.formatToMMMMyyyy()
+            SelectionType.MONTH_TO_DATE -> startDate.formatToLocalizedMonthYear()
             SelectionType.YEAR_TO_DATE -> startDate.formatToYYYY()
             SelectionType.WEEK_TO_DATE, SelectionType.CUSTOM ->
                 "${dateFormatter.format(startDate)} – ${dateFormatter.format(endDate)}"

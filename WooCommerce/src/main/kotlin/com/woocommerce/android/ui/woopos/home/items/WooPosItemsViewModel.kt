@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsN
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsWooCommerceVersionSunsetWarningRequired
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -46,7 +45,6 @@ class WooPosItemsViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
     private val dateTimeProvider: DateTimeProvider,
-    private val isWooCommerceVersionSunsetWarningRequired: WooPosIsWooCommerceVersionSunsetWarningRequired,
     private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
     private var preservedStateBeforeOpeningSubScreen: WooPosItemsToolbarViewState? = null
@@ -84,13 +82,6 @@ class WooPosItemsViewModel @Inject constructor(
             if (isSyncOverdue) {
                 trackStaleWarningShown((requirement as WooPosFullSyncRequirement.NonBlockingRequired).lastSyncTimestamp)
                 _bannerState.value = WooPosItemsBannerState.SyncOverdue
-                return@launch
-            }
-
-            val isWcVersionSunsetRequired = isWooCommerceVersionSunsetWarningRequired()
-            if (isWcVersionSunsetRequired) {
-                analyticsTracker.track(WooPosAnalyticsEvent.Event.WooCommerceVersionSunsetWarningShown)
-                _bannerState.value = WooPosItemsBannerState.WooCommerceVersionSunset
                 return@launch
             }
 
@@ -133,16 +124,6 @@ class WooPosItemsViewModel @Inject constructor(
                 viewModelScope.launch {
                     analyticsTracker.track(
                         WooPosAnalyticsEvent.Event.LocalCatalogStaleWarningDismissed
-                    )
-                }
-            }
-
-            WooPosItemsUIEvent.WooCommerceVersionSunsetBannerDismissed -> {
-                _bannerState.value = WooPosItemsBannerState.Hidden
-                viewModelScope.launch {
-                    preferencesRepository.setWooVersionSunsetBannerDismissalTimestamp(dateTimeProvider.now())
-                    analyticsTracker.track(
-                        WooPosAnalyticsEvent.Event.WooCommerceVersionSunsetWarningDismissed
                     )
                 }
             }

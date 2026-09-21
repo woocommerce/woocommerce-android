@@ -3,7 +3,8 @@ package com.woocommerce.android.cardreader.connection
 sealed class CardReaderStatus {
     data class NotConnected(
         val errorCode: ErrorCode? = null,
-        val errorMessage: String? = null
+        val errorMessage: String? = null,
+        val stripeErrorCode: String? = null,
     ) : CardReaderStatus() {
         enum class ErrorCode {
             BATTERY_CRITICALLY_LOW,

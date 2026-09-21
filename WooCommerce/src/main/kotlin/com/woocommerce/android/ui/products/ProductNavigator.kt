@@ -349,7 +349,14 @@ class ProductNavigator @Inject constructor() {
                     isNewAttribute = target.isNewAttribute,
                     isVariationCreation = target.isVariationCreation
                 )
-                fragment.findNavController().navigateSafely(action)
+                // For a brand-new attribute in the edit flow, drop the "add attribute name" screen from the
+                // back stack so returning from the options screen goes to the attribute list, not naming.
+                val navOptions = if (target.isNewAttribute && !target.isVariationCreation) {
+                    NavOptions.Builder().setPopUpTo(id.addAttributeFragment, true).build()
+                } else {
+                    null
+                }
+                fragment.findNavController().navigateSafely(action, navOptions = navOptions)
             }
 
             is ProductNavigationTarget.ViewMediaUploadErrors -> {

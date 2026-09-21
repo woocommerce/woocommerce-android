@@ -7,6 +7,12 @@ import java.math.BigDecimal
 @Immutable
 sealed class WooPosRefundState {
 
+    enum class Recovery {
+        Retry,
+        RefreshItems,
+        None,
+    }
+
     @Immutable
     data object Loading : WooPosRefundState()
 
@@ -29,9 +35,14 @@ sealed class WooPosRefundState {
         val refundReason: String = "",
         val step: RefundStep,
         val isPreviewLoading: Boolean = false,
-        val previewFailed: Boolean = false,
-        val previewErrorMessage: String? = null,
+        val previewFailure: PreviewFailure? = null,
     ) : WooPosRefundState() {
+
+        @Immutable
+        data class PreviewFailure(
+            val message: String?,
+            val recovery: Recovery,
+        )
 
         @Immutable
         sealed class RefundStep {
@@ -85,7 +96,7 @@ sealed class WooPosRefundState {
     data class Error(
         val message: String,
         val errorType: ErrorType,
-        val canRetry: Boolean = true,
+        val recovery: Recovery = Recovery.Retry,
     ) : WooPosRefundState() {
 
         @Immutable

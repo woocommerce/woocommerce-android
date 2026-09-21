@@ -16,7 +16,6 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderShipmentTracking
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -25,6 +24,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
+import com.woocommerce.android.ui.products.ProductImageLoader
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -51,7 +51,7 @@ class OrderFulfillFragment :
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    @Inject lateinit var productImageMap: ProductImageMap
+    @Inject lateinit var productImageLoaderFactory: ProductImageLoader.Factory
 
     @Inject lateinit var dateUtils: DateUtils
 
@@ -99,7 +99,7 @@ class OrderFulfillFragment :
     private fun setupObservers(binding: FragmentOrderFulfillBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.order?.takeIfNotEqualTo(old?.order) {
-                showOrderDetail(it, binding)
+                showOrderDetail(it, new.isVirtualOrder, binding)
             }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { screenTitle = it }
             new.isShipmentTrackingAvailable?.takeIfNotEqualTo(old?.isShipmentTrackingAvailable) {
@@ -131,10 +131,10 @@ class OrderFulfillFragment :
         }
     }
 
-    private fun showOrderDetail(order: Order, binding: FragmentOrderFulfillBinding) {
+    private fun showOrderDetail(order: Order, isVirtualOrder: Boolean, binding: FragmentOrderFulfillBinding) {
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
-            isVirtualOrder = viewModel.hasVirtualProductsOnly(),
+            isVirtualOrder = isVirtualOrder,
             isReadOnly = true
         )
         binding.buttonMarkOrderCompete.setOnClickListener {
@@ -153,7 +153,7 @@ class OrderFulfillFragment :
                 showMarkOrderCompleteButton(false) { }
                 updateProductList(
                     orderItems = products,
-                    productImageMap = productImageMap,
+                    productImageLoaderFactory = productImageLoaderFactory,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
                     productClickListener = this@OrderFulfillFragment,
                     onProductMenuItemClicked = { /* will be added in a separate commit */ }

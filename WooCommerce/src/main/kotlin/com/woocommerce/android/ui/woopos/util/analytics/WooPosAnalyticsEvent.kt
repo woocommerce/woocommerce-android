@@ -12,6 +12,8 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListProductType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSourceType
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundFlow
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundPreconditionReason
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncErrorType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncSkipReason
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
@@ -21,10 +23,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
     override val siteless: Boolean = false
     override val isPosEvent: Boolean = true
 
-    private val _properties: MutableMap<String, String> = mutableMapOf()
-    val properties: Map<String, String> get() = _properties.toMap()
+    private val _properties: MutableMap<String, Any> = mutableMapOf()
+    val properties: Map<String, Any> get() = _properties.toMap()
 
-    fun addProperties(additionalProperties: Map<String, String>) {
+    fun addProperties(additionalProperties: Map<String, Any>) {
         _properties.putAll(additionalProperties)
     }
 
@@ -51,8 +53,13 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "back_to_checkout_from_cash"
         }
 
-        data object CashCollectPaymentSuccess : Event() {
+        data class CashCollectPaymentSuccess(val paymentProperties: Map<String, Any>) : Event() {
             override val name: String = "cash_collect_payment_success"
+
+            init {
+                addProperties(paymentProperties)
+                addProperties(mapOf("payment_method_type" to "cash", "plugin_slug" to "cod"))
+            }
         }
 
         data object CheckoutCashPaymentTapped : Event() {
@@ -79,8 +86,26 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "scan_to_pay_payment_detected_via_polling"
         }
 
-        data object ScanToPayCollectPaymentSuccess : Event() {
+        data class ScanToPayCollectPaymentSuccess(
+            val paymentProperties: Map<String, Any>,
+            val gateway: String,
+        ) : Event() {
             override val name: String = "scan_to_pay_collect_payment_success"
+
+            init {
+                addProperties(paymentProperties)
+                addProperties(
+                    mapOf(
+                        "payment_method_type" to "scan_to_pay",
+                        "plugin_slug" to when (gateway) {
+                            "stripe" -> "woocommerce-stripe"
+                            "woocommerce_payments" -> "woocommerce-payments"
+                            "" -> "unknown"
+                            else -> gateway
+                        }
+                    )
+                )
+            }
         }
 
         data object ScanToPayPaymentFailed : Event() {
@@ -99,8 +124,13 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "mark_as_paid_confirmed"
         }
 
-        data object MarkAsPaidSuccess : Event() {
+        data class MarkAsPaidSuccess(val paymentProperties: Map<String, Any>) : Event() {
             override val name: String = "mark_as_paid_success"
+
+            init {
+                addProperties(paymentProperties)
+                addProperties(mapOf("payment_method_type" to "mark_as_paid", "plugin_slug" to "other"))
+            }
         }
 
         data object MarkAsPaidFailed : Event() {
@@ -216,6 +246,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data object GoToOrdersTapped : Event() {
             override val name: String = "orders_menu_item_tapped"
+        }
+
+        data object OrdersListLoaded : Event() {
+            override val name: String = "orders_list_loaded"
         }
 
         data object OrdersListPullToRefreshTriggered : Event() {
@@ -927,14 +961,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "local_catalog_stale_warning_dismissed"
         }
 
-        data object WooCommerceVersionSunsetWarningShown : Event() {
-            override val name: String = "woocommerce_version_sunset_warning_shown"
-        }
-
-        data object WooCommerceVersionSunsetWarningDismissed : Event() {
-            override val name: String = "woocommerce_version_sunset_warning_dismissed"
-        }
-
         data class LocalCatalogBlockedFellBackToRemote(val wooCommerceVersion: String?) : Event() {
             override val name: String = "local_catalog_blocked_fell_back_to_remote"
 
@@ -1027,16 +1053,79 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        data object RefundProcessingStarted : Event() {
+        data class RefundProcessingStarted(
+            val refundFlow: RefundFlow
+        ) : Event() {
             override val name: String = "refund_processing_started"
+
+            init {
+                addProperties(
+                    mapOf(
+                        RefundFlow.REFUND_FLOW to refundFlow.value
+                    )
+                )
+            }
         }
 
-        data object RefundProcessingSuccess : Event() {
+        data class RefundProcessingSuccess(
+            val refundFlow: RefundFlow
+        ) : Event() {
             override val name: String = "refund_processing_success"
+
+            init {
+                addProperties(
+                    mapOf(
+                        RefundFlow.REFUND_FLOW to refundFlow.value
+                    )
+                )
+            }
         }
 
-        data object RefundProcessingFailed : Event() {
+        /**
+         * [apiErrorCode] is omitted rather than sent as a placeholder when the failure carries no
+         * code, matching iOS (woocommerce-ios#17716) so both platforms answer "failures with no
+         * code" the same way.
+         */
+        data class RefundProcessingFailed(
+            val refundFlow: RefundFlow,
+            val apiErrorCode: String?,
+        ) : Event() {
             override val name: String = "refund_processing_failed"
+
+            init {
+                addProperties(
+                    buildMap {
+                        put(RefundFlow.REFUND_FLOW, refundFlow.value)
+                        apiErrorCode?.let { put("api_error_code", it) }
+                    }
+                )
+            }
+        }
+
+        /**
+         * The refund was abandoned between `refund_processing_started` and submission, so neither
+         * `refund_processing_success` nor `refund_processing_failed` will follow. Carries
+         * [refundFlow] so the funnel reconciles per flow:
+         * `started(f) == success(f) + failed(f) + precondition_failed(f)`.
+         */
+        data class RefundProcessingPreconditionFailed(
+            val refundFlow: RefundFlow,
+            val reason: RefundPreconditionReason,
+        ) : Event() {
+            override val name: String = "refund_processing_precondition_failed"
+
+            init {
+                addProperties(
+                    mapOf(
+                        RefundFlow.REFUND_FLOW to refundFlow.value,
+                        RefundPreconditionReason.REASON to reason.value,
+                    )
+                )
+            }
+        }
+
+        data object RefundServerFlowUnavailable : Event() {
+            override val name: String = "refund_server_flow_unavailable"
         }
 
         data class RefundFlowAborted(val refundStep: String) : Event() {
@@ -1139,7 +1228,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "card_present_collect_payment_failed"
         }
 
-        data object CardPresentCollectPaymentSuccess : PaymentFlowTrackerEvent() {
+        class CardPresentCollectPaymentSuccess : PaymentFlowTrackerEvent() {
             override val name: String = "card_present_collect_payment_success"
         }
 
@@ -1365,7 +1454,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
     }
 }
 
-internal fun IAnalyticsEvent.addProperties(additionalProperties: Map<String, String>) {
+internal fun IAnalyticsEvent.addProperties(additionalProperties: Map<String, Any>) {
     when (this) {
         is WooPosAnalyticsEvent -> addProperties(additionalProperties)
         else -> error("Cannot add properties to non-WooPosAnalytics event")
@@ -1375,9 +1464,13 @@ internal fun IAnalyticsEvent.addProperties(additionalProperties: Map<String, Str
 internal fun WooPosLaunchability.NonLaunchabilityReason.toAnalyticsReason(): String {
     return when (this) {
         WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion -> "wc_plugin_version"
-        WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
-        WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache,
-        WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "other"
+        WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound -> "unknown_wc_plugin"
+        WooPosLaunchability.NonLaunchabilityReason.UnsupportedCountry -> "store_country"
+        WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency -> "store_currency"
+        WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled -> "feature_switch_disabled"
+        WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable -> "site_settings_unavailable"
+        WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache -> "unknown_no_positive_cache"
+        WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "no_site_selected"
     }
 }
 

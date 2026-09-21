@@ -120,7 +120,12 @@ fun ExpandableProductCard(
             .then(modifier)
     ) {
         val (img, name, stock, sku, quantity, discount, price, chevron, expandedPart) = createRefs()
-        val collapsedStateBottomBarrier = createBottomBarrier(sku, quantity)
+        val collapsedStateBottomBarrier = if (isExpanded) {
+            createBottomBarrier(sku)
+        } else {
+            createBottomBarrier(quantity)
+        }
+        val showsCollapsedDiscount = !isExpanded && product.productInfo.hasDiscount
         ProductThumbnail(
             modifier = Modifier
                 .constrainAs(img) {
@@ -155,7 +160,7 @@ fun ExpandableProductCard(
             modifier = Modifier
                 .constrainAs(stock) {
                     start.linkTo(name.start)
-                    end.linkTo(discount.start)
+                    end.linkTo(if (showsCollapsedDiscount) discount.start else chevron.start)
                     top.linkTo(name.bottom)
                     width = Dimension.fillToConstraints
                 }
@@ -165,7 +170,7 @@ fun ExpandableProductCard(
             overflow = TextOverflow.Ellipsis,
             color = colorResource(id = R.color.color_on_surface_disabled)
         )
-        if (!isExpanded && product.productInfo.hasDiscount) {
+        if (showsCollapsedDiscount) {
             Text(
                 modifier = Modifier
                     .constrainAs(discount) {
@@ -311,13 +316,17 @@ fun ExtendedProductCardContent(
             configurationDivider
         ) = createRefs()
 
-        val buttonBarrier = createTopBarrier(removeButton, configurationButton)
-
         val editableControlsEnabled = state.value?.isEditable ?: false
         // The logic to update bundled products quantity is complex so we need to prevent any change while we are
         // updating the bundle and inner products quantity
         val isBundledProduct = product.productInfo.productType == ProductType.BUNDLE
         val discountButtonsEnabled = state.value?.areDiscountButtonsEnabled == true
+
+        val buttonBarrier = if (product.productInfo.isConfigurable) {
+            createTopBarrier(removeButton, configurationButton)
+        } else {
+            createTopBarrier(removeButton)
+        }
 
         Divider(
             modifier = Modifier
@@ -723,6 +732,39 @@ fun ExpandableProductCardPreview() {
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
     WooThemeWithBackground {
         ExpandableProductCard(state, product, {}, {}, {}, {}, { _, _ -> })
+    }
+}
+
+@Preview(name = "Expanded", widthDp = 360)
+@Preview(name = "Expanded - Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES, widthDp = 360)
+@Composable
+fun ExpandableProductCardExpandedPreview() {
+    val item = Order.Item.EMPTY.copy(
+        name = "Test Product Long Long Long Long Long Long Name",
+        quantity = 3.0f,
+        sku = "123",
+        itemId = 10L
+    )
+    val product = OrderCreationProduct.ProductItem(
+        item = item,
+        productInfo = ProductInfo(
+            imageUrl = "",
+            isStockManaged = true,
+            stockQuantity = 3.0,
+            stockStatus = ProductStockStatus.InStock,
+            pricePreDiscount = "$1000",
+            priceTotal = "$3000",
+            priceSubtotal = "$3000",
+            discountAmount = "$5",
+            priceAfterDiscount = "$2995",
+            hasDiscount = true,
+            isConfigurable = false,
+            productType = ProductType.SIMPLE
+        )
+    )
+    val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
+    WooThemeWithBackground {
+        ExpandableProductCard(state, product, {}, {}, {}, {}, { _, _ -> }, isExpanded = true)
     }
 }
 

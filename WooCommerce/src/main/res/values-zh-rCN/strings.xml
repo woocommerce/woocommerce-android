@@ -1,11 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-28 11:56:56+0000
+Translation-Revision-Date: 2026-09-08 09:54:23+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="age_verification_open_google_play">打开 Google Play</string>
+    <string name="age_verification_required_message">在 WooCommerce 检查您是否可以使用该应用程序之前，Google Play 需要您先验证年龄。请在 Google Play 中完成验证，然后返回此处重试。</string>
+    <string name="age_verification_required_title">请验证您的年龄以继续</string>
+    <string name="woopos_refund_review_remaining_items_button">查看剩余项目</string>
+    <string name="woopos_refund_error_store_not_updated">该银行卡已退款，但您的商店未同步更新相关信息。 在您的商店管理页面中记录此退款。</string>
+    <string name="woopos_refund_error_item_already_refunded">所选商品中有一件已全额退款。</string>
+    <string name="filter_history_delete">删除</string>
+    <string name="filter_history_clear_confirmation">是否确定要清除所有筛选器历史记录？</string>
+    <string name="filter_history_clear">清除历史记录</string>
+    <string name="filter_history_empty">未找到筛选器历史记录</string>
+    <string name="filter_history_cancel">取消</string>
+    <string name="filter_history_apply">应用</string>
+    <string name="filter_history_recent_header">最近</string>
+    <string name="filter_history_title">筛选器历史记录</string>
+    <string name="add_action">添加</string>
+    <string name="product_attribute_no_options_warning">此属性没有选项，将被移除。 是否要继续？</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">开启定位功能以查看读卡器</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">允许定位功能以查看读卡器</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">开启蓝牙功能以查看读卡器</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">允许蓝牙功能以查看读卡器</string>
+    <string name="woopos_card_reader_local_network_permission_message">需要本地网络权限才能连接用作读卡器的手机。</string>
+    <string name="woopos_card_reader_local_network_permission_title">需要本地网络权限</string>
+    <string name="woopos_refund_error_invalid_amount">退款金额无效</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">退款金额大于此商品的剩余可退款金额</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">退款金额大于此订单的剩余可退款金额</string>
+    <string name="woopos_refund_error_order_not_refundable">此订单无法退款</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">所选数量大于剩余可退款数量</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">再次出示该代码</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">在收银机上收款</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">未在线收取任何款项。 请在收银机上收取，或再次出示该代码。</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">客户选择现场付款</string>
+    <string name="woopos_remote_reader_failed_token_invalid">付款服务错误。 请尝试重新连接。</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">请在手机上开启 NFC 功能，然后重试。</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">此手机不支持“点按付款”功能。 请尝试使用其他设备。</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">此捆绑包包含一款订阅产品，系统不支持为此产品创建订单</string>
+    <string name="product_image_details_name_removal_blocked">该应用程序不支持删除标题。 请使用 wp-admin 将其删除。</string>
+    <string name="product_image_details_alt_text_removal_blocked">该应用程序不支持删除替代文本。 请使用 wp-admin 将其删除。</string>
+    <string name="product_image_details_name_label">标题</string>
+    <string name="product_image_details_alt_text_label">替代文本</string>
+    <string name="product_image_details_title">图片详情</string>
+    <string name="card_reader_mode_local_network_permission_open_settings">打开“设置”</string>
+    <string name="card_reader_mode_local_network_permission_denied_subtitle">本地网络权限被阻止。 请打开“设置”并授予本地网络访问权限，以便在此手机上使用点按付款功能。</string>
+    <string name="card_reader_mode_local_network_permission_continue">继续</string>
+    <string name="card_reader_mode_local_network_permission_subtitle">Android 需要本地网络访问权限，以便您的平板电脑能够找到此手机。 不会有任何数据发送到您的网络之外。</string>
+    <string name="card_reader_mode_local_network_permission_header">需要本地网络权限</string>
+    <string name="card_reader_mode_error_phone_not_eligible">此手机不支持“点按付款”功能。 请尝试使用其他设备。</string>
+    <string name="card_reader_pay_in_person_fetch_failed">我们无法确认“现场付款”功能是否已启用。 请稍后重试。</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">禁用</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">此操作将在您商店的结账页面上禁用“货到付款”付款方式，因此客户将无法选择该付款方式。</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">禁用“现场付款”功能？</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">启用</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">此操作将在您商店的结账页面上启用“货到付款”付款方式，并为您的客户将该付款方式的名称从“%1$s”更改为“现场付款”，包括在您网站结账页面上的显示名称。</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">此操作将在您商店的结账页面上启用“货到付款”付款方式。</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">启用“现场付款”功能？</string>
+    <string name="order_creation_gift_card_not_applied">无法应用此礼品卡</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">您无法添加没有变体的可变产品</string>
+    <string name="login_site_credentials_use_web_authorization">请尝试使用您的浏览器登录</string>
+    <string name="login_site_credentials_endpoint_persistence_failed">我们无法保存您商店的登录设置。 请重试。</string>
+    <string name="login_site_credentials_admin_url_not_found_error">我们无法通过该地址访问 WordPress 仪表盘。 请检查一下，然后重试。</string>
+    <string name="login_site_credentials_login_url_not_found_error">我们无法在该地址找到 WordPress 登录页面。 请检查一下，然后重试。</string>
+    <string name="login_site_credentials_endpoint_same_site_error">请在同一站点上输入一个地址，而不更改其安全连接或端口。</string>
+    <string name="login_site_credentials_endpoint_invalid_url_error">请输入完整的网址，包括 http:// 或 https://。</string>
+    <string name="login_site_credentials_admin_url_label">WordPress 仪表盘地址</string>
+    <string name="login_site_credentials_admin_url_description">安全插件可能会移动 WordPress 仪表盘的位置。 请输入您用于打开该仪表盘的地址。</string>
+    <string name="login_site_credentials_admin_url_title">您商店的仪表盘位于何处？</string>
+    <string name="login_site_credentials_login_url_label">WordPress 登录地址</string>
+    <string name="login_site_credentials_login_url_description">安全插件可能会使用自定义 WordPress 登录地址。 请输入您用于登录的地址。</string>
+    <string name="login_site_credentials_login_url_title">您在哪里登录您的商店？</string>
+    <string name="login_text_otp_another">通过短信重新发送代码</string>
+    <string name="login_text_otp">通过短信重新发送代码</string>
+    <string name="enter_verification_code_sms_generic">我们发送了一条短信。 请输入短信中的验证码。</string>
+    <string name="enter_verification_code">请输入验证码以继续。</string>
+    <string name="logviewer_share_all_logs_error">无法准备日志以供共享</string>
+    <string name="logviewer_preparing_logs">正在准备日志…</string>
+    <string name="logviewer_share_all_logs">共享所有日志</string>
+    <string name="support_mobile_status_report_share_error">无法共享移动设备状态报告</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">将移动设备状态报告复制到剪贴板时出错</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">移动设备状态报告已复制到剪贴板</string>
+    <string name="support_mobile_status_report_share_label">共享移动设备状态报告</string>
+    <string name="support_mobile_status_report_copy_label">将移动设备状态报告复制到剪贴板</string>
+    <string name="support_mobile_status_report_clipboard_label">WooCommerce 移动设备状态报告</string>
+    <string name="support_mobile_status_report_detail">此应用程序中的应用程序、设备和商店信息</string>
+    <string name="support_mobile_status_report">移动设备状态报告</string>
     <string name="woopos_cart_custom_amount_discount_not_applied">未应用折扣</string>
     <string name="product_duplicate_discard_changes_action">放弃并复制</string>
     <string name="product_duplicate_discard_changes_message">您未保存的更改将会丢失。 副本将使用最后保存的版本。</string>
@@ -584,9 +667,6 @@ Language: zh_CN
     <string name="woopos_refund_creating_error_title">退款创建失败</string>
     <string name="woopos_refund_loading_error_title">加载退款项目失败</string>
     <string name="woopos_orders_via_payment_method">通过 %1$s</string>
-    <string name="woopos_wc_version_sunset_banner_dismiss">忽略 WooCommerce 更新警告</string>
-    <string name="woopos_wc_version_sunset_banner_message">从 2026 年 8 月 1 日起，销售点将要求使用 WooCommerce 10.5.0 或更高版本。 请更新您商店中的 WooCommerce 或咨询您的商店管理员。</string>
-    <string name="woopos_wc_version_sunset_banner_title">尽快更新 WooCommerce</string>
     <string name="restart">重新启动</string>
     <string name="dev_feature_flags">功能标志</string>
     <string name="settings_enable_push_notifications">启用推送通知</string>
@@ -1074,7 +1154,6 @@ Language: zh_CN
     <string name="woo_shipping_fetching_countries_and_states_failed">我们无法检索到国家/地区和州/省/自治区/直辖市信息。 请重试。</string>
     <string name="woo_shipping_field_required_error">此字段为必填字段。</string>
     <string name="product_upload_error_title">图片上传发生错误</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">POS 目前仅支持简单产品、可变产品和虚拟产品 — \n创建一个以开始。</string>
     <string name="woo_shipping_label_phone">电话</string>
     <string name="woo_shipping_label_email">电子邮件</string>
@@ -1476,7 +1555,6 @@ Language: zh_CN
     <string name="my_store_widget_stats_title">业绩</string>
     <string name="dashboard_stats_edit_granularity_content_description">更改日期范围按钮</string>
     <string name="images_unavailable_notice">图片不可用，因为您的站点已标记为“私人”。 您可以切换至“即将推出”模式来更改此设置。\n</string>
-    <string name="card_selection_control">分析卡选择</string>
     <string name="login_app_password_exit_dialog_cancel">取消</string>
     <string name="login_app_password_exit_dialog_confirmation">仍要退出</string>
     <string name="login_app_password_exit_dialog_message">您似乎尚未批准应用程序连接。 是否确定要退出？</string>
@@ -2248,7 +2326,6 @@ Language: zh_CN
     <string name="login_site_credentials_web_authorization_connection_rejected">无法登录，因为未批准应用程序创建密码。</string>
     <string name="login_site_credentials_fetching_site">正在获取站点…</string>
     <string name="login_site_credentials_fetching_site_failed">获取您的网站时出错</string>
-    <string name="login_site_credentials_use_web_authorization">请使用“WP 管理”页面重试</string>
     <string name="login_store_address">登录</string>
     <string name="loading">正在加载…</string>
     <string name="upgrades_plan_ended_name">%s 已结束</string>
@@ -3426,7 +3503,7 @@ Language: zh_CN
     <string name="upsells_desc">促销产品而非当前浏览的产品（即利润更高的产品）</string>
     <string name="upsells_label">追加销售</string>
     <string name="product_detail_linked_products">关联产品</string>
-    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="orderdetail_product_lineitem_attribute">%1$s：%2$s</string>
     <string name="login_get_link_by_email">通过电子邮件获取登录链接</string>
     <string name="email_not_registered_wpcom">找不到与此电子邮件地址关联的 WordPress.com 帐户。</string>
     <string name="settings_enable_product_addons_teaser_message">当我们准备发布时，测试查看订单加载项</string>
@@ -3584,6 +3661,7 @@ Language: zh_CN
     <string name="product_sale_date_to">直至 %1$s</string>
     <string name="product_wip_title">提供新的编辑选项</string>
     <string name="orderdetail_product_multiple">产品</string>
+    <string name="orderdetail_product_lineitem_quantity_and_price">%1$s x %2$s</string>
     <string name="product_type_external">外部</string>
     <string name="product_type_simple">简单</string>
     <string name="product_status_privately_published">已私密发布</string>
@@ -4002,10 +4080,7 @@ Language: zh_CN
     <string name="login_magic_link_email_requesting">正在请求登录电子邮件</string>
     <string name="password_incorrect">密码似乎不对。请仔细检查您的信息，然后再试一次。</string>
     <string name="requesting_otp">正在请求短信验证码。</string>
-    <string name="login_text_otp_another">再发一条短信验证码。</string>
-    <string name="login_text_otp">通过短信向我发送验证码。</string>
     <string name="enter_verification_code_sms">我们已经向尾号 %s 的手机号码发送短信。请输入短信中的验证码。</string>
-    <string name="enter_verification_code">马上就好！ 请输入身份验证器应用程序中的 WordPress.com 验证码。</string>
     <string name="open_mail">打开邮箱</string>
     <string name="next">下一步</string>
     <string name="log_in">登录</string>

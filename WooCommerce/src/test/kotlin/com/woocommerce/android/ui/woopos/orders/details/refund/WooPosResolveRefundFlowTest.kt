@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -21,24 +19,11 @@ class WooPosResolveRefundFlowTest {
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock {
         on { invoke() } doReturn WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
     }
-    private val featureFlagRepository: FeatureFlagRepository = mock {
-        on { isEnabled(FeatureFlag.WOO_POS_SERVER_REFUNDS) } doReturn true
-    }
-
     private val site = SiteModel().apply { id = LOCAL_SITE_ID }
 
     private val sut by lazy {
         whenever(selectedSite.get()).thenReturn(site)
-        WooPosResolveRefundFlow(selectedSite, availabilityCache, getWooCoreVersion, featureFlagRepository)
-    }
-
-    @Test
-    fun `given flag disabled, when resolved, then flow is local`() {
-        // GIVEN
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_SERVER_REFUNDS)).thenReturn(false)
-
-        // THEN
-        assertThat(sut()).isEqualTo(WooPosRefundFlow.LocalComputed)
+        WooPosResolveRefundFlow(selectedSite, availabilityCache, getWooCoreVersion)
     }
 
     @Test

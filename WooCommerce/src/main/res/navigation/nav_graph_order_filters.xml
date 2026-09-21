@@ -24,6 +24,13 @@
             app:popEnterAnim="@anim/default_pop_enter_anim"
             app:popExitAnim="@anim/default_pop_exit_anim" />
         <action
+            android:id="@+id/action_orderFilterCategoriesFragment_to_filterHistoryFragment"
+            app:destination="@id/orderFilterHistoryFragment"
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim" />
+        <action
             android:id="@+id/action_orderFilterCategoriesFragment_to_nav_graph_product_selector"
             app:destination="@id/nav_graph_product_selector"
             app:enterAnim="@anim/default_enter_anim"
@@ -71,5 +78,13 @@
         <argument
             android:name="allowGuests"
             app:argType="boolean" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderFilterHistoryFragment"
+        android:name="com.woocommerce.android.ui.filters.FilterHistoryFragment"
+        android:label="FilterHistoryFragment">
+        <argument
+            android:name="filterType"
+            app:argType="com.woocommerce.android.ui.filters.FilterHistoryType" />
     </fragment>
 </navigation>

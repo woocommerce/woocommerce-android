@@ -1,6 +1,47 @@
 package com.woocommerce.android.ui.woopos.util.analytics
 
 object WooPosAnalyticsEventConstant {
+    const val TAP_TO_PAY_READER_MODEL = "TAP_TO_PAY_DEVICE"
+
+    enum class CardReaderTransport(val value: String) {
+        BUILT_IN("built_in"),
+        BLUETOOTH("bluetooth"),
+        WIFI_LAN("wifi_lan");
+
+        override fun toString(): String = value
+    }
+
+    enum class RefundFlow(val value: String) {
+        LOCAL("local"),
+        SERVER_COMPUTED("server_computed");
+
+        override fun toString(): String {
+            return value
+        }
+
+        companion object {
+            const val REFUND_FLOW = "refund_flow"
+        }
+    }
+
+    /**
+     * Why a refund never reached submission after `refund_processing_started` fired. Reported on
+     * `refund_processing_precondition_failed` so the started event always has a terminal event to
+     * pair with.
+     */
+    enum class RefundPreconditionReason(val value: String) {
+        ORDER_UNAVAILABLE("order_unavailable"),
+        CURRENCY_SETTINGS_UNAVAILABLE("currency_settings_unavailable");
+
+        override fun toString(): String {
+            return value
+        }
+
+        companion object {
+            const val REASON = "reason"
+        }
+    }
+
     enum class DeviceType(val value: String) {
         PHONE("phone"),
         TABLET("tablet");

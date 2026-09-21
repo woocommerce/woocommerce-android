@@ -14,6 +14,8 @@ import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayError
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocalNetworkPermissionDenied
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocalNetworkPermissionExplainer
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionDenied
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionExplainer
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
@@ -56,6 +58,10 @@ class CardReaderModeViewModel @Inject constructor(
     private var isSimulated = false
     private var tracking = SessionTracking()
 
+    fun onPermissionsGranted() {
+        startSessionIfNeeded()
+    }
+
     fun onLocationPermissionMissing() {
         if (sessionStarted) return
         _viewState.value = RemoteTapToPayLocationPermissionExplainer(
@@ -63,14 +69,25 @@ class CardReaderModeViewModel @Inject constructor(
         )
     }
 
-    fun onLocationPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
-        when {
-            granted -> startSessionIfNeeded()
-            !shouldShowRationale -> _viewState.value = RemoteTapToPayLocationPermissionDenied(
-                onPrimaryActionClicked = { _events.trySend(CardReaderModeEvent.OpenAppSettings) },
-            )
-            else -> onLocationPermissionMissing()
-        }
+    fun onLocationPermissionDenied() {
+        if (sessionStarted) return
+        _viewState.value = RemoteTapToPayLocationPermissionDenied(
+            onPrimaryActionClicked = { _events.trySend(CardReaderModeEvent.OpenAppSettings) },
+        )
+    }
+
+    fun onLocalNetworkPermissionMissing() {
+        if (sessionStarted) return
+        _viewState.value = RemoteTapToPayLocalNetworkPermissionExplainer(
+            onPrimaryActionClicked = { _events.trySend(CardReaderModeEvent.RequestLocalNetworkPermission) },
+        )
+    }
+
+    fun onLocalNetworkPermissionDenied() {
+        if (sessionStarted) return
+        _viewState.value = RemoteTapToPayLocalNetworkPermissionDenied(
+            onPrimaryActionClicked = { _events.trySend(CardReaderModeEvent.OpenAppSettings) },
+        )
     }
 
     private fun startSessionIfNeeded() {

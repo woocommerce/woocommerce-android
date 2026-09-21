@@ -61,6 +61,7 @@ import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEd
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountType.Amount
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountType.Percentage
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.ViewState
+import com.woocommerce.android.ui.orders.creation.views.getQuantityWithTotalText
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -77,10 +78,11 @@ fun OrderCreateEditProductDiscountScreen(
     onDiscountAmountChange: (BigDecimal?) -> Unit,
     onPercentageDiscountSelected: () -> Unit,
     onAmountDiscountSelected: () -> Unit,
-    discountInputFieldConfig: DiscountInputFieldConfig,
+    discountInputFieldConfig: StateFlow<DiscountInputFieldConfig?>,
     productItem: MutableStateFlow<OrderCreationProduct>,
 ) {
     val state = viewState.collectAsState()
+    val inputFieldConfig = discountInputFieldConfig.collectAsState()
     Scaffold(topBar = { Toolbar(onCloseClicked, onDoneClicked, state.value.isDoneButtonEnabled) }) { padding ->
         val focusRequester = remember { FocusRequester() }
         Box(
@@ -98,48 +100,51 @@ fun OrderCreateEditProductDiscountScreen(
                 ProductCard(
                     imageUrl = viewState.value.productDetailsState?.imageUrl,
                     productName = productItem.value.item.name,
-                    productPrice = productItem.value.item.pricePreDiscount,
-                    productQuantity = productItem.value.item.quantity,
-                    subTotalPerProduct = productItem.value.item.subtotal,
-                    state = state.value
+                    quantityWithPrice = getQuantityWithTotalText(productItem.value),
+                    subTotalPerProduct = productItem.value.productInfo.priceSubtotal,
                 )
 
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(dimensionResource(id = R.dimen.minor_100)),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    WCOutlinedTypedTextField(
+                inputFieldConfig.value?.let { config ->
+                    Row(
                         modifier = Modifier
-                            .focusRequester(focusRequester)
-                            .weight(1f),
-                        value = state.value.discountAmount,
-                        valueMapper = NullableCurrencyTextFieldValueMapper.create(
-                            discountInputFieldConfig.decimalSeparator,
-                            discountInputFieldConfig.numberOfDecimals
-                        ),
-                        onValueChange = onDiscountAmountChange,
-                        label = stringResource(
-                            R.string.order_creation_discount_amount_with_currency,
-                            state.value.discountType.symbol
-                        ),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        isError = discountValidationState is Invalid,
-                        trailingIcon = {
-                            if (discountValidationState is Invalid) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.ic_info_filled_24dp),
-                                    contentDescription = null,
-                                    tint = colorResource(id = R.color.woo_red_50)
-                                )
-                            }
-                        },
-                    )
-                    Switch(state.value, onPercentageDiscountSelected, onAmountDiscountSelected)
+                            .fillMaxWidth()
+                            .padding(dimensionResource(id = R.dimen.minor_100)),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        WCOutlinedTypedTextField(
+                            modifier = Modifier
+                                .focusRequester(focusRequester)
+                                .weight(1f),
+                            value = state.value.discountAmount,
+                            valueMapper = NullableCurrencyTextFieldValueMapper.create(
+                                config.decimalSeparator,
+                                config.numberOfDecimals
+                            ),
+                            onValueChange = onDiscountAmountChange,
+                            label = stringResource(
+                                R.string.order_creation_discount_amount_with_currency,
+                                state.value.discountType.symbol
+                            ),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            isError = discountValidationState is Invalid,
+                            trailingIcon = {
+                                if (discountValidationState is Invalid) {
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource(R.drawable.ic_info_filled_24dp),
+                                        contentDescription = null,
+                                        tint = colorResource(id = R.color.woo_red_50)
+                                    )
+                                }
+                            },
+                        )
+                        Switch(state.value, onPercentageDiscountSelected, onAmountDiscountSelected)
+                    }
+                    LaunchedEffect(Unit) {
+                        focusRequester.requestFocus()
+                    }
                 }
                 if (discountValidationState is Invalid) {
                     Text(
@@ -161,9 +166,6 @@ fun OrderCreateEditProductDiscountScreen(
                         onClick = onRemoveDiscountClicked,
                         text = stringResource(id = R.string.order_creation_remove_discount)
                     )
-                }
-                LaunchedEffect(Unit) {
-                    focusRequester.requestFocus()
                 }
             }
         }
@@ -202,10 +204,8 @@ private fun Toolbar(
 private fun ProductCard(
     imageUrl: String?,
     productName: String,
-    productPrice: BigDecimal,
-    productQuantity: Float,
-    subTotalPerProduct: BigDecimal,
-    state: ViewState
+    quantityWithPrice: String,
+    subTotalPerProduct: String,
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -257,7 +257,7 @@ private fun ProductCard(
         )
 
         Text(
-            text = "$productQuantity x ${state.currency}$productPrice",
+            text = quantityWithPrice,
             style = MaterialTheme.typography.body2,
             color = colorResource(id = R.color.woo_gray_40),
             modifier = Modifier
@@ -273,7 +273,7 @@ private fun ProductCard(
         )
 
         Text(
-            text = "${state.currency}$subTotalPerProduct",
+            text = subTotalPerProduct,
             modifier = Modifier
                 .constrainAs(totalText) {
                     end.linkTo(parent.end)
@@ -330,11 +330,6 @@ data class DiscountInputFieldConfig(
 fun CalculatedAmount(
     state: ViewState,
 ) {
-    val discountAmount = when (state.discountType) {
-        is Percentage -> "${state.currency}${state.calculatedPriceAfterDiscount}"
-        is Amount -> "${state.calculatedPriceAfterDiscount}%"
-    }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -355,7 +350,7 @@ fun CalculatedAmount(
             color = colorResource(id = R.color.woo_gray_40)
         )
         Text(
-            text = discountAmount,
+            text = state.calculatedAmount,
             style = MaterialTheme.typography.body2,
             color = colorResource(id = R.color.woo_gray_40)
         )
@@ -383,7 +378,7 @@ private fun PriceAfterDiscount(
             style = MaterialTheme.typography.body1,
         )
         Text(
-            text = "${state.currency}${state.priceAfterDiscount}",
+            text = state.priceAfterDiscount,
             style = MaterialTheme.typography.body1,
             color = colorResource(id = R.color.woo_gray_40)
         )
@@ -416,9 +411,11 @@ fun OrderCreateEditProductDiscountScreenPreview() =
         {},
         {},
         {},
-        DiscountInputFieldConfig(
-            decimalSeparator = ".",
-            numberOfDecimals = 2
+        MutableStateFlow(
+            DiscountInputFieldConfig(
+                decimalSeparator = ".",
+                numberOfDecimals = 2
+            )
         ),
         productItem = MutableStateFlow(
             OrderCreationProduct.ProductItem(
@@ -460,13 +457,7 @@ fun ProductCardPreview() {
     ProductCard(
         imageUrl = "",
         productName = "Product Name",
-        productPrice = BigDecimal.ZERO,
-        productQuantity = 1f,
-        subTotalPerProduct = BigDecimal.ZERO,
-        state = ViewState(
-            "$",
-            BigDecimal.ZERO,
-            isRemoveButtonVisible = true,
-        )
+        quantityWithPrice = "1 × $10.00",
+        subTotalPerProduct = "$10.00",
     )
 }

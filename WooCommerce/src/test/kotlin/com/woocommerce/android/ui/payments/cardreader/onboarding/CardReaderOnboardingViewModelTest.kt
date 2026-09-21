@@ -39,10 +39,12 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRI
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.ONBOARDING
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.util.LocalizedDatePatternsTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.kotlin.any
@@ -65,6 +67,9 @@ import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class CardReaderOnboardingViewModelTest : BaseUnitTest() {
+    @get:Rule
+    val localizedDatePatterns = LocalizedDatePatternsTestRule()
+
     private val onboardingChecker: CardReaderOnboardingChecker = mock()
     private val tracker: PaymentsFlowTracker = mock()
     private val selectedSite: SelectedSite = mock {
@@ -1872,7 +1877,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             ).isEqualTo(
                 UiString.UiStringRes(
                     R.string.card_reader_onboarding_account_pending_requirements_hint,
-                    listOf(UiString.UiStringText("January 01"))
+                    listOf(UiString.UiStringText("January 1"))
                 )
             )
         }

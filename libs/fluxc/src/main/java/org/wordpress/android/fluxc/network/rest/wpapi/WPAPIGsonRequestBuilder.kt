@@ -6,11 +6,14 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Error
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Success
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import java.lang.reflect.Type
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
-class WPAPIGsonRequestBuilder @Inject constructor() {
+class WPAPIGsonRequestBuilder @Inject constructor(
+    private val httpsUrlNormalizer: HttpsUrlNormalizer,
+) {
     suspend fun <T> syncGetRequest(
         restClient: BaseWPAPIRestClient,
         url: String,
@@ -80,7 +83,8 @@ class WPAPIGsonRequestBuilder @Inject constructor() {
         nonce: String?,
         restClient: BaseWPAPIRestClient
     ) {
-        val request = WPAPIGsonRequest(method, url, params, body, clazz, { responseData, headers ->
+        val normalizedUrl = httpsUrlNormalizer.normalize(url).normalizedUrl
+        val request = WPAPIGsonRequest(method, normalizedUrl, params, body, clazz, { responseData, headers ->
             cont.resume(Success(responseData, headers))
         }, { error ->
             cont.resume(Error(error))
@@ -114,7 +118,8 @@ class WPAPIGsonRequestBuilder @Inject constructor() {
         nonce: String?,
         restClient: BaseWPAPIRestClient
     ) {
-        val request = WPAPIGsonRequest<T>(method, url, params, body, type, { responseData, headers ->
+        val normalizedUrl = httpsUrlNormalizer.normalize(url).normalizedUrl
+        val request = WPAPIGsonRequest<T>(method, normalizedUrl, params, body, type, { responseData, headers ->
             cont.resume(Success(responseData, headers))
         }, { error ->
             cont.resume(Error(error))

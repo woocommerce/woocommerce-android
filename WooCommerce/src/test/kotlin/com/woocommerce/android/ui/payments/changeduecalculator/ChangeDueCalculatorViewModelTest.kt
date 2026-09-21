@@ -13,6 +13,9 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.anyVararg
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -105,6 +108,8 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         // GIVEN
         val currencySymbol = "$"
         whenever(orderDetailRepository.getOrderById(eq(1L))).thenReturn(order)
+        whenever(resourceProvider.getString(any(), anyVararg())).thenReturn("")
+        whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), anyOrNull(), any())).thenReturn("")
         val siteParameters: SiteParameters = mock()
         whenever(siteParameters.currencySymbol).thenReturn(currencySymbol)
         whenever(parameterRepository.getParameters()).thenReturn(siteParameters)
@@ -117,9 +122,31 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         )
 
         // WHEN
+        advanceUntilIdle()
         val result = viewModel.uiState.value.currencySymbol
 
         // THEN
         assertThat(result).isEqualTo(currencySymbol)
+    }
+
+    @Test
+    fun `when order details are loaded, then loading is finished`() = runTest {
+        // GIVEN
+        whenever(orderDetailRepository.getOrderById(eq(1L))).thenReturn(order)
+        whenever(resourceProvider.getString(any(), anyVararg())).thenReturn("")
+        whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), anyOrNull(), any())).thenReturn("")
+        viewModel = ChangeDueCalculatorViewModel(
+            savedStateHandle = savedStateHandle,
+            orderDetailRepository = orderDetailRepository,
+            parameterRepository = parameterRepository,
+            resourceProvider = resourceProvider,
+            currencyFormatter = currencyFormatter
+        )
+
+        // WHEN
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(viewModel.uiState.value.isLoading).isFalse
     }
 }

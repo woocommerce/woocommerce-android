@@ -40,6 +40,9 @@ class WooPosCardReaderConnectionViewModel @Inject constructor(
                     WooPosCardReaderConnectionController.ControllerEvent.RequestLocationPermission -> {
                         _event.emit(Event.RequestLocationPermission)
                     }
+                    WooPosCardReaderConnectionController.ControllerEvent.RequestLocalNetworkPermission -> {
+                        _event.emit(Event.RequestLocalNetworkPermission)
+                    }
                     WooPosCardReaderConnectionController.ControllerEvent.RequestEnableLocation -> {
                         _event.emit(Event.RequestEnableLocation)
                     }
@@ -98,6 +101,7 @@ class WooPosCardReaderConnectionViewModel @Inject constructor(
             is WooPosCardReaderConnectionState.InvalidPostalCode,
             is WooPosCardReaderConnectionState.LocationDisabled,
             is WooPosCardReaderConnectionState.MissingBluetoothPermission,
+            is WooPosCardReaderConnectionState.MissingLocalNetworkPermission,
             is WooPosCardReaderConnectionState.MissingLocationPermission,
             is WooPosCardReaderConnectionState.MultipleReadersFound,
             is WooPosCardReaderConnectionState.ReaderFound,
@@ -117,6 +121,10 @@ class WooPosCardReaderConnectionViewModel @Inject constructor(
 
     fun onLocationPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
         controller.onLocationPermissionResult(granted, shouldShowRationale)
+    }
+
+    fun onLocalNetworkPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
+        controller.onLocalNetworkPermissionResult(granted, shouldShowRationale)
     }
 
     fun onLocationEnabled() {
@@ -139,6 +147,7 @@ class WooPosCardReaderConnectionViewModel @Inject constructor(
         data object RequestBluetoothPermission : Event
         data object RequestEnableBluetooth : Event
         data object RequestLocationPermission : Event
+        data object RequestLocalNetworkPermission : Event
         data object RequestEnableLocation : Event
         data object Dismissed : Event
         data class NavigateToOnboarding(val onboardingState: CardReaderOnboardingState) : Event

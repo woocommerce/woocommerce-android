@@ -3,7 +3,6 @@ package com.woocommerce.android.util
 import android.content.Context
 import android.text.format.DateFormat
 import com.automattic.android.tracks.crashlogging.CrashLogging
-import com.woocommerce.android.extensions.formatToEEEEMMMddhha
 import com.woocommerce.android.extensions.formatToYYYYmm
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.tools.SelectedSite
@@ -34,7 +33,7 @@ class DateUtils @Inject constructor(
     private val friendlyTimeFormat: SimpleDateFormat
         get() = SimpleDateFormat("h:mm a", locale)
     private val friendlyLongMonthDayFormat: SimpleDateFormat
-        get() = SimpleDateFormat("MMMM dd", locale)
+        get() = SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, "MMMMd"), locale)
 
     private val weekOfYearStartingMondayFormat: SimpleDateFormat
         get() = SimpleDateFormat("yyyy-ww", locale).apply {
@@ -129,7 +128,7 @@ class DateUtils @Inject constructor(
     }
 
     /**
-     * Given an ISO8601 date of format YYYY-MM-DD, returns the String in long month ("MMMM dd") format.
+     * Given an ISO8601 date of format YYYY-MM-DD, returns the String with the full month name and day.
      *
      * For example, given 2018-07-03 returns "July 3", and given 2018-07-28 returns "July 28".
      *
@@ -311,9 +310,9 @@ class DateUtils @Inject constructor(
     }
 
     /**
-     * Given an ISO8601 date of format YYYY-MM-DD HH, returns the day String in ("EEEE, MMM dd › ha") format.
+     * Given an ISO8601 date of format YYYY-MM-DD HH, returns the String with the weekday, month, day and hour.
      *
-     * For example, given 2023-12-27 12 returns "Wednesday, Dec 27 > 12 am"
+     * For example, given 2023-12-27 12 returns "Wednesday, Dec 27 › 12pm"
      *
      * return null if the argument is not a valid iso8601 date string or not in the expected format.
      */
@@ -321,14 +320,22 @@ class DateUtils @Inject constructor(
         return try {
             val originalFormat = SimpleDateFormat("yyyy-MM-dd HH", locale)
             val date = originalFormat.parse(iso8601Date)
-            date!!.formatToEEEEMMMddhha(locale)
+            date!!.toFriendlyDayHourString()
         } catch (e: Exception) {
             findMatchingDatePattern(iso8601Date)
-                ?.formatToEEEEMMMddhha(locale)
+                ?.toFriendlyDayHourString()
                 .also {
                     if (it == null) "Date string argument is not of format yyyy-MM-dd HH: $iso8601Date".reportAsError(e)
                 }
         }
+    }
+
+    private fun Date.toFriendlyDayHourString(): String {
+        val symbols = DateFormatSymbols(locale)
+        symbols.amPmStrings = arrayOf("am", "pm")
+        val dateFormat = SimpleDateFormat("${DateFormat.getBestDateTimePattern(locale, "EEEEMMMd")} › ha", locale)
+        dateFormat.dateFormatSymbols = symbols
+        return dateFormat.format(this)
     }
 
     /**

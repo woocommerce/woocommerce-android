@@ -626,6 +626,34 @@ class WooPosOrdersListViewModelTest {
     // region Analytics
 
     @Test
+    fun `given list mode, when init, then orders list loaded analytics tracked`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersList(order(1)))) }
+        )
+
+        // WHEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        verify(ordersAnalyticsTracker).trackOrdersListLoaded()
+    }
+
+    @Test
+    fun `given single order mode, when init, then orders list loaded analytics not tracked`() = runTest {
+        // GIVEN
+        val savedStateHandle = SavedStateHandle(mapOf(ORDERS_ROUTE_ORDER_ID_KEY to 42L))
+
+        // WHEN
+        viewModel = createViewModel(savedStateHandle)
+        advanceUntilIdle()
+
+        // THEN
+        verify(ordersAnalyticsTracker, times(0)).trackOrdersListLoaded()
+    }
+
+    @Test
     fun `when refresh called, then pull-to-refresh analytics tracked`() = runTest {
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersList(order(1)))) }

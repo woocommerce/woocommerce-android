@@ -31,6 +31,12 @@
 # Application classes that will be serialized/deserialized over Gson
 -keep class org.wordpress.android.fluxc.model.** { <fields>; }
 -keep class org.wordpress.android.fluxc.network.** { <fields>; }
+# Keep the no-arg constructor too: R8 full mode may strip the reflectively-used <init>(), which
+# makes Gson fall back to Unsafe.allocateInstance and skip Kotlin field initializers, so defaulted
+# fields deserialize to null in release only. This also covers JsonObjectOrFalse subclasses, which
+# JsonObjectOrFalseDeserializer instantiates via getDeclaredConstructor().
+-keepclassmembers class org.wordpress.android.fluxc.** { <fields>; <init>(); }
+-keepclassmembers enum org.wordpress.android.fluxc.** { *; }
 
 # Prevent proguard from stripping interface information from TypeAdapter, TypeAdapterFactory,
 # JsonSerializer, JsonDeserializer instances (so they can be used in @JsonAdapter)

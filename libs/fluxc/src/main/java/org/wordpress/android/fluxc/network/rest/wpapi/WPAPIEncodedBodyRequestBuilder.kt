@@ -6,10 +6,13 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Error
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Success
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
-class WPAPIEncodedBodyRequestBuilder @Inject constructor() {
+class WPAPIEncodedBodyRequestBuilder @Inject constructor(
+    private val httpsUrlNormalizer: HttpsUrlNormalizer,
+) {
     suspend fun syncGetRequest(
         restClient: BaseWPAPIRestClient,
         url: String,
@@ -46,7 +49,8 @@ class WPAPIEncodedBodyRequestBuilder @Inject constructor() {
         nonce: String?,
         restClient: BaseWPAPIRestClient
     ) {
-        val request = WPAPIEncodedBodyRequest(method, url, params, body, { response, headers ->
+        val normalizedUrl = httpsUrlNormalizer.normalize(url).normalizedUrl
+        val request = WPAPIEncodedBodyRequest(method, normalizedUrl, params, body, { response, headers ->
             cont.resume(Success(response, headers))
         }, { error ->
             cont.resume(Error(error))

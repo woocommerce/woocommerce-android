@@ -21,7 +21,7 @@ class PaymentsHubPayoutSummaryStateMapperTest {
         on { formatCurrencyGivenInTheSmallestCurrencyUnit(250, "RUB") }.thenReturn("250R")
         on { formatCurrencyGivenInTheSmallestCurrencyUnit(0, "RUB") }.thenReturn("0R")
     }
-    private val dateFormatter: DateToDDMMMYYYYStringFormatter = mock()
+    private val dateFormatter: PayoutDateStringFormatter = mock()
     private val mapper = PaymentsHubPayoutSummaryStateMapper(
         currencyFormatter,
         dateFormatter,

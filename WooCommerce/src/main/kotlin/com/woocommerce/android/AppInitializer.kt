@@ -1,12 +1,15 @@
 package com.woocommerce.android
 
+import android.app.Activity
 import android.app.Application
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import androidx.lifecycle.Lifecycle.State.STARTED
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
@@ -273,6 +276,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         // Schedule worker to refresh FCM token periodically
         FCMRefreshWorker.schedule(application)
+        if (prefs.getFCMToken().isEmpty()) {
+            FCMRefreshWorker.run(application)
+        }
 
         posLocalCatalogScheduler.schedulePeriodicFullCatalogSync()
         observeSiteChangesForCatalogSync()
@@ -299,7 +305,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         }
     }
 
-    override fun onFirstActivityResumed() {
+    override fun onFirstActivityResumed(activity: Activity) {
         // App is completely restarted
         if (networkStatus.isConnected()) {
             if (accountStore.hasAccessToken()) {
@@ -353,8 +359,12 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 }
             }
         }
-        appCoroutineScope.launch {
-            ageEligibilityChecker.checkAge()
+    }
+
+    override fun onActivityResumed(activity: Activity) {
+        (activity as? LifecycleOwner)?.lifecycleScope?.launch {
+            ageEligibilityChecker.checkAgeOnStartup(activity)
+            ageEligibilityChecker.retryAfterReturningFromPlayStore(activity)
         }
     }
 

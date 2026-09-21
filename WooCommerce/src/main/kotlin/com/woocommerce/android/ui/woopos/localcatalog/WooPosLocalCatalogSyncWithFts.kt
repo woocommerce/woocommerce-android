@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
-import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
-import com.google.gson.reflect.TypeToken
+import com.google.gson.JsonObject
+import com.google.gson.JsonParseException
+import com.google.gson.JsonParser
+import com.woocommerce.android.extensions.stringOrNull
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.util.WooLog
@@ -22,7 +23,6 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
     private val productsDao: WooPosProductsDao,
     private val variationsDao: WooPosVariationsDao,
     private val filterConfig: WooPosProductsTypesFilterConfig,
-    private val gson: Gson,
     private val logger: WooPosLogWrapper,
 ) {
     data class FtsSyncResult(
@@ -234,12 +234,17 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
         }
 
         return try {
-            val type = object : TypeToken<List<AttributeJson>>() {}.type
-            val attributes: List<AttributeJson> = gson.fromJson(attributesJson, type)
-            attributes
-                .mapNotNull { it.option?.takeIf { option -> option.isNotBlank() } }
-                .joinToString(" ")
-        } catch (e: JsonSyntaxException) {
+            val root = JsonParser.parseString(attributesJson)
+            if (root.isJsonArray) {
+                root.asJsonArray
+                    .mapNotNull { element ->
+                        (element as? JsonObject)?.stringOrNull("option")?.takeIf { option -> option.isNotBlank() }
+                    }
+                    .joinToString(" ")
+            } else {
+                ""
+            }
+        } catch (e: JsonParseException) {
             WooLog.e(WooLog.T.POS, "Failed to parse attributes JSON for FTS: $attributesJson", e)
             ""
         }
@@ -255,10 +260,4 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
 
     private fun WooPosVariationEntity.isEligibleForFts(): Boolean =
         status == allowedStatus && downloadable == allowedDownloadable
-
-    private data class AttributeJson(
-        val id: Long? = null,
-        val name: String? = null,
-        val option: String? = null
-    )
 }

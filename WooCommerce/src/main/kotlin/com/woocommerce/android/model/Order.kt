@@ -137,17 +137,25 @@ data class Order(
         @IgnoredOnParcel
         var containsAddons = false
 
+        val displayableAttributes: List<Attribute>
+            get() = attributesList.filter {
+                it.value.isNotEmpty() && it.key.isNotEmpty()
+            }.map { attribute ->
+                Attribute(
+                    key = attribute.key.fastStripHtml(),
+                    value = attribute.value
+                        .fastStripHtml()
+                        .replaceFirstChar {
+                            if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+                        }
+                )
+            }
+
         /**
          * @return a comma-separated list of attribute values for display
          */
         val attributesDescription
-            get() = attributesList.filter {
-                it.value.isNotEmpty() && it.key.isNotEmpty()
-            }.joinToString { attribute ->
-                attribute.value
-                    .fastStripHtml()
-                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-            }
+            get() = displayableAttributes.joinToString { it.value }
 
         companion object {
             val EMPTY by lazy {

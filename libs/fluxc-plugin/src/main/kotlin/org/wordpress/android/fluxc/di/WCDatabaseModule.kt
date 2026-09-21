@@ -14,6 +14,7 @@ import org.wordpress.android.fluxc.persistence.converters.StatsGranularityConver
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
 import org.wordpress.android.fluxc.persistence.dao.CouponsDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerFromAnalyticsDao
+import org.wordpress.android.fluxc.persistence.dao.FilterHistoryDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingMethodDao
 import org.wordpress.android.fluxc.persistence.dao.SupportChatBookmarkDao
@@ -178,8 +179,15 @@ interface WCDatabaseModule {
             return database.supportChatBookmarkDao
         }
 
+        @Provides fun provideFilterHistoryDao(database: WCAndroidDatabase): FilterHistoryDao {
+            return database.filterHistoryDao
+        }
+
         @Provides fun provideAnalyticsScheduledImportDao(database: WCAndroidDatabase) =
             database.analyticsScheduledImportDao
+
+        @Provides fun provideSubscriptionProductCreationSettingsDao(database: WCAndroidDatabase) =
+            database.subscriptionProductCreationSettingsDao
     }
     @Binds fun bindTransactionExecutor(database: WCAndroidDatabase): TransactionExecutor
 }

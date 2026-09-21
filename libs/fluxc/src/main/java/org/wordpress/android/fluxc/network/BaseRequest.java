@@ -335,6 +335,11 @@ public abstract class BaseRequest<T> extends Request<T> {
 
     @NonNull
     private BaseNetworkError getBaseNetworkError(VolleyError volleyError) {
+        // Volley wraps TLS handshake failures in NoConnectionError, so classify the cause first.
+        if (volleyError.getCause() instanceof SSLHandshakeException) {
+            return new BaseNetworkError(GenericErrorType.INVALID_SSL_CERTIFICATE, volleyError);
+        }
+
         // No connection
         if (volleyError instanceof NoConnectionError || volleyError.getCause() instanceof NoConnectionError) {
             return new BaseNetworkError(GenericErrorType.NO_CONNECTION, volleyError);
@@ -343,11 +348,6 @@ public abstract class BaseRequest<T> extends Request<T> {
         // Network error
         if (volleyError instanceof NetworkError || volleyError.getCause() instanceof NetworkError) {
             return new BaseNetworkError(GenericErrorType.NETWORK_ERROR, volleyError);
-        }
-
-        // Invalid SSL Handshake
-        if (volleyError.getCause() instanceof SSLHandshakeException) {
-            return new BaseNetworkError(GenericErrorType.INVALID_SSL_CERTIFICATE, volleyError);
         }
 
         // Invalid HTTP Auth

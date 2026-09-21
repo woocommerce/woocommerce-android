@@ -5,6 +5,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.describeWithCauses
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteConnectionLostException
@@ -16,8 +17,11 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentO
 import com.woocommerce.android.ui.payments.cardreader.payment.TerminalPaymentIntentConfig
 import com.woocommerce.android.ui.payments.cardreader.payment.TerminalPaymentPreparationResolver
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
+import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.CardReaderTransport
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.TAP_TO_PAY_READER_MODEL
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.delay
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -33,15 +37,20 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val logger: WooPosLogWrapper,
     private val errorMapper: WooPosRemoteReaderErrorMapper,
+    private val trackingInfoKeeper: CardReaderTrackingInfoKeeper,
     @PointOfSaleMode private val paymentsFlowTracker: PaymentsFlowTracker,
     private val appPrefs: AppPrefs = AppPrefs,
 ) {
     private val terminalPaymentPreparationResolver = TerminalPaymentPreparationResolver(wooStore, appPrefs)
 
     suspend fun collect(order: Order, onCaptureStarting: suspend () -> Unit = {}): Result {
+        trackingInfoKeeper.setCurrency(order.currency)
+        trackingInfoKeeper.setPaymentMethodType(PaymentMethodType.UNKNOWN.stringRepresentation)
+        trackingInfoKeeper.setCardReaderModel(TAP_TO_PAY_READER_MODEL)
+        trackingInfoKeeper.setTransport(CardReaderTransport.WIFI_LAN.value)
         val result = collectInternal(order, onCaptureStarting)
         when (result) {
-            Result.Completed -> paymentsFlowTracker.trackPaymentSucceeded()
+            Result.Completed -> paymentsFlowTracker.trackPaymentSucceeded(order)
             is Result.Failed -> paymentsFlowTracker.trackPaymentFailed(result.errorDescription)
         }
         return result
@@ -103,6 +112,9 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     ): Result {
         return when (val outcome = remoteReaderSession.sendCollectPayment(paymentInfo)) {
             is CollectPaymentOutcome.Success -> {
+                trackingInfoKeeper.setPaymentMethodType(
+                    (outcome.paymentMethodType ?: PaymentMethodType.UNKNOWN).stringRepresentation
+                )
                 onCaptureStarting()
                 capture(orderId, outcome.paymentIntentId)
             }
@@ -160,6 +172,7 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
         }
 
     private suspend fun simulatePayment(onCaptureStarting: suspend () -> Unit): Result {
+        trackingInfoKeeper.setPaymentMethodType(PaymentMethodType.CARD_PRESENT.stringRepresentation)
         onCaptureStarting()
         delay(SIMULATED_PAYMENT_DELAY_MS)
         return Result.Completed

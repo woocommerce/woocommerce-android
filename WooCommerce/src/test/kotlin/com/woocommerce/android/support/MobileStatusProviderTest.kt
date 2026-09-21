@@ -15,6 +15,9 @@ import com.woocommerce.android.support.zendesk.MobileStatusProvider
 import com.woocommerce.android.support.zendesk.ZendeskEnvironmentDataSource
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.troubleshooting.useCases.NotificationSystemStatusProvider
+import com.woocommerce.android.ui.troubleshooting.useCases.NotificationSystemStatusProvider.ChannelImportance
+import com.woocommerce.android.ui.troubleshooting.useCases.NotificationSystemStatusProvider.DoNotDisturbStatus
+import com.woocommerce.android.ui.troubleshooting.useCases.NotificationSystemStatusProvider.WooChannelState
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsLocalCatalogSupported
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
@@ -86,7 +89,14 @@ class MobileStatusProviderTest : BaseUnitTest() {
     private val notificationSystemStatusProvider: NotificationSystemStatusProvider = mock {
         on { hasPostNotificationsPermission() } doReturn true
         on { areAppNotificationsEnabled() } doReturn true
-        on { disabledWooNotificationChannels() } doReturn listOf(NotificationChannelType.REVIEW)
+        on { wooNotificationChannels() } doReturn wooChannels(
+            NotificationChannelType.NEW_ORDER to ChannelImportance.DEFAULT,
+            NotificationChannelType.REVIEW to ChannelImportance.SILENT,
+            NotificationChannelType.STOCK to ChannelImportance.OFF,
+            NotificationChannelType.OTHER to ChannelImportance.DEFAULT
+        )
+        on { doNotDisturbStatus() } doReturn DoNotDisturbStatus.PRIORITY_ONLY
+        on { areNotificationsPaused() } doReturn false
     }
 
     private val notificationChannelsHandler: NotificationChannelsHandler = mock {
@@ -501,6 +511,92 @@ class MobileStatusProviderTest : BaseUnitTest() {
         assertThat(report).contains("Local catalog variations: 3420")
     }
 
+    @Test
+    fun `given a silenced channel, when the report is generated, then it is told apart from a healthy one`() =
+        testBlocking {
+            notificationSystemStatusProvider.stub {
+                on { wooNotificationChannels() } doReturn wooChannels(
+                    NotificationChannelType.NEW_ORDER to ChannelImportance.SILENT,
+                    NotificationChannelType.REVIEW to ChannelImportance.DEFAULT,
+                    NotificationChannelType.STOCK to ChannelImportance.DEFAULT,
+                    NotificationChannelType.OTHER to ChannelImportance.DEFAULT
+                )
+            }
+
+            val report = sut(SiteModel().apply { url = "https://example.com" })
+
+            assertThat(report).contains(
+                "Channels: NEW_ORDER=silent, REVIEW=default, STOCK=default, OTHER=default"
+            )
+        }
+
+    @Test
+    fun `given a channel was raised or never created, when the report is generated, then each state is named`() =
+        testBlocking {
+            notificationSystemStatusProvider.stub {
+                on { wooNotificationChannels() } doReturn wooChannels(
+                    NotificationChannelType.NEW_ORDER to ChannelImportance.HIGH,
+                    NotificationChannelType.REVIEW to ChannelImportance.NOT_CREATED,
+                    NotificationChannelType.STOCK to ChannelImportance.UNKNOWN,
+                    NotificationChannelType.OTHER to ChannelImportance.OFF
+                )
+            }
+
+            val report = sut(SiteModel().apply { url = "https://example.com" })
+
+            assertThat(report).contains(
+                "Channels: NEW_ORDER=high, REVIEW=not created, STOCK=unknown, OTHER=off"
+            )
+        }
+
+    @Test
+    fun `given channels bypass do not disturb, when the report is generated, then they are listed`() = testBlocking {
+        notificationSystemStatusProvider.stub {
+            on { wooNotificationChannels() } doReturn mapOf(
+                NotificationChannelType.NEW_ORDER to WooChannelState(ChannelImportance.DEFAULT, canBypassDnd = true),
+                NotificationChannelType.REVIEW to WooChannelState(ChannelImportance.DEFAULT, canBypassDnd = false),
+                NotificationChannelType.STOCK to WooChannelState(ChannelImportance.DEFAULT, canBypassDnd = true),
+                NotificationChannelType.OTHER to WooChannelState(ChannelImportance.DEFAULT, canBypassDnd = false)
+            )
+        }
+
+        val report = sut(SiteModel().apply { url = "https://example.com" })
+
+        assertThat(report).contains("Channels bypassing DND: NEW_ORDER, STOCK")
+    }
+
+    @Test
+    fun `given each do not disturb state, when the report is generated, then it is spelled out`() = testBlocking {
+        val expected = mapOf(
+            DoNotDisturbStatus.OFF to "off",
+            DoNotDisturbStatus.PRIORITY_ONLY to "priority only",
+            DoNotDisturbStatus.ALARMS_ONLY to "alarms only",
+            DoNotDisturbStatus.TOTAL_SILENCE to "total silence",
+            DoNotDisturbStatus.UNKNOWN to "unknown"
+        )
+
+        expected.forEach { (status, description) ->
+            notificationSystemStatusProvider.stub { on { doNotDisturbStatus() } doReturn status }
+
+            val report = sut(SiteModel().apply { url = "https://example.com" })
+
+            assertThat(report).contains("Do Not Disturb: $description")
+        }
+    }
+
+    @Test
+    fun `given the platform cannot say if notifications are paused, when the report is generated, then it says why`() =
+        testBlocking {
+            notificationSystemStatusProvider.stub { on { areNotificationsPaused() } doReturn null }
+
+            val report = sut(SiteModel().apply { url = "https://example.com" })
+
+            assertThat(report).contains("Notifications paused: unknown (requires Android 10 or newer)")
+        }
+
+    private fun wooChannels(vararg states: Pair<NotificationChannelType, ChannelImportance>) =
+        states.toMap().mapValues { (_, importance) -> WooChannelState(importance, canBypassDnd = false) }
+
     /** The lines of one section, without its heading, so a section can be asserted on as a whole. */
     private fun String.section(heading: String) =
         substringAfter("$heading\n").substringBefore("\n\n").trim()
@@ -601,7 +697,10 @@ class MobileStatusProviderTest : BaseUnitTest() {
             Play Services: available
             Permission granted: true
             App notifications enabled: true
-            Disabled channels: REVIEW
+            Channels: NEW_ORDER=default, REVIEW=silent, STOCK=off, OTHER=default
+            Channels bypassing DND: none
+            Do Not Disturb: priority only
+            Notifications paused: false
             New order sound: changed from the default
             Push token: present (…klmnop)
             Background restricted: false
@@ -628,6 +727,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
             smarter_notifications: true (remote)
             wc_shipping_banner: true (remote)
             woo_app_passwords_for_jetpack_sites: true (remote)
+            woo_filter_history: true (remote)
             woo_mobile_ai_assistant: true (remote)
             woo_notification_1d_after_free_trial_expires: true (remote)
             woo_notification_1d_before_free_trial_expires: true (remote)
@@ -637,7 +737,6 @@ class MobileStatusProviderTest : BaseUnitTest() {
             woo_pos_mark_order_as_complete: true (remote)
             woo_pos_phone: true (remote)
             woo_pos_scan_to_pay: true (remote)
-            woo_pos_server_refunds: true (remote)
             woo_pos_tablet_promo_banner: true (remote)
             woo_pos_tap_to_pay: true (remote)
             woo_qr_code_login: true (remote)

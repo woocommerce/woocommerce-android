@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class ShippingLabelAddressMapper @Inject constructor(private val getLocations: GetLocations) {
     fun toAppModel(dto: WCShippingLabelModel.ShippingLabelAddress): Address {
-        val (countryLocation, stateLocation) = getLocations(dto.country.orEmpty(), dto.state.orEmpty())
+        val (countryLocation, stateLocation) = getLocations.getBlocking(dto.country.orEmpty(), dto.state.orEmpty())
         return Address(
             company = dto.company ?: "",
             firstName = dto.name ?: "",

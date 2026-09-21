@@ -519,7 +519,7 @@ class WooPosRefundSubmissionProcessorTest {
                 error = WooError(
                     type = WooErrorType.GENERIC_ERROR,
                     original = GenericErrorType.UNKNOWN,
-                    message = "Something went wrong.",
+                    message = "Refund of 12.00 for order 42 is not allowed by gateway wc_stripe",
                     apiErrorCode = "some_unmapped_code"
                 )
             )
@@ -529,10 +529,10 @@ class WooPosRefundSubmissionProcessorTest {
         processor.submit(request.copy(serverLineItems = serverLineItems)).test {
             assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
 
-            // THEN — the error from the computed create reaches the cashier rather than being
-            // swallowed into a success state.
+            // THEN — the failure reaches the cashier as the generic message, not the store's own
+            // technical wording.
             val failure = awaitItem() as WooPosRefundSubmissionState.Failure
-            assertThat(failure.message).isEqualTo("Something went wrong.")
+            assertThat(failure.message).isEqualTo("Something went wrong")
             awaitComplete()
         }
     }
@@ -570,6 +570,7 @@ class WooPosRefundSubmissionProcessorTest {
 
     @Test
     fun `given backend notification fails after interac success, when refund is submitted, then failure is backend retry only`() = runTest {
+        // GIVEN
         val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
             CardReaderInteracRefundState.LoadingData {}
         )
@@ -603,14 +604,16 @@ class WooPosRefundSubmissionProcessorTest {
             )
         )
 
+        // WHEN
         processor.submit(request).test {
             assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.PreparingReader)
 
             paymentState.value = CardReaderInteracRefundState.InteracRefundSuccessful("$22.00")
             assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.NotifyingStore)
 
+            // THEN
             val failure = awaitItem() as WooPosRefundSubmissionState.Failure
-            assertThat(failure.message).isEqualTo("Backend failed")
+            assertThat(failure.message).isEqualTo("Something went wrong")
             assertThat(failure.retryBackendNotificationOnly).isTrue()
             assertThat(failure.retryCardRefund).isFalse()
             assertThat(failure.canRetry).isFalse()

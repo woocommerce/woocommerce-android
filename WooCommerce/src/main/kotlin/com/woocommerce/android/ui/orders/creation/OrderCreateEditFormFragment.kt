@@ -829,15 +829,6 @@ class OrderCreateEditFormFragment :
     }
 
     private fun OrderCreationAdditionalInfoCollectionSectionBinding.bindGiftCardSubSection(newOrderData: Order) {
-        when (viewModel.mode) {
-            is Creation -> bindGiftCardForOrderCreation(newOrderData)
-            is Edit -> addGiftCardButtonGroup.isVisible = false
-        }
-    }
-
-    private fun OrderCreationAdditionalInfoCollectionSectionBinding.bindGiftCardForOrderCreation(
-        newOrderData: Order
-    ) {
         if (newOrderData.selectedGiftCard.isNullOrEmpty()) {
             addGiftCardButtonGroup.isVisible = viewModel.isGiftCardExtensionEnabled
             addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }

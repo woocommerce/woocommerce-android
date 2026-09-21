@@ -60,7 +60,17 @@
         app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_name"
-        tools:text="Red, Medium • $15.00 x 2" />
+        tools:text="Color: Red\nSize: Medium" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/productInfo_quantityAndPrice"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
+        app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_attributes"
+        tools:text="2 x $15.00" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/productInfo_SKU"
@@ -69,10 +79,8 @@
         android:layout_height="wrap_content"
         android:text="@string/orderdetail_product_lineitem_sku_value"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
-        android:lines="1"
-        android:ellipsize="end"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
-        app:layout_constraintTop_toBottomOf="@+id/productInfo_attributes"
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_quantityAndPrice"
         tools:visibility="visible" />
 
     <com.google.android.material.textview.MaterialTextView

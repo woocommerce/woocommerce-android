@@ -142,10 +142,10 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
 
     fun onWPMediaSelected(image: Product.Image) {
         launch {
-            handleSelectedImage(image.source) { imageDetails ->
+            handleSelectedImage(image.source) { mimeType ->
                 BlazeRepository.BlazeCampaignImage.RemoteImage(
                     uri = image.source,
-                    mimeType = imageDetails.mimeType
+                    mimeType = mimeType
                 )
             }
         }
@@ -153,13 +153,13 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
 
     private suspend fun handleSelectedImage(
         uri: String,
-        createCampaignImage: (MediaFilesRepository.ImageDetails) -> BlazeRepository.BlazeCampaignImage
+        createCampaignImage: (mimeType: String) -> BlazeRepository.BlazeCampaignImage
     ) {
         val imageDetails = blazeRepository.getImageDetails(uri)
-        when (imageDetails.validateAdImage()) {
-            Valid -> {
+        when (val validationResult = imageDetails.validateAdImage()) {
+            is Valid -> {
                 _viewState.update {
-                    it.copy(adImage = createCampaignImage(imageDetails))
+                    it.copy(adImage = createCampaignImage(validationResult.mimeType))
                 }
             }
             InvalidSize -> showInvalidImageSizeDialog()

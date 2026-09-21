@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.payments.tracking.toAnalyticsErrorType
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionState.BluetoothRequirement
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionState.Connected
@@ -33,6 +34,7 @@ import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosUnifiedDiscover
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosUnifiedDiscoveryStream
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.CardReaderTransport
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.LocationUtils
@@ -88,6 +90,7 @@ class WooPosCardReaderConnectionController(
     private var isRequiredUpdate = true
     private var isBluetoothPermissionPermanentlyDenied = false
     private var isLocationPermissionPermanentlyDenied = false
+    private var isLocalNetworkPermissionPermanentlyDenied = false
     private var bluetoothRequirement: BluetoothRequirement = BluetoothRequirement.Satisfied
     private var pendingBluetoothFailure: String? = null
 
@@ -188,6 +191,14 @@ class WooPosCardReaderConnectionController(
         checkRequirementsAndStartDiscovery()
     }
 
+    fun onLocalNetworkPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
+        isLocalNetworkPermissionPermanentlyDenied = !granted && !shouldShowRationale
+        val currentState = _state.value
+        if (granted && currentState is WooPosCardReaderConnectionState.MissingLocalNetworkPermission) {
+            onPhoneConnectClicked(currentState.phone)
+        }
+    }
+
     fun onBluetoothEnabled() {
         checkRequirementsAndStartDiscovery()
     }
@@ -197,8 +208,13 @@ class WooPosCardReaderConnectionController(
     }
 
     fun recheckPermissions() {
-        if (isShowingBluetoothRequirement()) {
-            checkRequirementsAndStartDiscovery()
+        val currentState = _state.value
+        when {
+            isShowingBluetoothRequirement() -> checkRequirementsAndStartDiscovery()
+
+            currentState is WooPosCardReaderConnectionState.MissingLocalNetworkPermission &&
+                WooPermissionUtils.hasLocalNetworkPermission(context) ->
+                onPhoneConnectClicked(currentState.phone)
         }
     }
 
@@ -228,7 +244,7 @@ class WooPosCardReaderConnectionController(
         BluetoothAdapter.getDefaultAdapter()?.isEnabled != true ->
             BluetoothRequirement.Unmet.BluetoothOff
 
-        !WooPermissionUtils.hasFineLocationPermission(context) ->
+        !WooPermissionUtils.hasCardReaderLocationPermission(context) ->
             BluetoothRequirement.Unmet.MissingLocationPermission
 
         !locationUtils.isLocationEnabled() ->
@@ -333,6 +349,7 @@ class WooPosCardReaderConnectionController(
         data object RequestBluetoothPermission : ControllerEvent
         data object RequestEnableBluetooth : ControllerEvent
         data object RequestLocationPermission : ControllerEvent
+        data object RequestLocalNetworkPermission : ControllerEvent
         data object RequestEnableLocation : ControllerEvent
         data object OpenAppSettings : ControllerEvent
         data object Cancelled : ControllerEvent
@@ -417,7 +434,7 @@ class WooPosCardReaderConnectionController(
         if (event is WooPosUnifiedDiscoveryEvent.ReadersFound) {
             latestDiscoveredPhones = event.readers.filterIsInstance<WooPosDiscoveredReader.Phone>()
         }
-        if (isShowingConnectionOutcome()) return
+        if (shouldIgnoreDiscoveryUpdates()) return
 
         when (event) {
             is WooPosUnifiedDiscoveryEvent.Started -> {
@@ -443,9 +460,10 @@ class WooPosCardReaderConnectionController(
         }
     }
 
-    private fun isShowingConnectionOutcome(): Boolean =
+    private fun shouldIgnoreDiscoveryUpdates(): Boolean =
         _state.value is WooPosCardReaderConnectionState.Connecting ||
             _state.value is WooPosCardReaderConnectionState.ConnectingFailed ||
+            _state.value is WooPosCardReaderConnectionState.MissingLocalNetworkPermission ||
             _state.value is Connected
 
     private fun handleReadersFound(
@@ -559,6 +577,21 @@ class WooPosCardReaderConnectionController(
 
     private fun onPhoneConnectClicked(phone: WooPosDiscoveredReader.Phone) {
         if (_state.value is WooPosCardReaderConnectionState.Connecting) return
+        if (!WooPermissionUtils.hasLocalNetworkPermission(context)) {
+            logger.d("Local network permission not granted")
+            _state.value = WooPosCardReaderConnectionState.MissingLocalNetworkPermission(
+                phone = phone,
+                onRequestPermissionClicked = {
+                    if (isLocalNetworkPermissionPermanentlyDenied) {
+                        emitEvent(ControllerEvent.OpenAppSettings)
+                    } else {
+                        emitEvent(ControllerEvent.RequestLocalNetworkPermission)
+                    }
+                },
+                onCancelClicked = { cancel() },
+            )
+            return
+        }
         markPhoneReaderSelected()
         tracker.trackOnConnectTapped()
         selectedReader = null
@@ -580,13 +613,13 @@ class WooPosCardReaderConnectionController(
     // Must run before any phone event is tracked, or a model and battery level left over from a
     // previous Bluetooth connection get reported against this wifi_lan session.
     private fun markPhoneReaderSelected() {
-        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.WifiLan.toAnalyticsValue())
+        cardReaderTrackingInfoKeeper.setTransport(CardReaderTransport.WIFI_LAN.value)
         cardReaderTrackingInfoKeeper.setCardReaderModel(null)
         cardReaderTrackingInfoKeeper.setCardReaderBatteryLevel(null)
     }
 
     private fun markBluetoothReaderSelected(readerModel: String) {
-        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.Bluetooth.toAnalyticsValue())
+        cardReaderTrackingInfoKeeper.setTransport(CardReaderTransport.BLUETOOTH.value)
         cardReaderTrackingInfoKeeper.setCardReaderModel(readerModel)
         cardReaderTrackingInfoKeeper.setCardReaderBatteryLevel(null)
     }
@@ -597,11 +630,6 @@ class WooPosCardReaderConnectionController(
             logger.d("Retrying phone connection with a re-advertised address")
         }
         onPhoneConnectClicked(refreshed)
-    }
-
-    private fun WooPosDiscoveryTransport.toAnalyticsValue(): String = when (this) {
-        WooPosDiscoveryTransport.Bluetooth -> "bluetooth"
-        WooPosDiscoveryTransport.WifiLan -> "wifi_lan"
     }
 
     private fun handleRemoteConnectionResult(
@@ -617,8 +645,11 @@ class WooPosCardReaderConnectionController(
                 _state.value = Connected(readerName = phone.name)
             }
             is WooPosRemoteReaderSession.State.Failed -> {
-                logger.e("Remote reader connection failed: ${result.message}")
-                tracker.trackConnectionFailed()
+                logger.e("Remote reader connection failed: ${result.errorDescription}")
+                tracker.trackConnectionFailed(
+                    errorType = result.reason.analyticsValue,
+                    errorDescription = result.errorDescription,
+                )
                 appPrefsWrapper.removeLastConnectedPhoneDeviceId()
                 _state.value = WooPosCardReaderConnectionState.ConnectingFailed(
                     errorMessage = result.message,
@@ -633,7 +664,7 @@ class WooPosCardReaderConnectionController(
 
     private fun connectToReader(reader: CardReader) {
         cardReaderTrackingInfoKeeper.setCardReaderModel(reader.type)
-        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.Bluetooth.toAnalyticsValue())
+        cardReaderTrackingInfoKeeper.setTransport(CardReaderTransport.BLUETOOTH.value)
         selectedReader = reader
         _state.value = WooPosCardReaderConnectionState.Connecting
 
@@ -699,7 +730,7 @@ class WooPosCardReaderConnectionController(
             }
             is CardReaderStatus.NotConnected -> {
                 if (_state.value is WooPosCardReaderConnectionState.Connecting) {
-                    handleConnectionFailed(status.errorCode, status.errorMessage)
+                    handleConnectionFailed(status)
                 }
             }
 
@@ -708,13 +739,10 @@ class WooPosCardReaderConnectionController(
         }
     }
 
-    private fun handleConnectionFailed(
-        errorCode: CardReaderStatus.NotConnected.ErrorCode?,
-        errorMessage: String?
-    ) {
-        logger.e("Connection failed - $errorCode: $errorMessage")
-        tracker.trackConnectionFailed()
-        when (errorCode) {
+    private fun handleConnectionFailed(status: CardReaderStatus.NotConnected) {
+        logger.e("Connection failed - ${status.errorCode}: ${status.errorMessage}")
+        tracker.trackConnectionFailed(status.toAnalyticsErrorType(), status.errorMessage)
+        when (status.errorCode) {
             CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW -> {
                 _state.value = WooPosCardReaderConnectionState.ConnectingFailedBatteryLow(
                     onCancelClicked = { cancel() }
@@ -724,7 +752,7 @@ class WooPosCardReaderConnectionController(
             CardReaderStatus.NotConnected.ErrorCode.OTHER,
             null -> {
                 _state.value = WooPosCardReaderConnectionState.ConnectingFailed(
-                    errorMessage = errorMessage ?: "Connection failed",
+                    errorMessage = status.errorMessage ?: "Connection failed",
                     onRetryClicked = {
                         selectedReader?.let { connectToReader(it) } ?: checkRequirementsAndStartDiscovery()
                     },
@@ -791,7 +819,7 @@ class WooPosCardReaderConnectionController(
             is WooPosCardReaderConnectionState.UpdateAvailable -> {
                 _state.value = currentState.copy(showCancelWarning = true)
             }
-            else -> error("Invalid state $currentState for update back button clicked")
+            else -> error("Invalid state ${currentState::class.simpleName} for update back button clicked")
         }
     }
 

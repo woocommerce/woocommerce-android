@@ -22,7 +22,6 @@ import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.EditOrder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
@@ -48,7 +47,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleDa
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingEligibilityDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
-import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.products.addons.AddonRepository
@@ -115,6 +113,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val pluginsInfo = HashMap<String, WooPlugin>()
     private val orderDetailRepository: OrderDetailRepository = mock {
         on { getOrderDetailsPluginsInfo() } doReturn pluginsInfo
+        on { hasVirtualProductsOnly(any()) } doReturn false
+        on { getProductCountForOrder(any()) } doReturn 0
+        on { getOrderRefunds(any()) } doReturn emptyList()
     }
     private val addonsRepository: AddonRepository = mock {
         on { containsAddonsFrom(any()) } doReturn false
@@ -125,9 +126,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
     }
-    private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock {
         doReturn(ShippingLabelSupport.WCS_SUPPORTED).whenever(it).shippingPluginSupport
+        on { shouldShowWcShippingBanner(any()) } doReturn false
     }
     private val shippingLabelRepository: WooShippingLabelRepository = mock()
     private val shippingEligibilityDataStore: WooShippingEligibilityDataStore = mock()
@@ -138,7 +139,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         allOrderIds = arrayOf(ORDER_ID).toLongArray()
     ).toSavedStateHandle()
 
-    private val productImageMap = mock<ProductImageMap>()
     private val orderDetailsTransactionLauncher = mock<OrderDetailsTransactionLauncher>()
     private val orderProductMapper = OrderProductMapper()
     private val productDetailRepository: ProductDetailRepository = mock()
@@ -199,8 +199,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 orderDetailRepository,
                 addonsRepository,
                 selectedSite,
-                productImageMap,
-                paymentCollectibilityChecker,
                 paymentsFlowTracker,
                 orderDetailTracker,
                 shippingLabelOnboardingRepository,
@@ -234,9 +232,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             it
         }
         doReturn(site).whenever(selectedSite).getIfExists()
-        testBlocking {
-            doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
-        }
 
         pluginsInfo.clear()
 
@@ -258,14 +253,63 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given product and shipping refunds, when loaded, then expose counts and grouped shipping`() = testBlocking {
+        // GIVEN
+        val refund = testOrderRefunds.single()
+        val refunds = listOf(refund, refund.copy(id = 2))
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(refunds).whenever(orderDetailRepository).getOrderRefunds(any())
+
+        // WHEN
+        val states = viewModel.orderRefunds.runAndCaptureValues { viewModel.start() }
+
+        // THEN
+        val state = states.last()
+        assertThat(state.refunds).isEqualTo(refunds)
+        assertThat(state.refundedProductsCount).isEqualTo(2)
+        assertThat(state.shippingLines).containsExactly(
+            refund.shippingLines.single().copy(total = BigDecimal("26.0"), totalTax = BigDecimal("6.0"))
+        )
+        assertThat(state.isVisible).isTrue()
+    }
+
+    @Test
+    fun `given shipping only refund, when loaded, then expose visible state without products`() = testBlocking {
+        // GIVEN
+        val refund = testOrderRefunds.single().copy(items = emptyList())
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(listOf(refund)).whenever(orderDetailRepository).getOrderRefunds(any())
+
+        // WHEN
+        val states = viewModel.orderRefunds.runAndCaptureValues { viewModel.start() }
+
+        // THEN
+        assertThat(states.last().refundedProductsCount).isZero()
+        assertThat(states.last().shippingLines).isEqualTo(refund.shippingLines)
+        assertThat(states.last().isVisible).isTrue()
+    }
+
+    @Test
+    fun `given no refunds, when loaded, then expose hidden refund state`() = testBlocking {
+        // GIVEN
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+
+        // WHEN
+        val states = viewModel.orderRefunds.runAndCaptureValues { viewModel.start() }
+
+        // THEN
+        assertThat(states.last().refundedProductsCount).isZero()
+        assertThat(states.last().shippingLines).isEmpty()
+        assertThat(states.last().isVisible).isFalse()
+    }
+
+    @Test
     fun `Displays the order detail view correctly`() = testBlocking {
         val nonRefundedOrder = order.copy(refundTotal = BigDecimal.ZERO)
 
         val expectedViewState = orderWithParameters.copy(
             orderInfo = orderInfo.copy(order = nonRefundedOrder)
         )
-
-        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
 
         doReturn(nonRefundedOrder).whenever(orderDetailRepository).getOrderById(any())
 
@@ -309,7 +353,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         // refunds
         val refunds = ArrayList<Refund>()
         viewModel.orderRefunds.observeForever {
-            it?.let { refunds.addAll(it) }
+            it?.let { refunds.addAll(it.refunds) }
         }
 
         // shipping Labels
@@ -338,7 +382,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(true)
-            whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(false)
             whenever(orderDetailRepository.getOrderById(any())).thenReturn(
                 order.copy(
                     datePaid = Date()
@@ -367,7 +410,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(true)
-            whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(true)
             whenever(orderDetailRepository.getOrderById(any())).thenReturn(
                 order.copy(
                     datePaid = null
@@ -396,7 +438,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(false)
-            whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(false)
             whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
             whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(true)
             whenever(orderDetailRepository.getOrderNotes(any())).thenReturn(testOrderNotes)
@@ -417,39 +458,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `collect button hidden if payment is not collectable`() =
-        testBlocking {
-            // GIVEN
-            doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
-            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-
-            // WHEN
-            viewModel.start()
-
-            // THEN
-            assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
-        }
-
-    @Test
-    fun `collect button shown if payment is collectable`() =
-        testBlocking {
-            // GIVEN
-            doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
-            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-
-            // WHEN
-            viewModel.start()
-
-            // THEN
-            assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isTrue()
-        }
-
-    @Test
-    fun `hasVirtualProductsOnly returns false if there are no products for the order`() =
+    fun `given an order with no products, when the screen loads, then the order is not marked as virtual`() =
         testBlocking {
             val order = order.copy(items = emptyList())
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
@@ -463,11 +472,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
 
             viewModel.start()
-            assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(false)
+
+            assertThat(currentViewStateValue!!.orderInfo!!.isVirtualOrder).isFalse()
         }
 
     @Test
-    fun `hasVirtualProductsOnly returns true if and only if there are no physical products for the order`() =
+    fun `given an order with only virtual products, when the screen loads, then the order is marked as virtual`() =
         testBlocking {
             val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
             val virtualItems = listOf(item.copy(productId = 3), item.copy(productId = 4))
@@ -483,11 +493,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(true)
+            assertThat(currentViewStateValue!!.orderInfo!!.isVirtualOrder).isTrue()
         }
 
     @Test
-    fun `hasVirtualProductsOnly returns false if there are both virtual and physical products for the order`() =
+    fun `given an order with virtual and physical products, when the screen loads, then the order is not marked as virtual`() =
         testBlocking {
             val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
             val mixedItems = listOf(item, item.copy(productId = 2))
@@ -506,7 +516,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(false)
+            assertThat(currentViewStateValue!!.orderInfo!!.isVirtualOrder).isFalse()
         }
 
     @Test
@@ -570,7 +580,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             val refunds = ArrayList<Refund>()
             viewModel.orderRefunds.observeForever {
-                it?.let { refunds.addAll(it) }
+                it?.let { refunds.addAll(it.refunds) }
             }
 
             var areProductsVisible: Boolean? = null
@@ -673,7 +683,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-            doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
@@ -2197,7 +2206,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(flowOf(emptyList<ShippingMethod>())).whenever(getShippingMethodsWithOtherValue).invoke()
 
-        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
         doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
@@ -2221,7 +2229,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(flowOf(emptyList<ShippingMethod>())).whenever(getShippingMethodsWithOtherValue).invoke()
 
-        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
         doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
@@ -2337,7 +2344,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(observedViewState!!.orderInfo!!.order).isEqualTo(newOrder)
-        assertThat(observedViewState.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
     }
 
     @Test

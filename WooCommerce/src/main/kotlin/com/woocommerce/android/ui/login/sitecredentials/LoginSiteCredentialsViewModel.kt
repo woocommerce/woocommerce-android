@@ -17,7 +17,6 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordGenerationException
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.extensions.combine
-import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -40,6 +39,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.INVALID_SSL_CERTIFICATE
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.AdminBaseVerification
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.Endpoint as ValidationEndpoint
@@ -52,6 +52,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_RESPONSE
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
 import java.net.URI
@@ -60,6 +61,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginSiteCredentialsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val httpsUrlNormalizer: HttpsUrlNormalizer,
     private val wpApiSiteRepository: WPApiSiteRepository,
     private val selectedSite: SelectedSite,
     private val loginAnalyticsListener: LoginAnalyticsListener,
@@ -74,6 +76,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         const val USERNAME_KEY = "username"
         const val PASSWORD_KEY = "password"
         const val IS_JETPACK_CONNECTED_KEY = "is-jetpack-connected"
+        const val WAS_URL_NORMALIZED_TO_HTTPS_KEY = "was-url-normalized-to-https"
         private const val REDIRECTION_URL = "woocommerce://login"
         private const val SUCCESS_PARAMETER = "success"
         private const val USERNAME_PARAMETER = "user_login"
@@ -83,10 +86,25 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         private const val ADMIN_BASE_URL_KEY = "admin-base-url"
     }
 
+    private val wasSiteAddressNormalizedToHttps =
+        savedStateHandle[WAS_URL_NORMALIZED_TO_HTTPS_KEY]
+            ?: normalizeSiteAddress(requireNotNull(savedStateHandle.get<String>(SITE_ADDRESS_KEY)))?.wasUpgraded
+            ?: false
+
     private var siteAddress: String
-        get() = savedStateHandle[SITE_ADDRESS_KEY]!!
+        get() {
+            val rawUrl = requireNotNull(savedStateHandle.get<String>(SITE_ADDRESS_KEY))
+            return normalizeSiteAddress(rawUrl)?.normalizedUrl ?: rawUrl
+        }
         set(value) {
-            savedStateHandle[SITE_ADDRESS_KEY] = value
+            savedStateHandle[SITE_ADDRESS_KEY] = normalizeSiteAddress(value)?.normalizedUrl ?: value
+        }
+
+    private fun normalizeSiteAddress(rawUrl: String): HttpsUrlNormalizer.Result? =
+        try {
+            httpsUrlNormalizer.normalize(rawUrl, addHttpsSchemeIfMissing = true)
+        } catch (_: IllegalArgumentException) {
+            null
         }
 
     // The URL the WP.com `connect/site-info` endpoint reports as the canonical site URL is
@@ -115,7 +133,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         key = "endpoint-recovery"
     )
 
-    private val SiteModel?.fullAuthorizationUrl: String?
+    private val SiteModel?.applicationPasswordAuthorizationUrl: String?
         get() = this?.applicationPasswordsAuthorizeUrl
             ?.let { url ->
                 "$url?app_name=${applicationPasswordsConfiguration.applicationName}&success_url=$REDIRECTION_URL"
@@ -356,7 +374,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
             INVALID_CREDENTIALS -> authError.value = AuthenticationError(
                 errorMessage = authenticationError.errorMessage,
-                showWpAdminFallbackOption = endpoints.loginEntryUrl == null
+                showWpAdminFallbackOption = true
             )
 
             BASIC_AUTH_REQUIRED -> showNativeAuthenticationError(authenticationError.errorMessage)
@@ -376,8 +394,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         hasVerifiedCustomLoginEntry: Boolean
     ) {
         when {
-            hasVerifiedCustomLoginEntry -> showNativeAuthenticationError(
-                requireNotNull(authenticationError).errorMessage
+            authenticationError?.networkErrorType == INVALID_SSL_CERTIFICATE -> {
+                showNativeAuthenticationError(authenticationError.errorMessage)
+            }
+
+            hasVerifiedCustomLoginEntry -> authError.value = AuthenticationError(
+                errorMessage = requireNotNull(authenticationError).errorMessage,
+                showWpAdminFallbackOption = authenticationError.errorType == INVALID_RESPONSE
             )
 
             authenticationError?.errorType == INVALID_RESPONSE && endpoints.loginEntryUrl != null -> {
@@ -404,7 +427,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private suspend fun fetchSiteForTutorial(detectedErrorMessage: UiString? = null) {
         loadingMessage.value = R.string.login_site_credentials_fetching_site
-        wpApiSiteRepository.fetchSite(url = siteAddress).fold(
+        wpApiSiteRepository.fetchSite(
+            url = siteAddress,
+            wasUrlNormalizedToHttps = wasSiteAddressNormalizedToHttps,
+        ).fold(
             onSuccess = { site ->
                 val canonicalUrl = site.url
                 if (!hasReconciledSiteUrl && !canonicalUrl.isNullOrEmpty() && canonicalUrl != siteAddress) {
@@ -419,10 +445,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     val errorMessage = detectedErrorMessage
                         ?.toPresentableString()
                         ?: resourceProvider.getString(R.string.error_generic)
-                    if (site.fullAuthorizationUrl.isNotNullOrEmpty()) {
+                    val applicationPasswordAuthorizationUrl = site.applicationPasswordAuthorizationUrl
+                    if (!applicationPasswordAuthorizationUrl.isNullOrEmpty()) {
                         triggerEvent(
                             ShowApplicationPasswordTutorialScreen(
-                                url = site.fullAuthorizationUrl!!,
+                                verifiedLoginUrl = savedStateHandle.get<String>(LOGIN_ENTRY_URL_KEY),
+                                applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
                                 errorMessage = errorMessage
                             )
                         )
@@ -452,7 +480,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         wpApiSiteRepository.fetchSite(
             url = siteAddress,
             username = viewState?.username,
-            password = viewState?.password
+            password = viewState?.password,
+            wasUrlNormalizedToHttps = wasSiteAddressNormalizedToHttps,
         ).fold(
             onSuccess = { site ->
                 if (site.hasWooCommerce) {
@@ -571,7 +600,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             LOGIN_SITE_CREDENTIALS_LOGIN_FAILED,
             mapOf(
                 AnalyticsTracker.KEY_STEP to step.name.lowercase(),
-                AnalyticsTracker.KEY_NETWORK_STATUS_CODE to statusCode?.toString().orEmpty()
+                AnalyticsTracker.KEY_NETWORK_STATUS_CODE to statusCode?.toString().orEmpty(),
+                AnalyticsTracker.KEY_URL_WAS_NORMALIZED_TO_HTTPS to wasSiteAddressNormalizedToHttps.toString(),
             ),
             errorContext = errorContext,
             errorType = errorType,
@@ -642,7 +672,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private suspend fun handleEndpointRecovery(type: EndpointType, isRetry: Boolean) {
         if (!isRetry && !hasReconciledSiteUrl) {
-            val canonicalUrl = wpApiSiteRepository.fetchSite(url = siteAddress).getOrNull()?.url
+            val canonicalUrl = wpApiSiteRepository.fetchSite(
+                url = siteAddress,
+                wasUrlNormalizedToHttps = wasSiteAddressNormalizedToHttps,
+            ).getOrNull()?.url
             val reconciledSiteAddress = canonicalUrl?.toSafeReconciledSiteAddress()
             if (reconciledSiteAddress != null) {
                 hasReconciledSiteUrl = true
@@ -756,7 +789,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     ) : MultiLiveEvent.Event()
 
     data class ShowApplicationPasswordTutorialScreen(
-        val url: String,
+        val verifiedLoginUrl: String?,
+        val applicationPasswordAuthorizationUrl: String,
         val errorMessage: String
     ) : MultiLiveEvent.Event()
 }

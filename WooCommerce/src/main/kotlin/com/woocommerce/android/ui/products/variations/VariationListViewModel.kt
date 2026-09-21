@@ -108,9 +108,11 @@ class VariationListViewModel @Inject constructor(
         get() = _variationList.value?.isEmpty() ?: true
 
     fun start() {
-        productRepository.getProduct(remoteProductId)?.let {
-            viewState = viewState.copy(parentProduct = it)
-            handleVariationLoading(remoteProductId)
+        launch {
+            productRepository.getProduct(remoteProductId)?.let {
+                viewState = viewState.copy(parentProduct = it)
+                handleVariationLoading(remoteProductId)
+            }
         }
     }
 

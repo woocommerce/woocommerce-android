@@ -5,6 +5,9 @@ import androidx.annotation.ChecksSdkIntAtLeast
 
 @Suppress("Unused", "TooManyFunctions")
 object SystemVersionUtils {
+    @ChecksSdkIntAtLeast(Build.VERSION_CODES.CINNAMON_BUN)
+    fun isAtLeastCinnamonBun() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN
+
     @ChecksSdkIntAtLeast(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     fun isAtLeastU() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
     fun isAtMostU() = Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE

@@ -40,7 +40,13 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var isWooPosSurveyNotificationCurrentUserShown by AppPrefs::isWooPosSurveyNotificationCurrentUserShown
 
-    var isUserAgeEligibleForAppUse by AppPrefs::isUserAgeEligibleForAppUse
+    val isUserAgeEligibleForAppUse by AppPrefs::isUserAgeEligibleForAppUse
+
+    var userAgeRestrictionReason by AppPrefs::userAgeRestrictionReason
+
+    fun clearLegacyAgeRestriction() {
+        AppPrefs.isUserAgeEligibleForAppUse = true
+    }
 
     var isAiAssistantEarlyAccessNoticeDismissed by AppPrefs::isAiAssistantEarlyAccessNoticeDismissed
 

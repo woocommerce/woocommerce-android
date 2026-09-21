@@ -21,16 +21,16 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentReviewDetailBinding
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.loadPhotonUrlWithFallback
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.texteditor.SimpleTextEditorFragment
 import com.woocommerce.android.ui.common.texteditor.SimpleTextEditorStrategy.SEND_RESULT_ON_CONFIRMATION
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.products.ProductImageLoader
+import com.woocommerce.android.ui.products.ProductImageViewTarget
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.APPROVED
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
@@ -56,12 +56,13 @@ class ReviewDetailFragment :
     BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    @Inject lateinit var productImageMap: ProductImageMap
+    @Inject lateinit var productImageLoaderFactory: ProductImageLoader.Factory
 
     private val viewModel: ReviewDetailViewModel by viewModels()
 
     private var runOnStartFunc: (() -> Unit)? = null
     private var productIconSize: Int = 0
+    private var productImageTarget: ProductImageViewTarget? = null
     private val skeletonView = SkeletonView()
 
     private var _binding: FragmentReviewDetailBinding? = null
@@ -136,6 +137,7 @@ class ReviewDetailFragment :
     override fun onDestroyView() {
         skeletonView.hide()
         super.onDestroyView()
+        productImageTarget = null
         _binding = null
     }
 
@@ -224,15 +226,13 @@ class ReviewDetailFragment :
     }
 
     private fun refreshProductImage(remoteProductId: Long) {
-        // Note that if productImageMap doesn't already have the image for this product then it will request
-        // it from the backend. When the request completes it will be captured by the presenter, which will
-        // call this method to show the image for the just-downloaded product model
-        productImageMap.get(remoteProductId)?.let { productImage ->
-            Glide.with(activity as Context)
-                .loadPhotonUrlWithFallback(productImage, productIconSize, productIconSize)
-                .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.ic_product))
-                .into(binding.reviewProductIcon)
-        }
+        val target = productImageTarget ?: ProductImageViewTarget(
+            imageView = binding.reviewProductIcon,
+            factory = productImageLoaderFactory,
+            imageSize = productIconSize,
+            cornerRadius = 0
+        ).also { productImageTarget = it }
+        target.load(remoteProductId)
     }
 
     private fun showSkeleton(show: Boolean) {

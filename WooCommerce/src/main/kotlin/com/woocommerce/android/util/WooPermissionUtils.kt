@@ -1,9 +1,12 @@
 package com.woocommerce.android.util
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission.ACCESS_LOCAL_NETWORK
 import android.Manifest.permission.BLUETOOTH_CONNECT
 import android.Manifest.permission.BLUETOOTH_SCAN
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -42,10 +45,42 @@ object WooPermissionUtils {
 
     fun hasFineLocationPermission(context: Context) = context.checkIfPermissionGiven(ACCESS_FINE_LOCATION)
 
-    fun shouldShowFineLocationPermissionRationale(activity: Activity): Boolean {
-        if (hasFineLocationPermission(activity)) return false
+    /**
+     * The location permission required for card reader discovery. Stripe Terminal 5.8.0 only needs coarse
+     * location for its reporting, and on Android 12+ Bluetooth LE scanning relies on BLUETOOTH_SCAN
+     * (neverForLocation), so coarse is sufficient. On Android 11 and below a BLE scan still requires fine
+     * location at the OS level, so we keep requesting it there.
+     */
+    fun cardReaderLocationPermission(): String =
+        if (SystemVersionUtils.isAtLeastS()) ACCESS_COARSE_LOCATION else ACCESS_FINE_LOCATION
 
-        return ActivityCompat.shouldShowRequestPermissionRationale(activity, ACCESS_FINE_LOCATION)
+    fun hasCardReaderLocationPermission(context: Context) =
+        context.checkIfPermissionGiven(cardReaderLocationPermission())
+
+    fun shouldShowCardReaderLocationPermissionRationale(activity: Activity): Boolean {
+        if (hasCardReaderLocationPermission(activity)) return false
+
+        return ActivityCompat.shouldShowRequestPermissionRationale(activity, cardReaderLocationPermission())
+    }
+
+    fun requestCardReaderLocationPermission(launcher: ActivityResultLauncher<String>) {
+        launcher.launch(cardReaderLocationPermission())
+    }
+
+    @SuppressLint("InlinedApi")
+    fun hasLocalNetworkPermission(context: Context) =
+        !SystemVersionUtils.isAtLeastCinnamonBun() || context.checkIfPermissionGiven(ACCESS_LOCAL_NETWORK)
+
+    @SuppressLint("InlinedApi")
+    fun shouldShowLocalNetworkPermissionRationale(activity: Activity): Boolean {
+        if (hasLocalNetworkPermission(activity)) return false
+
+        return ActivityCompat.shouldShowRequestPermissionRationale(activity, ACCESS_LOCAL_NETWORK)
+    }
+
+    @SuppressLint("InlinedApi")
+    fun requestLocalNetworkPermission(launcher: ActivityResultLauncher<String>) {
+        launcher.launch(ACCESS_LOCAL_NETWORK)
     }
 
     fun hasBluetoothScanPermission(context: Context) =
@@ -53,10 +88,6 @@ object WooPermissionUtils {
 
     fun hasBluetoothConnectPermission(context: Context) =
         SystemVersionUtils.isAtMostR() || context.checkIfPermissionGiven(BLUETOOTH_CONNECT)
-
-    fun requestFineLocationPermission(requestPermissionLauncher: ActivityResultLauncher<String>) {
-        requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
-    }
 
     fun requestScanAndConnectBluetoothPermission(launcher: ActivityResultLauncher<Array<String>>) {
         launcher.launch(arrayOf(BLUETOOTH_SCAN, BLUETOOTH_CONNECT))

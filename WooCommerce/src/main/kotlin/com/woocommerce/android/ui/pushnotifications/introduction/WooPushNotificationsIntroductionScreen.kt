@@ -104,6 +104,15 @@ fun WooPushNotificationsIntroductionScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
+                ViewState.OfflineModeError -> ErrorContent(
+                    bodyText = stringResource(
+                        id = R.string.woo_push_notifications_introduction_error_offline_mode_body
+                    ),
+                    onContactSupportClick = onContactSupportClick,
+                    onNotNowClick = onNotNowClick,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
                 ViewState.GenericError -> ErrorContent(
                     bodyText = stringResource(
                         id = R.string.woo_push_notifications_introduction_error_body
@@ -465,6 +474,21 @@ private fun WooPushNotificationsIntroductionErrorPreview() {
     WooThemeWithBackground {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.GenericError,
+            onContinueClick = {},
+            onCloseClick = {},
+            onNotNowClick = {},
+            onWhatIsWPComClick = {},
+            onContactSupportClick = {}
+        )
+    }
+}
+
+@Composable
+@Preview
+private fun WooPushNotificationsIntroductionOfflineModeErrorPreview() {
+    WooThemeWithBackground {
+        WooPushNotificationsIntroductionScreen(
+            viewState = ViewState.OfflineModeError,
             onContinueClick = {},
             onCloseClick = {},
             onNotNowClick = {},

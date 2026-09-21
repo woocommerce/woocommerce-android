@@ -84,13 +84,13 @@ class ProductInventoryViewModel @Inject constructor(
             if (sku == originalSku) {
                 clearSkuError()
             } else {
-                if (!productRepository.isSkuAvailableLocally(sku)) {
-                    showSkuError()
-                } else {
-                    clearSkuError()
-                }
-
                 skuVerificationJob = launch {
+                    if (!productRepository.isSkuAvailableLocally(sku)) {
+                        showSkuError()
+                    } else {
+                        clearSkuError()
+                    }
+
                     delay(AppConstants.SEARCH_TYPING_DELAY_MS)
 
                     productRepository.isSkuAvailableRemotely(sku)?.let { isRemotelyAvailable ->

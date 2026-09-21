@@ -1,9 +1,12 @@
 package com.woocommerce.android.ui.woopos.common.data
 
-import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.google.gson.JsonParseException
+import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
-import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.longOrNull
+import com.woocommerce.android.extensions.stringOrNull
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.util.WooLog
@@ -18,9 +21,7 @@ import javax.inject.Singleton
  * This centralizes all variation mapping logic, JSON parsing, and name generation.
  */
 @Singleton
-class WooPosVariationMapper @Inject constructor(
-    private val gson: Gson
-) {
+class WooPosVariationMapper @Inject constructor() {
     fun fromProductVariation(productVariation: ProductVariation): WooPosVariation {
         return WooPosVariation(
             remoteVariationId = productVariation.remoteVariationId,
@@ -137,26 +138,25 @@ class WooPosVariationMapper @Inject constructor(
         if (attributesJson.isEmpty()) return emptyList()
 
         return try {
-            val type = object : TypeToken<List<AttributeJsonItem>>() {}.type
-            val items: List<AttributeJsonItem> = gson.fromJson(attributesJson, type)
-            items.map { item ->
-                WooPosVariation.WooPosVariationAttribute(
-                    id = item.id,
-                    name = item.name,
-                    option = item.option
-                )
+            val root = JsonParser.parseString(attributesJson)
+            if (root.isJsonArray) {
+                root.asJsonArray.mapNotNull { element ->
+                    (element as? JsonObject)?.let { attribute ->
+                        WooPosVariation.WooPosVariationAttribute(
+                            id = attribute.longOrNull("id"),
+                            name = attribute.stringOrNull("name"),
+                            option = attribute.stringOrNull("option"),
+                        )
+                    }
+                }
+            } else {
+                emptyList()
             }
-        } catch (e: JsonSyntaxException) {
+        } catch (e: JsonParseException) {
             WooLog.w(WooLog.T.POS, "Failed to parse attributes JSON: ${e.message}")
             emptyList()
         }
     }
-
-    private data class AttributeJsonItem(
-        val id: Long?,
-        val name: String?,
-        val option: String?
-    )
 }
 
 fun ProductVariation.toWooPosVariation(mapper: WooPosVariationMapper): WooPosVariation =

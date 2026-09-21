@@ -12,10 +12,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_POS_ONBO
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_REASON
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.IAnalyticsEvent
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.payments.cardreader.cardReaderBatteryLevelPercent
@@ -46,9 +48,6 @@ class PaymentsFlowTracker @Inject constructor(
         errorType: String? = null,
         errorDescription: String? = null,
     ) {
-        if (stat is WooPosAnalyticsEvent) {
-            properties.putAll(stat.properties)
-        }
         addPreferredPluginSlugProperty(properties)
         addStoreCountryCodeProperty(properties)
         addCurrencyProperty(properties)
@@ -56,6 +55,9 @@ class PaymentsFlowTracker @Inject constructor(
         addCardReaderModelProperty(properties)
         addCardReaderBatteryLevelProperty(properties)
         addTransportProperty(properties)
+        if (stat is WooPosAnalyticsEvent) {
+            properties.putAll(stat.properties)
+        }
 
         val isError = !errorType.isNullOrBlank() || !errorDescription.isNullOrEmpty()
         if (isError) {
@@ -350,8 +352,12 @@ class PaymentsFlowTracker @Inject constructor(
         track(eventProvider.CARD_READER_LOCATION_PERMISSION_REQUIRED_SHOWN)
     }
 
-    fun trackConnectionFailed() {
-        track(eventProvider.CARD_READER_CONNECTION_FAILED)
+    fun trackConnectionFailed(errorType: String, errorDescription: String?) {
+        track(
+            eventProvider.CARD_READER_CONNECTION_FAILED,
+            errorType = errorType,
+            errorDescription = errorDescription,
+        )
     }
 
     fun trackConnectionSucceeded() {
@@ -368,6 +374,10 @@ class PaymentsFlowTracker @Inject constructor(
 
     fun trackPaymentSucceeded() {
         track(eventProvider.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS, getAndResetFlowsDuration())
+    }
+
+    fun trackPaymentSucceeded(order: Order) {
+        track(eventProvider.paymentSuccessEvent(order), getAndResetFlowsDuration())
     }
 
     fun trackInteracPaymentSucceeded() {
@@ -653,4 +663,18 @@ class PaymentsFlowTracker @Inject constructor(
         private const val OPTIONAL_UPDATE = "Optional"
         private const val REQUIRED_UPDATE = "Required"
     }
+}
+
+internal fun CardReaderStatus.NotConnected.ErrorCode?.toAnalyticsValue() = when (this) {
+    CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW -> "battery_critically_low"
+    CardReaderStatus.NotConnected.ErrorCode.BLUETOOTH_PEER_REMOVED_PAIRING -> "bluetooth_peer_removed_pairing"
+    CardReaderStatus.NotConnected.ErrorCode.OTHER -> "other"
+    null -> "unknown"
+}
+
+internal fun CardReaderStatus.NotConnected.toAnalyticsErrorType() = when (errorCode) {
+    CardReaderStatus.NotConnected.ErrorCode.OTHER -> stripeErrorCode ?: errorCode.toAnalyticsValue()
+    CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW,
+    CardReaderStatus.NotConnected.ErrorCode.BLUETOOTH_PEER_REMOVED_PAIRING,
+    null -> errorCode.toAnalyticsValue()
 }

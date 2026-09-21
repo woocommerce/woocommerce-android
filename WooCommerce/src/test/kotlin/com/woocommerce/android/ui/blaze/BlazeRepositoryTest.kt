@@ -129,7 +129,7 @@ class BlazeRepositoryTest : BaseUnitTest() {
 
             whenever(appPrefsWrapper.blazeCampaignSelectedObjective).thenReturn(objective)
             whenever(productDetailRepository.getProduct(productId)).thenReturn(product)
-            whenever(mediaFilesRepository.getImageDetails(imageUrl)).thenReturn(ImageDetails(0, 0, ""))
+            whenever(mediaFilesRepository.getImageDetails(imageUrl)).thenReturn(ImageDetails(0, 0, null))
 
             val before = Date()
             val details = repository.generateDefaultCampaignDetails(productId)
@@ -203,12 +203,38 @@ class BlazeRepositoryTest : BaseUnitTest() {
 
             whenever(appPrefsWrapper.blazeCampaignSelectedObjective).thenReturn(objective)
             whenever(productDetailRepository.getProduct(productId)).thenReturn(product)
-            whenever(mediaFilesRepository.getImageDetails(imageUrl)).thenReturn(ImageDetails(0, 0, ""))
+            whenever(mediaFilesRepository.getImageDetails(imageUrl)).thenReturn(ImageDetails(0, 0, null))
 
             val details = repository.generateDefaultCampaignDetails(productId)
 
             // Only focus on campaign image behavior
             assertThat(details.campaignImage).isInstanceOf(BlazeRepository.BlazeCampaignImage.None::class.java)
+        }
+
+    @Test
+    fun `given a product with valid image, when generateDefaultCampaignDetails invoked, then CampaignDetails with normalized mime type created`() =
+        testBlocking {
+            // GIVEN
+            val productId = 789L
+            val objective = "sales"
+            val imageUrl = "https://example.com/image-400.jpg"
+            val product = ProductTestUtils.generateProduct(
+                productId = productId,
+                productName = "Valid Image Product",
+                imageUrl = imageUrl
+            )
+
+            whenever(appPrefsWrapper.blazeCampaignSelectedObjective).thenReturn(objective)
+            whenever(productDetailRepository.getProduct(productId)).thenReturn(product)
+            whenever(mediaFilesRepository.getImageDetails(imageUrl))
+                .thenReturn(ImageDetails(VALID_IMAGE_SIZE, VALID_IMAGE_SIZE, "IMAGE/JPEG"))
+
+            // WHEN
+            val details = repository.generateDefaultCampaignDetails(productId)
+
+            // THEN
+            assertThat(details.campaignImage)
+                .isEqualTo(BlazeRepository.BlazeCampaignImage.RemoteImage(imageUrl, "image/jpeg"))
         }
 
     @Test
@@ -221,7 +247,7 @@ class BlazeRepositoryTest : BaseUnitTest() {
             val validationResult = with(repository) { imageDetails.validateAdImage() }
 
             // THEN
-            assertThat(validationResult).isEqualTo(Valid)
+            assertThat(validationResult).isEqualTo(Valid(mimeType))
         }
     }
 
@@ -234,7 +260,7 @@ class BlazeRepositoryTest : BaseUnitTest() {
         val validationResult = with(repository) { imageDetails.validateAdImage() }
 
         // THEN
-        assertThat(validationResult).isEqualTo(Valid)
+        assertThat(validationResult).isEqualTo(Valid("image/jpeg"))
     }
 
     @Test
@@ -259,6 +285,18 @@ class BlazeRepositoryTest : BaseUnitTest() {
             height = VALID_IMAGE_SIZE,
             mimeType = "image/avif"
         )
+
+        // WHEN
+        val validationResult = with(repository) { imageDetails.validateAdImage() }
+
+        // THEN
+        assertThat(validationResult).isEqualTo(UnsupportedMimeType)
+    }
+
+    @Test
+    fun `given image details without a mime type, when validating ad image, then result is unsupported mime type`() {
+        // GIVEN
+        val imageDetails = ImageDetails(width = VALID_IMAGE_SIZE, height = VALID_IMAGE_SIZE, mimeType = null)
 
         // WHEN
         val validationResult = with(repository) { imageDetails.validateAdImage() }

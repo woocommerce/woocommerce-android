@@ -61,7 +61,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    val siteParameters: SiteParameters by lazy { parameterRepository.getParameters(KEY_PARAMETERS, savedState) }
+    val siteParameters: SiteParameters by lazy { parameterRepository.getParametersBlocking(KEY_PARAMETERS, savedState) }
 
     private var availablePackages: List<ShippingPackage>? = null
 
@@ -365,7 +365,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
-    private fun Order.getShippableItems(): List<Order.Item> {
+    private suspend fun Order.getShippableItems(): List<Order.Item> {
         val refunds = orderDetailRepository.getOrderRefunds(id)
         return refunds.getNonRefundedProducts(items)
             .filter {

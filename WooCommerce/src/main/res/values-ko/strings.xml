@@ -1,11 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-28 09:54:25+0000
+Translation-Revision-Date: 2026-09-08 09:54:36+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="age_verification_open_google_play">Google Play 열기</string>
+    <string name="age_verification_required_message">앱을 사용할 수 있는지를 우커머스에서 확인할 수 있으려면 Google Play에서 연령 인증을 받아야 합니다.</string>
+    <string name="age_verification_required_title">연령 인증 후 계속</string>
+    <string name="woopos_refund_review_remaining_items_button">나머지 아이템 검토</string>
+    <string name="woopos_refund_error_store_not_updated">카드는 환불되었지만, 스토어는 업데이트되지 않았습니다. 스토어 관리자에서 이 환불을 기록하세요.</string>
+    <string name="woopos_refund_error_item_already_refunded">선택한 아이템 중 하나가 이미 전액 환불되었습니다.</string>
+    <string name="filter_history_delete">삭제</string>
+    <string name="filter_history_clear_confirmation">필터 기록을 모두 지우시겠어요?</string>
+    <string name="filter_history_clear">기록 지우기</string>
+    <string name="filter_history_empty">이전 필터를 찾을 수 없음</string>
+    <string name="filter_history_cancel">취소</string>
+    <string name="filter_history_apply">적용</string>
+    <string name="filter_history_recent_header">최근</string>
+    <string name="filter_history_title">필터 기록</string>
+    <string name="add_action">추가</string>
+    <string name="product_attribute_no_options_warning">이 속성은 옵션이 없으며 제거됩니다. 계속하시겠습니까?</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">위치를 켜서 카드 리더 표시</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">위치에 카드 리더 표시 허용</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">블루투스를 켜서 카드 리더 표시</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">블루투스에 카드 리더 표시 허용</string>
+    <string name="woopos_card_reader_local_network_permission_message">카드 리더로 사용되는 스마트폰에 연결하려면 로컬 네트워크 권한이 필요합니다.</string>
+    <string name="woopos_card_reader_local_network_permission_title">로컬 네트워크 권한 필요</string>
+    <string name="woopos_refund_error_invalid_amount">환불 금액이 유효하지 않음</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">환불 금액이 이 아이템에 남은 환불 금액보다 많음</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">환불 금액이 이 주문에 남은 환불 금액보다 많음</string>
+    <string name="woopos_refund_error_order_not_refundable">이 주문은 환불할 수 없음</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">선택한 수량이 남은 환불 수량보다 많음</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">코드 다시 표시</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">등록기에서 수령</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">온라인 결제가 진행되지 않았습니다. 등록기에서 수령하거나 코드를 다시 표시하세요.</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">고객이 대면 결제 선택</string>
+    <string name="woopos_remote_reader_failed_token_invalid">결제 서비스 오류입니다. 다시 연결해 보세요.</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">스마트폰에서 NFC를 켜고 다시 시도하세요.</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">이 스마트폰에서는 Tap to Pay를 사용할 수 없습니다. 다른 기기를 사용해 보세요.</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">주문 생성이 지원되지 않는 구독 상품이 이 번들에 있습니다.</string>
+    <string name="product_image_details_name_removal_blocked">앱에서 제목 제거를 지원하지 않습니다. wp-admin을 사용하여 제거하세요.</string>
+    <string name="product_image_details_alt_text_removal_blocked">앱에서 대체 텍스트 제거를 지원하지 않습니다. wp-admin을 사용하여 제거하세요.</string>
+    <string name="product_image_details_name_label">제목</string>
+    <string name="product_image_details_alt_text_label">대체 텍스트</string>
+    <string name="product_image_details_title">이미지 상세 정보</string>
+    <string name="card_reader_mode_local_network_permission_open_settings">설정 열기</string>
+    <string name="card_reader_mode_local_network_permission_denied_subtitle">로컬 네트워크 권한이 차단되었습니다. 이 스마트폰에서 tap-to-pay를 사용하려면 설정을 열어 로컬 네트워크 접근 권한을 부여하세요.</string>
+    <string name="card_reader_mode_local_network_permission_continue">계속</string>
+    <string name="card_reader_mode_local_network_permission_subtitle">Android에서는 로컬 네트워크 접근 권한이 있어야 태블릿에서 이 스마트폰을 찾을 수 있습니다. 회원님의 네트워크 외부로 발송된 내용이 없습니다.</string>
+    <string name="card_reader_mode_local_network_permission_header">로컬 네트워크 권한 필요</string>
+    <string name="card_reader_mode_error_phone_not_eligible">이 스마트폰에서는 Tap to Pay를 사용할 수 없습니다. 다른 기기를 사용해 보세요.</string>
+    <string name="card_reader_pay_in_person_fetch_failed">대면 결제가 활성화되었는지 확인할 수 없습니다. 나중에 다시 시도해 보세요.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">비활성화</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">그러면 회원님의 스토어에서 계산할 때 배송 시 현금 결제 수단이 비활성화되어 고객이 선택할 수 없게 됩니다.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">대면 결제를 비활성화할까요?</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">활성화</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">그러면 회원님의 웹사이트에서 계산할 때를 포함하여 회원님의 스토어에서 계산할 때 배송 시 현금 결제 수단이 활성화되고 고객에게 표시되는 이름이 “%1$s”에서 \"대면 결제\"로 변경됩니다.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">그러면 회원님의 스토어에서 계산할 때 배송 시 현금 결제 수단이 활성화됩니다.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">대면 결제를 활성화할까요?</string>
+    <string name="order_creation_gift_card_not_applied">이 상품권을 적용할 수 없음</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">변형이 없는 변형 상품은 추가할 수 없음</string>
+    <string name="login_site_credentials_use_web_authorization">그 대신에 회원님 브라우저로 로그인 시도</string>
+    <string name="login_site_credentials_endpoint_persistence_failed">회원님 스토어의 로그인 설정을 저장할 수 없습니다. 다시 시도해 주세요.</string>
+    <string name="login_site_credentials_admin_url_not_found_error">해당 주소에서 워드프레스 알림판에 연결할 수 없습니다. 확인하고 다시 시도하세요.</string>
+    <string name="login_site_credentials_login_url_not_found_error">해당 주소에서 워드프레스 로그인 페이지를 찾을 수 없습니다. 확인하고 다시 시도하세요.</string>
+    <string name="login_site_credentials_endpoint_same_site_error">보안 연결 또는 포트를 변경하지 말고 동일한 사이트의 주소를 입력하세요.</string>
+    <string name="login_site_credentials_endpoint_invalid_url_error">http:// 또는 https://를 포함한 전체 웹 주소를 입력하세요.</string>
+    <string name="login_site_credentials_admin_url_label">워드프레스 알림판 주소</string>
+    <string name="login_site_credentials_admin_url_description">보안 플러그인 때문에 워드프레스 알림판이 이동할 수 있습니다. 여는 데 사용할 주소를 입력하세요.</string>
+    <string name="login_site_credentials_admin_url_title">회원님 스토어의 알림판은 어디에 있나요?</string>
+    <string name="login_site_credentials_login_url_label">워드프레스 로그인 주소</string>
+    <string name="login_site_credentials_login_url_description">보안 플러그인에서 사용자 정의 워드프레스 로그인 주소를 사용할 수 있습니다. 로그인하는 데 사용할 주소를 입력하세요.</string>
+    <string name="login_site_credentials_login_url_title">어디에서 스토어에 로그인하시나요?</string>
+    <string name="login_text_otp_another">문자 메시지를 통한 코드 다시 보내기</string>
+    <string name="login_text_otp">문자 메시지를 통한 코드 다시 보내기</string>
+    <string name="enter_verification_code_sms_generic">문자 메시지를 보냈습니다. 메시지에 있는 확인 코드를 입력하세요.</string>
+    <string name="enter_verification_code">계속하려면 확인 코드를 입력하세요.</string>
+    <string name="logviewer_share_all_logs_error">공유할 로그를 준비할 수 없음</string>
+    <string name="logviewer_preparing_logs">로그 준비 중…</string>
+    <string name="logviewer_share_all_logs">모든 로그 공유</string>
+    <string name="support_mobile_status_report_share_error">모바일 상태 보고서를 공유할 수 없음</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">모바일 상태 보고서를 클립보드에 복사하는 중 오류 발생</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">클립보드에 모바일 상태 보고서 복사됨</string>
+    <string name="support_mobile_status_report_share_label">모바일 상태 보고서 공유</string>
+    <string name="support_mobile_status_report_copy_label">클립보드에 모바일 상태 보고서 복사</string>
+    <string name="support_mobile_status_report_clipboard_label">우커머스 모바일 상태 보고서</string>
+    <string name="support_mobile_status_report_detail">이 앱의 애플리케이션, 기기 및 스토어 정보</string>
+    <string name="support_mobile_status_report">모바일 상태 보고서</string>
     <string name="woopos_cart_custom_amount_discount_not_applied">할인 적용 안 됨</string>
     <string name="product_duplicate_discard_changes_action">취소 및 복제</string>
     <string name="product_duplicate_discard_changes_message">저장하지 않은 변경 사항은 손실됩니다. 복제본에서는 저장된 마지막 버전을 사용합니다.</string>
@@ -584,9 +667,6 @@ Language: ko_KR
     <string name="woopos_refund_creating_error_title">환불 생성 실패</string>
     <string name="woopos_refund_loading_error_title">환불 아이템 로드 실패</string>
     <string name="woopos_orders_via_payment_method">수단: %1$s</string>
-    <string name="woopos_wc_version_sunset_banner_dismiss">우커머스 업데이트 경고 무시</string>
-    <string name="woopos_wc_version_sunset_banner_message">2026년 8월 1일부터 POS에 우커머스 10.5.0 이상이 필요합니다. 스토어에서 우커머스를 업데이트하거나 스토어 관리자에게 문의하세요.</string>
-    <string name="woopos_wc_version_sunset_banner_title">우커머스 업데이트 예정</string>
     <string name="restart">재시작</string>
     <string name="dev_feature_flags">기능 플래그</string>
     <string name="settings_enable_push_notifications">푸시 알림 활성화</string>
@@ -1074,7 +1154,6 @@ Language: ko_KR
     <string name="woo_shipping_fetching_countries_and_states">국가 및 주를 가져오는 중입니다.</string>
     <string name="woo_shipping_fetching_countries_and_states_failed">국가 및 주 정보를 조회할 수 없습니다. 다시 시도해 주세요.</string>
     <string name="product_upload_error_title">이미지 업로드 오류</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">현재 POS에서는 단순, 변형 및 가상 상품만 지원 - \n시작하려면 하나를 생성하세요.</string>
     <string name="woo_shipping_label_phone">전화</string>
     <string name="woo_shipping_label_email">이메일</string>
@@ -1476,7 +1555,6 @@ Language: ko_KR
     <string name="my_store_widget_stats_title">성과</string>
     <string name="dashboard_stats_edit_granularity_content_description">날짜 범위 변경 버튼</string>
     <string name="images_unavailable_notice">사이트가 비공개로 표시되어서 이미지를 사용할 수 없습니다. 공개 예정 모드로 전환하여 이를 변경할 수 있습니다.\n</string>
-    <string name="card_selection_control">분석 카드 선택</string>
     <string name="login_app_password_exit_dialog_cancel">취소</string>
     <string name="login_app_password_exit_dialog_confirmation">강제 종료</string>
     <string name="login_app_password_exit_dialog_message">아직 앱 연결을 승인하지 않으신 것 같습니다. 종료하시겠어요?</string>
@@ -2249,7 +2327,6 @@ Language: ko_KR
     <string name="card_reader_tap_to_pay_description">스마트폰을 사용하여 카드 결제 수락\n결제 지금 사용해 보세요.</string>
     <string name="loading">로드 중입니다…</string>
     <string name="login_site_credentials_fetching_site_failed">웹사이트를 가져오는 동안 오류 발생</string>
-    <string name="login_site_credentials_use_web_authorization">WP 관리자 페이지에서 다시 시도</string>
     <string name="login_store_address">로그인</string>
     <string name="upgrades_plan_ended_name">%s 종료됨</string>
     <string name="upgrades_current_plan_ended_caption">구독이 종료되었으며, 모든 기능에 대한 접근 권한이 제한되었습니다.</string>
@@ -3426,7 +3503,7 @@ Language: ko_KR
     <string name="upsells_desc">현재 보는 제품 대신에 홍보되는 제품(즉, 수익성이 더 높은 제품)</string>
     <string name="upsells_label">상향 판매</string>
     <string name="product_detail_linked_products">연결된 제품</string>
-    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="orderdetail_product_lineitem_attribute">%1$s: %2$s</string>
     <string name="login_get_link_by_email">이메일로 로그인 링크 받기</string>
     <string name="email_not_registered_wpcom">이 이메일 주소와 연결된 워드프레스닷컴 계정을 찾을 수 없습니다.</string>
     <string name="settings_preferences">기본 설정</string>
@@ -3584,6 +3661,7 @@ Language: ko_KR
     <string name="product_sale_date_to">%1$s까지</string>
     <string name="product_wip_title">사용 가능한 새 편집 옵션</string>
     <string name="orderdetail_product_multiple">제품</string>
+    <string name="orderdetail_product_lineitem_quantity_and_price">%1$s x %2$s</string>
     <string name="product_type_external">외부</string>
     <string name="product_type_simple">심플</string>
     <string name="product_status_privately_published">비공개로 게시됨</string>
@@ -3986,7 +4064,6 @@ Language: ko_KR
     <string name="xmlrpc_endpoint_forbidden_error">연결할 수 없습니다. 사이트\n XMLRPC 엔드포인트에 액세스를 시도할 때 403 오류가 발생했습니다. 사이트와 통신하려면 이 앱에 필요합니다. 호스트에 문의하여\n 이 문제를 해결하세요.</string>
     <string name="default_web_client_id" a8c-src-lib="module:login">플레이스홀더</string>
     <string name="notification_channel_general_title">일반</string>
-    <string name="login_text_otp_another">대신 다른 코드를 문자로 받습니다.</string>
     <string name="enter_verification_code_sms">%s(으)로 끝나는 전화 번호로 문자 메시지를 보냈습니다. SMS의 확인 코드를 입력하세요.</string>
     <string name="enter_wpcom_password_google">이 Google 계정으로 진행하려면 일치하는 워드프레스닷컴 비밀번호를 제공하세요. 이 메시지는 한 번만 표시됩니다.</string>
     <string name="login_log_in_for_share_intent">콘텐츠를 공유하려면 워드프레스닷컴에 로그인하세요.</string>
@@ -4005,7 +4082,6 @@ Language: ko_KR
     <string name="login_magic_link_email_requesting">로그인 이메일 요청 중</string>
     <string name="password_incorrect">이 비밀번호가 올바르지 않은 것 같습니다. 정보를 확인하고 다시 시도하세요.</string>
     <string name="requesting_otp">SMS를 통해 확인 코드를 요청 중입니다.</string>
-    <string name="login_text_otp">대신 코드를 문자로 받습니다.</string>
     <string name="open_mail">메일 열기</string>
     <string name="next">다음</string>
     <string name="already_logged_in_wpcom">이미 워드프레스닷컴 계정에 로그인되어 있으므로 다른 계정에 연결된 워드프레스닷컴 사이트를 추가할 수 없습니다.</string>
@@ -4092,7 +4168,6 @@ Language: ko_KR
     <string name="orderdetail_note_private">비공개</string>
     <string name="dashboard_top_performers_empty">이 기간에 활동이 없음</string>
     <string name="order_error_fetch_notes_generic">메모를 가져오는 중 오류 발생</string>
-    <string name="enter_verification_code">마무리 단계입니다! 인증 앱의 워드프레스닷컴 확인 코드를 입력하세요.</string>
     <string-array name="analytics_date_range_selectors">
         <item>@string/date_timeframe_custom</item>
         <item>@string/date_timeframe_today</item>

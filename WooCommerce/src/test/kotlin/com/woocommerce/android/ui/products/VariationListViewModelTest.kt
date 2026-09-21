@@ -58,7 +58,9 @@ class VariationListViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         doReturn(true).whenever(networkStatus).isConnected()
-        whenever(productRepository.getProduct(productRemoteId)).thenReturn(product)
+        productRepository.stub {
+            on { getProduct(productRemoteId) } doReturn product
+        }
 
         variationRepository = mock {
             on { fetchProductVariations(any(), any()) } doReturn emptyList()

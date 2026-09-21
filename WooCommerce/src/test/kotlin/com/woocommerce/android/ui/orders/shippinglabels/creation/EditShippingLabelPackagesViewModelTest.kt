@@ -68,6 +68,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         ).toSavedStateHandle()
         whenever(shippingLabelRepository.getShippingPackages()).thenReturn(WooResult(availablePackages))
         whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(testOrder)
+        whenever(orderDetailRepository.getOrderRefunds(any())).thenReturn(emptyList())
         whenever(productDetailRepository.getProduct(any())).thenReturn(testProduct)
         viewModel = EditShippingLabelPackagesViewModel(
             savedState,

@@ -166,7 +166,7 @@ class CreateShippingLabelViewModel @Inject constructor(
     }
 
     private val parameters: SiteParameters by lazy {
-        parameterRepository.getParameters(KEY_SHIPPING_LABELS_PARAMETERS, savedState)
+        parameterRepository.getParametersBlocking(KEY_SHIPPING_LABELS_PARAMETERS, savedState)
     }
 
     private val arguments: CreateShippingLabelFragmentArgs by savedState.navArgs()
@@ -495,7 +495,7 @@ class CreateShippingLabelViewModel @Inject constructor(
         )
     }
 
-    private fun getStoreAddress(): Address {
+    private suspend fun getStoreAddress(): Address {
         val siteSettings = wooStore.getSiteSettings(site.get())
         val (country, state) = getLocations(
             countryCode = siteSettings?.countryCode.orEmpty(),

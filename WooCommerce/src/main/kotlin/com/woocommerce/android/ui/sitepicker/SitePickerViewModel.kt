@@ -77,6 +77,7 @@ class SitePickerViewModel @Inject constructor(
     companion object {
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
         private const val WOOCOMMERCE_INSTALLATION_DONE_URL = "marketplace/thank-you/woocommerce"
+        private const val LOGIN_SITE_ADDRESS_KEY = "login-site-address"
     }
 
     private val navArgs: SitePickerFragmentArgs by savedState.navArgs()
@@ -109,10 +110,16 @@ class SitePickerViewModel @Inject constructor(
     val isWooUpgradeDialogVisible: State<Boolean> = _isWooUpgradeDialogVisible
 
     private var loginSiteAddress: String?
-        get() = savedState["key"] ?: appPrefsWrapper.getLoginSiteAddress()
-        set(value) = savedState.set("key", value)
+        get() = savedState[LOGIN_SITE_ADDRESS_KEY]
+        set(value) {
+            savedState[LOGIN_SITE_ADDRESS_KEY] = value
+            if (value == null) appPrefsWrapper.removeLoginSiteAddress()
+        }
 
     init {
+        if (!savedState.contains(LOGIN_SITE_ADDRESS_KEY)) {
+            savedState[LOGIN_SITE_ADDRESS_KEY] = appPrefsWrapper.getLoginSiteAddress()
+        }
         when (navArgs.openedFromLogin) {
             true -> loadLoginView()
             false -> loadStorePickerView()
