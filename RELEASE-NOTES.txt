@@ -4,6 +4,8 @@
 
 25.8
 -----
+- [*****] Refreshed My Store, Orders, Products, and the More menu with the new design system — new top app bars, bottom navigation, list styling, and icons [https://github.com/woocommerce/woocommerce-android/pull/16322]
+- [*] Fixed the add product button staying on screen after clearing the product search term [https://github.com/woocommerce/woocommerce-android/pull/16451]
 - [Internal] Card Reader Mode on the phone now tracks when it rejects a Remote Tap to Pay payment from the tablet [https://github.com/woocommerce/woocommerce-android/pull/16584]
 
 - [*] Card Reader Mode on the phone now explains what it is for before it starts [https://github.com/woocommerce/woocommerce-android/pull/16579]
@@ -14,7 +16,6 @@
 
 25.7
 -----
-- [*****] Refreshed My Store, Orders, Products, and the More menu with the new design system — new top app bars, bottom navigation, list styling, and icons [https://github.com/woocommerce/woocommerce-android/pull/16322]
 - [*] Customers list no longer reshuffles its rows once the fresh results arrive from the server [https://github.com/woocommerce/woocommerce-android/pull/16573]
 - [*] Updated the create shipping label button visibility on the order details screen [https://github.com/woocommerce/woocommerce-android/pull/16572]
 - [Internal] Defer push notification handler initialization until a message is received on the Firebase worker thread.
@@ -47,7 +48,6 @@
 
 25.6
 -----
-- [*] Fixed the add product button staying on screen after clearing the product search term [https://github.com/woocommerce/woocommerce-android/pull/16451]
 - [Internal] Fixed an Android 13 crash when returning to a screen (e.g. Product details) after the app was backgrounded, caused by R8 full mode tripping the API 33 typed Bundle.getParcelable bug; reflective reads now go through AndroidX compat [https://github.com/woocommerce/woocommerce-android/pull/16562]
 - [Internal] Fixed an IllegalAccessError crash when opening the Aztec editor (e.g. a product's description) in release builds, caused by R8 full mode inlining TagSoup's HTML parser across a package boundary [https://github.com/woocommerce/woocommerce-android/pull/16530]
 - [*] The toolbar search icon on the Products and Orders lists is purple again, like the other toolbar icons, instead of black [https://github.com/woocommerce/woocommerce-android/pull/16508]
