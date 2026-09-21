@@ -49,4 +49,4 @@ fun WooPosHomeDialogs(
     }
 }
 
-private const val REMOTE_TAP_TO_PAY_EXPLAINER_WIDTH_FRACTION = 0.55f
+private const val REMOTE_TAP_TO_PAY_EXPLAINER_WIDTH_FRACTION = 0.6f

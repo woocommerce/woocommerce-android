@@ -4447,11 +4447,13 @@
     <string name="woopos_remote_ttp_hint_strip_text">Use an Android phone as a card reader</string>
     <string name="woopos_remote_ttp_hint_cash_success_text">Did you know you can use an Android phone as a card reader?</string>
     <string name="woopos_remote_ttp_explainer_title">No card reader? No problem</string>
-    <string name="woopos_remote_ttp_explainer_intro">Use the Woo app on your phone to take card payments.</string>
-    <string name="woopos_remote_ttp_explainer_setup_heading">Set up your phone</string>
-    <string name="woopos_remote_ttp_explainer_setup_body">Open Woo on your phone, then go to Settings → Payments → Card Reader Mode.</string>
-    <string name="woopos_remote_ttp_explainer_requirements_heading">Check compatibility</string>
-    <string name="woopos_remote_ttp_explainer_requirements_body">Use the same Wi-Fi and sign in to the same store on both devices. Your phone needs Android 13 or newer, NFC, and Tap-to-Pay support.</string>
+    <string name="woopos_remote_ttp_explainer_description">Take card payments on an Android phone connected to Woo POS on your tablet.</string>
+    <string name="woopos_remote_ttp_explainer_what_you_need_heading">What you need</string>
+    <string name="woopos_remote_ttp_explainer_what_you_need_body">An Android phone with Android 13 or newer, NFC, and support for Tap to Pay.</string>
+    <string name="woopos_remote_ttp_explainer_connect_heading">Connect your phone</string>
+    <string name="woopos_remote_ttp_explainer_connect_step_same_store">Connect both devices to the same Wi-Fi and sign in to the same store.</string>
+    <string name="woopos_remote_ttp_explainer_connect_step_phone">On your phone, open Menu &gt; Payments &gt; Card Reader Mode.</string>
+    <string name="woopos_remote_ttp_explainer_connect_step_tablet">On your tablet, pick your phone from the card reader list.</string>
     <string name="woopos_remote_ttp_explainer_got_it">Got it</string>
 
     <string name="customers_details_customer_section">Customer</string>
