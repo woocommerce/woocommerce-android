@@ -19,11 +19,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 
 @Composable
 fun WooPosRemoteReaderHintStrip(
+    text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     WooPosText(
-        text = stringResource(R.string.woopos_remote_ttp_hint_strip_text),
+        text = text,
         style = WooPosTypography.BodyMedium,
         color = MaterialTheme.colorScheme.primary,
         textAlign = TextAlign.Center,
@@ -42,6 +43,9 @@ fun WooPosRemoteReaderHintStrip(
 @Composable
 fun WooPosRemoteReaderHintStripPreview() {
     WooPosTheme {
-        WooPosRemoteReaderHintStrip(onClick = {})
+        WooPosRemoteReaderHintStrip(
+            text = stringResource(R.string.woopos_remote_ttp_hint_strip_text),
+            onClick = {},
+        )
     }
 }

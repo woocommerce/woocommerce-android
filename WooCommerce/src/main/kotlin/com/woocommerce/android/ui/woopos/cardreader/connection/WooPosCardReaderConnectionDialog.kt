@@ -511,7 +511,10 @@ private fun ScanningContent(
             modifier = Modifier.fillMaxWidth()
         ) {
             ScanningDialogBody()
-            WooPosRemoteReaderHintStrip(onClick = onHintClick)
+            WooPosRemoteReaderHintStrip(
+                text = stringResource(R.string.woopos_remote_ttp_hint_strip_text),
+                onClick = onHintClick,
+            )
         }
         false -> ScanningDialogBody()
     }
@@ -841,7 +844,10 @@ private fun BluetoothDisabledContent(
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
-        WooPosRemoteReaderHintStrip(onClick = onHintClick)
+        WooPosRemoteReaderHintStrip(
+            text = stringResource(R.string.woopos_remote_ttp_hint_strip_text),
+            onClick = onHintClick,
+        )
     }
 }
 
@@ -880,7 +886,10 @@ private fun LocationDisabledContent(
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
-        WooPosRemoteReaderHintStrip(onClick = onHintClick)
+        WooPosRemoteReaderHintStrip(
+            text = stringResource(R.string.woopos_remote_ttp_hint_strip_text),
+            onClick = onHintClick,
+        )
     }
 }
 
@@ -921,7 +930,10 @@ private fun MissingPermissionContent(
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
-        WooPosRemoteReaderHintStrip(onClick = onHintClick)
+        WooPosRemoteReaderHintStrip(
+            text = stringResource(R.string.woopos_remote_ttp_hint_strip_text),
+            onClick = onHintClick,
+        )
     }
 }
 

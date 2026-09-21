@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -75,7 +76,7 @@ fun WooPosPaymentSuccessScreen(
         val textsMargin = WooPosSpacing.Small.value
 
         ConstraintLayout {
-            val (icon, title, message, buttonNewOrder, buttonEmailReceipts, remoteReaderHint) = createRefs()
+            val (icon, title, message, buttonNewOrder, buttonEmailReceipts) = createRefs()
 
             WooPosSuccessCheckmark(
                 contentDescription = stringResource(R.string.woopos_payment_successful_label),
@@ -102,32 +103,30 @@ fun WooPosPaymentSuccessScreen(
                 }
             )
 
-            WooPosText(
-                text = state.orderTotalText,
-                style = WooPosTypography.BodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.constrainAs(message) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    when (showRemoteReaderHint) {
-                        true -> bottom.linkTo(remoteReaderHint.top, margin = textsMargin)
-                        false -> bottom.linkTo(buttonNewOrder.top, margin = marginBetweenButtonAndText)
-                    }
+                    bottom.linkTo(buttonNewOrder.top, margin = marginBetweenButtonAndText)
                 }
-            )
-
-            if (showRemoteReaderHint) {
-                WooPosRemoteReaderHintStrip(
-                    onClick = onRemoteReaderHintClicked,
-                    modifier = Modifier
-                        .constrainAs(remoteReaderHint) {
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                            bottom.linkTo(buttonNewOrder.top, margin = marginBetweenButtonAndText)
-                        }
-                        .width(IntrinsicSize.Max),
+            ) {
+                WooPosText(
+                    text = state.orderTotalText,
+                    style = WooPosTypography.BodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
                 )
+
+                if (showRemoteReaderHint) {
+                    WooPosRemoteReaderHintStrip(
+                        text = stringResource(R.string.woopos_remote_ttp_hint_cash_success_text),
+                        onClick = onRemoteReaderHintClicked,
+                        modifier = Modifier
+                            .padding(top = textsMargin)
+                            .width(IntrinsicSize.Max),
+                    )
+                }
             }
 
             val marginBetweenButtons = WooPosSpacing.Medium.value
