@@ -128,6 +128,19 @@ private fun StartingContent(state: RemoteTapToPayViewState?) {
 }
 
 @Composable
+private fun illustrationModifier(state: RemoteTapToPayViewState): Modifier = when (state) {
+    is RemoteTapToPayIntro -> Modifier
+    is RemoteTapToPayStarting,
+    is RemoteTapToPayLocationPermissionExplainer,
+    is RemoteTapToPayLocationPermissionDenied,
+    is RemoteTapToPayLocalNetworkPermissionExplainer,
+    is RemoteTapToPayLocalNetworkPermissionDenied,
+    is RemoteTapToPayReadyToPair,
+    is RemoteTapToPayWaitingForPayment,
+    is RemoteTapToPayError -> Modifier.size(dimensionResource(id = R.dimen.image_major_120))
+}
+
+@Composable
 private fun StatefulContent(state: RemoteTapToPayViewState) {
     Column(
         modifier = Modifier
@@ -147,6 +160,7 @@ private fun StatefulContent(state: RemoteTapToPayViewState) {
                 Image(
                     painter = painterResource(id = drawable),
                     contentDescription = null,
+                    modifier = illustrationModifier(state),
                 )
             }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
