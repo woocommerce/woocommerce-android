@@ -13,6 +13,8 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import java.util.Date
@@ -164,6 +166,17 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order)
 
             assertThat(isCollectable).isFalse()
+        }
+
+    @Test
+    fun `given subscription check disabled, when checking collectability, then subscription is not looked up`() =
+        testBlocking {
+            val order = getOrder()
+
+            val isCollectable = checker.isCollectable(order, checkSubscription = false)
+
+            assertThat(isCollectable).isTrue()
+            verify(orderSubscriptionChecker, never()).isOrderFreeOfSubscriptions(any())
         }
 
     @Test
