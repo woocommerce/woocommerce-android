@@ -1700,6 +1700,14 @@
     <string name="card_reader_mode_local_network_permission_continue">Continue</string>
     <string name="card_reader_mode_local_network_permission_denied_subtitle">Local network permission is blocked. Open Settings and grant local network access to use tap-to-pay on this phone.</string>
     <string name="card_reader_mode_local_network_permission_open_settings">Open Settings</string>
+    <string name="card_reader_mode_intro_header">This phone as a card reader</string>
+    <string name="card_reader_mode_intro_subtitle">This phone shows up as a card reader in Woo POS on your tablet. At checkout the tablet sends the amount here and the customer taps their card on this phone.</string>
+    <string name="card_reader_mode_intro_requirements_heading">Before you start</string>
+    <string name="card_reader_mode_intro_requirement_pos">Open Woo POS on an Android tablet signed in to the same store</string>
+    <string name="card_reader_mode_intro_requirement_wifi">Connect both devices to the same Wi-Fi</string>
+    <string name="card_reader_mode_intro_requirement_nfc">Turn on NFC on this phone</string>
+    <string name="card_reader_mode_intro_start">Start</string>
+    <string name="card_reader_mode_intro_not_now">Not now</string>
 
     <string name="card_reader_payment_failed_nfc_disabled">The app could not enable the card reader, because the NFC chip is disabled</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Enable NFC</string>
@@ -2262,6 +2270,7 @@
     <string name="variation_detail_image_add">Add a variation image</string>
     <string name="variation_list_generate_new_variation">Generate new variation</string>
     <string name="variation_list_add">Add variation</string>
+    <string name="variation_list_fetch_error">Error fetching variations</string>
     <string name="variation_created_title">Variation Created</string>
     <string name="variation_create_dialog_title">Generating variation</string>
     <string name="variation_loading_dialog_title">Fetching variations…</string>
@@ -2917,6 +2926,7 @@
     <string name="woo_push_notifications_introduction_error_title">Something went wrong</string>
     <string name="woo_push_notifications_introduction_error_body">We could not complete the push notifications setup. Please contact support for assistance.</string>
     <string name="woo_push_notifications_introduction_error_forbidden_body">Your account does not have permission to complete push notifications setup. Please ask your store administrator to handle this.</string>
+    <string name="woo_push_notifications_introduction_error_offline_mode_body">Push notifications can\'t be set up because your store is in Offline Mode. If you still need help, please contact support.</string>
     <string name="woo_push_notifications_introduction_connected_title">Get push notifications for your store</string>
     <string name="woo_push_notifications_introduction_connected_body">You\'re one step away from getting notifications for new orders, reviews and more.</string>
     <string name="woo_push_notifications_introduction_update_required_title">Get push notifications for your store</string>
@@ -3959,6 +3969,7 @@
     <string name="woopos_cart_custom_amount_edit_content_description">Edit %s</string>
     <string name="woopos_cart_custom_amount_includes_tax">Tax included</string>
     <string name="woopos_cart_custom_amount_discount_not_applied">Discount not applied</string>
+    <string name="woopos_cart_item_discount_applied">Discount applied</string>
     <string name="woopos_cart_custom_amount_menu_edit">Edit</string>
     <string name="woopos_cart_custom_amount_menu_remove">Remove</string>
     <string name="woopos_custom_amount_entry_title">Custom amount</string>

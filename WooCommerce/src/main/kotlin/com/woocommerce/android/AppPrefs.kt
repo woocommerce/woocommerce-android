@@ -57,6 +57,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import java.util.Calendar
 import java.util.Date
+import java.util.UUID
 
 // Guaranteed to hold a reference to the application context, which is safe
 @SuppressLint("StaticFieldLeak")
@@ -188,6 +189,8 @@ object AppPrefs {
         // this phone's stable device id when it advertises itself as a Woo POS remote tap-to-pay reader
         WOO_POS_REMOTE_READER_DEVICE_UUID,
 
+        WOO_POS_REMOTE_READER_PAIRED_ONCE,
+
         // show card reader tutorial after a reader is connected
         SHOW_CARD_READER_CONNECTED_TUTORIAL,
 
@@ -251,7 +254,24 @@ object AppPrefs {
 
     fun init(context: Context) {
         AppPrefs.context = context.applicationContext
+        clearLegacyPushPreferences()
+        if (wooCorePushDeviceUUID.isEmpty()) {
+            wooCorePushDeviceUUID = UUID.randomUUID().toString()
+        }
         if (relativeInstallationDate == null) relativeInstallationDate = Calendar.getInstance().time
+    }
+
+    private fun clearLegacyPushPreferences() {
+        val preferences = getPreferences()
+        val uuidKey = DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID.name
+        val tokenKey = UndeletablePrefKey.WC_PREF_NOTIFICATIONS_TOKEN.name
+        if (!preferences.contains(uuidKey) && !preferences.contains(tokenKey)) return
+
+        // Backed-up push identity values must be discarded instead of copied to the excluded preferences file.
+        preferences.edit {
+            remove(uuidKey)
+            remove(tokenKey)
+        }
     }
 
     /**
@@ -372,8 +392,8 @@ object AppPrefs {
         set(value) = setBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN, value)
 
     var wooCorePushDeviceUUID: String
-        get() = getString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID, "")
-        set(value) = setString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID, value)
+        get() = getDeletableString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID)
+        set(value) = setDeletableString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID, value)
 
     var remoteFeatureFlagsDeviceId: String
         get() = getString(UndeletablePrefKey.REMOTE_FEATURE_FLAGS_DEVICE_ID, "")
@@ -458,10 +478,10 @@ object AppPrefs {
         setDeletableInt(UndeletablePrefKey.CANCELLED_APP_VERSION_CODE, versionCode)
     }
 
-    fun getFCMToken() = getString(UndeletablePrefKey.WC_PREF_NOTIFICATIONS_TOKEN)
+    fun getFCMToken() = getDeletableString(UndeletablePrefKey.WC_PREF_NOTIFICATIONS_TOKEN)
 
     fun setFCMToken(token: String) {
-        setString(UndeletablePrefKey.WC_PREF_NOTIFICATIONS_TOKEN, token)
+        setDeletableString(UndeletablePrefKey.WC_PREF_NOTIFICATIONS_TOKEN, token)
     }
 
     fun setSupportEmail(email: String?) {
@@ -679,6 +699,10 @@ object AppPrefs {
     var wooPosRemoteReaderDeviceUUID: String
         get() = getString(UndeletablePrefKey.WOO_POS_REMOTE_READER_DEVICE_UUID, "")
         set(value) = setString(UndeletablePrefKey.WOO_POS_REMOTE_READER_DEVICE_UUID, value)
+
+    var wooPosRemoteReaderPairedOnce: Boolean
+        get() = getBoolean(UndeletablePrefKey.WOO_POS_REMOTE_READER_PAIRED_ONCE, false)
+        set(value) = setBoolean(UndeletablePrefKey.WOO_POS_REMOTE_READER_PAIRED_ONCE, value)
 
     fun getShowCardReaderConnectedTutorial() = getBoolean(UndeletablePrefKey.SHOW_CARD_READER_CONNECTED_TUTORIAL, true)
 
@@ -1457,6 +1481,10 @@ object AppPrefs {
         removePreferencesWithDynamicKey(editor)
         editor.apply()
 
+        getDeleteablePreferences().edit {
+            remove(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID.name)
+        }
+
         resetSitePreferences()
     }
 
@@ -1556,7 +1584,7 @@ object AppPrefs {
 
     /**
      * Methods used to store values in SharedPreferences that are not backed up
-     * when app is installed/uninstalled. Currently, only used for storing appVersionCode.
+     * when app is installed/uninstalled. Currently used for storing appVersionCode, push UUID and FCM token.
      * We might want to migrate this to it's own class if we are to use this for other
      * attributes as well.
      */
@@ -1565,6 +1593,12 @@ object AppPrefs {
 
     private fun setDeletableInt(key: PrefKey, value: Int) =
         PreferenceUtils.setInt(getDeleteablePreferences(), key.toString(), value)
+
+    private fun getDeletableString(key: PrefKey, defaultValue: String = "") =
+        PreferenceUtils.getString(getDeleteablePreferences(), key.toString(), defaultValue) ?: defaultValue
+
+    private fun setDeletableString(key: PrefKey, value: String) =
+        PreferenceUtils.setString(getDeleteablePreferences(), key.toString(), value)
 
     private fun getDeleteablePreferences(): SharedPreferences {
         return context.getSharedPreferences(

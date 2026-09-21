@@ -51,6 +51,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.atLeastOnce
+import org.mockito.kotlin.atMost
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
@@ -575,6 +576,23 @@ class SitePickerViewModelTest : BaseUnitTest() {
             )
 
             assertThat(viewModel.event.value).isEqualTo(NavigateToAccountMismatchScreen(CONNECT_JETPACK, url))
+        }
+
+    @Test
+    fun `given the site address does not match the user account, when site info fetch fails, then the address is cleared`() =
+        testBlocking {
+            // GIVEN
+            givenThatUserLoggedInFromEnteringSiteAddress(null)
+            whenever(repository.fetchSiteInfo(any())).thenReturn(Result.failure(Exception()))
+            whenSitesAreFetched()
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN
+            verify(appPrefsWrapper, atLeastOnce()).removeLoginSiteAddress()
+            verify(repository, atMost(2)).fetchSiteInfo(any())
+            assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.site_picker_error))
         }
 
     @Test

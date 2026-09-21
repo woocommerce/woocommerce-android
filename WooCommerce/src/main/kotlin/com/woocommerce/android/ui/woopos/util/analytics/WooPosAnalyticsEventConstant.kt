@@ -1,6 +1,16 @@
 package com.woocommerce.android.ui.woopos.util.analytics
 
 object WooPosAnalyticsEventConstant {
+    const val TAP_TO_PAY_READER_MODEL = "TAP_TO_PAY_DEVICE"
+
+    enum class CardReaderTransport(val value: String) {
+        BUILT_IN("built_in"),
+        BLUETOOTH("bluetooth"),
+        WIFI_LAN("wifi_lan");
+
+        override fun toString(): String = value
+    }
+
     enum class RefundFlow(val value: String) {
         LOCAL("local"),
         SERVER_COMPUTED("server_computed");

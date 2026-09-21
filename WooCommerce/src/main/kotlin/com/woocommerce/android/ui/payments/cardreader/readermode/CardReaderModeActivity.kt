@@ -56,6 +56,7 @@ class CardReaderModeActivity : AppCompatActivity() {
                 viewModel.events.collect { event ->
                     when (event) {
                         CardReaderModeEvent.Exit -> finish()
+                        CardReaderModeEvent.CheckPermissions -> checkPermissionsAndStartSession()
                         CardReaderModeEvent.RequestLocationPermission ->
                             WooPermissionUtils.requestCardReaderLocationPermission(locationPermissionLauncher)
                         CardReaderModeEvent.RequestLocalNetworkPermission ->
@@ -70,7 +71,7 @@ class CardReaderModeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        checkPermissionsAndStartSession()
+        viewModel.onScreenResumed()
     }
 
     private fun checkPermissionsAndStartSession() {

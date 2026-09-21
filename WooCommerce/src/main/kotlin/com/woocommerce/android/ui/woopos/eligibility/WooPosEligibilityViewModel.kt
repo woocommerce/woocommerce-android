@@ -55,9 +55,14 @@ class WooPosEligibilityViewModel @Inject constructor(
     private var currentReason: WooPosLaunchability.NonLaunchabilityReason? = null
 
     suspend fun initialize(reason: WooPosLaunchability.NonLaunchabilityReason) {
+        if (_retryState.value != null) return
+        val initialState = buildIneligibleState(reason)
+        if (_retryState.value != null) return
         currentReason = reason
-        _retryState.value = buildIneligibleState(reason)
-        tracker.track(WooPosAnalyticsEvent.Event.IneligibleUIShown(reason))
+        _retryState.value = initialState
+        viewModelScope.launch {
+            tracker.track(WooPosAnalyticsEvent.Event.IneligibleUIShown(reason))
+        }
     }
 
     fun retryEligibilityCheckTapped() {
