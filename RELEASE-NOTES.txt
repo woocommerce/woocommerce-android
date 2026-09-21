@@ -4,6 +4,7 @@
 
 25.8
 -----
+- [*] Card Reader Mode on the phone now explains what it is for before it starts [https://github.com/woocommerce/woocommerce-android/pull/16579]
 - [*] The variations list now shows an error with a retry option when a page of variations fails to load, instead of silently skipping it [https://github.com/woocommerce/woocommerce-android/pull/16580]
 - [*] POS no longer flips between portrait and landscape on tablets whose screen is just above the tablet size threshold [https://github.com/woocommerce/woocommerce-android/pull/16574]
 - [*] Logging in with the www form of a store address no longer shows "not connected to this account" for a store the account owns [https://github.com/woocommerce/woocommerce-android/pull/16567]
