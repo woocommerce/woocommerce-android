@@ -14,14 +14,15 @@ import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayError
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayIntro
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocalNetworkPermissionDenied
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocalNetworkPermissionExplainer
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionDenied
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionExplainer
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayViewState
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.util.siteIdHash
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -48,8 +49,8 @@ class CardReaderModeViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
 
-    private val _viewState = MutableStateFlow<ViewState?>(null)
-    val viewState: StateFlow<ViewState?> = _viewState.asStateFlow()
+    private val _viewState = MutableStateFlow<RemoteTapToPayViewState?>(null)
+    val viewState: StateFlow<RemoteTapToPayViewState?> = _viewState.asStateFlow()
 
     private val _events = Channel<CardReaderModeEvent>(capacity = Channel.BUFFERED)
     val events: Flow<CardReaderModeEvent> = _events.receiveAsFlow()
@@ -58,8 +59,43 @@ class CardReaderModeViewModel @Inject constructor(
     private var isSimulated = false
     private var tracking = SessionTracking()
 
+    fun onScreenResumed() {
+        when (_viewState.value) {
+            null -> when (appPrefsWrapper.wooPosRemoteReaderPairedOnce) {
+                true -> requestPermissionCheck()
+                false -> showIntro()
+            }
+            is RemoteTapToPayIntro -> Unit
+            is RemoteTapToPayStarting,
+            is RemoteTapToPayLocationPermissionExplainer,
+            is RemoteTapToPayLocationPermissionDenied,
+            is RemoteTapToPayLocalNetworkPermissionExplainer,
+            is RemoteTapToPayLocalNetworkPermissionDenied,
+            is RemoteTapToPayReadyToPair,
+            is RemoteTapToPayWaitingForPayment,
+            is RemoteTapToPayError -> requestPermissionCheck()
+        }
+    }
+
     fun onPermissionsGranted() {
         startSessionIfNeeded()
+    }
+
+    private fun showIntro() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.REMOTE_TTP_PHONE_INTRO_SHOWN)
+        _viewState.value = RemoteTapToPayIntro(
+            onPrimaryActionClicked = ::requestPermissionCheck,
+            onSecondaryActionClicked = ::dismissIntro,
+        )
+    }
+
+    private fun requestPermissionCheck() {
+        _events.trySend(CardReaderModeEvent.CheckPermissions)
+    }
+
+    private fun dismissIntro() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.REMOTE_TTP_PHONE_INTRO_DISMISSED)
+        _events.trySend(CardReaderModeEvent.Exit)
     }
 
     fun onLocationPermissionMissing() {
@@ -107,6 +143,7 @@ class CardReaderModeViewModel @Inject constructor(
         viewModelScope.launch {
             session.state.collect { sessionState ->
                 trackSessionState(sessionState)
+                rememberPairing(sessionState)
                 _viewState.value = mapToViewState(sessionState)
             }
         }
@@ -156,6 +193,12 @@ class CardReaderModeViewModel @Inject constructor(
         )
     }
 
+    private fun rememberPairing(state: CardReaderRemoteSessionState) {
+        if (state is CardReaderRemoteSessionState.WaitingForPayment) {
+            appPrefsWrapper.wooPosRemoteReaderPairedOnce = true
+        }
+    }
+
     private fun trackSessionStartedOnce() {
         if (tracking.startTracked) return
         tracking = tracking.copy(startTracked = true)
@@ -198,8 +241,8 @@ class CardReaderModeViewModel @Inject constructor(
         is CardReaderRemoteSessionState.Error -> "error"
     }
 
-    private fun mapToViewState(state: CardReaderRemoteSessionState): ViewState? = when (state) {
-        CardReaderRemoteSessionState.Idle -> null
+    private fun mapToViewState(state: CardReaderRemoteSessionState): RemoteTapToPayViewState = when (state) {
+        CardReaderRemoteSessionState.Idle,
         CardReaderRemoteSessionState.Starting -> RemoteTapToPayStarting(onPrimaryActionClicked = ::exit)
         is CardReaderRemoteSessionState.ReadyToPair -> RemoteTapToPayReadyToPair(
             deviceName = state.deviceName,
