@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.cardreader.readermode
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -60,6 +61,9 @@ fun CardReaderModeScreen(viewModel: CardReaderModeViewModel) {
 
 @Composable
 private fun CardReaderModeContent(state: RemoteTapToPayViewState?) {
+    if (state is RemoteTapToPayIntro) {
+        BackHandler(onBack = state.onSecondaryActionClicked)
+    }
     Box(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
