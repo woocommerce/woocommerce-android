@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.woopos.util.analytics
 
 import com.woocommerce.android.analytics.IAnalyticsEvent
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTrackerEventProvider
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.PaymentFlowTrackerEvent
 
 class WooPosPaymentsFlowTrackerEventProvider(
     private val analyticsTrackingDataKeeper: WooPosAnalyticsTrackingDataKeeper,
+    private val paymentSuccessProperties: WooPosPaymentSuccessProperties,
 ) : PaymentsFlowTrackerEventProvider {
     override val CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED: IAnalyticsEvent
         get() = PaymentFlowTrackerEvent.CardPresentOnboardingLearnMoreTapped
@@ -101,7 +103,7 @@ class WooPosPaymentsFlowTrackerEventProvider(
         get() = PaymentFlowTrackerEvent.CardPresentCollectPaymentFailed
 
     override val CARD_PRESENT_COLLECT_PAYMENT_SUCCESS: IAnalyticsEvent
-        get() = PaymentFlowTrackerEvent.CardPresentCollectPaymentSuccess.apply {
+        get() = PaymentFlowTrackerEvent.CardPresentCollectPaymentSuccess().apply {
             val props = mutableMapOf<String, String>()
             analyticsTrackingDataKeeper.interactionWithCustomerStartedTimestamp?.let {
                 props["milliseconds_since_customer_interaction_started"] = "${System.currentTimeMillis() - it}"
@@ -118,6 +120,9 @@ class WooPosPaymentsFlowTrackerEventProvider(
             props["checkout_tap_count"] = "${analyticsTrackingDataKeeper.checkoutButtonTapsCount}"
             addProperties(props)
         }
+
+    override fun paymentSuccessEvent(order: Order): IAnalyticsEvent =
+        CARD_PRESENT_COLLECT_PAYMENT_SUCCESS.apply { addProperties(paymentSuccessProperties(order)) }
 
     override val CARD_PRESENT_COLLECT_INTERAC_PAYMENT_SUCCESS: IAnalyticsEvent
         get() = PaymentFlowTrackerEvent.CardPresentCollectInteracPaymentSuccess

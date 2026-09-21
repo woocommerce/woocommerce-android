@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.remote
 
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import java.math.BigDecimal
 
@@ -40,6 +41,7 @@ internal sealed class CardReaderRemoteMessage {
         override val requestId: String,
         val paymentIntentId: String,
         val status: String,
+        val paymentMethodType: PaymentMethodType? = null,
     ) : CardReaderRemoteMessage()
 
     data class ErrorMessage(

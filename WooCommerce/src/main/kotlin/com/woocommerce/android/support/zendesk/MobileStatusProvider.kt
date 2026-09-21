@@ -6,12 +6,16 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.background.GetBackgroundRestrictions
 import com.woocommerce.android.extensions.logInformation
+import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus
 import com.woocommerce.android.tools.connectionTypeOrNull
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.troubleshooting.useCases.NotificationSystemStatusProvider
+import com.woocommerce.android.ui.troubleshooting.useCases.NotificationSystemStatusProvider.ChannelImportance
+import com.woocommerce.android.ui.troubleshooting.useCases.NotificationSystemStatusProvider.DoNotDisturbStatus
+import com.woocommerce.android.ui.troubleshooting.useCases.NotificationSystemStatusProvider.WooChannelState
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsLocalCatalogSupported
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
@@ -37,6 +41,8 @@ import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStor
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
+
+private typealias WooChannels = Map<NotificationChannelType, WooChannelState>
 
 /**
  * Builds the Mobile Status Report attached to support tickets — the app-level counterpart to the server-side
@@ -125,15 +131,44 @@ class MobileStatusProvider @Inject constructor(
 
     // Push registration is not here: it is keyed on a store, so it sits with the store it belongs to.
     private fun notificationsSection(): List<String> {
-        val disabledChannels = notificationSystemStatusProvider.disabledWooNotificationChannels()
+        val channels = notificationSystemStatusProvider.wooNotificationChannels()
         return listOf(
             entry("Play Services", if (deviceFeatures.isGooglePlayServicesAvailable()) "available" else "unavailable"),
             entry("Permission granted", notificationSystemStatusProvider.hasPostNotificationsPermission()),
             entry("App notifications enabled", notificationSystemStatusProvider.areAppNotificationsEnabled()),
-            entry("Disabled channels", disabledChannels.joinToString().ifEmpty { NONE }),
+            entry("Channels", channels.describeImportances()),
+            entry("Channels bypassing DND", channels.describeDndBypass()),
+            entry("Do Not Disturb", notificationSystemStatusProvider.doNotDisturbStatus().describe()),
+            entry("Notifications paused", notificationsPausedState()),
             entry("New order sound", notificationChannelsHandler.checkNewOrderNotificationSound().describe()),
             entry("Push token", pushTokenState())
         ) + backgroundRestrictions()
+    }
+
+    private fun WooChannels.describeImportances() =
+        entries.joinToString { (type, state) -> "$type=${state.importance.describe()}" }
+
+    private fun WooChannels.describeDndBypass() =
+        filterValues { it.canBypassDnd }.keys.joinToString().ifEmpty { NONE }
+
+    private fun notificationsPausedState() = notificationSystemStatusProvider.areNotificationsPaused()
+        ?: "$UNKNOWN ($REASON_PAUSED_NEEDS_ANDROID_10)"
+
+    private fun ChannelImportance.describe() = when (this) {
+        ChannelImportance.OFF -> "off"
+        ChannelImportance.SILENT -> "silent"
+        ChannelImportance.DEFAULT -> "default"
+        ChannelImportance.HIGH -> "high"
+        ChannelImportance.NOT_CREATED -> "not created"
+        ChannelImportance.UNKNOWN -> UNKNOWN
+    }
+
+    private fun DoNotDisturbStatus.describe() = when (this) {
+        DoNotDisturbStatus.OFF -> "off"
+        DoNotDisturbStatus.PRIORITY_ONLY -> "priority only"
+        DoNotDisturbStatus.ALARMS_ONLY -> "alarms only"
+        DoNotDisturbStatus.TOTAL_SILENCE -> "total silence"
+        DoNotDisturbStatus.UNKNOWN -> UNKNOWN
     }
 
     private fun NewOrderNotificationSoundStatus.describe() = when (this) {
@@ -400,6 +435,7 @@ class MobileStatusProvider @Inject constructor(
             "every flag below is on its compiled-in default - no fetch has succeeded on this install, " +
                 "none has completed since launch, or the ones that did returned no key listed here"
         private const val REASON_SIDELOADED = "installed outside an app store, not from Play"
+        private const val REASON_PAUSED_NEEDS_ANDROID_10 = "requires Android 10 or newer"
         private const val POS_REASON_HINT =
             "Reason is logged - search application_log.txt for " +
                 "\"POS Tab Not visible reason\" or \"POS cannot be launched\""

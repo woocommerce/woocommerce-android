@@ -1,5 +1,6 @@
 package com.woocommerce.android
 
+import android.content.Context
 import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
@@ -13,7 +14,10 @@ import org.junit.Test
 class AppPrefsTest {
     @Before
     fun setup() {
-        AppPrefs.init(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext)
+        val context = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
+        context.getSharedPreferences("${context.packageName}_deletable_preferences", Context.MODE_PRIVATE)
+            .edit().clear().commit()
+        AppPrefs.init(context)
         AppPrefs.getPreferences().edit().clear().commit()
     }
 
