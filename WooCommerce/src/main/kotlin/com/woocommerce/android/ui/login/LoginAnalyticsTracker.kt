@@ -173,7 +173,15 @@ class LoginAnalyticsTracker(
         statusName: String?,
         statusMessage: String?
     ) {
-        AnalyticsTracker.track(AnalyticsEvent.LOGIN_SOCIAL_BUTTON_FAILURE)
+        AnalyticsTracker.track(
+            AnalyticsEvent.LOGIN_SOCIAL_BUTTON_FAILURE,
+            mapOf(
+                AnalyticsTracker.KEY_ERROR_CONTEXT to source,
+                AnalyticsTracker.KEY_ERROR_CODE to statusCode?.toString(),
+                AnalyticsTracker.KEY_ERROR_TYPE to (statusName ?: VALUE_NO_SIGN_IN_RESULT),
+                AnalyticsTracker.KEY_ERROR_DESC to statusMessage
+            ).filterValues { it != null }
+        )
     }
 
     override fun trackSocialConnectFailure() {
@@ -348,5 +356,9 @@ class LoginAnalyticsTracker(
 
     override fun trackUseSecurityKeyClicked() {
         AnalyticsTracker.track(AnalyticsEvent.LOGIN_USE_SECURITY_KEY_CLICKED)
+    }
+
+    private companion object {
+        const val VALUE_NO_SIGN_IN_RESULT = "no_sign_in_result"
     }
 }
