@@ -167,7 +167,12 @@ class LoginAnalyticsTracker(
         unifiedLoginTracker.trackClick(Click.LOGIN_WITH_GOOGLE)
     }
 
-    override fun trackSocialButtonFailure() {
+    override fun trackSocialButtonFailure(
+        source: String,
+        statusCode: Int?,
+        statusName: String?,
+        statusMessage: String?
+    ) {
         AnalyticsTracker.track(AnalyticsEvent.LOGIN_SOCIAL_BUTTON_FAILURE)
     }
 
