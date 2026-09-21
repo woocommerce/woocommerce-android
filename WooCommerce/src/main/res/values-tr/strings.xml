@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-27 17:56:45+0000
+Translation-Revision-Date: 2026-09-08 12:56:34+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="age_verification_open_google_play">Google Play\'i aç</string>
+    <string name="age_verification_required_message">WooCommerce uygulamayı kullanıp kullanamayacağınızı kontrol etmeden önce Google Play\'de yaşınızı doğrulamanız gerekir. Google Play\'de doğrulamayı tamamlayın, ardından buraya geri dönüp tekrar deneyin.</string>
+    <string name="age_verification_required_title">Devam etmek için yaşınızı doğrulayın</string>
+    <string name="woopos_refund_review_remaining_items_button">Kalan öğeleri incele</string>
+    <string name="woopos_refund_error_store_not_updated">Kart iade edildi, ancak mağazanız güncellenmedi. Bu iadeyi mağaza yöneticinizde kaydedin.</string>
+    <string name="woopos_refund_error_item_already_refunded">Seçilen öğelerden biri zaten tamamen iade edildi.</string>
+    <string name="filter_history_delete">Sil</string>
+    <string name="filter_history_clear_confirmation">Tüm filtre geçmişini temizlemek istediğinizden emin misiniz?</string>
+    <string name="filter_history_clear">Geçmişi Temizle</string>
+    <string name="filter_history_empty">Hiçbir geçmiş filtre bulunamadı</string>
+    <string name="filter_history_cancel">İptal Et</string>
+    <string name="filter_history_apply">Uygula</string>
+    <string name="filter_history_recent_header">Son</string>
+    <string name="filter_history_title">Filtre Geçmişi</string>
+    <string name="add_action">Ekle</string>
+    <string name="product_attribute_no_options_warning">Bu niteliğin seçeneği yok ve kaldırılacak. Devam etmek istiyor musunuz?</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_off">Kart okuyucuları görmek için konumu açın</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Kart okuyucuları görmek için konuma izin ver</string>
     <string name="woopos_card_reader_bluetooth_unavailable_off">Kart okuyucuları görmek için Bluetooth\'u açın</string>
@@ -16,7 +32,6 @@ Language: tr
     <string name="woopos_refund_error_amount_exceeds_item_remaining">İade tutarı, bu öğe için iade yapılacak tutardan daha fazla</string>
     <string name="woopos_refund_error_amount_exceeds_order_remaining">İade tutarı, bu siparişte iade yapılacak tutardan daha fazla</string>
     <string name="woopos_refund_error_order_not_refundable">Bu siparişin iadesi yapılamaz</string>
-    <string name="woopos_refund_error_item_already_refunded">Bu ürün zaten tamamen iade edildi</string>
     <string name="woopos_refund_error_quantity_exceeds_refundable">Seçilen miktar, iade edilecek kalandan daha fazla</string>
     <string name="woopos_scan_to_pay_pay_in_person_show_qr">Kodu tekrar göster</string>
     <string name="woopos_scan_to_pay_pay_in_person_collect">Kayıtta topla</string>
@@ -651,9 +666,6 @@ Language: tr
     <string name="woopos_refund_creating_error_title">Geri ödeme oluşturulamadı</string>
     <string name="woopos_refund_loading_error_title">Geri ödeme öğeleri yüklenemedi</string>
     <string name="woopos_orders_via_payment_method">Şunun üzerinden: %1$s</string>
-    <string name="woopos_wc_version_sunset_banner_dismiss">WooCommerce güncelleme uyarısını kapat</string>
-    <string name="woopos_wc_version_sunset_banner_message">1 Ağustos 2026 tarihinden itibaren Satış Noktası, WooCommerce 10.5.0 veya sonraki bir sürümünü gerektirecektir. Mağazanızda WooCommerce\'i güncelleyin veya mağaza yöneticinize danışın.</string>
-    <string name="woopos_wc_version_sunset_banner_title">WooCommerce\'i yakında güncelle</string>
     <string name="restart">Yeniden başlat</string>
     <string name="dev_feature_flags">Özellik Bayrakları</string>
     <string name="settings_enable_push_notifications">Anlık Bildirimleri Etkinleştir</string>
@@ -1542,7 +1554,6 @@ Language: tr
     <string name="my_store_widget_stats_title">Performans</string>
     <string name="dashboard_stats_edit_granularity_content_description">Tarih aralığını değiştirme düğmesi</string>
     <string name="images_unavailable_notice">Siteniz Özel olarak işaretlendiğinden görseller kullanılamıyor. Çok Yakında moduna geçerek bunu değiştirebilirsiniz.\n</string>
-    <string name="card_selection_control">Analiz kartı seçimi</string>
     <string name="login_app_password_exit_dialog_cancel">İptal Et</string>
     <string name="login_app_password_exit_dialog_message">Görünüşe göre henüz uygulama bağlantısını onaylamadınız. Çıkış yapmak istediğinizden emin misiniz?</string>
     <string name="blaze_campaign_edit_ad_invalid_image_title">Geçersiz görsel</string>
@@ -3491,7 +3502,7 @@ Language: tr
     <string name="upsells_desc">Şu anda görüntülenen ürün yerine tanıtılan ürünler (yani daha kârlı ürünler)</string>
     <string name="upsells_label">Yukarı satışlar</string>
     <string name="product_detail_linked_products">Bağlı ürünler</string>
-    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="orderdetail_product_lineitem_attribute">%1$s: %2$s</string>
     <string name="login_get_link_by_email">E-posta ile bir oturum açma bağlantısı alın</string>
     <string name="email_not_registered_wpcom">Bu e-posta hesabına bağlı bir WordPress.com hesabı bulamıyoruz.</string>
     <string name="settings_preferences">Tercihler</string>
@@ -3649,6 +3660,7 @@ Language: tr
     <string name="product_sale_date_to">%1$s tarihine kadar</string>
     <string name="product_wip_title">Yeni düzenleme seçenekleri kullanılabilir</string>
     <string name="orderdetail_product_multiple">Ürünler</string>
+    <string name="orderdetail_product_lineitem_quantity_and_price">%1$s x %2$s</string>
     <string name="product_type_external">Harici</string>
     <string name="product_type_simple">Basit</string>
     <string name="product_status_privately_published">Özel olarak yayınlanan</string>
