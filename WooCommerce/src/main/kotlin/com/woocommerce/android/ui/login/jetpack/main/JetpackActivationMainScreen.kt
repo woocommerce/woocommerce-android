@@ -59,7 +59,7 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 import kotlinx.coroutines.delay
 
@@ -86,8 +86,9 @@ fun JetpackActivationMainScreen(
     onGetHelpClick: () -> Unit = {},
     onRetryClick: () -> Unit = {}
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
-        topBar = { Toolbar(onNavigationButtonClick = onCloseClick) }
+        topBar = { Toolbar(onNavigationButtonClick = onCloseClick, showDivider = scrollState.canScrollBackward) }
     ) { paddingValues ->
         val transition = updateTransition(targetState = viewState, label = "State Transition")
 
@@ -97,7 +98,7 @@ fun JetpackActivationMainScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(dimensionResource(id = R.dimen.major_100))
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .height(IntrinsicSize.Max)
         ) {
             JetpackToWooHeader(isError = viewState is JetpackActivationMainViewModel.ViewState.ErrorViewState)
@@ -472,7 +473,7 @@ private class ViewStatePreviewProvider : PreviewParameterProvider<JetpackActivat
 private fun JetpackActivationPreview(
     @PreviewParameter(provider = ViewStatePreviewProvider::class) state: JetpackActivationMainViewModel.ViewState
 ) {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         JetpackActivationMainScreen(
             viewState = state
         )
@@ -518,7 +519,7 @@ private fun JetpackActivationProgressToErrorPreview() {
         state = errorState
     }
 
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         JetpackActivationMainScreen(
             viewState = state,
             onRetryClick = {

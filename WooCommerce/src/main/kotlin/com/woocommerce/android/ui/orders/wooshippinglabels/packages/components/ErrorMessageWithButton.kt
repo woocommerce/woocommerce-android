@@ -20,7 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun ErrorMessageWithButton(
@@ -55,4 +55,4 @@ fun ErrorMessageWithButton(
 
 @Preview
 @Composable
-private fun ErrorMessageWithButtonPreview() = WooThemeWithBackground { ErrorMessageWithButton() }
+private fun ErrorMessageWithButtonPreview() = LegacyWooThemeWithBackground { ErrorMessageWithButton() }

@@ -40,7 +40,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState
 import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState.Generating
 import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState.Regenerate
@@ -253,7 +253,7 @@ fun DefaultUIWithSharingContent() {
         "Hey! 🎵 I just listened to the new album \"Album Title\" by Artist Name, and it's fantastic! Check it out " +
             "now on your favorite music platform and join the conversation using #AlbumTitleByArtistName. Let's " +
             "spread the love for this amazing music! 🎧💕 #NewMusicAlert"
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ProductShareWithAI(
             viewState = ProductSharingViewState(
                 productTitle = "Music Album",
@@ -271,7 +271,7 @@ fun DefaultUIWithRegenerateButton() {
         "Hey! 🎵 I just listened to the new album \"Album Title\" by Artist Name, and it's fantastic! Check it out " +
             "now on your favorite music platform and join the conversation using #AlbumTitleByArtistName. Let's " +
             "spread the love for this amazing music! 🎧💕 #NewMusicAlert"
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ProductShareWithAI(
             viewState = ProductSharingViewState(
                 productTitle = "Music Album",
@@ -289,7 +289,7 @@ fun DefaultUIWithRegenerateButtonAndFeedbackForm() {
         "Hey! 🎵 I just listened to the new album \"Album Title\" by Artist Name, and it's fantastic! Check it out " +
             "now on your favorite music platform and join the conversation using #AlbumTitleByArtistName. Let's " +
             "spread the love for this amazing music! 🎧💕 #NewMusicAlert"
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ProductShareWithAI(
             viewState = ProductSharingViewState(
                 productTitle = "Music Album",
@@ -304,7 +304,7 @@ fun DefaultUIWithRegenerateButtonAndFeedbackForm() {
 @Preview
 @Composable
 fun Generating() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ProductShareWithAI(
             viewState = ProductSharingViewState(
                 productTitle = "Music Album",

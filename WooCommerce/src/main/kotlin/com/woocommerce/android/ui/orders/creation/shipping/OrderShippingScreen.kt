@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import java.math.BigDecimal
 
 @Composable
@@ -272,7 +272,7 @@ fun FieldEditValue(
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO, device = Devices.PIXEL_4)
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.PIXEL_4)
 fun UpdateShippingScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         UpdateShippingScreen(
             name = "Flat Rate",
             method = "Flat Rate",

@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -30,7 +30,7 @@ class OrderSummaryRowTest {
             .getString(R.string.pos_badge)
 
         composeTestRule.setContent {
-            WooThemeWithBackground {
+            WooDesignSystemThemeWithBackground {
                 Box(modifier = Modifier.width(380.dp)) {
                     OrderSummaryRow(
                         order = orderSummaryRowModel(isPosOrder = true),
@@ -66,7 +66,7 @@ class OrderSummaryRowTest {
     @Test
     fun givenNarrowContainer_whenOrderSummaryRowIsRendered_thenMetadataUsesCompactLine() {
         composeTestRule.setContent {
-            WooThemeWithBackground {
+            WooDesignSystemThemeWithBackground {
                 Box(modifier = Modifier.width(332.dp)) {
                     OrderSummaryRow(
                         order = orderSummaryRowModel(),

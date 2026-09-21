@@ -52,7 +52,7 @@ The `USE_ANDROID_CLI=0` fallback paths in this skill (mobile-mcp + adb) have bee
 | CLI block | Status |
 |---|---|
 | `android run` (step 7 install + launch) | Verified — installs and launches in one call. |
-| `android layout --diff` (screen-transition polling) | Verified — captured the `ordersList` transition on a tab switch; diff JSON is a small fraction of a full layout dump. *Note: `--device=<device_id>` was added to the documented invocation post-verification (multi-device fix); the flag is documented by the CLI but the new combination has not been re-run end-to-end.* |
+| `android layout --diff` (screen-transition polling) | Verified — captured the orders-list transition on a tab switch; diff JSON is a small fraction of a full layout dump. *Note: `--device=<device_id>` was added to the documented invocation post-verification (multi-device fix); the flag is documented by the CLI but the new combination has not been re-run end-to-end.* |
 | `android screen capture --annotate` + `screen resolve` (Option B tap) | Verified — both short (`-a`/`-o`) and long (`--annotate`/`--output=…`) flag forms work. |
 | `android docs search` / `docs fetch` | Verified — first invocation auto-downloads a knowledge-base zip (~one-time, a few seconds). |
 | `android emulator list` (step 0 lifecycle) | Partial — `list` runs end-to-end. `create`/`start`/`stop` shape confirmed via `--help` only; no AVD was created during verification, so step 0 is flagged **Experimental** in its heading. |
@@ -133,7 +133,7 @@ Always pass `--device=<device_id>` to keep these calls pinned to the same device
 # `[[:space:]]*` around the colon makes the pattern tolerant of both
 # compact and pretty-printed JSON, so a stray --pretty in the chain
 # doesn't silently break the grep.
-TARGET='"resource-id"[[:space:]]*:[[:space:]]*"com.woocommerce.android.dev:id/ordersList"'
+TARGET='"resource-id"[[:space:]]*:[[:space:]]*"order_list_screen"'
 
 # Baseline snapshot immediately after the action — also greppable: if the
 # transition was instantaneous, the target is already on screen and every
@@ -153,7 +153,7 @@ if ! grep -qE "$TARGET" /tmp/layout_t0.json; then
 fi
 ```
 
-Replace the `TARGET` pattern with the `resource-id`, Compose test tag, or `content-description` of the screen you expect to land on (see the WooCommerce Navigation Reference). Compose test tags surface as `resource-id` because `testTagsAsResourceId` is on, so the example pattern works for both — but `content-description` lives under a different JSON key (typically `content-desc`), so swap the key, not just the value.
+Replace the `TARGET` pattern with the `resource-id`, Compose test tag, or `content-description` of the screen you expect to land on (see the WooCommerce Navigation Reference). Compose test tags surface as `resource-id` because `testTagsAsResourceId` is on, but they appear **verbatim** (`order_list_screen`) while View IDs carry the package prefix (`com.woocommerce.android.dev:id/toolbar`) — use whichever form the target screen actually exposes. `content-description` lives under a different JSON key (typically `content-desc`), so swap the key, not just the value.
 
 ### Fallback: Repeated Layout Reads (no `android` CLI)
 
@@ -230,11 +230,11 @@ When `mobile_list_elements_on_screen` does not return the element you expect, it
 
 `mobile_list_elements_on_screen` can return 50-200+ elements. To find what you need:
 
-- **By resource identifier (most reliable):** Match the `identifier` field (e.g., `com.woocommerce.android.dev:id/ordersList`). Resource IDs are stable across app versions.
+- **By resource identifier (most reliable):** Match the `identifier` field -- `com.woocommerce.android.dev:id/toolbar` for a View, `order_list_screen` for a Compose test tag. Resource IDs are stable across app versions.
 - **By display text:** Match the element's `text` or `label` field. Useful for finding specific list items (e.g., order "#1234").
 - **By position:** Elements are returned in document order (top to bottom, left to right). Toolbar/status bar elements appear first, list items in visual order.
 
-**Compose vs View elements:** View-based screens have stable `com.woocommerce.android.dev:id/*` identifiers. Compose-based screens (Dashboard cards, Settings, newer screens) may lack resource IDs — rely on `contentDescription` or display text instead.
+**Compose vs View elements:** View-based screens have stable `com.woocommerce.android.dev:id/*` identifiers. Compose screens expose their `Modifier.testTag()` values as unprefixed resource IDs (`testTagsAsResourceId` is enabled in both app themes), so a tagged node such as `order_list_screen` is matchable the same way. Compose nodes without a test tag have no resource ID at all — rely on `contentDescription` or display text for those.
 
 ## Authentication and Session Preservation
 
@@ -584,7 +584,7 @@ For all ADB commands, extras, API types, examples, and debugging tips, read `doc
 
 ## WooCommerce Navigation Reference
 
-All resource IDs below use the debug package prefix `com.woocommerce.android.dev:id/`. Compose test tags (applied via `Modifier.testTag()`) also appear as resource IDs in the accessibility tree because `testTagsAsResourceId` is enabled in the app's theme.
+View resource IDs below use the debug package prefix `com.woocommerce.android.dev:id/`. Compose test tags (applied via `Modifier.testTag()`) also appear as resource IDs in the accessibility tree because `testTagsAsResourceId` is enabled in the app's themes, but they appear verbatim with no prefix — `order_list_screen`, not `com.woocommerce.android.dev:id/order_list_screen`.
 
 The app has two distinct navigation domains with different architectures. **Only load the reference files you need for the task** — each file adds significant context cost.
 

@@ -14,7 +14,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
-import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.compose.legacyComposeView
 import com.woocommerce.android.ui.customfields.CustomFieldContentType
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
 import com.woocommerce.android.ui.customfields.editor.CustomFieldsEditorViewModel
@@ -39,7 +39,7 @@ class CustomFieldsFragment : BaseFragment() {
     override val activityAppBarStatus = AppBarStatus.Hidden
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return composeView {
+        return legacyComposeView {
             CustomFieldsScreen(
                 viewModel = viewModel,
                 snackbarHostState = snackbarHostState

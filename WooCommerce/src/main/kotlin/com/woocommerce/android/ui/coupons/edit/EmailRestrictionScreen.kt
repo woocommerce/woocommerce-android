@@ -47,7 +47,8 @@ fun EmailRestrictionScreen(
             Toolbar(
                 title = stringResource(id = R.string.coupon_restrictions_allowed_emails),
                 navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                onNavigationButtonClick = onBackPressed
+                onNavigationButtonClick = onBackPressed,
+                showDivider = scrollState.canScrollBackward,
             )
         }
     ) { paddingValues ->

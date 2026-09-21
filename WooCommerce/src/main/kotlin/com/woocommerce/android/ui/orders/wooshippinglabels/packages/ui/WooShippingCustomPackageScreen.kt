@@ -27,7 +27,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedSpinner
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel
 
 @Composable
@@ -254,7 +254,7 @@ fun WooShippingCustomPackageCreationScreen(
 @Preview
 @Composable
 fun PreviewWooShippingCustomPackageCreationScreen() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooShippingCustomPackageCreationScreen(
             packageName = "Custom Package",
             packageType = "Box",

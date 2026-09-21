@@ -5,15 +5,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.google.android.material.appbar.MaterialToolbar
+    <com.woocommerce.android.ui.compose.designsystem.component.WooDesignSystemToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:elevation="@dimen/appbar_elevation"
+        android:layout_height="@dimen/woo_ds_toolbar_height"
         app:layout_collapseMode="pin"
         app:navigationIcon="@drawable/ic_gridicons_cross_24dp"
-        app:title="@string/feedback_survey_request_title"
-        style="@style/Widget.Woo.Toolbar" />
+        app:title="@string/feedback_survey_request_title" />
 
     <WebView
         android:id="@+id/webView"

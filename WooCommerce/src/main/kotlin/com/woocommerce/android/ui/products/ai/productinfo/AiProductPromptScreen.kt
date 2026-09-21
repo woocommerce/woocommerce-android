@@ -133,7 +133,7 @@ fun AiProductPromptScreen(
 
     Scaffold(
         topBar = {
-            Toolbar(onNavigationButtonClick = onBackButtonClick)
+            Toolbar(onNavigationButtonClick = onBackButtonClick, showDivider = scrollState.canScrollBackward)
         }
     ) { padding ->
         Column(

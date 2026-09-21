@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.details.OrderDetailFragment.CurrencyFormattedAmount
 import com.woocommerce.android.ui.orders.details.OrderDetailFragment.CustomAmountUI
 import java.math.BigDecimal
@@ -142,7 +142,7 @@ fun Header(
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun CustomAmountCardPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         CustomAmountCard(
             CustomAmountUI(
                 name = "Services Rendered",
@@ -157,7 +157,7 @@ fun CustomAmountCardPreview() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun CustomAmountCardWithLongNamePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         CustomAmountCard(
             CustomAmountUI(
                 name = "Very long name for testing very long name",
@@ -172,7 +172,7 @@ fun CustomAmountCardWithLongNamePreview() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun HeaderPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Header(text = stringResource(id = R.string.order_detail_custom_amounts_header))
     }
 }
@@ -181,7 +181,7 @@ fun HeaderPreview() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun CustomAmountCardWithHeaderPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Column {
             Header(text = stringResource(id = R.string.order_detail_custom_amounts_header))
             CustomAmountCard(
