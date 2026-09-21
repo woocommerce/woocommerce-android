@@ -7,6 +7,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.di.AppCoroutineScope
@@ -46,7 +47,8 @@ class AccountRepository @Inject constructor(
     private val siteVisibilityDataStore: VisibleWooSitesDataStore,
     private val dispatchers: CoroutineDispatchers,
     private val pushNotificationRepository: PushNotificationRepository,
-    @DataStoreQualifier(DataStoreType.WOO_POS) private val posDataStore: DataStore<Preferences>
+    @DataStoreQualifier(DataStoreType.WOO_POS) private val posDataStore: DataStore<Preferences>,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) {
     fun getUserAccount(): AccountModel? = accountStore.account.takeIf { it.userId != 0L }
 
@@ -77,6 +79,16 @@ class AccountRepository @Inject constructor(
         } else {
             logoutApplicationPasswordAccount(applicationPasswordSite)
         }
+    }
+
+    suspend fun logoutInvoluntarily(reason: InvoluntaryLogoutReason): Boolean {
+        if (!isUserLoggedIn()) return true
+
+        analyticsTracker.track(
+            AnalyticsEvent.ACCOUNT_INVOLUNTARY_LOGOUT,
+            mapOf(AnalyticsTracker.KEY_REASON to reason.trackingValue)
+        )
+        return logout()
     }
 
     suspend fun closeAccount(): CloseAccountResult {
@@ -179,4 +191,10 @@ class AccountRepository @Inject constructor(
         object Success : CloseAccountResult()
         data class Error(val hasActiveStores: Boolean) : CloseAccountResult()
     }
+}
+
+enum class InvoluntaryLogoutReason(val trackingValue: String) {
+    INVALID_TOKEN("invalid_token"),
+    APPLICATION_PASSWORDS_DISABLED("application_passwords_disabled"),
+    APPLICATION_PASSWORD_UNAUTHORIZED("application_password_unauthorized")
 }
