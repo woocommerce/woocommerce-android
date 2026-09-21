@@ -180,6 +180,14 @@ class VariationListViewModel @Inject constructor(
         triggerEvent(ExitWithResult(VariationListData(viewState.parentProduct?.numVariations)))
     }
 
+    fun onFetchVariationsRetryClicked(loadMore: Boolean) {
+        if (loadMore) {
+            loadVariations(remoteProductId, loadMore = true)
+        } else {
+            refreshVariations(remoteProductId)
+        }
+    }
+
     fun refreshVariations(remoteProductId: Long) {
         viewState = viewState.copy(isRefreshing = true)
         loadVariations(remoteProductId)
@@ -252,19 +260,23 @@ class VariationListViewModel @Inject constructor(
 
     private suspend fun fetchVariations(remoteProductId: Long, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
-            val fetchedVariations = variationRepository.fetchProductVariations(remoteProductId, loadMore)
-            if (fetchedVariations.isEmpty()) {
-                if (!loadMore) {
-                    _variationList.value = emptyList()
-                    viewState = viewState.copy(
-                        isEmptyViewVisible = true,
-                        isVariationsOptionsMenuEnabled = false
-                    )
-                }
-            } else {
-                _variationList.value = combineData(fetchedVariations)
-                viewState = viewState.copy(isVariationsOptionsMenuEnabled = isReadOnlyMode.not())
-            }
+            variationRepository.fetchProductVariations(remoteProductId, loadMore).fold(
+                onSuccess = { fetchedVariations ->
+                    if (fetchedVariations.isEmpty()) {
+                        if (!loadMore) {
+                            _variationList.value = emptyList()
+                            viewState = viewState.copy(
+                                isEmptyViewVisible = true,
+                                isVariationsOptionsMenuEnabled = false
+                            )
+                        }
+                    } else {
+                        _variationList.value = combineData(fetchedVariations)
+                        viewState = viewState.copy(isVariationsOptionsMenuEnabled = isReadOnlyMode.not())
+                    }
+                },
+                onFailure = { triggerEvent(ShowFetchVariationsError(loadMore)) }
+            )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }
@@ -401,6 +413,8 @@ class VariationListViewModel @Inject constructor(
     object ShowBulkUpdateLimitExceededWarning : Event()
 
     object ShowVariationDialog : Event()
+
+    data class ShowFetchVariationsError(val loadMore: Boolean) : Event()
 
     data class ShowGenerateVariationConfirmation(val variationCandidates: List<VariationCandidate>) : Event()
 
