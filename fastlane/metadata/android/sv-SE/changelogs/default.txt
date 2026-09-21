@@ -1,2 +1,0 @@
-25.6:
-Den här versionen gör appen mindre och snabbare. Produktredigering är säkrare: du varnas innan du förlorar ett attributalternativ eller en etikett som du har skrivit och redigeringsalternativen tar inte längre bort andra attribut. I beställningsinformationen visas produkttillägg tydligt, bilderna laddas in tillförlitligt i fler butiker och märket för olästa recensioner fastnar inte längre. Plus kraschkorrigeringar.

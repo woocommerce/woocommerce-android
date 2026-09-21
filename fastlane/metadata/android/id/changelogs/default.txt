@@ -1,2 +1,0 @@
-25.6:
-Rilis ini memperkecil dan mempercepat aplikasi. Pengeditan produk lebih aman: Anda telah diperingatkan sebelum kehilangan pilihan atribut atau tag yang Anda ketik, dan pilihan pengeditan tidak lagi menghapus atribut lainnya. Detail pesanan menunjukkan add-on produk dengan jelas, gambar dimuat dengan lebih baik di lebih banyak toko, dan lencana tinjauan yang belum dibaca tidak lagi terhenti. Plus perbaikan crash.
