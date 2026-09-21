@@ -17,7 +17,7 @@ import androidx.compose.material.Surface as Material2Surface
  * @see <a href="https://developer.android.com/jetpack/compose/themes/material#content-color</a> for more details
  */
 @Composable
-fun WooThemeWithBackground(
+fun LegacyWooThemeWithBackground(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {

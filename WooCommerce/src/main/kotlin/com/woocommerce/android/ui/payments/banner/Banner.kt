@@ -33,7 +33,7 @@ import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.compose.component.WCOverflowMenu
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.jitm.JitmState
 import com.woocommerce.android.util.UiHelpers
 
@@ -217,7 +217,7 @@ private fun BadgeIcon(
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PaymentScreenBannerPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Banner(
             JitmState.Banner(
                 onPrimaryActionClicked = {},
@@ -242,7 +242,7 @@ fun PaymentScreenBannerPreview() {
 @Preview(name = "No badge - Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PaymentScreenBannerNoBadgePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Banner(
             JitmState.Banner(
                 onPrimaryActionClicked = {},

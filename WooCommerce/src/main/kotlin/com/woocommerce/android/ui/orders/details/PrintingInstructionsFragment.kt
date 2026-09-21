@@ -19,6 +19,7 @@ class PrintingInstructionsFragment : DialogFragment(R.layout.fragment_printing_i
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentPrintingInstructionsBinding.bind(view)
+        binding.appBarLayout.stateListAnimator = null
         binding.root.edgeToEdgeHandlingForNavigationAndStatusBar(binding.appBarLayout)
         setupToolbar(binding)
     }

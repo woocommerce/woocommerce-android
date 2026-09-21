@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.SelectionCheck
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 
 @Composable
@@ -188,7 +188,7 @@ fun WooShippingPackageListItemSkeleton(
 @Preview
 @Composable
 fun WooSavedPackageListItemPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooShippingPackageListItem(
             modifier = Modifier,
             packageData = PackageData(
@@ -208,7 +208,7 @@ fun WooSavedPackageListItemPreview() {
 @Preview
 @Composable
 fun WooSavedPackageListItemSkeletonPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooShippingPackageListItemSkeleton()
     }
 }

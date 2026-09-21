@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayError
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayIntro
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocalNetworkPermissionDenied
@@ -278,7 +278,7 @@ private const val BULLET = "\u2022"
 @PreviewLightDark
 @Composable
 fun CardReaderModeIntroPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         CardReaderModeContent(
             state = RemoteTapToPayIntro(
                 onPrimaryActionClicked = {},
@@ -291,7 +291,7 @@ fun CardReaderModeIntroPreview() {
 @PreviewLightDark
 @Composable
 fun CardReaderModeStartingPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         CardReaderModeContent(state = RemoteTapToPayStarting(onPrimaryActionClicked = {}))
     }
 }
@@ -299,7 +299,7 @@ fun CardReaderModeStartingPreview() {
 @PreviewLightDark
 @Composable
 fun CardReaderModeReadyToPairPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         CardReaderModeContent(
             state = RemoteTapToPayReadyToPair(
                 deviceName = "Pixel 7",
@@ -314,7 +314,7 @@ fun CardReaderModeReadyToPairPreview() {
 @PreviewLightDark
 @Composable
 fun CardReaderModeWaitingForPaymentPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         CardReaderModeContent(
             state = RemoteTapToPayWaitingForPayment(
                 tabletName = "iPad Pro",
@@ -327,7 +327,7 @@ fun CardReaderModeWaitingForPaymentPreview() {
 @PreviewLightDark
 @Composable
 fun CardReaderModeErrorPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         CardReaderModeContent(
             state = RemoteTapToPayError(
                 message = "java.net.SocketTimeoutException: Connection timed out",

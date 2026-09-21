@@ -14,7 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.compose.legacyComposeView
 import com.woocommerce.android.ui.login.DynamicEdgeToEdgeActivity
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.util.WooPermissionUtils
@@ -60,7 +60,7 @@ class QrLoginPrologueFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = composeView {
+    ): View = legacyComposeView {
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         QrLoginPrologueScreen(
             cameraPermissionDialog = uiState.cameraPermissionDialog,

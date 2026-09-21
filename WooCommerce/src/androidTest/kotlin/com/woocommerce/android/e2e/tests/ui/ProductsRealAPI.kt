@@ -69,17 +69,19 @@ class ProductsRealAPI : TestBase() {
 
     @After
     fun tearDown() {
-        ProductListScreen()
-            .leaveSearchMode()
-
-        WelcomeScreen
-            .logoutIfNeeded(composeTestRule)
+        try {
+            ProductListScreen(composeTestRule)
+                .leaveSearchMode()
+        } finally {
+            WelcomeScreen
+                .logoutIfNeeded(composeTestRule)
+        }
     }
 
     @Retry(numberOfTimes = 1)
     @Test
     fun e2eRealApiProductsSearchUsual() {
-        ProductListScreen()
+        ProductListScreen(composeTestRule)
             // Make sure all products are listed
             .assertProductCard(productCappuccino)
             .assertProductCard(productSalad)
@@ -112,7 +114,7 @@ class ProductsRealAPI : TestBase() {
     @Retry(numberOfTimes = 1)
     @Test
     fun e2eRealApiProductsSearchBySKU() {
-        ProductListScreen()
+        ProductListScreen(composeTestRule)
             // Search for a simple product SKU
             .openSearchPane()
             .tapSearchSKU()
@@ -144,20 +146,20 @@ class ProductsRealAPI : TestBase() {
             // Filter by "Product type" = "Simple"
             .tapFilters()
             .filterByPropertyAndValue("Product type", "Simple")
-            .showProducts(true)
+            .showProducts()
             .assertProductCard(productSalad)
             .assertProductsCount(1)
             // Check that "Clear" button works
             .tapFilters()
             .clearFilters()
-            .showProducts(true)
+            .showProducts()
             .assertProductCard(productSalad)
             .assertProductCard(productCappuccino)
             .assertProductsCount(2)
             // Filter by "Stock status" = "Out of Stock" and expect to see zero products
             .tapFilters()
             .filterByPropertyAndValue("Stock status", "Out of stock")
-            .showProducts(false)
+            .showProducts()
             .assertProductsCount(0)
     }
 

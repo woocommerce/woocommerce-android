@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackagesState
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PageType
@@ -143,7 +143,7 @@ fun WooShippingSavedPackageContent(
 @Preview
 @Composable
 fun WooShippingSavedPackageScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooShippingSavedPackageScreen(
             packageState = PackagesState.Data(
                 storeOptions = StoreOptionsForPackages.DEFAULT,
@@ -188,7 +188,7 @@ fun WooShippingSavedPackageScreenPreview() {
 @Preview
 @Composable
 fun WooShippingSavedPackageScreenLoadingPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooShippingSavedPackageScreen(
             packageState = PackagesState.Waiting,
             isAddPackageEnabled = false,
@@ -204,7 +204,7 @@ fun WooShippingSavedPackageScreenLoadingPreview() {
 @Preview
 @Composable
 fun WooShippingSavedPackageScreenErrorPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooShippingSavedPackageScreen(
             packageState = PackagesState.Error(),
             isAddPackageEnabled = false,

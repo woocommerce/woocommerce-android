@@ -4,22 +4,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 
 /**
- * Creates a [ComposeView] with the [ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed] composition strategy,
- * and the [WooThemeWithBackground] as the root composable.
- *
- * @param compositionStrategy To override the composition strategy.
- * @param content The content of the [WooThemeWithBackground].
+ * Creates a [ComposeView] with the Store design-system theme root.
  */
 fun Fragment.composeView(
     compositionStrategy: ViewCompositionStrategy = ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
     content: @Composable () -> Unit
 ) = ComposeView(requireContext()).apply {
+    setDesignSystemContent(compositionStrategy, content)
+}
+
+/**
+ * Configures this [ComposeView] with the Store design-system theme root.
+ */
+fun ComposeView.setDesignSystemContent(
+    compositionStrategy: ViewCompositionStrategy = ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
+    content: @Composable () -> Unit
+) {
     setViewCompositionStrategy(compositionStrategy)
 
     setContent {
-        WooThemeWithBackground(content = content)
+        WooDesignSystemThemeWithBackground(content = content)
     }
 }

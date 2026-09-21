@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun WooShippingLabelRefundScreen(viewModel: WooShippingLabelRefundViewModel) {
@@ -140,7 +140,7 @@ private fun LoadingScreen() {
 @Preview("Dark Theme", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun WooShippingLabelRefundScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooShippingLabelRefundScreen(
             purchaseDate = "Feb 19, 2025",
             refundableAmount = "$11.33",

@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.util.WooPermissionUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -46,7 +46,7 @@ class CardReaderModeActivity : AppCompatActivity() {
         window.addFlags(FLAG_KEEP_SCREEN_ON)
 
         setContent {
-            WooThemeWithBackground {
+            LegacyWooThemeWithBackground {
                 CardReaderModeScreen(viewModel = viewModel)
             }
         }

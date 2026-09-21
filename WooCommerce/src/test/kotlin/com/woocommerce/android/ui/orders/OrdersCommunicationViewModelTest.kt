@@ -21,11 +21,13 @@ class OrdersCommunicationViewModelTest : BaseUnitTest() {
         viewModel.onOrderCreated(orderId = 123L)
 
         assertThat(viewModel.createdOrderIdPendingScrollToTop).isEqualTo(123L)
+        assertThat(viewModel.createdOrderIdPendingScrollToTopFlow.value).isEqualTo(123L)
         assertThat(viewModel.createdOrderIdPendingScrollToTop).isEqualTo(123L)
 
         viewModel.onScrollToTopAfterOrderCreationHandled()
 
         assertThat(viewModel.createdOrderIdPendingScrollToTop).isNull()
+        assertThat(viewModel.createdOrderIdPendingScrollToTopFlow.value).isNull()
     }
 
     @Test

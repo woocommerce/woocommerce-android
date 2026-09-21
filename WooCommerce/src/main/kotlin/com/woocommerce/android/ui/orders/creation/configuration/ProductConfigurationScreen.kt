@@ -20,20 +20,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -69,28 +69,24 @@ import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.ui.compose.component.SelectionCheck
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 internal const val OUTLINED_BORDER_OPACITY = 0.14f
 
 @Composable
 fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
     val viewState by viewModel.viewState.collectAsState()
+    val listState = rememberLazyListState()
     BackHandler(onBack = viewModel::onCancel)
     Scaffold(topBar = {
-        TopAppBar(
-            title = { Text(stringResource(id = R.string.product_configuration_title)) },
-            navigationIcon = {
-                IconButton(viewModel::onCancel) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                        contentDescription = stringResource(id = R.string.close)
-                    )
-                }
-            },
-            backgroundColor = colorResource(id = R.color.color_toolbar),
-            elevation = 0.dp,
+        Toolbar(
+            title = stringResource(id = R.string.product_configuration_title),
+            onNavigationButtonClick = viewModel::onCancel,
+            navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+            navigationIconContentDescription = stringResource(id = R.string.close),
+            showDivider = listState.canScrollBackward
         )
     }) { padding ->
         when (val state = viewState) {
@@ -105,7 +101,8 @@ fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
                     onSaveConfigurationClick = viewModel::onSaveConfiguration,
                     modifier = Modifier.padding(padding),
                     configurationIssues = state.configurationIssues,
-                    onSelectChildrenAttributes = viewModel::onSelectChildrenAttributes
+                    onSelectChildrenAttributes = viewModel::onSelectChildrenAttributes,
+                    listState = listState
                 )
             }
         }
@@ -121,13 +118,14 @@ fun ProductConfigurationScreen(
     onUpdateChildrenConfiguration: (Long, String, String) -> Unit,
     onSaveConfigurationClick: () -> Unit,
     onSelectChildrenAttributes: (itemId: Long) -> Unit,
+    listState: LazyListState,
     modifier: Modifier = Modifier,
     configurationIssues: List<String> = emptyList()
 ) {
     Surface {
         Column(modifier = modifier) {
             val isMaxChildrenReached = productConfiguration.isMaxChildrenReached()
-            LazyColumn(Modifier.weight(1f)) {
+            LazyColumn(modifier = Modifier.weight(1f), state = listState) {
                 val configurationItems = productConfiguration.childrenConfiguration?.entries?.toList() ?: emptyList()
                 items(configurationItems) { childMapEntry ->
                     val item = productsInfo.getOrDefault(
@@ -429,7 +427,7 @@ fun QuantityProductItem(
 @Preview
 @Composable
 fun QuantityProductItemPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         QuantityProductItem(
             title = "This is an optional item with a very very very long title that should wrap into two columns",
             imageUrl = null,
@@ -469,7 +467,7 @@ fun OptionalProductItem(
 @Preview
 @Composable
 fun OptionalChildrenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         OptionalProductItem(
             title = "This is an optional item with a very very very long title that should wrap into two columns",
             imageUrl = null,
@@ -484,7 +482,7 @@ fun OptionalChildrenPreview() {
 @Composable
 fun SelectionCheckPreview() {
     var value: Boolean by rememberSaveable { mutableStateOf(false) }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         SelectionCheck(
             isSelected = value,
             onSelectionChange = { newValue -> value = newValue }
@@ -523,7 +521,7 @@ fun ConfigurableListItem(
 @Preview
 @Composable
 fun ConfigurableListItemPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ConfigurableListItem(
             title = "This the product title",
             imageUrl = "not valid url",
@@ -586,7 +584,7 @@ fun OrderProductItem(
 @Preview
 @Composable
 fun OrderProductItemWithInfoPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         OrderProductItem(
             title = "This the product title",
             imageUrl = "not valid url",
@@ -598,7 +596,7 @@ fun OrderProductItemWithInfoPreview() {
 @Preview
 @Composable
 fun OrderProductItemWithoutInfoPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         OrderProductItem(
             title = "This the product title",
             imageUrl = "not valid url",
@@ -693,7 +691,7 @@ fun Stepper(
 @Composable
 fun StepperPreview() {
     var value: Float by rememberSaveable { mutableStateOf(100f) }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Stepper(
             value = value,
             onStepDown = { newValue -> value = newValue },
@@ -751,7 +749,7 @@ fun ConfigurationIssues(
 @Preview
 @Composable
 fun ConfigurationIssuesPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ConfigurationIssues(listOf("Need to select 2 items", "Caipi -> please choose product options"))
     }
 }
@@ -980,7 +978,7 @@ fun VariableSelection(
 @Preview
 @Composable
 fun VariableQuantityProductItemPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         VariableQuantityProductItem(
             title = "This is an item with title",
             imageUrl = null,

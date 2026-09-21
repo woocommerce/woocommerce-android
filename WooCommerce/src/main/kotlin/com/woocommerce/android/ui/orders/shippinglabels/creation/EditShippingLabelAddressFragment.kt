@@ -52,6 +52,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @AndroidEntryPoint
 class EditShippingLabelAddressFragment :
@@ -122,7 +123,7 @@ class EditShippingLabelAddressFragment :
         }
         binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
             requireActivity(),
-            R.drawable.ic_back_24dp
+            DesignSystemR.drawable.woo_ds_ic_regular_arrow_left_24dp
         )
         binding.toolbar.setNavigationOnClickListener {
             onRequestAllowBackPress()
