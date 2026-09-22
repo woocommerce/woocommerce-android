@@ -141,6 +141,7 @@ private fun AmountSection(
                 textColor = MaterialTheme.colorScheme.onSurface,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 contentAlignment = Alignment.CenterStart,
+                fillWidth = true,
             )
         }
     }
@@ -169,6 +170,7 @@ private fun NameSection(
                 onValueChange = onNameChanged,
                 label = stringResource(R.string.woopos_custom_amount_dialog_name_placeholder),
                 textColor = MaterialTheme.colorScheme.onSurface,
+                fillWidth = true,
             )
         }
     }

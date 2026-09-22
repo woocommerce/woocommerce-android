@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -59,6 +60,7 @@ fun WooPosMoneyInputField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     contentAlignment: Alignment = Alignment.CenterStart,
     preselectText: Boolean = false,
+    fillWidth: Boolean = false,
 ) {
     val visualTransformation = remember(currencySymbol, currencyPosition) {
         CurrencyVisualTransformation(
@@ -128,10 +130,10 @@ fun WooPosMoneyInputField(
 
         val density = LocalDensity.current
 
-        val textFieldModifier = if (showLabel) {
-            Modifier.width(with(density) { labelWidth.toDp() + WooPosSpacing.XSmall.value })
-        } else {
-            Modifier.width(IntrinsicSize.Min)
+        val textFieldModifier = when {
+            fillWidth -> Modifier.fillMaxWidth()
+            showLabel -> Modifier.width(with(density) { labelWidth.toDp() + WooPosSpacing.XSmall.value })
+            else -> Modifier.width(IntrinsicSize.Min)
         }
 
         val textFieldColor = if (showLabel) {
@@ -197,6 +199,7 @@ fun WooPosInputField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     contentAlignment: Alignment = Alignment.CenterStart,
     labelMaxLines: Int = 1,
+    fillWidth: Boolean = false,
 ) {
     var labelWidth by remember { mutableIntStateOf(0) }
 
@@ -221,10 +224,10 @@ fun WooPosInputField(
         val density = LocalDensity.current
 
         // that's workaround to keep cursor to the left from the label
-        val textFieldModifier = if (value.isEmpty()) {
-            Modifier.width(with(density) { labelWidth.toDp() + WooPosSpacing.XSmall.value })
-        } else {
-            Modifier.width(IntrinsicSize.Min)
+        val textFieldModifier = when {
+            fillWidth -> Modifier.fillMaxWidth()
+            value.isEmpty() -> Modifier.width(with(density) { labelWidth.toDp() + WooPosSpacing.XSmall.value })
+            else -> Modifier.width(IntrinsicSize.Min)
         }
         BasicTextField(
             value = value,
