@@ -31,7 +31,7 @@ class UpdateOrderListBySelectedStore @Inject constructor(
                     listStore.saveListFetched(
                         listDescriptor = listDescriptor,
                         remoteItemIds = remoteIds,
-                        canLoadMore = remoteIds.size == listDescriptor.config.networkPageSize
+                        canLoadMore = remoteIds.size == WCOrderStore.ORDERS_LIST_FIRST_PAGE_SIZE
                     )
                 }
                 storeOrdersListLastUpdate(listDescriptor.uniqueIdentifier.value)

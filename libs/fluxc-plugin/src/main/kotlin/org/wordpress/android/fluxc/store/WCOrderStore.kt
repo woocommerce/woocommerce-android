@@ -79,6 +79,7 @@ class WCOrderStore @Inject internal constructor(
     companion object {
         const val NUM_ORDERS_PER_FETCH = 15
         private const val IDS_QUERY_CHUNK_SIZE = 200
+        const val ORDERS_LIST_FIRST_PAGE_SIZE = 25
     }
 
     class FetchOrderListPayload(
@@ -1099,7 +1100,7 @@ class WCOrderStore @Inject internal constructor(
         listDescriptor: WCOrderListDescriptor,
         deleteOldData: Boolean = false
     ): WooResult<List<OrderEntity>> {
-        val response = wcOrderRestClient.fetchOrdersListFirstPage(listDescriptor)
+        val response = wcOrderRestClient.fetchOrdersListFirstPage(listDescriptor, ORDERS_LIST_FIRST_PAGE_SIZE)
         return if (response.isError) {
             WooResult(WooError(API_ERROR, SERVER_ERROR, response.error.message))
         } else {
