@@ -25,7 +25,10 @@ developer.properties
 
 # Crash Logging Configuration
 fabric.properties
+
 # Legacy Sentry secrets file: no longer generated, but may linger in older checkouts
+#
+# See https://linear.app/a8c/issue/AINFRA-3221
 sentry.properties
 
 # Local configuration file (sdk path, etc)
