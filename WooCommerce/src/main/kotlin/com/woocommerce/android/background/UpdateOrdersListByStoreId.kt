@@ -18,27 +18,23 @@ class UpdateOrdersListByStoreId @Inject constructor(
                 Exception("${UpdateOrdersListByStoreId::class.java.name} There is no list descriptor")
             )
         val response = ordersStore.fetchOrdersListFirstPage(listDescriptor, deleteOldData)
-        val orders = response.model
+        val firstPage = response.model
 
         return when {
             response.isError -> Result.failure(
                 Exception("${UpdateOrdersListByStoreId::class.java.name} ${response.error.message}")
             )
 
-            orders == null -> Result.failure(
+            firstPage == null -> Result.failure(
                 Exception("${UpdateOrdersListByStoreId::class.java.name} There is no orders")
             )
 
             else -> {
-                orders
-                    .map { it.orderId }
-                    .let { remoteIds ->
-                        listStore.saveListFetched(
-                            listDescriptor = listDescriptor,
-                            remoteItemIds = remoteIds,
-                            canLoadMore = remoteIds.size == WCOrderStore.ORDERS_LIST_FIRST_PAGE_SIZE
-                        )
-                    }
+                listStore.saveListFetched(
+                    listDescriptor = listDescriptor,
+                    remoteItemIds = firstPage.orders.map { it.orderId },
+                    canLoadMore = firstPage.canLoadMore
+                )
 
                 storeOrdersListLastUpdate(listDescriptor.uniqueIdentifier.value)
                 Result.success(Unit)

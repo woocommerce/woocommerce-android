@@ -79,8 +79,13 @@ class WCOrderStore @Inject internal constructor(
     companion object {
         const val NUM_ORDERS_PER_FETCH = 15
         private const val IDS_QUERY_CHUNK_SIZE = 200
-        const val ORDERS_LIST_FIRST_PAGE_SIZE = 25
+        private const val ORDERS_LIST_FIRST_PAGE_SIZE = 25
     }
+
+    data class OrdersListFirstPage(
+        val orders: List<OrderEntity>,
+        val canLoadMore: Boolean
+    )
 
     class FetchOrderListPayload(
         val listDescriptor: WCOrderListDescriptor,
@@ -1099,7 +1104,7 @@ class WCOrderStore @Inject internal constructor(
     suspend fun fetchOrdersListFirstPage(
         listDescriptor: WCOrderListDescriptor,
         deleteOldData: Boolean = false
-    ): WooResult<List<OrderEntity>> {
+    ): WooResult<OrdersListFirstPage> {
         val response = wcOrderRestClient.fetchOrdersListFirstPage(listDescriptor, ORDERS_LIST_FIRST_PAGE_SIZE)
         return if (response.isError) {
             WooResult(WooError(API_ERROR, SERVER_ERROR, response.error.message))
@@ -1127,7 +1132,7 @@ class WCOrderStore @Inject internal constructor(
 
             @Suppress("SpreadOperator")
             insertOrder(listDescriptor.site.localId(), *result.toTypedArray())
-            WooResult(orders)
+            WooResult(OrdersListFirstPage(orders, canLoadMore = orders.size == ORDERS_LIST_FIRST_PAGE_SIZE))
         }
     }
 
