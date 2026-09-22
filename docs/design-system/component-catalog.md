@@ -111,6 +111,21 @@ split module keeps the component API clean:
   provides Compose preview coverage and an interactive Developer Options catalog; screenshot wiring
   can be added separately when the module has an approved screenshot-test setup.
 
+### Button label policy
+
+Button labels default to at most two lines and ellipsize any overflow. Set `maxLines = Int.MAX_VALUE` to allow
+unlimited wrapping. This bounded default is an Android design-system choice: legacy WC buttons
+and the JITM button before its design-system migration allowed wrapping without a line cap.
+
+[Material 3 button guidance](https://m3.material.io/components/buttons/guidelines) generally calls for a
+single-line label and says labels must not be truncated. Its
+[accessibility guidance](https://m3.material.io/components/buttons/accessibility) asks authors to keep labels
+concise enough to fit within two lines at 200% text size. The two-line default alone cannot guarantee that:
+screens must allow more lines or reflow, shorten the label, or provide one-tap access to the full text when
+truncation occurs. Vertical padding remains unchanged pending measured, per-size design guidance.
+At 200% text size, the current no-icon Outlined Small JITM CTA uses two lines and ellipsizes at the 140dp
+content width available inside a 320dp banner; narrower parent constraints can truncate it further.
+
 ## Preview Standard
 
 Use `androidx.compose.ui.tooling.preview.PreviewLightDark` for design-system component previews.
@@ -144,7 +159,7 @@ component split does not add module screenshot infrastructure.
 | Component | Android API | Status | Notes |
 | --- | --- | --- | --- |
 | Badges | `WooBadge`, `WooBadgeTone`, `WooBadgeColors`, `WooBadgeDefaults` | production | Compact label badge with optional decorative leading icon and status tones including `NeutralOutlined`. Prefer semantic tones; use `WooBadgeDefaults.colors(...)` only when a feature must preserve an established custom palette. |
-| Buttons | `WooFilledButton`, `WooFilledTonalButton`, `WooOutlinedButton`, `WooButtonSize` | production | Figma-backed Fill/Tonal/Outline treatments exposed with Material 3-aligned Filled, Filled Tonal, and Outlined API names. Supports optional leading icon, enabled/disabled state, medium/small sizes, and 48dp touch target preservation. Use one Filled button per screen, Filled Tonal for alternatives, and Outlined for low-emphasis actions. |
+| Buttons | `WooFilledButton`, `WooFilledTonalButton`, `WooOutlinedButton`, `WooButtonSize` | production | Figma-backed Fill/Tonal/Outline treatments exposed with Material 3-aligned Filled, Filled Tonal, and Outlined API names. Supports optional leading icon, enabled/disabled state, medium/small sizes, a two-line default label limit with caller overrides, and 48dp touch target preservation. Use one Filled button per screen, Filled Tonal for alternatives, and Outlined for low-emphasis actions. |
 | Cell | `WooCell`, `WooSettingsRow` | production | Surface Bright row shell with On Surface titles, On Surface Variant descriptions/slots, and a settings convenience. Keep one row-level action; avoid duplicate child semantics. Figma `Cell Content` maps to internal row content styling, not a standalone public API. |
 | Checkbox | `WooCheckbox` | production | Controlled Material 3 checkbox wrapper. Caller owns label and group semantics. |
 | Chip | `WooFilterChip` | production | Controlled filter chip with optional icons. Resting uses Surface Bright plus Tint On Surface 16; selected content uses On Secondary Container. |

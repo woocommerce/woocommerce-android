@@ -25,6 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -40,6 +42,7 @@ fun WooFilledButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     size: WooButtonSize = WooButtonSize.Medium,
+    maxLines: Int = DEFAULT_BUTTON_LABEL_MAX_LINES,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
     WooButton(
@@ -48,6 +51,7 @@ fun WooFilledButton(
         modifier = modifier,
         enabled = enabled,
         size = size,
+        maxLines = maxLines,
         style = WooButtonStyle.Filled,
         leadingIcon = leadingIcon,
     )
@@ -60,6 +64,7 @@ fun WooFilledTonalButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     size: WooButtonSize = WooButtonSize.Medium,
+    maxLines: Int = DEFAULT_BUTTON_LABEL_MAX_LINES,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
     WooButton(
@@ -68,6 +73,7 @@ fun WooFilledTonalButton(
         modifier = modifier,
         enabled = enabled,
         size = size,
+        maxLines = maxLines,
         style = WooButtonStyle.FilledTonal,
         leadingIcon = leadingIcon,
     )
@@ -80,6 +86,7 @@ fun WooOutlinedButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     size: WooButtonSize = WooButtonSize.Medium,
+    maxLines: Int = DEFAULT_BUTTON_LABEL_MAX_LINES,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
     WooButton(
@@ -88,6 +95,7 @@ fun WooOutlinedButton(
         modifier = modifier,
         enabled = enabled,
         size = size,
+        maxLines = maxLines,
         style = WooButtonStyle.Outlined,
         leadingIcon = leadingIcon,
     )
@@ -100,6 +108,7 @@ private fun WooButton(
     modifier: Modifier,
     enabled: Boolean,
     size: WooButtonSize,
+    maxLines: Int,
     style: WooButtonStyle,
     leadingIcon: @Composable (() -> Unit)?,
 ) {
@@ -114,6 +123,7 @@ private fun WooButton(
         WooButtonContent(
             text = text,
             buttonSpec = buttonSpec,
+            maxLines = maxLines,
             leadingIcon = leadingIcon,
         )
     }
@@ -156,6 +166,7 @@ private fun WooButton(
 private fun WooButtonContent(
     text: String,
     buttonSpec: WooButtonSpec,
+    maxLines: Int,
     leadingIcon: @Composable (() -> Unit)?,
 ) {
     if (leadingIcon != null) {
@@ -171,6 +182,8 @@ private fun WooButtonContent(
         text = text,
         textAlign = TextAlign.Center,
         style = buttonSpec.textStyle,
+        maxLines = maxLines,
+        overflow = TextOverflow.Ellipsis,
     )
 }
 
@@ -233,6 +246,7 @@ private fun LeadingButtonIcon() {
 
 @Suppress("UnusedPrivateMember")
 @PreviewLightDark
+@Preview(name = "Label behavior at 200%", widthDp = 360, fontScale = 2f, showBackground = true)
 @Composable
 private fun WooButtonPreview() {
     WooDesignSystemTheme {
@@ -272,6 +286,32 @@ internal fun WooButtonDemo(
             leadingIcon = { LeadingButtonIcon() },
         )
         WooFilledButton(text = "Disabled", onClick = {}, enabled = false)
+        WooOutlinedButton(
+            text = "Compact small button label",
+            onClick = {},
+            modifier = Modifier.width(COMPACT_LABEL_PREVIEW_WIDTH),
+            size = WooButtonSize.Small,
+        )
+        WooFilledButton(
+            text = "Default medium label limited to two lines",
+            onClick = {},
+            modifier = Modifier.width(LONG_LABEL_PREVIEW_WIDTH),
+            leadingIcon = { LeadingButtonIcon() },
+        )
+        WooFilledTonalButton(
+            text = "Explicit one-line label",
+            onClick = {},
+            modifier = Modifier.width(LONG_LABEL_PREVIEW_WIDTH),
+            maxLines = 1,
+            leadingIcon = { LeadingButtonIcon() },
+        )
+        WooOutlinedButton(
+            text = "Explicit unlimited label wraps without an ellipsis",
+            onClick = {},
+            modifier = Modifier.width(LONG_LABEL_PREVIEW_WIDTH),
+            maxLines = Int.MAX_VALUE,
+            leadingIcon = { LeadingButtonIcon() },
+        )
     }
 }
 
@@ -301,3 +341,6 @@ private data class WooButtonSpec(
 
 private val MEDIUM_BUTTON_VISUAL_HEIGHT = 56.dp
 private val SMALL_BUTTON_VISUAL_HEIGHT = 32.dp
+private val COMPACT_LABEL_PREVIEW_WIDTH = 132.dp
+private val LONG_LABEL_PREVIEW_WIDTH = 200.dp
+private const val DEFAULT_BUTTON_LABEL_MAX_LINES = 2
