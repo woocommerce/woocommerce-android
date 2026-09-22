@@ -938,6 +938,9 @@ class OrderDetailViewModel @Inject constructor(
         val orderRefunds = loadOrderRefunds()
         val orderProducts = loadOrderProducts(orderRefunds)
 
+        if (wooShippingShipments.isVisible && _wooShippingShipments.value.isNullOrEmpty()) {
+            tracker.trackOrderEligibleForShippingLabelCreation(awaitOrder().status.value, true)
+        }
         _wooShippingShipments.value = wooShippingShipments.let { if (it.isVisible) it.list else emptyList() }
 
         _shippingLabels.value = shippingLabels.let { if (it.isVisible) it.list else emptyList() }

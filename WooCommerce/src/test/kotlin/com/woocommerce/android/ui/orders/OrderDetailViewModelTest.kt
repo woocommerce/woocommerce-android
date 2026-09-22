@@ -47,6 +47,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.GetShipments
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingEligibilityDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.EligibilityResponse
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
@@ -86,6 +87,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
@@ -236,6 +238,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             it
         }
         doReturn(site).whenever(selectedSite).getIfExists()
+        doReturn(site).whenever(selectedSite).get()
 
         pluginsInfo.clear()
 
@@ -924,29 +927,59 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(isCreateShippingLabelButtonVisible).isTrue()
+            verify(orderDetailTracker).trackOrderEligibleForShippingLabelCreation(order.status.value, false)
         }
 
     @Test
     fun `given using new Woo Shipping plugin, when order is eligible, then show shipments section`() = testBlocking {
+        val unpaidCashOrder = order.copy(datePaid = null, isCashPayment = true)
+        val shipment = ShippingLabelSampleData.getShippingLabelUIModel()
         whenever(getShippingLabelSupport())
             .doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
         whenever(getWooShippingShipments.invoke(any()))
-            .doReturn(listOf(ShippingLabelSampleData.getShippingLabelUIModel()))
+            .doReturn(listOf(shipment))
         whenever(shippingEligibilityDataStore.observeEligibility(any())).doReturn(flowOf(true))
-        whenever(orderDetailRepository.getOrderById(any())).doReturn(order)
-        whenever(orderDetailRepository.fetchOrderById(any())).doReturn(order)
+        whenever(shippingLabelRepository.fetchShippingEligibility(selectedSite.get(), ORDER_ID))
+            .doReturn(WooResult(EligibilityResponse(isEligible = true)))
+        whenever(orderDetailRepository.getOrderById(any())).doReturn(unpaidCashOrder)
+        whenever(orderDetailRepository.fetchOrderById(any())).doReturn(unpaidCashOrder)
+        whenever(orderDetailRepository.fetchOrderNotes(ORDER_ID)).doReturn(true)
 
         var isCreateShippingLabelButtonVisible: Boolean? = null
         viewModel.viewStateData.observeForever { _, new ->
             isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
         }
-        val shipments = viewModel.shippingLabels.captureValues()
+        val shipments = viewModel.wooShippingShipments.runAndCaptureValues {
+            viewModel.start()
+        }
 
-        viewModel.start()
-
-        assertThat(isCreateShippingLabelButtonVisible).isFalse
-        assertThat(shipments).isNotEmpty
+        assertThat(isCreateShippingLabelButtonVisible).isFalse()
+        assertThat(shipments.last()).containsExactly(shipment)
+        verify(shippingLabelRepository).fetchShippingEligibility(selectedSite.get(), ORDER_ID)
+        verify(getWooShippingShipments, times(2)).invoke(unpaidCashOrder)
+        verify(orderDetailTracker).trackOrderEligibleForShippingLabelCreation(unpaidCashOrder.status.value, true)
     }
+
+    @Test
+    fun `given using new Woo Shipping plugin, when order is ineligible, then do not track eligibility`() =
+        testBlocking {
+            whenever(getShippingLabelSupport())
+                .doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
+            whenever(shippingEligibilityDataStore.observeEligibility(any())).doReturn(flowOf(false))
+            whenever(shippingLabelRepository.fetchShippingEligibility(selectedSite.get(), ORDER_ID))
+                .doReturn(WooResult(EligibilityResponse(isEligible = false)))
+            whenever(orderDetailRepository.getOrderById(any())).doReturn(order)
+            whenever(orderDetailRepository.fetchOrderById(any())).doReturn(order)
+            whenever(orderDetailRepository.fetchOrderNotes(ORDER_ID)).doReturn(true)
+
+            val shipments = viewModel.wooShippingShipments.runAndCaptureValues {
+                viewModel.start()
+            }
+
+            assertThat(shipments.last()).isEmpty()
+            verify(shippingEligibilityDataStore, times(2)).observeEligibility(ORDER_ID)
+            verify(orderDetailTracker, never()).trackOrderEligibleForShippingLabelCreation(any(), any())
+        }
 
     @Test
     fun `hide shipping label creation if wcs is older than supported version`() =
