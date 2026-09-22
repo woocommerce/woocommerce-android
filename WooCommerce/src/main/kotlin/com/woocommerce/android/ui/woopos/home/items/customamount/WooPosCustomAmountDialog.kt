@@ -6,9 +6,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -27,10 +30,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -65,8 +70,17 @@ fun WooPosCustomAmountFormScreen(
     BackHandler(enabled = true) { onBackClick() }
 
     val state by viewModel.state.collectAsState()
+    val submitButtonKeyboardGap = when (WindowInsets.ime.getBottom(LocalDensity.current) > 0) {
+        true -> WooPosSpacing.Medium.value
+        false -> 0.dp
+    }
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .navigationBarsPadding()
+            .imePadding()
+    ) {
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -90,7 +104,7 @@ fun WooPosCustomAmountFormScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = WooPosSpacing.Medium.value)
-                    .navigationBarsPadding(),
+                    .padding(bottom = submitButtonKeyboardGap),
                 state = state,
                 onSubmit = viewModel::onSubmit,
             )
