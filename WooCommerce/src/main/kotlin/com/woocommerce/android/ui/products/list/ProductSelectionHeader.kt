@@ -29,7 +29,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
 import com.woocommerce.android.ui.compose.designsystem.component.WooIconButton
-import com.woocommerce.android.ui.compose.designsystem.icons.Ellipsis
+import com.woocommerce.android.ui.compose.designsystem.icons.EllipsisVertical
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 import com.woocommerce.android.ui.compose.designsystem.icons.Xmark
 import com.woocommerce.android.util.StringUtils
@@ -108,7 +108,7 @@ private fun ProductSelectionOverflowMenu(
 
     Box {
         WooIconButton(
-            imageVector = WooIcons.Regular.Ellipsis,
+            imageVector = WooIcons.Regular.EllipsisVertical,
             contentDescription = stringResource(R.string.more_options),
             onClick = { isExpanded = true },
             modifier = Modifier.testTag(ProductListTestTags.SELECTION_OVERFLOW),

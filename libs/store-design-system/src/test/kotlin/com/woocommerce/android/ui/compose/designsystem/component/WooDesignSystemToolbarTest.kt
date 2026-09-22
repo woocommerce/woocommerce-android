@@ -605,7 +605,7 @@ class WooDesignSystemToolbarTest {
         assertThat(overflowButton.background).isInstanceOf(RippleDrawable::class.java)
         assertThat(overflowButton.getTag(R.id.woo_ds_toolbar_action_view)).isEqualTo(true)
         assertThat(shadowOf(overflowButton.drawable).createdFromResId)
-            .isEqualTo(R.drawable.woo_ds_ic_regular_ellipsis_24dp)
+            .isEqualTo(R.drawable.woo_ds_ic_regular_ellipsis_vertical_24dp)
         val actualTint = checkNotNull(ImageViewCompat.getImageTintList(overflowButton))
         val disabledState = intArrayOf(-android.R.attr.state_enabled)
         assertThat(actualTint.isStateful).isEqualTo(expectedTint.isStateful)
@@ -662,7 +662,7 @@ class WooDesignSystemToolbarTest {
         assertThat(overflowButton.background).isSameAs(overflowBackground)
         assertThat(overflowButton.getTag(R.id.woo_ds_toolbar_action_view)).isEqualTo(true)
         assertThat(shadowOf(overflowButton.drawable).createdFromResId)
-            .isEqualTo(R.drawable.woo_ds_ic_regular_ellipsis_24dp)
+            .isEqualTo(R.drawable.woo_ds_ic_regular_ellipsis_vertical_24dp)
         assertThat(overflowLayoutParams.isOverflowButton).isTrue()
     }
 

@@ -37,7 +37,7 @@
 
     <style name="Widget.Woo.DesignSystem.Toolbar.OverflowButton" parent="Widget.AppCompat.ActionButton.Overflow">
         <!-- android:src must take precedence over AppCompat's inherited srcCompat overflow glyph. -->
-        <item name="android:src">@drawable/woo_ds_ic_regular_ellipsis_24dp</item>
+        <item name="android:src">@drawable/woo_ds_ic_regular_ellipsis_vertical_24dp</item>
         <item name="tint">@color/woo_ds_toolbar_icon_button_tint</item>
     </style>
 
