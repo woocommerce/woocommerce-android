@@ -10,8 +10,12 @@ concurrency:
 
 jobs:
   review-recommendation:
-    # Skip draft PRs and PRs opened from forks. GitHub doesn't give fork PRs access to secrets, so there would be no Anthropic API key.
-    if: github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository
+    # Skip draft PRs, PRs opened from forks, and Dependabot PRs. GitHub doesn't give those runs access to secrets, so there
+    # would be no Anthropic API key, and Dependabot runs also downgrade `pull-requests: write` to read, so labelling would fail.
+    if: >-
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-26.04
     timeout-minutes: 20
     permissions:
