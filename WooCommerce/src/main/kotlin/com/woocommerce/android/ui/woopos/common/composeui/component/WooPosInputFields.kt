@@ -59,14 +59,14 @@ fun WooPosMoneyInputField(
     contentAlignment: Alignment = Alignment.CenterStart,
     preselectText: Boolean = false,
 ) {
-    val visualTransformation = remember {
+    val visualTransformation = remember(currencySymbol, currencyPosition) {
         CurrencyVisualTransformation(
             currencySymbol = currencySymbol,
             currencyPosition = currencyPosition
         )
     }
 
-    val visualTransformationWithoutCurrency = remember {
+    val visualTransformationWithoutCurrency = remember(currencyPosition) {
         CurrencyVisualTransformation(
             currencySymbol = "",
             currencyPosition = currencyPosition
