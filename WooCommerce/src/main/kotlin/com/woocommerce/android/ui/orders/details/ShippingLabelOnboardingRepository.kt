@@ -1,25 +1,17 @@
 package com.woocommerce.android.ui.orders.details
 
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import javax.inject.Inject
 
 class ShippingLabelOnboardingRepository @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
+    private val getShippingLabelSupport: GetShippingLabelSupport,
     private val appSharedPrefs: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
 ) {
-    companion object {
-        // The required version to support shipping label creation
-        const val SUPPORTED_WCS_VERSION = "1.25.11"
-        const val SUPPORTED_WC_SHIPPING_VERSION = "1.0.6"
-        const val SUPPORTED_WCS_CURRENCY = "USD"
-        const val SUPPORTED_WCS_COUNTRY = "US"
-    }
-
-    val shippingPluginSupport: ShippingLabelSupport by lazy { getShippingLabelSupport() }
+    private val shippingPluginSupport by lazy { getShippingLabelSupport() }
 
     suspend fun shouldShowWcShippingBanner(order: Order): Boolean =
         !shippingPluginSupport.isSupported() &&
@@ -42,32 +34,8 @@ class ShippingLabelOnboardingRepository @Inject constructor(
         }
     }
 
-    private fun getShippingLabelSupport(): ShippingLabelSupport {
-        orderDetailRepository.getWooShippingPluginInfo()
-            .takeIf {
-                val pluginVersion = it.version ?: "0.0.0"
-                it.isOperational &&
-                    pluginVersion.semverCompareTo(SUPPORTED_WC_SHIPPING_VERSION) >= 0
-            }?.let {
-                return ShippingLabelSupport.WC_SHIPPING_SUPPORTED
-            }
-
-        orderDetailRepository.getWooServicesPluginInfo()
-            .takeIf {
-                val pluginVersion = it.version ?: "0.0.0"
-                it.isOperational && pluginVersion.semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
-            }?.let { return ShippingLabelSupport.WCS_SUPPORTED }
-
-        return ShippingLabelSupport.NOT_SUPPORTED
-    }
-
-    enum class ShippingLabelSupport {
-        NOT_SUPPORTED,
-        WC_SHIPPING_SUPPORTED,
-        WCS_SUPPORTED;
-
-        fun isSupported() = this == WCS_SUPPORTED || this == WC_SHIPPING_SUPPORTED
-        fun isWooTaxLegacySupported() = this == WCS_SUPPORTED
-        fun isWooShippingSupported() = this == WC_SHIPPING_SUPPORTED
+    companion object {
+        const val SUPPORTED_WCS_CURRENCY = "USD"
+        const val SUPPORTED_WCS_COUNTRY = "US"
     }
 }

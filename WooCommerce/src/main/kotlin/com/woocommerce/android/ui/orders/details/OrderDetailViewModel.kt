@@ -108,6 +108,7 @@ class OrderDetailViewModel @Inject constructor(
     private val paymentsFlowTracker: PaymentsFlowTracker,
     private val tracker: OrderDetailTracker,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
+    private val getShippingLabelSupport: GetShippingLabelSupport,
     private val shippingLabelRepository: WooShippingLabelRepository,
     private val eligibilityDataStore: WooShippingEligibilityDataStore,
     private val getWooShippingShipments: GetShipments,
@@ -220,9 +221,10 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private var pluginsInformation: Map<String, WooPlugin> = HashMap()
+    private val shippingPluginSupport by lazy { getShippingLabelSupport() }
 
     private val isRevampWooShippingEnabled: Boolean
-        get() = shippingLabelOnboardingRepository.shippingPluginSupport.isWooShippingSupported()
+        get() = shippingPluginSupport.isWooShippingSupported()
 
     init {
         launch {
@@ -848,7 +850,7 @@ class OrderDetailViewModel @Inject constructor(
     private fun fetchSLCreationEligibilityAsync() = async {
         if (isRevampWooShippingEnabled) {
             shippingLabelRepository.fetchShippingEligibility(selectedSite.get(), navArgs.orderId)
-        } else if (shippingLabelOnboardingRepository.shippingPluginSupport.isSupported()) {
+        } else if (shippingPluginSupport.isSupported()) {
             orderDetailRepository.fetchSLCreationEligibility(navArgs.orderId)
         }
         orderDetailsTransactionLauncher.onPackageCreationEligibleFetched()
@@ -890,7 +892,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
-        if (shippingLabelOnboardingRepository.shippingPluginSupport.isWooTaxLegacySupported()) {
+        if (shippingPluginSupport.isWooTaxLegacySupported()) {
             orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId, isRevampWooShippingEnabled)
         }
         orderDetailsTransactionLauncher.onShippingLabelFetchingCompleted()
@@ -981,7 +983,7 @@ class OrderDetailViewModel @Inject constructor(
 
     private suspend fun isOrderEligibleForLegacySLCreation() =
         !isRevampWooShippingEnabled &&
-            shippingLabelOnboardingRepository.shippingPluginSupport.isSupported() &&
+            shippingPluginSupport.isSupported() &&
             orderDetailRepository.isOrderEligibleForSLCreation(awaitOrder().id)
 
     private suspend fun shouldShowThankYouNoteButton() =
