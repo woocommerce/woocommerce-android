@@ -183,7 +183,7 @@ private fun WooButtonContent(
         textAlign = TextAlign.Center,
         style = buttonSpec.textStyle,
         maxLines = maxLines,
-        overflow = if (maxLines == Int.MAX_VALUE) TextOverflow.Clip else TextOverflow.Ellipsis,
+        overflow = TextOverflow.Ellipsis,
     )
 }
 

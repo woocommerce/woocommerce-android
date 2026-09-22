@@ -113,8 +113,8 @@ split module keeps the component API clean:
 
 ### Button label policy
 
-Button labels default to at most two lines. Finite `maxLines` values ellipsize; `Int.MAX_VALUE` allows unlimited
-wrapping with clipped overflow. This bounded default is an Android design-system choice: legacy WC buttons
+Button labels default to at most two lines and ellipsize any overflow. Set `maxLines = Int.MAX_VALUE` to allow
+unlimited wrapping. This bounded default is an Android design-system choice: legacy WC buttons
 and the JITM button before its design-system migration allowed wrapping without a line cap.
 
 [Material 3 button guidance](https://m3.material.io/components/buttons/guidelines) generally calls for a
