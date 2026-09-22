@@ -5,6 +5,7 @@
 25.8
 -----
 - [*] The app no longer signs you out when a single store endpoint returns an authorization error [https://github.com/woocommerce/woocommerce-android/pull/16571]
+- [*] Long button labels now use at most two lines before showing an ellipsis.
 - [Internal] Push notification analytics now attribute store and plan properties to the notification's origin site instead of the currently selected store [https://github.com/woocommerce/woocommerce-android/pull/16575]
 - [*] Background order sync now fetches 25 orders at a time instead of 60, so large stores no longer time out and retry [https://github.com/woocommerce/woocommerce-android/pull/16597]
 - [*****] Refreshed My Store, Orders, Products, and the More menu with the new design system — new top app bars, bottom navigation, list styling, and icons [https://github.com/woocommerce/woocommerce-android/pull/16322]
