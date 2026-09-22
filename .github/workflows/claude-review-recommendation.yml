@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [opened, reopened, ready_for_review, synchronize]
 
+concurrency:
+  group: review-recommendation-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   review-recommendation:
     # Skip draft PRs and PRs opened from forks. GitHub doesn't give fork PRs access to secrets, so there would be no Anthropic API key.
