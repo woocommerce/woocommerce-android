@@ -10,3 +10,4 @@ google-services.json
 *.jks
 local.properties
 secrets.properties
+sentry.properties

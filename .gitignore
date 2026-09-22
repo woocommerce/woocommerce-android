@@ -25,6 +25,8 @@ developer.properties
 
 # Crash Logging Configuration
 fabric.properties
+# Legacy Sentry secrets file: no longer generated, but may linger in older checkouts
+sentry.properties
 
 # Local configuration file (sdk path, etc)
 local.properties
