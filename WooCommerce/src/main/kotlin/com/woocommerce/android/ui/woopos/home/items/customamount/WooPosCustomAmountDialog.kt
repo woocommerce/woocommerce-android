@@ -84,16 +84,29 @@ fun WooPosCustomAmountFormScreen(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = WooPosSpacing.Medium.value),
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
         ) {
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-            AmountSection(state = state, onAmountChanged = viewModel::onAmountChanged)
-            HorizontalDivider(color = WooPosTheme.colors.outlineVariant)
+            AmountSection(
+                state = state,
+                onAmountChanged = viewModel::onAmountChanged,
+                modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+            )
+            HorizontalDivider(
+                color = WooPosTheme.colors.outlineVariant,
+                modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+            )
             TaxesToggle(isTaxable = state.isTaxable, onToggled = viewModel::onTaxableToggled)
-            HorizontalDivider(color = WooPosTheme.colors.outlineVariant)
-            NameSection(value = state.name, onNameChanged = viewModel::onNameChanged)
+            HorizontalDivider(
+                color = WooPosTheme.colors.outlineVariant,
+                modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+            )
+            NameSection(
+                value = state.name,
+                onNameChanged = viewModel::onNameChanged,
+                modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+            )
         }
 
         Surface(
@@ -116,8 +129,9 @@ fun WooPosCustomAmountFormScreen(
 private fun AmountSection(
     state: WooPosCustomAmountDialogState,
     onAmountChanged: (BigDecimal?) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Column {
+    Column(modifier = modifier) {
         WooPosText(
             text = stringResource(R.string.woopos_custom_amount_dialog_amount_label),
             style = WooPosTypography.BodySmall,
@@ -151,8 +165,9 @@ private fun AmountSection(
 private fun NameSection(
     value: String,
     onNameChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Column {
+    Column(modifier = modifier) {
         WooPosText(
             text = stringResource(R.string.woopos_custom_amount_dialog_name_label),
             style = WooPosTypography.BodySmall,
@@ -189,7 +204,7 @@ private fun TaxesToggle(
                 role = Role.Switch,
                 onValueChange = onToggled,
             )
-            .padding(vertical = WooPosSpacing.Small.value),
+            .padding(horizontal = WooPosSpacing.Medium.value, vertical = WooPosSpacing.Small.value),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
