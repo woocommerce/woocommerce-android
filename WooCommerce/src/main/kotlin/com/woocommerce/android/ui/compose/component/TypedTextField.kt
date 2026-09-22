@@ -22,7 +22,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -252,7 +252,7 @@ class NullableIntTextFieldValueMapper(
 @Preview
 @Composable
 private fun PreviewTypedTextFields() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             var signedDecimal by remember {
                 mutableStateOf(BigDecimal.ZERO)

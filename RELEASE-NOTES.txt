@@ -4,10 +4,17 @@
 
 25.8
 -----
+- [*] The app no longer signs you out when a single store endpoint returns an authorization error [https://github.com/woocommerce/woocommerce-android/pull/16571]
+- [Internal] Push notification analytics now attribute store and plan properties to the notification's origin site instead of the currently selected store [https://github.com/woocommerce/woocommerce-android/pull/16575]
+- [*****] Refreshed My Store, Orders, Products, and the More menu with the new design system — new top app bars, bottom navigation, list styling, and icons [https://github.com/woocommerce/woocommerce-android/pull/16322]
+- [*] Fixed the add product button staying on screen after clearing the product search term [https://github.com/woocommerce/woocommerce-android/pull/16451]
+- [Internal] Card Reader Mode on the phone now tracks when it rejects a Remote Tap to Pay payment from the tablet [https://github.com/woocommerce/woocommerce-android/pull/16584]
+
 - [*] Card Reader Mode on the phone now explains what it is for before it starts [https://github.com/woocommerce/woocommerce-android/pull/16579]
 - [*] The variations list now shows an error with a retry option when a page of variations fails to load, instead of silently skipping it [https://github.com/woocommerce/woocommerce-android/pull/16580]
 - [*] POS no longer flips between portrait and landscape on tablets whose screen is just above the tablet size threshold [https://github.com/woocommerce/woocommerce-android/pull/16574]
 - [*] Logging in with the www form of a store address no longer shows "not connected to this account" for a store the account owns [https://github.com/woocommerce/woocommerce-android/pull/16567]
+- [*] POS: Cart items discounted by a coupon or another source are now marked "Discount applied" at checkout [https://github.com/woocommerce/woocommerce-android/pull/16570]
 
 25.7
 -----

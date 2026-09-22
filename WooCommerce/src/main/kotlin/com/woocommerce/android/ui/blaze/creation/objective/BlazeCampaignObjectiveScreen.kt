@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -36,7 +37,6 @@ import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.BottomSheetSwitchColors
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCSwitch
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 
 @Composable
@@ -60,16 +60,18 @@ private fun ObjectiveScreen(
     onObjectiveTapped: (ObjectiveItem) -> Unit,
     onStoreObjectiveSwitchChanged: (Boolean) -> Unit
 ) {
+    val listState = rememberLazyListState()
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.blaze_campaign_preview_details_objective),
                 onNavigationButtonClick = onBackPressed,
+                showDivider = listState.canScrollBackward,
                 actions = {
-                    WCTextButton(
+                    TextAction(
+                        text = stringResource(R.string.save),
                         onClick = onSaveTapped,
                         enabled = state.isSaveButtonEnabled,
-                        text = stringResource(R.string.save)
                     )
                 }
             )
@@ -83,6 +85,7 @@ private fun ObjectiveScreen(
                 .fillMaxSize()
         ) {
             LazyColumn(
+                state = listState,
                 modifier = Modifier
                     .padding(vertical = 4.dp)
                     .weight(1f)

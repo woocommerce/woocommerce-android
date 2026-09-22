@@ -25,6 +25,7 @@
         <attr name="settingsCategoryHeaderStyle" format="reference" />
         <attr name="settingsButtonStyle" format="reference" />
         <attr name="secondaryTextButtonStyle" format="reference" />
+        <attr name="appBarBackgroundColor" format="reference|color" />
     </declare-styleable>
 
     <declare-styleable name="WCTextViewCompat">

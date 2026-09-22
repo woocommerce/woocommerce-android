@@ -39,7 +39,7 @@ import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.AIThankYouNoteViewModel.GenerationState
 
 @Composable
@@ -271,7 +271,7 @@ fun Survey(
 @Composable
 @Suppress("UnusedPrivateMember")
 private fun SurveyPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Survey(onDescriptionFeedbackReceived = {})
     }
 }
@@ -280,7 +280,7 @@ private fun SurveyPreview() {
 @Composable
 @Suppress("UnusedPrivateMember")
 private fun GeneratedStatePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         GeneratedState(
             note = "note",
             onRegenerateButtonClicked = {},

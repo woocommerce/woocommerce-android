@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.products.details
 
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
-import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
@@ -86,6 +84,7 @@ import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import java.math.BigDecimal
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @Suppress("LargeClass", "LongParameterList")
 class ProductDetailCardBuilder(
@@ -388,7 +387,7 @@ class ProductDetailCardBuilder(
                 default = string.product_downloadable_files_value_multiple,
                 one = string.product_downloadable_files_value_single
             ),
-            icon = drawable.ic_gridicons_cloud,
+            icon = DesignSystemR.drawable.woo_ds_ic_regular_cloud_24dp,
             onClick = {
                 viewModel.onEditProductCardClicked(
                     ViewProductDownloads,
@@ -403,7 +402,7 @@ class ProductDetailCardBuilder(
             ComplexProperty(
                 string.product_short_description,
                 shortDescription,
-                drawable.ic_gridicons_align_left
+                DesignSystemR.drawable.woo_ds_ic_regular_align_left_24dp
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductShortDescriptionEditor(
@@ -450,7 +449,7 @@ class ProductDetailCardBuilder(
         return PropertyGroup(
             string.product_inventory,
             inventory,
-            drawable.ic_gridicons_list_checkmark,
+            DesignSystemR.drawable.woo_ds_ic_regular_list_check_24dp,
             true
         ) {
             viewModel.onEditProductCardClicked(
@@ -517,7 +516,7 @@ class ProductDetailCardBuilder(
             PropertyGroup(
                 string.product_shipping,
                 shippingGroup,
-                drawable.ic_gridicons_shipping
+                DesignSystemR.drawable.woo_ds_ic_regular_truck_24dp
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductShipping(
@@ -566,7 +565,7 @@ class ProductDetailCardBuilder(
             PropertyGroup(
                 string.product_external_link,
                 externalGroup,
-                drawable.ic_gridicons_link,
+                DesignSystemR.drawable.woo_ds_ic_regular_up_right_from_square_24dp,
                 hasExternalLink
             ) {
                 viewModel.onEditProductCardClicked(
@@ -604,7 +603,7 @@ class ProductDetailCardBuilder(
         return PropertyGroup(
             string.product_price,
             pricingGroup,
-            drawable.ic_gridicons_money,
+            DesignSystemR.drawable.woo_ds_ic_regular_square_dollar_24dp,
             showTitle = product.regularPrice.isSet()
         ) {
             viewModel.onEditProductCardClicked(
@@ -644,7 +643,7 @@ class ProductDetailCardBuilder(
         return ComplexProperty(
             string.product_type,
             resources.getString(string.product_detail_product_type_hint, productTypeDisplayName()),
-            drawable.ic_gridicons_product,
+            DesignSystemR.drawable.woo_ds_ic_regular_box_24dp,
             onClick = if (remoteId != 0L && productType != OTHER) onClickHandler else null
         )
     }
@@ -660,7 +659,7 @@ class ProductDetailCardBuilder(
                 string.product_reviews,
                 value,
                 this.averageRating,
-                drawable.ic_reviews
+                DesignSystemR.drawable.woo_ds_ic_regular_star_24dp
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductReviews(this.remoteId),
@@ -690,7 +689,7 @@ class ProductDetailCardBuilder(
         return ComplexProperty(
             string.grouped_products,
             groupedProductsDesc,
-            drawable.ic_widgets,
+            DesignSystemR.drawable.woo_ds_ic_regular_layer_group_24dp,
             showTitle = showTitle
         ) {
             viewModel.onEditProductCardClicked(
@@ -719,7 +718,7 @@ class ProductDetailCardBuilder(
         return ComplexProperty(
             string.product_detail_linked_products,
             "$upsellDesc<br>$crossSellDesc",
-            drawable.ic_gridicons_reblog,
+            DesignSystemR.drawable.woo_ds_ic_regular_retweet_24dp,
             maxLines = 2
         ) {
             viewModel.onEditProductCardClicked(
@@ -789,7 +788,7 @@ class ProductDetailCardBuilder(
             properties.add(
                 Button(
                     string.product_sharing_write_with_ai,
-                    drawable.ic_ai,
+                    DesignSystemR.drawable.woo_ds_ic_regular_sparkles_24dp,
                     onClick = onWriteWithAIClicked,
                     tooltip = tooltip,
                     link = Link(
@@ -815,7 +814,7 @@ class ProductDetailCardBuilder(
             ComplexProperty(
                 string.product_variations,
                 content,
-                drawable.ic_gridicons_types
+                DesignSystemR.drawable.woo_ds_ic_regular_shapes_24dp
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductVariations(remoteId = this.remoteId),
@@ -830,7 +829,7 @@ class ProductDetailCardBuilder(
     private fun Product.emptyVariations() =
         ComplexProperty(
             value = resources.getString(string.product_detail_add_variations),
-            icon = drawable.ic_gridicons_types,
+            icon = DesignSystemR.drawable.woo_ds_ic_regular_shapes_24dp,
             showTitle = false,
             onClick = {
                 analyticsTrackerWrapper.track(
@@ -852,7 +851,7 @@ class ProductDetailCardBuilder(
             PropertyGroup(
                 string.variable_product_attributes,
                 properties,
-                drawable.ic_gridicons_customize,
+                DesignSystemR.drawable.woo_ds_ic_regular_screwdriver_wrench_24dp,
                 propertyFormat = string.product_variation_options
             ) {
                 viewModel.onEditProductCardClicked(
@@ -869,7 +868,7 @@ class ProductDetailCardBuilder(
             ComplexProperty(
                 string.product_categories,
                 categories,
-                drawable.ic_gridicons_folder,
+                DesignSystemR.drawable.woo_ds_ic_regular_folder_24dp,
                 maxLines = 5
             ) {
                 viewModel.onEditProductCardClicked(
@@ -889,7 +888,7 @@ class ProductDetailCardBuilder(
             ComplexProperty(
                 string.product_tags,
                 tags,
-                drawable.ic_gridicons_tag,
+                DesignSystemR.drawable.woo_ds_ic_regular_tag_24dp,
                 maxLines = 5
             ) {
                 viewModel.onEditProductCardClicked(
@@ -906,11 +905,11 @@ class ProductDetailCardBuilder(
         takeIf { product ->
             addonRepository.hasAnyProductSpecificAddons(
                 productRemoteID = product.remoteId
-            ) && AppPrefs.isProductAddonsEnabled
+            ) && appPrefsWrapper.isProductAddonsEnabled
         }?.let {
             ComplexProperty(
                 value = resources.getString(string.product_add_ons_title),
-                icon = drawable.ic_gridicon_circle_plus,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_circle_plus_24dp,
                 showTitle = false,
                 onClick = {
                     viewModel.onEditProductCardClicked(
@@ -923,7 +922,7 @@ class ProductDetailCardBuilder(
 
     private fun SubscriptionDetails.subscriptionExpirationDate(): ProductProperty = PropertyGroup(
         title = string.product_subscription_expiration_title,
-        icon = drawable.ic_calendar_expiration,
+        icon = DesignSystemR.drawable.woo_ds_ic_regular_calendar_xmark_24dp,
         properties = mapOf(
             resources.getString(string.subscription_expire) to expirationDisplayValue(
                 resources
@@ -940,7 +939,7 @@ class ProductDetailCardBuilder(
 
     private fun SubscriptionDetails.subscriptionTrial(): ProductProperty = PropertyGroup(
         title = string.product_subscription_free_trial_title,
-        icon = drawable.ic_hourglass_empty,
+        icon = DesignSystemR.drawable.woo_ds_ic_regular_hourglass_24dp,
         properties = mapOf(
             resources.getString(string.subscription_free_trial) to trialDisplayValue(resources)
         ),
@@ -974,7 +973,11 @@ class ProductDetailCardBuilder(
             )
         }
 
-        return rules.getProductProperty(resources, onClick)
+        return rules.getProductProperty(
+            resources = resources,
+            onClick = onClick,
+            icon = DesignSystemR.drawable.woo_ds_ic_regular_sliders_24dp
+        )
     }
 
     private suspend fun Product.bundleProducts(): ProductProperty? {
@@ -990,7 +993,7 @@ class ProductDetailCardBuilder(
             ComplexProperty(
                 string.product_bundle,
                 content,
-                drawable.ic_widgets
+                DesignSystemR.drawable.woo_ds_ic_regular_layer_group_24dp
             ) {
                 viewModel.onEditProductCardClicked(
                     ProductNavigationTarget.ViewBundleProducts(this.remoteId),
@@ -1017,7 +1020,7 @@ class ProductDetailCardBuilder(
             ComplexProperty(
                 string.product_components,
                 content,
-                drawable.ic_widgets
+                DesignSystemR.drawable.woo_ds_ic_regular_layer_group_24dp
             ) {
                 viewModel.onEditProductCardClicked(
                     ProductNavigationTarget.ViewProductComponents(components),
@@ -1037,7 +1040,7 @@ class ProductDetailCardBuilder(
         return ComplexProperty(
             string.product_custom_fields,
             resources.getString(R.string.product_custom_fields_desc),
-            drawable.ic_custom_fields,
+            DesignSystemR.drawable.woo_ds_ic_regular_grid_plus_24dp,
             onClick = viewModel::onCustomFieldsClicked
         )
     }

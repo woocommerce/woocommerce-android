@@ -86,7 +86,8 @@ fun CouponRestrictionsScreen(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.coupon_edit_usage_restrictions),
-                onNavigationButtonClick = onBackPressed
+                onNavigationButtonClick = onBackPressed,
+                showDivider = scrollState.canScrollBackward,
             )
         }
     ) { paddingValues ->

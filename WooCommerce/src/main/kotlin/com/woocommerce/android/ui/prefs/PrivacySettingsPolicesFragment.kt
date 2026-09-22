@@ -10,7 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,7 +28,7 @@ class PrivacySettingsPolicesFragment : BaseFragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     PrivacySettingsPolicesScreen(
                         onPrivacyPolicyClicked = {
                             AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED)

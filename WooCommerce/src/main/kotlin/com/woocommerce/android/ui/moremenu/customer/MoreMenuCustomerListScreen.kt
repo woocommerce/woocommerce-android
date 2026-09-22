@@ -1,21 +1,14 @@
 package com.woocommerce.android.ui.moremenu.customer
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.customer.CustomerListScreen
 
 @Composable
@@ -25,18 +18,9 @@ fun MenuCustomerListScreen(viewModel: CustomerListDetailsViewModel) {
     state?.let {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = { Text(stringResource(id = R.string.more_menu_customers_title)) },
-                    navigationIcon = {
-                        IconButton(viewModel::onNavigateBack) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(R.drawable.ic_back_24dp),
-                                contentDescription = stringResource(id = R.string.back)
-                            )
-                        }
-                    },
-                    backgroundColor = colorResource(id = R.color.color_toolbar),
-                    elevation = 0.dp,
+                Toolbar(
+                    title = stringResource(id = R.string.more_menu_customers_title),
+                    onNavigationButtonClick = viewModel::onNavigateBack,
                 )
             }
         ) { padding ->

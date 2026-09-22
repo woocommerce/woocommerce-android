@@ -41,7 +41,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.prefs.account.CloseAccountViewModel.CloseAccountState
 import com.woocommerce.android.ui.prefs.account.CloseAccountViewModel.ContactSupport
@@ -63,7 +63,7 @@ class CloseAccountDialogFragment : DialogFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     viewModel.viewState.observeAsState().value?.let { state ->
                         val focusRequester = remember { FocusRequester() }
                         Column(modifier = Modifier.clip(RoundedCornerShape(35.dp))) {
