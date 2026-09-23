@@ -17,6 +17,7 @@
 - [*] POS no longer flips between portrait and landscape on tablets whose screen is just above the tablet size threshold [https://github.com/woocommerce/woocommerce-android/pull/16574]
 - [*] Logging in with the www form of a store address no longer shows "not connected to this account" for a store the account owns [https://github.com/woocommerce/woocommerce-android/pull/16567]
 - [*] POS: Cart items discounted by a coupon or another source are now marked "Discount applied" at checkout [https://github.com/woocommerce/woocommerce-android/pull/16570]
+- [*] Custom fields no longer show REST API addresses as links that open an authorization error [https://github.com/woocommerce/woocommerce-android/pull/16607]
 
 25.7
 -----
