@@ -40,7 +40,7 @@ interface LoginAnalyticsListener {
     fun trackSocialButtonStart()
     fun trackSocialAccountsNeedConnecting()
     fun trackSocialButtonClick()
-    fun trackSocialButtonFailure()
+    fun trackSocialButtonFailure(source: String, statusCode: Int?, statusName: String?, statusMessage: String?)
     fun trackSocialConnectFailure()
     fun trackSocialConnectSuccess()
     fun trackSocialErrorUnknownUser()
