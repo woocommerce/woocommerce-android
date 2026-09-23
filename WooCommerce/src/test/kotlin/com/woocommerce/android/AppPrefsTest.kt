@@ -1,7 +1,6 @@
 package com.woocommerce.android
 
 import android.content.Context
-import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_PENDING
@@ -10,11 +9,15 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 
+@RunWith(RobolectricTestRunner::class)
 class AppPrefsTest {
     @Before
     fun setup() {
-        val context = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
+        val context = RuntimeEnvironment.getApplication()
         context.getSharedPreferences("${context.packageName}_deletable_preferences", Context.MODE_PRIVATE)
             .edit().clear().commit()
         AppPrefs.init(context)
