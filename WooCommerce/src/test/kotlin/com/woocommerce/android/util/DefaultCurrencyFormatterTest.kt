@@ -179,14 +179,19 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when formatting currency, then use the settings of the observed selected site`() =
+    fun `given the selected site switched, when formatting currency, then use the new site settings`() =
         runTest {
             // GIVEN
-            val site = SiteModel().also { it.id = 1 }
+            val firstSite = SiteModel().also { it.id = 1 }
+            val secondSite = SiteModel().also { it.id = 2 }
             val eurSettings = generateSettings(LocalId(1)).copy(currencyCode = "EUR")
-            whenever(selectedSite.observe()).thenReturn(flowOf(site))
-            whenever(wcStore.observeAllSiteSettings()).thenReturn(MutableStateFlow(mapOf(LocalId(1) to eurSettings)))
-            whenever(wcStore.formatCurrencyForDisplay("5.00", eurSettings, "EUR", true)).thenReturn("€5.00")
+            val gbpSettings = generateSettings(LocalId(2)).copy(currencyCode = "GBP")
+            whenever(selectedSite.observe()).thenReturn(flowOf(firstSite))
+            whenever(selectedSite.getOrNull()).thenReturn(firstSite)
+            whenever(wcStore.observeAllSiteSettings()).thenReturn(
+                MutableStateFlow(mapOf(LocalId(1) to eurSettings, LocalId(2) to gbpSettings))
+            )
+            whenever(wcStore.formatCurrencyForDisplay("5.00", gbpSettings, "GBP", true)).thenReturn("£5.00")
             formatter = CurrencyFormatter(
                 wcStore = wcStore,
                 selectedSite = selectedSite,
@@ -197,12 +202,13 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
                 localeProvider = localeProvider
             )
             advanceTimeBy(100)
+            whenever(selectedSite.getOrNull()).thenReturn(secondSite)
 
             // WHEN
-            val result = formatter.formatCurrency("5.00")
+            val result = formatter.formatCurrency("5.00", "GBP")
 
             // THEN
-            assertThat(result).isEqualTo("€5.00")
+            assertThat(result).isEqualTo("£5.00")
         }
 
     @Test

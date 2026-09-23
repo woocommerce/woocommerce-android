@@ -37,25 +37,27 @@ class CurrencyFormatter @Inject constructor(
 ) {
     private var defaultCurrencyCode = ""
 
-    private val selectedSiteWithSettings: StateFlow<Pair<SiteModel, Settings?>?> = combine(
-        selectedSite.observe().filterNotNull(),
-        wcStore.observeAllSiteSettings()
-    ) { site, settingsMap ->
-        site to settingsMap[LocalId(site.id)]
-    }
+    private val allSiteSettings: StateFlow<Map<LocalId, Settings>> = wcStore.observeAllSiteSettings()
         .flowOn(dispatchers.io)
-        .stateIn(appCoroutineScope, SharingStarted.Eagerly, null)
+        .stateIn(appCoroutineScope, SharingStarted.Eagerly, emptyMap())
 
     private val selectedSiteSettings: Settings?
-        get() = selectedSiteWithSettings.value?.second
+        get() = selectedSite.getOrNull()?.let { allSiteSettings.value[LocalId(it.id)] }
 
     init {
         appCoroutineScope.launch {
-            selectedSiteWithSettings.filterNotNull().collect { (site, settings) ->
-                defaultCurrencyCode = settings?.currencyCode.orEmpty().ifEmpty {
-                    getOrFetchCurrencyCode(site)
-                }
+            combine(
+                selectedSite.observe().filterNotNull(),
+                allSiteSettings
+            ) { site, settingsMap ->
+                site to (settingsMap[LocalId(site.id)]?.currencyCode ?: "")
             }
+                .flowOn(dispatchers.io)
+                .collect { (site, currencyCode) ->
+                    defaultCurrencyCode = currencyCode.ifEmpty {
+                        getOrFetchCurrencyCode(site)
+                    }
+                }
         }
     }
 
