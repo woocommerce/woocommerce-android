@@ -957,6 +957,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         assertThat(shipments.last()).containsExactly(shipment)
         verify(shippingLabelRepository).fetchShippingEligibility(selectedSite.get(), ORDER_ID)
         verify(getWooShippingShipments, times(2)).invoke(unpaidCashOrder)
+        verify(getShippingLabelSupport).invoke()
         verify(orderDetailTracker).trackOrderEligibleForShippingLabelCreation(unpaidCashOrder.status.value, true)
     }
 

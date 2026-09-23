@@ -11,10 +11,8 @@ class ShippingLabelOnboardingRepository @Inject constructor(
     private val appSharedPrefs: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
 ) {
-    private val shippingPluginSupport by lazy { getShippingLabelSupport() }
-
     suspend fun shouldShowWcShippingBanner(order: Order): Boolean =
-        !shippingPluginSupport.isSupported() &&
+        !getShippingLabelSupport().isSupported() &&
             orderDetailRepository.getStoreCountryCode() == SUPPORTED_WCS_COUNTRY &&
             order.currency == SUPPORTED_WCS_CURRENCY &&
             !order.isCashPayment &&

@@ -98,7 +98,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         assertFalse(sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS))
     }
 
-    private fun givenShippingPluginSupport(support: ShippingLabelSupport) {
+    private suspend fun givenShippingPluginSupport(support: ShippingLabelSupport) {
         whenever(getShippingLabelSupport()).thenReturn(support)
     }
 

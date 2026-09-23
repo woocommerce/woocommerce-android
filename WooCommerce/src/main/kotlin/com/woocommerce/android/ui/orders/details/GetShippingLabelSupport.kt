@@ -6,7 +6,7 @@ import javax.inject.Inject
 class GetShippingLabelSupport @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository
 ) {
-    operator fun invoke(): ShippingLabelSupport {
+    suspend operator fun invoke(): ShippingLabelSupport {
         orderDetailRepository.getWooShippingPluginInfo()
             .takeIf {
                 val pluginVersion = it.version ?: "0.0.0"

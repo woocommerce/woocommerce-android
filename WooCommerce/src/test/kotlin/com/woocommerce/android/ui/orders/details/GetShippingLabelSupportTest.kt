@@ -3,13 +3,16 @@ package com.woocommerce.android.ui.orders.details
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.ui.orders.details.GetShippingLabelSupport.Companion.SUPPORTED_WCS_VERSION
 import com.woocommerce.android.ui.orders.details.GetShippingLabelSupport.Companion.SUPPORTED_WC_SHIPPING_VERSION
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
-class GetShippingLabelSupportTest {
+@OptIn(ExperimentalCoroutinesApi::class)
+class GetShippingLabelSupportTest : BaseUnitTest() {
     private val orderDetailRepository: OrderDetailRepository = mock {
         on { getWooShippingPluginInfo() } doReturn NOT_INSTALLED_PLUGIN
         on { getWooServicesPluginInfo() } doReturn NOT_INSTALLED_PLUGIN
@@ -17,7 +20,7 @@ class GetShippingLabelSupportTest {
     private val getShippingLabelSupport = GetShippingLabelSupport(orderDetailRepository)
 
     @Test
-    fun `given legacy shipping is active at minimum version, when support is checked, then legacy is supported`() {
+    fun `given legacy shipping is active at minimum version, when support is checked, then legacy is supported`() = testBlocking {
         givenWooServicesPlugin(version = SUPPORTED_WCS_VERSION)
 
         val result = getShippingLabelSupport()
@@ -26,7 +29,7 @@ class GetShippingLabelSupportTest {
     }
 
     @Test
-    fun `given Woo Shipping is active at minimum version, when support is checked, then Woo Shipping is supported`() {
+    fun `given Woo Shipping is active at minimum version, when support is checked, then Woo Shipping is supported`() = testBlocking {
         givenWooShippingPlugin(version = SUPPORTED_WC_SHIPPING_VERSION)
 
         val result = getShippingLabelSupport()
@@ -35,7 +38,7 @@ class GetShippingLabelSupportTest {
     }
 
     @Test
-    fun `given both plugins are supported, when support is checked, then Woo Shipping takes precedence`() {
+    fun `given both plugins are supported, when support is checked, then Woo Shipping takes precedence`() = testBlocking {
         givenWooShippingPlugin(version = SUPPORTED_WC_SHIPPING_VERSION)
         givenWooServicesPlugin(version = SUPPORTED_WCS_VERSION)
 
@@ -45,7 +48,7 @@ class GetShippingLabelSupportTest {
     }
 
     @Test
-    fun `given both plugins are installed but inactive, when support is checked, then neither is supported`() {
+    fun `given both plugins are installed but inactive, when support is checked, then neither is supported`() = testBlocking {
         givenWooShippingPlugin(active = false, version = SUPPORTED_WC_SHIPPING_VERSION)
         givenWooServicesPlugin(active = false, version = SUPPORTED_WCS_VERSION)
 
@@ -55,7 +58,7 @@ class GetShippingLabelSupportTest {
     }
 
     @Test
-    fun `given Woo Shipping is below minimum version, when legacy is supported, then fall back to legacy`() {
+    fun `given Woo Shipping is below minimum version, when legacy is supported, then fall back to legacy`() = testBlocking {
         givenWooShippingPlugin(version = "1.0.5")
         givenWooServicesPlugin(version = SUPPORTED_WCS_VERSION)
 
@@ -65,7 +68,7 @@ class GetShippingLabelSupportTest {
     }
 
     @Test
-    fun `given legacy shipping is below minimum version, when support is checked, then it is not supported`() {
+    fun `given legacy shipping is below minimum version, when support is checked, then it is not supported`() = testBlocking {
         givenWooServicesPlugin(version = "1.25.10")
 
         val result = getShippingLabelSupport()
@@ -74,7 +77,7 @@ class GetShippingLabelSupportTest {
     }
 
     @Test
-    fun `given active plugins have null versions, when support is checked, then neither is supported`() {
+    fun `given active plugins have null versions, when support is checked, then neither is supported`() = testBlocking {
         givenWooShippingPlugin(version = null)
         givenWooServicesPlugin(version = null)
 
@@ -83,7 +86,7 @@ class GetShippingLabelSupportTest {
         assertThat(result).isEqualTo(ShippingLabelSupport.NOT_SUPPORTED)
     }
 
-    private fun givenWooShippingPlugin(
+    private suspend fun givenWooShippingPlugin(
         installed: Boolean = true,
         active: Boolean = true,
         version: String?
@@ -92,7 +95,7 @@ class GetShippingLabelSupportTest {
             .thenReturn(WooPlugin(installed, active, version))
     }
 
-    private fun givenWooServicesPlugin(
+    private suspend fun givenWooServicesPlugin(
         installed: Boolean = true,
         active: Boolean = true,
         version: String?
