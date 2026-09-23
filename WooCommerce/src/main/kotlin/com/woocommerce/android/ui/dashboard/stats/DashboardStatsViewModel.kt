@@ -394,7 +394,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
         )
     }
 
-    private fun onRevenueStatsSuccess(
+    private suspend fun onRevenueStatsSuccess(
         result: LoadStatsResult.RevenueStatsSuccess,
         selectedRange: StatsTimeRangeSelection
     ) {
@@ -449,7 +449,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
         }
     }
 
-    private fun WCRevenueStatsModel.toStoreStatsUiModel(): RevenueStatsUiModel {
+    private suspend fun WCRevenueStatsModel.toStoreStatsUiModel(): RevenueStatsUiModel {
         val totals = parseTotal()
         return RevenueStatsUiModel(
             intervalList = getIntervalList().toStatsIntervalUiModelList(),

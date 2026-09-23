@@ -17,7 +17,7 @@ class CachedCouponEnabledChecker @Inject constructor(
             cachedValue?.let { return it }
         }
 
-        return (wooCommerceStore.getSiteSettingsAsync(site)?.couponsEnabled ?: false)
+        return (wooCommerceStore.getSiteSettings(site)?.couponsEnabled ?: false)
             .also {
                 cachedSiteId = site.id
                 cachedValue = it

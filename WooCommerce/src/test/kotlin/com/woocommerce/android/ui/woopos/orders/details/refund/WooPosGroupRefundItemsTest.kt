@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.orders.details.refund
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.mockito.kotlin.mock
@@ -22,7 +23,7 @@ class WooPosGroupRefundItemsTest {
     private val testSite = SiteModel().apply { id = 1 }
 
     @Before
-    fun setup() {
+    fun setup() = runTest {
         whenever(selectedSite.get()).thenReturn(testSite)
         whenever(wooCommerceStore.getSiteSettings(testSite)).thenReturn(
             Settings(

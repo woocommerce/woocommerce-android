@@ -123,7 +123,7 @@ class AIAnalyticsDataSourceTest {
         }
 
     @Test
-    fun `given selected site settings, when currency code is requested, then site currency is returned`() {
+    fun `given selected site settings, when currency code is requested, then site currency is returned`() = runTest {
         whenever(wooCommerceStore.getSiteSettings(site)).thenReturn(siteSettings(currencyCode = CURRENCY))
 
         val currencyCode = dataSource.getSelectedSiteCurrencyCode()

@@ -38,7 +38,7 @@ class CachedCouponEnabledCheckerTest {
     fun `when coupons are enabled in site settings, then returns true`() = runTest {
         // GIVEN
         val siteSettings = WCSettingsTestUtils.generateSettings(siteModel.localId()).copy(couponsEnabled = true)
-        whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
+        whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(siteSettings)
 
         // WHEN
         val result = cachedCouponEnabledChecker.isEnabled()
@@ -51,7 +51,7 @@ class CachedCouponEnabledCheckerTest {
     fun `when coupons are disabled in site settings, then returns false`() = runTest {
         // GIVEN
         val siteSettings = WCSettingsTestUtils.generateSettings(siteModel.localId()).copy(couponsEnabled = false)
-        whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
+        whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(siteSettings)
 
         // WHEN
         val result = cachedCouponEnabledChecker.isEnabled()
@@ -63,7 +63,7 @@ class CachedCouponEnabledCheckerTest {
     @Test
     fun `when site settings are null, then returns false`() = runTest {
         // GIVEN
-        whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(null)
+        whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(null)
 
         // WHEN
         val result = cachedCouponEnabledChecker.isEnabled()
@@ -76,13 +76,13 @@ class CachedCouponEnabledCheckerTest {
     fun `given value is already cached, when checking again, then returns cached value`() = runTest {
         // GIVEN
         val siteSettings = WCSettingsTestUtils.generateSettings(siteModel.localId()).copy(couponsEnabled = true)
-        whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
+        whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(siteSettings)
 
         // WHEN
         val firstResult = cachedCouponEnabledChecker.isEnabled()
 
         val newSettings = WCSettingsTestUtils.generateSettings(siteModel.localId()).copy(couponsEnabled = false)
-        whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(newSettings)
+        whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(newSettings)
 
         val secondResult = cachedCouponEnabledChecker.isEnabled()
 
@@ -95,14 +95,14 @@ class CachedCouponEnabledCheckerTest {
     fun `given value is cached for one site, when site changes, then fetches fresh value`() = runTest {
         // GIVEN
         val siteSettings = WCSettingsTestUtils.generateSettings(siteModel.localId()).copy(couponsEnabled = true)
-        whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
+        whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(siteSettings)
         cachedCouponEnabledChecker.isEnabled()
 
         // WHEN
         val newSite = SiteModel().apply { id = 456 }
         val newSiteSettings = WCSettingsTestUtils.generateSettings(newSite.localId()).copy(couponsEnabled = false)
         whenever(selectedSite.get()).thenReturn(newSite)
-        whenever(wooCommerceStore.getSiteSettingsAsync(newSite)).thenReturn(newSiteSettings)
+        whenever(wooCommerceStore.getSiteSettings(newSite)).thenReturn(newSiteSettings)
 
         val result = cachedCouponEnabledChecker.isEnabled()
 

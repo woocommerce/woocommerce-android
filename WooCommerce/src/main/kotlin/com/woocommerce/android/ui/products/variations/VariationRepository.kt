@@ -95,7 +95,7 @@ class VariationRepository @Inject constructor(
     /**
      * Returns the currency code for the site
      */
-    fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
+    suspend fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
 
     /**
      * Fires the request to create a empty variation to a given product

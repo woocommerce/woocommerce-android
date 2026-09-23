@@ -80,7 +80,7 @@ class ClientSidePosBannerTest : BaseUnitTest() {
     fun `given non-eligible country, when shouldShow called, then returns false`() = testBlocking {
         val site = setupValidSite()
         whenever(wooPosIsScreenSizeAllowed()).thenReturn(false)
-        whenever(wooStore.getSiteSettingsAsync(site)).thenReturn(settingsWithCountry("CA"))
+        whenever(wooStore.getSiteSettings(site)).thenReturn(settingsWithCountry("CA"))
 
         val result = sut.shouldShow()
 
@@ -91,7 +91,7 @@ class ClientSidePosBannerTest : BaseUnitTest() {
     fun `given all conditions met, when shouldShow called, then returns true`() = testBlocking {
         val site = setupValidSite()
         whenever(wooPosIsScreenSizeAllowed()).thenReturn(false)
-        whenever(wooStore.getSiteSettingsAsync(site)).thenReturn(settingsWithCountry("US"))
+        whenever(wooStore.getSiteSettings(site)).thenReturn(settingsWithCountry("US"))
         whenever(dismissalStorage.isBannerHidden(any(), any())).thenReturn(false)
 
         val result = sut.shouldShow()
@@ -112,7 +112,7 @@ class ClientSidePosBannerTest : BaseUnitTest() {
     fun `given all conditions met, when shouldShow called, then checks the client banner feature flag`() = testBlocking {
         val site = setupValidSite()
         whenever(wooPosIsScreenSizeAllowed()).thenReturn(false)
-        whenever(wooStore.getSiteSettingsAsync(site)).thenReturn(settingsWithCountry("US"))
+        whenever(wooStore.getSiteSettings(site)).thenReturn(settingsWithCountry("US"))
         whenever(dismissalStorage.isBannerHidden(any(), any())).thenReturn(false)
 
         sut.shouldShow()
@@ -126,7 +126,7 @@ class ClientSidePosBannerTest : BaseUnitTest() {
             // GIVEN
             val site = setupValidSite()
             whenever(wooPosIsScreenSizeAllowed()).thenReturn(false)
-            whenever(wooStore.getSiteSettingsAsync(site)).thenReturn(settingsWithCountry("US"))
+            whenever(wooStore.getSiteSettings(site)).thenReturn(settingsWithCountry("US"))
             whenever(dismissalStorage.isBannerHidden(any(), any())).thenReturn(false)
 
             // WHEN
@@ -148,7 +148,7 @@ class ClientSidePosBannerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isFalse()
-        verify(wooStore, never()).getSiteSettingsAsync(any())
+        verify(wooStore, never()).getSiteSettings(any())
     }
 
     private fun setupValidSite(): SiteModel {
