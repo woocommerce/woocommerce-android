@@ -10,12 +10,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -47,9 +49,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
     fun `when formatting rounded currency, then use the current app locale`() = runTest {
         // GIVEN
         setupSitesFlow()
-        val site = SiteModel()
-        whenever(selectedSite.get()).thenReturn(site)
-        whenever(wcStore.formatCurrencyForDisplay(any<String>(), eq(site), eq("TRY"), eq(false)))
+        whenever(wcStore.formatCurrencyForDisplay(any<String>(), anyOrNull(), eq("TRY"), eq(false)))
             .thenAnswer { "₺${it.getArgument<String>(0)}" }
         val amountsByLocale = mapOf(
             Locale.forLanguageTag("tr-TR") to "4 B",
@@ -73,9 +73,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
     fun `when formatting rounded currency, then round the amount without narrowing to Int`() = runTest {
         // GIVEN
         setupSitesFlow()
-        val site = SiteModel()
-        whenever(selectedSite.get()).thenReturn(site)
-        whenever(wcStore.formatCurrencyForDisplay(any<String>(), eq(site), eq("USD"), eq(false)))
+        whenever(wcStore.formatCurrencyForDisplay(any<String>(), anyOrNull(), eq("USD"), eq(false)))
             .thenAnswer { it.getArgument<String>(0) }
         val amounts = listOf(
             Triple(0.0, 0L, "0"),
@@ -100,9 +98,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
     fun `given an RTL locale, when formatting negative currency, then pass a leading minus to the store`() = runTest {
         // GIVEN
         setupSitesFlow()
-        val site = SiteModel()
         val locale = Locale.forLanguageTag("he-IL")
-        whenever(selectedSite.get()).thenReturn(site)
         whenever(localeProvider.provideLocale()).thenReturn(locale)
         whenever(numberExtensionsWrapper.compactNumberCompat(any(), eq(locale))).thenAnswer {
             when (it.getArgument<Long>(0) < 0) {
@@ -110,7 +106,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
                 false -> "4K"
             }
         }
-        whenever(wcStore.formatCurrencyForDisplay(any<String>(), eq(site), eq("TRY"), eq(false)))
+        whenever(wcStore.formatCurrencyForDisplay(any<String>(), anyOrNull(), eq("TRY"), eq(false)))
             .thenAnswer { it.getArgument<String>(0) }
 
         // WHEN
@@ -165,6 +161,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
                 numberExtensionsWrapper = numberExtensionsWrapper,
                 localeProvider = localeProvider
             )
+            TestScope(coroutinesTestRule.testDispatcher).launch { formatter.observeSiteSettings() }
 
             advanceTimeBy(5_000)
             var result = formatter.formatAmountWithCurrency(100.0)
@@ -181,6 +178,40 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             advanceTimeBy(100)
             result = formatter.formatAmountWithCurrency(100.0)
             assertThat(result).contains("£")
+        }
+
+    @Test
+    fun `given the selected site switched, when formatting currency, then use the new site settings`() =
+        runTest {
+            // GIVEN
+            val firstSite = SiteModel().also { it.id = 1 }
+            val secondSite = SiteModel().also { it.id = 2 }
+            val eurSettings = generateSettings(LocalId(1)).copy(currencyCode = "EUR")
+            val gbpSettings = generateSettings(LocalId(2)).copy(currencyCode = "GBP")
+            whenever(selectedSite.observe()).thenReturn(flowOf(firstSite))
+            whenever(selectedSite.getOrNull()).thenReturn(firstSite)
+            whenever(wcStore.observeAllSiteSettings()).thenReturn(
+                MutableStateFlow(mapOf(LocalId(1) to eurSettings, LocalId(2) to gbpSettings))
+            )
+            whenever(wcStore.formatCurrencyForDisplay("5.00", gbpSettings, "GBP", true)).thenReturn("£5.00")
+            formatter = CurrencyFormatter(
+                wcStore = wcStore,
+                selectedSite = selectedSite,
+                siteIndependentCurrencyFormatter = siteIndependentCurrencyFormatter,
+                appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
+                dispatchers = coroutinesTestRule.testDispatchers,
+                numberExtensionsWrapper = numberExtensionsWrapper,
+                localeProvider = localeProvider
+            )
+            TestScope(coroutinesTestRule.testDispatcher).launch { formatter.observeSiteSettings() }
+            advanceTimeBy(100)
+            whenever(selectedSite.getOrNull()).thenReturn(secondSite)
+
+            // WHEN
+            val result = formatter.formatCurrency("5.00", "GBP")
+
+            // THEN
+            assertThat(result).isEqualTo("£5.00")
         }
 
     @Test
@@ -239,6 +270,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
                 numberExtensionsWrapper = numberExtensionsWrapper,
                 localeProvider = localeProvider
             )
+            TestScope(coroutinesTestRule.testDispatcher).launch { formatter.observeSiteSettings() }
 
             advanceTimeBy(100)
             var result = formatter.formatAmountWithCurrency(100.0)
@@ -284,6 +316,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             numberExtensionsWrapper = numberExtensionsWrapper,
             localeProvider = localeProvider
         )
+        TestScope(coroutinesTestRule.testDispatcher).launch { formatter.observeSiteSettings() }
     }
 
     private suspend fun setupExponentialBackoff() {
@@ -316,5 +349,6 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             numberExtensionsWrapper = numberExtensionsWrapper,
             localeProvider = localeProvider
         )
+        TestScope(coroutinesTestRule.testDispatcher).launch { formatter.observeSiteSettings() }
     }
 }

@@ -6,12 +6,14 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.settings.Settings
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Currency
@@ -33,11 +35,16 @@ class CurrencyFormatter @Inject constructor(
 ) {
     private var defaultCurrencyCode = ""
 
+    private val allSiteSettings = MutableStateFlow<Map<LocalId, Settings>?>(null)
+
+    private val selectedSiteSettings: Settings?
+        get() = selectedSite.getOrNull()?.let { allSiteSettings.value?.get(LocalId(it.id)) }
+
     init {
         appCoroutineScope.launch {
             combine(
                 selectedSite.observe().filterNotNull(),
-                wcStore.observeAllSiteSettings()
+                allSiteSettings.filterNotNull()
             ) { site, settingsMap ->
                 site to (settingsMap[LocalId(site.id)]?.currencyCode ?: "")
             }
@@ -48,6 +55,12 @@ class CurrencyFormatter @Inject constructor(
                     }
                 }
         }
+    }
+
+    suspend fun observeSiteSettings() {
+        wcStore.observeAllSiteSettings()
+            .flowOn(dispatchers.io)
+            .collect { allSiteSettings.value = it }
     }
 
     private suspend fun getOrFetchCurrencyCode(site: SiteModel): String {
@@ -79,7 +92,7 @@ class CurrencyFormatter @Inject constructor(
         rawValue: String,
         currencyCode: String = defaultCurrencyCode,
         applyDecimalFormatting: Boolean = true
-    ) = wcStore.formatCurrencyForDisplay(rawValue, selectedSite.get(), currencyCode, applyDecimalFormatting)
+    ) = wcStore.formatCurrencyForDisplay(rawValue, selectedSiteSettings, currencyCode, applyDecimalFormatting)
 
     /**
      * Formats the amount for display based on the WooCommerce site settings.
@@ -120,7 +133,7 @@ class CurrencyFormatter @Inject constructor(
             true -> "-$compactValue"
             false -> compactValue
         }
-        return wcStore.formatCurrencyForDisplay(displayFormatted, selectedSite.get(), currencyCode, false)
+        return wcStore.formatCurrencyForDisplay(displayFormatted, selectedSiteSettings, currencyCode, false)
     }
 
     /**

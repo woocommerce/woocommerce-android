@@ -23,6 +23,8 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
+import org.wordpress.android.fluxc.model.settings.Settings
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
@@ -113,7 +115,22 @@ class FetchStatsTest : BaseUnitTest() {
         whenever(statsRepository.fetchRevenueStats(selectedSite)).thenReturn(Result.success(revenueResponse))
         whenever(statsRepository.fetchVisitorStats(selectedSite)).thenReturn(Result.success(1))
         whenever(connectionStatus.isStoreConnected()).thenReturn(true)
-        whenever(wooCommerceStore.formatCurrencyForDisplay(100.0, selectedSite, null, true)).thenReturn("100.0")
+        val siteSettings = Settings(
+            currencyCode = "USD",
+            currencyPosition = CurrencyPosition.LEFT,
+            currencyThousandSeparator = ",",
+            currencyDecimalSeparator = ".",
+            currencyDecimalNumber = 2,
+            countryCode = "US",
+            stateCode = "CA",
+            address = "",
+            address2 = "",
+            city = "",
+            postalCode = "",
+            couponsEnabled = true
+        )
+        whenever(wooCommerceStore.getSiteSettings(selectedSite)).thenReturn(siteSettings)
+        whenever(wooCommerceStore.formatCurrencyForDisplay(100.0, siteSettings, null, true)).thenReturn("100.0")
         return expectedData
     }
 }
