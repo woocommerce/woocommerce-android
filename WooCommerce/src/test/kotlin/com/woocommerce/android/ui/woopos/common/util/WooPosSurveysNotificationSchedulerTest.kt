@@ -64,7 +64,7 @@ class WooPosSurveysNotificationSchedulerTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "US")
             whenever(appPrefs.isWooPosSurveyNotificationPotentialUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(false))
-            whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(siteSettings)
 
             scheduler.schedulePotentialUserSurveyNotification()
 
@@ -79,7 +79,7 @@ class WooPosSurveysNotificationSchedulerTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "US")
             whenever(appPrefs.isWooPosSurveyNotificationPotentialUserShown).thenReturn(true)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(false))
-            whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(siteSettings)
 
             scheduler.schedulePotentialUserSurveyNotification()
 
@@ -92,7 +92,7 @@ class WooPosSurveysNotificationSchedulerTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "FR")
             whenever(appPrefs.isWooPosSurveyNotificationPotentialUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(false))
-            whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(siteSettings)
 
             scheduler.schedulePotentialUserSurveyNotification()
 
@@ -105,7 +105,7 @@ class WooPosSurveysNotificationSchedulerTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "US")
             whenever(appPrefs.isWooPosSurveyNotificationPotentialUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(true))
-            whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(siteSettings)
 
             scheduler.schedulePotentialUserSurveyNotification()
 
@@ -118,7 +118,7 @@ class WooPosSurveysNotificationSchedulerTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "GB")
             whenever(appPrefs.isWooPosSurveyNotificationPotentialUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(false))
-            whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(siteSettings)
 
             scheduler.schedulePotentialUserSurveyNotification()
 
@@ -133,7 +133,7 @@ class WooPosSurveysNotificationSchedulerTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "us")
             whenever(appPrefs.isWooPosSurveyNotificationPotentialUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(false))
-            whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(siteSettings)
 
             scheduler.schedulePotentialUserSurveyNotification()
 
@@ -148,7 +148,7 @@ class WooPosSurveysNotificationSchedulerTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "")
             whenever(appPrefs.isWooPosSurveyNotificationPotentialUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(false))
-            whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(siteSettings)
 
             scheduler.schedulePotentialUserSurveyNotification()
 
@@ -160,7 +160,7 @@ class WooPosSurveysNotificationSchedulerTest {
         runTest {
             whenever(appPrefs.isWooPosSurveyNotificationPotentialUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(false))
-            whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(null)
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(null)
 
             scheduler.schedulePotentialUserSurveyNotification()
 
@@ -173,7 +173,7 @@ class WooPosSurveysNotificationSchedulerTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "US")
             whenever(appPrefs.isWooPosSurveyNotificationCurrentUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(true))
-            whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(siteSettings)
 
             scheduler.scheduleCurrentUserSurveyNotification()
 
@@ -191,7 +191,7 @@ class WooPosSurveysNotificationSchedulerTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "US")
             whenever(appPrefs.isWooPosSurveyNotificationCurrentUserShown).thenReturn(true)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(true))
-            whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(siteSettings)
 
             scheduler.scheduleCurrentUserSurveyNotification()
 
@@ -204,7 +204,7 @@ class WooPosSurveysNotificationSchedulerTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "US")
             whenever(appPrefs.isWooPosSurveyNotificationCurrentUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(false))
-            whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(siteSettings)
 
             scheduler.scheduleCurrentUserSurveyNotification()
 
@@ -217,7 +217,7 @@ class WooPosSurveysNotificationSchedulerTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "FR")
             whenever(appPrefs.isWooPosSurveyNotificationCurrentUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(true))
-            whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(siteSettings)
 
             scheduler.scheduleCurrentUserSurveyNotification()
 

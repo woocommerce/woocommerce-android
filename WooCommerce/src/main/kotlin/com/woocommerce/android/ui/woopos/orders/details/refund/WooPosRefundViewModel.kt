@@ -564,7 +564,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
      * Returns null only when the store's currency settings cannot be read; the caller reports that
      * as [RefundPreconditionReason.CURRENCY_SETTINGS_UNAVAILABLE].
      */
-    private fun buildSubmissionRequest(
+    private suspend fun buildSubmissionRequest(
         order: Order,
         contentState: WooPosRefundState.Content,
         selectedItems: List<WooPosRefundableItem>,

@@ -138,16 +138,11 @@ open class WooCommerceStore @Inject internal constructor(
     /**
      * Given a [SiteModel], returns its WooCommerce site settings, or null if no settings are stored for this site.
      */
-    fun getSiteSettings(site: SiteModel): Settings? =
-        runBlocking { settingsDao.getSettings(site.localId())?.let { WCSettingsMapper.mapToDomain(it) } }
+    suspend fun getSiteSettings(site: SiteModel): Settings? =
+        settingsDao.getSettings(site.localId())?.let { WCSettingsMapper.mapToDomain(it) }
 
-    /**
-     * Given a [SiteModel], returns its WooCommerce site settings, or null if no settings are stored for this site.
-     */
-    suspend fun getSiteSettingsAsync(site: SiteModel): Settings? =
-        coroutineEngine.withDefaultContext(T.DB, this, "getSiteSettingsAsync") {
-            settingsDao.getSettings(site.localId())?.let { WCSettingsMapper.mapToDomain(it) }
-        }
+    private fun getSiteSettingsBlocking(site: SiteModel): Settings? =
+        runBlocking { getSiteSettings(site) }
 
     /**
      * Returns a Flow that emits all WooCommerce site settings whenever any of them change.
@@ -633,7 +628,7 @@ open class WooCommerceStore @Inject internal constructor(
         currencyCode: String? = null,
         applyDecimalFormatting: Boolean
     ): String {
-        val siteSettings = getSiteSettings(site)
+        val siteSettings = getSiteSettingsBlocking(site)
 
         // Resolve the currency code to a localized symbol
         val resolvedCurrencyCode = currencyCode?.takeIf { it.isNotEmpty() } ?: siteSettings?.currencyCode
@@ -674,7 +669,7 @@ open class WooCommerceStore @Inject internal constructor(
      * @param currencyCode an optional, ISO 4217 currency code to use. If not supplied, the site's currency code
      * will be used (obtained from the [WCSettingsModel] corresponding to the given [site]
      */
-    fun getSiteCurrency(
+    suspend fun getSiteCurrency(
         site: SiteModel,
         currencyCode: String? = null
     ): String {

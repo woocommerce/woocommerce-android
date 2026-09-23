@@ -48,6 +48,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -87,7 +88,7 @@ class ProductSelectorViewModel @Inject constructor(
         private const val NUMBER_OF_SUGGESTED_ITEMS = 5
     }
 
-    private val currencyCode by lazy {
+    private val currencyCode = async {
         wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     }
 
@@ -181,7 +182,7 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    private fun mapProductsToUiModel(
+    private suspend fun mapProductsToUiModel(
         it: Product,
         selectedIds: List<SelectedItem>
     ) = when (selectionHandling) {
@@ -204,21 +205,21 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    private fun getPopularProductsToDisplay(
+    private suspend fun getPopularProductsToDisplay(
         popularProducts: List<Product>,
         selectedIds: List<SelectedItem>
     ): List<ListItem> {
         return getProductItemsIfSearchQueryEmptyOrNoFilter(popularProducts, selectedIds)
     }
 
-    private fun getRecentProductsToDisplay(
+    private suspend fun getRecentProductsToDisplay(
         recentProducts: List<Product>,
         selectedIds: List<SelectedItem>
     ): List<ListItem> {
         return getProductItemsIfSearchQueryEmptyOrNoFilter(recentProducts, selectedIds)
     }
 
-    private fun getProductItemsIfSearchQueryEmptyOrNoFilter(
+    private suspend fun getProductItemsIfSearchQueryEmptyOrNoFilter(
         productsList: List<Product>,
         selectedIds: List<SelectedItem>
     ): List<ListItem> {
@@ -271,7 +272,7 @@ class ProductSelectorViewModel @Inject constructor(
         orderEntity.getLineItemList().mapNotNull { it.productId }
     }
 
-    private fun Product.toUiModel(selectedItems: Collection<SelectedItem>): ListItem {
+    private suspend fun Product.toUiModel(selectedItems: Collection<SelectedItem>): ListItem {
         val isVariation = productType == VARIATION
         val stockStatus = getStockText(resourceProvider)
         val price = formatPrice()
@@ -310,11 +311,11 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    private fun Product.formatPrice(): String? {
+    private suspend fun Product.formatPrice(): String? {
         return price?.let {
             PriceUtils.formatCurrency(
                 price,
-                navArgs.orderCurrency ?: currencyCode,
+                navArgs.orderCurrency ?: currencyCode.await(),
                 currencyFormatter
             )
         }
@@ -356,7 +357,7 @@ class ProductSelectorViewModel @Inject constructor(
             selectionState = getProductSelection(selectedItems),
         )
 
-    private fun Product.toSimpleUiModel(selectedItems: Collection<SelectedItem>): ListItem {
+    private suspend fun Product.toSimpleUiModel(selectedItems: Collection<SelectedItem>): ListItem {
         val stockStatus = getStockText(resourceProvider)
         val price = formatPrice()
         val stockAndPrice = listOfNotNull(stockStatus, price).joinToString(" \u2022 ")

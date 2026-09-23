@@ -14,6 +14,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -38,13 +39,13 @@ class CouponSelectorViewModel @Inject constructor(
         private const val LOADING_STATE_DELAY = 100L
     }
 
-    private val currencyCode by lazy { wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode }
+    private val currencyCode = async { wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode }
 
     private val loadingState = MutableStateFlow(LoadingState.Idle)
 
     val couponSelectorState = combine(
         flow = couponListHandler.couponsFlow
-            .map { coupons -> coupons.map { it.toUiModel(couponUtils, currencyCode) } },
+            .map { coupons -> coupons.map { it.toUiModel(couponUtils, currencyCode.await()) } },
         flow2 = loadingState.withIndex()
             .debounce {
                 if (it.index != 0 && it.value == LoadingState.Idle) {
