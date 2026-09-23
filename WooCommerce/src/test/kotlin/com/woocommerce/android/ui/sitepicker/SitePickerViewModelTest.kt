@@ -50,11 +50,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.atMost
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -567,11 +569,14 @@ class SitePickerViewModelTest : BaseUnitTest() {
             val url = SitePickerTestUtils.loginSiteAddress
 
             verify(repository, atLeastOnce()).getSiteBySiteUrl(any())
-            verify(analyticsTrackerWrapper, atLeastOnce()).track(
-                AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
-                mapOf(
-                    AnalyticsTracker.KEY_URL to url,
-                    AnalyticsTracker.KEY_HAS_CONNECTED_STORES to true
+            verify(unifiedLoginTracker, times(1)).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT),
+                properties = eq(
+                    mapOf(
+                        AnalyticsTracker.KEY_URL to url,
+                        AnalyticsTracker.KEY_HAS_CONNECTED_STORES to "true"
+                    )
                 )
             )
 
@@ -637,11 +642,14 @@ class SitePickerViewModelTest : BaseUnitTest() {
             viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
 
             verify(repository, atLeastOnce()).getSiteBySiteUrl(any())
-            verify(analyticsTrackerWrapper, atLeastOnce()).track(
-                AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE,
-                mapOf(
-                    AnalyticsTracker.KEY_URL to url,
-                    AnalyticsTracker.KEY_HAS_CONNECTED_STORES to true
+            verify(unifiedLoginTracker, times(1)).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.NOT_WOO_STORE),
+                properties = eq(
+                    mapOf(
+                        AnalyticsTracker.KEY_URL to url,
+                        AnalyticsTracker.KEY_HAS_CONNECTED_STORES to "true"
+                    )
                 )
             )
 

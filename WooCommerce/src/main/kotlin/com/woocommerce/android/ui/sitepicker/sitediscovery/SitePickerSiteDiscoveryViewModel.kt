@@ -11,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.sitepicker.SitePickerRepository
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -47,6 +48,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val unifiedLoginTracker: UnifiedLoginTracker,
     private val urlUtils: UrlUtils
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -61,6 +63,13 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     private var fetchedSiteUrl
         get() = savedState.get<String>(FETCHED_URL_KEY)
         set(value) = savedState.set(FETCHED_URL_KEY, value)
+
+    init {
+        unifiedLoginTracker.track(
+            flow = UnifiedLoginTracker.Flow.SITE_DISCOVERY,
+            step = UnifiedLoginTracker.Step.START
+        )
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = stepFlow.transformLatest { step ->
