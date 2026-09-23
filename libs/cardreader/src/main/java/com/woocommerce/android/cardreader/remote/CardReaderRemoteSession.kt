@@ -28,8 +28,11 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
@@ -62,6 +65,9 @@ class CardReaderRemoteSession internal constructor(
 
     private val _state = MutableStateFlow<CardReaderRemoteSessionState>(CardReaderRemoteSessionState.Idle)
     val state: StateFlow<CardReaderRemoteSessionState> = _state.asStateFlow()
+
+    private val _paymentRejections = MutableSharedFlow<PaymentRejection>(extraBufferCapacity = REJECTIONS_BUFFER)
+    val paymentRejections: SharedFlow<PaymentRejection> = _paymentRejections.asSharedFlow()
 
     var certificateKeyType: CardReaderRemoteCertificateKeyType? = null
         private set
@@ -292,30 +298,36 @@ class CardReaderRemoteSession internal constructor(
                     )
                     is RetrieveAndCollectResult.Failed -> {
                         logWrapper.e(LOG_TAG, "Collect payment failed: ${collectResult.cause.describeWithCauses()}")
-                        accepted.send(
-                            ErrorMessage(
-                                requestId = request.requestId,
-                                code = collectResult.cause
-                                    .toCardReaderRemoteError(CardReaderRemoteError.CollectFailed).code,
-                                description = collectResult.cause.describeWithCauses(),
-                            )
-                        )
+                        rejectPayment(request, collectResult.cause, CardReaderRemoteError.CollectFailed, accepted)
                     }
                 }
             }
             is CreatePaymentIntentResult.Failed -> {
                 logWrapper.e(LOG_TAG, "Create payment intent failed: ${createResult.cause.describeWithCauses()}")
-                accepted.send(
-                    ErrorMessage(
-                        requestId = request.requestId,
-                        code = createResult.cause
-                            .toCardReaderRemoteError(CardReaderRemoteError.CreateIntentFailed).code,
-                        description = createResult.cause.describeWithCauses(),
-                    )
-                )
+                rejectPayment(request, createResult.cause, CardReaderRemoteError.CreateIntentFailed, accepted)
             }
         }
         _state.value = CardReaderRemoteSessionState.WaitingForPayment(tabletName = null)
+    }
+
+    private suspend fun rejectPayment(
+        request: CollectPaymentRequest,
+        cause: Throwable,
+        fallback: CardReaderRemoteError,
+        accepted: CardReaderRemoteConnection,
+    ) {
+        val rejection = PaymentRejection(
+            error = cause.toCardReaderRemoteError(fallback),
+            description = cause.describeWithCauses(),
+        )
+        accepted.send(
+            ErrorMessage(
+                requestId = request.requestId,
+                code = rejection.error.code,
+                description = rejection.description,
+            )
+        )
+        _paymentRejections.tryEmit(rejection)
     }
 
     private fun CollectPaymentRequest.toPaymentInfo(): PaymentInfo = PaymentInfo(
@@ -394,8 +406,14 @@ class CardReaderRemoteSession internal constructor(
         fun create(): RemoteTokenChannelProvider
     }
 
+    data class PaymentRejection(
+        val error: CardReaderRemoteError,
+        val description: String,
+    )
+
     companion object {
         private const val LOG_TAG = "CardReaderRemoteSession"
+        private const val REJECTIONS_BUFFER = 8
         private const val DEFAULT_DEVICE_NAME = "Android"
         private const val FINGERPRINT_LOG_SUFFIX_LENGTH = 8
 

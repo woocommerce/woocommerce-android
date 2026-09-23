@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCSwitch
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun PurchaseSection(
@@ -141,7 +141,7 @@ internal fun PurchaseButton(
 @Preview
 @Composable
 internal fun PurchasesSectionPortraitPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PurchasesSectionPortrait(
             state = ShippingLabelSampleData.getPurchaseSection(),
             orderCompleteToggleVisible = true,
@@ -153,7 +153,7 @@ internal fun PurchasesSectionPortraitPreview() {
 @Preview(widthDp = 750, heightDp = 120)
 @Composable
 fun PurchasesSectionLandscapePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PurchasesSectionLandscape(
             state = ShippingLabelSampleData.getPurchaseSection(),
             orderCompleteToggleVisible = true,

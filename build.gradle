@@ -45,6 +45,16 @@ measureBuilds {
 allprojects {
     apply plugin: libs.plugins.detekt.get().pluginId
 
+    // Robolectric 4.17 creates an ApplicationSharedMemory while setting up the Android environment, which
+    // reflects into FileDescriptor internals via jdk.internal.access.SharedSecrets - a package the JDK does
+    // not export. https://robolectric.org/getting-started/ lists the wider set it suggests for Java 17+.
+    tasks.withType(Test).configureEach {
+        jvmArgs += [
+                "--add-opens=java.base/java.io=ALL-UNNAMED",
+                "--add-opens=java.base/jdk.internal.access=ALL-UNNAMED"
+        ]
+    }
+
     tasks.withType(KotlinCompile).configureEach {
         compilerOptions {
             jvmTarget = JvmTarget.fromTarget(libs.versions.java.get())

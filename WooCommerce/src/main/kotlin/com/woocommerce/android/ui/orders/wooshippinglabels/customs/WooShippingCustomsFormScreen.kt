@@ -40,7 +40,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedSpinner
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.getText
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.InputValue
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.products.WooShippingCustomsProductListItem
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.products.WooShippingCustomsProductUIModel
@@ -261,7 +261,7 @@ fun WooShippingCustomsFormScreen(
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun PreviewWooShippingCustomsFormScreen() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Surface {
             WooShippingCustomsFormScreen(
                 contentType = ContentType.MERCHANDISE,
