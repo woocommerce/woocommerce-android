@@ -183,22 +183,24 @@ class CouponDetailsViewModel @Inject constructor(
         )
     }
 
-    fun onShareButtonClick() = launch {
-        coupon.value?.let { coupon ->
-            couponUtils.formatSharingMessage(
-                coupon = coupon,
-                currencyCode = currencyCode.await()
-            )
-        }?.let {
-            triggerEvent(ShareCodeEvent(it))
-        } ?: run {
-            triggerEvent(ShowSnackbar(R.string.coupon_details_share_formatting_failure))
-        }
+    fun onShareButtonClick() {
+        launch {
+            coupon.value?.let { coupon ->
+                couponUtils.formatSharingMessage(
+                    coupon = coupon,
+                    currencyCode = currencyCode.await()
+                )
+            }?.let {
+                triggerEvent(ShareCodeEvent(it))
+            } ?: run {
+                triggerEvent(ShowSnackbar(R.string.coupon_details_share_formatting_failure))
+            }
 
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.COUPON_DETAILS,
-            mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_SHARED)
-        )
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.COUPON_DETAILS,
+                mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_SHARED)
+            )
+        }
     }
 
     fun onEditButtonClick() {
