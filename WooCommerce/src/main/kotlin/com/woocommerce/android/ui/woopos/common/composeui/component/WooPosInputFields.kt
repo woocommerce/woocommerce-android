@@ -43,7 +43,6 @@ import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 @Composable
 fun WooPosMoneyInputField(
@@ -78,7 +77,8 @@ fun WooPosMoneyInputField(
 
     val valueMapper = NullableCurrencyTextFieldValueMapper.create(
         decimalSeparator = decimalSeparator,
-        numberOfDecimals = numberOfDecimals
+        numberOfDecimals = numberOfDecimals,
+        keepTrailingZeros = true
     )
 
     var currentValue by remember {
@@ -91,11 +91,7 @@ fun WooPosMoneyInputField(
         stateSaver = TextFieldValue.Saver,
     ) {
         currentValue = value
-        val printedValue = value
-            ?.setScale(numberOfDecimals, RoundingMode.HALF_UP)
-            ?.toPlainString()
-            ?.replace(".", decimalSeparator)
-            .orEmpty()
+        val printedValue = valueMapper.printValue(value)
         mutableStateOf(
             TextFieldValue(
                 text = printedValue,

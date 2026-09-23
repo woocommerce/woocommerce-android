@@ -195,7 +195,8 @@ class NullableBigDecimalTextFieldValueMapper private constructor(
 
 class NullableCurrencyTextFieldValueMapper @VisibleForTesting constructor(
     private val decimalSeparator: String,
-    private val numberOfDecimals: Int
+    private val numberOfDecimals: Int,
+    private val keepTrailingZeros: Boolean = false
 ) : TextFieldValueMapper<BigDecimal?> {
     private val acceptedChars = "0123456789.$decimalSeparator"
 
@@ -204,7 +205,12 @@ class NullableCurrencyTextFieldValueMapper @VisibleForTesting constructor(
 
     override fun printValue(value: BigDecimal?): String =
         value?.setScale(numberOfDecimals, RoundingMode.HALF_UP)
-            ?.stripTrailingZeros()
+            ?.let {
+                when (keepTrailingZeros) {
+                    true -> it
+                    false -> it.stripTrailingZeros()
+                }
+            }
             ?.toPlainString()
             ?.replace(".", decimalSeparator)
             .orEmpty()
@@ -224,9 +230,10 @@ class NullableCurrencyTextFieldValueMapper @VisibleForTesting constructor(
 
     companion object {
         @Composable
-        fun create(decimalSeparator: String, numberOfDecimals: Int) = remember(decimalSeparator, numberOfDecimals) {
-            NullableCurrencyTextFieldValueMapper(decimalSeparator, numberOfDecimals)
-        }
+        fun create(decimalSeparator: String, numberOfDecimals: Int, keepTrailingZeros: Boolean = false) =
+            remember(decimalSeparator, numberOfDecimals, keepTrailingZeros) {
+                NullableCurrencyTextFieldValueMapper(decimalSeparator, numberOfDecimals, keepTrailingZeros)
+            }
     }
 }
 
