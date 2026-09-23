@@ -2,7 +2,10 @@ package com.woocommerce.android.ui.woopos.home
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionDialog
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderExplainerContent
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupDialog
 
@@ -33,4 +36,17 @@ fun WooPosHomeDialogs(
             onConnectionSuccess = { onHomeUIEvent(WooPosHomeUIEvent.DismissCardReaderConnectionDialog) }
         )
     }
+
+    WooPosDialogWrapper(
+        isVisible = dialogState is WooPosHomeState.DialogState.RemoteTapToPayExplainerDialog,
+        dialogBackgroundContentDescription = stringResource(R.string.woopos_remote_ttp_explainer_title),
+        widthFraction = REMOTE_TAP_TO_PAY_EXPLAINER_WIDTH_FRACTION,
+        onDismissRequest = { onHomeUIEvent(WooPosHomeUIEvent.DismissRemoteTapToPayExplainerDialog) },
+    ) {
+        WooPosRemoteReaderExplainerContent(
+            onDismiss = { onHomeUIEvent(WooPosHomeUIEvent.DismissRemoteTapToPayExplainerDialog) }
+        )
+    }
 }
+
+private const val REMOTE_TAP_TO_PAY_EXPLAINER_WIDTH_FRACTION = 0.6f

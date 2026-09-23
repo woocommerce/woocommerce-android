@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSourceType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundFlow
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundPreconditionReason
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RemoteTapToPayExplainerSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncErrorType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncSkipReason
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
@@ -646,8 +647,14 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        data object RemoteTapToPayExplainerShown : Event() {
+        data class RemoteTapToPayExplainerShown(
+            val source: RemoteTapToPayExplainerSource,
+        ) : Event() {
             override val name: String = "remote_ttp_explainer_shown"
+
+            init {
+                addProperties(mapOf(RemoteTapToPayExplainerSource.SOURCE to source.toString()))
+            }
         }
 
         data object SimpleProductExplanationDialogShown : Event() {

@@ -50,5 +50,8 @@ data class WooPosHomeState(
 
         @Parcelize
         data object CardReaderConnectionDialog : DialogState()
+
+        @Parcelize
+        data object RemoteTapToPayExplainerDialog : DialogState()
     }
 }

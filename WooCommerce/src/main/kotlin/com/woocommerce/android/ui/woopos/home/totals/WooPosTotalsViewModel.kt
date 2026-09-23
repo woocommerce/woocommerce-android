@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosBuiltInReaderConnector
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatus
 import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
+import com.woocommerce.android.ui.woopos.cardreader.WooPosHasConnectedReaderBefore
 import com.woocommerce.android.ui.woopos.cardreader.WooPosIsTapToPayAvailable
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPaymentFlow
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
@@ -93,6 +94,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val builtInReaderConnector: WooPosBuiltInReaderConnector,
     private val remoteReaderPaymentFlow: WooPosRemoteReaderPaymentFlow,
     private val effectiveReaderStatusProvider: WooPosEffectiveReaderStatusProvider,
+    private val hasConnectedReaderBefore: WooPosHasConnectedReaderBefore,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -275,6 +277,14 @@ class WooPosTotalsViewModel @Inject constructor(
             WooPosTotalsUIEvent.ConnectReaderClicked -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.ShowCardReaderConnectionDialog)
+                }
+            }
+
+            is WooPosTotalsUIEvent.RemoteReaderHintClicked -> {
+                viewModelScope.launch {
+                    childrenToParentEventSender.sendToParent(
+                        ChildToParentEvent.ShowRemoteTapToPayExplainer(event.source)
+                    )
                 }
             }
 
@@ -1148,7 +1158,11 @@ class WooPosTotalsViewModel @Inject constructor(
                 priceFormat(dataState.orderTotal)
             )
             uiState.value = WooPosTotalsViewState.PaymentSuccess(
-                orderTotalText = orderTotalText
+                orderTotalText = orderTotalText,
+                showRemoteReaderHint = paymentMethod == PaymentMethod.CASH &&
+                    !hasConnectedReaderBefore() &&
+                    resolveCardPaymentEnabledForCountry() &&
+                    !isTapToPayAvailable(),
             )
         }
     }

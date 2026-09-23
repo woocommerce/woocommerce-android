@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.woopos.cardreader.MissingFineLocationPermissio
 import com.woocommerce.android.ui.woopos.cardreader.WooPosBuiltInReaderConnector
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
+import com.woocommerce.android.ui.woopos.cardreader.WooPosHasConnectedReaderBefore
 import com.woocommerce.android.ui.woopos.cardreader.WooPosIsTapToPayAvailable
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPaymentFlow
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
@@ -195,6 +196,7 @@ class WooPosTotalsViewModelTest {
         on { state }.thenReturn(MutableStateFlow(WooPosRemoteReaderSession.State.Idle))
     }
     private val remoteReaderPaymentFlow: WooPosRemoteReaderPaymentFlow = mock()
+    private val hasConnectedReaderBefore: WooPosHasConnectedReaderBefore = mock()
 
     private fun cartWithCoupon() = listOf(
         WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
@@ -1365,6 +1367,62 @@ class WooPosTotalsViewModelTest {
             val successState = viewModel.state.value as WooPosTotalsViewState.PaymentSuccess
             assertThat(successState.orderTotalText).isEqualTo("Paid 5.00$ in Cash")
         }
+
+    @Test
+    fun `given reader never connected, when paid by cash, then success shows remote reader hint`() = runTest {
+        // GIVEN
+        whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_cash, "5.00$"))
+            .thenReturn("Paid 5.00$ in Cash")
+        whenever(hasConnectedReaderBefore.invoke()).thenReturn(false)
+        whenever(isTapToPayAvailable.invoke()).thenReturn(false)
+        val parentToChildrenEventFlow = MutableStateFlow<ParentToChildrenEvent>(
+            ParentToChildrenEvent.CheckoutClicked(
+                listOf(
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                )
+            )
+        )
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(
+            parentToChildrenEventFlow = parentToChildrenEventFlow,
+        )
+
+        // WHEN
+        parentToChildrenEventFlow.value = ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CASH)
+
+        // THEN
+        val successState = viewModel.state.value as WooPosTotalsViewState.PaymentSuccess
+        assertThat(successState.showRemoteReaderHint).isTrue()
+    }
+
+    @Test
+    fun `given reader connected before, when paid by cash, then success hides remote reader hint`() = runTest {
+        // GIVEN
+        whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_cash, "5.00$"))
+            .thenReturn("Paid 5.00$ in Cash")
+        whenever(hasConnectedReaderBefore.invoke()).thenReturn(true)
+        whenever(isTapToPayAvailable.invoke()).thenReturn(false)
+        val parentToChildrenEventFlow = MutableStateFlow<ParentToChildrenEvent>(
+            ParentToChildrenEvent.CheckoutClicked(
+                listOf(
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                )
+            )
+        )
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(
+            parentToChildrenEventFlow = parentToChildrenEventFlow,
+        )
+
+        // WHEN
+        parentToChildrenEventFlow.value = ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CASH)
+
+        // THEN
+        val successState = viewModel.state.value as WooPosTotalsViewState.PaymentSuccess
+        assertThat(successState.showRemoteReaderHint).isFalse()
+    }
 
     @Test
     fun `given payment success state, when OnBackClicked, then sends OnNewTransactionStarted to parent`() =
@@ -2927,5 +2985,6 @@ class WooPosTotalsViewModelTest {
         builtInReaderConnector = builtInReaderConnector,
         remoteReaderPaymentFlow = remoteReaderPaymentFlow,
         effectiveReaderStatusProvider = WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
+        hasConnectedReaderBefore = hasConnectedReaderBefore,
     )
 }
