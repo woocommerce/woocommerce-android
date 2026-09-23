@@ -56,7 +56,7 @@ enum class CustomFieldContentType {
     companion object {
         fun fromMetadataValue(value: String): CustomFieldContentType {
             return when {
-                // REST API URLs need a nonce, so opening them from a link always fails with an authorization error
+                // REST API URLs are meant for apps: opening one shows raw JSON or an authorization error
                 value.isRestApiUrl() -> TEXT
                 PatternsCompat.WEB_URL.matcher(value).matches() -> URL
                 PatternsCompat.EMAIL_ADDRESS.matcher(value).matches() -> EMAIL
