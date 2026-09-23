@@ -8,7 +8,7 @@
 - [Internal] Push notification analytics now attribute store and plan properties to the notification's origin site instead of the currently selected store [https://github.com/woocommerce/woocommerce-android/pull/16575]
 - [*****] Refreshed My Store, Orders, Products, and the More menu with the new design system — new top app bars, bottom navigation, list styling, and icons [https://github.com/woocommerce/woocommerce-android/pull/16322]
 - [*] Fixed the add product button staying on screen after clearing the product search term [https://github.com/woocommerce/woocommerce-android/pull/16451]
-- [Internal] Card Reader Mode on the phone now tracks when it rejects a Remote Tap to Pay payment from the tablet [https://github.com/woocommerce/woocommerce-android/pull/16584]
+- [Internal] [WEAR] Wear stack traces in Sentry now carry source context: the source bundle uploads to the `woocommerce-wear` project rather than the phone app's [https://github.com/woocommerce/woocommerce-android/pull/16427]
 
 - [*] Card Reader Mode on the phone now explains what it is for before it starts [https://github.com/woocommerce/woocommerce-android/pull/16579]
 - [*] The variations list now shows an error with a retry option when a page of variations fails to load, instead of silently skipping it [https://github.com/woocommerce/woocommerce-android/pull/16580]
@@ -80,7 +80,6 @@
 - [*] You can now apply a gift card when editing an order [https://github.com/woocommerce/woocommerce-android/pull/16445]
 - [Internal] Woo POS analytics: replaced the catch-all "other" reason on the POS ineligible screen with specific reasons, and added the missing orders_list_loaded event [https://github.com/woocommerce/woocommerce-android/pull/16439]
 - [WEAR][*] Order and stats dates on the watch now follow the language's date order [https://github.com/woocommerce/woocommerce-android/pull/16429]
-- [Internal] [WEAR] Wear stack traces in Sentry now carry source context: the source bundle uploads to the `woocommerce-wear` project rather than the phone app's [https://github.com/woocommerce/woocommerce-android/pull/16427]
 - [Internal] Fixed duplicated device registration API calls fired concurrently during login [https://github.com/woocommerce/woocommerce-android/pull/16354]
 - [*] Woo POS: when the store rejects a refund because the order changed - another register refunded part of it - the refund screen now offers to reload the remaining items instead of a retry that cannot succeed [https://github.com/woocommerce/woocommerce-android/pull/16440]
 - [***] Woo POS: on stores running WooCommerce 11.1.0 or newer, refund totals are now calculated by the store instead of on the device [https://github.com/woocommerce/woocommerce-android/pull/16450]
