@@ -117,6 +117,7 @@
             app:argType="string" />
         <argument
             android:name="storeCountryCode"
+            android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
     </fragment>
