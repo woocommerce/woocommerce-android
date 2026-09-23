@@ -53,7 +53,7 @@ class AppPrefsTest {
     }
 
     @Test
-    fun whenAiAssistantEarlyAccessNoticeIsDismissedThenSitePreferencesResetClearsDismissal() {
+    fun `when AI assistant early access notice is dismissed and site preferences are reset, then dismissal is cleared`() {
         AppPrefs.isAiAssistantEarlyAccessNoticeDismissed = true
 
         AppPrefs.resetSitePreferences()
@@ -567,7 +567,7 @@ class AppPrefsTest {
     }
 
     @Test
-    fun givenPOSTabVisibilitySetWhenClearedThenGetterReturnsFalse() {
+    fun `given POS tab visibility set, when cleared, then getter returns false`() {
         // GIVEN
         val siteId = 789
         AppPrefs.setPOSTabVisibilityForSite(siteId)
@@ -581,14 +581,14 @@ class AppPrefsTest {
     }
 
     @Test
-    fun givenPOSLaunchableNotSetWhenIsPOSLaunchableForSiteThenReturnFalseByDefault() {
+    fun `given POS launchable not set, when checking POS launchable for site, then return false by default`() {
         val siteId = 111
 
         assertThat(AppPrefs.isPOSLaunchableForSite(siteId)).isFalse
     }
 
     @Test
-    fun givenSetPOSLaunchableForSiteWhenIsPOSLaunchableForSiteThenReturnTrueOnlyForThatSite() {
+    fun `given POS launchable set for site, when checking POS launchable for site, then return true only for that site`() {
         val siteA = 222
         val siteB = 333
 
@@ -599,7 +599,7 @@ class AppPrefsTest {
     }
 
     @Test
-    fun givenSetPOSLaunchableForSiteWhenClearPOSLaunchableForSiteThenReturnFalse() {
+    fun `given POS launchable set for site, when cleared, then return false`() {
         val siteId = 444
         AppPrefs.setPOSLaunchableForSite(siteId)
         assertThat(AppPrefs.isPOSLaunchableForSite(siteId)).isTrue
@@ -610,19 +610,19 @@ class AppPrefsTest {
     }
 
     @Test
-    fun givenWooPosSurveyNotificationCurrentUserShownNotSetThenReturnFalseByDefault() {
+    fun `given POS survey notification for current user not set, when read, then return false by default`() {
         assertThat(AppPrefs.isWooPosSurveyNotificationCurrentUserShown).isFalse
     }
 
     @Test
-    fun givenWooPosSurveyNotificationCurrentUserShownSetToTrueThenReturnTrue() {
+    fun `given POS survey notification for current user shown, when read, then return true`() {
         AppPrefs.isWooPosSurveyNotificationCurrentUserShown = true
 
         assertThat(AppPrefs.isWooPosSurveyNotificationCurrentUserShown).isTrue
     }
 
     @Test
-    fun givenWooPosSurveyNotificationCurrentUserShownSetToFalseThenReturnFalse() {
+    fun `given POS survey notification for current user set back to false, when read, then return false`() {
         AppPrefs.isWooPosSurveyNotificationCurrentUserShown = true
         AppPrefs.isWooPosSurveyNotificationCurrentUserShown = false
 
@@ -630,19 +630,19 @@ class AppPrefsTest {
     }
 
     @Test
-    fun givenWooPosSurveyNotificationPotentialUserShownNotSetThenReturnFalseByDefault() {
+    fun `given POS survey notification for potential user not set, when read, then return false by default`() {
         assertThat(AppPrefs.isWooPosSurveyNotificationPotentialUserShown).isFalse
     }
 
     @Test
-    fun givenWooPosSurveyNotificationPotentialUserShownSetToTrueThenReturnTrue() {
+    fun `given POS survey notification for potential user shown, when read, then return true`() {
         AppPrefs.isWooPosSurveyNotificationPotentialUserShown = true
 
         assertThat(AppPrefs.isWooPosSurveyNotificationPotentialUserShown).isTrue
     }
 
     @Test
-    fun givenWooPosSurveyNotificationPotentialUserShownSetToFalseThenReturnFalse() {
+    fun `given POS survey notification for potential user set back to false, when read, then return false`() {
         AppPrefs.isWooPosSurveyNotificationPotentialUserShown = true
         AppPrefs.isWooPosSurveyNotificationPotentialUserShown = false
 
@@ -650,14 +650,14 @@ class AppPrefsTest {
     }
 
     @Test
-    fun givenPosFeatureSwitchNeverStoredThenReturnNull() {
+    fun `given POS feature switch never stored, when read, then return null`() {
         assertThat(
             AppPrefs.getPOSFeatureSwitchEnabledForSite(localSiteId = 1, remoteSiteId = 2L, selfHostedSiteId = 0L)
         ).isNull()
     }
 
     @Test
-    fun givenPosFeatureSwitchStoredAsFalseThenReturnFalseRatherThanNull() {
+    fun `given POS feature switch stored as false, when read, then return false rather than null`() {
         AppPrefs.setPOSFeatureSwitchEnabledForSite(
             localSiteId = 1,
             remoteSiteId = 2L,
@@ -671,7 +671,7 @@ class AppPrefsTest {
     }
 
     @Test
-    fun givenTwoSelfHostedSitesWithoutRemoteIdsThenPosFeatureSwitchDoesNotCollide() {
+    fun `given two self-hosted sites without remote ids, when POS feature switch is stored for both, then values do not collide`() {
         AppPrefs.setPOSFeatureSwitchEnabledForSite(
             localSiteId = 1,
             remoteSiteId = 0L,
@@ -694,7 +694,7 @@ class AppPrefsTest {
     }
 
     @Test
-    fun whenUserPreferencesAreResetThenPosFeatureSwitchIsCleared() {
+    fun `when user preferences are reset, then POS feature switch is cleared`() {
         AppPrefs.setPOSFeatureSwitchEnabledForSite(
             localSiteId = 1,
             remoteSiteId = 2L,

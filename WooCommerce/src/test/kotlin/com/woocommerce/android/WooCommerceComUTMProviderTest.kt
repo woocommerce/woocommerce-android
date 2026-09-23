@@ -178,7 +178,7 @@ class WooCommerceComUTMProviderTest {
     }
 
     @Test
-    fun `testCampaignIsAddedAsRawValueWithoutPrefix`() {
+    fun `when campaign is supplied, then it is added as raw value without prefix`() {
         val utmCampaign = "feature_announcement_card"
         val defaultUTMMedium = "woo_android"
         val url = "https://www.woocommerce.com/us/hw"
@@ -197,7 +197,7 @@ class WooCommerceComUTMProviderTest {
     }
 
     @Test
-    fun `testContentIsAddedAsRawValueWithoutPrefix`() {
+    fun `when content is supplied, then it is added as raw value without prefix`() {
         val utmContent = "test_content"
         val defaultUTMMedium = "woo_android"
         val url = "https://www.woocommerce.com/us/hw"
