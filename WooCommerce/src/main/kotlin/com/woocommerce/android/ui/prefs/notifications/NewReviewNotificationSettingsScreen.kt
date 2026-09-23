@@ -27,7 +27,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.prefs.compose.SettingsSectionHeader
 import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsSharedViewModel.Companion.MAX_REVIEW_RATING
 import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsSharedViewModel.Companion.MIN_REVIEW_RATING
@@ -187,7 +187,7 @@ private fun ratingStarColor(isSelected: Boolean, enabled: Boolean): Color {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun NewReviewNotificationSettingsScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         val ratingFilteredReviews =
             NotificationSettingsSharedViewModel.NewReviewNotificationPreference.RatingFilteredReviews
         NewReviewNotificationSettingsScreen(

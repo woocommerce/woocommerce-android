@@ -9,19 +9,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 
 @Composable
 fun StatsInfoFooter(
@@ -35,30 +33,30 @@ fun StatsInfoFooter(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onInfoClick)
-            .padding(dimensionResource(id = R.dimen.major_100)),
+            .padding(WooTheme.padding.padding5),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.bodyMedium,
-            color = colorResource(id = R.color.color_on_surface_medium),
+            style = WooTheme.text.bodyMedium.regular,
+            color = WooTheme.colors.surface.onDefault,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_50)))
+        Spacer(modifier = Modifier.width(WooTheme.spacing.space2))
         Icon(
             painter = painterResource(id = R.drawable.ic_tintable_info_outline_24dp),
             contentDescription = stringResource(id = R.string.dashboard_stats_info_content_description),
-            tint = colorResource(id = R.color.color_primary),
-            modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
+            tint = WooTheme.colors.primary,
+            modifier = Modifier.size(WooTheme.iconSize.size16),
         )
     }
 }
 
-@LightDarkThemePreviews
+@PreviewLightDark
 @Composable
 private fun StatsInfoFooterDelayedPreview() {
-    WooThemeWithBackground {
+    WooDesignSystemThemeWithBackground {
         StatsInfoFooter(
             text = stringResource(id = R.string.dashboard_stats_delayed_footer),
             onInfoClick = {}
@@ -66,10 +64,10 @@ private fun StatsInfoFooterDelayedPreview() {
     }
 }
 
-@LightDarkThemePreviews
+@PreviewLightDark
 @Composable
 private fun StatsInfoFooterLastUpdatePreview() {
-    WooThemeWithBackground {
+    WooDesignSystemThemeWithBackground {
         StatsInfoFooter(
             text = "Last update: 8:52 AM",
             onInfoClick = {}

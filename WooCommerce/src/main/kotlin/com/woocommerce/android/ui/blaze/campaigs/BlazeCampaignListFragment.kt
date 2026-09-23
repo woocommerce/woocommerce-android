@@ -18,7 +18,7 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewFragment
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,9 +28,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class BlazeCampaignListFragment : BaseFragment() {
     override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            hasShadow = false
-        )
+        get() = AppBarStatus.Visible()
 
     @Inject
     lateinit var blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
@@ -43,7 +41,7 @@ class BlazeCampaignListFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     BlazeCampaignListScreen(viewModel)
                 }
             }

@@ -11,8 +11,9 @@ doc defines the technical boundaries that support that rollout.
 - POS is out of scope.
 - Design-system foundations and components live in the Store-only `:libs:store-design-system`
   module, not `:libs:commons`.
-- The first rollout wave migrates Dashboard, Products, Orders, More, top Product Detail, and top Order Detail.
-- Product Detail and Order Detail launched child flows remain out of scope for the first wave.
+- The first rollout wave migrates Dashboard, Products, Orders, More, and top Product Detail.
+- Product Detail launched child flows remain out of scope for the first wave.
+- Order Detail is postponed and remains on its existing XML and legacy Compose implementation.
 - Design-system components are adopted deliberately. Existing screens keep their current behavior and
   styling until migrated or until the legacy theme convergence phase touches safe color/chrome tokens.
 - Figma is the design-intent source of truth. Android owns the runtime API contract.
@@ -100,13 +101,12 @@ rollout wiring should stay outside the module.
 
 ## Theme Root Strategy
 
-Screen migration is explicit: migrated screens opt into the design-system root, and non-migrated
-screens stay on the legacy root. Do not add root-selection indirection to arbitrary/default
-`composeView {}` calls; a screen is migrated by changing its call site to the DS root builder.
-
-During migration work, introduce or use a DS-specific builder such as `designSystemComposeView {}`.
-The controlled root-API rename boundary is defined in [rollout-direction.md](rollout-direction.md);
-keep that file as the source for exact rename steps and audits.
+Screen migration is explicit: migrated Fragment hosts use the design-system-rooted `composeView {}`,
+embedded migrated content uses `setDesignSystemContent {}`, and non-migrated Fragment hosts use
+`legacyComposeView {}`. Legacy previews and manually hosted content use
+`LegacyWooThemeWithBackground {}`. Do not add compatibility aliases or root-selection indirection.
+The final contract and audit requirements are defined in
+[rollout-direction.md](rollout-direction.md).
 
 The Store design-system module still owns pure foundations/components and still does not import app
 `R`, Hilt, POS, or Store feature packages. Do not document a legacy-compatible design-system

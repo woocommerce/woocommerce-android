@@ -187,6 +187,8 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var wooPosRemoteReaderDeviceUUID by AppPrefs::wooPosRemoteReaderDeviceUUID
 
+    var wooPosRemoteReaderPairedOnce by AppPrefs::wooPosRemoteReaderPairedOnce
+
     fun getJetpackBenefitsDismissalDate(): Long {
         return AppPrefs.getJetpackBenefitsDismissalDate()
     }

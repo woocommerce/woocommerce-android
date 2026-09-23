@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.products.selector.SelectionState
 import com.woocommerce.android.ui.products.selector.SelectionState.DISABLED
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
@@ -214,7 +214,7 @@ private fun SelectorListItemInfo(
 @Preview
 @Composable
 private fun SelectorListItemPreviewEnabled() =
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         LazyColumn {
             item {
                 SelectorListItem(
@@ -238,7 +238,7 @@ private fun SelectorListItemPreviewEnabled() =
 @Preview
 @Composable
 private fun SelectorListItemPreviewDisabled() =
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         LazyColumn {
             item {
                 SelectorListItem(
@@ -262,7 +262,7 @@ private fun SelectorListItemPreviewDisabled() =
 @Preview
 @Composable
 private fun SelectorListItemPreviewLoading() =
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         LazyColumn {
             item {
                 SelectorListItem(

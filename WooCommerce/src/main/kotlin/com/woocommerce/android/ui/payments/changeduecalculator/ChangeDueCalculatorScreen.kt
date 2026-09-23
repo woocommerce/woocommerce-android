@@ -43,7 +43,7 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCSwitch
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import java.math.BigDecimal
 
@@ -57,12 +57,14 @@ fun ChangeDueCalculatorScreen(
     onAmountReceivedChanged: (BigDecimal?) -> Unit,
     onRecordTransactionDetailsCheckedChanged: (Boolean) -> Unit
 ) {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
+        val scrollState = rememberScrollState()
         Scaffold(
             topBar = {
                 Toolbar(
                     title = uiState.title,
                     onNavigationButtonClick = onNavigateUp,
+                    showDivider = scrollState.canScrollBackward,
                 )
             }
         ) { paddingValues ->
@@ -77,7 +79,7 @@ fun ChangeDueCalculatorScreen(
                     Column(
                         modifier = Modifier
                             .padding(paddingValues)
-                            .verticalScroll(rememberScrollState())
+                            .verticalScroll(scrollState)
                             .fillMaxSize()
                             .padding(horizontal = 16.dp, vertical = 8.dp),
                         verticalArrangement = Arrangement.Top,

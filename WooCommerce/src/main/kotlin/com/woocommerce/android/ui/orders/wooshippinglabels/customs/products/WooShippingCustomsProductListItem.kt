@@ -51,7 +51,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.getText
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.RoundedBorderDropDownWithLabel
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.InputValue
 
@@ -408,7 +408,7 @@ private fun OriginCountrySelector(
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun WooShippingCustomsProductListCollapsedItemPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Box(Modifier.padding(16.dp)) {
             WooShippingCustomsProductListItem(
                 itemData = WooShippingCustomsProductUIModel(
@@ -441,7 +441,7 @@ fun WooShippingCustomsProductListCollapsedItemPreview() {
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun WooShippingCustomsProductListCollapsedItemErrorPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Box(Modifier.padding(16.dp)) {
             WooShippingCustomsProductListItem(
                 itemData = WooShippingCustomsProductUIModel(
@@ -474,7 +474,7 @@ fun WooShippingCustomsProductListCollapsedItemErrorPreview() {
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun WooShippingCustomsProductListExpandedItemPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Box(Modifier.padding(16.dp)) {
             WooShippingCustomsProductListItem(
                 itemData = WooShippingCustomsProductUIModel(
@@ -507,7 +507,7 @@ fun WooShippingCustomsProductListExpandedItemPreview() {
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun WooShippingCustomsProductListExpandedItemErrorPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Box(Modifier.padding(16.dp)) {
             WooShippingCustomsProductListItem(
                 itemData = WooShippingCustomsProductUIModel(

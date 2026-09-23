@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 /**
  * Fullscreen "Signing you in…" view shown while the QR exchange + site fetch + eligibility check
@@ -51,7 +51,7 @@ fun QrLoginAuthenticatingScreen() {
 @LightDarkThemePreviews
 @Composable
 private fun QrLoginAuthenticatingScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         QrLoginAuthenticatingScreen()
     }
 }

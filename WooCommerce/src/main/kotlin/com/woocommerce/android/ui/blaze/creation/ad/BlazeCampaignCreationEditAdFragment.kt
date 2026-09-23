@@ -18,7 +18,7 @@ import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdV
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.ShowMediaLibrary
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.ShowProductImagePicker
 import com.woocommerce.android.ui.blaze.creation.ad.ProductImagePickerViewModel.ImageSelectedResult
-import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.compose.legacyComposeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -41,7 +41,7 @@ class BlazeCampaignCreationEditAdFragment : BaseFragment(), MediaPickerResultHan
     lateinit var mediaPickerHelper: MediaPickerHelper
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return composeView {
+        return legacyComposeView {
             BlazeCampaignCreationPreviewScreen(viewModel = viewModel)
         }
     }

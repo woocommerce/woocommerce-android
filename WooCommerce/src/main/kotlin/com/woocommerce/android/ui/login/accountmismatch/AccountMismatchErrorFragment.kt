@@ -15,7 +15,7 @@ import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment.Listener
@@ -52,7 +52,7 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     AccountMismatchErrorScreen(viewModel)
                 }
             }

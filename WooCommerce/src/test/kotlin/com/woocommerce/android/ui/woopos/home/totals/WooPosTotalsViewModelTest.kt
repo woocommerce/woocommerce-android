@@ -53,6 +53,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ReturnedFromCar
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.WooPosOrderCreatedData
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
@@ -86,6 +87,7 @@ import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
@@ -710,6 +712,95 @@ class WooPosTotalsViewModelTest {
             )
         )
     }
+
+    @Test
+    fun `given order with discounted line item, when order created, then discounted flags are sent to cart`() =
+        runTest {
+            // GIVEN
+            val orderItems = listOf(
+                Order.Item.EMPTY.copy(productId = 1L, subtotal = BigDecimal("1.00"), total = BigDecimal("1.00")),
+                Order.Item.EMPTY.copy(productId = 2L, subtotal = BigDecimal("1.00"), total = BigDecimal("0.50")),
+            )
+
+            // WHEN
+            createViewModelAndSetupForSuccessfulOrderCreation(
+                itemClickedData = listOf(
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                ),
+                orderItems = orderItems,
+            )
+            advanceUntilIdle()
+
+            // THEN
+            val captor = argumentCaptor<ChildToParentEvent>()
+            verify(childrenToParentEventSender, atLeastOnce()).sendToParent(captor.capture())
+            val orderCreated = captor.allValues.filterIsInstance<ChildToParentEvent.OrderCreated>().single()
+            assertThat(orderCreated.data.updatedProducts.map { it.discounted }).containsExactly(false, true)
+        }
+
+    @Test
+    fun `given order with discounted variation line item, when order created, then discounted flags are sent to cart`() =
+        runTest {
+            // GIVEN
+            val orderItems = listOf(
+                Order.Item.EMPTY.copy(
+                    productId = 100L,
+                    variationId = 101L,
+                    subtotal = BigDecimal("1.00"),
+                    total = BigDecimal("1.00")
+                ),
+                Order.Item.EMPTY.copy(
+                    productId = 100L,
+                    variationId = 102L,
+                    subtotal = BigDecimal("1.00"),
+                    total = BigDecimal("0.50")
+                ),
+            )
+
+            // WHEN
+            createViewModelAndSetupForSuccessfulOrderCreation(
+                itemClickedData = listOf(
+                    WooPosItemsViewModel.ItemClickedData.Product.Variation(productId = 100L, id = 101L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Variation(productId = 100L, id = 102L),
+                ),
+                orderItems = orderItems,
+            )
+            advanceUntilIdle()
+
+            // THEN
+            val captor = argumentCaptor<ChildToParentEvent>()
+            verify(childrenToParentEventSender, atLeastOnce()).sendToParent(captor.capture())
+            val orderCreated = captor.allValues.filterIsInstance<ChildToParentEvent.OrderCreated>().single()
+            val updatedVariations = orderCreated.data.updatedProducts
+                .filterIsInstance<WooPosOrderCreatedData.ProductInfo.Variation>()
+            assertThat(updatedVariations.map { it.variationId to it.discounted })
+                .containsExactly(101L to false, 102L to true)
+        }
+
+    @Test
+    fun `given line item with rounding delta only, when order created, then discounted flag is false`() =
+        runTest {
+            // GIVEN
+            val orderItems = listOf(
+                Order.Item.EMPTY.copy(productId = 1L, subtotal = BigDecimal("1.00"), total = BigDecimal("0.999")),
+            )
+
+            // WHEN
+            createViewModelAndSetupForSuccessfulOrderCreation(
+                itemClickedData = listOf(
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                ),
+                orderItems = orderItems,
+            )
+            advanceUntilIdle()
+
+            // THEN
+            val captor = argumentCaptor<ChildToParentEvent>()
+            verify(childrenToParentEventSender, atLeastOnce()).sendToParent(captor.capture())
+            val orderCreated = captor.allValues.filterIsInstance<ChildToParentEvent.OrderCreated>().single()
+            assertThat(orderCreated.data.updatedProducts.map { it.discounted }).containsExactly(false)
+        }
 
     @Test
     fun `given reader not connected, when checkout clicked, then should show error`() = runTest {

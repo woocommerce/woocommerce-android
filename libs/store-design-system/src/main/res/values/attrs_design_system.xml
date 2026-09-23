@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="WooDesignSystemToolbar">
+        <attr name="wooToolbarConfiguration" format="enum">
+            <enum name="small" value="0" />
+            <enum name="medium" value="1" />
+        </attr>
+        <attr name="wooToolbarTitleAlignment" format="enum">
+            <enum name="start" value="0" />
+            <enum name="center" value="1" />
+        </attr>
+        <attr name="wooToolbarSupportingText" format="string" />
+        <attr name="wooToolbarDividerMode" format="enum">
+            <enum name="auto" value="0" />
+            <enum name="always" value="1" />
+            <enum name="never" value="2" />
+        </attr>
+        <attr name="wooToolbarScrollTarget" format="reference" />
+    </declare-styleable>
+</resources>

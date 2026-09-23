@@ -12,17 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -37,11 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -54,7 +46,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
+import com.woocommerce.android.ui.compose.designsystem.component.WooModalBottomSheet
+import com.woocommerce.android.ui.compose.designsystem.component.WooModalBottomSheetState
+import com.woocommerce.android.ui.compose.designsystem.component.WooSegmentControl
+import com.woocommerce.android.ui.compose.designsystem.component.rememberWooModalBottomSheetDismisser
+import com.woocommerce.android.ui.compose.designsystem.component.rememberWooModalBottomSheetState
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
@@ -82,14 +80,20 @@ fun DashboardStatsCard(
         }
     )
 ) {
+    val orderDateTypeState by viewModel.orderDateTypeState.collectAsStateWithLifecycle()
+    var showOrderDateTypeBottomSheet by rememberSaveable { mutableStateOf(false) }
+    val orderDateTypeBottomSheetState = rememberWooModalBottomSheetState(skipPartiallyExpanded = true)
+    val orderDateTypeBottomSheetDismisser = rememberWooModalBottomSheetDismisser(
+        state = orderDateTypeBottomSheetState,
+    ) {
+        showOrderDateTypeBottomSheet = false
+    }
     val dateRange = viewModel.dateRangeState.observeAsState().value ?: return
     val revenueStatsState by viewModel.revenueStatsState.observeAsState()
     val visitorsStatsState by viewModel.visitorStatsState.observeAsState()
     val lastUpdateState by viewModel.lastUpdateStats.observeAsState()
     val isScheduledImportEnabled by parentViewModel.isScheduledImportEnabled.observeAsState(false)
     val selectedRevenueStatsType = viewModel.selectedRevenueStatsType.observeAsState().value ?: return
-    val orderDateTypeState by viewModel.orderDateTypeState.collectAsStateWithLifecycle()
-    var showOrderDateTypeBottomSheet by rememberSaveable { mutableStateOf(false) }
 
     HandleEvents(
         event = viewModel.event,
@@ -161,12 +165,15 @@ fun DashboardStatsCard(
     if (showOrderDateTypeBottomSheet) {
         OrderDateTypeBottomSheet(
             state = orderDateTypeState,
-            onDismiss = { showOrderDateTypeBottomSheet = false },
+            sheetState = orderDateTypeBottomSheetState,
+            isDismissing = orderDateTypeBottomSheetDismisser.isDismissing,
+            onDismissRequest = { showOrderDateTypeBottomSheet = false },
             onSelect = { orderDateType ->
-                viewModel.onOrderDateTypeSelected(orderDateType) {
-                    showOrderDateTypeBottomSheet = false
-                }
-            }
+                viewModel.onOrderDateTypeSelected(
+                    orderDateType = orderDateType,
+                    onSuccess = orderDateTypeBottomSheetDismisser::dismiss,
+                )
+            },
         )
     }
 }
@@ -199,7 +206,7 @@ private fun DashboardStatsContent(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Divider()
+        WooDivider()
 
         RevenueStatsTypeSelector(
             selectedType = selectedRevenueStatsType,
@@ -329,7 +336,6 @@ private fun StatsChart(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RevenueStatsTypeSelector(
     selectedType: DashboardStatsViewModel.RevenueStatsType,
@@ -337,47 +343,32 @@ private fun RevenueStatsTypeSelector(
     modifier: Modifier = Modifier
 ) {
     val options = DashboardStatsViewModel.RevenueStatsType.OPTIONS
-    val segmentedButtonColors = SegmentedButtonDefaults.colors(
-        activeContainerColor = colorResource(id = R.color.color_primary),
-        activeContentColor = colorResource(id = R.color.woo_white),
+    WooSegmentControl(
+        options = options.map { stringResource(id = it.labelRes) },
+        selectedIndex = options.indexOf(selectedType),
+        onSelectedIndexChange = { onTypeSelected(options[it]) },
+        modifier = modifier.padding(
+            start = WooTheme.padding.padding5,
+            top = WooTheme.padding.padding3,
+            end = WooTheme.padding.padding5,
+            bottom = WooTheme.padding.padding2,
+        ),
     )
-
-    SingleChoiceSegmentedButtonRow(
-        modifier = modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 4.dp)
-    ) {
-        options.forEachIndexed { index, type ->
-            SegmentedButton(
-                selected = selectedType == type,
-                onClick = { onTypeSelected(type) },
-                shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
-                colors = segmentedButtonColors,
-                icon = {},
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = stringResource(id = type.labelRes),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-        }
-    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun OrderDateTypeBottomSheet(
     state: DashboardStatsViewModel.OrderDateTypeUiState,
-    onDismiss: () -> Unit,
+    sheetState: WooModalBottomSheetState,
+    isDismissing: Boolean,
+    onDismissRequest: () -> Unit,
     onSelect: (WCAnalyticsOrderDateType) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-    WCModalBottomSheet(
-        sheetState = sheetState,
-        onDismissRequest = onDismiss,
-        modifier = modifier
+    WooModalBottomSheet(
+        state = sheetState,
+        onDismissRequest = onDismissRequest,
+        modifier = modifier,
     ) {
         Column(
             modifier = Modifier
@@ -387,9 +378,8 @@ private fun OrderDateTypeBottomSheet(
             Text(
                 modifier = Modifier.padding(horizontal = 24.dp),
                 text = stringResource(id = R.string.dashboard_stats_order_date_type_sheet_title),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                style = WooTheme.text.titleLarge.strong,
+                color = WooTheme.colors.surface.onDefault,
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -397,8 +387,8 @@ private fun OrderDateTypeBottomSheet(
             Text(
                 modifier = Modifier.padding(horizontal = 24.dp),
                 text = stringResource(id = R.string.dashboard_stats_order_date_type_sheet_description),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface
+                style = WooTheme.text.bodyLarge.regular,
+                color = WooTheme.colors.surface.onDefault,
             )
 
             Spacer(modifier = Modifier.height(28.dp))
@@ -407,18 +397,24 @@ private fun OrderDateTypeBottomSheet(
                 OrderDateTypeOptionRow(
                     option = option,
                     state = state,
-                    onDismiss = onDismiss,
-                    onSelect = onSelect
+                    isDismissing = isDismissing,
+                    onSelect = onSelect,
                 )
             }
 
             if (state.hasUpdateError) {
-                Text(
+                Surface(
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
-                    text = stringResource(id = R.string.dashboard_stats_order_date_type_update_error),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.error
-                )
+                    color = WooTheme.colors.status.errorContainer,
+                    contentColor = WooTheme.colors.status.onErrorContainer,
+                    shape = RoundedCornerShape(WooTheme.radius.medium),
+                ) {
+                    Text(
+                        modifier = Modifier.padding(horizontal = WooTheme.padding.padding3),
+                        text = stringResource(id = R.string.dashboard_stats_order_date_type_update_error),
+                        style = WooTheme.text.bodyMedium.regular,
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -426,8 +422,8 @@ private fun OrderDateTypeBottomSheet(
             Text(
                 modifier = Modifier.padding(horizontal = 24.dp),
                 text = stringResource(id = R.string.dashboard_stats_order_date_type_sheet_footer),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = WooTheme.text.bodySmall.regular,
+                color = WooTheme.colors.surface.onDefault,
             )
         }
     }
@@ -437,23 +433,19 @@ private fun OrderDateTypeBottomSheet(
 private fun OrderDateTypeOptionRow(
     option: OrderDateTypeOption,
     state: DashboardStatsViewModel.OrderDateTypeUiState,
-    onDismiss: () -> Unit,
+    isDismissing: Boolean,
     onSelect: (WCAnalyticsOrderDateType) -> Unit
 ) {
     val isSelected = state.selectedType == option.type
     val isUpdating = state.updatingType == option.type
-    val isEnabled = state.updatingType == null && !state.isLoading
+    val isEnabled = state.updatingType == null && !state.isLoading && !isDismissing
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = 60.dp)
             .clickable(enabled = isEnabled) {
-                if (isSelected) {
-                    onDismiss()
-                } else {
-                    onSelect(option.type)
-                }
+                onSelect(option.type)
             }
             .padding(horizontal = 24.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -461,17 +453,16 @@ private fun OrderDateTypeOptionRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = stringResource(id = option.title),
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface
+                style = WooTheme.text.bodyLarge.emphasized,
+                color = WooTheme.colors.surface.onDefault,
             )
 
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 text = stringResource(id = option.description),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = WooTheme.text.bodyMedium.regular,
+                color = WooTheme.colors.surface.onDefault,
             )
         }
 
@@ -479,15 +470,16 @@ private fun OrderDateTypeOptionRow(
 
         when {
             isUpdating -> CircularProgressIndicator(
+                color = WooTheme.colors.primary,
                 modifier = Modifier.size(24.dp),
-                strokeWidth = 2.dp
+                strokeWidth = 2.dp,
             )
 
             isSelected -> Icon(
                 modifier = Modifier.size(18.dp),
                 imageVector = ImageVector.vectorResource(R.drawable.ic_check),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
+                tint = WooTheme.colors.primary,
             )
         }
     }

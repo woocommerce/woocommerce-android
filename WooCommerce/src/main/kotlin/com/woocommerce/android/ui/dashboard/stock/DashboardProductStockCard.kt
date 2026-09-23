@@ -10,19 +10,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -34,9 +31,11 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
-import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.dashboard.DashboardFilterableCardHeader
+import com.woocommerce.android.ui.dashboard.DashboardSkeleton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WCAnalyticsNotAvailableErrorView
@@ -164,7 +163,7 @@ private fun ProductStockLoading(
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                SkeletonView(
+                DashboardSkeleton(
                     modifier = Modifier
                         .height(42.dp)
                         .width(42.dp)
@@ -176,10 +175,10 @@ private fun ProductStockLoading(
                         .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    SkeletonView(width = 240.dp, height = 16.dp)
-                    SkeletonView(width = 140.dp, height = 12.dp)
+                    DashboardSkeleton(width = 240.dp, height = 16.dp)
+                    DashboardSkeleton(width = 140.dp, height = 12.dp)
                 }
-                SkeletonView(width = 20.dp, height = 14.dp)
+                DashboardSkeleton(width = 20.dp, height = 14.dp)
             }
         }
     }
@@ -199,25 +198,52 @@ private fun ProductStockCardContent(
             Text(
                 modifier = Modifier.weight(1f),
                 text = stringResource(id = R.string.dashboard_product_stock_products),
-                style = MaterialTheme.typography.body2,
-                color = colorResource(id = R.color.color_on_surface_medium_selector),
-                fontWeight = FontWeight.SemiBold,
+                style = WooTheme.text.bodyMedium.emphasized,
+                color = WooTheme.colors.surface.onDefault,
             )
             Text(
                 text = stringResource(id = R.string.dashboard_product_stock_levels),
-                style = MaterialTheme.typography.body2,
-                color = colorResource(id = R.color.color_on_surface_medium_selector),
-                fontWeight = FontWeight.SemiBold,
+                style = WooTheme.text.bodyMedium.emphasized,
+                color = WooTheme.colors.surface.onDefault,
             )
         }
         when {
             productStockItems.isEmpty() -> StockEmptyView()
             else -> productStockItems.forEachIndexed { index, product ->
-                ProductStockRow(
-                    product = product,
-                    onItemClicked = onProductClicked,
-                    displayDivider = index != productStockItems.size - 1
-                )
+                ProductSummaryRow(
+                    title = product.name,
+                    imageUrl = product.imageUrl,
+                    onClick = { onProductClicked(product) },
+                    displayDivider = index != productStockItems.size - 1,
+                    trailingContent = {
+                        Surface(
+                            color = WooTheme.colors.status.errorContainer,
+                            contentColor = WooTheme.colors.status.onErrorContainer,
+                            shape = RoundedCornerShape(WooTheme.radius.medium),
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(horizontal = WooTheme.padding.padding2),
+                                text = product.stockQuantity,
+                                style = WooTheme.text.titleMedium.regular,
+                            )
+                        }
+                    },
+                ) {
+                    ProductSummaryRowInfo(
+                        text = when {
+                            product.itemsSold == 0 -> {
+                                stringResource(R.string.dashboard_product_stock_no_sales_last_30_days)
+                            }
+                            else -> stringResource(
+                                R.string.dashboard_product_stock_sales_last_30_days,
+                                product.itemsSold,
+                            )
+                        },
+                        maxLines = Int.MAX_VALUE,
+                        overflow = TextOverflow.Clip,
+                        style = WooTheme.text.bodyMedium.regular,
+                    )
+                }
             }
         }
     }
@@ -242,42 +268,9 @@ fun StockEmptyView(modifier: Modifier = Modifier) {
 
         Text(
             text = stringResource(id = R.string.dashboard_product_stock_empty_products),
-            style = MaterialTheme.typography.body1,
+            style = WooTheme.text.bodyLarge.regular,
+            color = WooTheme.colors.surface.onDefault,
             textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
-fun ProductStockRow(
-    product: DashboardProductStockViewModel.ProductStockUiItem,
-    onItemClicked: (DashboardProductStockViewModel.ProductStockUiItem) -> Unit,
-    displayDivider: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    ProductSummaryRow(
-        title = product.name,
-        imageUrl = product.imageUrl,
-        onClick = { onItemClicked(product) },
-        displayDivider = displayDivider,
-        modifier = modifier,
-        trailingContent = {
-            Text(
-                text = product.stockQuantity,
-                color = colorResource(id = R.color.color_error),
-                style = MaterialTheme.typography.subtitle1,
-            )
-        },
-    ) {
-        ProductSummaryRowInfo(
-            text = when {
-                product.itemsSold == 0 -> stringResource(R.string.dashboard_product_stock_no_sales_last_30_days)
-                else -> stringResource(R.string.dashboard_product_stock_sales_last_30_days, product.itemsSold)
-            },
-            color = colorResource(id = R.color.color_on_surface_medium_selector),
-            maxLines = Int.MAX_VALUE,
-            overflow = TextOverflow.Clip,
-            style = MaterialTheme.typography.body2,
         )
     }
 }
@@ -296,6 +289,6 @@ private fun Header(
             onFilterSelected = onFilterSelected,
             mapper = { stringResource(id = it.stringResource) }
         )
-        Divider()
+        WooDivider()
     }
 }

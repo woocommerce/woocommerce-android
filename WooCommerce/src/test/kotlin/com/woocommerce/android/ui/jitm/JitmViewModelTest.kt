@@ -175,7 +175,7 @@ class JitmViewModelTest : BaseUnitTest() {
             assertThat(
                 (sut.jitmState.value as JitmState.Banner).badgeIcon
             ).isEqualTo(
-                JitmState.Banner.LabelOrRemoteIcon.Remote(imageUrl, imageDarkUrl)
+                JitmState.Banner.RemoteIcon(imageUrl, imageDarkUrl)
             )
             assertThat(
                 (sut.jitmState.value as JitmState.Banner).backgroundImage
@@ -205,7 +205,7 @@ class JitmViewModelTest : BaseUnitTest() {
             assertThat(
                 (sut.jitmState.value as JitmState.Banner).badgeIcon
             ).isEqualTo(
-                JitmState.Banner.LabelOrRemoteIcon.Remote(imageUrl, imageUrl)
+                JitmState.Banner.RemoteIcon(imageUrl, imageUrl)
             )
             assertThat(
                 (sut.jitmState.value as JitmState.Banner).backgroundImage
