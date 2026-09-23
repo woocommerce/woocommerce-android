@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -47,9 +48,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
     fun `when formatting rounded currency, then use the current app locale`() = runTest {
         // GIVEN
         setupSitesFlow()
-        val site = SiteModel()
-        whenever(selectedSite.get()).thenReturn(site)
-        whenever(wcStore.formatCurrencyForDisplay(any<String>(), eq(site), eq("TRY"), eq(false)))
+        whenever(wcStore.formatCurrencyForDisplay(any<String>(), anyOrNull(), eq("TRY"), eq(false)))
             .thenAnswer { "₺${it.getArgument<String>(0)}" }
         val amountsByLocale = mapOf(
             Locale.forLanguageTag("tr-TR") to "4 B",
@@ -73,9 +72,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
     fun `when formatting rounded currency, then round the amount without narrowing to Int`() = runTest {
         // GIVEN
         setupSitesFlow()
-        val site = SiteModel()
-        whenever(selectedSite.get()).thenReturn(site)
-        whenever(wcStore.formatCurrencyForDisplay(any<String>(), eq(site), eq("USD"), eq(false)))
+        whenever(wcStore.formatCurrencyForDisplay(any<String>(), anyOrNull(), eq("USD"), eq(false)))
             .thenAnswer { it.getArgument<String>(0) }
         val amounts = listOf(
             Triple(0.0, 0L, "0"),
@@ -100,9 +97,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
     fun `given an RTL locale, when formatting negative currency, then pass a leading minus to the store`() = runTest {
         // GIVEN
         setupSitesFlow()
-        val site = SiteModel()
         val locale = Locale.forLanguageTag("he-IL")
-        whenever(selectedSite.get()).thenReturn(site)
         whenever(localeProvider.provideLocale()).thenReturn(locale)
         whenever(numberExtensionsWrapper.compactNumberCompat(any(), eq(locale))).thenAnswer {
             when (it.getArgument<Long>(0) < 0) {
@@ -110,7 +105,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
                 false -> "4K"
             }
         }
-        whenever(wcStore.formatCurrencyForDisplay(any<String>(), eq(site), eq("TRY"), eq(false)))
+        whenever(wcStore.formatCurrencyForDisplay(any<String>(), anyOrNull(), eq("TRY"), eq(false)))
             .thenAnswer { it.getArgument<String>(0) }
 
         // WHEN
@@ -181,6 +176,33 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             advanceTimeBy(100)
             result = formatter.formatAmountWithCurrency(100.0)
             assertThat(result).contains("£")
+        }
+
+    @Test
+    fun `when formatting currency, then use the settings of the observed selected site`() =
+        runTest {
+            // GIVEN
+            val site = SiteModel().also { it.id = 1 }
+            val eurSettings = generateSettings(LocalId(1)).copy(currencyCode = "EUR")
+            whenever(selectedSite.observe()).thenReturn(flowOf(site))
+            whenever(wcStore.observeAllSiteSettings()).thenReturn(MutableStateFlow(mapOf(LocalId(1) to eurSettings)))
+            whenever(wcStore.formatCurrencyForDisplay("5.00", eurSettings, "EUR", true)).thenReturn("€5.00")
+            formatter = CurrencyFormatter(
+                wcStore = wcStore,
+                selectedSite = selectedSite,
+                siteIndependentCurrencyFormatter = siteIndependentCurrencyFormatter,
+                appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
+                dispatchers = coroutinesTestRule.testDispatchers,
+                numberExtensionsWrapper = numberExtensionsWrapper,
+                localeProvider = localeProvider
+            )
+            advanceTimeBy(100)
+
+            // WHEN
+            val result = formatter.formatCurrency("5.00")
+
+            // THEN
+            assertThat(result).isEqualTo("€5.00")
         }
 
     @Test

@@ -6,12 +6,16 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.settings.Settings
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Currency
@@ -33,20 +37,25 @@ class CurrencyFormatter @Inject constructor(
 ) {
     private var defaultCurrencyCode = ""
 
+    private val selectedSiteWithSettings: StateFlow<Pair<SiteModel, Settings?>?> = combine(
+        selectedSite.observe().filterNotNull(),
+        wcStore.observeAllSiteSettings()
+    ) { site, settingsMap ->
+        site to settingsMap[LocalId(site.id)]
+    }
+        .flowOn(dispatchers.io)
+        .stateIn(appCoroutineScope, SharingStarted.Eagerly, null)
+
+    private val selectedSiteSettings: Settings?
+        get() = selectedSiteWithSettings.value?.second
+
     init {
         appCoroutineScope.launch {
-            combine(
-                selectedSite.observe().filterNotNull(),
-                wcStore.observeAllSiteSettings()
-            ) { site, settingsMap ->
-                site to (settingsMap[LocalId(site.id)]?.currencyCode ?: "")
-            }
-                .flowOn(dispatchers.io)
-                .collect { (site, currencyCode) ->
-                    defaultCurrencyCode = currencyCode.ifEmpty {
-                        getOrFetchCurrencyCode(site)
-                    }
+            selectedSiteWithSettings.filterNotNull().collect { (site, settings) ->
+                defaultCurrencyCode = settings?.currencyCode.orEmpty().ifEmpty {
+                    getOrFetchCurrencyCode(site)
                 }
+            }
         }
     }
 
@@ -79,7 +88,7 @@ class CurrencyFormatter @Inject constructor(
         rawValue: String,
         currencyCode: String = defaultCurrencyCode,
         applyDecimalFormatting: Boolean = true
-    ) = wcStore.formatCurrencyForDisplay(rawValue, selectedSite.get(), currencyCode, applyDecimalFormatting)
+    ) = wcStore.formatCurrencyForDisplay(rawValue, selectedSiteSettings, currencyCode, applyDecimalFormatting)
 
     /**
      * Formats the amount for display based on the WooCommerce site settings.
@@ -120,7 +129,7 @@ class CurrencyFormatter @Inject constructor(
             true -> "-$compactValue"
             false -> compactValue
         }
-        return wcStore.formatCurrencyForDisplay(displayFormatted, selectedSite.get(), currencyCode, false)
+        return wcStore.formatCurrencyForDisplay(displayFormatted, selectedSiteSettings, currencyCode, false)
     }
 
     /**
