@@ -52,6 +52,7 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBanner
 import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBannerTone
 import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButtonDemo
+import com.woocommerce.android.ui.compose.designsystem.component.WooOverflowMenuItem
 import com.woocommerce.android.ui.compose.designsystem.component.WooProgressIndicatorDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooSearchField
 import com.woocommerce.android.ui.compose.designsystem.component.WooSearchFieldDemo
@@ -450,6 +451,10 @@ private fun ProductionTopAppHeaderCatalogLeaf() {
                     contentDescription = "Open",
                     onClick = {},
                 )
+                OverflowAction(contentDescription = "More options") { dismiss ->
+                    WooOverflowMenuItem(text = "Share", onClick = dismiss)
+                    WooOverflowMenuItem(text = "Delete", onClick = dismiss, isDestructive = true)
+                }
             },
         )
         CatalogBodyText(

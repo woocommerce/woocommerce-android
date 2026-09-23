@@ -48,7 +48,7 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleDown
 import com.woocommerce.android.ui.compose.designsystem.icons.BarcodeScan
 import com.woocommerce.android.ui.compose.designsystem.icons.BarsFilter
-import com.woocommerce.android.ui.compose.designsystem.icons.Ellipsis
+import com.woocommerce.android.ui.compose.designsystem.icons.EllipsisVertical
 import com.woocommerce.android.ui.compose.designsystem.icons.MagnifyingGlass
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 import com.woocommerce.android.ui.compose.designsystem.icons.Xmark
@@ -253,7 +253,7 @@ private fun OrderSelectionOverflowMenu(
 
     Box {
         WooIconButton(
-            imageVector = WooIcons.Regular.Ellipsis,
+            imageVector = WooIcons.Regular.EllipsisVertical,
             contentDescription = stringResource(R.string.more_options),
             onClick = { isExpanded = true },
             modifier = Modifier.testTag(OrderListTestTags.SELECTION_OVERFLOW),
