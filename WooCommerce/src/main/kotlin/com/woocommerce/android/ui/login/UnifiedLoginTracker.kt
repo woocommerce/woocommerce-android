@@ -34,7 +34,8 @@ class UnifiedLoginTracker
     @JvmOverloads
     fun track(
         flow: Flow? = currentFlow,
-        step: Step
+        step: Step,
+        properties: Map<String, String> = emptyMap()
     ) {
         currentFlow = flow
         if (step == Step.HELP) {
@@ -45,7 +46,7 @@ class UnifiedLoginTracker
         if (currentFlow != null && currentStep != null) {
             analyticsTracker.track(
                 stat = AnalyticsEvent.UNIFIED_LOGIN_STEP,
-                properties = buildDefaultParams()
+                properties = buildDefaultParams().apply { putAll(properties) }
             )
         } else {
             handleMissingFlowOrStep("step: ${step.value}")
@@ -144,6 +145,7 @@ class UnifiedLoginTracker
         LOGIN_PASSWORD("login_password"),
         LOGIN_STORE_CREDS("login_store_creds"),
         LOGIN_SITE_ADDRESS("login_site_address"),
+        SITE_DISCOVERY("site_discovery"),
         SIGNUP("signup"),
         GOOGLE_SIGNUP("google_signup"),
         EPILOGUE("epilogue"),
@@ -167,6 +169,7 @@ class UnifiedLoginTracker
         NO_WOO_STORES("no_woo_stores"),
         SITE_LIST("site_list"),
         JETPACK_NOT_CONNECTED("jetpack_not_connected"),
+        JETPACK_NOT_INSTALLED("jetpack_not_installed"),
         NOT_WOO_STORE("not_woo_store"),
         NO_WPCOM_ACCOUNT_FOUND("no_wpcom_account_found"),
         NOT_WORDPRESS_SITE("not_wordpress_site"),
