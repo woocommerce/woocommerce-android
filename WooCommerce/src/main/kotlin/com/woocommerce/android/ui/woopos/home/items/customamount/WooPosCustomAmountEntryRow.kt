@@ -12,12 +12,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +38,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -80,24 +77,12 @@ fun WooPosCustomAmountEntryRow(
                     .heightIn(min = WooPosComponentSize.Large.value),
                 contentAlignment = Alignment.Center,
             ) {
-                Box {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_shoppingmode_24dp),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(44.dp.toAdaptiveIconSize()),
-                    )
-                    Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_add_circle_filled_24dp),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .offset(x = WooPosSpacing.Small.value, y = 6.dp.toAdaptiveIconSize())
-                            .size(WooPosIconSize.Small.value)
-                            .background(MaterialTheme.colorScheme.surfaceContainerLow, CircleShape),
-                    )
-                }
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_new_label_24dp),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(44.dp.toAdaptiveIconSize()),
+                )
             }
 
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
