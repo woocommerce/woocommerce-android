@@ -376,7 +376,7 @@ class PaymentsFlowTracker @Inject constructor(
         track(eventProvider.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS, getAndResetFlowsDuration())
     }
 
-    fun trackPaymentSucceeded(order: Order) {
+    suspend fun trackPaymentSucceeded(order: Order) {
         track(eventProvider.paymentSuccessEvent(order), getAndResetFlowsDuration())
     }
 

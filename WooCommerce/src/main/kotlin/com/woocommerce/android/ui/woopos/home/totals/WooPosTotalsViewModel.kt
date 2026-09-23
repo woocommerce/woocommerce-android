@@ -167,10 +167,12 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun trackTapToPayUnavailableReasonIfNeeded() {
         if (!isTapToPayAvailable.isFeatureFlagEnabled()) return
-        when (val result = tapToPayAvailabilityStatus()) {
-            is TapToPayAvailabilityStatus.Result.NotAvailable ->
-                paymentsFlowTracker.trackTapToPayNotAvailableReason(result, TAP_TO_PAY_SOURCE)
-            else -> Unit
+        viewModelScope.launch {
+            when (val result = tapToPayAvailabilityStatus()) {
+                is TapToPayAvailabilityStatus.Result.NotAvailable ->
+                    paymentsFlowTracker.trackTapToPayNotAvailableReason(result, TAP_TO_PAY_SOURCE)
+                else -> Unit
+            }
         }
     }
 

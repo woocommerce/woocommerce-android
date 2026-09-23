@@ -175,7 +175,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
             .thenReturn(WooPlugin(installed, active, version))
     }
 
-    private fun givenStoreCountryCode(countryCode: String) {
+    private suspend fun givenStoreCountryCode(countryCode: String) {
         whenever(orderDetailRepository.getStoreCountryCode())
             .thenReturn(countryCode)
     }

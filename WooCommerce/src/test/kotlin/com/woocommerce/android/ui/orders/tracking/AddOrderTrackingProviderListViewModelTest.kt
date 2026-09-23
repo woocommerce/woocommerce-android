@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.tracking
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.OrderShipmentProvider
-import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListViewModel.ViewState
 import com.woocommerce.android.ui.orders.tracking.OrderShipmentProvidersRepository.OrderShipmentProvidersFetchException
 import com.woocommerce.android.ui.orders.tracking.OrderShipmentProvidersRepository.OrderShipmentProvidersFetchResult
@@ -29,7 +28,6 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
         private const val ORDER_ID = 1L
     }
 
-    private val orderDetailRepository: OrderDetailRepository = mock()
     private val shipmentProvidersRepository: OrderShipmentProvidersRepository = mock()
     private val resourceProvider: ResourceProvider = mock()
 
@@ -41,12 +39,14 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: AddOrderTrackingProviderListViewModel
 
-    private val savedState = AddOrderTrackingProviderListFragmentArgs(orderId = ORDER_ID).toSavedStateHandle()
+    private val savedState = AddOrderTrackingProviderListFragmentArgs(
+        orderId = ORDER_ID,
+        storeCountryCode = "US",
+    ).toSavedStateHandle()
 
     fun setupViewModel() {
         viewModel = AddOrderTrackingProviderListViewModel(
             savedState = savedState,
-            orderDetailRepository = orderDetailRepository,
             shipmentProvidersRepository = shipmentProvidersRepository,
             resourceProvider = resourceProvider
         )

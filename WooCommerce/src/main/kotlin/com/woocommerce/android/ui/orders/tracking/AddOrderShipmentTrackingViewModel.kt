@@ -100,12 +100,15 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
     }
 
     fun onCarrierClicked() {
-        triggerEvent(
-            ViewShipmentTrackingProviders(
-                orderId = navArgs.orderId,
-                selectedProvider = addOrderShipmentTrackingViewState.carrier.name
+        launch {
+            triggerEvent(
+                ViewShipmentTrackingProviders(
+                    orderId = navArgs.orderId,
+                    selectedProvider = addOrderShipmentTrackingViewState.carrier.name,
+                    storeCountryCode = orderDetailRepository.getStoreCountryCode(),
+                )
             )
-        )
+        }
     }
 
     fun onScanTrackingNumberClicked() {

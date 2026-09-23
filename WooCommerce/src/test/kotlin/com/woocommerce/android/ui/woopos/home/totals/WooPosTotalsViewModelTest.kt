@@ -182,7 +182,9 @@ class WooPosTotalsViewModelTest {
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
-    private val isTapToPayAvailable: WooPosIsTapToPayAvailable = mock()
+    private val isTapToPayAvailable: WooPosIsTapToPayAvailable = mock {
+        on { invoke() } doReturn false
+    }
     private val isCardPaymentEnabledForCountry: WooPosIsCardPaymentEnabledForCountry = mock {
         on { invoke() } doReturn true
     }
