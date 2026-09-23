@@ -313,6 +313,44 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
+    fun `given order has custom amounts, when checkout starts, then custom amounts total is shown`() = runTest {
+        // GIVEN
+        whenever(resourceProvider.getString(R.string.woopos_totals_reader_checking_order))
+            .thenReturn("Checking order")
+        whenever(resourceProvider.getString(R.string.woopos_totals_reader_getting_ready))
+            .thenReturn("Getting ready")
+        val itemClickedData = listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData)))
+        }
+        val order = Order.getEmptyOrder(dateCreated = Date(), dateModified = Date()).copy(
+            id = 123L,
+            items = listOf(Order.Item.EMPTY.copy(productId = 1L)),
+            productsTotal = BigDecimal("3.00"),
+            feesLines = listOf(Order.FeeLine.EMPTY.copy(total = BigDecimal("12.50"))),
+            total = BigDecimal("15.50"),
+        )
+        val totalsRepository: WooPosTotalsRepository = mock {
+            on { createOrderFromCartItems(itemClickedData) }.thenReturn(Result.success(order))
+        }
+        val priceFormat: WooPosFormatPrice = mock {
+            on { invoke(any()) }.thenReturn("")
+            on { invoke(BigDecimal("12.50")) }.thenReturn("$12.50")
+        }
+
+        // WHEN
+        val viewModel = createViewModel(
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+            priceFormat = priceFormat,
+        )
+
+        // THEN
+        val totals = (viewModel.state.value as WooPosTotalsViewState.Checkout).totals
+        assertThat((totals as WooPosTotalsViewState.Totals.Visible).orderCustomAmountsText).isEqualTo("$12.50")
+    }
+
+    @Test
     fun `given checkout started and successfully created order, when vm created, then totals state correctly calculated`() =
         runTest {
             // GIVEN

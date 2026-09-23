@@ -4,6 +4,7 @@
 
 25.8
 -----
+- [*] POS: custom amount form keeps its button above the keyboard, shows custom amounts in checkout and order totals, and formats amounts correctly [https://github.com/woocommerce/woocommerce-android/pull/16598]
 - [*] The app no longer signs you out when a single store endpoint returns an authorization error [https://github.com/woocommerce/woocommerce-android/pull/16571]
 - [Internal] Push notification analytics now attribute store and plan properties to the notification's origin site instead of the currently selected store [https://github.com/woocommerce/woocommerce-android/pull/16575]
 - [*] Background order sync now fetches 25 orders at a time instead of 60, so large stores no longer time out and retry [https://github.com/woocommerce/woocommerce-android/pull/16597]

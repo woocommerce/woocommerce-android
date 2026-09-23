@@ -47,6 +47,7 @@ sealed class WooPosTotalsViewState : Parcelable {
         data class Visible(
             val orderDiscountText: String?,
             val orderSubtotalText: String,
+            val orderCustomAmountsText: String?,
             val orderTaxText: String,
             val orderTotalText: String,
         ) : Totals()

@@ -6,9 +6,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -27,10 +30,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -65,21 +70,43 @@ fun WooPosCustomAmountFormScreen(
     BackHandler(enabled = true) { onBackClick() }
 
     val state by viewModel.state.collectAsState()
+    val submitButtonKeyboardGap = when (WindowInsets.ime.getBottom(LocalDensity.current) > 0) {
+        true -> WooPosSpacing.Medium.value
+        false -> 0.dp
+    }
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .navigationBarsPadding()
+            .imePadding()
+    ) {
         Column(
             modifier = Modifier
                 .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = WooPosSpacing.Medium.value),
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
         ) {
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-            AmountSection(state = state, onAmountChanged = viewModel::onAmountChanged)
-            HorizontalDivider(color = WooPosTheme.colors.outlineVariant)
+            AmountSection(
+                state = state,
+                onAmountChanged = viewModel::onAmountChanged,
+                modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+            )
+            HorizontalDivider(
+                color = WooPosTheme.colors.outlineVariant,
+                modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+            )
             TaxesToggle(isTaxable = state.isTaxable, onToggled = viewModel::onTaxableToggled)
-            HorizontalDivider(color = WooPosTheme.colors.outlineVariant)
-            NameSection(value = state.name, onNameChanged = viewModel::onNameChanged)
+            HorizontalDivider(
+                color = WooPosTheme.colors.outlineVariant,
+                modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+            )
+            NameSection(
+                value = state.name,
+                onNameChanged = viewModel::onNameChanged,
+                modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+            )
         }
 
         Surface(
@@ -90,7 +117,7 @@ fun WooPosCustomAmountFormScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = WooPosSpacing.Medium.value)
-                    .navigationBarsPadding(),
+                    .padding(bottom = submitButtonKeyboardGap),
                 state = state,
                 onSubmit = viewModel::onSubmit,
             )
@@ -102,8 +129,9 @@ fun WooPosCustomAmountFormScreen(
 private fun AmountSection(
     state: WooPosCustomAmountDialogState,
     onAmountChanged: (BigDecimal?) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Column {
+    Column(modifier = modifier) {
         WooPosText(
             text = stringResource(R.string.woopos_custom_amount_dialog_amount_label),
             style = WooPosTypography.BodySmall,
@@ -127,6 +155,7 @@ private fun AmountSection(
                 textColor = MaterialTheme.colorScheme.onSurface,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 contentAlignment = Alignment.CenterStart,
+                fillWidth = true,
             )
         }
     }
@@ -136,8 +165,9 @@ private fun AmountSection(
 private fun NameSection(
     value: String,
     onNameChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Column {
+    Column(modifier = modifier) {
         WooPosText(
             text = stringResource(R.string.woopos_custom_amount_dialog_name_label),
             style = WooPosTypography.BodySmall,
@@ -155,6 +185,7 @@ private fun NameSection(
                 onValueChange = onNameChanged,
                 label = stringResource(R.string.woopos_custom_amount_dialog_name_placeholder),
                 textColor = MaterialTheme.colorScheme.onSurface,
+                fillWidth = true,
             )
         }
     }
@@ -173,7 +204,7 @@ private fun TaxesToggle(
                 role = Role.Switch,
                 onValueChange = onToggled,
             )
-            .padding(vertical = WooPosSpacing.Small.value),
+            .padding(horizontal = WooPosSpacing.Medium.value, vertical = WooPosSpacing.Small.value),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
