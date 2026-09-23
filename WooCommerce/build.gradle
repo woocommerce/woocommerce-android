@@ -57,6 +57,9 @@ fladle {
     smartFlankGcsPath = "gs://fladle/woocommerce-android/smart-flank/JUnitReport.xml"
 
     environmentVariables = [
+            // Per-test timeout (AndroidJUnitRunner), unlike `testTimeout` above which applies to a whole shard.
+            // A hanging test fails with a stack trace instead of the whole shard timing out.
+            "timeout_msec": "120000",
             "API_URL"     : secretProperties.getProperty("e2eApiUrl", ""),
             "API_EMAIL"   : secretProperties.getProperty("e2eApiEmail", ""),
             "API_PASSWORD": secretProperties.getProperty("e2eApiPassword", "")
