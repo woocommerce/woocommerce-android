@@ -20,6 +20,12 @@ steps:
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
 
+  - label: ":key: Validate AUTOMATTIC_GITHUB_TOKEN_READ_ONLY via localize_libs"
+    command: .buildkite/commands/validate-about-lib-token.sh
+    plugins: [$CI_TOOLKIT]
+    agents:
+      queue: "mac-metal"
+
   ########################################
   - group: "🕵️ Linters"
     steps:
