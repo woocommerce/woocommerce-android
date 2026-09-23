@@ -10,6 +10,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
@@ -160,6 +161,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
                 numberExtensionsWrapper = numberExtensionsWrapper,
                 localeProvider = localeProvider
             )
+            TestScope(coroutinesTestRule.testDispatcher).launch { formatter.observeSiteSettings() }
 
             advanceTimeBy(5_000)
             var result = formatter.formatAmountWithCurrency(100.0)
@@ -201,6 +203,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
                 numberExtensionsWrapper = numberExtensionsWrapper,
                 localeProvider = localeProvider
             )
+            TestScope(coroutinesTestRule.testDispatcher).launch { formatter.observeSiteSettings() }
             advanceTimeBy(100)
             whenever(selectedSite.getOrNull()).thenReturn(secondSite)
 
@@ -267,6 +270,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
                 numberExtensionsWrapper = numberExtensionsWrapper,
                 localeProvider = localeProvider
             )
+            TestScope(coroutinesTestRule.testDispatcher).launch { formatter.observeSiteSettings() }
 
             advanceTimeBy(100)
             var result = formatter.formatAmountWithCurrency(100.0)
@@ -312,6 +316,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             numberExtensionsWrapper = numberExtensionsWrapper,
             localeProvider = localeProvider
         )
+        TestScope(coroutinesTestRule.testDispatcher).launch { formatter.observeSiteSettings() }
     }
 
     private suspend fun setupExponentialBackoff() {
@@ -344,5 +349,6 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             numberExtensionsWrapper = numberExtensionsWrapper,
             localeProvider = localeProvider
         )
+        TestScope(coroutinesTestRule.testDispatcher).launch { formatter.observeSiteSettings() }
     }
 }

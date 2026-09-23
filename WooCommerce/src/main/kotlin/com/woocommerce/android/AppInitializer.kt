@@ -271,6 +271,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         appCoroutineScope.launch {
             siteObserver.observeAndUpdateSelectedSiteData()
         }
+        appCoroutineScope.launch { currencyFormatter.observeSiteSettings() }
         appCoroutineScope.launch { blazeCampaignsObserver.observeAndScheduleNotifications() }
 
         monitorApplicationPasswordsStatus()

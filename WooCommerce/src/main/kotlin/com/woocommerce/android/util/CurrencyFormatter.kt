@@ -6,12 +6,10 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -37,18 +35,16 @@ class CurrencyFormatter @Inject constructor(
 ) {
     private var defaultCurrencyCode = ""
 
-    private val allSiteSettings: StateFlow<Map<LocalId, Settings>> = wcStore.observeAllSiteSettings()
-        .flowOn(dispatchers.io)
-        .stateIn(appCoroutineScope, SharingStarted.Eagerly, emptyMap())
+    private val allSiteSettings = MutableStateFlow<Map<LocalId, Settings>?>(null)
 
     private val selectedSiteSettings: Settings?
-        get() = selectedSite.getOrNull()?.let { allSiteSettings.value[LocalId(it.id)] }
+        get() = selectedSite.getOrNull()?.let { allSiteSettings.value?.get(LocalId(it.id)) }
 
     init {
         appCoroutineScope.launch {
             combine(
                 selectedSite.observe().filterNotNull(),
-                allSiteSettings
+                allSiteSettings.filterNotNull()
             ) { site, settingsMap ->
                 site to (settingsMap[LocalId(site.id)]?.currencyCode ?: "")
             }
@@ -59,6 +55,12 @@ class CurrencyFormatter @Inject constructor(
                     }
                 }
         }
+    }
+
+    suspend fun observeSiteSettings() {
+        wcStore.observeAllSiteSettings()
+            .flowOn(dispatchers.io)
+            .collect { allSiteSettings.value = it }
     }
 
     private suspend fun getOrFetchCurrencyCode(site: SiteModel): String {
