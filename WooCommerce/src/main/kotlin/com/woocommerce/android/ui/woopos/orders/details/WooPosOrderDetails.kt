@@ -385,6 +385,16 @@ private fun OrdersTotals(
 
             Spacer(Modifier.height(WooPosSpacing.Small.value))
 
+            breakdown.customAmounts?.let {
+                TotalRowLine(
+                    label = stringResource(R.string.woopos_orders_details_breakdown_custom_amounts_label),
+                    value = it,
+                    boldLabel = false,
+                )
+
+                breakdown.discount?.let { Spacer(Modifier.height(WooPosSpacing.Small.value)) }
+            }
+
             breakdown.discount?.let { discount ->
                 val label = if (breakdown.discountCode.isNullOrBlank()) {
                     stringResource(R.string.woopos_orders_details_breakdown_discount_label)
@@ -708,6 +718,7 @@ fun WooPosOrderDetailsPreview() {
         ),
         breakdown = WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(
             products = "$23.00",
+            customAmounts = "$12.50",
             discount = "-$5.00",
             discountCode = "SAVE5",
             taxes = "$0.00",

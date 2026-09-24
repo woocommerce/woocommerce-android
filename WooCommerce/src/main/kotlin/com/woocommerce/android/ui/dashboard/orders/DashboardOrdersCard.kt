@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -19,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -31,9 +29,12 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.navOptions
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.dashboard.DashboardFilterableCardHeader
+import com.woocommerce.android.ui.dashboard.DashboardSkeleton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
@@ -146,7 +147,7 @@ private fun Header(
             mapper = { it.label }
         )
 
-        Divider()
+        WooDivider()
     }
 }
 
@@ -173,7 +174,7 @@ fun TopOrders(
                     onClick = { onOrderClicked(order) },
                 )
 
-                Divider(
+                WooDivider(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 16.dp)
@@ -198,7 +199,7 @@ private fun Loading() {
     Column {
         repeat(3) {
             LoadingItem()
-            Divider(
+            WooDivider(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp)
@@ -216,7 +217,7 @@ private fun LoadingItem() {
             .padding(16.dp)
     ) {
         val (number, date, name, status, total) = createRefs()
-        SkeletonView(
+        DashboardSkeleton(
             modifier = Modifier
                 .height(22.dp)
                 .width(50.dp)
@@ -226,7 +227,7 @@ private fun LoadingItem() {
                 }
         )
 
-        SkeletonView(
+        DashboardSkeleton(
             modifier = Modifier
                 .padding(start = 16.dp)
                 .height(22.dp)
@@ -237,7 +238,7 @@ private fun LoadingItem() {
                 }
         )
 
-        SkeletonView(
+        DashboardSkeleton(
             modifier = Modifier
                 .padding(top = 8.dp)
                 .height(20.dp)
@@ -248,7 +249,7 @@ private fun LoadingItem() {
                 }
         )
 
-        SkeletonView(
+        DashboardSkeleton(
             modifier = Modifier
                 .height(22.dp)
                 .width(100.dp)
@@ -258,7 +259,7 @@ private fun LoadingItem() {
                 },
         )
 
-        SkeletonView(
+        DashboardSkeleton(
             modifier = Modifier
                 .padding(top = 8.dp)
                 .height(20.dp)
@@ -292,21 +293,25 @@ fun EmptyView(
             text = stringResource(
                 R.string.orders_empty_message_for_filtered_orders
             ),
-            style = MaterialTheme.typography.h6,
+            style = WooTheme.text.titleLarge.strong,
+            color = WooTheme.colors.surface.onDefault,
             textAlign = TextAlign.Center
         )
     }
 }
 
 @Composable
-@Preview
+@PreviewLightDark
 fun PreviewEmptyView() {
-    EmptyView()
+    WooDesignSystemThemeWithBackground { EmptyView() }
 }
 
 @Composable
-@Preview
-fun PreviewTopOrders() {
+@PreviewLightDark
+fun PreviewTopOrders() = WooDesignSystemThemeWithBackground { PreviewTopOrdersContent() }
+
+@Composable
+private fun PreviewTopOrdersContent() {
     TopOrders(
         orders = listOf(
             OrderItem(
@@ -351,12 +356,12 @@ fun PreviewTopOrders() {
             )
         ),
         onFilterSelected = {},
-        onOrderClicked = {}
+        onOrderClicked = {},
     )
 }
 
 @Composable
-@Preview
+@PreviewLightDark
 fun PreviewLoadingCard() {
-    Loading()
+    WooDesignSystemThemeWithBackground { Loading() }
 }

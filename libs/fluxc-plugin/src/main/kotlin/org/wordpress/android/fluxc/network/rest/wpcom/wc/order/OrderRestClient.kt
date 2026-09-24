@@ -259,12 +259,12 @@ class OrderRestClient @Inject constructor(
     }
 
     suspend fun fetchOrdersListFirstPage(
-        listDescriptor: WCOrderListDescriptor
+        listDescriptor: WCOrderListDescriptor,
+        pageSize: Int
     ): WooPayload<List<Pair<OrderEntity, List<WCMetaData>>>> {
         val url = WOOCOMMERCE.orders.pathV3
-        val networkPageSize = listDescriptor.config.networkPageSize
         val params = mutableMapOf(
-            "per_page" to networkPageSize.toString(),
+            "per_page" to pageSize.toString(),
             "offset" to "0",
             "orderby" to OrderBy.DATE.value,
             "order" to SortOrder.DESCENDING.value,

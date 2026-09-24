@@ -284,13 +284,15 @@ class OrderDetailRepository @Inject constructor(
         .filter { it.status == LabelItem.STATUS_PURCHASED }
         .map { shippingLabelMapper.toAppModel(it) }
 
-    fun getWooServicesPluginInfo(): WooPlugin {
-        val info = wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_SERVICES)
+    suspend fun getWooServicesPluginInfo(): WooPlugin {
+        val info = wooCommerceStore.getSitePlugins(selectedSite.get(), listOf(WooCommerceStore.WooPlugin.WOO_SERVICES))
+            .firstOrNull()
         return WooPlugin(info != null, info?.isActive ?: false, info?.version)
     }
 
-    fun getWooShippingPluginInfo(): WooPlugin {
-        val info = wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_SHIPPING)
+    suspend fun getWooShippingPluginInfo(): WooPlugin {
+        val info = wooCommerceStore.getSitePlugins(selectedSite.get(), listOf(WooCommerceStore.WooPlugin.WOO_SHIPPING))
+            .firstOrNull()
         return WooPlugin(info != null, info?.isActive ?: false, info?.version)
     }
 

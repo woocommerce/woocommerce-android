@@ -78,7 +78,8 @@ class WooPosCartItemsUpdaterTest {
             name = "Updated Name",
             finalPrice = BigDecimal("10.0"),
             basePrice = BigDecimal("10.0"),
-            quantity = 1f
+            quantity = 1f,
+            discounted = false
         )
         val cachedProduct = generateWooPosProduct()
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
@@ -119,7 +120,8 @@ class WooPosCartItemsUpdaterTest {
             name = "Updated Variation",
             finalPrice = BigDecimal("10.0"),
             basePrice = BigDecimal("10.0"),
-            quantity = 1f
+            quantity = 1f,
+            discounted = false
         )
         val cachedProduct = generateWooPosProduct()
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
@@ -190,7 +192,8 @@ class WooPosCartItemsUpdaterTest {
             name = "Updated Product 1",
             finalPrice = BigDecimal("10.0"),
             basePrice = BigDecimal("10.0"),
-            quantity = 1f
+            quantity = 1f,
+            discounted = false
         )
         val cachedProduct = generateWooPosProduct()
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
@@ -235,7 +238,8 @@ class WooPosCartItemsUpdaterTest {
             name = "Updated Product",
             finalPrice = BigDecimal("10.0"),
             basePrice = BigDecimal("10.0"),
-            quantity = 1f
+            quantity = 1f,
+            discounted = false
         )
         val cachedProduct = generateWooPosProduct()
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
@@ -282,7 +286,8 @@ class WooPosCartItemsUpdaterTest {
                 name = "Product",
                 finalPrice = BigDecimal("10.0"),
                 basePrice = BigDecimal("10.0"),
-                quantity = 1f
+                quantity = 1f,
+                discounted = false
             )
 
             // WHEN
@@ -387,7 +392,8 @@ class WooPosCartItemsUpdaterTest {
             name = "Updated Name",
             finalPrice = BigDecimal("10.0"),
             basePrice = BigDecimal("10.0"),
-            quantity = 1f
+            quantity = 1f,
+            discounted = false
         )
         val cachedProduct = generateWooPosProduct()
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
@@ -524,6 +530,151 @@ class WooPosCartItemsUpdaterTest {
         // THEN
         assertThat(result.productsChanged).isFalse()
         assertThat(result.couponsChanged).isFalse()
+        assertThat(result.discountsChanged).isFalse()
+    }
+
+    @Test
+    fun `given discounted product info, when called, then discounted flag is copied and discountsChanged is true`() =
+        runTest {
+            // GIVEN
+            val simpleProduct = WooPosCartItemViewState.Product.Simple(
+                itemNumber = 1,
+                id = 1L,
+                name = "Name",
+                price = "10.0$",
+                imageUrl = "url",
+                description = null
+            )
+            val updatedInfo = WooPosOrderCreatedData.ProductInfo.Simple(
+                id = 1L,
+                name = "Name",
+                finalPrice = BigDecimal("8.0"),
+                basePrice = BigDecimal("10.0"),
+                quantity = 1f,
+                discounted = true
+            )
+
+            // WHEN
+            val result = updater.invoke(listOf(simpleProduct), listOf(updatedInfo), emptyList())
+
+            // THEN
+            val updatedItem = result.updatedItems[0] as WooPosCartItemViewState.Product.Simple
+            assertThat(updatedItem.discounted).isTrue()
+            assertThat(result.discountsChanged).isTrue()
+        }
+
+    @Test
+    fun `given discounted cart item and product info without discount, when called, then discounted flag is cleared`() =
+        runTest {
+            // GIVEN
+            val simpleProduct = WooPosCartItemViewState.Product.Simple(
+                itemNumber = 1,
+                id = 1L,
+                name = "Name",
+                price = "10.0$",
+                imageUrl = "url",
+                description = null,
+                discounted = true
+            )
+            val updatedInfo = WooPosOrderCreatedData.ProductInfo.Simple(
+                id = 1L,
+                name = "Name",
+                finalPrice = BigDecimal("10.0"),
+                basePrice = BigDecimal("10.0"),
+                quantity = 1f,
+                discounted = false
+            )
+
+            // WHEN
+            val result = updater.invoke(listOf(simpleProduct), listOf(updatedInfo), emptyList())
+
+            // THEN
+            val updatedItem = result.updatedItems[0] as WooPosCartItemViewState.Product.Simple
+            assertThat(updatedItem.discounted).isFalse()
+            assertThat(result.discountsChanged).isTrue()
+        }
+
+    @Test
+    fun `given discounted variation info, when called, then discounted flag is copied to variation item`() =
+        runTest {
+            // GIVEN
+            val variationProduct = WooPosCartItemViewState.Product.Variation(
+                itemNumber = 1,
+                id = 1L,
+                variationId = 2L,
+                name = "Name",
+                price = "10.0$",
+                imageUrl = "url",
+                description = null
+            )
+            val updatedInfo = WooPosOrderCreatedData.ProductInfo.Variation(
+                id = 1L,
+                variationId = 2L,
+                name = "Name",
+                finalPrice = BigDecimal("8.0"),
+                basePrice = BigDecimal("10.0"),
+                quantity = 1f,
+                discounted = true
+            )
+
+            // WHEN
+            val result = updater.invoke(listOf(variationProduct), listOf(updatedInfo), emptyList())
+
+            // THEN
+            val updatedItem = result.updatedItems[0] as WooPosCartItemViewState.Product.Variation
+            assertThat(updatedItem.discounted).isTrue()
+            assertThat(result.discountsChanged).isTrue()
+        }
+
+    @Test
+    fun `given unchanged discounted flag, when called, then discountsChanged is false`() = runTest {
+        // GIVEN
+        val simpleProduct = WooPosCartItemViewState.Product.Simple(
+            itemNumber = 1,
+            id = 1L,
+            name = "Name",
+            price = "10.0$",
+            imageUrl = "url",
+            description = null,
+            discounted = true
+        )
+        val updatedInfo = WooPosOrderCreatedData.ProductInfo.Simple(
+            id = 1L,
+            name = "Name",
+            finalPrice = BigDecimal("8.0"),
+            basePrice = BigDecimal("10.0"),
+            quantity = 1f,
+            discounted = true
+        )
+
+        // WHEN
+        val result = updater.invoke(listOf(simpleProduct), listOf(updatedInfo), emptyList())
+
+        // THEN
+        assertThat(result.discountsChanged).isFalse()
+    }
+
+    @Test
+    fun `given discounted product missing from order, when called, then discounted flag is cleared`() = runTest {
+        // GIVEN
+        val simpleProduct = WooPosCartItemViewState.Product.Simple(
+            itemNumber = 1,
+            id = 1L,
+            name = "Name",
+            price = "10.0$",
+            imageUrl = "url",
+            description = null,
+            discounted = true
+        )
+
+        // WHEN
+        val result = updater.invoke(listOf(simpleProduct), emptyList(), emptyList())
+
+        // THEN
+        val updatedItem = result.updatedItems[0] as WooPosCartItemViewState.Product.Simple
+        assertThat(updatedItem.productDoesNotExist).isTrue()
+        assertThat(updatedItem.discounted).isFalse()
+        assertThat(result.discountsChanged).isTrue()
     }
 
     private fun generateCoupon(

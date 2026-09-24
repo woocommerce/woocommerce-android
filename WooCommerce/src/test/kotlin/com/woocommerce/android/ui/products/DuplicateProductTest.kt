@@ -219,7 +219,7 @@ class DuplicateProductTest : BaseUnitTest() {
             variationRepository.stub {
                 on {
                     fetchProductVariations(eq(productToDuplicate.remoteId), any())
-                } doReturn variationsOfProductToDuplicate
+                } doReturn Result.success(variationsOfProductToDuplicate)
                 on { createVariations(any(), any()) } doReturn Result.success(Unit)
             }
 
@@ -242,6 +242,29 @@ class DuplicateProductTest : BaseUnitTest() {
                 .usingRecursiveComparison()
                 .ignoringFields("remoteProductId", "sku")
                 .isEqualTo(variationsOfProductToDuplicate)
+        }
+
+    @Test
+    fun `given fetching variations fails, when duplicating a variable product, then duplication fails`() =
+        testBlocking {
+            // GIVEN
+            val productToDuplicate = ProductAggregate(ProductTestUtils.generateProduct().copy(numVariations = 15))
+            val fetchError = WooException(ROUTE_MISSING_ERROR)
+            productDetailRepository.stub {
+                on { addProduct(any<ProductAggregate>()) } doReturn Pair(true, DUPLICATED_PRODUCT_ID)
+            }
+            variationRepository.stub {
+                on {
+                    fetchProductVariations(eq(productToDuplicate.remoteId), any())
+                } doReturn Result.failure(fetchError)
+            }
+
+            // WHEN
+            val result = sut.invoke(productToDuplicate)
+
+            // THEN
+            assertThat(result.exceptionOrNull()).isEqualTo(fetchError)
+            verify(variationRepository, never()).createVariations(any(), any())
         }
 
     private companion object {

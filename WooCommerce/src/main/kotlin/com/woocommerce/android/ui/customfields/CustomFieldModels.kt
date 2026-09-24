@@ -56,12 +56,16 @@ enum class CustomFieldContentType {
     companion object {
         fun fromMetadataValue(value: String): CustomFieldContentType {
             return when {
+                // REST API URLs are meant for apps: opening one shows raw JSON or an authorization error
+                value.isRestApiUrl() -> TEXT
                 PatternsCompat.WEB_URL.matcher(value).matches() -> URL
                 PatternsCompat.EMAIL_ADDRESS.matcher(value).matches() -> EMAIL
                 value.startsWith("tel://") || phonePattern.matcher(value).matches() -> PHONE
                 else -> TEXT
             }
         }
+
+        private fun String.isRestApiUrl() = contains("/wp-json/") || contains("rest_route=")
 
         private val phonePattern by lazy {
             // Copied from android.util.Patterns.PHONE to make it work with tests

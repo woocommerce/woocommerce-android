@@ -36,7 +36,6 @@ sealed class OrderListItemUIType {
         val dateCreated: String?,
         val currencyCode: String,
         val isLastItemInSection: Boolean = false,
-        var isSelected: Boolean = false,
         val salesChannelLabel: SalesChannelLabel = SalesChannelLabel.Hidden,
     ) : OrderListItemUIType() {
         sealed class SalesChannelLabel {

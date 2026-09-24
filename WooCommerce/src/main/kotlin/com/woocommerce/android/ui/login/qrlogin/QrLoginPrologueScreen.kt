@@ -53,7 +53,7 @@ import com.woocommerce.android.extensions.windowHeightSizeClass
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.HelpButton
 import com.woocommerce.android.ui.login.qrlogin.QrLoginPrologueViewModel.CameraPermissionDialogState
 
@@ -340,7 +340,7 @@ private fun CameraPermissionDialog(
 @LightDarkThemePreviews
 @Composable
 private fun QrLoginPrologueScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         QrLoginPrologueScreen(
             cameraPermissionDialog = null,
             onScanClicked = {},
@@ -356,7 +356,7 @@ private fun QrLoginPrologueScreenPreview() {
 @Preview(name = "First denial — dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun CameraPermissionFirstDenialPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         CameraPermissionDialog(
             dialog = CameraPermissionDialogState(
                 title = R.string.login_qr_prologue_camera_denied_title,
@@ -373,7 +373,7 @@ private fun CameraPermissionFirstDenialPreview() {
 @Preview(name = "Permanently denied — dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun CameraPermissionPermanentlyDeniedPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         CameraPermissionDialog(
             dialog = CameraPermissionDialogState(
                 title = R.string.login_qr_prologue_camera_blocked_title,
