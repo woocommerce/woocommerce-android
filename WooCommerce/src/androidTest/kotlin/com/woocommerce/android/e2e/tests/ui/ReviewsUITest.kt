@@ -55,12 +55,6 @@ class ReviewsUITest : TestBase(failOnUnmatchedWireMockRequests = false) {
             .openReviewsListScreen(composeTestRule)
     }
 
-    // TODO Temporary: verifies the per-test `timeout_msec` on Firebase Test Lab. Remove before merging.
-    @Test
-    fun e2eTimeoutMsecVerification() {
-        Thread.sleep(120_000_000)
-    }
-
     @Retry(numberOfTimes = 1)
     @Test
     fun e2eReviewListShowsAllReviews() {
