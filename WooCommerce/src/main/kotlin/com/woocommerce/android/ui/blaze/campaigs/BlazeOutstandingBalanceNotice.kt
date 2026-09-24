@@ -8,10 +8,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,19 +41,19 @@ fun BlazeOutstandingBalanceNotice(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = MaterialTheme.colors.error.copy(alpha = ERROR_BACKGROUND_ALPHA), shape = shape)
+                .background(color = MaterialTheme.colorScheme.error.copy(alpha = ERROR_BACKGROUND_ALPHA), shape = shape)
                 .padding(dimensionResource(id = R.dimen.major_100)),
             horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75))
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_tintable_info_outline_24dp),
                 contentDescription = null,
-                tint = MaterialTheme.colors.error
+                tint = MaterialTheme.colorScheme.error
             )
             Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50))) {
                 Text(
                     text = stringResource(id = R.string.blaze_campaign_list_outstanding_balance_title),
-                    style = MaterialTheme.typography.subtitle1,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
@@ -62,7 +61,7 @@ fun BlazeOutstandingBalanceNotice(
                         id = R.string.blaze_campaign_list_outstanding_balance_message,
                         outstandingBalance.formattedDebt
                     ),
-                    style = MaterialTheme.typography.body2
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
@@ -94,13 +93,13 @@ private fun UnpaidOrderRow(unpaidOrder: UnpaidOrderUi) {
             unpaidOrder.formattedDate?.let {
                 Text(
                     text = it,
-                    style = MaterialTheme.typography.body2,
-                    color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Text(
                 text = unpaidOrder.formattedAmount,
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
         }
