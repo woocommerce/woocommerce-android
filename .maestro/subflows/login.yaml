@@ -84,6 +84,39 @@ appId: com.woocommerce.android
     id: "bottom_button"
     retryTapIfNoChange: true
 
+# WP.com can refuse the email login and open the magic link screen instead.
+# Its fallback button opens the WP.com username and password screen.
+- extendedWaitUntil:
+    visible: ".*My store.*|.*Manage privacy.*|.*Save password.*|Use username and password instead"
+    timeout: 30000
+- runFlow:
+    when:
+      visible:
+        id: "login_magic_link_fallback_button"
+    commands:
+      - assertTrue:
+          condition: ${typeof MAESTRO_WOO_WPCOM_USERNAME !== 'undefined' && !!MAESTRO_WOO_WPCOM_USERNAME}
+          label: "WP.com username is set for the email-login fallback"
+      - tapOn:
+          id: "login_magic_link_fallback_button"
+      - tapOn:
+          id: "input"
+          childOf:
+            id: "login_username_row"
+      - inputText: ${MAESTRO_WOO_WPCOM_USERNAME}
+      - tapOn:
+          id: "input"
+          childOf:
+            id: "login_password_row"
+      - inputText: ${MAESTRO_WOO_WPCOM_PASSWORD}
+      - runFlow:
+          file: hide_keyboard.yaml
+          env:
+            KEYBOARD_TARGET_ID: "bottom_button"
+      - tapOn:
+          id: "bottom_button"
+          retryTapIfNoChange: true
+
 # Wait for dashboard to load. Google Password Manager may offer to SAVE the
 # password as a top-most sheet ("Never"/"Save") that hides the dashboard, and
 # the privacy dialog may also appear — accept any of them as "booted".
