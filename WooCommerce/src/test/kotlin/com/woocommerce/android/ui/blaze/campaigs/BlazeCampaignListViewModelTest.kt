@@ -13,11 +13,13 @@ import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -34,6 +36,9 @@ import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore.BlazeCampaign
 @ExperimentalCoroutinesApi
 class BlazeCampaignListViewModelTest : BaseUnitTest() {
     private val blazeCampaignsStore: BlazeCampaignsStore = mock()
+    private val blazeRepository: BlazeRepository = mock {
+        on { outstandingBalance } doReturn MutableStateFlow(null)
+    }
     private val selectedSite: SelectedSite = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
@@ -164,6 +169,7 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
                 campaignId
             ).toSavedStateHandle(),
             blazeCampaignsStore = blazeCampaignsStore,
+            blazeRepository = blazeRepository,
             selectedSite = selectedSite,
             appPrefsWrapper = appPrefsWrapper,
             analyticsTrackerWrapper = analyticsTrackerWrapper,

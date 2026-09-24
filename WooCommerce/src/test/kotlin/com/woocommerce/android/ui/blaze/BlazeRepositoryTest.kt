@@ -30,9 +30,12 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.blaze.BlazeBillingSummary
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignCreationRequest
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
+import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore.BlazeError
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore.BlazeResult
 import java.util.Date
 
@@ -65,6 +68,7 @@ class BlazeRepositoryTest : BaseUnitTest() {
     private val productDetailRepository: ProductDetailRepository = mock()
     private val mediaFilesRepository: MediaFilesRepository = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val outstandingBalanceCache = BlazeOutstandingBalanceCache()
 
     private val createCampaignRequestCaptor = argumentCaptor<BlazeCampaignCreationRequest>()
 
@@ -73,7 +77,8 @@ class BlazeRepositoryTest : BaseUnitTest() {
         blazeCampaignsStore,
         productDetailRepository,
         mediaFilesRepository,
-        appPrefsWrapper
+        appPrefsWrapper,
+        outstandingBalanceCache
     )
 
     @Test
@@ -321,10 +326,59 @@ class BlazeRepositoryTest : BaseUnitTest() {
         assertThat(validationResult).isEqualTo(InvalidSize)
     }
 
+    @Test
+    fun `given debt with unpaid orders, when fetching outstanding balance, then share the billing summary`() =
+        testBlocking {
+            // GIVEN
+            val billingSummary = BlazeBillingSummary(debt = 25.05, paymentLinks = listOf(PAYMENT_LINK))
+            whenever(blazeCampaignsStore.fetchBlazeBillingSummary(any())).thenReturn(BlazeResult(billingSummary))
+
+            // WHEN
+            repository.fetchOutstandingBalance()
+
+            // THEN
+            assertThat(repository.outstandingBalance.value).isEqualTo(billingSummary)
+        }
+
+    @Test
+    fun `given debt without unpaid orders, when fetching outstanding balance, then clear it`() = testBlocking {
+        // GIVEN
+        outstandingBalanceCache.update(OUTSTANDING_BALANCE)
+        val billingSummary = BlazeBillingSummary(debt = 25.05, paymentLinks = emptyList())
+        whenever(blazeCampaignsStore.fetchBlazeBillingSummary(any())).thenReturn(BlazeResult(billingSummary))
+
+        // WHEN
+        repository.fetchOutstandingBalance()
+
+        // THEN
+        assertThat(repository.outstandingBalance.value).isNull()
+    }
+
+    @Test
+    fun `given an error, when fetching outstanding balance, then keep the last known one`() = testBlocking {
+        // GIVEN
+        outstandingBalanceCache.update(OUTSTANDING_BALANCE)
+        whenever(blazeCampaignsStore.fetchBlazeBillingSummary(any())).thenReturn(
+            BlazeResult<BlazeBillingSummary>(BlazeError(type = GenericErrorType.NETWORK_ERROR))
+        )
+
+        // WHEN
+        repository.fetchOutstandingBalance()
+
+        // THEN
+        assertThat(repository.outstandingBalance.value).isEqualTo(OUTSTANDING_BALANCE)
+    }
+
     companion object {
         private const val TOTAL_BUDGET = 35f
         private const val PAYMENT_METHOD_ID = "132435"
         private const val VALID_IMAGE_SIZE = 400
+        private val PAYMENT_LINK = BlazeBillingSummary.PaymentLink(
+            date = Date(),
+            amount = 25.05,
+            url = "https://example.com/pay/826745"
+        )
+        private val OUTSTANDING_BALANCE = BlazeBillingSummary(debt = 25.05, paymentLinks = listOf(PAYMENT_LINK))
         private val SUPPORTED_IMAGE_MIME_TYPES = listOf(
             "image/png",
             "image/x-png",

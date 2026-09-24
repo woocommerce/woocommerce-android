@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
@@ -18,6 +19,8 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewFragment
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -58,6 +61,7 @@ class BlazeCampaignListFragment : BaseFragment() {
                 is BlazeCampaignListViewModel.ShowCampaignDetails -> openCampaignDetails(event.campaignId)
                 is BlazeCampaignListViewModel.LaunchBlazeCampaignCreationForProduct ->
                     openBlazeCreationFlow(event.productId)
+                is BlazeCampaignListViewModel.ShowOutstandingBalancePayment -> openPaymentPage(event.url)
             }
         }
         handleResults()
@@ -78,9 +82,22 @@ class BlazeCampaignListFragment : BaseFragment() {
         )
     }
 
+    private fun openPaymentPage(url: String) {
+        findNavController().navigateSafely(
+            NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(
+                urlToLoad = url,
+                title = getString(R.string.blaze_campaign_list_outstanding_balance_payment_title),
+                displayMode = AuthenticatedWebViewViewModel.DisplayMode.TASK
+            )
+        )
+    }
+
     private fun handleResults() {
         handleResult<BlazeAction>(BlazeCampaignDetailWebViewFragment.BLAZE_WEBVIEW_RESULT) {
             viewModel.onBlazeCampaignWebViewAction(it)
+        }
+        handleNotice(AuthenticatedWebViewFragment.WEBVIEW_DISMISSED) {
+            viewModel.onPaymentPageClosed()
         }
     }
 }
