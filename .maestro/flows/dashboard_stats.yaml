@@ -7,6 +7,7 @@
 #   - The Orders, Visitors and Conversion stat tiles are visible
 #   - Switching the date range to This Week
 #   - Top performers card is visible
+#   - The original date range is restored at the end
 appId: com.woocommerce.android
 name: "Dashboard - Stats and analytics"
 tags:
@@ -34,6 +35,42 @@ tags:
 - assertVisible:
     id: "dashboard_stats_card"
     label: "Stats card is visible"
+
+# The app saves the selected range, so record it here and switch back at the
+# end. A custom range is left as This Week, the flow cannot pick its dates again.
+- evalScript: ${output.statsOriginalRange = ''}
+- runFlow:
+    when:
+      visible:
+        text: "Today"
+        childOf:
+          id: "dashboard_stats_card"
+    commands:
+      - evalScript: ${output.statsOriginalRange = 'Today'}
+- runFlow:
+    when:
+      visible:
+        text: "This Week"
+        childOf:
+          id: "dashboard_stats_card"
+    commands:
+      - evalScript: ${output.statsOriginalRange = 'This Week'}
+- runFlow:
+    when:
+      visible:
+        text: "This Month"
+        childOf:
+          id: "dashboard_stats_card"
+    commands:
+      - evalScript: ${output.statsOriginalRange = 'This Month'}
+- runFlow:
+    when:
+      visible:
+        text: "This Year"
+        childOf:
+          id: "dashboard_stats_card"
+    commands:
+      - evalScript: ${output.statsOriginalRange = 'This Year'}
 
 # Verify the stat tiles are rendered on the card.
 #
@@ -117,3 +154,39 @@ tags:
 - swipe:
     direction: DOWN
     duration: 500
+
+- runFlow:
+    when:
+      true: ${output.statsOriginalRange !== '' && output.statsOriginalRange !== 'This Week'}
+    commands:
+      - scrollUntilVisible:
+          element:
+            id: "stats_range_dropdown_button"
+            childOf:
+              id: "dashboard_stats_card"
+          direction: DOWN
+          timeout: 15000
+          label: "Scroll to the stats date range button"
+      - repeat:
+          while:
+            notVisible: "Custom"
+          times: 5
+          commands:
+            - tapOn:
+                id: "stats_range_dropdown_button"
+                childOf:
+                  id: "dashboard_stats_card"
+                label: "Open the date range menu"
+            - waitForAnimationToEnd:
+                timeout: 5000
+      - tapOn:
+          text: "${output.statsOriginalRange}"
+          retryTapIfNoChange: true
+          label: "Select the original date range"
+      - extendedWaitUntil:
+          visible:
+            text: "${output.statsOriginalRange}"
+            childOf:
+              id: "dashboard_stats_card"
+          timeout: 10000
+          label: "Original date range is back"
