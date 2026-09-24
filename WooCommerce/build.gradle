@@ -55,6 +55,7 @@ fladle {
     maxTestShards = 50
     shardTime = 120
     smartFlankGcsPath = "gs://fladle/woocommerce-android/smart-flank/JUnitReport.xml"
+    smartFlankDisableUpload = System.getenv("BUILDKITE_BRANCH") != "trunk"
 
     environmentVariables = [
             // Per-test timeout (AndroidJUnitRunner), unlike `testTimeout` above which applies to a whole shard.
