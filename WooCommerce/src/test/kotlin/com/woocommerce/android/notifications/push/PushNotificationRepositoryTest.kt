@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.mutablePreferencesOf
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -169,30 +170,122 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any(), any(), any()))
                 .thenReturn(WooResult(RETURNED_TOKEN))
 
-            var savedPreferences: Preferences = mutablePreferencesOf(
-                stringPreferencesKey("push_token_$SITE_ID") to "legacy-token-id",
-                stringPreferencesKey("push_token_value_$SITE_ID") to "token",
-                stringPreferencesKey("push_locale_$SITE_ID") to "en_US"
+            val currentPreferences = givenStatefulDataStore(
+                mutablePreferencesOf(
+                    stringPreferencesKey("push_token_$SITE_ID") to "legacy-token-id",
+                    stringPreferencesKey("push_token_value_$SITE_ID") to "token",
+                    stringPreferencesKey("push_locale_$SITE_ID") to "en_US",
+                    booleanPreferencesKey("woo_push_wpcom_pending_restore_$LOCAL_SITE_ID") to true
+                )
             )
-            whenever(pushNotificationsDataStore.data).thenAnswer { flowOf(savedPreferences) }
-            whenever(pushNotificationsDataStore.updateData(any())).doSuspendableAnswer { invocation ->
-                val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
-                savedPreferences = transform(savedPreferences)
-                savedPreferences
-            }
 
             assertThat(sut.shouldRegisterWooPush("token", siteModel)).isTrue()
 
             val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
             assertThat(result.isSuccess).isTrue()
+            val savedPreferences = currentPreferences()
             assertThat(savedPreferences[stringPreferencesKey("push_token_$SITE_ID")]).isEqualTo(RETURNED_TOKEN)
             assertThat(savedPreferences[stringPreferencesKey("push_token_value_$SITE_ID")]).isEqualTo("token")
             assertThat(savedPreferences[stringPreferencesKey("push_locale_$SITE_ID")]).isEqualTo("en_US")
             assertThat(savedPreferences[stringPreferencesKey("push_device_uuid_$SITE_ID")]).isEqualTo("stored-uuid")
             assertThat(savedPreferences[longPreferencesKey("woo_push_refreshed_at_$LOCAL_SITE_ID")])
                 .isEqualTo(NOW_MILLIS)
+            assertThat(savedPreferences[booleanPreferencesKey("woo_push_wpcom_pending_restore_$LOCAL_SITE_ID")])
+                .isNull()
             assertThat(sut.shouldRegisterWooPush("token", siteModel)).isFalse()
+        }
+
+    @Test
+    fun `given jetpack store and rest no route, when registering, then clears woo and restores wpcom`() =
+        testBlocking {
+            whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
+            whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any(), any(), any()))
+                .thenReturn(PN_API_NOT_FOUND_ERROR)
+            givenJetpackConnection(siteModel)
+            setupWpComRegistration(isRegistered = true)
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any()))
+                .thenReturn(Result.success(Unit))
+            val currentPreferences = givenStatefulDataStore(
+                mutablePreferencesOf(
+                    stringPreferencesKey("push_token_$SITE_ID") to "token-id",
+                    stringPreferencesKey("push_token_value_$SITE_ID") to "token",
+                    stringPreferencesKey("push_locale_$SITE_ID") to "en_US",
+                    stringPreferencesKey("push_device_uuid_$SITE_ID") to "stored-uuid"
+                )
+            )
+
+            val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
+
+            assertThat(result.isFailure).isTrue()
+            val savedPreferences = currentPreferences()
+            assertThat(savedPreferences[stringPreferencesKey("push_token_$SITE_ID")]).isNull()
+            assertThat(savedPreferences[stringPreferencesKey("push_token_value_$SITE_ID")]).isNull()
+            assertThat(savedPreferences[stringPreferencesKey("push_locale_$SITE_ID")]).isNull()
+            assertThat(savedPreferences[stringPreferencesKey("push_device_uuid_$SITE_ID")]).isNull()
+            assertThat(savedPreferences[longPreferencesKey("woo_push_refreshed_at_$LOCAL_SITE_ID")])
+                .isEqualTo(NOW_MILLIS)
+            assertThat(savedPreferences[booleanPreferencesKey("woo_push_wpcom_pending_restore_$LOCAL_SITE_ID")])
+                .isNull()
+            verify(wpComPushNotificationStore).updateNotificationSettingsFor(
+                listOf(
+                    SiteNotificationSetting(
+                        siteId = SITE_ID,
+                        newCommentEnabled = true,
+                        storeOrderEnabled = true
+                    )
+                )
+            )
+        }
+
+    @Test
+    fun `given jetpack store and wpcom restore fails, when rest no route, then keeps pending restore`() =
+        testBlocking {
+            whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
+            whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any(), any(), any()))
+                .thenReturn(PN_API_NOT_FOUND_ERROR)
+            givenJetpackConnection(siteModel)
+            setupWpComRegistration(isRegistered = true)
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any()))
+                .thenReturn(Result.failure(Exception("restore failed")))
+            val currentPreferences = givenStatefulDataStore()
+
+            val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
+
+            assertThat(result.isFailure).isTrue()
+            val savedPreferences = currentPreferences()
+            assertThat(savedPreferences[longPreferencesKey("woo_push_refreshed_at_$LOCAL_SITE_ID")])
+                .isEqualTo(NOW_MILLIS)
+            assertThat(savedPreferences[booleanPreferencesKey("woo_push_wpcom_pending_restore_$LOCAL_SITE_ID")])
+                .isTrue()
+        }
+
+    @Test
+    fun `given application password store, when rest no route, then clears woo without wpcom calls`() =
+        testBlocking {
+            whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
+            whenever(siteModel.origin).thenReturn(SiteModel.ORIGIN_WPAPI)
+            whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any(), any(), any()))
+                .thenReturn(PN_API_NOT_FOUND_ERROR)
+            setupWpComRegistration(isRegistered = true)
+            val currentPreferences = givenStatefulDataStore(
+                mutablePreferencesOf(
+                    stringPreferencesKey("push_token_$SITE_ID") to "token-id",
+                    stringPreferencesKey("push_token_value_$SITE_ID") to "token"
+                )
+            )
+
+            val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
+
+            assertThat(result.isFailure).isTrue()
+            val savedPreferences = currentPreferences()
+            assertThat(savedPreferences[stringPreferencesKey("push_token_$SITE_ID")]).isNull()
+            assertThat(savedPreferences[longPreferencesKey("woo_push_refreshed_at_$LOCAL_SITE_ID")])
+                .isEqualTo(NOW_MILLIS)
+            assertThat(savedPreferences[booleanPreferencesKey("woo_push_wpcom_pending_restore_$LOCAL_SITE_ID")])
+                .isNull()
+            verify(wpComPushNotificationStore, never()).updateNotificationSettingsFor(any())
+            verify(wpComPushNotificationStore, never()).registerDevice(any(), any())
         }
 
     @Test
@@ -907,6 +1000,59 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given only one store needs wpcom restore, when restoring, then enables and clears only that store`() =
+        testBlocking {
+            val flaggedSite = mock<SiteModel> {
+                on { id } doReturn LOCAL_SITE_ID
+                on { siteId } doReturn SITE_ID
+            }
+            val currentSite = mock<SiteModel> {
+                on { id } doReturn 8
+            }
+            setupWpComRegistration(isRegistered = true)
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any()))
+                .thenReturn(Result.success(Unit))
+            val currentPreferences = givenStatefulDataStore(
+                mutablePreferencesOf(
+                    booleanPreferencesKey("woo_push_wpcom_pending_restore_$LOCAL_SITE_ID") to true
+                )
+            )
+
+            sut.restoreWpComNotifications(listOf(flaggedSite, currentSite))
+
+            verify(wpComPushNotificationStore).updateNotificationSettingsFor(
+                listOf(
+                    SiteNotificationSetting(
+                        siteId = SITE_ID,
+                        newCommentEnabled = true,
+                        storeOrderEnabled = true
+                    )
+                )
+            )
+            assertThat(
+                currentPreferences()[booleanPreferencesKey("woo_push_wpcom_pending_restore_$LOCAL_SITE_ID")]
+            ).isNull()
+            assertThat(currentPreferences()[booleanPreferencesKey("woo_push_wpcom_pending_restore_8")]).isNull()
+        }
+
+    @Test
+    fun `given wpcom device is not registered, when restoring, then keeps pending restore`() = testBlocking {
+        setupWpComRegistration(isRegistered = false)
+        val currentPreferences = givenStatefulDataStore(
+            mutablePreferencesOf(
+                booleanPreferencesKey("woo_push_wpcom_pending_restore_$LOCAL_SITE_ID") to true
+            )
+        )
+
+        sut.restoreWpComNotifications(listOf(siteModel))
+
+        verify(wpComPushNotificationStore, never()).updateNotificationSettingsFor(any())
+        assertThat(
+            currentPreferences()[booleanPreferencesKey("woo_push_wpcom_pending_restore_$LOCAL_SITE_ID")]
+        ).isTrue()
+    }
+
+    @Test
     fun `given stored tokens, when unregistering selected woo sites, then deletes tokens only for those sites`() =
         testBlocking {
             val site1 = mock<SiteModel> { on { siteId } doReturn 123L }
@@ -1085,6 +1231,24 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             .thenReturn(deviceId)
     }
 
+    private suspend fun givenStatefulDataStore(
+        initialPreferences: Preferences = mutablePreferencesOf()
+    ): () -> Preferences {
+        var savedPreferences = initialPreferences
+        whenever(pushNotificationsDataStore.data).thenAnswer { flowOf(savedPreferences) }
+        whenever(pushNotificationsDataStore.updateData(any())).doSuspendableAnswer { invocation ->
+            val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
+            savedPreferences = transform(savedPreferences)
+            savedPreferences
+        }
+        return { savedPreferences }
+    }
+
+    private fun givenJetpackConnection(site: SiteModel) {
+        whenever(site.origin).thenReturn(SiteModel.ORIGIN_WPCOM_REST)
+        whenever(site.isJetpackConnected).thenReturn(true)
+    }
+
     private fun setupMatchingWooRegistration() {
         whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
         whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn(RETURNED_TOKEN)
@@ -1113,6 +1277,14 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                 WooErrorType.GENERIC_ERROR,
                 BaseRequest.GenericErrorType.UNKNOWN,
                 "oops"
+            )
+        )
+
+        val PN_API_NOT_FOUND_ERROR = WooResult<String>(
+            WooError(
+                type = WooErrorType.API_NOT_FOUND,
+                original = BaseRequest.GenericErrorType.NOT_FOUND,
+                apiErrorCode = "rest_no_route"
             )
         )
 

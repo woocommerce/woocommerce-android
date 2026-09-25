@@ -19,9 +19,13 @@ import com.woocommerce.android.notifications.push.PushNotificationPreferences.ge
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.getPushTokenValue
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.getRefreshedAt
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.getRegisteredSiteIds
+import com.woocommerce.android.notifications.push.PushNotificationPreferences.hasWpComPendingRestore
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.savePushRegistration
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.saveRefreshedAt
+import com.woocommerce.android.notifications.push.PushNotificationPreferences.setWpComPendingRestore
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionTypeOrNull
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.locale.LocaleProvider
@@ -158,8 +162,20 @@ class PushNotificationRepository @Inject constructor(
             if (allowWpComFallback && !isWpComPushRegistered()) {
                 registerPushTokenInWpComSystem(token)
             }
+            if (result.error?.type == WooErrorType.API_NOT_FOUND) handleWooPushUnavailable(selectedSite)
             Result.failure(WooException(result.error))
         }
+    }
+
+    private suspend fun handleWooPushUnavailable(site: SiteModel) {
+        pushNotificationsDataStore.edit { preferences ->
+            preferences.clearPushRegistration(site)
+            preferences.saveRefreshedAt(site.id, clock.millis())
+            if (site.connectionTypeOrNull == SiteConnectionType.Jetpack) {
+                preferences.setWpComPendingRestore(site.id, isPending = true)
+            }
+        }
+        restoreWpComNotifications(listOf(site))
     }
 
     private suspend fun disableWpComNotificationsForSite(siteId: Long) {
@@ -225,6 +241,18 @@ class PushNotificationRepository @Inject constructor(
         return result
     }
 
+    suspend fun restoreWpComNotifications(sites: List<SiteModel>) {
+        val preferences = pushNotificationsDataStore.data.first()
+        val sitesToRestore = sites.filter { preferences.hasWpComPendingRestore(it.id) }
+        if (sitesToRestore.isEmpty() || !isWpComPushRegistered()) return
+
+        if (enableWpComNotificationsForSites(sitesToRestore.map { it.siteId }.toSet()).isSuccess) {
+            pushNotificationsDataStore.edit { prefs ->
+                sitesToRestore.forEach { prefs.setWpComPendingRestore(it.id, isPending = false) }
+            }
+        }
+    }
+
     private fun WpComPushNotificationStore.NotificationSettingsUpdateError?.toErrorCode(): String? =
         when (val type = this?.type) {
             is WpComPushNotificationStore.NotificationSettingErrorType.ApiError -> type.apiErrorCode
@@ -238,6 +266,7 @@ class PushNotificationRepository @Inject constructor(
         pushNotificationsDataStore.edit { preferences ->
             preferences.savePushRegistration(site.siteId, registration)
             preferences.saveRefreshedAt(site.id, clock.millis())
+            preferences.setWpComPendingRestore(site.id, isPending = false)
         }
     }
 

@@ -109,14 +109,16 @@ class RegisterDevice @Inject constructor(
             WooLog.d(WooLog.T.NOTIFICATIONS, "Skipping WP.com push registration for $trigger")
         }
 
-        if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
-            val sites = when (trigger) {
-                Trigger.LOGIN_SUCCESS,
-                Trigger.TOKEN_REFRESH,
-                Trigger.APP_FOREGROUND -> getWooVisibleSites()
+        val sites = when (trigger) {
+            Trigger.LOGIN_SUCCESS,
+            Trigger.TOKEN_REFRESH,
+            Trigger.APP_FOREGROUND -> getWooVisibleSites()
 
-                Trigger.SITE_SWITCH -> listOfNotNull(selectedSite.getIfExists())
-            }
+            Trigger.SITE_SWITCH -> listOfNotNull(selectedSite.getIfExists())
+        }
+        pushNotificationRepository.restoreWpComNotifications(sites)
+
+        if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
             supervisorScope {
                 sites.map { site ->
                     async {

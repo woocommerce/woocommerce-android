@@ -184,6 +184,23 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         }
 
     @Test
+    fun `given login success trigger, when registration runs, then restores wpcom before the Woo sites`() =
+        testBlocking {
+            // GIVEN
+            runBlocking { whenever(pushNotificationRepository.isWpComPushRegistered()).thenReturn(false) }
+
+            // WHEN
+            sut(LOGIN_SUCCESS)
+
+            // THEN
+            val registrationOrder = inOrder(pushNotificationRepository)
+            registrationOrder.verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
+            registrationOrder.verify(pushNotificationRepository).restoreWpComNotifications(listOf(siteOne, siteTwo))
+            registrationOrder.verify(pushNotificationRepository)
+                .registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
+        }
+
+    @Test
     fun `given login success trigger, when WPCom registration returns an error, then still registers Woo sites`() =
         testBlocking {
             // GIVEN
@@ -243,6 +260,18 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         verify(pushNotificationRepository, never()).shouldRegisterWooPush(TEST_TOKEN, siteOne)
         verify(pushNotificationRepository, never()).shouldRegisterWooPush(TEST_TOKEN, siteTwo)
         verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), any(), any())
+    }
+
+    @Test
+    fun `given M1 flag disabled, when registration runs, then still restores wpcom notifications`() = testBlocking {
+        // GIVEN
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)).thenReturn(false)
+
+        // WHEN
+        sut(APP_FOREGROUND)
+
+        // THEN
+        verify(pushNotificationRepository).restoreWpComNotifications(listOf(siteOne, siteTwo))
     }
 
     @Test
