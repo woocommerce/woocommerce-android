@@ -5,6 +5,7 @@ import com.woocommerce.android.notifications.push.RegisterDevice.Trigger.APP_FOR
 import com.woocommerce.android.notifications.push.RegisterDevice.Trigger.LOGIN_SUCCESS
 import com.woocommerce.android.notifications.push.RegisterDevice.Trigger.SITE_SWITCH
 import com.woocommerce.android.notifications.push.RegisterDevice.Trigger.TOKEN_REFRESH
+import com.woocommerce.android.notifications.push.RegisterDevice.Trigger.TROUBLESHOOTING
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.sitepicker.sitevisibility.GetWooVisibleSites
 import com.woocommerce.android.util.FeatureFlag
@@ -151,6 +152,22 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
             verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
             verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
+        }
+
+    @Test
+    fun `given troubleshooting trigger, when registration runs, then forces WPCom and only the selected Woo site`() =
+        testBlocking {
+            // WHEN
+            sut(TROUBLESHOOTING)
+
+            // THEN
+            verify(pushNotificationRepository, never()).isWpComPushRegistered()
+            verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
+            verify(pushNotificationRepository, never()).shouldRegisterWooPush(eq(TEST_TOKEN), any())
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, false)
+            verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
+            verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
+            verify(getWooVisibleSites, never()).invoke()
         }
 
     @Test

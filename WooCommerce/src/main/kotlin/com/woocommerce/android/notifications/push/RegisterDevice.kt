@@ -84,7 +84,7 @@ class RegisterDevice @Inject constructor(
             return
         }
 
-        val shouldForce = trigger == Trigger.TOKEN_REFRESH
+        val shouldForce = trigger == Trigger.TOKEN_REFRESH || trigger == Trigger.TROUBLESHOOTING
 
         // For WPCom, site switching doesn't affect registration
         val shouldEvaluateWpCom = trigger != Trigger.SITE_SWITCH &&
@@ -109,13 +109,7 @@ class RegisterDevice @Inject constructor(
             WooLog.d(WooLog.T.NOTIFICATIONS, "Skipping WP.com push registration for $trigger")
         }
 
-        val sites = when (trigger) {
-            Trigger.LOGIN_SUCCESS,
-            Trigger.TOKEN_REFRESH,
-            Trigger.APP_FOREGROUND -> getWooVisibleSites()
-
-            Trigger.SITE_SWITCH -> listOfNotNull(selectedSite.getIfExists())
-        }
+        val sites = getSitesForTrigger(trigger)
         pushNotificationRepository.restoreWpComNotifications(sites)
 
         if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
@@ -144,6 +138,16 @@ class RegisterDevice @Inject constructor(
             migrateWooPushRegistrationsToWpCom(trigger, token)
         }
     }
+
+    private suspend fun getSitesForTrigger(trigger: Trigger) =
+        when (trigger) {
+            Trigger.LOGIN_SUCCESS,
+            Trigger.TOKEN_REFRESH,
+            Trigger.APP_FOREGROUND -> getWooVisibleSites()
+
+            Trigger.SITE_SWITCH,
+            Trigger.TROUBLESHOOTING -> listOfNotNull(selectedSite.getIfExists())
+        }
 
     private suspend fun migrateWooPushRegistrationsToWpCom(trigger: Trigger, token: String) {
         if (trigger == Trigger.SITE_SWITCH) return
@@ -190,6 +194,7 @@ class RegisterDevice @Inject constructor(
         LOGIN_SUCCESS,
         APP_FOREGROUND,
         SITE_SWITCH,
-        TOKEN_REFRESH
+        TOKEN_REFRESH,
+        TROUBLESHOOTING
     }
 }
