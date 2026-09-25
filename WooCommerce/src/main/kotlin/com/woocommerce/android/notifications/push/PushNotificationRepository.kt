@@ -18,6 +18,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.locale.LocaleProvider
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -322,15 +323,35 @@ class PushNotificationRepository @Inject constructor(
         .toSet()
 
     suspend fun unregisterDeviceFromPushNotifications() {
-        coroutineScope {
-            val unregisterWpComToken = async {
-                if (isWpComPushRegistered()) {
-                    wpComPushNotificationStore.unregisterWpComPushToken()
+        try {
+            coroutineScope {
+                val unregisterWpComToken = async {
+                    if (isWpComPushRegistered()) {
+                        wpComPushNotificationStore.unregisterWpComPushToken()
+                    }
                 }
-            }
-            val unregisterWooCoreTokens = async { unregisterWooCoreTokensFromServer() }
+                val unregisterWooCoreTokens = async { unregisterWooCoreTokensFromServer() }
 
-            awaitAll(unregisterWpComToken, unregisterWooCoreTokens)
+                awaitAll(unregisterWpComToken, unregisterWooCoreTokens)
+            }
+        } finally {
+            // The server delete can't be retried once the account is gone, and every application-password
+            // store shares the same keys, so a leftover entry makes the next store look already registered.
+            withContext(NonCancellable) { clearAllWooPushRegistrations() }
+        }
+    }
+
+    private suspend fun clearAllWooPushRegistrations() {
+        var clearedSiteIds: Set<Long> = emptySet()
+        pushNotificationsDataStore.edit { preferences ->
+            clearedSiteIds = preferences.registeredSiteIds()
+            preferences.clear()
+        }
+        if (clearedSiteIds.isNotEmpty()) {
+            WooLog.w(
+                WooLog.T.NOTIFICATIONS,
+                "Cleared local Woo push registrations left behind at logout for sites $clearedSiteIds"
+            )
         }
     }
 
