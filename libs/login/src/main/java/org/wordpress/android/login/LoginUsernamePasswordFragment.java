@@ -235,7 +235,7 @@ public class LoginUsernamePasswordFragment extends LoginBaseDiscoveryFragment im
             mRequestedPassword = savedInstanceState.getString(KEY_REQUESTED_PASSWORD);
             mOldSitesIDs = savedInstanceState.getIntegerArrayList(KEY_OLD_SITES_IDS);
         } else {
-            mAnalyticsListener.trackUsernamePasswordFormViewed();
+            mAnalyticsListener.trackUsernamePasswordFormViewed(mIsWpcom);
 
             // auto-login if username and password are set for wpcom login
             if (mIsWpcom && !TextUtils.isEmpty(mInputUsername) && !TextUtils.isEmpty(mInputPassword)) {
@@ -262,7 +262,7 @@ public class LoginUsernamePasswordFragment extends LoginBaseDiscoveryFragment im
 
     @Override public void onResume() {
         super.onResume();
-        mAnalyticsListener.usernamePasswordScreenResumed();
+        mAnalyticsListener.usernamePasswordScreenResumed(mIsWpcom);
         updatePrimaryButtonEnabledStatus();
     }
 
@@ -354,9 +354,9 @@ public class LoginUsernamePasswordFragment extends LoginBaseDiscoveryFragment im
     private void showError(String errorMessage) {
         mUsernameInput.setError(errorMessage != null ? " " : null);
         mPasswordInput.setError(errorMessage);
-        mAnalyticsListener.trackFailure(errorMessage);
 
         if (errorMessage != null) {
+            mAnalyticsListener.trackFailure(errorMessage);
             requestScrollToView(mPasswordInput);
         }
     }
