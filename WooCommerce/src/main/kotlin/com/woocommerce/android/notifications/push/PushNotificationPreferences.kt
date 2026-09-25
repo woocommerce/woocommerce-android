@@ -2,7 +2,9 @@ package com.woocommerce.android.notifications.push
 
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import org.wordpress.android.fluxc.model.SiteModel
 
 internal object PushNotificationPreferences {
     fun Preferences.getPushRegistration(siteId: Long): WooPushRegistrationData? {
@@ -20,11 +22,12 @@ internal object PushNotificationPreferences {
         registration.deviceUuid?.let { this[getPushDeviceUuidKeyForSite(siteId)] = it }
     }
 
-    fun MutablePreferences.clearPushRegistration(siteId: Long) {
-        remove(getPushTokenIdKeyForSite(siteId))
-        remove(getPushTokenValueKeyForSite(siteId))
-        remove(getPushLocaleKeyForSite(siteId))
-        remove(getPushDeviceUuidKeyForSite(siteId))
+    fun MutablePreferences.clearPushRegistration(site: SiteModel) {
+        remove(getPushTokenIdKeyForSite(site.siteId))
+        remove(getPushTokenValueKeyForSite(site.siteId))
+        remove(getPushLocaleKeyForSite(site.siteId))
+        remove(getPushDeviceUuidKeyForSite(site.siteId))
+        remove(getRefreshedAtKeyForSite(site.id))
     }
 
     fun Preferences.getRegisteredSiteIds(): Set<Long> = asMap().keys
@@ -40,6 +43,12 @@ internal object PushNotificationPreferences {
 
     fun Preferences.getPushTokenValue(siteId: Long): String? = this[getPushTokenValueKeyForSite(siteId)]
 
+    fun Preferences.getRefreshedAt(localSiteId: Int): Long? = this[getRefreshedAtKeyForSite(localSiteId)]
+
+    fun MutablePreferences.saveRefreshedAt(localSiteId: Int, millis: Long) {
+        this[getRefreshedAtKeyForSite(localSiteId)] = millis
+    }
+
     private fun getPushTokenIdKeyForSite(siteId: Long): Preferences.Key<String> =
         stringPreferencesKey("$PUSH_TOKEN_KEY_PREFIX$siteId")
 
@@ -52,6 +61,9 @@ internal object PushNotificationPreferences {
     private fun getPushDeviceUuidKeyForSite(siteId: Long): Preferences.Key<String> =
         stringPreferencesKey("$PUSH_DEVICE_UUID_KEY_PREFIX$siteId")
 
+    private fun getRefreshedAtKeyForSite(localSiteId: Int): Preferences.Key<Long> =
+        longPreferencesKey("$REFRESHED_AT_KEY_PREFIX$localSiteId")
+
     data class WooPushRegistrationData(
         val tokenId: String,
         val token: String,
@@ -63,4 +75,5 @@ internal object PushNotificationPreferences {
     private const val PUSH_TOKEN_VALUE_KEY_PREFIX = "push_token_value_"
     private const val PUSH_LOCALE_KEY_PREFIX = "push_locale_"
     private const val PUSH_DEVICE_UUID_KEY_PREFIX = "push_device_uuid_"
+    private const val REFRESHED_AT_KEY_PREFIX = "woo_push_refreshed_at_"
 }

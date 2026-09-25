@@ -112,19 +112,19 @@ class RegisterDevice @Inject constructor(
         if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
             val sites = when (trigger) {
                 Trigger.LOGIN_SUCCESS,
-                Trigger.TOKEN_REFRESH -> getWooVisibleSites()
+                Trigger.TOKEN_REFRESH,
+                Trigger.APP_FOREGROUND -> getWooVisibleSites()
 
-                Trigger.APP_FOREGROUND,
                 Trigger.SITE_SWITCH -> listOfNotNull(selectedSite.getIfExists())
             }
             supervisorScope {
                 sites.map { site ->
                     async {
                         val shouldRegisterSite = shouldForce ||
-                            pushNotificationRepository.shouldRegisterWooPushForSite(token, site.siteId)
+                            pushNotificationRepository.shouldRegisterWooPush(token, site)
 
                         if (shouldRegisterSite) {
-                            pushNotificationRepository.clearWooPushRegistrationForStaleToken(site.siteId, token)
+                            pushNotificationRepository.clearWooPushRegistrationForStaleToken(site, token)
                             WooLog.d(
                                 WooLog.T.NOTIFICATIONS,
                                 "Registering Woo push for site ${site.siteId} for $trigger"

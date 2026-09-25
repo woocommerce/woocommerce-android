@@ -17,8 +17,10 @@ import com.woocommerce.android.notifications.push.PushNotificationPreferences.cl
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.getPushRegistration
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.getPushTokenId
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.getPushTokenValue
+import com.woocommerce.android.notifications.push.PushNotificationPreferences.getRefreshedAt
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.getRegisteredSiteIds
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.savePushRegistration
+import com.woocommerce.android.notifications.push.PushNotificationPreferences.saveRefreshedAt
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
@@ -40,9 +42,11 @@ import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.SiteNotificationSetting
 import org.wordpress.android.fluxc.utils.PreferenceUtils
 import java.io.IOException
+import java.time.Clock
 import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.days
 
 class PushNotificationRepository @Inject constructor(
     private val wooPushNotificationsStore: WooPushNotificationsStore,
@@ -56,7 +60,8 @@ class PushNotificationRepository @Inject constructor(
     private val localeProvider: LocaleProvider,
     private val checkWooPluginPushNotificationsSupport: CheckWooPluginPushNotificationsSupport,
     private val coroutineDispatchers: CoroutineDispatchers,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val clock: Clock
 ) {
     fun observeWooNotificationPreferences(): Flow<WooPushNotificationPreferences?> =
         wooPushNotificationsStore.observeNotificationPreferences(selectedSite.get())
@@ -124,7 +129,7 @@ class PushNotificationRepository @Inject constructor(
                     stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_SUCCESS,
                     siteId = selectedSite.siteId
                 )
-                savePushTokenForSite(selectedSite.siteId, WooPushRegistrationData(tokenId, token, deviceLocale, uuid))
+                savePushTokenForSite(selectedSite, WooPushRegistrationData(tokenId, token, deviceLocale, uuid))
                 disableWpComNotificationsForSite(selectedSite.siteId)
                 Result.success(Unit)
             } ?: run {
@@ -158,6 +163,8 @@ class PushNotificationRepository @Inject constructor(
     }
 
     private suspend fun disableWpComNotificationsForSite(siteId: Long) {
+        if (!isWpComPushRegistered()) return
+
         val setting = SiteNotificationSetting(
             siteId = siteId,
             newCommentEnabled = false,
@@ -227,21 +234,23 @@ class PushNotificationRepository @Inject constructor(
             null -> null
         }
 
-    private suspend fun savePushTokenForSite(siteId: Long, registration: WooPushRegistrationData) {
+    private suspend fun savePushTokenForSite(site: SiteModel, registration: WooPushRegistrationData) {
         pushNotificationsDataStore.edit { preferences ->
-            preferences.savePushRegistration(siteId, registration)
+            preferences.savePushRegistration(site.siteId, registration)
+            preferences.saveRefreshedAt(site.id, clock.millis())
         }
     }
 
     suspend fun isWooPushTokenRegisteredForSite(siteId: Long): Boolean =
         observeWooPushTokenRegisteredForSite(siteId).first()
 
-    suspend fun shouldRegisterWooPushForSite(currentToken: String, siteId: Long): Boolean {
+    suspend fun shouldRegisterWooPush(currentToken: String, site: SiteModel): Boolean {
         val preferences = pushNotificationsDataStore.data.first()
-        val registration = preferences.getPushRegistration(siteId)
+        val refreshedAt = preferences.getRefreshedAt(site.id) ?: return true
+        if (clock.millis() - refreshedAt !in 0 until REFRESH_INTERVAL_MILLIS) return true
 
-        return registration == null ||
-            registration.token != currentToken ||
+        val registration = preferences.getPushRegistration(site.siteId) ?: return false
+        return registration.token != currentToken ||
             registration.locale != getDeviceLocale() ||
             registration.deviceUuid != appPrefsWrapper.wooCorePushDeviceUUID
     }
@@ -268,19 +277,19 @@ class PushNotificationRepository @Inject constructor(
     suspend fun getWooPushRegisteredSiteIds(): Set<Long> =
         pushNotificationsDataStore.data.first().getRegisteredSiteIds()
 
-    suspend fun clearWooPushRegistrationForStaleToken(siteId: Long, currentToken: String) {
+    suspend fun clearWooPushRegistrationForStaleToken(site: SiteModel, currentToken: String) {
         if (currentToken.isEmpty()) return
 
         var cleared = false
         pushNotificationsDataStore.edit { preferences ->
-            val isRegistered = preferences.getPushTokenId(siteId).isNotNullOrEmpty()
-            if (isRegistered && preferences.getPushTokenValue(siteId) != currentToken) {
-                preferences.clearPushRegistration(siteId)
+            val isRegistered = preferences.getPushTokenId(site.siteId).isNotNullOrEmpty()
+            if (isRegistered && preferences.getPushTokenValue(site.siteId) != currentToken) {
+                preferences.clearPushRegistration(site)
                 cleared = true
             }
         }
         if (cleared) {
-            WooLog.d(WooLog.T.NOTIFICATIONS, "Cleared stale Woo Core push registration for site $siteId")
+            WooLog.d(WooLog.T.NOTIFICATIONS, "Cleared stale Woo Core push registration for site ${site.siteId}")
         }
     }
 
@@ -352,7 +361,7 @@ class PushNotificationRepository @Inject constructor(
         }
 
         pushNotificationsDataStore.edit {
-            it.clearPushRegistration(site.siteId)
+            it.clearPushRegistration(site)
         }
         if (isAlreadyDeleted) {
             WooLog.d(
@@ -413,5 +422,6 @@ class PushNotificationRepository @Inject constructor(
 
     companion object {
         private const val WPCOM_UNREGISTERED_DEVICE_ERROR_CODE = "unregistered_device"
+        private val REFRESH_INTERVAL_MILLIS = 1.days.inWholeMilliseconds
     }
 }

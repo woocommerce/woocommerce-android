@@ -166,7 +166,7 @@ class WooSitesVisibilityViewModel @Inject constructor(
             .filter { it.siteId in newlyVisibleSiteIds && it.siteId !in wooPushRegisteredSiteIds }
             .map { site ->
                 async {
-                    if (pushNotificationRepository.shouldRegisterWooPushForSite(token, site.siteId)) {
+                    if (pushNotificationRepository.shouldRegisterWooPush(token, site)) {
                         pushNotificationRepository.registerPushTokenInWooCoreSystem(
                             token = token,
                             selectedSite = site,
