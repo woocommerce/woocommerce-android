@@ -4,6 +4,7 @@
 
 25.8
 -----
+- [Internal] Logging out now always clears the local Woo push notification registration, even when the server-side token delete fails, so the next store logged in on the device can set up notifications
 - [*] POS: custom amount form keeps its button above the keyboard, shows custom amounts in checkout and order totals, and formats amounts correctly [https://github.com/woocommerce/woocommerce-android/pull/16598]
 - [*] The app no longer signs you out when a single store endpoint returns an authorization error [https://github.com/woocommerce/woocommerce-android/pull/16571]
 - [Internal] Push notification analytics now attribute store and plan properties to the notification's origin site instead of the currently selected store [https://github.com/woocommerce/woocommerce-android/pull/16575]
