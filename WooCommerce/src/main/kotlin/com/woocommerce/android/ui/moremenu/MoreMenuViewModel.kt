@@ -25,6 +25,7 @@ import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
@@ -65,6 +66,7 @@ class MoreMenuViewModel @Inject constructor(
     private val planRepository: SitePlanRepository,
     private val resourceProvider: ResourceProvider,
     private val blazeCampaignsStore: BlazeCampaignsStore,
+    private val blazeRepository: BlazeRepository,
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val isBlazeEnabled: IsBlazeEnabled,
@@ -106,6 +108,9 @@ class MoreMenuViewModel @Inject constructor(
                 onSuccess = { storeHasGoogleAdsCampaigns = it },
                 onFailure = { WooLog.e(WooLog.T.GOOGLE_ADS, "Failed to fetch Google Ads campaigns: $it") }
             )
+        }
+        launch {
+            loadOutstandingBlazeBalance()
         }
     }
 
@@ -361,10 +366,19 @@ class MoreMenuViewModel @Inject constructor(
         storeHasGoogleAdsCampaigns = true
     }
 
+    /**
+     * Without cached campaigns, tapping Blaze opens the intro, so the balance is loaded when the menu is created to
+     * open the campaign list and its balance notice instead. Until the balance is known, the intro opens.
+     */
+    private suspend fun loadOutstandingBlazeBalance() {
+        if (!isBlazeEnabled() || blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).isNotEmpty()) return
+        blazeRepository.fetchOutstandingBalance()
+    }
+
     private fun onPromoteProductsWithBlaze() {
         launch {
             val hasCampaigns = blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).isNotEmpty()
-            if (hasCampaigns) {
+            if (hasCampaigns || blazeRepository.outstandingBalance.value != null) {
                 AnalyticsTracker.track(
                     stat = BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED,
                     properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MORE_MENU_ITEM.trackingName)

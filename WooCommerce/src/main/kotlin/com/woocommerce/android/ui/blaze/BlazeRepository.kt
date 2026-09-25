@@ -13,6 +13,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.joinToUrl
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.transform
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.blaze.BlazeAdForecast
 import org.wordpress.android.fluxc.model.blaze.BlazeAdSuggestion
+import org.wordpress.android.fluxc.model.blaze.BlazeBillingSummary
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignCreationRequest
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignCreationRequestBudget
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignCreationRequestImage
@@ -39,7 +41,8 @@ class BlazeRepository @Inject constructor(
     private val blazeCampaignsStore: BlazeCampaignsStore,
     private val productDetailRepository: ProductDetailRepository,
     private val mediaFilesRepository: MediaFilesRepository,
-    private val appPrefsWrapper: AppPrefsWrapper
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val outstandingBalanceCache: BlazeOutstandingBalanceCache
 ) {
     companion object {
         private const val BLAZE_CAMPAIGN_CREATION_ORIGIN = "wc-android"
@@ -157,6 +160,24 @@ class BlazeRepository @Inject constructor(
     }
 
     suspend fun getMostRecentCampaign() = blazeCampaignsStore.getMostRecentBlazeCampaign(selectedSite.get())
+
+    /**
+     * The billing summary if the account has an outstanding balance with unpaid orders, or null otherwise.
+     */
+    val outstandingBalance: StateFlow<BlazeBillingSummary?>
+        get() = outstandingBalanceCache.outstandingBalance
+
+    suspend fun fetchOutstandingBalance() {
+        val result = blazeCampaignsStore.fetchBlazeBillingSummary(selectedSite.get())
+
+        if (result.isError) {
+            WooLog.w(WooLog.T.BLAZE, "Failed to fetch billing summary: ${result.error}")
+        } else {
+            outstandingBalanceCache.update(
+                result.model?.takeIf { it.debt > 0 && it.paymentLinks.isNotEmpty() }
+            )
+        }
+    }
 
     suspend fun fetchAdSuggestions(productId: Long): Result<List<AiSuggestionForAd>> {
         fun List<BlazeAdSuggestion>.mapToUiModel(): List<AiSuggestionForAd> {
