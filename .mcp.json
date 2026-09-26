@@ -2,11 +2,11 @@
   "mcpServers": {
     "mobile-mcp": {
       "command": "npx",
-      "args": ["-y", "@mobilenext/mobile-mcp@latest"]
+      "args": ["-y", "@mobilenext/mobile-mcp@0.0.42"]
     },
     "context-a8c": {
       "command": "npx",
-      "args": ["-y", "@automattic/mcp-context-a8c@latest"]
+      "args": ["-y", "@automattic/mcp-context-a8c@0.1.4"]
     }
   }
 }
