@@ -168,7 +168,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         whenever(mockedOrder.id).thenReturn(ORDER_ID)
         whenever(mockedOrder.status).thenReturn(Order.Status.Pending)
 
-        whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(true)
+        whenever(paymentCollectibilityChecker.isCollectable(any(), any(), any())).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(siteModel)
         whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
         whenever(appPrefs.getCardReaderStatementDescriptor(anyOrNull(), anyOrNull(), anyOrNull()))
@@ -446,7 +446,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
     @Test
     fun `when payment not collectable, then error event emitted and flow terminated`() =
         testBlocking {
-            whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(false)
+            whenever(paymentCollectibilityChecker.isCollectable(any(), any(), any())).thenReturn(false)
             val events = mutableListOf<CardReaderPaymentEvent>()
             val job = launch {
                 controller.event.collect {
@@ -463,6 +463,14 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             )
             assertThat(events[1]).isInstanceOf(CardReaderPaymentEvent.Exit::class.java)
             job.cancel()
+        }
+
+    @Test
+    fun `when payment flow started, then collectibility is checked without the subscription lookup`() =
+        testBlocking {
+            controller.start()
+
+            verify(paymentCollectibilityChecker).isCollectable(any(), any(), eq(false))
         }
 
     @Test
@@ -2999,6 +3007,22 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     // region - Interac refund
+    @Test
+    fun `given order not refundable, when refund starts, then not-available message shown and flow exits`() =
+        testBlocking {
+            setupControllerForInteracRefund()
+            whenever(interacRefundableChecker.isRefundable(any())).thenReturn(false)
+            val events = mutableListOf<CardReaderPaymentEvent>()
+            val job = launch { controller.event.collect { events.add(it) } }
+
+            controller.start()
+
+            assertThat((events[0] as ShowErrorMessage).message)
+                .isEqualTo(R.string.card_reader_interac_refund_not_available)
+            assertThat(events[1]).isInstanceOf(CardReaderPaymentEvent.Exit::class.java)
+            job.cancel()
+        }
+
     @Test
     fun `given interac refund shown, when RETRY message received, then refund payment hint updated`() =
         testBlocking {

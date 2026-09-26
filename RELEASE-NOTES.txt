@@ -22,6 +22,7 @@
 
 25.7
 -----
+- [*] In-person payment collection and Interac refunds are now hidden for orders sold as a subscription, including plan-based and variable subscriptions the previous check missed [https://github.com/woocommerce/woocommerce-android/pull/16563]
 - [*] Customers list no longer reshuffles its rows once the fresh results arrive from the server [https://github.com/woocommerce/woocommerce-android/pull/16573]
 - [*] Updated the create shipping label button visibility on the order details screen [https://github.com/woocommerce/woocommerce-android/pull/16572]
 - [Internal] Defer push notification handler initialization until a message is received on the Firebase worker thread.
