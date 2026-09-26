@@ -113,16 +113,18 @@ class MaestroCiContractTests(unittest.TestCase):
                 self.assertIn("  - smoke_core\n", source)
                 self.assertNotIn("  - flaky_quarantine\n", source)
 
-    def test_not_woo_store_requires_the_installation_page_cta(self) -> None:
+    def test_not_woo_store_requires_the_rejection_and_another_account_action(self) -> None:
         flow = (
             REPO_ROOT / ".maestro" / "flows" / "login_not_woo_store.yaml"
         ).read_text(encoding="utf-8")
         strings = (REPO_ROOT / ".maestro" / "strings.env").read_text(encoding="utf-8")
 
-        error_message = flow.index('visible: ".*not a WooCommerce site.*"')
-        cta = flow.index("text: ${STRING_LOGIN_OPEN_INSTALLATION_PAGE}")
-        self.assertLess(error_message, cta)
-        self.assertIn("STRING_LOGIN_OPEN_INSTALLATION_PAGE='Open installation page'", strings)
+        error_message = flow.index(
+            'visible: ".*not a WooCommerce site.*|.*does not support plugin installation.*"'
+        )
+        another_account = flow.index("text: ${STRING_LOGIN_TRY_ANOTHER_ACCOUNT}")
+        self.assertLess(error_message, another_account)
+        self.assertIn("STRING_LOGIN_TRY_ANOTHER_ACCOUNT='Log in with another account'", strings)
 
     def test_ci_defers_production_app_setup_to_the_runner(self) -> None:
         wrapper = (
