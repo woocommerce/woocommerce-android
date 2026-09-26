@@ -127,12 +127,10 @@ with `aapt` first, so `aapt` has to be on `PATH` or under `build-tools` in
 
 ### Store data prerequisites
 
-`orders_create` selects an existing live-store customer and edits only the customer copy attached to the order draft.
+`orders_create` selects the first existing customer and edits only the customer copy attached to the order draft.
 The app creates that `Order.Customer` in `OrderCreateEditCustomerAddFragment` and
 `OrderCreateEditViewModel.onCustomerEdited` replaces only `orderDraft.customer`; it does not update the store customer.
-The flow captures the selected email, verifies it on the draft, verifies the edited marker on the persisted order,
-then searches the customer list again and requires the original email to be unchanged. The configured store must have
-at least two existing customers with email addresses; missing data fails as an explicit prerequisite.
+The configured store must have at least one existing customer with an email address.
 
 ## Running
 
