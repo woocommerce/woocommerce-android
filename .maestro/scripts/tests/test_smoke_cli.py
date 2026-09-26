@@ -456,7 +456,7 @@ class SmokeCliContractTest(unittest.TestCase):
         result, output_root = self.run_runner(
             "--plan",
             "--include-tags",
-            "smoke_extended",
+            "no_flow_has_this_tag",
             "--store",
             "lab",
         )

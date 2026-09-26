@@ -21,7 +21,6 @@ appId: com.woocommerce.android
 name: "Orders - Create a new order"
 tags:
   - smoke_extended
-  - flaky_quarantine
   - orders
   - destructive
 ---
