@@ -115,6 +115,11 @@
             android:name="selectedProvider"
             android:defaultValue=""
             app:argType="string" />
+        <argument
+            android:name="storeCountryCode"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/addOrderNoteFragment"

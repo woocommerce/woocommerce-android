@@ -102,7 +102,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         whenever(getShippingLabelSupport()).thenReturn(support)
     }
 
-    private fun givenStoreCountryCode(countryCode: String) {
+    private suspend fun givenStoreCountryCode(countryCode: String) {
         whenever(orderDetailRepository.getStoreCountryCode())
             .thenReturn(countryCode)
     }

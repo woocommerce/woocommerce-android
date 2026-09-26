@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.tracking
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.OpenTrackingBarcodeScanning
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrackingProviders
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -75,6 +76,21 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
         assertThat(events[0]).isInstanceOf(SaveTrackingPrefsEvent::class.java)
         assertEquals(R.string.order_shipment_tracking_added, (events[1] as ShowSnackbar).message)
         assertThat(events[2]).isInstanceOf(ExitWithResult::class.java)
+    }
+
+    @Test
+    fun `given store country, when carrier clicked, then providers are opened with the store country`() = testBlocking {
+        // GIVEN
+        whenever(repository.getStoreCountryCode()).thenReturn("US")
+        viewModel.onCarrierSelected(Carrier("test", false))
+
+        // WHEN
+        viewModel.onCarrierClicked()
+
+        // THEN
+        assertThat(viewModel.event.value).isEqualTo(
+            ViewShipmentTrackingProviders(orderId = ORDER_ID, selectedProvider = "test", storeCountryCode = "US")
+        )
     }
 
     @Test

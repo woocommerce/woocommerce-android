@@ -5,6 +5,8 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asFlow
+import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.AppUrls.STRIPE_TAP_TO_PAY_DEVICE_REQUIREMENTS
@@ -55,9 +57,10 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.CARD_READER
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.combineWith
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -83,10 +86,9 @@ class PaymentsHubViewModel @Inject constructor(
     private val developerOptionsRepository: DeveloperOptionsRepository,
 ) : ScopedViewModel(savedState) {
     private val arguments: PaymentsHubFragmentArgs by savedState.navArgs()
-    private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
-    private val countryConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(
-        storeCountryCode
-    )
+    private val countryConfig = async {
+        cardReaderCountryConfigProvider.provideCountryConfigFor(wooStore.getStoreCountryCode(selectedSite.get()))
+    }
     private val cashOnDeliveryState = MutableLiveData<CashOnDeliveryState>(CashOnDeliveryState.Loading)
 
     private var cashOnDeliveryTitle: String? = null
@@ -123,12 +125,12 @@ class PaymentsHubViewModel @Inject constructor(
 
     private val onboardingCheck = MutableLiveData<OnboardingCheck>(OnboardingCheck.InProgress)
 
-    val viewStateData: LiveData<PaymentsHubViewState> = onboardingCheck
-        .combineWith(cashOnDeliveryState) { onboarding, cashOnDelivery ->
-            createViewState(requireNotNull(onboarding), requireNotNull(cashOnDelivery))
-        }
+    val viewStateData: LiveData<PaymentsHubViewState> =
+        combine(onboardingCheck.asFlow(), cashOnDeliveryState.asFlow()) { onboarding, cashOnDelivery ->
+            createViewState(onboarding, cashOnDelivery)
+        }.asLiveData()
 
-    private fun createViewState(
+    private suspend fun createViewState(
         onboarding: OnboardingCheck,
         cashOnDelivery: CashOnDeliveryState,
     ) = PaymentsHubViewState(
@@ -141,7 +143,7 @@ class PaymentsHubViewModel @Inject constructor(
         // Must run before anything below reads Tap to Pay availability — Stripe cannot answer
         // whether the device supports it until Terminal is initialized.
         initializeCardReaderManagerIfNeeded()
-        handleOpenInHubParameter()
+        launch { handleOpenInHubParameter() }
         listenForSoftwareUpdateAvailability()
     }
 
@@ -184,14 +186,14 @@ class PaymentsHubViewModel @Inject constructor(
         )
     }
 
-    private val cardReaderPurchaseUrl: String by lazy {
+    private suspend fun getCardReaderPurchaseUrl(): String {
         val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
             WooLog.e(CARD_READER, "Store's country code not found.")
         }
-        "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode"
+        return "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode"
     }
 
-    private fun createHubListWhenSinglePluginInstalled(
+    private suspend fun createHubListWhenSinglePluginInstalled(
         isOnboardingComplete: Boolean
     ): List<ListItem> = mutableListOf(
         PayoutSummaryListItem(index = 0),
@@ -223,11 +225,9 @@ class PaymentsHubViewModel @Inject constructor(
         addLearnMoreAboutIPP()
     }
 
-    private val isPhoneEligibleAsCardReader: Boolean
-        get() = tapToPayAvailabilityStatus().isAvailable
-
-    private fun MutableList<ListItem>.addTapToPay() {
+    private suspend fun MutableList<ListItem>.addTapToPay() {
         val status = tapToPayAvailabilityStatus()
+        val countryConfig = countryConfig.await()
         when {
             status.isAvailable -> {
                 add(
@@ -284,8 +284,8 @@ class PaymentsHubViewModel @Inject constructor(
         ) { actionType -> handlePositiveButtonClickTTPUnavailable(actionType) }
     }
 
-    private fun MutableList<ListItem>.addCardReaderMode() {
-        if (!isPhoneEligibleAsCardReader) return
+    private suspend fun MutableList<ListItem>.addCardReaderMode() {
+        if (!tapToPayAvailabilityStatus().isAvailable) return
         add(
             NonToggleableListItem(
                 icon = R.drawable.ic_smartphone_24dp,
@@ -300,7 +300,8 @@ class PaymentsHubViewModel @Inject constructor(
         triggerEvent(PaymentsHubEvents.NavigateToCardReaderMode)
     }
 
-    private fun MutableList<ListItem>.addCardReaderManuals() {
+    private suspend fun MutableList<ListItem>.addCardReaderManuals() {
+        val countryConfig = countryConfig.await()
         if (countryConfig is CardReaderConfigForSupportedCountry) {
             add(
                 NonToggleableListItem(
@@ -351,7 +352,7 @@ class PaymentsHubViewModel @Inject constructor(
         onLearnMoreClicked = ::onLearnMoreCodClicked
     )
 
-    private fun createHubRows(check: OnboardingCheck): List<ListItem> {
+    private suspend fun createHubRows(check: OnboardingCheck): List<ListItem> {
         val isOnboardingComplete = when (check) {
             OnboardingCheck.InProgress, is OnboardingCheck.Failed -> false
             OnboardingCheck.Completed, is OnboardingCheck.PendingRequirements -> true
@@ -383,12 +384,14 @@ class PaymentsHubViewModel @Inject constructor(
 
     private fun onPurchaseCardReaderClicked() {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_ORDER_CARD_READER_TAPPED)
-        triggerEvent(
-            MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
-                url = paymentMenuUtmProvider.getUrlWithUtmParams(cardReaderPurchaseUrl),
-                screenTitle = UiStringRes(R.string.card_reader_purchase_card_reader)
+        launch {
+            triggerEvent(
+                MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
+                    url = paymentMenuUtmProvider.getUrlWithUtmParams(getCardReaderPurchaseUrl()),
+                    screenTitle = UiStringRes(R.string.card_reader_purchase_card_reader)
+                )
             )
-        )
+        }
     }
 
     private fun onLearnMoreCodClicked() {
@@ -524,7 +527,7 @@ class PaymentsHubViewModel @Inject constructor(
         triggerEvent(PaymentsHubEvents.NavigateToCardReaderOnboardingScreen(state))
     }
 
-    private fun handleOpenInHubParameter() {
+    private suspend fun handleOpenInHubParameter() {
         when (val params = arguments.cardReaderFlowParam) {
             is CardReadersHub -> {
                 when (params.openInHub) {

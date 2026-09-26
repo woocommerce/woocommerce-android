@@ -151,7 +151,7 @@ class WooPosCashPaymentViewModel @Inject constructor(
             val timeElapsed = System.currentTimeMillis() - it
             props["milliseconds_since_customer_interaction_started"] = "$timeElapsed"
         }
-        val paymentProps = repository.getOrderById(orderId)?.let(paymentSuccessProperties::invoke).orEmpty()
+        val paymentProps = repository.getOrderById(orderId)?.let { paymentSuccessProperties(it) }.orEmpty()
         val event = CashCollectPaymentSuccess(paymentProps).apply { addProperties(props) }
         analyticsTracker.track(event)
     }

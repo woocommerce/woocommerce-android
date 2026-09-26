@@ -9,6 +9,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoImpl
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -28,7 +29,7 @@ class WooPosPaymentSuccessPropertiesTest {
     private val properties = WooPosPaymentSuccessProperties(PaymentUtils(mock()), selectedSite, wooStore)
 
     @Test
-    fun `given currencies with different minor units, when payment succeeds, then gross total uses order currency`() {
+    fun `given currencies with different minor units, when payment succeeds, then gross total uses order currency`() = runTest {
         // GIVEN
         val amounts = mapOf("USD" to 1235L, "JPY" to 12L, "KWD" to 12345L)
 
@@ -56,7 +57,7 @@ class WooPosPaymentSuccessPropertiesTest {
     }
 
     @Test
-    fun `given card success, when dispatched, then order properties override stale context and retain reader and gateway`() {
+    fun `given card success, when dispatched, then order properties override stale context and retain reader and gateway`() = runTest {
         // GIVEN
         val trackingInfo = CardReaderTrackingInfoImpl().apply {
             setCurrency("USD")
@@ -99,7 +100,7 @@ class WooPosPaymentSuccessPropertiesTest {
     }
 
     @Test
-    fun `given successive orders, when success events are created, then properties stay with their order`() {
+    fun `given successive orders, when success events are created, then properties stay with their order`() = runTest {
         // GIVEN
         val provider = WooPosPaymentsFlowTrackerEventProvider(WooPosAnalyticsTrackingDataKeeper(), properties)
         val firstOrder = Order.getEmptyOrder(Date(), Date()).copy(id = 1L, total = BigDecimal.TEN, currency = "USD")

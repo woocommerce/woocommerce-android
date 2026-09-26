@@ -326,7 +326,7 @@ class OrderDetailRepository @Inject constructor(
         return result
     }
 
-    fun getStoreCountryCode(): String? {
+    suspend fun getStoreCountryCode(): String? {
         return wooCommerceStore.getStoreCountryCode(selectedSite.get())
     }
 
