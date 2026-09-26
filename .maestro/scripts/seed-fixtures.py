@@ -172,7 +172,6 @@ def seed(args: argparse.Namespace) -> None:
         manifest.setdefault("sweep_deletions", [])
     else:
         manifest = manifest_template(run_id, args.store)
-    customer_name = f"{run_id} Tester"
     product_name = f"{run_id} Variable Product"
     simple_product_name = f"{run_id} Simple Product"
     coupon_code = f"{run_id}-10".upper()
@@ -229,23 +228,6 @@ def seed(args: argparse.Namespace) -> None:
             manifest_path,
         )
 
-    customer = client.create(
-        "customers",
-        {
-            "email": suite_email(run_id),
-            "first_name": run_id,
-            "last_name": "Tester",
-            "username": re.sub(r"[^A-Za-z0-9]", "", run_id.lower()),
-            "billing": {
-                "first_name": run_id,
-                "last_name": "Tester",
-                "email": suite_email(run_id),
-                "country": "US",
-            },
-        },
-    )
-    record(manifest, "customer", int(customer["id"]), "known customer", manifest_path)
-
     coupon = client.create(
         "coupons",
         {
@@ -264,7 +246,6 @@ def seed(args: argparse.Namespace) -> None:
         pending = create_order(
             client=client,
             run_id=run_id,
-            customer=customer,
             product_id=int(simple_product["id"]),
             status="pending",
             set_paid=False,
@@ -276,7 +257,6 @@ def seed(args: argparse.Namespace) -> None:
         refundable = create_order(
             client=client,
             run_id=run_id,
-            customer=customer,
             product_id=int(simple_product["id"]),
             status="completed",
             set_paid=True,
@@ -296,7 +276,6 @@ def seed(args: argparse.Namespace) -> None:
         processing = create_order(
             client=client,
             run_id=run_id,
-            customer=customer,
             product_id=int(simple_product["id"]),
             status="processing",
             set_paid=True,
@@ -313,8 +292,6 @@ def seed(args: argparse.Namespace) -> None:
 
     manifest["env"] = {
         "MAESTRO_SUITE_RUN_ID": run_id,
-        "MAESTRO_FIXTURE_CUSTOMER_NAME": customer_name,
-        "MAESTRO_FIXTURE_CUSTOMER_EMAIL": suite_email(run_id),
         "MAESTRO_FIXTURE_VARIABLE_PRODUCT": product_name,
         "MAESTRO_FIXTURE_SIMPLE_PRODUCT": simple_product_name,
         "MAESTRO_FIXTURE_COUPON_CODE": coupon_code,
@@ -335,7 +312,6 @@ def seed(args: argparse.Namespace) -> None:
 def create_order(
     client: WooClient,
     run_id: str,
-    customer: dict[str, Any],
     product_id: int,
     status: str,
     set_paid: bool,
@@ -346,13 +322,12 @@ def create_order(
         {
             "status": status,
             "set_paid": set_paid,
-            "customer_id": customer["id"],
             "payment_method": "cod",
             "payment_method_title": "Cash on delivery",
             "billing": {
                 "first_name": run_id,
                 "last_name": "Tester",
-                "email": customer["email"],
+                "email": suite_email(run_id),
                 "country": "US",
             },
             "shipping": {

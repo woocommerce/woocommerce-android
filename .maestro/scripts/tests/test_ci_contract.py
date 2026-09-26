@@ -113,40 +113,18 @@ class MaestroCiContractTests(unittest.TestCase):
                 self.assertIn("  - smoke_core\n", source)
                 self.assertNotIn("  - flaky_quarantine\n", source)
 
-    def test_not_woo_store_uses_site_admin_credentials_for_both_auth_routes(self) -> None:
-        flow = (
-            REPO_ROOT / ".maestro" / "flows" / "login_not_woo_store.yaml"
-        ).read_text(encoding="utf-8")
-
-        self.assertEqual(
-            flow.count("${MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME}"), 2
-        )
-        self.assertEqual(
-            flow.count("${MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD}"), 2
-        )
-
-        obsolete_namespace = "NOT_A_WOO_STORE_" + "WPCOM"
-        credential_sources = [
-            REPO_ROOT / ".maestro" / "env.example",
-            REPO_ROOT / ".maestro" / "README.md",
-            REPO_ROOT / ".maestro" / "scripts" / "doctor.py",
-            REPO_ROOT / ".maestro" / "scripts" / "run-smoke-tests.sh",
-            REPO_ROOT / ".maestro" / "flows" / "login_not_woo_store.yaml",
-        ]
-        for path in credential_sources:
-            with self.subTest(path=path):
-                self.assertNotIn(obsolete_namespace, path.read_text(encoding="utf-8"))
-
-    def test_not_woo_store_requires_the_installation_page_cta(self) -> None:
+    def test_not_woo_store_requires_the_rejection_and_another_account_action(self) -> None:
         flow = (
             REPO_ROOT / ".maestro" / "flows" / "login_not_woo_store.yaml"
         ).read_text(encoding="utf-8")
         strings = (REPO_ROOT / ".maestro" / "strings.env").read_text(encoding="utf-8")
 
-        error_message = flow.index('visible: ".*not a WooCommerce site.*"')
-        cta = flow.index("text: ${STRING_LOGIN_OPEN_INSTALLATION_PAGE}")
-        self.assertLess(error_message, cta)
-        self.assertIn("STRING_LOGIN_OPEN_INSTALLATION_PAGE='Open installation page'", strings)
+        error_message = flow.index(
+            'visible: ".*not a WooCommerce site.*|.*does not support plugin installation.*"'
+        )
+        another_account = flow.index("text: ${STRING_LOGIN_TRY_ANOTHER_ACCOUNT}")
+        self.assertLess(error_message, another_account)
+        self.assertIn("STRING_LOGIN_TRY_ANOTHER_ACCOUNT='Log in with another account'", strings)
 
     def test_ci_defers_production_app_setup_to_the_runner(self) -> None:
         wrapper = (

@@ -2,13 +2,19 @@
 # p2: login.not-woo-store
 # P2 ref: Login > Not a Woo store (notawoostore.wordpress.com)
 #
-# Logs into a WordPress site that does NOT have WooCommerce installed using
-# the configured site-admin credentials through either authentication route.
+# Logs into a WordPress site that does NOT have WooCommerce installed.
+# Site-admin credentials are preferred, with WP.com credentials used when
+# the site routes through WordPress.com authentication instead.
 #
 # Required env vars:
 #   MAESTRO_WOO_NOT_A_WOO_STORE_URL
 #   MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME
 #   MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD
+#
+# WP.com env vars (set both or neither). Required when the fixture is hosted
+# on wordpress.com; optional for self-hosted sites that expose site credentials:
+#   MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL
+#   MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD
 appId: com.woocommerce.android
 name: "Login - Not a WooCommerce store error"
 tags:
@@ -28,7 +34,10 @@ tags:
 - tapOn:
     id: "input"
 - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_URL}
-- hideKeyboard
+- runFlow:
+    file: ../subflows/hide_keyboard.yaml
+    env:
+      KEYBOARD_TARGET_ID: "bottom_button"
 - tapOn:
     id: "bottom_button"
     retryTapIfNoChange: true
@@ -63,8 +72,7 @@ tags:
       - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD}
       - tapOn: "Continue"
 
-# Use the same site-admin credentials when the fixture presents the
-# WP.com-style email and password screens.
+# Use the resolved WP.com credentials when no site-admin route is available.
 - runFlow:
     when:
       visible:
@@ -72,8 +80,11 @@ tags:
     commands:
       - tapOn:
           id: "input"
-      - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME}
-      - hideKeyboard
+      - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL}
+      - runFlow:
+          file: ../subflows/hide_keyboard.yaml
+          env:
+            KEYBOARD_TARGET_ID: "login_continue_button"
       - tapOn:
           id: "login_continue_button"
           retryTapIfNoChange: true
@@ -94,21 +105,25 @@ tags:
           timeout: 10000
       - tapOn:
           id: "input"
-      - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD}
-      - hideKeyboard
+      - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD}
+      - runFlow:
+          file: ../subflows/hide_keyboard.yaml
+          env:
+            KEYBOARD_TARGET_ID: "bottom_button"
       - tapOn:
           id: "bottom_button"
           retryTapIfNoChange: true
 
 # Verify the configured WordPress site is rejected specifically because it
-# does not have WooCommerce. A Jetpack-account error does not prove this P2
-# check and must fail so the fixture can be repaired.
+# does not have WooCommerce. A WordPress.com site on a plan without plugins gets
+# its own message. A Jetpack-account error does not prove this P2 check and must
+# fail so the fixture can be repaired.
 - extendedWaitUntil:
-    visible: ".*not a WooCommerce site.*"
+    visible: ".*not a WooCommerce site.*|.*does not support plugin installation.*"
     timeout: 30000
 
 - assertVisible:
-    text: ${STRING_LOGIN_OPEN_INSTALLATION_PAGE}
-    label: "Open installation page CTA is visible"
+    text: ${STRING_LOGIN_TRY_ANOTHER_ACCOUNT}
+    label: "Log in with another account is visible"
 
 - takeScreenshot: login_not_woo_store

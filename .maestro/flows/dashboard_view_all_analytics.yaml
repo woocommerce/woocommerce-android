@@ -11,7 +11,6 @@ appId: com.woocommerce.android
 name: "Dashboard - View All store analytics"
 tags:
   - smoke_extended
-  - flaky_quarantine
   - dashboard
 ---
 # Reuse the logged-in session — login flows run first and leave the

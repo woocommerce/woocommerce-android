@@ -5,7 +5,7 @@ Maestro smoke plan
   include: smoke_core,smoke_extended,destructive
   exclude: flaky_quarantine,pos_tablet,android_system
   seed:    no
-  flows:   11
+  flows:   13
 
 Selected flows:
   - .maestro/flows/login_not_wp_site.yaml
@@ -17,5 +17,7 @@ Selected flows:
   - .maestro/flows/login_google.yaml
   - .maestro/flows/login_successful.yaml
   - .maestro/flows/dashboard_stats.yaml
+  - .maestro/flows/dashboard_view_all_analytics.yaml
   - .maestro/flows/orders_list_and_search.yaml
+  - .maestro/flows/orders_create.yaml
   - .maestro/flows/products_list_and_sort.yaml

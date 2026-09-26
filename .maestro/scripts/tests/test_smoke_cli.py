@@ -456,7 +456,7 @@ class SmokeCliContractTest(unittest.TestCase):
         result, output_root = self.run_runner(
             "--plan",
             "--include-tags",
-            "smoke_extended",
+            "no_flow_has_this_tag",
             "--store",
             "lab",
         )
@@ -670,7 +670,7 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertEqual(rerun.returncode, 0, rerun.stderr)
         self.assertIn("login_successful.yaml", rerun_args)
 
-    def test_not_woo_store_forwards_site_admin_credentials(self) -> None:
+    def test_not_woo_store_forwards_site_admin_and_wpcom_credentials(self) -> None:
         result, args, _ = self.run_with_recorded_maestro_args(
             "--device",
             "emulator-5554",
@@ -679,12 +679,16 @@ class SmokeCliContractTest(unittest.TestCase):
                 "MAESTRO_WOO_NOT_A_WOO_STORE_URL": "https://not-woo.wordpress.com/",
                 "MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME": "site-admin",
                 "MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD": "site-password",
+                "MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL": "wpcom@example.com",
+                "MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD": "wpcom-password",
             },
         )
 
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME=site-admin", args)
         self.assertIn("MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD=site-password", args)
+        self.assertIn("MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL=wpcom@example.com", args)
+        self.assertIn("MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD=wpcom-password", args)
 
     def test_no_jetpack_wp_admin_url_is_normalized_before_maestro(self) -> None:
         result, args, _ = self.run_with_recorded_maestro_args(

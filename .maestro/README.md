@@ -14,8 +14,8 @@ The suite has two store targets:
 
 The no-Jetpack login scenario uses its own `MAESTRO_WOO_NO_JETPACK_*` variables. Do not reuse those Jurassic Ninja
 site credentials as the `lab` store block when running the broader suite. The runner removes a trailing
-`/wp-admin` or `/wp-admin/` from this flow's site URL. The not-Woo fixture always uses its dedicated
-`MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME/PASSWORD` pair, including through WP.com-style screens.
+`/wp-admin` or `/wp-admin/` from this flow's site URL. WordPress.com-hosted not-Woo fixtures require the dedicated
+`MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL/PASSWORD` pair.
 
 Destructive flows against the shared store are refused outside CI. In CI, they require `--seed`, the complete
 `MAESTRO_WOO_SHARED_*` login and REST credential block, and the exact `inpersonpayments.wpcomstaging.com` host. The
@@ -65,6 +65,48 @@ connected, pass `--device` so installation cannot target the wrong device.
 The selected device's primary system locale must use English (`en`, with any region). The doctor and runner fail before
 APK setup or Maestro execution when another language is primary; they do not change the device language automatically.
 
+### Provisioning a lab store
+
+`.maestro/scripts/setup-jn-store.sh` turns a Jurassic Ninja site into the lab store:
+it connects Jetpack to your own WordPress.com test account, creates WooCommerce REST
+API keys, and writes the matching `.env.local` entries. Everything site-side runs over
+SSH and wp-cli; only the WordPress.com calls go over HTTP.
+
+The quickest path is the `/setup-test-stores` skill, which creates the site through the
+`jurassic-ninja` ContextA8C MCP and then runs the script. To do it by hand instead,
+create a site at
+`https://jurassic.ninja/create/?woocommerce&woocommerce-import-sample-data`, take the
+admin password from the notice the site shows in `/wp-admin`, and run:
+
+```bash
+.maestro/scripts/setup-jn-store.sh --site your-site.jurassic.ninja
+```
+
+The first run needs a test account for Jetpack to connect to. Supply it either by filling
+`MAESTRO_WOO_LAB_WPCOM_EMAIL` and `MAESTRO_WOO_LAB_WPCOM_PASSWORD` in `.env.local`
+beforehand, or by letting the script prompt when you run it in a terminal. The script
+reads the account's username itself and writes `MAESTRO_WOO_LAB_WPCOM_USERNAME`.
+Without a terminal, supply the passwords through the environment:
+
+```bash
+JN_SSH_PASS=… MAESTRO_WOO_LAB_WPCOM_EMAIL=… MAESTRO_WOO_LAB_WPCOM_PASSWORD=… \
+  .maestro/scripts/setup-jn-store.sh --site your-site.jurassic.ninja
+```
+
+Requirements: `expect` (ships with macOS), `wc.oauth.app_id` and `wc.oauth.app_secret` in
+`~/.configure/woocommerce-android/secrets/secrets.properties`, and a **WordPress.com test
+account with two-factor authentication disabled**. The OAuth password grant cannot answer
+a 2FA challenge non-interactively. Use test accounts only.
+
+The store ships with the WooCommerce sample products, and the script adds 25 completed
+orders, one customer and a `maestro10` coupon. Pass `--no-jetpack-site` with a second
+Jurassic Ninja site created without Jetpack to fill in `MAESTRO_WOO_NO_JETPACK_*` as well.
+The other negative-login fixtures are filled in by hand.
+
+Jurassic Ninja sites expire after 7 days of inactivity. Re-run the script or the skill
+against a new site when that happens; the WordPress.com account already in `.env.local`
+is reused.
+
 ### Which APK to run against
 
 To run the flows against the current checkout instead of the release the
@@ -85,12 +127,10 @@ with `aapt` first, so `aapt` has to be on `PATH` or under `build-tools` in
 
 ### Store data prerequisites
 
-`orders_create` selects an existing live-store customer and edits only the customer copy attached to the order draft.
+`orders_create` selects the first existing customer and edits only the customer copy attached to the order draft.
 The app creates that `Order.Customer` in `OrderCreateEditCustomerAddFragment` and
 `OrderCreateEditViewModel.onCustomerEdited` replaces only `orderDraft.customer`; it does not update the store customer.
-The flow captures the selected email, verifies it on the draft, verifies the edited marker on the persisted order,
-then searches the customer list again and requires the original email to be unchanged. The configured store must have
-at least two existing customers with email addresses; missing data fails as an explicit prerequisite.
+The configured store must have at least one existing customer with an email address.
 
 ## Running
 

@@ -27,7 +27,10 @@ tags:
 - tapOn:
     id: "input"
 - inputText: ${MAESTRO_WOO_WRONG_ACCOUNT_STORE_URL}
-- hideKeyboard
+- runFlow:
+    file: ../subflows/hide_keyboard.yaml
+    env:
+      KEYBOARD_TARGET_ID: "bottom_button"
 - tapOn:
     id: "bottom_button"
     retryTapIfNoChange: true
@@ -39,7 +42,10 @@ tags:
 - tapOn:
     id: "input"
 - inputText: ${MAESTRO_WOO_WPCOM_EMAIL}
-- hideKeyboard
+- runFlow:
+    file: ../subflows/hide_keyboard.yaml
+    env:
+      KEYBOARD_TARGET_ID: "login_continue_button"
 - tapOn:
     id: "login_continue_button"
     retryTapIfNoChange: true
@@ -65,7 +71,10 @@ tags:
 - tapOn:
     id: "input"
 - inputText: ${MAESTRO_WOO_WPCOM_PASSWORD}
-- hideKeyboard
+- runFlow:
+    file: ../subflows/hide_keyboard.yaml
+    env:
+      KEYBOARD_TARGET_ID: "bottom_button"
 - tapOn:
     id: "bottom_button"
     retryTapIfNoChange: true
