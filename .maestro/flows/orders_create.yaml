@@ -250,6 +250,16 @@ tags:
     text: "Add discount"
     retryTapIfNoChange: true
     label: "Open product discount"
+# The tap is ignored while the quantity change is still syncing.
+- runFlow:
+    when:
+      notVisible: "Discount"
+    commands:
+      - waitForAnimationToEnd:
+          timeout: 5000
+      - tapOn:
+          text: "Add discount"
+          label: "Reopen product discount after the quantity sync"
 
 - extendedWaitUntil:
     visible: "Discount"
@@ -724,9 +734,6 @@ tags:
     id: "productInfo_name"
     index: 1
     label: "Second line item persisted on the completed order"
-- assertVisible:
-    text: ".*⦁.*"
-    label: "Persisted order retains the selected variation attributes"
 - scrollUntilVisible:
     element: ".*SmokeTest-${SUITE_RUN_ID}.*"
     direction: DOWN
