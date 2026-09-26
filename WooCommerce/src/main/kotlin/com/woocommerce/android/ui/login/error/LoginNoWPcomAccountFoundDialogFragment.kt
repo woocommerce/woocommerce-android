@@ -75,7 +75,7 @@ class LoginNoWPcomAccountFoundDialogFragment : LoginBaseErrorDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState != null) {
+        if (savedInstanceState == null) {
             unifiedLoginTracker.track(step = Step.NO_WPCOM_ACCOUNT_FOUND)
         }
     }

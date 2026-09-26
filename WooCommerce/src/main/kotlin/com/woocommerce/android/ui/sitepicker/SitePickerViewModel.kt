@@ -78,6 +78,7 @@ class SitePickerViewModel @Inject constructor(
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
         private const val WOOCOMMERCE_INSTALLATION_DONE_URL = "marketplace/thank-you/woocommerce"
         private const val LOGIN_SITE_ADDRESS_KEY = "login-site-address"
+        private const val LAST_TRACKED_LOGIN_STEP_KEY = "last-tracked-login-step"
     }
 
     private val navArgs: SitePickerFragmentArgs by savedState.navArgs()
@@ -376,14 +377,6 @@ class SitePickerViewModel @Inject constructor(
      */
     private fun showAccountMismatchScreen(url: String) = launch {
         sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = true, isPrimaryBtnVisible = false)
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
-            mapOf(
-                AnalyticsTracker.KEY_URL to url,
-                AnalyticsTracker.KEY_HAS_CONNECTED_STORES to sitePickerViewState.hasConnectedStores
-            )
-        )
-        trackLoginEvent(currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT)
         repository.fetchSiteInfo(url).fold(
             onSuccess = {
                 val primaryButton = when {
@@ -392,6 +385,17 @@ class SitePickerViewModel @Inject constructor(
                 }
                 if (event.value !is NavigateToAccountMismatchScreen) {
                     // The check is to avoid triggering the navigation multiple times
+                    // Tracked here rather than before the fetch, so the event describes a screen
+                    // the merchant actually saw and fires once: onSitesLoaded runs twice (cache,
+                    // then API) and each pass re-enters processLoginSiteAddress.
+                    trackLoginEvent(
+                        currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT,
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_URL to url,
+                            AnalyticsTracker.KEY_HAS_CONNECTED_STORES to
+                                sitePickerViewState.hasConnectedStores.toString()
+                        )
+                    )
                     triggerEvent(
                         NavigateToAccountMismatchScreen(
                             primaryButton = primaryButton,
@@ -413,14 +417,14 @@ class SitePickerViewModel @Inject constructor(
     }
 
     private fun loadWooNotFoundView(site: SiteModel) {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE,
-            mapOf(
+        trackLoginEvent(
+            currentStep = UnifiedLoginTracker.Step.NOT_WOO_STORE,
+            properties = mapOf(
                 AnalyticsTracker.KEY_URL to site.url,
-                AnalyticsTracker.KEY_HAS_CONNECTED_STORES to sitePickerViewState.hasConnectedStores
+                AnalyticsTracker.KEY_HAS_CONNECTED_STORES to
+                    sitePickerViewState.hasConnectedStores.toString()
             )
         )
-        trackLoginEvent(currentStep = UnifiedLoginTracker.Step.NOT_WOO_STORE)
         // Make sure installation is enabled only for selfhosted and atomic sites
         // TODO remove this when we handle non-atomic sites
         val isWooInstallationEnabled = site.isJetpackConnected
@@ -508,6 +512,7 @@ class SitePickerViewModel @Inject constructor(
     }
 
     fun onTryAnotherAccountButtonClick() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_LOGOUT_TAPPED)
         trackLoginEvent(clickEvent = UnifiedLoginTracker.Click.TRY_ANOTHER_ACCOUNT)
         launch {
             accountRepository.logout().let {
@@ -731,13 +736,19 @@ class SitePickerViewModel @Inject constructor(
     private fun trackLoginEvent(
         currentFlow: UnifiedLoginTracker.Flow? = null,
         currentStep: UnifiedLoginTracker.Step? = null,
-        clickEvent: UnifiedLoginTracker.Click? = null
+        clickEvent: UnifiedLoginTracker.Click? = null,
+        properties: Map<String, String> = emptyMap()
     ) {
         if (navArgs.openedFromLogin) {
-            if (currentFlow != null && currentStep != null) {
-                unifiedLoginTracker.track(currentFlow, currentStep)
-            } else if (currentStep != null) {
-                unifiedLoginTracker.track(step = currentStep)
+            // onSitesLoaded runs twice (cache, then API) and each pass re-enters
+            // processLoginSiteAddress, so skip a step that already fired for this screen.
+            if (currentStep != null && currentStep.value != savedState[LAST_TRACKED_LOGIN_STEP_KEY]) {
+                if (currentFlow != null) {
+                    unifiedLoginTracker.track(currentFlow, currentStep, properties)
+                } else {
+                    unifiedLoginTracker.track(step = currentStep, properties = properties)
+                }
+                savedState[LAST_TRACKED_LOGIN_STEP_KEY] = currentStep.value
             }
             if (clickEvent != null) {
                 unifiedLoginTracker.trackClick(clickEvent)
