@@ -65,6 +65,48 @@ connected, pass `--device` so installation cannot target the wrong device.
 The selected device's primary system locale must use English (`en`, with any region). The doctor and runner fail before
 APK setup or Maestro execution when another language is primary; they do not change the device language automatically.
 
+### Provisioning a lab store
+
+`.maestro/scripts/setup-jn-store.sh` turns a Jurassic Ninja site into the lab store:
+it connects Jetpack to your own WordPress.com test account, creates WooCommerce REST
+API keys, and writes the matching `.env.local` entries. Everything site-side runs over
+SSH and wp-cli; only the WordPress.com calls go over HTTP.
+
+The quickest path is the `/setup-test-stores` skill, which creates the site through the
+`jurassic-ninja` ContextA8C MCP and then runs the script. To do it by hand instead,
+create a site at
+`https://jurassic.ninja/create/?woocommerce&woocommerce-import-sample-data`, take the
+admin password from the notice the site shows in `/wp-admin`, and run:
+
+```bash
+.maestro/scripts/setup-jn-store.sh --site your-site.jurassic.ninja
+```
+
+The first run needs a test account for Jetpack to connect to. Supply it either by filling
+`MAESTRO_WOO_LAB_WPCOM_EMAIL` and `MAESTRO_WOO_LAB_WPCOM_PASSWORD` in `.env.local`
+beforehand, or by letting the script prompt when you run it in a terminal. The script
+reads the account's username itself and writes `MAESTRO_WOO_LAB_WPCOM_USERNAME`.
+Without a terminal, supply the passwords through the environment:
+
+```bash
+JN_SSH_PASS=… MAESTRO_WOO_LAB_WPCOM_EMAIL=… MAESTRO_WOO_LAB_WPCOM_PASSWORD=… \
+  .maestro/scripts/setup-jn-store.sh --site your-site.jurassic.ninja
+```
+
+Requirements: `expect` (ships with macOS), `wc.oauth.app_id` and `wc.oauth.app_secret` in
+`~/.configure/woocommerce-android/secrets/secrets.properties`, and a **WordPress.com test
+account with two-factor authentication disabled**. The OAuth password grant cannot answer
+a 2FA challenge non-interactively. Use test accounts only.
+
+The store ships with the WooCommerce sample products, and the script adds 25 completed
+orders, one customer and a `maestro10` coupon. Pass `--no-jetpack-site` with a second
+Jurassic Ninja site created without Jetpack to fill in `MAESTRO_WOO_NO_JETPACK_*` as well.
+The other negative-login fixtures are filled in by hand.
+
+Jurassic Ninja sites expire after 7 days of inactivity. Re-run the script or the skill
+against a new site when that happens; the WordPress.com account already in `.env.local`
+is reused.
+
 ### Which APK to run against
 
 To run the flows against the current checkout instead of the release the
