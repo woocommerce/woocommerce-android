@@ -34,6 +34,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.SiteNotificationSetting
 import org.wordpress.android.fluxc.utils.PreferenceUtils
+import java.io.IOException
 import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
@@ -343,9 +344,15 @@ class PushNotificationRepository @Inject constructor(
 
     private suspend fun clearAllWooPushRegistrations() {
         var clearedSiteIds: Set<Long> = emptySet()
-        pushNotificationsDataStore.edit { preferences ->
-            clearedSiteIds = preferences.registeredSiteIds()
-            preferences.clear()
+        try {
+            pushNotificationsDataStore.edit { preferences ->
+                clearedSiteIds = preferences.registeredSiteIds()
+                preferences.clear()
+            }
+        } catch (e: IOException) {
+            // Runs from the logout cleanup path, so it must never abort the logout or mask its error.
+            WooLog.e(WooLog.T.NOTIFICATIONS, "Failed to clear local Woo push registrations at logout", e)
+            return
         }
         if (clearedSiteIds.isNotEmpty()) {
             WooLog.w(

@@ -42,6 +42,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.SiteNotificationSetting
 import org.wordpress.android.fluxc.utils.PreferenceUtils
+import java.io.IOException
 import java.util.Locale
 
 @ExperimentalCoroutinesApi
@@ -546,6 +547,40 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             // THEN
             assertThat(stored.value.asMap()).isEmpty()
             verify(wooPushNotificationsStore, never()).deletePushToken(any(), any())
+        }
+
+    @Test
+    fun `given clearing local state fails, when unregisterDevice called, then logout is not aborted`() =
+        testBlocking {
+            // GIVEN
+            whenever(wooCommerceStore.getWooCommerceSites()).thenReturn(mutableListOf())
+            setupWpComRegistration(isRegistered = false)
+            whenever(pushNotificationsDataStore.updateData(any())).doSuspendableAnswer {
+                throw IOException("disk full")
+            }
+
+            // WHEN
+            val result = runCatching { sut.unregisterDeviceFromPushNotifications() }
+
+            // THEN
+            assertThat(result.isSuccess).isTrue()
+        }
+
+    @Test
+    fun `given site lookup and clearing local state both fail, when unregisterDevice called, then original error wins`() =
+        testBlocking {
+            // GIVEN
+            whenever(wooCommerceStore.getWooCommerceSites()).thenThrow(IllegalStateException("boom"))
+            setupWpComRegistration(isRegistered = false)
+            whenever(pushNotificationsDataStore.updateData(any())).doSuspendableAnswer {
+                throw IOException("disk full")
+            }
+
+            // WHEN
+            val result = runCatching { sut.unregisterDeviceFromPushNotifications() }
+
+            // THEN
+            assertThat(result.exceptionOrNull()).isInstanceOf(IllegalStateException::class.java)
         }
 
     @Test
