@@ -3,6 +3,11 @@ package com.woocommerce.android.ui.woopos.orders.details.refund
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isCashPayment
+import com.woocommerce.android.ui.woopos.cashmanagement.WooPosCashMovementRecorder
+import com.woocommerce.android.ui.woopos.cashmanagement.WooPosCashSession
+import com.woocommerce.android.ui.woopos.cashdrawer.WooPosCashDrawerController
+import com.woocommerce.android.ui.woopos.cashdrawer.WooPosCashDrawerReason
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
@@ -56,6 +61,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val refundSubmissionProcessor: WooPosRefundSubmissionProcessor,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val cardReaderFacade: WooPosCardReaderFacade,
+    private val cashMovements: WooPosCashMovementRecorder,
+    private val cashDrawer: WooPosCashDrawerController,
 ) : ViewModel() {
 
     @AssistedFactory
@@ -75,6 +82,9 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private var previewJob: Job? = null
     private var pendingReaderConnectionRefund: PendingReaderConnectionRefund? = null
     private var flowDraft: FlowDraft? = null
+    private var cashSessionCaptured = false
+    private var cashSessionAtRefund: WooPosCashSession? = null
+    private var drawerNameAtRefund: String? = null
 
     init {
         observeReaderConnectionForPendingRefund()
@@ -623,6 +633,19 @@ class WooPosRefundViewModel @AssistedInject constructor(
     ) {
         refundJob?.cancel()
         refundJob = viewModelScope.launch {
+            if (request.order.paymentMethod.isCashPayment && !cashSessionCaptured) {
+                try {
+                    cashSessionAtRefund = cashMovements.captureSession()
+                    drawerNameAtRefund = cashDrawer.drawerName
+                    cashSessionCaptured = true
+                } catch (error: Exception) {
+                    _state.value = WooPosRefundState.Error(
+                        message = "Could not check the cash session. Try again.",
+                        errorType = WooPosRefundState.Error.ErrorType.Processing
+                    )
+                    return@launch
+                }
+            }
             refundSubmissionProcessor.submit(request).collect { submissionState ->
                 handleRefundSubmissionState(
                     contentState = contentState,
@@ -668,8 +691,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.NotifyingStore)
             }
 
-            WooPosRefundSubmissionState.Success -> {
-                handleRefundSubmissionSuccess(contentState, request)
+            is WooPosRefundSubmissionState.Success -> {
+                handleRefundSubmissionSuccess(contentState, request, submissionState.refundId)
             }
 
             is WooPosRefundSubmissionState.Failure -> {
@@ -693,7 +716,16 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private suspend fun handleRefundSubmissionSuccess(
         contentState: WooPosRefundState.Content,
         request: WooPosRefundSubmissionRequest,
+        refundId: Long,
     ) {
+        if (request.order.paymentMethod.isCashPayment) {
+            val session = cashSessionAtRefund
+            cashMovements.recordRefund(session?.id, request.orderId, refundId)
+            cashDrawer.scheduleAutomaticOpen(
+                WooPosCashDrawerReason.CASH_REFUND, session?.id,
+                session?.drawerId, drawerNameAtRefund, request.orderId
+            )
+        }
         analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingSuccess(refundFlowFor(request)))
         val receiptSentMessage = request.order.billingAddress.email
             .takeIf { it.isNotBlank() }

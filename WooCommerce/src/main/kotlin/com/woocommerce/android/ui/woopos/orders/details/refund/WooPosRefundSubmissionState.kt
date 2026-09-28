@@ -12,7 +12,7 @@ sealed class WooPosRefundSubmissionState {
     ) : WooPosRefundSubmissionState()
     data object ProcessingReaderRefund : WooPosRefundSubmissionState()
     data object NotifyingStore : WooPosRefundSubmissionState()
-    data object Success : WooPosRefundSubmissionState()
+    data class Success(val refundId: Long) : WooPosRefundSubmissionState()
 
     /**
      * [apiErrorCode] is the store's REST error code, when it returned one. Kept raw rather than

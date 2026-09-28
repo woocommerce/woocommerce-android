@@ -49,6 +49,7 @@ import java.math.BigDecimal
 fun WooPosCashPaymentScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
     val viewModel = hiltViewModel<WooPosCashPaymentViewModel>()
     val state = viewModel.state.collectAsState().value
+    val drawerConnected = viewModel.drawerConnection.collectAsState().value
 
     val onBackClicked = { viewModel.onBackClicked() }
 
@@ -61,6 +62,7 @@ fun WooPosCashPaymentScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) 
         onAmountChanged = { viewModel.onUIEvent(WooPosCashPaymentUIEvent.AmountChanged(it)) },
         onCompleteOrderClicked = { viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked) },
         onBackClicked = onBackClicked,
+        drawerConnected = drawerConnected,
     )
     BackHandler {
         onBackClicked()
@@ -73,6 +75,7 @@ fun WooPosCashPaymentScreen(
     onAmountChanged: (BigDecimal?) -> Unit,
     onCompleteOrderClicked: () -> Unit,
     onBackClicked: () -> Unit,
+    drawerConnected: Boolean = true,
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -88,6 +91,7 @@ fun WooPosCashPaymentScreen(
                     state = state,
                     onAmountChanged = onAmountChanged,
                     onCompleteOrderClicked = onCompleteOrderClicked,
+                    drawerConnected = drawerConnected,
                 )
             }
 
@@ -102,6 +106,7 @@ private fun Collecting(
     state: WooPosCashPaymentState.Collecting,
     onAmountChanged: (BigDecimal?) -> Unit,
     onCompleteOrderClicked: () -> Unit,
+    drawerConnected: Boolean,
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -165,6 +170,15 @@ private fun Collecting(
                 color = WooPosTheme.colors.onSurfaceVariantLowest,
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value)
             )
+
+            if (!drawerConnected) {
+                WooPosText(
+                    text = stringResource(R.string.woopos_cash_drawer_unavailable_payment),
+                    style = WooPosTypography.BodySmall,
+                    color = WooPosTheme.colors.onSurfaceVariantLowest,
+                    modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value)
+                )
+            }
 
             if (state.errorMessage != null) {
                 Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))

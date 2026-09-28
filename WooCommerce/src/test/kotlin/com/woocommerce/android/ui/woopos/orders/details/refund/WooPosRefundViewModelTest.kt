@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.cashmanagement.WooPosCashMovementRecorder
+import com.woocommerce.android.ui.woopos.cashdrawer.WooPosCashDrawerController
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
@@ -159,7 +161,7 @@ class WooPosRefundViewModelTest {
         whenever(refundSubmissionProcessor.submit(any())).thenReturn(
             flowOf(
                 WooPosRefundSubmissionState.Processing,
-                WooPosRefundSubmissionState.Success
+                WooPosRefundSubmissionState.Success(1L)
             )
         )
     }
@@ -198,7 +200,9 @@ class WooPosRefundViewModelTest {
             mapRefundFailure = WooPosMapRefundFailure(resourceProvider),
             refundSubmissionProcessor = refundSubmissionProcessor,
             analyticsTracker = analyticsTracker,
-            cardReaderFacade = cardReaderFacade
+            cardReaderFacade = cardReaderFacade,
+            cashMovements = mock<WooPosCashMovementRecorder>(),
+            cashDrawer = mock<WooPosCashDrawerController>(),
         )
     }
 
@@ -1179,7 +1183,7 @@ class WooPosRefundViewModelTest {
                 flowOf(WooPosRefundSubmissionState.ReaderConnectionRequired),
                 flowOf(
                     WooPosRefundSubmissionState.PreparingReader,
-                    WooPosRefundSubmissionState.Success
+                    WooPosRefundSubmissionState.Success(1L)
                 )
             )
 
@@ -2298,7 +2302,7 @@ class WooPosRefundViewModelTest {
             )
             whenever(refundSubmissionProcessor.submit(any())).thenReturn(
                 flowOf(WooPosRefundSubmissionState.ReaderConnectionRequired),
-                flowOf(WooPosRefundSubmissionState.Success)
+                flowOf(WooPosRefundSubmissionState.Success(1L))
             )
             viewModel = createViewModel()
             viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)

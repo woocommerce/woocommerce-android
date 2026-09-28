@@ -4,6 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.cashmanagement.WooPosCashMovementRecorder
+import com.woocommerce.android.ui.woopos.cashdrawer.WooPosCashDrawerController
+import com.woocommerce.android.ui.woopos.cashdrawer.WooPosCashDrawerReason
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCheckoutFromCash
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashCollectPaymentSuccess
@@ -32,6 +35,8 @@ class WooPosCashPaymentViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val analyticsData: WooPosAnalyticsTrackingDataKeeper,
     private val paymentSuccessProperties: WooPosPaymentSuccessProperties,
+    private val cashMovements: WooPosCashMovementRecorder,
+    private val cashDrawer: WooPosCashDrawerController,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val orderId = savedState.get<Long>(CASH_ROUTE_ORDER_ID_KEY)!!
@@ -46,6 +51,7 @@ class WooPosCashPaymentViewModel @Inject constructor(
     )
 
     val state: StateFlow<WooPosCashPaymentState> = _state
+    val drawerConnection = cashDrawer.isConnected
 
     init {
         viewModelScope.launch {
@@ -55,8 +61,11 @@ class WooPosCashPaymentViewModel @Inject constructor(
             val order = repository.getOrderById(orderId)!!
             _state.value = WooPosCashPaymentState.Collecting(
                 enteredAmount = order.total,
-                changeDueText = "",
-                changeDue = null,
+                changeDueText = resourceProvider.getString(
+                    R.string.woopos_cash_payment_change_due,
+                    priceFormat(BigDecimal.ZERO)
+                ),
+                changeDue = BigDecimal.ZERO,
                 total = order.total,
                 totalText = resourceProvider.getString(
                     R.string.woopos_cash_payment_total,
@@ -127,8 +136,27 @@ class WooPosCashPaymentViewModel @Inject constructor(
                 )
             )
 
-            val result = repository.completeOrder(orderId, stateBeforeCompleting.changeDue.toString())
+            val cashSession = try {
+                cashMovements.captureSession()
+            } catch (error: Exception) {
+                _state.value = stateBeforeCompleting.copy(
+                    errorMessage = "Could not check the cash session. Try again.",
+                    button = stateBeforeCompleting.button.copy(
+                        status = WooPosCashPaymentState.Collecting.Button.Status.ENABLED
+                    )
+                )
+                return@launch
+            }
+            val drawerNameAtCapture = cashDrawer.drawerName
+            val result = repository.completeOrder(
+                orderId, (stateBeforeCompleting.changeDue ?: BigDecimal.ZERO).toPlainString()
+            )
             if (result.isSuccess) {
+                cashMovements.recordSale(cashSession?.id, orderId)
+                cashDrawer.scheduleAutomaticOpen(
+                    WooPosCashDrawerReason.CASH_SALE, cashSession?.id,
+                    cashSession?.drawerId, drawerNameAtCapture, orderId
+                )
                 trackPaymentSuccess()
                 _state.value = WooPosCashPaymentState.Complete
                 _navigationEvent.emit(WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment)

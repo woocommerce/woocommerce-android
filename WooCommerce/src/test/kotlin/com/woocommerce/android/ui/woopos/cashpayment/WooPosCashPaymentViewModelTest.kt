@@ -4,6 +4,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.cashmanagement.WooPosCashMovementRecorder
+import com.woocommerce.android.ui.woopos.cashdrawer.WooPosCashDrawerController
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
@@ -74,11 +76,14 @@ class WooPosCashPaymentViewModelTest {
         whenever(resourceProvider.getString(R.string.woopos_cash_payment_total, "100.00"))
             .thenReturn("Total: $100.00")
         whenever(priceFormat(BigDecimal("100.00"))).thenReturn("100.00")
+        whenever(priceFormat(BigDecimal.ZERO)).thenReturn("0.00")
 
         whenever(resourceProvider.getString(R.string.woopos_complete_cash_order_button))
             .thenReturn("Complete Order")
         whenever(resourceProvider.getString(R.string.woopos_cash_payment_change_due, "20.00"))
             .thenReturn("Change Due: $20.00")
+        whenever(resourceProvider.getString(R.string.woopos_cash_payment_change_due, "0.00"))
+            .thenReturn("Change Due: $0.00")
 
         val savedStateHandle = SavedStateHandle(mapOf("orderId" to orderId))
 
@@ -89,6 +94,8 @@ class WooPosCashPaymentViewModelTest {
             resourceProvider = resourceProvider,
             analyticsTracker = tracker,
             analyticsData = trackerData,
+            cashMovements = mock<WooPosCashMovementRecorder>(),
+            cashDrawer = mock<WooPosCashDrawerController>(),
             savedState = savedStateHandle,
         )
     }

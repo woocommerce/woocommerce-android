@@ -313,7 +313,11 @@ class WooPosRefundSubmissionProcessor @Inject constructor(
                 "WooPosRefund: backend refund creation succeeded " +
                     "orderId=${request.orderId}, backendOnlyRetry=$retryBackendNotificationOnly"
             )
-            trySendState(WooPosRefundSubmissionState.Success)
+            result.model?.id?.let { refundId ->
+                trySendState(WooPosRefundSubmissionState.Success(refundId))
+            } ?: trySendState(
+                WooPosRefundSubmissionState.Failure(message = resourceProvider.getString(R.string.error_generic))
+            )
         }
     }
 

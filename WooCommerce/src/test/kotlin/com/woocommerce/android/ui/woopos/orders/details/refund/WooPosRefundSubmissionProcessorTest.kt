@@ -150,7 +150,7 @@ class WooPosRefundSubmissionProcessorTest {
 
         processor.submit(request).test {
             assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
-            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success)
+            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success(1L))
             awaitComplete()
         }
 
@@ -193,7 +193,7 @@ class WooPosRefundSubmissionProcessorTest {
             // WHEN
             processor.submit(request.copy(serverLineItems = serverLineItems)).test {
                 assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
-                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success)
+                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success(1L))
                 awaitComplete()
             }
 
@@ -245,7 +245,7 @@ class WooPosRefundSubmissionProcessorTest {
 
             processor.submit(request).test {
                 assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
-                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success)
+                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success(1L))
                 awaitComplete()
             }
 
@@ -286,7 +286,7 @@ class WooPosRefundSubmissionProcessorTest {
 
         processor.submit(requestWithoutChargeId).test {
             assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
-            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success)
+            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success(1L))
             awaitComplete()
         }
 
@@ -371,7 +371,7 @@ class WooPosRefundSubmissionProcessorTest {
 
             paymentState.value = CardReaderInteracRefundState.InteracRefundSuccessful("$22.00")
             assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.NotifyingStore)
-            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success)
+            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success(1L))
             awaitComplete()
         }
 
@@ -425,7 +425,7 @@ class WooPosRefundSubmissionProcessorTest {
 
                 paymentState.value = CardReaderInteracRefundState.InteracRefundSuccessful("$22.00")
                 assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.NotifyingStore)
-                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success)
+                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success(1L))
                 awaitComplete()
             }
 
@@ -476,7 +476,7 @@ class WooPosRefundSubmissionProcessorTest {
                 request.copy(serverLineItems = serverLineItems, cardRefundAlreadySucceeded = true)
             ).test {
                 assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.NotifyingStore)
-                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success)
+                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success(1L))
                 awaitComplete()
             }
 
@@ -563,7 +563,7 @@ class WooPosRefundSubmissionProcessorTest {
 
                 paymentState.value = CardReaderInteracRefundState.InteracRefundSuccessful("$22.00")
                 assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.NotifyingStore)
-                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success)
+                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success(1L))
                 awaitComplete()
             }
         }
@@ -629,7 +629,7 @@ class WooPosRefundSubmissionProcessorTest {
 
         processor.submit(retryRequest).test {
             assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.NotifyingStore)
-            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success)
+            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success(1L))
             awaitComplete()
         }
 
