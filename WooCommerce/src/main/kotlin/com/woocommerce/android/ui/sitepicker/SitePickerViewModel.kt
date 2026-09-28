@@ -267,7 +267,8 @@ class SitePickerViewModel @Inject constructor(
         }
 
         sitePickerViewState = sitePickerViewState.copy(
-            hasConnectedStores = sites.isNotEmpty(),
+            // Woo stores only: an account with just non-Woo sites has nothing to connect to.
+            hasConnectedStores = wooSites.isNotEmpty(),
             isPrimaryBtnVisible = wooSites.isNotEmpty(),
             isPrimaryBtnEnabled = isSelectedSiteVisible,
             isNoStoresViewVisible = false,

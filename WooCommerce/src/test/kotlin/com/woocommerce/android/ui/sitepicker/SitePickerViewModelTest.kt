@@ -604,6 +604,34 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given the account has only non-woo sites, when the mismatch step is tracked, then has_connected_stores is false`() =
+        testBlocking {
+            // GIVEN an account that owns sites, but none with Woo
+            val nonWooSites = defaultExpectedSiteList.map { it.apply { hasWooCommerce = false } }
+            givenThatUserLoggedInFromEnteringSiteAddress(null)
+            whenever(repository.fetchSiteInfo(any())).thenReturn(
+                Result.success(
+                    ConnectSiteInfoPayload(
+                        url = SitePickerTestUtils.loginSiteAddress,
+                        isWordPress = true,
+                        isWPCom = false
+                    )
+                )
+            )
+            whenSitesAreFetched(sitesFromDb = nonWooSites, sitesFromApi = nonWooSites)
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN the property counts Woo stores, not every site on the account
+            verify(unifiedLoginTracker).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT),
+                properties = argThat { get(AnalyticsTracker.KEY_HAS_CONNECTED_STORES) == "false" }
+            )
+        }
+
+    @Test
     fun `given the site address does not match the user account, when site info fetch fails, then the mismatch step is not tracked`() =
         testBlocking {
             // GIVEN
