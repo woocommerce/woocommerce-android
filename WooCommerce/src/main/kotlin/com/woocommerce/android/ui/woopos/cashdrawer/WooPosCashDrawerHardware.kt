@@ -8,6 +8,7 @@ import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
 import com.starmicronics.stario10.InterfaceType
+import com.starmicronics.stario10.DrawerDelegate
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarDeviceDiscoveryManager
 import com.starmicronics.stario10.StarDeviceDiscoveryManagerFactory
@@ -25,7 +26,13 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -41,6 +48,7 @@ class WooPosPrinterNotConnectedException : IllegalStateException("No receipt pri
 interface WooPosCashDrawerHardware {
     val isConnected: StateFlow<Boolean>
     val selectedPrinter: StateFlow<WooPosReceiptPrinter?>
+    val drawerSignals: SharedFlow<Boolean>
     suspend fun discover(): List<WooPosReceiptPrinter>
     suspend fun connect(printer: WooPosReceiptPrinter)
     suspend fun disconnect()
@@ -52,10 +60,28 @@ interface WooPosCashDrawerHardware {
 class WooPosStarReceiptPrinter @Inject constructor(@ApplicationContext private val context: Context) : WooPosCashDrawerHardware {
     private val preferences = context.getSharedPreferences("woo_pos_receipt_printer", Context.MODE_PRIVATE)
     private val mutex = Mutex()
+    private val connectionScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private var activePrinter: StarPrinter? = null
     private val _isConnected = MutableStateFlow(false)
     override val isConnected: StateFlow<Boolean> = _isConnected
     private val _selectedPrinter = MutableStateFlow(loadSelection())
     override val selectedPrinter: StateFlow<WooPosReceiptPrinter?> = _selectedPrinter
+    private val _drawerSignals = MutableSharedFlow<Boolean>(extraBufferCapacity = 16)
+    override val drawerSignals: SharedFlow<Boolean> = _drawerSignals
+
+    init {
+        if (_selectedPrinter.value != null) {
+            connectionScope.launch {
+                mutex.withLock {
+                    try {
+                        requireActivePrinter()
+                    } catch (_: Exception) {
+                        _isConnected.value = false
+                    }
+                }
+            }
+        }
+    }
 
     override suspend fun discover(): List<WooPosReceiptPrinter> = suspendCancellableCoroutine { continuation ->
         val found = CopyOnWriteArrayList<WooPosReceiptPrinter>()
@@ -87,7 +113,15 @@ class WooPosStarReceiptPrinter @Inject constructor(@ApplicationContext private v
 
     override suspend fun connect(printer: WooPosReceiptPrinter) {
         mutex.withLock {
-            withPrinter(printer) { }
+            closeActivePrinter()
+            val connectedPrinter = createPrinter(printer)
+            try {
+                connectedPrinter.openAsync().await()
+            } catch (error: Exception) {
+                _isConnected.value = false
+                throw error
+            }
+            activePrinter = connectedPrinter
             preferences.edit().putString(KEY_INTERFACE, printer.interfaceType)
                 .putString(KEY_IDENTIFIER, printer.identifier).putString(KEY_MODEL, printer.model).apply()
             _selectedPrinter.value = printer
@@ -97,6 +131,7 @@ class WooPosStarReceiptPrinter @Inject constructor(@ApplicationContext private v
 
     override suspend fun disconnect() {
         mutex.withLock {
+            closeActivePrinter()
             preferences.edit().clear().apply()
             _selectedPrinter.value = null
             _isConnected.value = false
@@ -111,40 +146,75 @@ class WooPosStarReceiptPrinter @Inject constructor(@ApplicationContext private v
     }
 
     override suspend fun printCloseOut(text: String) {
-        val bitmap = renderText(text)
-        try {
-            val command = StarXpandCommandBuilder().addDocument(
-                DocumentBuilder().addPrinter(
-                    PrinterBuilder().actionPrintImage(ImageParameter(bitmap, PRINT_WIDTH)).actionCut(CutType.Partial)
-                )
-            ).getCommands()
-            execute(command)
-        } finally {
-            bitmap.recycle()
+        val layout = createTextLayout(text)
+        mutex.withLock {
+            try {
+                val printer = requireActivePrinter()
+                var offset = 0
+                do {
+                    val pageHeight = minOf(PRINT_PAGE_HEIGHT, layout.height - offset).coerceAtLeast(1)
+                    val bitmap = renderPage(layout, offset, pageHeight)
+                    try {
+                        val builder = PrinterBuilder().actionPrintImage(ImageParameter(bitmap, PRINT_WIDTH))
+                        if (offset + pageHeight >= layout.height) builder.actionCut(CutType.Partial)
+                        val command = StarXpandCommandBuilder().addDocument(
+                            DocumentBuilder().addPrinter(builder)
+                        ).getCommands()
+                        printer.printAsync(command).await()
+                    } finally {
+                        bitmap.recycle()
+                    }
+                    offset += pageHeight
+                } while (offset < layout.height)
+                _isConnected.value = true
+            } catch (error: Exception) {
+                closeActivePrinter()
+                throw error
+            }
         }
     }
 
     private suspend fun execute(command: String) {
         mutex.withLock {
-            val selected = _selectedPrinter.value ?: throw WooPosPrinterNotConnectedException()
             try {
-                withPrinter(selected) { printer -> printer.printAsync(command).await() }
+                requireActivePrinter().printAsync(command).await()
                 _isConnected.value = true
             } catch (error: Exception) {
+                closeActivePrinter()
                 _isConnected.value = false
                 throw error
             }
         }
     }
 
-    private suspend fun withPrinter(selection: WooPosReceiptPrinter, block: suspend (StarPrinter) -> Unit) {
-        val printer = StarPrinter(StarConnectionSettings(interfaceType(selection.interfaceType), selection.identifier), context)
+    private suspend fun requireActivePrinter(): StarPrinter {
+        activePrinter?.let { return it }
+        val selection = _selectedPrinter.value ?: throw WooPosPrinterNotConnectedException()
+        val printer = createPrinter(selection)
         printer.openAsync().await()
-        try {
-            block(printer)
-        } finally {
-            printer.closeAsync().await()
+        activePrinter = printer
+        _isConnected.value = true
+        return printer
+    }
+
+    private fun createPrinter(selection: WooPosReceiptPrinter): StarPrinter =
+        StarPrinter(StarConnectionSettings(interfaceType(selection.interfaceType), selection.identifier), context).apply {
+            drawerDelegate = object : DrawerDelegate() {
+                override fun onOpenCloseSignalSwitched(openCloseSignal: Boolean) {
+                    _drawerSignals.tryEmit(openCloseSignal)
+                }
+            }
         }
+
+    private suspend fun closeActivePrinter() {
+        val printer = activePrinter ?: return
+        activePrinter = null
+        try {
+            printer.closeAsync().await()
+        } catch (_: Exception) {
+            // A lost connection must not prevent selecting another printer.
+        }
+        _isConnected.value = false
     }
 
     private fun loadSelection(): WooPosReceiptPrinter? {
@@ -161,14 +231,17 @@ class WooPosStarReceiptPrinter @Inject constructor(@ApplicationContext private v
         else -> throw IllegalArgumentException("Unsupported printer interface: $value")
     }
 
-    private fun renderText(text: String): Bitmap {
-        val paint = TextPaint().apply { color = Color.BLACK; textSize = 28f; isAntiAlias = true }
-        val layout = StaticLayout.Builder.obtain(text, 0, text.length, paint, PRINT_WIDTH - 32)
+    private fun createTextLayout(text: String): StaticLayout {
+        val paint = TextPaint().apply { color = Color.BLACK; textSize = 24f; isAntiAlias = true }
+        return StaticLayout.Builder.obtain(text, 0, text.length, paint, PRINT_WIDTH - 32)
             .setAlignment(Layout.Alignment.ALIGN_NORMAL).setIncludePad(false).build()
-        val bitmap = Bitmap.createBitmap(PRINT_WIDTH, layout.height + 32, Bitmap.Config.ARGB_8888)
+    }
+
+    private fun renderPage(layout: StaticLayout, offset: Int, pageHeight: Int): Bitmap {
+        val bitmap = Bitmap.createBitmap(PRINT_WIDTH, pageHeight + 32, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         canvas.drawColor(Color.WHITE)
-        canvas.translate(16f, 16f)
+        canvas.translate(16f, 16f - offset)
         layout.draw(canvas)
         return bitmap
     }
@@ -178,7 +251,8 @@ class WooPosStarReceiptPrinter @Inject constructor(@ApplicationContext private v
         private const val KEY_IDENTIFIER = "identifier"
         private const val KEY_MODEL = "model"
         private const val DISCOVERY_MS = 10_000
-        private const val PRINT_WIDTH = 576
+        private const val PRINT_WIDTH = 384
+        private const val PRINT_PAGE_HEIGHT = 1_600
     }
 }
 

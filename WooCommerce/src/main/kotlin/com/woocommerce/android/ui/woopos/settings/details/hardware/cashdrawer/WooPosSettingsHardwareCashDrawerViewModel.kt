@@ -31,14 +31,6 @@ class WooPosSettingsHardwareCashDrawerViewModel @Inject constructor(
     private val _connectionError = MutableStateFlow(false)
     val connectionError: StateFlow<Boolean> = _connectionError.asStateFlow()
 
-    init {
-        drawer.selectedPrinter.value?.let { saved ->
-            viewModelScope.launch {
-                _connectionError.value = drawer.connectPrinter(saved).isFailure
-            }
-        }
-    }
-
     private val _isOpening = MutableStateFlow(false)
     val isOpening: StateFlow<Boolean> = _isOpening.asStateFlow()
 
