@@ -300,7 +300,10 @@ fun WooPosCashManagementScreen(
     }
 
     if (mode != CashDialog.NONE) {
-        CashEntryDialog(mode, state, onDismiss = { mode = CashDialog.NONE }, onSubmit = { amount, note ->
+        CashEntryDialog(mode, state, onDismiss = {
+            mode = CashDialog.NONE
+            viewModel.clearOperationError()
+        }, onSubmit = { amount, note ->
             when (mode) {
                 CashDialog.START -> viewModel.start(amount, drawer.drawerName) { _ ->
                     mode = CashDialog.NONE
