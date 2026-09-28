@@ -632,6 +632,33 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given the account has no sites at all, when the mismatch step is tracked, then has_connected_stores is false`() =
+        testBlocking {
+            // GIVEN nothing connected - onSitesLoaded returns early before the view state is built
+            givenThatUserLoggedInFromEnteringSiteAddress(null)
+            whenever(repository.fetchSiteInfo(any())).thenReturn(
+                Result.success(
+                    ConnectSiteInfoPayload(
+                        url = SitePickerTestUtils.loginSiteAddress,
+                        isWordPress = true,
+                        isWPCom = false
+                    )
+                )
+            )
+            whenSitesAreFetched(returnsEmpty = true)
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN the property is still a real boolean, not the string "null"
+            verify(unifiedLoginTracker).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT),
+                properties = argThat { get(AnalyticsTracker.KEY_HAS_CONNECTED_STORES) == "false" }
+            )
+        }
+
+    @Test
     fun `given the site address does not match the user account, when site info fetch fails, then the mismatch step is not tracked`() =
         testBlocking {
             // GIVEN

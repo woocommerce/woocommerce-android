@@ -267,8 +267,7 @@ class SitePickerViewModel @Inject constructor(
         }
 
         sitePickerViewState = sitePickerViewState.copy(
-            // Woo stores only: an account with just non-Woo sites has nothing to connect to.
-            hasConnectedStores = wooSites.isNotEmpty(),
+            hasConnectedStores = sites.isNotEmpty(),
             isPrimaryBtnVisible = wooSites.isNotEmpty(),
             isPrimaryBtnEnabled = isSelectedSiteVisible,
             isNoStoresViewVisible = false,
@@ -392,8 +391,10 @@ class SitePickerViewModel @Inject constructor(
                         currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT,
                         properties = mapOf(
                             AnalyticsTracker.KEY_URL to url,
+                            // Woo stores only, and non-null before sites load: onSitesLoaded
+                            // returns early here when the account has none at all.
                             AnalyticsTracker.KEY_HAS_CONNECTED_STORES to
-                                sitePickerViewState.hasConnectedStores.toString()
+                                loadedWooSites.isNotEmpty().toString()
                         )
                     )
                     triggerEvent(
