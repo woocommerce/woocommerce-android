@@ -88,6 +88,20 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     init {
         observeReaderConnectionForPendingRefund()
+        observeAutomaticDrawerOpenFailure()
+    }
+
+    private fun observeAutomaticDrawerOpenFailure() {
+        viewModelScope.launch {
+            cashDrawer.automaticRefundOpenFailure.collect { failedOrderId ->
+                val success = _state.value as? WooPosRefundState.RefundSuccess ?: return@collect
+                if (failedOrderId != null && success.orderId == failedOrderId) {
+                    _state.value = success.copy(
+                        drawerErrorMessage = resourceProvider.getString(R.string.woopos_cash_drawer_open_failed_after_refund)
+                    )
+                }
+            }
+        }
     }
 
     private suspend fun fetchSiteSettings(): Result<Int> {
@@ -738,7 +752,14 @@ class WooPosRefundViewModel @AssistedInject constructor(
             orderNumber = contentState.orderNumber,
             refundedAmount = contentState.formattedTotal,
             paymentMethod = contentState.paymentMethod,
-            receiptSentMessage = receiptSentMessage
+            receiptSentMessage = receiptSentMessage,
+            drawerErrorMessage = if (request.order.paymentMethod.isCashPayment &&
+                cashDrawer.automaticRefundOpenFailure.value == contentState.orderId
+            ) {
+                resourceProvider.getString(R.string.woopos_cash_drawer_open_failed_after_refund)
+            } else {
+                null
+            }
         )
     }
 

@@ -52,6 +52,8 @@ class WooPosCashDrawerController @Inject constructor(
     val selectedPrinter: StateFlow<WooPosReceiptPrinter?> get() = hardware.selectedPrinter
     private val _automaticOpenFailure = MutableStateFlow<Long?>(null)
     val automaticOpenFailure: StateFlow<Long?> = _automaticOpenFailure.asStateFlow()
+    private val _automaticRefundOpenFailure = MutableStateFlow<Long?>(null)
+    val automaticRefundOpenFailure: StateFlow<Long?> = _automaticRefundOpenFailure.asStateFlow()
 
     suspend fun discoverPrinters(): Result<List<WooPosReceiptPrinter>> = runCatching { hardware.discover() }
 
@@ -132,10 +134,12 @@ class WooPosCashDrawerController @Inject constructor(
         }
         val boundSessionId = sessionId.takeIf { !sessionDrawerId.isNullOrBlank() }
         return requestOpen(reason, boundSessionId, siteLocalId, orderId).also { result ->
-            if (reason == WooPosCashDrawerReason.CASH_SALE &&
-                (result == WooPosCashDrawerOpenResult.NOT_CONNECTED || result == WooPosCashDrawerOpenResult.FAILED)
-            ) {
-                _automaticOpenFailure.value = orderId
+            if (result == WooPosCashDrawerOpenResult.NOT_CONNECTED || result == WooPosCashDrawerOpenResult.FAILED) {
+                when (reason) {
+                    WooPosCashDrawerReason.CASH_SALE -> _automaticOpenFailure.value = orderId
+                    WooPosCashDrawerReason.CASH_REFUND -> _automaticRefundOpenFailure.value = orderId
+                    else -> Unit
+                }
             }
         }
     }
@@ -148,7 +152,11 @@ class WooPosCashDrawerController @Inject constructor(
         orderId: Long? = null,
         siteLocalId: Int? = null,
     ) {
-        _automaticOpenFailure.value = null
+        when (reason) {
+            WooPosCashDrawerReason.CASH_SALE -> _automaticOpenFailure.value = null
+            WooPosCashDrawerReason.CASH_REFUND -> _automaticRefundOpenFailure.value = null
+            else -> Unit
+        }
         hardwareScope.launch {
             openAutomatically(reason, sessionId, sessionDrawerId, configuredDrawerNameAtCapture,
                 orderId, siteLocalId)

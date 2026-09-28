@@ -164,6 +164,58 @@ class WooPosCashDrawerControllerTest {
     }
 
     @Test
+    fun `disconnected printer reports cash refund drawer failure`() = runTest {
+        val drawer = controller()
+        hardware.openError = WooPosPrinterNotConnectedException()
+
+        val result = drawer.openAutomatically(
+            WooPosCashDrawerReason.CASH_REFUND, 12L, "Front counter", "Front counter", 99L, 1
+        )
+
+        assertThat(result).isEqualTo(WooPosCashDrawerOpenResult.NOT_CONNECTED)
+        assertThat(drawer.automaticRefundOpenFailure.value).isEqualTo(99L)
+        assertThat(drawer.automaticOpenFailure.value).isNull()
+    }
+
+    @Test
+    fun `printer command failure reports cash refund drawer failure`() = runTest {
+        val drawer = controller()
+        hardware.openError = IllegalStateException("Printer failed")
+
+        val result = drawer.openAutomatically(
+            WooPosCashDrawerReason.CASH_REFUND, 12L, "Front counter", "Front counter", 99L, 1
+        )
+
+        assertThat(result).isEqualTo(WooPosCashDrawerOpenResult.FAILED)
+        assertThat(drawer.automaticRefundOpenFailure.value).isEqualTo(99L)
+    }
+
+    @Test
+    fun `cash refund without session does not report drawer failure`() = runTest {
+        val drawer = controller()
+
+        val result = drawer.openAutomatically(
+            WooPosCashDrawerReason.CASH_REFUND, null, null, "Front counter", 99L, 1
+        )
+
+        assertThat(result).isEqualTo(WooPosCashDrawerOpenResult.NO_SESSION)
+        assertThat(drawer.automaticRefundOpenFailure.value).isNull()
+    }
+
+    @Test
+    fun `disabled automatic cash refund open does not report drawer failure`() = runTest {
+        val drawer = controller(autoOpen = false)
+
+        val result = drawer.openAutomatically(
+            WooPosCashDrawerReason.CASH_REFUND, 12L, "Front counter", "Front counter", 99L, 1
+        )
+
+        assertThat(result).isEqualTo(WooPosCashDrawerOpenResult.NO_SESSION)
+        assertThat(drawer.automaticRefundOpenFailure.value).isNull()
+        assertThat(hardware.opens).isZero()
+    }
+
+    @Test
     fun `sensor confirmation reuses request correlation in captured session`() = runTest {
         val drawer = controller()
 

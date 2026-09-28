@@ -1147,6 +1147,16 @@ private fun RefundSuccessContent(
                 textAlign = TextAlign.Center
             )
         }
+
+        state.drawerErrorMessage?.let { message ->
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+            WooPosText(
+                text = message,
+                style = WooPosTypography.BodyMedium,
+                color = MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 

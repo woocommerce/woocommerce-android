@@ -116,5 +116,6 @@ sealed class WooPosRefundState {
         val refundedAmount: String,
         val paymentMethod: String,
         val receiptSentMessage: String? = null,
+        val drawerErrorMessage: String? = null,
     ) : WooPosRefundState()
 }

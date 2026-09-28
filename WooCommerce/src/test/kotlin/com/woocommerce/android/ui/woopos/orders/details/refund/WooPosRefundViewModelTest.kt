@@ -82,6 +82,10 @@ class WooPosRefundViewModelTest {
     private val refundSubmissionProcessor: WooPosRefundSubmissionProcessor = mock()
     private val cardReaderFacade: WooPosCardReaderFacade = mock()
     private val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.NotConnected())
+    private val drawerFailures = MutableStateFlow<Long?>(null)
+    private val cashDrawer: WooPosCashDrawerController = mock {
+        on { automaticRefundOpenFailure }.thenReturn(drawerFailures)
+    }
 
     private val testOrderId = 123L
     private val testOrder = OrderTestUtils.generateTestOrder(orderId = testOrderId).copy(
@@ -202,8 +206,29 @@ class WooPosRefundViewModelTest {
             analyticsTracker = analyticsTracker,
             cardReaderFacade = cardReaderFacade,
             cashMovements = mock<WooPosCashMovementRecorder>(),
-            cashDrawer = mock<WooPosCashDrawerController>(),
+            cashDrawer = cashDrawer,
         )
+    }
+
+    private suspend fun setUpCashRefund() {
+        val cashOrder = testOrder.copy(paymentMethod = "cod")
+        val refundableItems = listOf(testRefundableItem)
+        val groupedItems = listOf(
+            RefundRequestItem(
+                itemId = 1L,
+                quantity = 1,
+                refundTotal = BigDecimal("20.00"),
+                refundTax = emptyList()
+            )
+        )
+        whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(cashOrder))
+        whenever(retrieveOrderRefunds.invoke(eq(cashOrder), any())).thenReturn(Result.success(emptyList()))
+        whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+        whenever(groupRefundItems.invoke(eq(refundableItems), eq(cashOrder), any())).thenReturn(groupedItems)
+        whenever(resourceProvider.getString(R.string.woopos_cash_drawer_open_failed_after_refund))
+            .thenReturn("Refund complete. Open the drawer manually.")
+        viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
     }
 
     /**
@@ -1161,6 +1186,57 @@ class WooPosRefundViewModelTest {
             assertThat(successState.orderId).isEqualTo(testOrderId)
             assertThat(successState.orderNumber).isEqualTo("#456")
         }
+
+    @Test
+    fun `cash refund drawer failure after completion shows notice without reversing refund`() = runTest {
+        // GIVEN
+        setUpCashRefund()
+        advanceUntilIdle()
+        viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+        advanceUntilIdle()
+        assertThat(viewModel.state.value).isInstanceOf(WooPosRefundState.RefundSuccess::class.java)
+
+        // WHEN
+        drawerFailures.value = testOrderId
+        advanceUntilIdle()
+
+        // THEN
+        val success = viewModel.state.value as WooPosRefundState.RefundSuccess
+        assertThat(success.drawerErrorMessage).isEqualTo("Refund complete. Open the drawer manually.")
+    }
+
+    @Test
+    fun `cash refund drawer failure before success state shows notice`() = runTest {
+        // GIVEN
+        setUpCashRefund()
+        advanceUntilIdle()
+        drawerFailures.value = testOrderId
+
+        // WHEN
+        viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+        advanceUntilIdle()
+
+        // THEN
+        val success = viewModel.state.value as WooPosRefundState.RefundSuccess
+        assertThat(success.drawerErrorMessage).isEqualTo("Refund complete. Open the drawer manually.")
+    }
+
+    @Test
+    fun `drawer failure for another order does not appear on refund success`() = runTest {
+        // GIVEN
+        setUpCashRefund()
+        advanceUntilIdle()
+        viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+        advanceUntilIdle()
+
+        // WHEN
+        drawerFailures.value = testOrderId + 1
+        advanceUntilIdle()
+
+        // THEN
+        val success = viewModel.state.value as WooPosRefundState.RefundSuccess
+        assertThat(success.drawerErrorMessage).isNull()
+    }
 
     @Test
     fun `given interac refund requires reader connection, when reader connects, then refund resumes`() =
