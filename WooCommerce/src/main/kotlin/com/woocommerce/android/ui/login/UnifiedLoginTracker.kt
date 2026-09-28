@@ -46,7 +46,7 @@ class UnifiedLoginTracker
         if (currentFlow != null && currentStep != null) {
             analyticsTracker.track(
                 stat = AnalyticsEvent.UNIFIED_LOGIN_STEP,
-                properties = buildDefaultParams().apply { putAll(properties) }
+                properties = properties + buildDefaultParams()
             )
         } else {
             handleMissingFlowOrStep("step: ${step.value}")
