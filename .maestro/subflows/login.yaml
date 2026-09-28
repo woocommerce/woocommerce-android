@@ -124,17 +124,24 @@ appId: com.woocommerce.android
     visible: ".*My store.*|.*Manage privacy.*|.*Save password.*"
     timeout: 30000
 
-# Dismiss the Google "Save password" sheet if present. Tap "Never" so it does
-# not persist credentials or re-prompt on later runs. Must run BEFORE the
+# Dismiss the Google "Save password" sheet if present, with "Not now" on the
+# newer sheet and "Never" on the older one, so it does not persist credentials
+# or re-prompt on later runs. Must run BEFORE the
 # privacy-dialog guard below, whose "Save" match would otherwise collide with
 # this sheet's own "Save" button. Skips silently when there is no autofill.
 - runFlow:
     when:
       visible: ".*Save password.*"
     commands:
-      - tapOn:
-          text: "Never"
-          label: "dismiss_autofill_save_password"
+      - runFlow:
+          file: dismiss_google_password_manager.yaml
+      - runFlow:
+          when:
+            visible: "Never"
+          commands:
+            - tapOn:
+                text: "Never"
+                label: "dismiss_autofill_save_password"
 
 # Dismiss privacy dialog if it appears
 - runFlow:
@@ -156,9 +163,15 @@ appId: com.woocommerce.android
     when:
       visible: ".*Save password.*"
     commands:
-      - tapOn:
-          text: "Never"
-          label: "dismiss_autofill_save_password_late"
+      - runFlow:
+          file: dismiss_google_password_manager.yaml
+      - runFlow:
+          when:
+            visible: "Never"
+          commands:
+            - tapOn:
+                text: "Never"
+                label: "dismiss_autofill_save_password_late"
 
 # Verify dashboard is loaded
 - extendedWaitUntil:
