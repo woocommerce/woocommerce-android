@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.ui.woopos.cashmanagement.WooPosCashMovementRecorder
-import com.woocommerce.android.ui.woopos.cashmanagement.WooPosCashSession
+import com.woocommerce.android.ui.woopos.cashmanagement.WooPosCapturedCashSession
 import com.woocommerce.android.ui.woopos.cashdrawer.WooPosCashDrawerController
 import com.woocommerce.android.ui.woopos.cashdrawer.WooPosCashDrawerReason
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
@@ -83,7 +83,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private var pendingReaderConnectionRefund: PendingReaderConnectionRefund? = null
     private var flowDraft: FlowDraft? = null
     private var cashSessionCaptured = false
-    private var cashSessionAtRefund: WooPosCashSession? = null
+    private var cashSessionAtRefund: WooPosCapturedCashSession? = null
     private var drawerNameAtRefund: String? = null
 
     init {
@@ -720,10 +720,11 @@ class WooPosRefundViewModel @AssistedInject constructor(
     ) {
         if (request.order.paymentMethod.isCashPayment) {
             val session = cashSessionAtRefund
-            cashMovements.recordRefund(session?.id, request.orderId, refundId)
+            cashMovements.recordRefund(session, request.orderId, refundId)
             cashDrawer.scheduleAutomaticOpen(
-                WooPosCashDrawerReason.CASH_REFUND, session?.id,
-                session?.drawerId, drawerNameAtRefund, request.orderId
+                WooPosCashDrawerReason.CASH_REFUND, session?.session?.id,
+                session?.session?.drawerId, drawerNameAtRefund, request.orderId,
+                session?.siteLocalId
             )
         }
         analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingSuccess(refundFlowFor(request)))

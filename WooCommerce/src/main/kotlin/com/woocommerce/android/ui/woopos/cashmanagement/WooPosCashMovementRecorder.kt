@@ -25,36 +25,44 @@ class WooPosCashMovementRecorder @Inject constructor(
     private val queueLock = Any()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    suspend fun captureSession(): WooPosCashSession? = try {
-        sessions.current()
+    suspend fun captureSession(): WooPosCapturedCashSession? = try {
+        sessions.currentWithSite()
     } catch (_: CashSessionUnsupportedException) {
         null
     }
 
-    fun recordSale(sessionId: Long?, orderId: Long) {
-        if (sessionId == null) return
-        enqueue(PendingMovement("sale", sessionId, orderId, null, UUID.randomUUID().toString()))
+    fun recordSale(capture: WooPosCapturedCashSession?, orderId: Long) {
+        if (capture == null) return
+        enqueue(PendingMovement("sale", capture.siteLocalId, capture.session.id,
+            orderId, null, UUID.randomUUID().toString()))
         scope.launch { retryPending() }
     }
 
-    fun recordRefund(sessionId: Long?, orderId: Long, refundId: Long) {
-        if (sessionId == null) return
-        enqueue(PendingMovement("refund", sessionId, orderId, refundId, UUID.randomUUID().toString()))
+    fun recordRefund(capture: WooPosCapturedCashSession?, orderId: Long, refundId: Long) {
+        if (capture == null) return
+        enqueue(PendingMovement("refund", capture.siteLocalId, capture.session.id,
+            orderId, refundId, UUID.randomUUID().toString()))
         scope.launch { retryPending() }
     }
 
-    fun hasPending(sessionId: Long): Boolean = pending().any { it.sessionId == sessionId }
+    fun hasPending(sessionId: Long): Boolean {
+        val siteLocalId = runCatching { sessions.selectedSiteLocalId }.getOrNull() ?: return false
+        return pending().any { it.sessionId == sessionId && it.siteLocalId == siteLocalId }
+    }
 
     suspend fun retryPending() {
         mutex.withLock {
+            val selectedSiteLocalId = runCatching { sessions.selectedSiteLocalId }.getOrNull() ?: return@withLock
             pending().forEach { movement ->
+                if (movement.siteLocalId != selectedSiteLocalId) return@forEach
                 val recorded = try {
                     if (movement.type == "sale") {
-                        sessions.sale(movement.sessionId, movement.orderId, UUID.fromString(movement.requestId))
+                        sessions.sale(movement.sessionId, movement.orderId,
+                            UUID.fromString(movement.requestId), movement.siteLocalId)
                     } else {
                         sessions.refund(
                             movement.sessionId, movement.orderId, requireNotNull(movement.refundId),
-                            UUID.fromString(movement.requestId)
+                            UUID.fromString(movement.requestId), movement.siteLocalId
                         )
                     }
                     true
@@ -77,7 +85,8 @@ class WooPosCashMovementRecorder @Inject constructor(
     private fun enqueue(movement: PendingMovement) = synchronized(queueLock) {
         val existing = pending()
         val alreadyQueued = existing.any {
-            it.type == movement.type && it.orderId == movement.orderId && it.refundId == movement.refundId
+            it.siteLocalId == movement.siteLocalId && it.type == movement.type &&
+                it.orderId == movement.orderId && it.refundId == movement.refundId
         }
         if (!alreadyQueued) save(existing + movement)
     }
@@ -87,7 +96,8 @@ class WooPosCashMovementRecorder @Inject constructor(
         (0 until array.length()).map { index ->
             val item = array.getJSONObject(index)
             PendingMovement(
-                item.getString("type"), item.getLong("sessionId"), item.getLong("orderId"),
+                item.getString("type"), item.optInt("siteLocalId", -1),
+                item.getLong("sessionId"), item.getLong("orderId"),
                 item.optLong("refundId").takeIf { item.has("refundId") }, item.getString("requestId")
             )
         }
@@ -98,6 +108,7 @@ class WooPosCashMovementRecorder @Inject constructor(
         movements.forEach { item ->
             array.put(JSONObject().apply {
                 put("type", item.type)
+                put("siteLocalId", item.siteLocalId)
                 put("sessionId", item.sessionId)
                 put("orderId", item.orderId)
                 item.refundId?.let { put("refundId", it) }
@@ -109,9 +120,12 @@ class WooPosCashMovementRecorder @Inject constructor(
 
     private data class PendingMovement(
         val type: String,
+        val siteLocalId: Int,
         val sessionId: Long,
         val orderId: Long,
         val refundId: Long?,
         val requestId: String,
     )
 }
+
+data class WooPosCapturedCashSession(val session: WooPosCashSession, val siteLocalId: Int)

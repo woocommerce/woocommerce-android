@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.woopos.cashmanagement
 
 import com.woocommerce.android.ui.woopos.cashdrawer.WooPosCashDrawerController
+import com.woocommerce.android.R
+import com.woocommerce.android.viewmodel.ResourceProvider
+import com.woocommerce.android.ui.woopos.home.items.customamount.WooPosGetCurrencyFormattingParameters
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,6 +21,8 @@ class WooPosCashManagementViewModel @Inject constructor(
     private val repository: WooPosCashSessionRepository,
     val drawer: WooPosCashDrawerController,
     private val recorder: WooPosCashMovementRecorder,
+    private val resources: ResourceProvider,
+    private val currencyFormatting: WooPosGetCurrencyFormattingParameters,
 ) : ViewModel() {
     private val mutableState = MutableStateFlow(WooPosCashManagementState())
     val state: StateFlow<WooPosCashManagementState> = mutableState.asStateFlow()
@@ -31,7 +36,25 @@ class WooPosCashManagementViewModel @Inject constructor(
     private var adjustmentKey: String? = null
     private var adjustmentRequestId: UUID? = null
 
-    init { refresh() }
+    init {
+        refresh()
+        loadStartPrecision()
+    }
+
+    fun loadStartPrecision() {
+        viewModelScope.launch {
+            try {
+                val precision = currencyFormatting().numberOfDecimals
+                mutableState.value = mutableState.value.copy(startPrecision = precision, startPrecisionError = null)
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                mutableState.value = mutableState.value.copy(
+                    startPrecisionError = errorMessage(error, R.string.woopos_cash_error_currency_settings)
+                )
+            }
+        }
+    }
 
     fun refresh() {
         if (mutableState.value.loadingCurrent) return
@@ -54,7 +77,7 @@ class WooPosCashManagementViewModel @Inject constructor(
                 throw cancelled
             } catch (error: Exception) {
                 mutableState.value = mutableState.value.copy(
-                    loadingCurrent = false, currentError = error.message ?: "Could not load cash session"
+                    loadingCurrent = false, currentError = errorMessage(error, R.string.woopos_cash_error_current)
                 )
             }
         }
@@ -74,7 +97,7 @@ class WooPosCashManagementViewModel @Inject constructor(
                 throw cancelled
             } catch (error: Exception) {
                 mutableState.value = mutableState.value.copy(
-                    loadingHistory = false, historyError = error.message ?: "Could not load past sessions"
+                    loadingHistory = false, historyError = errorMessage(error, R.string.woopos_cash_error_history)
                 )
             }
         }
@@ -96,7 +119,7 @@ class WooPosCashManagementViewModel @Inject constructor(
                 throw cancelled
             } catch (error: Exception) {
                 mutableState.value = mutableState.value.copy(
-                    loadingHistory = false, historyError = error.message ?: "Could not load more sessions"
+                    loadingHistory = false, historyError = errorMessage(error, R.string.woopos_cash_error_history_more)
                 )
             }
         }
@@ -114,18 +137,22 @@ class WooPosCashManagementViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val detail = repository.detail(id)
+                if (request != detailRequest) return@launch
+                mutableState.value = mutableState.value.copy(detail = detail, loadingDetail = false, loadingMovements = true)
                 val first = repository.movements(id, 1)
                 if (request != detailRequest) return@launch
                 movementPage = 1
                 mutableState.value = mutableState.value.copy(
-                    detail = detail, movements = first.items, hasMoreMovements = first.hasMore, loadingDetail = false
+                    movements = first.items, hasMoreMovements = first.hasMore, loadingMovements = false
                 )
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (error: Exception) {
                 if (request == detailRequest) {
                     mutableState.value = mutableState.value.copy(
-                        loadingDetail = false, detailError = error.message ?: "Could not load session details"
+                        loadingDetail = false, loadingMovements = false,
+                        detailError = errorMessage(error, if (mutableState.value.detail == null)
+                            R.string.woopos_cash_error_detail else R.string.woopos_cash_error_activity)
                     )
                 }
             }
@@ -157,20 +184,21 @@ class WooPosCashManagementViewModel @Inject constructor(
                 throw cancelled
             } catch (error: Exception) {
                 mutableState.value = mutableState.value.copy(
-                    loadingMovements = false, detailError = error.message ?: "Could not load more activity"
+                    loadingMovements = false, detailError = errorMessage(error, R.string.woopos_cash_error_activity_more)
                 )
             }
         }
     }
 
     fun start(amount: BigDecimal, drawerName: String?, onSuccess: (Long) -> Unit) {
-        if (mutableState.value.saving || amount < BigDecimal.ZERO) return
+        val precision = mutableState.value.startPrecision ?: return
+        if (mutableState.value.saving || amount < BigDecimal.ZERO || !cashAmountFitsPrecision(amount, precision)) return
         val key = "${amount.toPlainString()}:${drawerName.orEmpty()}"
         if (startKey != key) {
             startKey = key
             startRequestId = UUID.randomUUID()
         }
-        save {
+        save(R.string.woopos_cash_error_start) {
             val session = repository.start(amount, drawerName, requireNotNull(startRequestId))
             startKey = null
             startRequestId = null
@@ -179,23 +207,24 @@ class WooPosCashManagementViewModel @Inject constructor(
         }
     }
 
-    fun adjust(type: String, amount: BigDecimal, reason: String, onSuccess: (Long, String?) -> Unit) {
+    fun adjust(type: String, amount: BigDecimal, reason: String, onSuccess: (Long, String?, Int) -> Unit) {
         val session = mutableState.value.current ?: return
         if (mutableState.value.saving || amount <= BigDecimal.ZERO ||
-            (type == "pay_out" && amount > session.expectedCash)) return
+            (type == "paid_out" && amount > session.expectedCash)) return
         val key = "${session.id}:$type:${amount.toPlainString()}:${reason.trim()}"
         if (adjustmentKey != key) {
             adjustmentKey = key
             adjustmentRequestId = UUID.randomUUID()
         }
-        save {
+        save(R.string.woopos_cash_error_adjust) {
+            val siteLocalId = repository.selectedSiteLocalId
             repository.adjust(
-                session.id, type, amount, reason.trim().ifBlank { if (type == "pay_in") "Paid in" else "Paid out" },
-                requireNotNull(adjustmentRequestId)
+                session.id, type, amount, reason.trim().ifBlank { if (type == "paid_in") "Paid in" else "Paid out" },
+                requireNotNull(adjustmentRequestId), siteLocalId
             )
             adjustmentKey = null
             adjustmentRequestId = null
-            onSuccess(session.id, session.drawerId)
+            onSuccess(session.id, session.drawerId, siteLocalId)
             refresh()
         }
     }
@@ -205,7 +234,7 @@ class WooPosCashManagementViewModel @Inject constructor(
         if (mutableState.value.saving || counted < BigDecimal.ZERO) return
         if (recorder.hasPending(session.id)) {
             mutableState.value = mutableState.value.copy(
-                operationError = "Cash movements are still waiting to sync. Retry before closing."
+                operationError = resources.getString(R.string.woopos_cash_error_pending)
             )
             return
         }
@@ -214,7 +243,7 @@ class WooPosCashManagementViewModel @Inject constructor(
             closeKey = key
             closeRequestId = UUID.randomUUID()
         }
-        save {
+        save(R.string.woopos_cash_error_close) {
             try {
                 val closed = repository.close(
                     session.id, session.revision, counted, note?.trim(), requireNotNull(closeRequestId)
@@ -233,12 +262,14 @@ class WooPosCashManagementViewModel @Inject constructor(
                     if (closed?.status == "closed") {
                         closeKey = null
                         closeRequestId = null
-                        mutableState.value = mutableState.value.copy(current = null)
+                        mutableState.value = mutableState.value.copy(
+                            current = null, detail = closed, detailId = closed.id
+                        )
                         historyPage = 0
                         loadHistory(force = true)
-                        selectSession(closed.id, refresh = true)
-                        onSuccess()
-                        return@save
+                        throw CashSessionException(
+                            "The cash session is already closed", "woocommerce_rest_cash_session_closed"
+                        )
                     }
                 }
                 if (latest?.id == session.id && latest.revision != session.revision) {
@@ -268,7 +299,7 @@ class WooPosCashManagementViewModel @Inject constructor(
         mutableState.value = mutableState.value.copy(operationError = null)
     }
 
-    private fun save(action: suspend () -> Unit) {
+    private fun save(fallback: Int, action: suspend () -> Unit) {
         mutableState.value = mutableState.value.copy(saving = true, operationError = null)
         viewModelScope.launch {
             try {
@@ -278,14 +309,35 @@ class WooPosCashManagementViewModel @Inject constructor(
                 throw cancelled
             } catch (error: Exception) {
                 mutableState.value = mutableState.value.copy(
-                    saving = false, operationError = error.message ?: "The cash session could not be saved"
+                    saving = false, operationError = errorMessage(error, fallback)
                 )
             }
         }
     }
+
+    private fun errorMessage(error: Exception, fallback: Int): String {
+        val message = when (error) {
+            is CashSessionUnsupportedException -> R.string.woopos_cash_error_unsupported
+            is CashSessionException -> when (error.code) {
+                "woocommerce_rest_cash_session_already_open" -> R.string.woopos_cash_error_already_open
+                "woocommerce_rest_cash_session_closed" -> R.string.woopos_cash_error_session_closed
+                "woocommerce_rest_cash_session_revision_conflict" -> R.string.woopos_cash_error_recount
+                "woocommerce_rest_cash_request_in_progress" -> R.string.woopos_cash_error_processing
+                "woocommerce_rest_cash_currency_mismatch", "woocommerce_rest_cash_precision_mismatch" ->
+                    R.string.woopos_cash_error_currency
+                "woocommerce_rest_cash_invalid_amount", "rest_invalid_param" -> R.string.woopos_cash_error_amount
+                "rest_forbidden", "woocommerce_rest_cannot_view" -> R.string.woopos_cash_error_permission
+                else -> fallback
+            }
+            else -> fallback
+        }
+        return resources.getString(message)
+    }
 }
 
 data class WooPosCashManagementState(
+    val startPrecision: Int? = null,
+    val startPrecisionError: String? = null,
     val current: WooPosCashSession? = null,
     val loadingCurrent: Boolean = false,
     val currentError: String? = null,
@@ -304,3 +356,5 @@ data class WooPosCashManagementState(
     val operationError: String? = null,
     val recountRequired: Boolean = false,
 )
+
+internal fun cashAmountFitsPrecision(amount: BigDecimal, precision: Int): Boolean = amount.scale() <= precision

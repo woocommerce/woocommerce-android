@@ -4987,5 +4987,25 @@
     <string name="woopos_cash_note_value">Note: %1$s</string>
     <string name="woopos_cash_order_link">Order #%1$d →</string>
     <string name="woopos_cash_share_chooser">Share cash session</string>
+    <string name="woopos_cash_error_current">Could not load the current cash session. Try again.</string>
+    <string name="woopos_cash_error_history">Could not load past cash sessions. Try again.</string>
+    <string name="woopos_cash_error_history_more">Could not load more sessions. Try again.</string>
+    <string name="woopos_cash_error_detail">Could not load this cash session. Try again.</string>
+    <string name="woopos_cash_error_activity">Could not load this session’s activity. Try again.</string>
+    <string name="woopos_cash_error_activity_more">Could not load more activity. Try again.</string>
+    <string name="woopos_cash_error_start">Could not start the cash session. Try again.</string>
+    <string name="woopos_cash_error_adjust">Could not save this cash movement. Try again.</string>
+    <string name="woopos_cash_error_close">Could not close the cash session. Try again.</string>
+    <string name="woopos_cash_error_pending">Cash movements are waiting to sync. Try again before closing.</string>
+    <string name="woopos_cash_error_unsupported">Update WooCommerce to use cash sessions.</string>
+    <string name="woopos_cash_error_already_open">A cash session is already open on this register. Refresh to continue.</string>
+    <string name="woopos_cash_error_session_closed">This cash session is already closed. Review its summary.</string>
+    <string name="woopos_cash_error_recount">The session changed. Review the expected cash and count again.</string>
+    <string name="woopos_cash_error_processing">The cash request is still processing. Try again in a moment.</string>
+    <string name="woopos_cash_error_currency">The store currency changed. Refresh the session and try again.</string>
+    <string name="woopos_cash_error_amount">Check the amount and try again.</string>
+    <string name="woopos_cash_error_permission">Your account cannot manage cash sessions.</string>
+    <string name="woopos_cash_error_currency_settings">Could not load store currency settings. Try again.</string>
+    <string name="woopos_cash_loading_currency_settings">Loading store currency settings…</string>
     <string name="woopos_cash_drawer_unavailable_payment">Cash drawer not connected. You can still complete the sale.</string>
 </resources>

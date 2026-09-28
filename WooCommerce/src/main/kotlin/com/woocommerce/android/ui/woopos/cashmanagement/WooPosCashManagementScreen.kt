@@ -294,13 +294,13 @@ fun WooPosCashManagementScreen(
                     mode = CashDialog.NONE
                 }
                 CashDialog.PAY_IN, CashDialog.PAY_OUT -> {
-                    val type = if (mode == CashDialog.PAY_IN) "pay_in" else "pay_out"
+                    val type = if (mode == CashDialog.PAY_IN) "paid_in" else "paid_out"
                     val drawerNameAtCapture = drawer.drawerName
-                    viewModel.adjust(type, amount, note.orEmpty()) { sessionId, sessionDrawerId ->
+                    viewModel.adjust(type, amount, note.orEmpty()) { sessionId, sessionDrawerId, siteLocalId ->
                         mode = CashDialog.NONE
                         drawer.scheduleAutomaticOpen(
                             WooPosCashDrawerReason.NO_SALE, sessionId,
-                            sessionDrawerId, drawerNameAtCapture
+                            sessionDrawerId, drawerNameAtCapture, siteLocalId = siteLocalId
                         )
                     }
                 }
@@ -311,6 +311,7 @@ fun WooPosCashManagementScreen(
                 CashDialog.NONE -> Unit
             }
         }, onRecount = viewModel::acknowledgeRecount,
+            onRetryStartPrecision = viewModel::loadStartPrecision,
             canOpenBeforeStart = drawer.isConnected.collectAsState().value,
             onOpenBeforeStart = { scope.launch { drawer.openBeforeSession() } })
     }
@@ -325,6 +326,7 @@ private fun CashEntryDialog(
     onDismiss: () -> Unit,
     onSubmit: (BigDecimal, String?) -> Unit,
     onRecount: () -> Unit,
+    onRetryStartPrecision: () -> Unit,
     canOpenBeforeStart: Boolean,
     onOpenBeforeStart: () -> Unit,
 ) {
@@ -333,8 +335,8 @@ private fun CashEntryDialog(
     val focus = remember { FocusRequester() }
     val session = state.current
     val amount = amountText.replace(',', '.').toBigDecimalOrNull()
-    val precision = session?.currencyPrecision ?: 2
-    val validScale = amount?.scale()?.let { it <= precision } == true
+    val precision = session?.currencyPrecision ?: state.startPrecision
+    val validScale = amount?.let { value -> precision?.let { cashAmountFitsPrecision(value, it) } } == true
     val validAmount = amount != null && validScale && amount >= BigDecimal.ZERO &&
         (mode == CashDialog.START || mode == CashDialog.CLOSE || amount > BigDecimal.ZERO) &&
         (mode != CashDialog.PAY_OUT || (session != null && amount <= session.expectedCash))
@@ -362,6 +364,14 @@ private fun CashEntryDialog(
                         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)) {
                         if (mode == CashDialog.START) {
                             CashText(stringResource(R.string.woopos_cash_count_start_hint))
+                            if (precision == null && state.startPrecisionError == null) {
+                                CashLoading(stringResource(R.string.woopos_cash_loading_currency_settings))
+                            }
+                            state.startPrecisionError?.let {
+                                CashText(it, color = WooPosTheme.colors.alert)
+                                WooPosOutlinedButton(text = stringResource(R.string.woopos_cash_retry),
+                                    onClick = onRetryStartPrecision)
+                            }
                             WooPosOutlinedButton(
                                 text = stringResource(R.string.woopos_cash_open_to_count),
                                 state = if (canOpenBeforeStart) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED,
@@ -393,7 +403,7 @@ private fun CashEntryDialog(
                             modifier = Modifier.focusRequester(focus).fillMaxWidth(),
                             singleLine = true,
                         )
-                        if (amountText.isNotEmpty() && !validAmount) CashText(
+                        if (amountText.isNotEmpty() && precision != null && !validAmount) CashText(
                             if (mode == CashDialog.PAY_OUT && amount != null && session != null &&
                                 amount > session.expectedCash
                             ) stringResource(R.string.woopos_cash_payout_limit)

@@ -21,7 +21,16 @@ class WooPosCashSessionRepository @Inject constructor(
         preferences.edit().putString("device_id", it).apply()
     }
 
+    val selectedSiteLocalId: Int get() = selectedSite.get().id
+
     suspend fun current(): WooPosCashSession? = list("open", 1).items.firstOrNull()
+
+    suspend fun currentWithSite(): WooPosCapturedCashSession? {
+        val siteLocalId = selectedSiteLocalId
+        val session = current()
+        if (selectedSiteLocalId != siteLocalId) throw CashSessionSiteChangedException()
+        return session?.let { WooPosCapturedCashSession(it, siteLocalId) }
+    }
 
     suspend fun past(page: Int): WooPosCashPage<WooPosCashSession> = list("closed", page)
 
@@ -58,19 +67,23 @@ class WooPosCashSessionRepository @Inject constructor(
         WooPosCashSession::class.java
     )
 
-    suspend fun adjust(id: Long, type: String, amount: BigDecimal, reason: String, requestId: UUID): WooPosCashMovement =
+    suspend fun adjust(
+        id: Long, type: String, amount: BigDecimal, reason: String, requestId: UUID, siteLocalId: Int
+    ): WooPosCashMovement =
         post("$PATH/$id/movements", mapOf("request_id" to requestId.toString(), "type" to type,
-            "amount" to amount.toPlainString(), "reason" to reason), WooPosCashMovement::class.java)
+            "amount" to amount.toPlainString(), "reason" to reason), WooPosCashMovement::class.java, siteLocalId)
 
-    suspend fun sale(id: Long, orderId: Long, requestId: UUID): WooPosCashMovement =
+    suspend fun sale(id: Long, orderId: Long, requestId: UUID, siteLocalId: Int): WooPosCashMovement =
         post("$PATH/$id/movements", mapOf("request_id" to requestId.toString(), "type" to "cash_sale",
-            "order_id" to orderId), WooPosCashMovement::class.java)
+            "order_id" to orderId), WooPosCashMovement::class.java, siteLocalId)
 
-    suspend fun refund(id: Long, orderId: Long, refundId: Long, requestId: UUID): WooPosCashMovement =
+    suspend fun refund(id: Long, orderId: Long, refundId: Long, requestId: UUID, siteLocalId: Int): WooPosCashMovement =
         post("$PATH/$id/movements", mapOf("request_id" to requestId.toString(), "type" to "cash_refund",
-            "order_id" to orderId, "refund_id" to refundId), WooPosCashMovement::class.java)
+            "order_id" to orderId, "refund_id" to refundId), WooPosCashMovement::class.java, siteLocalId)
 
-    suspend fun drawerEvent(id: Long, type: String, reason: String, orderId: Long?, correlationId: UUID?) {
+    suspend fun drawerEvent(
+        id: Long, type: String, reason: String, orderId: Long?, correlationId: UUID?, siteLocalId: Int
+    ) {
         post("$PATH/$id/drawer-events", buildMap {
             put("request_id", UUID.randomUUID().toString())
             put("type", type)
@@ -78,7 +91,7 @@ class WooPosCashSessionRepository @Inject constructor(
             put("occurred_at", java.time.OffsetDateTime.now().toString())
             orderId?.let { put("order_id", it) }
             correlationId?.let { put("correlation_id", it.toString()) }
-        }, DrawerEventResponse::class.java)
+        }, DrawerEventResponse::class.java, siteLocalId)
     }
 
     suspend fun close(id: Long, revision: Int, counted: BigDecimal, note: String?, requestId: UUID): WooPosCashSession = post(
@@ -92,8 +105,13 @@ class WooPosCashSessionRepository @Inject constructor(
     private suspend fun <T : Any> get(path: String, clazz: Class<T>): T =
         network.executeGetGsonRequest(selectedSite.get(), path, clazz).requireData()
 
-    private suspend fun <T : Any> post(path: String, body: Map<String, Any>, clazz: Class<T>): T =
-        network.executePostGsonRequest(selectedSite.get(), path, clazz, body).requireData()
+    private suspend fun <T : Any> post(
+        path: String, body: Map<String, Any>, clazz: Class<T>, expectedSiteLocalId: Int? = null
+    ): T {
+        val site = selectedSite.get()
+        if (expectedSiteLocalId != null && site.id != expectedSiteLocalId) throw CashSessionSiteChangedException()
+        return network.executePostGsonRequest(site, path, clazz, body).requireData()
+    }
 
     private fun <T> WPAPIResponse<T>.requireData(): T = when (this) {
         is WPAPIResponse.Success -> data ?: throw CashSessionException("The cash session response was empty")
@@ -121,3 +139,5 @@ class CashSessionException(
 ) : Exception(message)
 
 class CashSessionUnsupportedException : Exception("Update WooCommerce to use cash sessions")
+
+class CashSessionSiteChangedException : Exception("The selected store changed")

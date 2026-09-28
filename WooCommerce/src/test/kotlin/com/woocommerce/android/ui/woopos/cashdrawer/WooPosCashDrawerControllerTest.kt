@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.cashdrawer
 import android.content.Context
 import android.content.SharedPreferences
 import com.woocommerce.android.ui.woopos.cashmanagement.WooPosCashSession
+import com.woocommerce.android.ui.woopos.cashmanagement.WooPosCapturedCashSession
 import com.woocommerce.android.ui.woopos.cashmanagement.WooPosCashSessionRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,7 +52,7 @@ class WooPosCashDrawerControllerTest {
 
     @Test
     fun `manual no-sale without active session does not open drawer`() = runTest {
-        whenever(sessions.current()).thenReturn(null)
+        whenever(sessions.currentWithSite()).thenReturn(null)
         val drawer = controller()
 
         val result = drawer.open(WooPosCashDrawerReason.NO_SALE)
@@ -62,14 +63,14 @@ class WooPosCashDrawerControllerTest {
 
     @Test
     fun `manual no-sale in unbound session opens without Core event`() = runTest {
-        whenever(sessions.current()).thenReturn(session(drawerId = null))
+        whenever(sessions.currentWithSite()).thenReturn(capture(drawerId = null))
         val drawer = controller()
 
         val result = drawer.open(WooPosCashDrawerReason.NO_SALE)
 
         assertThat(result).isEqualTo(WooPosCashDrawerOpenResult.OPEN_REQUESTED)
         assertThat(hardware.opens).isEqualTo(1)
-        verify(sessions, never()).drawerEvent(any(), any(), any(), anyOrNull(), anyOrNull())
+        verify(sessions, never()).drawerEvent(any(), any(), any(), anyOrNull(), anyOrNull(), any())
     }
 
     @Test
@@ -77,24 +78,24 @@ class WooPosCashDrawerControllerTest {
         val drawer = controller()
 
         val result = drawer.openAutomatically(
-            WooPosCashDrawerReason.CASH_SALE, 12L, "Old drawer", "Front counter", 99L
+            WooPosCashDrawerReason.CASH_SALE, 12L, "Old drawer", "Front counter", 99L, 1
         )
 
         assertThat(result).isEqualTo(WooPosCashDrawerOpenResult.OPEN_REQUESTED)
         assertThat(hardware.opens).isEqualTo(1)
-        verify(sessions, never()).current()
-        verify(sessions).drawerEvent(eq(12L), eq("open_requested"), eq("cash_sale"), eq(99L), any())
+        verify(sessions, never()).currentWithSite()
+        verify(sessions).drawerEvent(eq(12L), eq("open_requested"), eq("cash_sale"), eq(99L), any(), eq(1))
     }
 
     @Test
     fun `automatic open in unbound session does not post Core event`() = runTest {
         val drawer = controller()
 
-        val result = drawer.openAutomatically(WooPosCashDrawerReason.CASH_SALE, 12L, null, "Front counter", 99L)
+        val result = drawer.openAutomatically(WooPosCashDrawerReason.CASH_SALE, 12L, null, "Front counter", 99L, 1)
 
         assertThat(result).isEqualTo(WooPosCashDrawerOpenResult.OPEN_REQUESTED)
         assertThat(hardware.opens).isEqualTo(1)
-        verify(sessions, never()).drawerEvent(any(), any(), any(), anyOrNull(), anyOrNull())
+        verify(sessions, never()).drawerEvent(any(), any(), any(), anyOrNull(), anyOrNull(), any())
     }
 
     @Test
@@ -102,12 +103,12 @@ class WooPosCashDrawerControllerTest {
         val drawer = controller()
 
         val result = drawer.openAutomatically(
-            WooPosCashDrawerReason.CASH_REFUND, 12L, "front COUNTER", "Front counter", 99L
+            WooPosCashDrawerReason.CASH_REFUND, 12L, "front COUNTER", "Front counter", 99L, 1
         )
 
         assertThat(result).isEqualTo(WooPosCashDrawerOpenResult.OPEN_REQUESTED)
-        verify(sessions).drawerEvent(eq(12L), eq("open_requested"), eq("cash_refund"), eq(99L), any())
-        verify(sessions, never()).current()
+        verify(sessions).drawerEvent(eq(12L), eq("open_requested"), eq("cash_refund"), eq(99L), any(), eq(1))
+        verify(sessions, never()).currentWithSite()
     }
 
     @Test
@@ -127,19 +128,19 @@ class WooPosCashDrawerControllerTest {
     fun `sensor confirmation reuses request correlation in captured session`() = runTest {
         val drawer = controller()
 
-        drawer.openAutomatically(WooPosCashDrawerReason.CASH_SALE, 12L, "Front counter", "Front counter", 99L)
+        drawer.openAutomatically(WooPosCashDrawerReason.CASH_SALE, 12L, "Front counter", "Front counter", 99L, 1)
         drawer.handleDrawerSignal(true)
 
         val correlations = argumentCaptor<UUID>()
-        verify(sessions).drawerEvent(eq(12L), eq("open_requested"), eq("cash_sale"), eq(99L), correlations.capture())
-        verify(sessions).drawerEvent(eq(12L), eq("opened"), eq("cash_sale"), eq(99L), correlations.capture())
+        verify(sessions).drawerEvent(eq(12L), eq("open_requested"), eq("cash_sale"), eq(99L), correlations.capture(), eq(1))
+        verify(sessions).drawerEvent(eq(12L), eq("opened"), eq("cash_sale"), eq(99L), correlations.capture(), eq(1))
         assertThat(correlations.allValues).hasSize(2)
         assertThat(correlations.allValues[1]).isEqualTo(correlations.allValues[0])
     }
 
     @Test
     fun `manual sensor opening records unknown only in current bound session`() = runTest {
-        whenever(sessions.current()).thenReturn(session(drawerId = "Old drawer"))
+        whenever(sessions.currentWithSite()).thenReturn(capture(drawerId = "Old drawer"))
         val drawer = controller()
 
         drawer.openBeforeSession()
@@ -147,12 +148,12 @@ class WooPosCashDrawerControllerTest {
         drawer.handleDrawerSignal(true)
         drawer.handleDrawerSignal(false)
 
-        verify(sessions).drawerEvent(eq(12L), eq("opened"), eq("unknown"), anyOrNull(), anyOrNull())
+        verify(sessions).drawerEvent(eq(12L), eq("opened"), eq("unknown"), anyOrNull(), anyOrNull(), eq(1))
     }
 
     @Test
     fun `late sensor opening is not attributed to a newer session`() = runTest {
-        whenever(sessions.current()).thenReturn(session(drawerId = "Front counter", createdAt = "2099-01-01T00:00:00"))
+        whenever(sessions.currentWithSite()).thenReturn(capture(drawerId = "Front counter", createdAt = "2099-01-01T00:00:00"))
         val drawer = controller()
 
         drawer.openBeforeSession()
@@ -160,7 +161,7 @@ class WooPosCashDrawerControllerTest {
         drawer.handleDrawerSignal(true)
         drawer.handleDrawerSignal(false)
 
-        verify(sessions, never()).drawerEvent(any(), any(), any(), anyOrNull(), anyOrNull())
+        verify(sessions, never()).drawerEvent(any(), any(), any(), anyOrNull(), anyOrNull(), any())
     }
 
     private fun session(drawerId: String?, createdAt: String = "2020-01-01T00:00:00"): WooPosCashSession = WooPosCashSession(
@@ -185,6 +186,9 @@ class WooPosCashDrawerControllerTest {
         openedByName = "Cashier",
         closedByName = null,
     )
+
+    private fun capture(drawerId: String?, createdAt: String = "2020-01-01T00:00:00") =
+        WooPosCapturedCashSession(session(drawerId, createdAt), 1)
 
     private class FakeHardware : WooPosCashDrawerHardware {
         override val isConnected: StateFlow<Boolean> = MutableStateFlow(true)

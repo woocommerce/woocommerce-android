@@ -99,18 +99,20 @@ class WooPosCashDrawerController @Inject constructor(
     }
 
     /** The cashier can count the float before a session exists. This attempt has no Core event. */
-    suspend fun openBeforeSession(): WooPosCashDrawerOpenResult = requestOpen(WooPosCashDrawerReason.NO_SALE, null, null)
+    suspend fun openBeforeSession(): WooPosCashDrawerOpenResult =
+        requestOpen(WooPosCashDrawerReason.NO_SALE, null, null, null)
 
     /** Test opens are allowed without a session. Other manual opens require an active session. */
     suspend fun open(reason: WooPosCashDrawerReason, orderId: Long? = null): WooPosCashDrawerOpenResult {
-        val session = try {
-            sessions.current()
+        val captured = try {
+            sessions.currentWithSite()
         } catch (_: Exception) {
             null
         }
+        val session = captured?.session
         if (session == null && reason != WooPosCashDrawerReason.TEST) return WooPosCashDrawerOpenResult.NO_SESSION
         val boundSessionId = session?.takeIf { !it.drawerId.isNullOrBlank() }?.id
-        return requestOpen(reason, boundSessionId, orderId)
+        return requestOpen(reason, boundSessionId, captured?.siteLocalId, orderId)
     }
 
     /** A confirmed cash transaction passes the session ID captured before its Core movement. */
@@ -121,12 +123,13 @@ class WooPosCashDrawerController @Inject constructor(
         sessionDrawerId: String?,
         configuredDrawerNameAtCapture: String?,
         orderId: Long? = null,
+        siteLocalId: Int? = null,
     ): WooPosCashDrawerOpenResult {
         if (!_autoOpen.value || sessionId == null) {
             return WooPosCashDrawerOpenResult.NO_SESSION
         }
         val boundSessionId = sessionId.takeIf { !sessionDrawerId.isNullOrBlank() }
-        return requestOpen(reason, boundSessionId, orderId)
+        return requestOpen(reason, boundSessionId, siteLocalId, orderId)
     }
 
     fun scheduleAutomaticOpen(
@@ -135,19 +138,23 @@ class WooPosCashDrawerController @Inject constructor(
         sessionDrawerId: String?,
         configuredDrawerNameAtCapture: String?,
         orderId: Long? = null,
+        siteLocalId: Int? = null,
     ) {
         hardwareScope.launch {
-            openAutomatically(reason, sessionId, sessionDrawerId, configuredDrawerNameAtCapture, orderId)
+            openAutomatically(reason, sessionId, sessionDrawerId, configuredDrawerNameAtCapture,
+                orderId, siteLocalId)
         }
     }
 
     private suspend fun requestOpen(
         reason: WooPosCashDrawerReason,
         boundSessionId: Long?,
+        siteLocalId: Int?,
         orderId: Long?,
     ): WooPosCashDrawerOpenResult {
         val correlationId = UUID.randomUUID()
-        val pending = PendingOpen(reason, boundSessionId, orderId, correlationId, System.currentTimeMillis())
+        val pending = PendingOpen(reason, boundSessionId, siteLocalId, orderId,
+            correlationId, System.currentTimeMillis())
         synchronized(sensorLock) { pendingOpen = pending }
         val result = try {
                 hardware.open()
@@ -160,7 +167,7 @@ class WooPosCashDrawerController @Inject constructor(
         if (result != WooPosCashDrawerOpenResult.OPEN_REQUESTED) {
             synchronized(sensorLock) { if (pendingOpen === pending) pendingOpen = null }
         }
-        if (boundSessionId != null) {
+        if (boundSessionId != null && siteLocalId != null) {
             try {
                 sessions.drawerEvent(
                     id = boundSessionId,
@@ -168,6 +175,7 @@ class WooPosCashDrawerController @Inject constructor(
                     reason = reason.apiValue,
                     orderId = orderId,
                     correlationId = correlationId,
+                    siteLocalId = siteLocalId,
                 )
             } catch (_: Exception) {
                 // Hardware outcome must not reverse an already confirmed cash transaction.
@@ -229,8 +237,10 @@ class WooPosCashDrawerController @Inject constructor(
 
     private suspend fun recordSensorEvent(pending: PendingOpen) {
         val sessionId = pending.sessionId ?: return
+        val siteLocalId = pending.siteLocalId ?: return
         try {
-            sessions.drawerEvent(sessionId, "opened", pending.reason.apiValue, pending.orderId, pending.correlationId)
+            sessions.drawerEvent(sessionId, "opened", pending.reason.apiValue,
+                pending.orderId, pending.correlationId, siteLocalId)
         } catch (_: Exception) {
             // The captured session can close before the sensor confirms opening.
         }
@@ -238,12 +248,13 @@ class WooPosCashDrawerController @Inject constructor(
 
     private suspend fun recordUnknownSensorEvent() {
         val signalAt = Instant.now()
-        val session = try { sessions.current() } catch (_: Exception) { null } ?: return
+        val captured = try { sessions.currentWithSite() } catch (_: Exception) { null } ?: return
+        val session = captured.session
         if (session.status != "open" || session.drawerId.isNullOrBlank()) return
         val createdAt = parseCreatedAt(session.dateCreatedGmt) ?: return
         if (createdAt.isAfter(signalAt)) return
         try {
-            sessions.drawerEvent(session.id, "opened", "unknown", null, null)
+            sessions.drawerEvent(session.id, "opened", "unknown", null, null, captured.siteLocalId)
         } catch (_: Exception) {
             // A session closed while the sensor event was being checked.
         }
@@ -262,6 +273,7 @@ class WooPosCashDrawerController @Inject constructor(
     private class PendingOpen(
         val reason: WooPosCashDrawerReason,
         val sessionId: Long?,
+        val siteLocalId: Int?,
         val orderId: Long?,
         val correlationId: UUID,
         val atMillis: Long,

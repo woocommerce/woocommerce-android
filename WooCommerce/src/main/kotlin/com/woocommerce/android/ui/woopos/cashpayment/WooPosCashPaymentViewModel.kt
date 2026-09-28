@@ -152,10 +152,11 @@ class WooPosCashPaymentViewModel @Inject constructor(
                 orderId, (stateBeforeCompleting.changeDue ?: BigDecimal.ZERO).toPlainString()
             )
             if (result.isSuccess) {
-                cashMovements.recordSale(cashSession?.id, orderId)
+                cashMovements.recordSale(cashSession, orderId)
                 cashDrawer.scheduleAutomaticOpen(
-                    WooPosCashDrawerReason.CASH_SALE, cashSession?.id,
-                    cashSession?.drawerId, drawerNameAtCapture, orderId
+                    WooPosCashDrawerReason.CASH_SALE, cashSession?.session?.id,
+                    cashSession?.session?.drawerId, drawerNameAtCapture, orderId,
+                    cashSession?.siteLocalId
                 )
                 trackPaymentSuccess()
                 _state.value = WooPosCashPaymentState.Complete
