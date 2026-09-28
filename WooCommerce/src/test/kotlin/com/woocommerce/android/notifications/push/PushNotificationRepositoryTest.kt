@@ -707,8 +707,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     @Test
     fun `given token exists for site and plugin is compatible, when isWooPushTokenRegisteredForSite called, then returns true`() =
         testBlocking {
-            val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
-            whenever(preferences[tokenKey]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
+            whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
 
             val result = sut.isWooPushTokenRegisteredForSite(SITE_ID)
 
@@ -729,8 +730,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     @Test
     fun `given empty token id exists for site, when isWooPushTokenRegisteredForSite called, then returns false`() =
         testBlocking {
-            val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
-            whenever(preferences[tokenKey]).thenReturn("")
+            whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("")
+            whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
+            whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
 
             val result = sut.isWooPushTokenRegisteredForSite(SITE_ID)
 
@@ -740,8 +742,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     @Test
     fun `given token stored but plugin incompatible, when isWooPushTokenRegisteredForSite called, then returns false`() =
         testBlocking {
-            val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
-            whenever(preferences[tokenKey]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
+            whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
             setupPluginCompatibility(isCompatible = false)
 
             val result = sut.isWooPushTokenRegisteredForSite(SITE_ID)
@@ -752,8 +755,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     @Test
     fun `given token stored but plugin version not cached, when isWooPushTokenRegisteredForSite called, then returns true`() =
         testBlocking {
-            val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
-            whenever(preferences[tokenKey]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
+            whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
             doReturn(CheckWooPluginPushNotificationsSupport.Result.Error)
                 .whenever(checkWooPluginPushNotificationsSupport).invoke(forceRefresh = false)
 
@@ -765,8 +769,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     @Test
     fun `given token stored and plugin compatible, when observeWooPushTokenRegisteredForSite, then emits true`() =
         testBlocking {
-            val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
-            whenever(preferences[tokenKey]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
+            whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
 
             val result = sut.observeWooPushTokenRegisteredForSite(SITE_ID).first()
 
@@ -776,8 +781,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     @Test
     fun `given token stored but plugin incompatible, when observeWooPushTokenRegisteredForSite, then emits false`() =
         testBlocking {
-            val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
-            whenever(preferences[tokenKey]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
+            whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
             setupPluginCompatibility(isCompatible = false)
 
             val result = sut.observeWooPushTokenRegisteredForSite(SITE_ID).first()
@@ -788,8 +794,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     @Test
     fun `given token stored but plugin version not cached, when observeWooPushTokenRegisteredForSite, then emits true`() =
         testBlocking {
-            val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
-            whenever(preferences[tokenKey]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
+            whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
             doReturn(CheckWooPluginPushNotificationsSupport.Result.Error)
                 .whenever(checkWooPluginPushNotificationsSupport).invoke(forceRefresh = false)
 
@@ -879,6 +886,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
             whenever(mutablePreferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
             whenever(mutablePreferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("old-token")
+            whenever(mutablePreferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
             whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
                 val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
                 testBlocking { transform(preferences) }
@@ -901,6 +909,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
             whenever(mutablePreferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
             whenever(mutablePreferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
+            whenever(mutablePreferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
             whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
                 val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
                 testBlocking { transform(preferences) }

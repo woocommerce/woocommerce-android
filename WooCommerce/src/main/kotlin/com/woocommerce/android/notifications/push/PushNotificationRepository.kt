@@ -15,8 +15,6 @@ import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.WooPushRegistrationData
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.clearPushRegistration
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.getPushRegistration
-import com.woocommerce.android.notifications.push.PushNotificationPreferences.getPushTokenId
-import com.woocommerce.android.notifications.push.PushNotificationPreferences.getPushTokenValue
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.getRefreshedAt
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.getRegisteredSiteIds
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.hasWpComPendingRestore
@@ -291,7 +289,7 @@ class PushNotificationRepository @Inject constructor(
 
     fun observeWooPushTokenRegisteredForSite(siteId: Long): Flow<Boolean> {
         return pushNotificationsDataStore.data.map { preferences ->
-            val isTokenStored = preferences.getPushTokenId(siteId).isNotNullOrEmpty()
+            val isTokenStored = preferences.getPushRegistration(siteId)?.tokenId.isNotNullOrEmpty()
             val supportResult = checkWooPluginPushNotificationsSupport(forceRefresh = false)
             // Treat errors as "compatible" to avoid hiding entry points during temporary failures
             val isPluginCompatible = when (supportResult) {
@@ -311,8 +309,8 @@ class PushNotificationRepository @Inject constructor(
 
         var cleared = false
         pushNotificationsDataStore.edit { preferences ->
-            val isRegistered = preferences.getPushTokenId(site.siteId).isNotNullOrEmpty()
-            if (isRegistered && preferences.getPushTokenValue(site.siteId) != currentToken) {
+            val registration = preferences.getPushRegistration(site.siteId)
+            if (registration != null && registration.token != currentToken) {
                 preferences.clearPushRegistration(site)
                 cleared = true
             }

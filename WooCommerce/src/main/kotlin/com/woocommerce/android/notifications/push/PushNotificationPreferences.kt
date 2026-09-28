@@ -9,8 +9,8 @@ import org.wordpress.android.fluxc.model.SiteModel
 
 internal object PushNotificationPreferences {
     fun Preferences.getPushRegistration(siteId: Long): WooPushRegistrationData? {
-        val tokenId = getPushTokenId(siteId) ?: return null
-        val token = getPushTokenValue(siteId) ?: return null
+        val tokenId = this[getPushTokenIdKeyForSite(siteId)] ?: return null
+        val token = this[getPushTokenValueKeyForSite(siteId)] ?: return null
         val locale = this[getPushLocaleKeyForSite(siteId)] ?: return null
         val deviceUuid = this[getPushDeviceUuidKeyForSite(siteId)]
         return WooPushRegistrationData(tokenId, token, locale, deviceUuid)
@@ -39,10 +39,6 @@ internal object PushNotificationPreferences {
                 ?.toLongOrNull()
         }
         .toSet()
-
-    fun Preferences.getPushTokenId(siteId: Long): String? = this[getPushTokenIdKeyForSite(siteId)]
-
-    fun Preferences.getPushTokenValue(siteId: Long): String? = this[getPushTokenValueKeyForSite(siteId)]
 
     fun Preferences.getRefreshedAt(localSiteId: Int): Long? = this[getRefreshedAtKeyForSite(localSiteId)]
 
