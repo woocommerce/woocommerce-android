@@ -104,7 +104,7 @@ fun WooPosCashManagementScreen(
             .then(if (historySelected) Modifier else Modifier.verticalScroll(rememberScrollState())),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)) {
             WooPosOutlinedButtonSmall(text = stringResource(R.string.woopos_cash_back_register), onClick = onBack)
-            CashText(stringResource(R.string.woopos_cash_management_title), style = WooPosTypography.Heading)
+            CashText(stringResource(R.string.woopos_cash_title), style = WooPosTypography.Heading)
             Row(horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) {
                 WooPosToggleButton(text = stringResource(R.string.woopos_cash_current), isSelected = !historySelected, onClick = { historySelected = false })
                 WooPosToggleButton(text = stringResource(R.string.woopos_cash_past), isSelected = historySelected, onClick = { historySelected = true; viewModel.loadHistory() })
