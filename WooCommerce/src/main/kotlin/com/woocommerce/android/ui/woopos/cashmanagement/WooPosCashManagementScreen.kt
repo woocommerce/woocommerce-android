@@ -2,9 +2,7 @@ package com.woocommerce.android.ui.woopos.cashmanagement
 
 import android.content.Context
 import android.content.Intent
-import com.woocommerce.android.R
-import androidx.core.content.FileProvider
-import java.io.File
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,20 +12,21 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -35,40 +34,46 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.core.content.FileProvider
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.cashdrawer.WooPosCashDrawerReason
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToggleButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToggleButton
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
-import kotlinx.coroutines.launch
-import androidx.compose.runtime.rememberCoroutineScope
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
+import java.io.File
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
+import kotlinx.coroutines.launch
 
 @Composable
 fun WooPosCashManagementScreen(
@@ -86,6 +91,11 @@ fun WooPosCashManagementScreen(
     var printError by remember { mutableStateOf<String?>(null) }
     var drawerMessage by remember { mutableStateOf<String?>(null) }
     val printerConnected by drawer.isConnected.collectAsState()
+    val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
+
+    BackHandler(enabled = isPhone && state.detailId != null && mode == CashDialog.NONE) {
+        viewModel.clearDetail()
+    }
 
     DisposableEffect(lifecycle, state.detailId, historySelected) {
         val observer = LifecycleEventObserver { _, event ->
@@ -99,10 +109,11 @@ fun WooPosCashManagementScreen(
         onDispose { lifecycle.lifecycle.removeObserver(observer) }
     }
 
-    Row(Modifier.fillMaxSize().padding(WooPosSpacing.Large.value)) {
-        Column(Modifier.width(WooPosSpacing.Large.value * 15).fillMaxHeight()
-            .then(if (historySelected) Modifier else Modifier.verticalScroll(rememberScrollState())),
-            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)) {
+    val listPane: @Composable (Modifier) -> Unit = { paneModifier ->
+        Column(
+            modifier = paneModifier.then(if (historySelected) Modifier else Modifier.verticalScroll(rememberScrollState())),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
+        ) {
             WooPosOutlinedButtonSmall(text = stringResource(R.string.woopos_cash_back_register), onClick = onBack)
             CashText(stringResource(R.string.woopos_cash_title), style = WooPosTypography.Heading)
             Row(horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) {
@@ -119,7 +130,10 @@ fun WooPosCashManagementScreen(
                 if (!state.loadingHistory && state.history.isEmpty() && state.historyError == null) {
                     CashText(stringResource(R.string.woopos_cash_no_past))
                 }
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) {
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)
+                ) {
                     items(state.history, key = { it.id }) { session ->
                         Column(Modifier.fillMaxWidth().clickable { viewModel.selectSession(session.id) }
                             .padding(WooPosSpacing.Small.value)) {
@@ -145,7 +159,11 @@ fun WooPosCashManagementScreen(
                 val session = state.current
                 if (session == null && !state.loadingCurrent && state.currentError == null) {
                     CashText(stringResource(R.string.woopos_cash_no_current))
-                    WooPosButton(text = stringResource(R.string.woopos_cash_start), onClick = { mode = CashDialog.START })
+                    WooPosButton(
+                        modifier = if (isPhone) Modifier.fillMaxWidth() else Modifier,
+                        text = stringResource(R.string.woopos_cash_start),
+                        onClick = { mode = CashDialog.START }
+                    )
                 } else if (session != null) {
                     CashText(stringResource(R.string.woopos_cash_session_number, session.id), style = WooPosTypography.BodyLarge)
                     CashText(stringResource(R.string.woopos_cash_opened_by, formatDate(session.dateCreatedGmt), session.openedByName))
@@ -199,103 +217,164 @@ fun WooPosCashManagementScreen(
                 }
             }
         }
-        Spacer(Modifier.width(WooPosSpacing.Large.value))
-        VerticalDivider(Modifier.fillMaxHeight())
-        Spacer(Modifier.width(WooPosSpacing.Large.value))
-        Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)) {
-            val detail = state.detail
-            if (state.detailId == null) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    WooPosText(
-                        text = stringResource(R.string.woopos_cash_select_session),
-                        style = WooPosTypography.BodyLarge,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(WooPosSpacing.XLarge.value),
-                    )
-                }
-            } else {
-                WooPosOutlinedButton(text = stringResource(R.string.woopos_cash_close_details), onClick = viewModel::clearDetail)
-                if (state.loadingDetail && detail == null) CashLoading(stringResource(R.string.woopos_cash_loading_detail))
-                state.detailError?.let {
-                    CashText(it, color = WooPosTheme.colors.alert)
-                    WooPosOutlinedButton(text = stringResource(R.string.woopos_cash_retry), onClick = viewModel::refreshDetail)
-                }
-                if (detail != null) {
-                    CashText(stringResource(R.string.woopos_cash_detail_title, detail.id), style = WooPosTypography.Heading)
-                    CashText(if (detail.status == "closed") stringResource(R.string.woopos_cash_closed)
-                        else stringResource(R.string.woopos_cash_open))
-                    CashText(stringResource(R.string.woopos_cash_opened_by, formatDate(detail.dateCreatedGmt), detail.openedByName))
-                    detail.drawerId?.let { CashText(stringResource(R.string.woopos_cash_session_drawer_name, it)) }
-                    detail.dateClosedGmt?.let {
-                        CashText(stringResource(R.string.woopos_cash_closed_by, formatDate(it), detail.closedByName.orEmpty()))
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value)) {
-                        Column { CashText(stringResource(R.string.woopos_cash_opening)); CashText(cash(detail.openingAmount, detail)) }
-                        Column { CashText(stringResource(R.string.woopos_cash_sales)); CashText(cash(detail.cashSalesTotal, detail)) }
-                        Column { CashText(stringResource(R.string.woopos_cash_refunds)); CashText(cash(detail.cashRefundsTotal, detail)) }
-                        Column { CashText(stringResource(R.string.woopos_cash_paid_in)); CashText(cash(detail.paidInTotal, detail)) }
-                        Column { CashText(stringResource(R.string.woopos_cash_paid_out)); CashText(cash(detail.paidOutTotal, detail)) }
-                    }
-                    CashText(stringResource(R.string.woopos_cash_expected_value, cash(detail.expectedAmount, detail)),
-                        style = WooPosTypography.BodyLarge)
-                    detail.countedAmount?.let { CashText(stringResource(R.string.woopos_cash_counted_value, cash(it, detail))) }
-                    detail.variance?.let { CashText(stringResource(R.string.woopos_cash_variance_value, cash(it, detail))) }
-                    detail.note?.takeIf { it.isNotBlank() }?.let {
-                        CashText(stringResource(R.string.woopos_cash_note_value, it))
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) {
-                        WooPosOutlinedButton(text = stringResource(R.string.woopos_cash_share_csv), onClick = {
-                            scope.launch {
-                                printError = runCatching {
-                                    shareSession(context, detail, viewModel.allMovements(detail.id))
-                                }.exceptionOrNull()?.message
-                            }
-                        })
+    }
+    val detailPane: @Composable (Modifier) -> Unit = { paneModifier ->
+        val detail = state.detail
+        if (state.detailId == null) {
+            Box(paneModifier, contentAlignment = Alignment.Center) {
+                WooPosText(
+                    text = stringResource(R.string.woopos_cash_select_session),
+                    style = WooPosTypography.BodyLarge,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(WooPosSpacing.XLarge.value),
+                )
+            }
+        } else {
+            LazyColumn(paneModifier, verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)) {
+                item {
+                    Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)) {
                         WooPosOutlinedButton(
-                            text = stringResource(R.string.woopos_cash_print_summary),
-                            onClick = {
-                                scope.launch {
-                                    printError = runCatching { viewModel.allMovements(detail.id) }
-                                        .mapCatching { drawer.printCloseOut(formatCloseOut(detail, it)).getOrThrow() }
-                                        .exceptionOrNull()?.message
-                                }
-                            },
-                            state = if (printerConnected) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED,
+                            text = stringResource(
+                                if (isPhone) R.string.woopos_cash_back_sessions else R.string.woopos_cash_close_details
+                            ),
+                            onClick = viewModel::clearDetail
                         )
-                        WooPosOutlinedButton(text = stringResource(R.string.woopos_cash_refresh), onClick = viewModel::refreshDetail)
-                    }
-                    printError?.let { CashText(it, color = WooPosTheme.colors.alert) }
-                    HorizontalDivider()
-                    CashText(stringResource(R.string.woopos_cash_activity), style = WooPosTypography.BodyLarge)
-                    if (!state.loadingDetail && state.movements.isEmpty()) CashText(stringResource(R.string.woopos_cash_no_activity))
-                    LazyColumn(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) {
-                        items(state.movements, key = { it.id }) { movement ->
-                            Row(Modifier.fillMaxWidth().clickable(enabled = movement.orderId != null) {
-                                movement.orderId?.let(onOrder)
-                            }.padding(WooPosSpacing.Small.value),
-                                horizontalArrangement = Arrangement.SpaceBetween) {
-                                Column {
-                                    CashText(movement.type.replace('_', ' ').replaceFirstChar(Char::uppercase))
-                                    CashText("${formatDate(movement.occurredAt)} · ${movement.createdByName}")
-                                    movement.reason?.takeIf { it.isNotBlank() }?.let { CashText(it) }
-                                    movement.orderId?.let {
-                                        CashText(stringResource(R.string.woopos_cash_order_link, it))
+                        if (state.loadingDetail && detail == null) CashLoading(stringResource(R.string.woopos_cash_loading_detail))
+                        state.detailError?.let {
+                            CashText(it, color = WooPosTheme.colors.alert)
+                            WooPosOutlinedButton(text = stringResource(R.string.woopos_cash_retry), onClick = viewModel::refreshDetail)
+                        }
+                        if (detail != null) {
+                            CashText(stringResource(R.string.woopos_cash_detail_title, detail.id), style = WooPosTypography.Heading)
+                            CashText(if (detail.status == "closed") stringResource(R.string.woopos_cash_closed)
+                                else stringResource(R.string.woopos_cash_open))
+                            CashText(
+                                stringResource(R.string.woopos_cash_opened_by, formatDate(detail.dateCreatedGmt), detail.openedByName)
+                            )
+                            detail.drawerId?.let { CashText(stringResource(R.string.woopos_cash_session_drawer_name, it)) }
+                            detail.dateClosedGmt?.let {
+                                CashText(stringResource(R.string.woopos_cash_closed_by, formatDate(it), detail.closedByName.orEmpty()))
+                            }
+                            val totals = listOf(
+                                stringResource(R.string.woopos_cash_opening) to cash(detail.openingAmount, detail),
+                                stringResource(R.string.woopos_cash_sales) to cash(detail.cashSalesTotal, detail),
+                                stringResource(R.string.woopos_cash_refunds) to cash(detail.cashRefundsTotal, detail),
+                                stringResource(R.string.woopos_cash_paid_in) to cash(detail.paidInTotal, detail),
+                                stringResource(R.string.woopos_cash_paid_out) to cash(detail.paidOutTotal, detail),
+                            )
+                            if (isPhone) {
+                                Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) {
+                                    totals.forEach { (label, value) ->
+                                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                            CashText(label, modifier = Modifier.weight(1f))
+                                            CashText(value)
+                                        }
                                     }
                                 }
-                                CashText(cash(movement.amount, detail))
+                            } else {
+                                Row(horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value)) {
+                                    totals.forEach { (label, value) ->
+                                        Column { CashText(label); CashText(value) }
+                                    }
+                                }
                             }
-                            HorizontalDivider()
+                            CashText(stringResource(R.string.woopos_cash_expected_value, cash(detail.expectedAmount, detail)),
+                                style = WooPosTypography.BodyLarge)
+                            detail.countedAmount?.let { CashText(stringResource(R.string.woopos_cash_counted_value, cash(it, detail))) }
+                            detail.variance?.let { CashText(stringResource(R.string.woopos_cash_variance_value, cash(it, detail))) }
+                            detail.note?.takeIf { it.isNotBlank() }?.let {
+                                CashText(stringResource(R.string.woopos_cash_note_value, it))
+                            }
+                            @Composable fun DetailActions() {
+                                WooPosOutlinedButton(
+                                    modifier = if (isPhone) Modifier.fillMaxWidth() else Modifier,
+                                    text = stringResource(R.string.woopos_cash_share_csv),
+                                    onClick = {
+                                        scope.launch {
+                                            printError = runCatching {
+                                                shareSession(context, detail, viewModel.allMovements(detail.id))
+                                            }.exceptionOrNull()?.message
+                                        }
+                                    }
+                                )
+                                WooPosOutlinedButton(
+                                    modifier = if (isPhone) Modifier.fillMaxWidth() else Modifier,
+                                    text = stringResource(R.string.woopos_cash_print_summary),
+                                    onClick = {
+                                        scope.launch {
+                                            printError = runCatching { viewModel.allMovements(detail.id) }
+                                                .mapCatching { drawer.printCloseOut(formatCloseOut(detail, it)).getOrThrow() }
+                                                .exceptionOrNull()?.message
+                                        }
+                                    },
+                                    state = if (printerConnected) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED,
+                                )
+                                WooPosOutlinedButton(
+                                    modifier = if (isPhone) Modifier.fillMaxWidth() else Modifier,
+                                    text = stringResource(R.string.woopos_cash_refresh),
+                                    onClick = viewModel::refreshDetail
+                                )
+                            }
+                            if (isPhone) {
+                                Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) { DetailActions() }
+                            } else {
+                                Row(horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) { DetailActions() }
+                            }
+                            printError?.let { CashText(it, color = WooPosTheme.colors.alert) }
                         }
-                        if (state.hasMoreMovements) item {
-                            WooPosOutlinedButton(
-                                text = stringResource(R.string.woopos_cash_load_more_activity),
-                                state = if (state.loadingMovements) WooPosButtonState.LOADING else WooPosButtonState.ENABLED,
-                                onClick = viewModel::loadMoreMovements,
-                            )
+                    }
+                }
+                if (detail != null) {
+                    item { HorizontalDivider() }
+                    item {
+                        CashText(stringResource(R.string.woopos_cash_activity), style = WooPosTypography.BodyLarge)
+                    }
+                    if (!state.loadingDetail && state.movements.isEmpty()) {
+                        item { CashText(stringResource(R.string.woopos_cash_no_activity)) }
+                    }
+                    items(state.movements, key = { it.id }) { movement ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth().clickable(enabled = movement.orderId != null) {
+                                movement.orderId?.let(onOrder)
+                            }.padding(WooPosSpacing.Small.value),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(Modifier.weight(1f)) {
+                                CashText(movement.type.replace('_', ' ').replaceFirstChar(Char::uppercase))
+                                CashText("${formatDate(movement.occurredAt)} · ${movement.createdByName}")
+                                movement.reason?.takeIf { it.isNotBlank() }?.let { CashText(it) }
+                                movement.orderId?.let {
+                                    CashText(stringResource(R.string.woopos_cash_order_link, it))
+                                }
+                            }
+                            CashText(cash(movement.amount, detail))
                         }
+                        HorizontalDivider()
+                    }
+                    if (state.hasMoreMovements) item {
+                        WooPosOutlinedButton(
+                            text = stringResource(R.string.woopos_cash_load_more_activity),
+                            state = if (state.loadingMovements) WooPosButtonState.LOADING else WooPosButtonState.ENABLED,
+                            onClick = viewModel::loadMoreMovements,
+                        )
                     }
                 }
             }
+        }
+    }
+
+    val contentModifier = Modifier.fillMaxSize()
+        .then(if (isPhone) Modifier.statusBarsPadding().navigationBarsPadding() else Modifier)
+        .padding(WooPosSpacing.Large.value)
+    if (isPhone) {
+        if (state.detailId == null) listPane(contentModifier) else detailPane(contentModifier)
+    } else {
+        Row(contentModifier) {
+            listPane(Modifier.width(WooPosSpacing.Large.value * 15).fillMaxHeight())
+            Spacer(Modifier.width(WooPosSpacing.Large.value))
+            VerticalDivider(Modifier.fillMaxHeight())
+            Spacer(Modifier.width(WooPosSpacing.Large.value))
+            detailPane(Modifier.weight(1f).fillMaxHeight())
         }
     }
 
@@ -365,83 +444,102 @@ private fun CashEntryDialog(
         CashDialog.CLOSE -> stringResource(R.string.woopos_cash_count_close_session)
         CashDialog.NONE -> ""
     }
+    val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
+    val summary: @Composable () -> Unit = {
+        Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)) {
+            if (mode == CashDialog.START) {
+                CashText(stringResource(R.string.woopos_cash_count_start_hint))
+                if (precision == null && state.startPrecisionError == null) {
+                    CashLoading(stringResource(R.string.woopos_cash_loading_currency_settings))
+                }
+                state.startPrecisionError?.let {
+                    CashText(it, color = WooPosTheme.colors.alert)
+                    WooPosOutlinedButton(text = stringResource(R.string.woopos_cash_retry),
+                        onClick = onRetryStartPrecision)
+                }
+                WooPosOutlinedButton(
+                    text = stringResource(R.string.woopos_cash_open_to_count),
+                    state = if (canOpenBeforeStart) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED,
+                    onClick = onOpenBeforeStart,
+                )
+                if (!canOpenBeforeStart) CashText(stringResource(R.string.woopos_cash_no_printer))
+            }
+            if (session != null) {
+                CashText(stringResource(R.string.woopos_cash_session_number, session.id), style = WooPosTypography.BodyLarge)
+                session.drawerId?.let { CashText(stringResource(R.string.woopos_cash_session_drawer_name, it)) }
+                CashText(stringResource(R.string.woopos_cash_opening_value, cash(session.openingAmount, session)))
+                CashText(stringResource(R.string.woopos_cash_sales_value, cash(session.cashSalesTotal, session)))
+                CashText(stringResource(R.string.woopos_cash_refunds_value, cash(session.cashRefundsTotal, session)))
+                CashText(stringResource(R.string.woopos_cash_paid_in_value, cash(session.paidInTotal, session)))
+                CashText(stringResource(R.string.woopos_cash_paid_out_value, cash(session.paidOutTotal, session)))
+                CashText(stringResource(R.string.woopos_cash_expected_value, cash(session.expectedAmount, session)),
+                    style = WooPosTypography.BodyLarge)
+            }
+        }
+    }
+    val fields: @Composable () -> Unit = {
+        Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)) {
+            OutlinedTextField(
+                value = amountText,
+                onValueChange = { amountText = it },
+                label = { CashText(if (mode == CashDialog.CLOSE)
+                    stringResource(R.string.woopos_cash_counted_cash)
+                    else stringResource(R.string.woopos_cash_amount)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                modifier = Modifier.focusRequester(focus).fillMaxWidth(),
+                singleLine = true,
+            )
+            if (amountText.isNotEmpty() && precision != null && !validAmount) CashText(
+                if (mode == CashDialog.PAY_OUT && amount != null && session != null &&
+                    amount > session.expectedCash
+                ) stringResource(R.string.woopos_cash_payout_limit)
+                else stringResource(R.string.woopos_cash_amount_invalid, precision),
+                color = WooPosTheme.colors.alert
+            )
+            if (mode != CashDialog.START) OutlinedTextField(
+                value = note,
+                onValueChange = { note = it },
+                label = { CashText(if (mode == CashDialog.CLOSE)
+                    stringResource(R.string.woopos_cash_note_optional)
+                    else stringResource(R.string.woopos_cash_reason_optional)) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+            if (session != null) variance?.let {
+                CashText(stringResource(R.string.woopos_cash_variance_value, cash(it.toPlainString(), session)),
+                    style = WooPosTypography.BodyLarge)
+            }
+            if (state.recountRequired) CashText(
+                stringResource(R.string.woopos_cash_recount_required),
+                color = WooPosTheme.colors.alert
+            )
+            state.operationError?.let { CashText(it, color = WooPosTheme.colors.alert) }
+        }
+    }
     LaunchedEffect(mode) { focus.requestFocus() }
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             Column(
-                Modifier.fillMaxSize().imePadding().padding(WooPosSpacing.Large.value),
+                Modifier.fillMaxSize()
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+                    .imePadding()
+                    .padding(WooPosSpacing.Large.value),
                 verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
             ) {
                 WooPosOutlinedButton(text = stringResource(R.string.woopos_cash_back_management), onClick = onDismiss)
                 CashText(title, style = WooPosTypography.Heading)
-                Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value)) {
-                    Column(Modifier.weight(1f).verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)) {
-                        if (mode == CashDialog.START) {
-                            CashText(stringResource(R.string.woopos_cash_count_start_hint))
-                            if (precision == null && state.startPrecisionError == null) {
-                                CashLoading(stringResource(R.string.woopos_cash_loading_currency_settings))
-                            }
-                            state.startPrecisionError?.let {
-                                CashText(it, color = WooPosTheme.colors.alert)
-                                WooPosOutlinedButton(text = stringResource(R.string.woopos_cash_retry),
-                                    onClick = onRetryStartPrecision)
-                            }
-                            WooPosOutlinedButton(
-                                text = stringResource(R.string.woopos_cash_open_to_count),
-                                state = if (canOpenBeforeStart) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED,
-                                onClick = onOpenBeforeStart,
-                            )
-                            if (!canOpenBeforeStart) CashText(stringResource(R.string.woopos_cash_no_printer))
-                        }
-                        if (session != null) {
-                            CashText(stringResource(R.string.woopos_cash_session_number, session.id), style = WooPosTypography.BodyLarge)
-                            session.drawerId?.let { CashText(stringResource(R.string.woopos_cash_session_drawer_name, it)) }
-                            CashText(stringResource(R.string.woopos_cash_opening_value, cash(session.openingAmount, session)))
-                            CashText(stringResource(R.string.woopos_cash_sales_value, cash(session.cashSalesTotal, session)))
-                            CashText(stringResource(R.string.woopos_cash_refunds_value, cash(session.cashRefundsTotal, session)))
-                            CashText(stringResource(R.string.woopos_cash_paid_in_value, cash(session.paidInTotal, session)))
-                            CashText(stringResource(R.string.woopos_cash_paid_out_value, cash(session.paidOutTotal, session)))
-                            CashText(stringResource(R.string.woopos_cash_expected_value, cash(session.expectedAmount, session)),
-                                style = WooPosTypography.BodyLarge)
-                        }
+                if (isPhone) {
+                    Column(
+                        Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
+                    ) {
+                        summary()
+                        fields()
                     }
-                    Column(Modifier.weight(1f).verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)) {
-                        OutlinedTextField(
-                            value = amountText,
-                            onValueChange = { amountText = it },
-                            label = { CashText(if (mode == CashDialog.CLOSE)
-                                stringResource(R.string.woopos_cash_counted_cash)
-                                else stringResource(R.string.woopos_cash_amount)) },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                            modifier = Modifier.focusRequester(focus).fillMaxWidth(),
-                            singleLine = true,
-                        )
-                        if (amountText.isNotEmpty() && precision != null && !validAmount) CashText(
-                            if (mode == CashDialog.PAY_OUT && amount != null && session != null &&
-                                amount > session.expectedCash
-                            ) stringResource(R.string.woopos_cash_payout_limit)
-                            else stringResource(R.string.woopos_cash_amount_invalid, precision),
-                            color = WooPosTheme.colors.alert
-                        )
-                        if (mode != CashDialog.START) OutlinedTextField(
-                            value = note,
-                            onValueChange = { note = it },
-                            label = { CashText(if (mode == CashDialog.CLOSE)
-                                stringResource(R.string.woopos_cash_note_optional)
-                                else stringResource(R.string.woopos_cash_reason_optional)) },
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                        if (session != null) variance?.let {
-                            CashText(stringResource(R.string.woopos_cash_variance_value, cash(it.toPlainString(), session)),
-                                style = WooPosTypography.BodyLarge)
-                        }
-                        if (state.recountRequired) CashText(
-                            stringResource(R.string.woopos_cash_recount_required),
-                            color = WooPosTheme.colors.alert
-                        )
-                        state.operationError?.let { CashText(it, color = WooPosTheme.colors.alert) }
+                } else {
+                    Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value)) {
+                        Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) { summary() }
+                        Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) { fields() }
                     }
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) {

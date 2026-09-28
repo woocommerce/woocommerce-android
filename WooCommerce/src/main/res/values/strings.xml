@@ -4936,6 +4936,7 @@
     <string name="woopos_cash_count_close">Count and close</string>
     <string name="woopos_cash_select_session">Select a session to view its activity</string>
     <string name="woopos_cash_close_details">Close details</string>
+    <string name="woopos_cash_back_sessions">Back to cash sessions</string>
     <string name="woopos_cash_loading_detail">Loading session details…</string>
     <string name="woopos_cash_closed">Closed</string>
     <string name="woopos_cash_open">Open</string>
