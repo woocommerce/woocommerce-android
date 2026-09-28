@@ -145,6 +145,52 @@ class WooPosCashManagementViewModelTest {
         assertThat(model.state.value.current?.id).isEqualTo(7L)
     }
 
+    @Test fun `start explains when another session already uses the drawer`() = runTest {
+        whenever(repository.current()).thenReturn(null)
+        whenever(repository.start(eq(BigDecimal("25")), anyOrNull(), any())).thenAnswer {
+            throw CashSessionException("drawer in use", "woocommerce_rest_cash_drawer_already_open")
+        }
+        whenever(resources.getString(R.string.woopos_cash_error_drawer_already_open)).thenReturn("Drawer already in use")
+        val model = model()
+        advanceUntilIdle()
+
+        model.start(BigDecimal("25"), "Front till") { }
+        advanceUntilIdle()
+
+        assertThat(model.state.value.operationError).isEqualTo("Drawer already in use")
+    }
+
+    @Test fun `server rejected pay out refreshes expected cash and explains the new balance`() = runTest {
+        whenever(repository.current()).thenReturn(session(), session().copy(expectedAmount = "40.00"))
+        whenever(repository.adjust(eq(7), eq("paid_out"), any(), any(), any(), any())).thenAnswer {
+            throw CashSessionException("insufficient cash", "woocommerce_rest_cash_insufficient_cash")
+        }
+        whenever(resources.getString(R.string.woopos_cash_error_insufficient_cash)).thenReturn("Review updated balance")
+        val model = model()
+        advanceUntilIdle()
+
+        model.adjust("paid_out", BigDecimal("90"), "Supplier") { _, _, _ -> }
+        advanceUntilIdle()
+
+        assertThat(model.state.value.current?.expectedAmount).isEqualTo("40.00")
+        assertThat(model.state.value.operationError).isEqualTo("Review updated balance")
+    }
+
+    @Test fun `close explains when another cashier owns the session`() = runTest {
+        whenever(repository.current()).thenReturn(session())
+        whenever(repository.close(eq(7), eq(1), any(), anyOrNull(), any())).thenAnswer {
+            throw CashSessionException("not owner", "woocommerce_rest_cash_session_not_owner")
+        }
+        whenever(resources.getString(R.string.woopos_cash_error_not_owner)).thenReturn("Only opener or manager can change it")
+        val model = model()
+        advanceUntilIdle()
+
+        model.close(BigDecimal("100"), null) { }
+        advanceUntilIdle()
+
+        assertThat(model.state.value.operationError).isEqualTo("Only opener or manager can change it")
+    }
+
     @Test fun `start uses zero-decimal store precision`() = runTest {
         whenever(repository.current()).thenReturn(null)
         whenever(currencyFormatting()).thenReturn(

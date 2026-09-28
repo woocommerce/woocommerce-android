@@ -218,10 +218,15 @@ class WooPosCashManagementViewModel @Inject constructor(
         }
         save(R.string.woopos_cash_error_adjust) {
             val siteLocalId = repository.selectedSiteLocalId
-            repository.adjust(
-                session.id, type, amount, reason.trim().ifBlank { if (type == "paid_in") "Paid in" else "Paid out" },
-                requireNotNull(adjustmentRequestId), siteLocalId
-            )
+            try {
+                repository.adjust(
+                    session.id, type, amount, reason.trim().ifBlank { if (type == "paid_in") "Paid in" else "Paid out" },
+                    requireNotNull(adjustmentRequestId), siteLocalId
+                )
+            } catch (error: CashSessionException) {
+                if (error.code == "woocommerce_rest_cash_insufficient_cash") refresh()
+                throw error
+            }
             adjustmentKey = null
             adjustmentRequestId = null
             onSuccess(session.id, session.drawerId, siteLocalId)
@@ -320,12 +325,15 @@ class WooPosCashManagementViewModel @Inject constructor(
             is CashSessionUnsupportedException -> R.string.woopos_cash_error_unsupported
             is CashSessionException -> when (error.code) {
                 "woocommerce_rest_cash_session_already_open" -> R.string.woopos_cash_error_already_open
+                "woocommerce_rest_cash_drawer_already_open" -> R.string.woopos_cash_error_drawer_already_open
                 "woocommerce_rest_cash_session_closed" -> R.string.woopos_cash_error_session_closed
                 "woocommerce_rest_cash_session_revision_conflict" -> R.string.woopos_cash_error_recount
                 "woocommerce_rest_cash_request_in_progress" -> R.string.woopos_cash_error_processing
+                "woocommerce_rest_cash_insufficient_cash" -> R.string.woopos_cash_error_insufficient_cash
                 "woocommerce_rest_cash_currency_mismatch", "woocommerce_rest_cash_precision_mismatch" ->
                     R.string.woopos_cash_error_currency
                 "woocommerce_rest_cash_invalid_amount", "rest_invalid_param" -> R.string.woopos_cash_error_amount
+                "woocommerce_rest_cash_session_not_owner" -> R.string.woopos_cash_error_not_owner
                 "rest_forbidden", "woocommerce_rest_cannot_view" -> R.string.woopos_cash_error_permission
                 else -> fallback
             }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="woopos_cash_error_drawer_already_open">A cash session is already open for this drawer. Close it before starting another.</string>
+    <string name="woopos_cash_error_insufficient_cash">The expected cash changed. Review the updated balance before paying out.</string>
+    <string name="woopos_cash_error_not_owner">Only the cashier who opened this session or a shop manager can change it.</string>
+</resources>
