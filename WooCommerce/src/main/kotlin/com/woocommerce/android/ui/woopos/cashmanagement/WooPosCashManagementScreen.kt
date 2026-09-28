@@ -34,6 +34,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -76,8 +77,8 @@ fun WooPosCashManagementScreen(
     val lifecycle = LocalLifecycleOwner.current
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var mode by remember { mutableStateOf(CashDialog.NONE) }
-    var historySelected by remember { mutableStateOf(false) }
+    var mode by rememberSaveable { mutableStateOf(CashDialog.NONE) }
+    var historySelected by rememberSaveable { mutableStateOf(false) }
     var printError by remember { mutableStateOf<String?>(null) }
     var drawerMessage by remember { mutableStateOf<String?>(null) }
     val printerConnected by drawer.isConnected.collectAsState()
@@ -330,8 +331,8 @@ private fun CashEntryDialog(
     canOpenBeforeStart: Boolean,
     onOpenBeforeStart: () -> Unit,
 ) {
-    var amountText by remember(mode) { mutableStateOf("") }
-    var note by remember(mode) { mutableStateOf("") }
+    var amountText by rememberSaveable(mode) { mutableStateOf("") }
+    var note by rememberSaveable(mode) { mutableStateOf("") }
     val focus = remember { FocusRequester() }
     val session = state.current
     val amount = amountText.replace(',', '.').toBigDecimalOrNull()
