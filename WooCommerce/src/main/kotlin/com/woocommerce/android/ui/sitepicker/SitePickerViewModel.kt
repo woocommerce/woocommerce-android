@@ -376,14 +376,6 @@ class SitePickerViewModel @Inject constructor(
      */
     private fun showAccountMismatchScreen(url: String) = launch {
         sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = true, isPrimaryBtnVisible = false)
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
-            mapOf(
-                AnalyticsTracker.KEY_URL to url,
-                AnalyticsTracker.KEY_HAS_CONNECTED_STORES to sitePickerViewState.hasConnectedStores
-            )
-        )
-        trackLoginEvent(currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT)
         repository.fetchSiteInfo(url).fold(
             onSuccess = {
                 val primaryButton = when {
@@ -392,6 +384,17 @@ class SitePickerViewModel @Inject constructor(
                 }
                 if (event.value !is NavigateToAccountMismatchScreen) {
                     // The check is to avoid triggering the navigation multiple times
+                    // Tracked here rather than before the fetch, so the event describes a screen
+                    // the merchant actually saw and fires once: onSitesLoaded runs twice (cache,
+                    // then API) and each pass re-enters processLoginSiteAddress.
+                    trackLoginEvent(
+                        currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT,
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_URL to url,
+                            AnalyticsTracker.KEY_HAS_CONNECTED_STORES to
+                                sitePickerViewState.hasConnectedStores.toString()
+                        )
+                    )
                     triggerEvent(
                         NavigateToAccountMismatchScreen(
                             primaryButton = primaryButton,
@@ -731,13 +734,16 @@ class SitePickerViewModel @Inject constructor(
     private fun trackLoginEvent(
         currentFlow: UnifiedLoginTracker.Flow? = null,
         currentStep: UnifiedLoginTracker.Step? = null,
-        clickEvent: UnifiedLoginTracker.Click? = null
+        clickEvent: UnifiedLoginTracker.Click? = null,
+        properties: Map<String, String> = emptyMap()
     ) {
         if (navArgs.openedFromLogin) {
-            if (currentFlow != null && currentStep != null) {
-                unifiedLoginTracker.track(currentFlow, currentStep)
-            } else if (currentStep != null) {
-                unifiedLoginTracker.track(step = currentStep)
+            if (currentStep != null) {
+                if (currentFlow != null) {
+                    unifiedLoginTracker.track(currentFlow, currentStep, properties)
+                } else {
+                    unifiedLoginTracker.track(step = currentStep, properties = properties)
+                }
             }
             if (clickEvent != null) {
                 unifiedLoginTracker.trackClick(clickEvent)

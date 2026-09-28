@@ -50,12 +50,17 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.atMost
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -567,11 +572,14 @@ class SitePickerViewModelTest : BaseUnitTest() {
             val url = SitePickerTestUtils.loginSiteAddress
 
             verify(repository, atLeastOnce()).getSiteBySiteUrl(any())
-            verify(analyticsTrackerWrapper, atLeastOnce()).track(
-                AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
-                mapOf(
-                    AnalyticsTracker.KEY_URL to url,
-                    AnalyticsTracker.KEY_HAS_CONNECTED_STORES to true
+            verify(unifiedLoginTracker, times(1)).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT),
+                properties = eq(
+                    mapOf(
+                        AnalyticsTracker.KEY_URL to url,
+                        AnalyticsTracker.KEY_HAS_CONNECTED_STORES to "true"
+                    )
                 )
             )
 
@@ -593,6 +601,83 @@ class SitePickerViewModelTest : BaseUnitTest() {
             verify(appPrefsWrapper, atLeastOnce()).removeLoginSiteAddress()
             verify(repository, atMost(2)).fetchSiteInfo(any())
             assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.site_picker_error))
+        }
+
+    @Test
+    fun `given the site address does not match the user account, when site info fetch fails, then the mismatch step is not tracked`() =
+        testBlocking {
+            // GIVEN
+            givenThatUserLoggedInFromEnteringSiteAddress(null)
+            whenever(repository.fetchSiteInfo(any())).thenReturn(Result.failure(Exception()))
+            whenSitesAreFetched()
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN the merchant never saw the mismatch screen, so nothing is reported for it
+            verify(unifiedLoginTracker, never()).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT),
+                properties = any()
+            )
+        }
+
+    @Test
+    fun `given the picker was not opened from login, when the account does not match, then the mismatch step is not tracked`() =
+        testBlocking {
+            // GIVEN
+            givenTheScreenIsFromLogin(false)
+            whenever(appPrefsWrapper.getLoginSiteAddress()).thenReturn(SitePickerTestUtils.loginSiteAddress)
+            whenever(repository.getSiteBySiteUrl(any())).thenReturn(null)
+            whenever(repository.fetchSiteInfo(any())).thenReturn(
+                Result.success(
+                    ConnectSiteInfoPayload(
+                        url = SitePickerTestUtils.loginSiteAddress,
+                        isWordPress = true,
+                        isWPCom = false
+                    )
+                )
+            )
+            whenSitesAreFetched()
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN unified login steps only describe a login session
+            verify(unifiedLoginTracker, never()).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT),
+                properties = any()
+            )
+        }
+
+    @Test
+    fun `given sites load from cache, when the API response arrives, then the mismatch step is reported once`() =
+        testBlocking {
+            // GIVEN onSitesLoaded runs twice - once from cache, once from the API response
+            givenThatUserLoggedInFromEnteringSiteAddress(null)
+            whenever(repository.fetchSiteInfo(any())).thenReturn(
+                Result.success(
+                    ConnectSiteInfoPayload(
+                        url = SitePickerTestUtils.loginSiteAddress,
+                        isWordPress = true,
+                        isWPCom = false
+                    )
+                )
+            )
+            whenSitesAreFetched()
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN both passes re-enter processLoginSiteAddress, but the navigation guard means
+            // the merchant sees one screen and we report one step.
+            verify(repository, atLeast(2)).getSiteBySiteUrl(any())
+            verify(unifiedLoginTracker, times(1)).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT),
+                properties = any()
+            )
         }
 
     @Test
