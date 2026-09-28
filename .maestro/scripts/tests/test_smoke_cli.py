@@ -32,13 +32,14 @@ class SmokeCliContractTest(unittest.TestCase):
         )
 
         self.assertIn('id: "android:id/autofill_dialog_no"', dismissal)
+        self.assertIn('id: "android:id/autofill_save_no"', dismissal)
         self.assertNotIn("point:", dismissal)
         references = 0
         for path in affected_files:
             source = path.read_text(encoding="utf-8")
             self.assertNotIn('"No thanks"', source)
             references += source.count("dismiss_google_password_manager.yaml")
-        self.assertEqual(references, 9)
+        self.assertEqual(references, 11)
 
     def test_not_wp_site_flow_verifies_recovery_preserves_the_entered_address(self) -> None:
         source = LOGIN_NOT_WP_SITE_FLOW.read_text(encoding="utf-8")
