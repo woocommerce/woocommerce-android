@@ -7,6 +7,7 @@ import androidx.core.content.FileProvider
 import java.io.File
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,12 +38,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -52,6 +55,7 @@ import com.woocommerce.android.ui.woopos.cashdrawer.WooPosCashDrawerReason
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToggleButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
@@ -99,7 +103,7 @@ fun WooPosCashManagementScreen(
         Column(Modifier.width(WooPosSpacing.Large.value * 15).fillMaxHeight()
             .then(if (historySelected) Modifier else Modifier.verticalScroll(rememberScrollState())),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)) {
-            WooPosOutlinedButton(text = stringResource(R.string.woopos_cash_back_register), onClick = onBack)
+            WooPosOutlinedButtonSmall(text = stringResource(R.string.woopos_cash_back_register), onClick = onBack)
             CashText(stringResource(R.string.woopos_cash_management_title), style = WooPosTypography.Heading)
             Row(horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) {
                 WooPosToggleButton(text = stringResource(R.string.woopos_cash_current), isSelected = !historySelected, onClick = { historySelected = false })
@@ -201,7 +205,14 @@ fun WooPosCashManagementScreen(
         Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)) {
             val detail = state.detail
             if (state.detailId == null) {
-                CashText(stringResource(R.string.woopos_cash_select_session), style = WooPosTypography.BodyLarge)
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    WooPosText(
+                        text = stringResource(R.string.woopos_cash_select_session),
+                        style = WooPosTypography.BodyLarge,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(WooPosSpacing.XLarge.value),
+                    )
+                }
             } else {
                 WooPosOutlinedButton(text = stringResource(R.string.woopos_cash_close_details), onClick = viewModel::clearDetail)
                 if (state.loadingDetail && detail == null) CashLoading(stringResource(R.string.woopos_cash_loading_detail))
