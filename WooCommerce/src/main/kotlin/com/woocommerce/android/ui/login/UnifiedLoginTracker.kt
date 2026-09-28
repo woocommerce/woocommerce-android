@@ -34,7 +34,8 @@ class UnifiedLoginTracker
     @JvmOverloads
     fun track(
         flow: Flow? = currentFlow,
-        step: Step
+        step: Step,
+        properties: Map<String, String> = emptyMap()
     ) {
         currentFlow = flow
         if (step == Step.HELP) {
@@ -45,7 +46,7 @@ class UnifiedLoginTracker
         if (currentFlow != null && currentStep != null) {
             analyticsTracker.track(
                 stat = AnalyticsEvent.UNIFIED_LOGIN_STEP,
-                properties = buildDefaultParams()
+                properties = buildDefaultParams().apply { putAll(properties) }
             )
         } else {
             handleMissingFlowOrStep("step: ${step.value}")
