@@ -1,5 +1,6 @@
 [versions]
 agp = '9.4.1'
+stario10 = '1.14.0'
 android-desugar = '2.1.5'
 android-security-lint = '1.0.4'
 androidx-activity = '1.13.0'
@@ -116,6 +117,7 @@ wordpress-utils = '3.15.0'
 zendesk = '5.6.0'
 
 [libraries]
+starmicronics-stario10 = { module = "com.starmicronics:stario10", version.ref = "stario10" }
 android-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "android-desugar" }
 android-security-lint = { group = "com.android.security.lint", name = "lint", version.ref = "android-security-lint" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity" }

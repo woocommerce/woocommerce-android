@@ -265,6 +265,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.starmicronics.stario10)
     if (isComposeScreenshotTestsEnabled) {
         screenshotTestImplementation(libs.androidx.compose.ui.tooling.main)
         screenshotTestImplementation(libs.google.screenshot.validation.api)
