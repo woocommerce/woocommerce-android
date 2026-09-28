@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatus
 import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
 import com.woocommerce.android.ui.woopos.cardreader.WooPosIsTapToPayAvailable
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPaymentFlow
+import com.woocommerce.android.ui.woopos.cashdrawer.WooPosCashDrawerController
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
@@ -93,6 +94,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val builtInReaderConnector: WooPosBuiltInReaderConnector,
     private val remoteReaderPaymentFlow: WooPosRemoteReaderPaymentFlow,
     private val effectiveReaderStatusProvider: WooPosEffectiveReaderStatusProvider,
+    private val cashDrawer: WooPosCashDrawerController,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -161,8 +163,22 @@ class WooPosTotalsViewModel @Inject constructor(
 
     init {
         listenUpEvents()
+        observeAutomaticDrawerOpenFailure()
         observeCardReaderStatus()
         trackTapToPayUnavailableReasonIfNeeded()
+    }
+
+    private fun observeAutomaticDrawerOpenFailure() {
+        viewModelScope.launch {
+            cashDrawer.automaticOpenFailure.collect { failedOrderId ->
+                val success = uiState.value as? WooPosTotalsViewState.PaymentSuccess ?: return@collect
+                if (failedOrderId != null && success.cashOrderId == failedOrderId) {
+                    uiState.value = success.copy(
+                        drawerErrorMessage = resourceProvider.getString(R.string.woopos_cash_drawer_open_failed_after_payment)
+                    )
+                }
+            }
+        }
     }
 
     private fun trackTapToPayUnavailableReasonIfNeeded() {
@@ -1151,7 +1167,15 @@ class WooPosTotalsViewModel @Inject constructor(
                 orderTotalText = orderTotalText,
                 changeDueText = changeDue
                     ?.takeIf { paymentMethod == PaymentMethod.CASH && it > BigDecimal.ZERO }
-                    ?.let { resourceProvider.getString(R.string.woopos_cash_payment_change_due, priceFormat(it)) }
+                    ?.let { resourceProvider.getString(R.string.woopos_cash_payment_change_due, priceFormat(it)) },
+                cashOrderId = dataState.orderId.takeIf { paymentMethod == PaymentMethod.CASH },
+                drawerErrorMessage = if (paymentMethod == PaymentMethod.CASH &&
+                    cashDrawer.automaticOpenFailure.value == dataState.orderId
+                ) {
+                    resourceProvider.getString(R.string.woopos_cash_drawer_open_failed_after_payment)
+                } else {
+                    null
+                }
             )
         }
     }

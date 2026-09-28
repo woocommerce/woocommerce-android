@@ -4980,6 +4980,7 @@
     <string name="woopos_cash_printer_disconnected">Receipt printer is not connected</string>
     <string name="woopos_cash_drawer_no_session">No cash session is open</string>
     <string name="woopos_cash_drawer_failed">Could not open the cash drawer</string>
+    <string name="woopos_cash_drawer_open_failed_after_payment">Payment complete. Could not open the cash drawer. Open it manually.</string>
     <string name="woopos_cash_detail_title">Cash session #%1$d</string>
     <string name="woopos_cash_closed_by">Closed %1$s by %2$s</string>
     <string name="woopos_cash_counted_value">Counted %1$s</string>

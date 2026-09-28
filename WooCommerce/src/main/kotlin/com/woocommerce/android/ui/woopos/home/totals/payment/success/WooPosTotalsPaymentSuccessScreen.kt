@@ -66,7 +66,7 @@ fun WooPosPaymentSuccessScreen(
         val textsMargin = WooPosSpacing.Small.value
 
         ConstraintLayout {
-            val (icon, title, message, changeDue, buttonNewOrder, buttonEmailReceipts) = createRefs()
+            val (icon, title, message, changeDue, drawerError, buttonNewOrder, buttonEmailReceipts) = createRefs()
 
             WooPosSuccessCheckmark(
                 contentDescription = stringResource(R.string.woopos_payment_successful_label),
@@ -102,8 +102,16 @@ fun WooPosPaymentSuccessScreen(
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     bottom.linkTo(
-                        if (state.changeDueText != null) changeDue.top else buttonNewOrder.top,
-                        margin = if (state.changeDueText != null) textsMargin else marginBetweenButtonAndText
+                        when {
+                            state.changeDueText != null -> changeDue.top
+                            state.drawerErrorMessage != null -> drawerError.top
+                            else -> buttonNewOrder.top
+                        },
+                        margin = if (state.changeDueText != null || state.drawerErrorMessage != null) {
+                            textsMargin
+                        } else {
+                            marginBetweenButtonAndText
+                        }
                     )
                 }
             )
@@ -116,6 +124,23 @@ fun WooPosPaymentSuccessScreen(
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.constrainAs(changeDue) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(
+                            if (state.drawerErrorMessage != null) drawerError.top else buttonNewOrder.top,
+                            margin = if (state.drawerErrorMessage != null) textsMargin else marginBetweenButtonAndText
+                        )
+                    }
+                )
+            }
+
+            state.drawerErrorMessage?.let { text ->
+                WooPosText(
+                    text = text,
+                    style = WooPosTypography.BodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.constrainAs(drawerError) {
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                         bottom.linkTo(buttonNewOrder.top, margin = marginBetweenButtonAndText)

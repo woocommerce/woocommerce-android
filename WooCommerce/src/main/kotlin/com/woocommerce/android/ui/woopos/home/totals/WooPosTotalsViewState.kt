@@ -56,6 +56,8 @@ sealed class WooPosTotalsViewState : Parcelable {
     data class PaymentSuccess(
         val orderTotalText: String,
         val changeDueText: String? = null,
+        val cashOrderId: Long? = null,
+        val drawerErrorMessage: String? = null,
     ) : WooPosTotalsViewState()
 
     sealed class ReaderStatus : Parcelable {

@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusP
 import com.woocommerce.android.ui.woopos.cardreader.WooPosIsTapToPayAvailable
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPaymentFlow
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
+import com.woocommerce.android.ui.woopos.cashdrawer.WooPosCashDrawerController
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.BackFromCheckoutToCartClicked
@@ -195,6 +196,10 @@ class WooPosTotalsViewModelTest {
         on { state }.thenReturn(MutableStateFlow(WooPosRemoteReaderSession.State.Idle))
     }
     private val remoteReaderPaymentFlow: WooPosRemoteReaderPaymentFlow = mock()
+    private val drawerFailures = MutableStateFlow<Long?>(null)
+    private val cashDrawer: WooPosCashDrawerController = mock {
+        on { automaticOpenFailure }.thenReturn(drawerFailures)
+    }
 
     private fun cartWithCoupon() = listOf(
         WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
@@ -1435,6 +1440,81 @@ class WooPosTotalsViewModelTest {
         // THEN
         val successState = viewModel.state.value as WooPosTotalsViewState.PaymentSuccess
         assertThat(successState.changeDueText).isNull()
+    }
+
+    @Test
+    fun `drawer failure after cash payment appears on success screen`() = runTest {
+        // GIVEN
+        whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_cash, "5.00$"))
+            .thenReturn("Paid 5.00$ in cash")
+        whenever(resourceProvider.getString(R.string.woopos_cash_drawer_open_failed_after_payment))
+            .thenReturn("Payment complete. Open the drawer manually.")
+        val events = MutableStateFlow<ParentToChildrenEvent>(
+            ParentToChildrenEvent.CheckoutClicked(
+                listOf(1L, 2L, 3L).map { WooPosItemsViewModel.ItemClickedData.Product.Simple(id = it) }
+            )
+        )
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(parentToChildrenEventFlow = events)
+        advanceUntilIdle()
+        events.value = ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CASH)
+        advanceUntilIdle()
+
+        // WHEN
+        drawerFailures.value = 23L
+        advanceUntilIdle()
+
+        // THEN
+        val success = viewModel.state.value as WooPosTotalsViewState.PaymentSuccess
+        assertThat(success.drawerErrorMessage).isEqualTo("Payment complete. Open the drawer manually.")
+    }
+
+    @Test
+    fun `drawer failure from another order does not appear on cash success screen`() = runTest {
+        // GIVEN
+        whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_cash, "5.00$"))
+            .thenReturn("Paid 5.00$ in cash")
+        val events = MutableStateFlow<ParentToChildrenEvent>(
+            ParentToChildrenEvent.CheckoutClicked(
+                listOf(1L, 2L, 3L).map { WooPosItemsViewModel.ItemClickedData.Product.Simple(id = it) }
+            )
+        )
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(parentToChildrenEventFlow = events)
+        advanceUntilIdle()
+        events.value = ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CASH)
+        advanceUntilIdle()
+
+        // WHEN
+        drawerFailures.value = 99L
+        advanceUntilIdle()
+
+        // THEN
+        val success = viewModel.state.value as WooPosTotalsViewState.PaymentSuccess
+        assertThat(success.drawerErrorMessage).isNull()
+    }
+
+    @Test
+    fun `drawer failure before navigation appears on cash success screen`() = runTest {
+        // GIVEN
+        whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_cash, "5.00$"))
+            .thenReturn("Paid 5.00$ in cash")
+        drawerFailures.value = 23L
+        whenever(resourceProvider.getString(R.string.woopos_cash_drawer_open_failed_after_payment))
+            .thenReturn("Payment complete. Open the drawer manually.")
+        val events = MutableStateFlow<ParentToChildrenEvent>(
+            ParentToChildrenEvent.CheckoutClicked(
+                listOf(1L, 2L, 3L).map { WooPosItemsViewModel.ItemClickedData.Product.Simple(id = it) }
+            )
+        )
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(parentToChildrenEventFlow = events)
+        advanceUntilIdle()
+
+        // WHEN
+        events.value = ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CASH)
+        advanceUntilIdle()
+
+        // THEN
+        val success = viewModel.state.value as WooPosTotalsViewState.PaymentSuccess
+        assertThat(success.drawerErrorMessage).isEqualTo("Payment complete. Open the drawer manually.")
     }
 
     @Test
@@ -2999,5 +3079,6 @@ class WooPosTotalsViewModelTest {
         builtInReaderConnector = builtInReaderConnector,
         remoteReaderPaymentFlow = remoteReaderPaymentFlow,
         effectiveReaderStatusProvider = WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
+        cashDrawer = cashDrawer,
     )
 }

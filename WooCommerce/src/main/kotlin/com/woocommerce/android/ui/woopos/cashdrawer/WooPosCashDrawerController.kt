@@ -50,6 +50,8 @@ class WooPosCashDrawerController @Inject constructor(
     val autoOpen: Boolean get() = _autoOpen.value
     val isConnected: StateFlow<Boolean> get() = hardware.isConnected
     val selectedPrinter: StateFlow<WooPosReceiptPrinter?> get() = hardware.selectedPrinter
+    private val _automaticOpenFailure = MutableStateFlow<Long?>(null)
+    val automaticOpenFailure: StateFlow<Long?> = _automaticOpenFailure.asStateFlow()
 
     suspend fun discoverPrinters(): Result<List<WooPosReceiptPrinter>> = runCatching { hardware.discover() }
 
@@ -129,7 +131,13 @@ class WooPosCashDrawerController @Inject constructor(
             return WooPosCashDrawerOpenResult.NO_SESSION
         }
         val boundSessionId = sessionId.takeIf { !sessionDrawerId.isNullOrBlank() }
-        return requestOpen(reason, boundSessionId, siteLocalId, orderId)
+        return requestOpen(reason, boundSessionId, siteLocalId, orderId).also { result ->
+            if (reason == WooPosCashDrawerReason.CASH_SALE &&
+                (result == WooPosCashDrawerOpenResult.NOT_CONNECTED || result == WooPosCashDrawerOpenResult.FAILED)
+            ) {
+                _automaticOpenFailure.value = orderId
+            }
+        }
     }
 
     fun scheduleAutomaticOpen(
@@ -140,6 +148,7 @@ class WooPosCashDrawerController @Inject constructor(
         orderId: Long? = null,
         siteLocalId: Int? = null,
     ) {
+        _automaticOpenFailure.value = null
         hardwareScope.launch {
             openAutomatically(reason, sessionId, sessionDrawerId, configuredDrawerNameAtCapture,
                 orderId, siteLocalId)

@@ -121,7 +121,46 @@ class WooPosCashDrawerControllerTest {
 
         assertThat(result).isEqualTo(WooPosCashDrawerOpenResult.NO_SESSION)
         assertThat(hardware.opens).isZero()
+        assertThat(drawer.automaticOpenFailure.value).isNull()
         verifyNoInteractions(sessions)
+    }
+
+    @Test
+    fun `failed automatic open reports order for payment success`() = runTest {
+        val drawer = controller()
+        hardware.openError = WooPosPrinterNotConnectedException()
+
+        val result = drawer.openAutomatically(
+            WooPosCashDrawerReason.CASH_SALE, 12L, "Front counter", "Front counter", 99L, 1
+        )
+
+        assertThat(result).isEqualTo(WooPosCashDrawerOpenResult.NOT_CONNECTED)
+        assertThat(drawer.automaticOpenFailure.value).isEqualTo(99L)
+    }
+
+    @Test
+    fun `automatic open without session does not report failure`() = runTest {
+        val drawer = controller()
+
+        val result = drawer.openAutomatically(
+            WooPosCashDrawerReason.CASH_SALE, null, null, "Front counter", 99L, 1
+        )
+
+        assertThat(result).isEqualTo(WooPosCashDrawerOpenResult.NO_SESSION)
+        assertThat(drawer.automaticOpenFailure.value).isNull()
+    }
+
+    @Test
+    fun `printer failure reports order for payment success`() = runTest {
+        val drawer = controller()
+        hardware.openError = IllegalStateException("Printer failed")
+
+        val result = drawer.openAutomatically(
+            WooPosCashDrawerReason.CASH_SALE, 12L, "Front counter", "Front counter", 99L, 1
+        )
+
+        assertThat(result).isEqualTo(WooPosCashDrawerOpenResult.FAILED)
+        assertThat(drawer.automaticOpenFailure.value).isEqualTo(99L)
     }
 
     @Test
@@ -195,11 +234,15 @@ class WooPosCashDrawerControllerTest {
         override val selectedPrinter: StateFlow<WooPosReceiptPrinter?> = MutableStateFlow(null)
         override val drawerSignals: SharedFlow<Boolean> = MutableSharedFlow()
         var opens = 0
+        var openError: Exception? = null
 
         override suspend fun discover(): List<WooPosReceiptPrinter> = emptyList()
         override suspend fun connect(printer: WooPosReceiptPrinter) = Unit
         override suspend fun disconnect() = Unit
-        override suspend fun open() { opens++ }
+        override suspend fun open() {
+            opens++
+            openError?.let { throw it }
+        }
         override suspend fun printCloseOut(text: String) = Unit
     }
 }
