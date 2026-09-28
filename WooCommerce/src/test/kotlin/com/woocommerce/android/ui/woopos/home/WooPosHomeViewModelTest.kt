@@ -26,6 +26,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.math.BigDecimal
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
@@ -317,11 +318,11 @@ class WooPosHomeViewModelTest {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUIEvent(WooPosHomeUIEvent.OnPaymentCompletedViaCash)
+        viewModel.onUIEvent(WooPosHomeUIEvent.OnPaymentCompletedViaCash(BigDecimal("20.00")))
 
         // THEN
         verify(parentToChildrenEventSender).sendToChildren(
-            ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CASH)
+            ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CASH, BigDecimal("20.00"))
         )
         assertThat(viewModel.state.value.screenPositionState)
             .isEqualTo(WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals)
@@ -336,7 +337,7 @@ class WooPosHomeViewModelTest {
             val viewModel = createViewModel()
 
             // WHEN
-            viewModel.onUIEvent(WooPosHomeUIEvent.OnPaymentCompletedViaCash)
+            viewModel.onUIEvent(WooPosHomeUIEvent.OnPaymentCompletedViaCash(BigDecimal.ZERO))
 
             // THEN
             verify(soundHelper).playChaChing()

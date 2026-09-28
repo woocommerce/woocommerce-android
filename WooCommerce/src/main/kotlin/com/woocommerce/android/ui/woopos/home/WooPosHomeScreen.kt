@@ -34,10 +34,12 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.toolbar.PreviewWooPosFloatingToolbarStatusConnectedWithMenu
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosFloatingToolbar
 import org.wordpress.android.util.ToastUtils
+import java.math.BigDecimal
 
 @Composable
 fun WooPosHomeScreen(
     isPaymentCompletedViaCash: Boolean,
+    cashChangeDue: BigDecimal?,
     viewModel: WooPosHomeViewModel,
 ) {
     val state = viewModel.state.collectAsState().value
@@ -45,7 +47,7 @@ fun WooPosHomeScreen(
 
     LaunchedEffect(Unit) {
         if (isPaymentCompletedViaCash) {
-            viewModel.onUIEvent(WooPosHomeUIEvent.OnPaymentCompletedViaCash)
+            viewModel.onUIEvent(WooPosHomeUIEvent.OnPaymentCompletedViaCash(cashChangeDue))
         }
     }
 

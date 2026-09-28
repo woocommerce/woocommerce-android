@@ -10,7 +10,6 @@ sealed class WooPosCashPaymentState : Parcelable {
     data class Collecting(
         val enteredAmount: BigDecimal?,
         val errorMessage: String?,
-        val changeDueText: String,
         val changeDue: BigDecimal?,
         val total: BigDecimal,
         val totalText: String,

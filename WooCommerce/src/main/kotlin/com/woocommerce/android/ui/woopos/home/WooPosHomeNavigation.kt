@@ -18,9 +18,11 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
+import java.math.BigDecimal
 
 const val HOME_ROUTE = "home"
 const val HOME_PAYMENT_COMPLETED_VIA_CASH_KEY = "home_payment_completed_via_cash_key"
+const val HOME_CASH_CHANGE_DUE_KEY = "home_cash_change_due_key"
 const val ELIGIBILITY_ROUTE = "eligibility"
 const val ELIGIBILITY_REASON_KEY = "eligibility_reason"
 
@@ -28,10 +30,11 @@ fun NavController.navigateToHomeScreen() {
     navigateOnce(HOME_ROUTE)
 }
 
-fun NavController.navigateToHomeScreenAfterSuccessfulCashPayment() {
-    previousBackStackEntry
-        ?.savedStateHandle
-        ?.set(HOME_PAYMENT_COMPLETED_VIA_CASH_KEY, true)
+fun NavController.navigateToHomeScreenAfterSuccessfulCashPayment(changeDue: BigDecimal) {
+    getBackStackEntry(HOME_ROUTE).savedStateHandle.apply {
+        set(HOME_PAYMENT_COMPLETED_VIA_CASH_KEY, true)
+        set(HOME_CASH_CHANGE_DUE_KEY, changeDue.toPlainString())
+    }
 
     navigate(HOME_ROUTE) {
         popUpTo(HOME_ROUTE) { inclusive = false }
@@ -82,18 +85,22 @@ fun NavGraphBuilder.homeScreen(
         val savedStateHandle = entry.savedStateHandle
 
         val isPaymentCompletedViaCash = savedStateHandle.get<Boolean>(HOME_PAYMENT_COMPLETED_VIA_CASH_KEY) == true
+        val cashChangeDue = savedStateHandle.get<String>(HOME_CASH_CHANGE_DUE_KEY)?.toBigDecimalOrNull()
         if (isPaymentCompletedViaCash) {
             savedStateHandle[HOME_PAYMENT_COMPLETED_VIA_CASH_KEY] = false
+            savedStateHandle.remove<String>(HOME_CASH_CHANGE_DUE_KEY)
         }
 
         if (LocalContext.current.isWooPosPhoneLayout()) {
             WooPosHomePhoneScreen(
                 isPaymentCompletedViaCash = isPaymentCompletedViaCash,
+                cashChangeDue = cashChangeDue,
                 viewModel = homeViewModel,
             )
         } else {
             WooPosHomeScreen(
                 isPaymentCompletedViaCash = isPaymentCompletedViaCash,
+                cashChangeDue = cashChangeDue,
                 viewModel = homeViewModel,
             )
         }

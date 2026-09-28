@@ -164,13 +164,6 @@ private fun Collecting(
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
-            WooPosText(
-                text = state.changeDueText,
-                style = WooPosTypography.BodySmall,
-                color = WooPosTheme.colors.onSurfaceVariantLowest,
-                modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value)
-            )
-
             if (!drawerConnected) {
                 WooPosText(
                     text = stringResource(R.string.woopos_cash_drawer_unavailable_payment),
@@ -221,7 +214,6 @@ fun WooPosTotalsPaymentCashScreenPreview() {
             state = WooPosCashPaymentState.Collecting(
                 enteredAmount = BigDecimal(100),
                 errorMessage = null,
-                changeDueText = "5$",
                 changeDue = BigDecimal(5),
                 total = BigDecimal(10),
                 totalText = "10$",
@@ -243,13 +235,12 @@ fun WooPosTotalsPaymentCashScreenPreview() {
 
 @WooPosPreview
 @Composable
-fun WooPosTotalsPaymentCashWithLabelScreenPreview() {
+fun WooPosTotalsPaymentCashLoadingScreenPreview() {
     WooPosTheme {
         WooPosCashPaymentScreen(
             state = WooPosCashPaymentState.Collecting(
                 enteredAmount = null,
                 errorMessage = null,
-                changeDueText = "Change Due 5$",
                 changeDue = BigDecimal(5),
                 total = BigDecimal(10),
                 totalText = "Total: 10$",
@@ -277,7 +268,6 @@ fun WooPosTotalsPaymentCashWithErrorScreenPreview() {
             state = WooPosCashPaymentState.Collecting(
                 enteredAmount = BigDecimal(500),
                 errorMessage = "Amount must be more or equal to total",
-                changeDueText = "Change Due 5$",
                 changeDue = BigDecimal(5),
                 total = BigDecimal(10),
                 totalText = "Total: 10$",

@@ -695,7 +695,7 @@ class WooPosTotalsViewModel @Inject constructor(
                             // Cancel payment intent if order is marked completed by cash
                             cancelPaymentAction()
                         }
-                        showSuccessfulPaymentState(event.paymentMethod)
+                        showSuccessfulPaymentState(event.paymentMethod, event.changeDue)
                         performIncrementalSyncUseCase.execute(WooPosIncrementalSyncReason.AFTER_SUCCESSFUL_PAYMENT)
                     }
 
@@ -1133,7 +1133,7 @@ class WooPosTotalsViewModel @Inject constructor(
             }
         }
 
-    private fun showSuccessfulPaymentState(paymentMethod: PaymentMethod) {
+    private fun showSuccessfulPaymentState(paymentMethod: PaymentMethod, changeDue: BigDecimal?) {
         viewModelScope.launch {
             val dataState = dataState.value
             checkNotNull(dataState.orderTotal)
@@ -1148,7 +1148,10 @@ class WooPosTotalsViewModel @Inject constructor(
                 priceFormat(dataState.orderTotal)
             )
             uiState.value = WooPosTotalsViewState.PaymentSuccess(
-                orderTotalText = orderTotalText
+                orderTotalText = orderTotalText,
+                changeDueText = changeDue
+                    ?.takeIf { paymentMethod == PaymentMethod.CASH && it > BigDecimal.ZERO }
+                    ?.let { resourceProvider.getString(R.string.woopos_cash_payment_change_due, priceFormat(it)) }
             )
         }
     }

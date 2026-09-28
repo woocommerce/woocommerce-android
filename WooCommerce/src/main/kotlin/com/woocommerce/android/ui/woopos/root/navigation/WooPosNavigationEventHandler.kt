@@ -49,7 +49,7 @@ fun NavHostController.handleNavigationEvent(
         is WooPosNavigationEvent.GoBack -> popBackStack()
 
         is WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment ->
-            navigateToHomeScreenAfterSuccessfulCashPayment()
+            navigateToHomeScreenAfterSuccessfulCashPayment(event.changeDue)
 
         is WooPosNavigationEvent.OpenEmailReceipt ->
             navigateToEmailReceipt(event.orderId, event.receiptAlreadySent)

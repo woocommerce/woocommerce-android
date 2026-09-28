@@ -66,7 +66,7 @@ fun WooPosPaymentSuccessScreen(
         val textsMargin = WooPosSpacing.Small.value
 
         ConstraintLayout {
-            val (icon, title, message, buttonNewOrder, buttonEmailReceipts) = createRefs()
+            val (icon, title, message, changeDue, buttonNewOrder, buttonEmailReceipts) = createRefs()
 
             WooPosSuccessCheckmark(
                 contentDescription = stringResource(R.string.woopos_payment_successful_label),
@@ -101,9 +101,27 @@ fun WooPosPaymentSuccessScreen(
                 modifier = Modifier.constrainAs(message) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    bottom.linkTo(buttonNewOrder.top, margin = marginBetweenButtonAndText)
+                    bottom.linkTo(
+                        if (state.changeDueText != null) changeDue.top else buttonNewOrder.top,
+                        margin = if (state.changeDueText != null) textsMargin else marginBetweenButtonAndText
+                    )
                 }
             )
+
+            state.changeDueText?.let { text ->
+                WooPosText(
+                    text = text,
+                    style = WooPosTypography.BodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.constrainAs(changeDue) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(buttonNewOrder.top, margin = marginBetweenButtonAndText)
+                    }
+                )
+            }
 
             val marginBetweenButtons = WooPosSpacing.Medium.value
             WooPosButton(

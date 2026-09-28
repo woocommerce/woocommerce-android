@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.root.navigation
 
 import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
+import java.math.BigDecimal
 
 sealed class WooPosNavigationEvent {
     data object OpenSplashScreen : WooPosNavigationEvent()
@@ -22,7 +23,7 @@ sealed class WooPosNavigationEvent {
     data class OpenRefundReason(val orderId: Long, val initialReason: String = "") : WooPosNavigationEvent()
     data object GoBack : WooPosNavigationEvent()
     data class GoBackWithResult(val key: String, val value: Any) : WooPosNavigationEvent()
-    data object OpenHomeFromCashPaymentAfterSuccessfulPayment : WooPosNavigationEvent()
+    data class OpenHomeFromCashPaymentAfterSuccessfulPayment(val changeDue: BigDecimal) : WooPosNavigationEvent()
     data object ReturnHomeFromCashPayment : WooPosNavigationEvent()
     data class OpenEligibilityScreenFromSplash(
         val reason: WooPosLaunchability.NonLaunchabilityReason

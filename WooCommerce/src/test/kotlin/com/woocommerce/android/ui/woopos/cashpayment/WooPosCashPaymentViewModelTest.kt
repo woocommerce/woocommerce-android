@@ -6,6 +6,7 @@ import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.cashmanagement.WooPosCashMovementRecorder
 import com.woocommerce.android.ui.woopos.cashdrawer.WooPosCashDrawerController
+import com.woocommerce.android.ui.woopos.cashdrawer.WooPosCashDrawerReason
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
@@ -27,9 +28,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.check
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -56,6 +59,7 @@ class WooPosCashPaymentViewModelTest {
     private val resourceProvider: ResourceProvider = mock()
     private val tracker: WooPosAnalyticsTracker = mock()
     private val trackerData: WooPosAnalyticsTrackingDataKeeper = WooPosAnalyticsTrackingDataKeeper()
+    private val cashDrawer: WooPosCashDrawerController = mock()
 
     private lateinit var viewModel: WooPosCashPaymentViewModel
 
@@ -95,7 +99,7 @@ class WooPosCashPaymentViewModelTest {
             analyticsTracker = tracker,
             analyticsData = trackerData,
             cashMovements = mock<WooPosCashMovementRecorder>(),
-            cashDrawer = mock<WooPosCashDrawerController>(),
+            cashDrawer = cashDrawer,
             savedState = savedStateHandle,
         )
     }
@@ -145,7 +149,6 @@ class WooPosCashPaymentViewModelTest {
         assertThat(state).isInstanceOf(WooPosCashPaymentState.Collecting::class.java)
         val collectingState = state as WooPosCashPaymentState.Collecting
         assertThat(collectingState.enteredAmount).isEqualTo(enteredAmount)
-        assertThat(collectingState.changeDueText).isEqualTo("Change Due: $20.00")
         assertThat(collectingState.changeDue).isEqualTo(changeDue)
         assertThat(collectingState.button.status).isEqualTo(WooPosCashPaymentState.Collecting.Button.Status.ENABLED)
     }
@@ -165,7 +168,6 @@ class WooPosCashPaymentViewModelTest {
         assertThat(state).isInstanceOf(WooPosCashPaymentState.Collecting::class.java)
         val collectingState = state as WooPosCashPaymentState.Collecting
         assertThat(collectingState.enteredAmount).isEqualTo(enteredAmount)
-        assertThat(collectingState.changeDueText).isEqualTo("")
         assertThat(collectingState.changeDue).isNull()
         assertThat(collectingState.button.status).isEqualTo(WooPosCashPaymentState.Collecting.Button.Status.DISABLED)
     }
@@ -202,13 +204,14 @@ class WooPosCashPaymentViewModelTest {
         // THEN
         assertThat(state).isEqualTo(WooPosCashPaymentState.Complete)
         verify(repository).completeOrder(any(), any())
+        verify(cashDrawer).scheduleAutomaticOpen(WooPosCashDrawerReason.CASH_SALE, null, null, null, 123L, null)
     }
 
     @Test
     fun `given order missing after successful completion, when complete clicked, then success is tracked and home opens`() =
         runTest {
             // GIVEN
-            whenever(repository.completeOrder(123L, "null")).thenReturn(Result.success(Unit))
+            whenever(repository.completeOrder(123L, "0")).thenReturn(Result.success(Unit))
             whenever(repository.getOrderById(123L)).thenReturn(null)
 
             viewModel.navigationEvent.test {
@@ -216,7 +219,9 @@ class WooPosCashPaymentViewModelTest {
                 viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked)
 
                 // THEN
-                assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment)
+                assertThat(awaitItem()).isEqualTo(
+                    WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment(BigDecimal.ZERO)
+                )
                 assertThat(viewModel.state.value).isEqualTo(WooPosCashPaymentState.Complete)
             }
             verify(tracker).track(
@@ -245,6 +250,9 @@ class WooPosCashPaymentViewModelTest {
         assertThat(collectingState.errorMessage).isEqualTo(errorMessage)
         assertThat(collectingState.button.status).isEqualTo(WooPosCashPaymentState.Collecting.Button.Status.ENABLED)
         verify(repository).completeOrder(any(), any())
+        verify(cashDrawer, never()).scheduleAutomaticOpen(
+            any(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()
+        )
     }
 
     @Test
@@ -297,16 +305,19 @@ class WooPosCashPaymentViewModelTest {
     }
 
     @Test
-    fun `given source is CHECKOUT, when order completed successfully, then navigation event is OpenHomeFromCashPaymentAfterSuccessfulPayment`() = runTest {
+    fun `given excess tender, when order completes, then success event carries change due`() = runTest {
         // GIVEN
         whenever(repository.completeOrder(any(), any())).thenReturn(Result.success(Unit))
+        viewModel.onUIEvent(WooPosCashPaymentUIEvent.AmountChanged(BigDecimal("120.00")))
 
         // WHEN & THEN
         viewModel.navigationEvent.test {
             viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked)
 
             val event = awaitItem()
-            assertThat(event).isEqualTo(WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment)
+            assertThat(event).isEqualTo(
+                WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment(BigDecimal("20.00"))
+            )
         }
     }
 

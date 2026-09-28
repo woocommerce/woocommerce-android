@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import java.math.BigDecimal
 
 @HiltViewModel
 class WooPosHomeViewModel @Inject constructor(
@@ -98,8 +99,8 @@ class WooPosHomeViewModel @Inject constructor(
                 )
             }
 
-            WooPosHomeUIEvent.OnPaymentCompletedViaCash -> onOrderSuccessfullyPaid(
-                PaymentMethod.CASH
+            is WooPosHomeUIEvent.OnPaymentCompletedViaCash -> onOrderSuccessfullyPaid(
+                PaymentMethod.CASH, event.changeDue
             )
 
             WooPosHomeUIEvent.ExitPosClicked -> {
@@ -327,13 +328,13 @@ class WooPosHomeViewModel @Inject constructor(
         parentToChildrenEventSender.sendToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
     }
 
-    private fun onOrderSuccessfullyPaid(paymentMethod: PaymentMethod) {
+    private fun onOrderSuccessfullyPaid(paymentMethod: PaymentMethod, changeDue: BigDecimal? = null) {
         viewModelScope.launch {
             soundHelper.playChaChing()
         }
         _state.value = _state.value.copy(
             screenPositionState = ScreenPositionState.Checkout.FullScreenTotals
         )
-        sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid(paymentMethod))
+        sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid(paymentMethod, changeDue))
     }
 }

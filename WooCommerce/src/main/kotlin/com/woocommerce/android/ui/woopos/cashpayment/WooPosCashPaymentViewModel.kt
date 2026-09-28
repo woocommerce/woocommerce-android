@@ -61,10 +61,6 @@ class WooPosCashPaymentViewModel @Inject constructor(
             val order = repository.getOrderById(orderId)!!
             _state.value = WooPosCashPaymentState.Collecting(
                 enteredAmount = order.total,
-                changeDueText = resourceProvider.getString(
-                    R.string.woopos_cash_payment_change_due,
-                    priceFormat(BigDecimal.ZERO)
-                ),
                 changeDue = BigDecimal.ZERO,
                 total = order.total,
                 totalText = resourceProvider.getString(
@@ -100,18 +96,8 @@ class WooPosCashPaymentViewModel @Inject constructor(
             val changeDue = enteredAmount - currentState.total
             val isChangePositiveOrZero = changeDue >= BigDecimal.ZERO
 
-            val changeDueText = if (isChangePositiveOrZero) {
-                resourceProvider.getString(
-                    R.string.woopos_cash_payment_change_due,
-                    priceFormat(changeDue)
-                )
-            } else {
-                ""
-            }
-
             _state.value = currentState.copy(
                 enteredAmount = enteredAmount,
-                changeDueText = changeDueText,
                 changeDue = changeDue.takeIf { isChangePositiveOrZero },
                 errorMessage = null,
                 button = currentState.button.copy(
@@ -160,7 +146,11 @@ class WooPosCashPaymentViewModel @Inject constructor(
                 )
                 trackPaymentSuccess()
                 _state.value = WooPosCashPaymentState.Complete
-                _navigationEvent.emit(WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment)
+                _navigationEvent.emit(
+                    WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment(
+                        stateBeforeCompleting.changeDue ?: BigDecimal.ZERO
+                    )
+                )
             } else {
                 val currentState = _state.value as? WooPosCashPaymentState.Collecting ?: return@launch
                 _state.value = currentState.copy(

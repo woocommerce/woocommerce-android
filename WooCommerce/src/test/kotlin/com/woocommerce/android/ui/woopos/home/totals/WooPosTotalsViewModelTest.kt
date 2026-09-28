@@ -1377,6 +1377,8 @@ class WooPosTotalsViewModelTest {
             // GIVEN & WHEN
             whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_cash, "5.00$"))
                 .thenReturn("Paid 5.00$ in Cash")
+            whenever(resourceProvider.getString(R.string.woopos_cash_payment_change_due, "2.50$"))
+                .thenReturn("Change due 2.50$")
             val parentToChildrenEventFlow = MutableStateFlow<ParentToChildrenEvent>(
                 ParentToChildrenEvent.CheckoutClicked(
                     listOf(
@@ -1396,13 +1398,44 @@ class WooPosTotalsViewModelTest {
             val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(
                 parentToChildrenEventFlow = parentToChildrenEventFlow,
             )
-            parentToChildrenEventFlow.value = ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CASH)
+            parentToChildrenEventFlow.value = ParentToChildrenEvent.OrderSuccessfullyPaid(
+                PaymentMethod.CASH, BigDecimal("2.50")
+            )
 
             // THEN
             assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.PaymentSuccess::class.java)
             val successState = viewModel.state.value as WooPosTotalsViewState.PaymentSuccess
             assertThat(successState.orderTotalText).isEqualTo("Paid 5.00$ in Cash")
+            assertThat(successState.changeDueText).isEqualTo("Change due 2.50$")
         }
+
+    @Test
+    fun `given exact cash tender, when payment succeeds, then change due is absent`() = runTest {
+        // GIVEN
+        whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_cash, "5.00$"))
+            .thenReturn("Paid 5.00$ in Cash")
+        val parentToChildrenEventFlow = MutableStateFlow<ParentToChildrenEvent>(
+            ParentToChildrenEvent.CheckoutClicked(
+                listOf(
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                )
+            )
+        )
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(
+            parentToChildrenEventFlow = parentToChildrenEventFlow
+        )
+
+        // WHEN
+        parentToChildrenEventFlow.value = ParentToChildrenEvent.OrderSuccessfullyPaid(
+            PaymentMethod.CASH, BigDecimal.ZERO
+        )
+
+        // THEN
+        val successState = viewModel.state.value as WooPosTotalsViewState.PaymentSuccess
+        assertThat(successState.changeDueText).isNull()
+    }
 
     @Test
     fun `given payment success state, when OnBackClicked, then sends OnNewTransactionStarted to parent`() =
@@ -2915,6 +2948,7 @@ class WooPosTotalsViewModelTest {
         val priceFormat: WooPosFormatPrice = mock {
             on { invoke(BigDecimal("1.00")) }.thenReturn("1.00$")
             on { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
+            on { invoke(BigDecimal("2.50")) }.thenReturn("2.50$")
             on { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
             on { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
         }
