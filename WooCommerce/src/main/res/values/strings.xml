@@ -4986,5 +4986,6 @@
     <string name="woopos_cash_variance_value">Variance %1$s</string>
     <string name="woopos_cash_note_value">Note: %1$s</string>
     <string name="woopos_cash_order_link">Order #%1$d →</string>
+    <string name="woopos_cash_share_chooser">Share cash session</string>
     <string name="woopos_cash_drawer_unavailable_payment">Cash drawer not connected. You can still complete the sale.</string>
 </resources>

@@ -122,6 +122,12 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                 }
             }
 
+            R.string.woopos_cash_management_title -> {
+                viewModelScope.launch {
+                    childrenToParentEventSender.sendToParent(ChildToParentEvent.NavigationEvent.ToCashManagement)
+                }
+            }
+
             R.string.woopos_settings_title -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.NavigationEvent.ToSettings)
@@ -189,6 +195,10 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_orders_title,
                         icon = R.drawable.ic_description_filled_24dp,
+                    ),
+                    WooPosHomeFloatingToolbarState.Menu.MenuItem(
+                        title = R.string.woopos_cash_management_title,
+                        icon = R.drawable.ic_gridicons_money,
                     ),
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_settings_title,

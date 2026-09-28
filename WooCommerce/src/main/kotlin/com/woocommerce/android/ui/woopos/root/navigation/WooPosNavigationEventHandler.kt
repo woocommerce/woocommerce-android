@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.root.navigation
 
+import com.woocommerce.android.ui.woopos.cashmanagement.navigateToCashManagement
+
 import androidx.activity.ComponentActivity
 import androidx.navigation.NavHostController
 import com.woocommerce.android.ui.woopos.cardpayment.navigateToCardPaymentScreen
@@ -60,6 +62,8 @@ fun NavHostController.handleNavigationEvent(
 
         is WooPosNavigationEvent.OpenEligibilityScreenFromSplash ->
             navigateToEligibilityScreen(event.reason)
+
+        is WooPosNavigationEvent.OpenCashManagement -> navigateToCashManagement()
 
         is WooPosNavigationEvent.OpenSettings ->
             navigateToSettingsScreen()

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.root.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.navigation
 import com.woocommerce.android.ui.woopos.cardpayment.cardPaymentScreen
+import com.woocommerce.android.ui.woopos.cashmanagement.cashManagementScreen
 import com.woocommerce.android.ui.woopos.cashpayment.cashPaymentScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.authenticatedwebview.webViewScreen
 import com.woocommerce.android.ui.woopos.emailreceipt.emailReceiptScreen
@@ -32,6 +33,7 @@ fun NavGraphBuilder.mainGraph(
         homeScreen(homeViewModel = homeViewModel)
         cardPaymentScreen(onNavigationEvent = onNavigationEvent)
         cashPaymentScreen(onNavigationEvent = onNavigationEvent)
+        cashManagementScreen(onNavigationEvent = onNavigationEvent)
         markOrderAsCompleteScreen(onNavigationEvent = onNavigationEvent)
         scanToPayScreen(onNavigationEvent = onNavigationEvent)
         emailReceiptScreen(onNavigationEvent = onNavigationEvent)

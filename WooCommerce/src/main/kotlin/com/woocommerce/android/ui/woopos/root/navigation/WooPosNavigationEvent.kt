@@ -28,6 +28,7 @@ sealed class WooPosNavigationEvent {
         val reason: WooPosLaunchability.NonLaunchabilityReason
     ) : WooPosNavigationEvent()
     data object OpenSettings : WooPosNavigationEvent()
+    data object OpenCashManagement : WooPosNavigationEvent()
     data object OpenOrders : WooPosNavigationEvent()
     data class OpenOrderDetails(val orderId: Long) : WooPosNavigationEvent()
     data class NavigateToCashPayment(val orderId: Long) : WooPosNavigationEvent()
