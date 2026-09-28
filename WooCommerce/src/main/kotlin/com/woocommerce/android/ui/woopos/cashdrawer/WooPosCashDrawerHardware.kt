@@ -66,7 +66,7 @@ class WooPosStarReceiptPrinter @Inject constructor(@ApplicationContext private v
     override val isConnected: StateFlow<Boolean> = _isConnected
     private val _selectedPrinter = MutableStateFlow(loadSelection())
     override val selectedPrinter: StateFlow<WooPosReceiptPrinter?> = _selectedPrinter
-    private val _drawerSignals = MutableSharedFlow<Boolean>(extraBufferCapacity = 16)
+    private val _drawerSignals = MutableSharedFlow<Boolean>(replay = 1, extraBufferCapacity = 16)
     override val drawerSignals: SharedFlow<Boolean> = _drawerSignals
 
     init {
@@ -117,6 +117,7 @@ class WooPosStarReceiptPrinter @Inject constructor(@ApplicationContext private v
             val connectedPrinter = createPrinter(printer)
             try {
                 connectedPrinter.openAsync().await()
+                emitCurrentDrawerSignal(connectedPrinter)
             } catch (error: Exception) {
                 _isConnected.value = false
                 throw error
@@ -192,6 +193,7 @@ class WooPosStarReceiptPrinter @Inject constructor(@ApplicationContext private v
         val selection = _selectedPrinter.value ?: throw WooPosPrinterNotConnectedException()
         val printer = createPrinter(selection)
         printer.openAsync().await()
+        emitCurrentDrawerSignal(printer)
         activePrinter = printer
         _isConnected.value = true
         return printer
@@ -205,6 +207,14 @@ class WooPosStarReceiptPrinter @Inject constructor(@ApplicationContext private v
                 }
             }
         }
+
+    private suspend fun emitCurrentDrawerSignal(printer: StarPrinter) {
+        try {
+            _drawerSignals.tryEmit(printer.getStatusAsync().await().drawerOpenCloseSignal)
+        } catch (_: Exception) {
+            // Some printers do not report a drawer sensor. Printing and opening can still work.
+        }
+    }
 
     private suspend fun closeActivePrinter() {
         val printer = activePrinter ?: return

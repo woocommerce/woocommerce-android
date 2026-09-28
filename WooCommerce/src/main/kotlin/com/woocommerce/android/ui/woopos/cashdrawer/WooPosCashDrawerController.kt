@@ -109,11 +109,12 @@ class WooPosCashDrawerController @Inject constructor(
             null
         }
         if (session == null && reason != WooPosCashDrawerReason.TEST) return WooPosCashDrawerOpenResult.NO_SESSION
-        val boundSessionId = session?.takeIf { isBoundToConfiguredDrawer(it.drawerId) }?.id
+        val boundSessionId = session?.takeIf { !it.drawerId.isNullOrBlank() }?.id
         return requestOpen(reason, boundSessionId, orderId)
     }
 
     /** A confirmed cash transaction passes the session ID captured before its Core movement. */
+    @Suppress("UNUSED_PARAMETER")
     suspend fun openAutomatically(
         reason: WooPosCashDrawerReason,
         sessionId: Long?,
@@ -124,10 +125,7 @@ class WooPosCashDrawerController @Inject constructor(
         if (!_autoOpen.value || sessionId == null) {
             return WooPosCashDrawerOpenResult.NO_SESSION
         }
-        val boundSessionId = sessionId.takeIf {
-            !sessionDrawerId.isNullOrBlank() &&
-                sessionDrawerId.trim().equals(configuredDrawerNameAtCapture?.trim(), ignoreCase = true)
-        }
+        val boundSessionId = sessionId.takeIf { !sessionDrawerId.isNullOrBlank() }
         return requestOpen(reason, boundSessionId, orderId)
     }
 
@@ -141,11 +139,6 @@ class WooPosCashDrawerController @Inject constructor(
         hardwareScope.launch {
             openAutomatically(reason, sessionId, sessionDrawerId, configuredDrawerNameAtCapture, orderId)
         }
-    }
-
-    private fun isBoundToConfiguredDrawer(boundName: String?): Boolean {
-        val configuredName = drawerName ?: return false
-        return boundName?.trim()?.equals(configuredName, ignoreCase = true) == true
     }
 
     private suspend fun requestOpen(
@@ -191,7 +184,7 @@ class WooPosCashDrawerController @Inject constructor(
         return result
     }
 
-    private suspend fun handleDrawerSignal(signal: Boolean) {
+    internal suspend fun handleDrawerSignal(signal: Boolean) {
         val event = synchronized(sensorLock) {
             val previous = lastSignal
             if (previous == signal) return@synchronized null
@@ -246,7 +239,7 @@ class WooPosCashDrawerController @Inject constructor(
     private suspend fun recordUnknownSensorEvent() {
         val signalAt = Instant.now()
         val session = try { sessions.current() } catch (_: Exception) { null } ?: return
-        if (session.status != "open" || !isBoundToConfiguredDrawer(session.drawerId)) return
+        if (session.status != "open" || session.drawerId.isNullOrBlank()) return
         val createdAt = parseCreatedAt(session.dateCreatedGmt) ?: return
         if (createdAt.isAfter(signalAt)) return
         try {
