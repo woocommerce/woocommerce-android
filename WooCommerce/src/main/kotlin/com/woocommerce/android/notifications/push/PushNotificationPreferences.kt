@@ -5,7 +5,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import org.wordpress.android.fluxc.model.SiteModel
 
 internal object PushNotificationPreferences {
     fun Preferences.getPushRegistration(siteId: Long): WooPushRegistrationData? {
@@ -23,12 +22,12 @@ internal object PushNotificationPreferences {
         registration.deviceUuid?.let { this[getPushDeviceUuidKeyForSite(siteId)] = it }
     }
 
-    fun MutablePreferences.clearPushRegistration(site: SiteModel) {
-        remove(getPushTokenIdKeyForSite(site.siteId))
-        remove(getPushTokenValueKeyForSite(site.siteId))
-        remove(getPushLocaleKeyForSite(site.siteId))
-        remove(getPushDeviceUuidKeyForSite(site.siteId))
-        remove(getRefreshedAtKeyForSite(site.id))
+    fun MutablePreferences.clearPushRegistration(siteId: Long) {
+        remove(getPushTokenIdKeyForSite(siteId))
+        remove(getPushTokenValueKeyForSite(siteId))
+        remove(getPushLocaleKeyForSite(siteId))
+        remove(getPushDeviceUuidKeyForSite(siteId))
+        remove(getRefreshedAtKeyForSite(siteId))
     }
 
     fun Preferences.getRegisteredSiteIds(): Set<Long> = asMap().keys
@@ -40,17 +39,17 @@ internal object PushNotificationPreferences {
         }
         .toSet()
 
-    fun Preferences.getRefreshedAt(localSiteId: Int): Long? = this[getRefreshedAtKeyForSite(localSiteId)]
+    fun Preferences.getRefreshedAt(siteId: Long): Long? = this[getRefreshedAtKeyForSite(siteId)]
 
-    fun MutablePreferences.saveRefreshedAt(localSiteId: Int, millis: Long) {
-        this[getRefreshedAtKeyForSite(localSiteId)] = millis
+    fun MutablePreferences.saveRefreshedAt(siteId: Long, millis: Long) {
+        this[getRefreshedAtKeyForSite(siteId)] = millis
     }
 
-    fun Preferences.hasWpComPendingRestore(localSiteId: Int): Boolean =
-        this[getWpComPendingRestoreKeyForSite(localSiteId)] == true
+    fun Preferences.hasWpComPendingRestore(siteId: Long): Boolean =
+        this[getWpComPendingRestoreKeyForSite(siteId)] == true
 
-    fun MutablePreferences.setWpComPendingRestore(localSiteId: Int, isPending: Boolean) {
-        val key = getWpComPendingRestoreKeyForSite(localSiteId)
+    fun MutablePreferences.setWpComPendingRestore(siteId: Long, isPending: Boolean) {
+        val key = getWpComPendingRestoreKeyForSite(siteId)
         if (isPending) this[key] = true else remove(key)
     }
 
@@ -66,11 +65,11 @@ internal object PushNotificationPreferences {
     private fun getPushDeviceUuidKeyForSite(siteId: Long): Preferences.Key<String> =
         stringPreferencesKey("$PUSH_DEVICE_UUID_KEY_PREFIX$siteId")
 
-    private fun getRefreshedAtKeyForSite(localSiteId: Int): Preferences.Key<Long> =
-        longPreferencesKey("$REFRESHED_AT_KEY_PREFIX$localSiteId")
+    private fun getRefreshedAtKeyForSite(siteId: Long): Preferences.Key<Long> =
+        longPreferencesKey("$REFRESHED_AT_KEY_PREFIX$siteId")
 
-    private fun getWpComPendingRestoreKeyForSite(localSiteId: Int): Preferences.Key<Boolean> =
-        booleanPreferencesKey("$WPCOM_PENDING_RESTORE_KEY_PREFIX$localSiteId")
+    private fun getWpComPendingRestoreKeyForSite(siteId: Long): Preferences.Key<Boolean> =
+        booleanPreferencesKey("$WPCOM_PENDING_RESTORE_KEY_PREFIX$siteId")
 
     data class WooPushRegistrationData(
         val tokenId: String,

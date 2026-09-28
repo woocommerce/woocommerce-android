@@ -167,10 +167,10 @@ class PushNotificationRepository @Inject constructor(
 
     private suspend fun handleWooPushUnavailable(site: SiteModel) {
         pushNotificationsDataStore.edit { preferences ->
-            preferences.clearPushRegistration(site)
-            preferences.saveRefreshedAt(site.id, clock.millis())
+            preferences.clearPushRegistration(site.siteId)
+            preferences.saveRefreshedAt(site.siteId, clock.millis())
             if (site.connectionTypeOrNull == SiteConnectionType.Jetpack) {
-                preferences.setWpComPendingRestore(site.id, isPending = true)
+                preferences.setWpComPendingRestore(site.siteId, isPending = true)
             }
         }
         restoreWpComNotifications(listOf(site))
@@ -241,12 +241,12 @@ class PushNotificationRepository @Inject constructor(
 
     suspend fun restoreWpComNotifications(sites: List<SiteModel>) {
         val preferences = pushNotificationsDataStore.data.first()
-        val sitesToRestore = sites.filter { preferences.hasWpComPendingRestore(it.id) }
+        val sitesToRestore = sites.filter { preferences.hasWpComPendingRestore(it.siteId) }
         if (sitesToRestore.isEmpty() || !isWpComPushRegistered()) return
 
         if (enableWpComNotificationsForSites(sitesToRestore.map { it.siteId }.toSet()).isSuccess) {
             pushNotificationsDataStore.edit { prefs ->
-                sitesToRestore.forEach { prefs.setWpComPendingRestore(it.id, isPending = false) }
+                sitesToRestore.forEach { prefs.setWpComPendingRestore(it.siteId, isPending = false) }
             }
         }
     }
@@ -263,8 +263,8 @@ class PushNotificationRepository @Inject constructor(
     private suspend fun savePushTokenForSite(site: SiteModel, registration: WooPushRegistrationData) {
         pushNotificationsDataStore.edit { preferences ->
             preferences.savePushRegistration(site.siteId, registration)
-            preferences.saveRefreshedAt(site.id, clock.millis())
-            preferences.setWpComPendingRestore(site.id, isPending = false)
+            preferences.saveRefreshedAt(site.siteId, clock.millis())
+            preferences.setWpComPendingRestore(site.siteId, isPending = false)
         }
     }
 
@@ -273,7 +273,7 @@ class PushNotificationRepository @Inject constructor(
 
     suspend fun shouldRegisterWooPush(currentToken: String, site: SiteModel): Boolean {
         val preferences = pushNotificationsDataStore.data.first()
-        val refreshedAt = preferences.getRefreshedAt(site.id) ?: return true
+        val refreshedAt = preferences.getRefreshedAt(site.siteId) ?: return true
         if (clock.millis() - refreshedAt !in 0 until REFRESH_INTERVAL_MILLIS) return true
 
         val registration = preferences.getPushRegistration(site.siteId) ?: return false
@@ -311,7 +311,7 @@ class PushNotificationRepository @Inject constructor(
         pushNotificationsDataStore.edit { preferences ->
             val registration = preferences.getPushRegistration(site.siteId)
             if (registration != null && registration.token != currentToken) {
-                preferences.clearPushRegistration(site)
+                preferences.clearPushRegistration(site.siteId)
                 cleared = true
             }
         }
@@ -388,7 +388,7 @@ class PushNotificationRepository @Inject constructor(
         }
 
         pushNotificationsDataStore.edit {
-            it.clearPushRegistration(site)
+            it.clearPushRegistration(site.siteId)
         }
         if (isAlreadyDeleted) {
             WooLog.d(
