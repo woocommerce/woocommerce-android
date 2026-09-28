@@ -169,13 +169,11 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any(), any(), any()))
                 .thenReturn(WooResult(RETURNED_TOKEN))
 
-            val currentPreferences = givenStatefulDataStore(
-                mutablePreferencesOf(
-                    stringPreferencesKey("push_token_$SITE_ID") to "legacy-token-id",
-                    stringPreferencesKey("push_token_value_$SITE_ID") to "token",
-                    stringPreferencesKey("push_locale_$SITE_ID") to "en_US",
-                    booleanPreferencesKey("woo_push_wpcom_pending_restore_$SITE_ID") to true
-                )
+            val stored = givenStoredPushPreferences(
+                stringPreferencesKey("push_token_$SITE_ID") to "legacy-token-id",
+                stringPreferencesKey("push_token_value_$SITE_ID") to "token",
+                stringPreferencesKey("push_locale_$SITE_ID") to "en_US",
+                booleanPreferencesKey("woo_push_wpcom_pending_restore_$SITE_ID") to true
             )
 
             assertThat(sut.shouldRegisterWooPush("token", siteModel)).isTrue()
@@ -183,7 +181,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
             assertThat(result.isSuccess).isTrue()
-            val savedPreferences = currentPreferences()
+            val savedPreferences = stored.value
             assertThat(savedPreferences[stringPreferencesKey("push_token_$SITE_ID")]).isEqualTo(RETURNED_TOKEN)
             assertThat(savedPreferences[stringPreferencesKey("push_token_value_$SITE_ID")]).isEqualTo("token")
             assertThat(savedPreferences[stringPreferencesKey("push_locale_$SITE_ID")]).isEqualTo("en_US")
@@ -205,19 +203,17 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             setupWpComRegistration(isRegistered = true)
             whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any()))
                 .thenReturn(Result.success(Unit))
-            val currentPreferences = givenStatefulDataStore(
-                mutablePreferencesOf(
-                    stringPreferencesKey("push_token_$SITE_ID") to "token-id",
-                    stringPreferencesKey("push_token_value_$SITE_ID") to "token",
-                    stringPreferencesKey("push_locale_$SITE_ID") to "en_US",
-                    stringPreferencesKey("push_device_uuid_$SITE_ID") to "stored-uuid"
-                )
+            val stored = givenStoredPushPreferences(
+                stringPreferencesKey("push_token_$SITE_ID") to "token-id",
+                stringPreferencesKey("push_token_value_$SITE_ID") to "token",
+                stringPreferencesKey("push_locale_$SITE_ID") to "en_US",
+                stringPreferencesKey("push_device_uuid_$SITE_ID") to "stored-uuid"
             )
 
             val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
             assertThat(result.isFailure).isTrue()
-            val savedPreferences = currentPreferences()
+            val savedPreferences = stored.value
             assertThat(savedPreferences[stringPreferencesKey("push_token_$SITE_ID")]).isNull()
             assertThat(savedPreferences[stringPreferencesKey("push_token_value_$SITE_ID")]).isNull()
             assertThat(savedPreferences[stringPreferencesKey("push_locale_$SITE_ID")]).isNull()
@@ -247,12 +243,12 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             setupWpComRegistration(isRegistered = true)
             whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any()))
                 .thenReturn(Result.failure(Exception("restore failed")))
-            val currentPreferences = givenStatefulDataStore()
+            val stored = givenStoredPushPreferences()
 
             val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
             assertThat(result.isFailure).isTrue()
-            val savedPreferences = currentPreferences()
+            val savedPreferences = stored.value
             assertThat(savedPreferences[longPreferencesKey("woo_push_refreshed_at_$SITE_ID")])
                 .isEqualTo(NOW_MILLIS)
             assertThat(savedPreferences[booleanPreferencesKey("woo_push_wpcom_pending_restore_$SITE_ID")])
@@ -267,17 +263,15 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any(), any(), any()))
                 .thenReturn(PN_API_NOT_FOUND_ERROR)
             setupWpComRegistration(isRegistered = true)
-            val currentPreferences = givenStatefulDataStore(
-                mutablePreferencesOf(
-                    stringPreferencesKey("push_token_$SITE_ID") to "token-id",
-                    stringPreferencesKey("push_token_value_$SITE_ID") to "token"
-                )
+            val stored = givenStoredPushPreferences(
+                stringPreferencesKey("push_token_$SITE_ID") to "token-id",
+                stringPreferencesKey("push_token_value_$SITE_ID") to "token"
             )
 
             val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
             assertThat(result.isFailure).isTrue()
-            val savedPreferences = currentPreferences()
+            val savedPreferences = stored.value
             assertThat(savedPreferences[stringPreferencesKey("push_token_$SITE_ID")]).isNull()
             assertThat(savedPreferences[longPreferencesKey("woo_push_refreshed_at_$SITE_ID")])
                 .isEqualTo(NOW_MILLIS)
@@ -1027,10 +1021,8 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             setupWpComRegistration(isRegistered = true)
             whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any()))
                 .thenReturn(Result.success(Unit))
-            val currentPreferences = givenStatefulDataStore(
-                mutablePreferencesOf(
-                    booleanPreferencesKey("woo_push_wpcom_pending_restore_$SITE_ID") to true
-                )
+            val stored = givenStoredPushPreferences(
+                booleanPreferencesKey("woo_push_wpcom_pending_restore_$SITE_ID") to true
             )
 
             sut.restoreWpComNotifications(listOf(flaggedSite, currentSite))
@@ -1044,27 +1036,21 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                     )
                 )
             )
-            assertThat(
-                currentPreferences()[booleanPreferencesKey("woo_push_wpcom_pending_restore_$SITE_ID")]
-            ).isNull()
-            assertThat(currentPreferences()[booleanPreferencesKey("woo_push_wpcom_pending_restore_456")]).isNull()
+            assertThat(stored.value[booleanPreferencesKey("woo_push_wpcom_pending_restore_$SITE_ID")]).isNull()
+            assertThat(stored.value[booleanPreferencesKey("woo_push_wpcom_pending_restore_456")]).isNull()
         }
 
     @Test
     fun `given wpcom device is not registered, when restoring, then keeps pending restore`() = testBlocking {
         setupWpComRegistration(isRegistered = false)
-        val currentPreferences = givenStatefulDataStore(
-            mutablePreferencesOf(
-                booleanPreferencesKey("woo_push_wpcom_pending_restore_$SITE_ID") to true
-            )
+        val stored = givenStoredPushPreferences(
+            booleanPreferencesKey("woo_push_wpcom_pending_restore_$SITE_ID") to true
         )
 
         sut.restoreWpComNotifications(listOf(siteModel))
 
         verify(wpComPushNotificationStore, never()).updateNotificationSettingsFor(any())
-        assertThat(
-            currentPreferences()[booleanPreferencesKey("woo_push_wpcom_pending_restore_$SITE_ID")]
-        ).isTrue()
+        assertThat(stored.value[booleanPreferencesKey("woo_push_wpcom_pending_restore_$SITE_ID")]).isTrue()
     }
 
     @Test
@@ -1244,19 +1230,6 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         val deviceId = if (isRegistered) "device-id-123" else null
         whenever(sharedPreferences.getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null))
             .thenReturn(deviceId)
-    }
-
-    private suspend fun givenStatefulDataStore(
-        initialPreferences: Preferences = mutablePreferencesOf()
-    ): () -> Preferences {
-        var savedPreferences = initialPreferences
-        whenever(pushNotificationsDataStore.data).thenAnswer { flowOf(savedPreferences) }
-        whenever(pushNotificationsDataStore.updateData(any())).doSuspendableAnswer { invocation ->
-            val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
-            savedPreferences = transform(savedPreferences)
-            savedPreferences
-        }
-        return { savedPreferences }
     }
 
     private fun givenJetpackConnection(site: SiteModel) {
