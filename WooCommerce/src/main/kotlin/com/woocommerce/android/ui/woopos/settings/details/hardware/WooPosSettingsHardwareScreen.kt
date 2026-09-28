@@ -42,6 +42,9 @@ fun WooPosHardwareSettingsScreen(
 
                         R.string.woopos_settings_hardware_card_readers ->
                             onNavigate(WooPosSettingsDetailDestination.Hardware.CardReaders)
+
+                        R.string.woopos_settings_hardware_cash_drawers ->
+                            onNavigate(WooPosSettingsDetailDestination.Hardware.CashDrawers)
                     }
                 }
             )

@@ -18,5 +18,9 @@ data class WooPosHardwareSettingsState(
             titleRes = R.string.woopos_settings_hardware_barcode_scanners,
             subtitleRes = R.string.woopos_settings_hardware_barcode_scanners_subtitle,
         ),
+        HardwareSettingsItem(
+            titleRes = R.string.woopos_settings_hardware_cash_drawers,
+            subtitleRes = R.string.woopos_settings_hardware_cash_drawers_subtitle,
+        ),
     ),
 )

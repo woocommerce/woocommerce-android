@@ -34,7 +34,7 @@ sealed class WooPosSettingsDetailDestination : Parcelable {
             override val parentDestination: WooPosSettingsDetailDestination? = null
 
             @IgnoredOnParcel
-            override val childDestinations: List<Hardware> = listOf(BarcodeScanners, CardReaders)
+            override val childDestinations: List<Hardware> = listOf(BarcodeScanners, CardReaders, CashDrawers)
         }
 
         @Parcelize
@@ -53,6 +53,18 @@ sealed class WooPosSettingsDetailDestination : Parcelable {
         data object CardReaders : Hardware() {
             @IgnoredOnParcel
             override val titleRes: Int = R.string.woopos_settings_hardware_card_readers
+
+            @IgnoredOnParcel
+            override val parentDestination: Hardware = Overview
+
+            @IgnoredOnParcel
+            override val childDestinations: List<WooPosSettingsDetailDestination> = emptyList()
+        }
+
+        @Parcelize
+        data object CashDrawers : Hardware() {
+            @IgnoredOnParcel
+            override val titleRes: Int = R.string.woopos_settings_hardware_cash_drawers
 
             @IgnoredOnParcel
             override val parentDestination: Hardware = Overview
