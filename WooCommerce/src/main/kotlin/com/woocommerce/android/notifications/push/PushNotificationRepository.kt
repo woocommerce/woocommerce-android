@@ -14,13 +14,11 @@ import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.WooPushRegistrationData
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.clearPushRegistration
+import com.woocommerce.android.notifications.push.PushNotificationPreferences.getNextCheckAt
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.getPushRegistration
-import com.woocommerce.android.notifications.push.PushNotificationPreferences.getRefreshedAt
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.getRegisteredSiteIds
-import com.woocommerce.android.notifications.push.PushNotificationPreferences.hasWpComPendingRestore
+import com.woocommerce.android.notifications.push.PushNotificationPreferences.saveNextCheckAt
 import com.woocommerce.android.notifications.push.PushNotificationPreferences.savePushRegistration
-import com.woocommerce.android.notifications.push.PushNotificationPreferences.saveRefreshedAt
-import com.woocommerce.android.notifications.push.PushNotificationPreferences.setWpComPendingRestore
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionTypeOrNull
@@ -49,6 +47,7 @@ import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 
 class PushNotificationRepository @Inject constructor(
     private val wooPushNotificationsStore: WooPushNotificationsStore,
@@ -143,6 +142,7 @@ class PushNotificationRepository @Inject constructor(
                     errorDescription = errorMsg,
                     errorType = WooErrorType.EMPTY_RESPONSE.name
                 )
+                scheduleNextCheck(selectedSite.siteId, RETRY_INTERVAL_MILLIS)
                 Result.failure(Exception(errorMsg))
             }
         } else {
@@ -157,23 +157,29 @@ class PushNotificationRepository @Inject constructor(
                 WooLog.T.NOTIFICATIONS,
                 "Woo Core push token registration failed:${result.error?.message}, fallback to WPCom"
             )
-            if (allowWpComFallback && !isWpComPushRegistered()) {
-                registerPushTokenInWpComSystem(token)
+            if (result.error?.type == WooErrorType.API_NOT_FOUND) {
+                handleWooPushUnavailable(selectedSite)
+            } else {
+                scheduleNextCheck(selectedSite.siteId, RETRY_INTERVAL_MILLIS)
+                if (allowWpComFallback && !isWpComPushRegistered()) {
+                    registerPushTokenInWpComSystem(token)
+                }
             }
-            if (result.error?.type == WooErrorType.API_NOT_FOUND) handleWooPushUnavailable(selectedSite)
             Result.failure(WooException(result.error))
         }
     }
 
     private suspend fun handleWooPushUnavailable(site: SiteModel) {
+        val canUseWPCom = site.connectionTypeOrNull == SiteConnectionType.Jetpack
+        // Try to restore WP.com push notifications
+        val isWpComRestored = canUseWPCom && isWpComPushRegistered() &&
+            enableWpComNotificationsForSites(setOf(site.siteId)).isSuccess
+
         pushNotificationsDataStore.edit { preferences ->
             preferences.clearPushRegistration(site.siteId)
-            preferences.saveRefreshedAt(site.siteId, clock.millis())
-            if (site.connectionTypeOrNull == SiteConnectionType.Jetpack) {
-                preferences.setWpComPendingRestore(site.siteId, isPending = true)
-            }
+            val interval = if (!canUseWPCom || isWpComRestored) CHECK_INTERVAL_MILLIS else RETRY_INTERVAL_MILLIS
+            preferences.saveNextCheckAt(site.siteId, clock.millis() + interval)
         }
-        restoreWpComNotifications(listOf(site))
     }
 
     private suspend fun disableWpComNotificationsForSite(siteId: Long) {
@@ -239,18 +245,6 @@ class PushNotificationRepository @Inject constructor(
         return result
     }
 
-    suspend fun restoreWpComNotifications(sites: List<SiteModel>) {
-        val preferences = pushNotificationsDataStore.data.first()
-        val sitesToRestore = sites.filter { preferences.hasWpComPendingRestore(it.siteId) }
-        if (sitesToRestore.isEmpty() || !isWpComPushRegistered()) return
-
-        if (enableWpComNotificationsForSites(sitesToRestore.map { it.siteId }.toSet()).isSuccess) {
-            pushNotificationsDataStore.edit { prefs ->
-                sitesToRestore.forEach { prefs.setWpComPendingRestore(it.siteId, isPending = false) }
-            }
-        }
-    }
-
     private fun WpComPushNotificationStore.NotificationSettingsUpdateError?.toErrorCode(): String? =
         when (val type = this?.type) {
             is WpComPushNotificationStore.NotificationSettingErrorType.ApiError -> type.apiErrorCode
@@ -263,8 +257,13 @@ class PushNotificationRepository @Inject constructor(
     private suspend fun savePushTokenForSite(site: SiteModel, registration: WooPushRegistrationData) {
         pushNotificationsDataStore.edit { preferences ->
             preferences.savePushRegistration(site.siteId, registration)
-            preferences.saveRefreshedAt(site.siteId, clock.millis())
-            preferences.setWpComPendingRestore(site.siteId, isPending = false)
+            preferences.saveNextCheckAt(site.siteId, clock.millis() + CHECK_INTERVAL_MILLIS)
+        }
+    }
+
+    private suspend fun scheduleNextCheck(siteId: Long, intervalMillis: Long) {
+        pushNotificationsDataStore.edit { preferences ->
+            preferences.saveNextCheckAt(siteId, clock.millis() + intervalMillis)
         }
     }
 
@@ -273,8 +272,9 @@ class PushNotificationRepository @Inject constructor(
 
     suspend fun shouldRegisterWooPush(currentToken: String, site: SiteModel): Boolean {
         val preferences = pushNotificationsDataStore.data.first()
-        val refreshedAt = preferences.getRefreshedAt(site.siteId) ?: return true
-        if (clock.millis() - refreshedAt !in 0 until REFRESH_INTERVAL_MILLIS) return true
+        val nextCheckAt = preferences.getNextCheckAt(site.siteId) ?: return true
+        val now = clock.millis()
+        if (now >= nextCheckAt || nextCheckAt > now + CHECK_INTERVAL_MILLIS) return true
 
         val registration = preferences.getPushRegistration(site.siteId) ?: return false
         return registration.token != currentToken ||
@@ -449,6 +449,7 @@ class PushNotificationRepository @Inject constructor(
 
     companion object {
         private const val WPCOM_UNREGISTERED_DEVICE_ERROR_CODE = "unregistered_device"
-        private val REFRESH_INTERVAL_MILLIS = 1.days.inWholeMilliseconds
+        private val CHECK_INTERVAL_MILLIS = 1.days.inWholeMilliseconds
+        private val RETRY_INTERVAL_MILLIS = 4.hours.inWholeMilliseconds
     }
 }
