@@ -13,6 +13,6 @@ If applicable, mention key devices, scenarios, or edge cases to verify. -->
 ### Images/gif
 <!-- Include before and after images or gifs when appropriate. -->
 
-- [ ] I have considered if this change warrants release notes and have added them to `RELEASE-NOTES.txt` if necessary. Use the "[Internal]" label for non-user-facing changes.
+- [ ] I have selected `impact: user-visible` or `impact: internal`. For user-visible changes, my PR title describes the change for the release notes. See [release notes guidelines](https://github.com/woocommerce/woocommerce-android/blob/trunk/docs/release-notes.md).
 
-<!-- Pull request guidelines: https://github.com/woocommerce/woocommerce-android/blob/develop/docs/pull-request-guidelines.md -->
+<!-- Pull request guidelines: https://github.com/woocommerce/woocommerce-android/blob/trunk/docs/pull-request-guidelines.md -->

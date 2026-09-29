@@ -1,6 +1,6 @@
-*** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
-*** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
-*** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+*** Generated from PR titles during code freeze. Do not add entries in feature PRs; see docs/release-notes.md.
+*** Entries use [*] by default; preserve higher QA priority by starting the PR title with e.g. [*****].
+*** For user-visible Android Wear changes, include [WEAR] in the PR title.
 
 25.8
 -----

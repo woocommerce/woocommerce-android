@@ -162,6 +162,19 @@ platform :android do
     Fastlane::Helper::GitHelper.create_branch(new_release_branch, from: DEFAULT_BRANCH)
     UI.success("Done! New release branch is: #{git_branch}")
 
+    # Compare with the preceding release before bumping the local version or creating unpublished commits.
+    generate_release_notes_file(
+      repository: GITHUB_REPO,
+      version: new_version,
+      tag_name: new_version,
+      previous_tag: release_version_current,
+      target_commitish: last_git_commit[:commit_hash],
+      configuration_file_path: '.github/developer-release-notes.yml',
+      release_notes_file_path: DEV_RELEASE_NOTES_PATH
+    )
+    git_add(path: DEV_RELEASE_NOTES_PATH)
+    git_commit(path: DEV_RELEASE_NOTES_PATH, message: "Generate release notes for #{new_version}", allow_nothing_to_commit: true)
+
     # Bump the version and build code
     UI.message 'Bumping beta version and build code...'
     VERSION_FILE.write_version(
@@ -180,12 +193,6 @@ platform :android do
     # Empty the `fastlane/metadata/wear/en-US/changelogs/default.txt` file to avoid accidentally still having notes from previous release
     # It will be up to the Release Manager to fill that file with user-friendly release notes manually before calling `complete_code_freeze`.
     File.write(METADATA_SOURCE_CHANGELOG_FILE_PATH[WEAR_APP], '')
-
-    # Add new section header at the top of the dev release notes file ready for next version
-    android_update_release_notes(
-      new_version: new_version,
-      release_notes_file_path: DEV_RELEASE_NOTES_PATH
-    )
 
     UI.important('Pushing changes to remote and configuring the release on GitHub')
     UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')

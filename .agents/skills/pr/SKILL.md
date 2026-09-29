@@ -27,9 +27,9 @@ Create a pull request following the project's PR conventions.
    - Architecture compliance (MVVM layers, Hilt DI, Compose patterns)
    - Missing tests for new logic
    - Any `FIXME`, `!!`, wildcard imports, or other violations
-   - Whether `RELEASE-NOTES.txt` needs updating (user-facing changes)
+   - Whether the PR title and impact label follow `docs/release-notes.md`
 
-6. **Check RELEASE-NOTES.txt.** If changes are user-facing, remind the user to update `RELEASE-NOTES.txt`. Use `[Internal]` for non-user-facing changes.
+6. **Check release-notes metadata.** Select exactly one of `impact: user-visible` or `impact: internal`. For user-visible changes, use a descriptive PR title and preserve any necessary QA priority or `[WEAR]` marker. Do not edit `RELEASE-NOTES.txt` in feature PRs; it is generated during code freeze. See `docs/release-notes.md`.
 
 7. **Push the branch.** Run `git push -u origin <branch-name>`.
 
