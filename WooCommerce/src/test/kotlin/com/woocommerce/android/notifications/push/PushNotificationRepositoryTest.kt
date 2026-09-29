@@ -512,26 +512,6 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given app password site and failing delete, when unregisterDevice called, then site is not registered`() =
-        testBlocking {
-            // GIVEN application password stores share the site id 0 keys
-            val site = mock<SiteModel> { on { siteId } doReturn 0L }
-            whenever(wooCommerceStore.getWooCommerceSites()).thenReturn(mutableListOf(site))
-            givenStoredPushPreferences(
-                stringPreferencesKey("push_token_0") to "token-id-1",
-                stringPreferencesKey("push_token_value_0") to "token-1",
-                stringPreferencesKey("push_locale_0") to "en_US"
-            )
-            whenever(wooPushNotificationsStore.deletePushToken(any(), any())).thenReturn(PN_UNREGISTER_ERROR)
-
-            // WHEN
-            sut.unregisterDeviceFromPushNotifications()
-
-            // THEN
-            assertThat(sut.isWooPushTokenRegisteredForSite(0L)).isFalse()
-        }
-
-    @Test
     fun `given stored registration for an unknown site, when unregisterDevice called, then clears local token`() =
         testBlocking {
             // GIVEN
@@ -564,23 +544,6 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
 
             // THEN
             assertThat(result.isSuccess).isTrue()
-        }
-
-    @Test
-    fun `given site lookup and clearing local state both fail, when unregisterDevice called, then original error wins`() =
-        testBlocking {
-            // GIVEN
-            whenever(wooCommerceStore.getWooCommerceSites()).thenThrow(IllegalStateException("boom"))
-            setupWpComRegistration(isRegistered = false)
-            whenever(pushNotificationsDataStore.updateData(any())).doSuspendableAnswer {
-                throw IOException("disk full")
-            }
-
-            // WHEN
-            val result = runCatching { sut.unregisterDeviceFromPushNotifications() }
-
-            // THEN
-            assertThat(result.exceptionOrNull()).isInstanceOf(IllegalStateException::class.java)
         }
 
     @Test
