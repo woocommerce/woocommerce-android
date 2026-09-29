@@ -60,6 +60,14 @@ tags:
     visible: "New order"
     timeout: 15000
 
+# While the order draft syncs, Collect Payment ignores taps. Create is
+# disabled for the same period, so wait for it to be enabled.
+- extendedWaitUntil:
+    visible:
+      id: "menu_create"
+      enabled: true
+    timeout: 30000
+
 - scrollUntilVisible:
     element: "Collect Payment"
     direction: DOWN
