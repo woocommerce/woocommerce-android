@@ -110,6 +110,8 @@ class RegisterDevice @Inject constructor(
         }
 
         val sites = getSitesForTrigger(trigger)
+        // Retries WP.com restores that failed after a Woo push 404, rather than leaving the site without
+        // notifications until its next daily Woo push check.
         pushNotificationRepository.restoreWpComNotifications(sites)
 
         if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
