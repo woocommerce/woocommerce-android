@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.persistence.mappers
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.Mockito.mockStatic
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.payments.woo.WooPaymentsDepositsOverviewComposedEntities
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.payments.woo.WooPaymentsAccountDepositSummary
@@ -20,6 +21,7 @@ import org.wordpress.android.fluxc.persistence.entity.WooPaymentsBalanceEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositsOverviewEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsManualDepositEntity
+import org.wordpress.android.util.AppLog
 import org.wordpress.android.fluxc.persistence.entity.SourceTypes as WooPaymentsSourceTypesEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositsSchedule as WooPaymentsDepositsScheduleEntity
 
@@ -150,7 +152,7 @@ class WooPaymentsDepositsOverviewMapperTest {
     }
 
     @Test
-    fun `given manual deposit with unexpected date format, when mapApiResponseToModel, then date is null`() {
+    fun `given manual deposit with unexpected date format, when mapApiResponseToModel, then date is null and warning logged`() {
         // GIVEN
         val apiResponse = WooPaymentsDepositsOverviewApiResponse(
             deposit = WooPaymentsCurrencyDeposits(
@@ -166,12 +168,17 @@ class WooPaymentsDepositsOverviewMapperTest {
             account = null
         )
 
-        // WHEN
-        val result = mapper.mapApiResponseToModel(apiResponse)
+        mockStatic(AppLog::class.java).use { appLog ->
+            // WHEN
+            val result = mapper.mapApiResponseToModel(apiResponse)
 
-        // THEN
-        assertThat(result.deposit?.lastManualDeposits?.single()?.currency).isEqualTo("usd")
-        assertThat(result.deposit?.lastManualDeposits?.single()?.date).isNull()
+            // THEN
+            assertThat(result.deposit?.lastManualDeposits?.single()?.currency).isEqualTo("usd")
+            assertThat(result.deposit?.lastManualDeposits?.single()?.date).isNull()
+            appLog.verify {
+                AppLog.w(AppLog.T.API, "Unexpected manual deposit date format: 2026-09-28T12:05:11Z")
+            }
+        }
     }
 
     @Suppress("LongMethod")

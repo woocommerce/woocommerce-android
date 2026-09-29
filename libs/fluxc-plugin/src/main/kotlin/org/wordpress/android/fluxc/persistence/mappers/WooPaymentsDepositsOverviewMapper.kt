@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositsOverviewEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositsSchedule
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsManualDepositEntity
+import org.wordpress.android.util.AppLog
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -251,6 +252,7 @@ class WooPaymentsDepositsOverviewMapper @Inject constructor() {
         return try {
             LocalDateTime.parse(date, MANUAL_DEPOSIT_DATE_FORMATTER).toInstant(ZoneOffset.UTC).toEpochMilli()
         } catch (_: DateTimeParseException) {
+            AppLog.w(AppLog.T.API, "Unexpected manual deposit date format: $date")
             null
         }
     }
