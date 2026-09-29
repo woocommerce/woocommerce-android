@@ -39,7 +39,7 @@ tags:
 
 # Tap Create Order FAB
 - tapOn:
-    id: "createOrderButton"
+    id: "order_list_create_order_fab"
     retryTapIfNoChange: true
     label: "Tap Create Order FAB"
 
@@ -688,7 +688,7 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "ordersList"
+      id: "order_list"
     timeout: 30000
 
 - takeScreenshot: order_create_completed
@@ -696,14 +696,14 @@ tags:
 # Locate the exact completed order and prove the order-local customer edit was
 # persisted by the backend, rather than only rendered in the draft.
 - tapOn:
-    id: "menu_search"
+    id: "order_list_search_action"
     label: "Search for the completed smoke order"
 - extendedWaitUntil:
     visible:
-      id: "search_src_text"
+      id: "order_list_search_field"
     timeout: 10000
 - tapOn:
-    id: "search_src_text"
+    id: "order_list_search_field"
 - inputText: SmokeTest-${SUITE_RUN_ID}
 - pressKey: Enter
 - extendedWaitUntil:
@@ -711,7 +711,9 @@ tags:
     timeout: 30000
     label: "Require the persisted order customer marker"
 - tapOn:
-    id: "orderNum"
+    text: "#\\d+"
+    childOf:
+      id: "order_list"
     index: 0
     retryTapIfNoChange: true
     label: "Open the completed smoke order"

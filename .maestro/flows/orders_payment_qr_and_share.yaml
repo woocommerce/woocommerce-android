@@ -25,7 +25,7 @@ tags:
 # Create a fresh pending-payment order owned by this flow. This avoids opening
 # an arbitrary shared-store order whose payment state may have changed.
 - tapOn:
-    id: "createOrderButton"
+    id: "order_list_create_order_fab"
     retryTapIfNoChange: true
     label: "Tap Create Order FAB"
 
@@ -185,6 +185,6 @@ tags:
 # valid "backed out without collecting payment" outcome.
 - extendedWaitUntil:
     visible:
-      id: "orderDetail_container|ordersList"
+      id: "orderDetail_container|order_list"
     timeout: 30000
     label: "Wait for order detail or orders list after dismissing share sheet"

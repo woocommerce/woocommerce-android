@@ -30,7 +30,7 @@ tags:
 
 # ── Create a fresh pending-payment order ──────────────────────────────
 - tapOn:
-    id: "createOrderButton"
+    id: "order_list_create_order_fab"
     retryTapIfNoChange: true
     label: "Tap Create Order FAB"
 
@@ -147,7 +147,7 @@ tags:
 # ── Verify the payment persisted, not just that we returned to the list ──
 - extendedWaitUntil:
     visible:
-      id: "ordersList"
+      id: "order_list"
     timeout: 30000
 
 - takeScreenshot: orders_after_cash_payment
@@ -156,7 +156,9 @@ tags:
 # paid (newest, top of the list) and confirm the cash payment actually
 # persisted: the order is Completed and shows a recorded Paid line.
 - tapOn:
-    id: "orderNum"
+    text: "#\\d+"
+    childOf:
+      id: "order_list"
     index: 0
     retryTapIfNoChange: true
     label: "Reopen the just-paid order"

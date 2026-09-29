@@ -38,7 +38,7 @@ tags:
 # this run's fixture by its run id. Clear any previously-applied filters
 # first to avoid cross-test contamination.
 - tapOn:
-    id: "btn_order_filter"
+    id: "order_list_filters"
     label: "Open filters"
 
 - runFlow:
@@ -71,14 +71,14 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "ordersList"
+      id: "order_list"
     timeout: 15000
 
 # Pull-to-refresh so the Completed filter reflects the latest server
 # state rather than a stale cached list.
 - swipe:
     from:
-      id: "ordersList"
+      id: "order_list"
     direction: DOWN
     duration: 800
 
@@ -266,5 +266,5 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "ordersList"
+      id: "order_list"
     timeout: 10000

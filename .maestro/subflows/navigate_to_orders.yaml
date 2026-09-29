@@ -5,5 +5,5 @@ appId: com.woocommerce.android
     id: "orders"
 - extendedWaitUntil:
     visible:
-      id: "ordersList"
+      id: "order_list"
     timeout: 15000
