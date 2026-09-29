@@ -5,7 +5,3 @@ changelog:
       - 'impact: internal'
       - 'Releases'
       - 'status: feature-flagged'
-  categories:
-    - title: Changes
-      labels:
-        - '*'

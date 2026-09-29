@@ -29,7 +29,7 @@ Create a pull request following the project's PR conventions.
    - Any `FIXME`, `!!`, wildcard imports, or other violations
    - Whether the PR title and impact label follow `docs/release-notes.md`
 
-6. **Check release-notes metadata.** Select exactly one of `impact: user-visible` or `impact: internal`. For user-visible changes, use a descriptive PR title and preserve any necessary QA priority or `[WEAR]` marker. Do not edit `RELEASE-NOTES.txt` in feature PRs; it is generated during code freeze. See `docs/release-notes.md`.
+6. **Check release-notes metadata.** Follow `docs/release-notes.md` for the impact label and PR title. Feature PRs do not edit `RELEASE-NOTES.txt`.
 
 7. **Push the branch.** Run `git push -u origin <branch-name>`.
 

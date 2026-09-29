@@ -15,6 +15,6 @@ If applicable, mention key devices, scenarios, or edge cases to verify. -->
 
 <!-- Adds or changes a tool or command? Update docs/ai-tools.md. -->
 
-- [ ] I have selected `impact: user-visible` or `impact: internal`. For user-visible changes, my PR title describes the change for the release notes. See [release notes guidelines](https://github.com/woocommerce/woocommerce-android/blob/trunk/docs/release-notes.md).
+- [ ] I selected an impact label and checked my PR title against the [release notes guidelines](https://github.com/woocommerce/woocommerce-android/blob/trunk/docs/release-notes.md).
 
 <!-- Pull request guidelines: https://github.com/woocommerce/woocommerce-android/blob/trunk/docs/pull-request-guidelines.md -->

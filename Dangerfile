@@ -49,11 +49,7 @@ if github.pr_draft?
   return
 end
 
-labels_checker.check(
-  do_not_merge_labels: ['status: do not merge'],
-  required_labels: [//],
-  required_labels_error: 'PR requires at least one label.'
-)
+labels_checker.check(do_not_merge_labels: ['status: do not merge'])
 
 impact_labels = github.pr_labels & ['impact: user-visible', 'impact: internal']
 failure('Choose exactly one release-notes label: `impact: user-visible` or `impact: internal`. See docs/release-notes.md.') unless impact_labels.one?
