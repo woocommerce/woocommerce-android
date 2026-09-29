@@ -76,6 +76,16 @@ class RegisterDevice @Inject constructor(
         }
     }
 
+    suspend fun cancelInProgressRegistration() {
+        if (activeJob != null) {
+            WooLog.d(WooLog.T.NOTIFICATIONS, "Cancelling in-progress push registration")
+            activeJob?.cancel()
+        }
+
+        // Queued runs aren't cancelled, so wait for them and the cancelled run to finish.
+        orchestrationMutex.withLock {}
+    }
+
     @Suppress("TooGenericExceptionCaught")
     private suspend fun register(trigger: Trigger) {
         val token = appPrefsWrapper.getFCMToken()

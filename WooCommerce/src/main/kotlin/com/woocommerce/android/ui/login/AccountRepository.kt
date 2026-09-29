@@ -12,6 +12,7 @@ import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.notifications.push.PushNotificationRepository
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -47,6 +48,7 @@ class AccountRepository @Inject constructor(
     private val siteVisibilityDataStore: VisibleWooSitesDataStore,
     private val dispatchers: CoroutineDispatchers,
     private val pushNotificationRepository: PushNotificationRepository,
+    private val registerDevice: RegisterDevice,
     @DataStoreQualifier(DataStoreType.WOO_POS) private val posDataStore: DataStore<Preferences>,
     private val analyticsTracker: AnalyticsTrackerWrapper
 ) {
@@ -69,9 +71,10 @@ class AccountRepository @Inject constructor(
     suspend fun logout(): Boolean {
         if (!isUserLoggedIn()) return true
 
-        // Capture the site before the suspension point below, it may be reset while we are suspended.
+        // Capture the site before the suspension points below, it may be reset while we are suspended.
         val applicationPasswordSite = selectedSite.getOrNull()
 
+        registerDevice.cancelInProgressRegistration()
         pushNotificationRepository.unregisterDeviceFromPushNotifications()
 
         return if (accountStore.hasAccessToken()) {

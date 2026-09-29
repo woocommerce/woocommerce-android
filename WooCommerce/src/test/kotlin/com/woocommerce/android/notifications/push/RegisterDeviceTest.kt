@@ -554,6 +554,44 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         }
 
     @Test
+    fun `given a run queued behind an in-progress run, when registration is cancelled, then it waits for the queued run to finish`() =
+        testBlocking {
+            // GIVEN
+            runBlocking {
+                whenever(
+                    pushNotificationRepository.registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne)
+                ).doSuspendableAnswer {
+                    delay(Long.MAX_VALUE.milliseconds)
+                    Result.success(Unit)
+                }
+                whenever(
+                    pushNotificationRepository.registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel)
+                ).doSuspendableAnswer {
+                    delay(1000.milliseconds)
+                    Result.success(Unit)
+                }
+            }
+            sut.kickoff(APP_FOREGROUND)
+            runCurrent()
+            sut.kickoff(SITE_SWITCH)
+            runCurrent()
+
+            // WHEN
+            val cancellation = launch { sut.cancelInProgressRegistration() }
+            runCurrent()
+
+            // THEN
+            assertThat(cancellation.isCompleted).isFalse()
+
+            // WHEN
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(cancellation.isCompleted).isTrue()
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel)
+        }
+
+    @Test
     fun `given multiple sites failing woo registration, when login trigger runs, then wpcom is registered exactly once`() =
         testBlocking {
             // GIVEN
