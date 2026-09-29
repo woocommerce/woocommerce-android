@@ -104,11 +104,7 @@ class PushNotificationRepository @Inject constructor(
         )
     }
 
-    suspend fun registerPushTokenInWooCoreSystem(
-        token: String,
-        selectedSite: SiteModel,
-        allowWpComFallback: Boolean = true
-    ): Result<Unit> {
+    suspend fun registerPushTokenInWooCoreSystem(token: String, selectedSite: SiteModel): Result<Unit> {
         WooLog.d(
             tag = WooLog.T.NOTIFICATIONS,
             message = "Registering FCM token in Woo Core instance${if (BuildConfig.DEBUG) ": $token" else ""}"
@@ -155,15 +151,12 @@ class PushNotificationRepository @Inject constructor(
             )
             WooLog.w(
                 WooLog.T.NOTIFICATIONS,
-                "Woo Core push token registration failed:${result.error?.message}, fallback to WPCom"
+                "Woo Core push token registration failed: ${result.error?.message}"
             )
             if (result.error?.type == WooErrorType.API_NOT_FOUND) {
                 handleWooPushUnavailable(selectedSite)
             } else {
                 scheduleNextCheck(selectedSite.siteId, RETRY_INTERVAL_MILLIS)
-                if (allowWpComFallback && !isWpComPushRegistered()) {
-                    registerPushTokenInWpComSystem(token)
-                }
             }
             Result.failure(WooException(result.error))
         }

@@ -25,7 +25,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.lenient
 import org.mockito.kotlin.any
-import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
@@ -103,7 +102,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
 
         // THEN
         verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(TEST_TOKEN)
-        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), any(), any())
+        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), any())
     }
 
     @Test
@@ -114,8 +113,8 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         // THEN
         verify(pushNotificationRepository).shouldRegisterWooPush(TEST_TOKEN, siteOne)
         verify(pushNotificationRepository).shouldRegisterWooPush(TEST_TOKEN, siteTwo)
-        verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
-        verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
+        verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne)
+        verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo)
         verify(pushNotificationRepository, never()).shouldRegisterWooPush(TEST_TOKEN, selectedSiteModel)
     }
 
@@ -125,15 +124,9 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         sut(SITE_SWITCH)
 
         // THEN
-        val fallbackCaptor = argumentCaptor<Boolean>()
         verify(selectedSite).getIfExists()
         verify(pushNotificationRepository).shouldRegisterWooPush(TEST_TOKEN, selectedSiteModel)
-        verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(
-            token = eq(TEST_TOKEN),
-            selectedSite = eq(selectedSiteModel),
-            allowWpComFallback = fallbackCaptor.capture()
-        )
-        assertThat(fallbackCaptor.firstValue).isFalse()
+        verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel)
         verify(pushNotificationRepository, never()).shouldRegisterWooPush(TEST_TOKEN, siteOne)
         verify(pushNotificationRepository, never()).shouldRegisterWooPush(TEST_TOKEN, siteTwo)
         verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(TEST_TOKEN)
@@ -149,8 +142,8 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             // THEN
             verify(pushNotificationRepository, never()).shouldRegisterWooPush(TEST_TOKEN, siteOne)
             verify(pushNotificationRepository, never()).shouldRegisterWooPush(TEST_TOKEN, siteTwo)
-            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
-            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne)
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo)
             verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
         }
 
@@ -164,9 +157,9 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             verify(pushNotificationRepository, never()).isWpComPushRegistered()
             verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
             verify(pushNotificationRepository, never()).shouldRegisterWooPush(eq(TEST_TOKEN), any())
-            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, false)
-            verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
-            verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel)
+            verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne)
+            verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo)
             verify(getWooVisibleSites, never()).invoke()
         }
 
@@ -194,10 +187,10 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             // THEN
             val siteOneOrder = inOrder(pushNotificationRepository)
             siteOneOrder.verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
-            siteOneOrder.verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
+            siteOneOrder.verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne)
             val siteTwoOrder = inOrder(pushNotificationRepository)
             siteTwoOrder.verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
-            siteTwoOrder.verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
+            siteTwoOrder.verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo)
         }
 
     @Test
@@ -217,8 +210,8 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             sut(LOGIN_SUCCESS)
 
             // THEN
-            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
-            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne)
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo)
         }
 
     @Test
@@ -259,7 +252,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         // THEN
         verify(pushNotificationRepository, never()).shouldRegisterWooPush(TEST_TOKEN, siteOne)
         verify(pushNotificationRepository, never()).shouldRegisterWooPush(TEST_TOKEN, siteTwo)
-        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), any(), any())
+        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), any())
     }
 
     @Test
@@ -272,7 +265,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             val siteOneOrder = inOrder(pushNotificationRepository)
             siteOneOrder.verify(pushNotificationRepository)
                 .clearWooPushRegistrationForStaleToken(siteOne, TEST_TOKEN)
-            siteOneOrder.verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
+            siteOneOrder.verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne)
             verify(pushNotificationRepository).clearWooPushRegistrationForStaleToken(siteTwo, TEST_TOKEN)
         }
 
@@ -472,8 +465,8 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
 
             // THEN
             verify(pushNotificationRepository, never())
-                .registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), eq(siteOne), any())
-            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
+                .registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), eq(siteOne))
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo)
         }
 
     @Test
@@ -486,7 +479,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
 
         // THEN
         verify(pushNotificationRepository, never()).shouldRegisterWooPush(eq(TEST_TOKEN), any())
-        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), any(), any())
+        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), any())
         verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(TEST_TOKEN)
     }
 
@@ -496,7 +489,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             // GIVEN
             runBlocking {
                 whenever(
-                    pushNotificationRepository.registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
+                    pushNotificationRepository.registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne)
                 ).doSuspendableAnswer {
                     delay(1000.milliseconds)
                     Result.success(Unit)
@@ -513,9 +506,9 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             runCurrent()
 
             // THEN
-            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne)
             verify(pushNotificationRepository, never())
-                .registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), eq(selectedSiteModel), any())
+                .registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), eq(selectedSiteModel))
 
             // WHEN
             advanceTimeBy(1001.milliseconds)
@@ -523,7 +516,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             advanceUntilIdle()
 
             // THEN
-            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, false)
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel)
         }
 
     @Test
@@ -533,7 +526,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             var isFirstCall = true
             runBlocking {
                 whenever(
-                    pushNotificationRepository.registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
+                    pushNotificationRepository.registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne)
                 ).doSuspendableAnswer {
                     if (isFirstCall) {
                         isFirstCall = false
@@ -553,8 +546,8 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             // THEN
             verify(pushNotificationRepository, times(1)).shouldRegisterWooPush(TEST_TOKEN, siteOne)
             verify(pushNotificationRepository, times(1)).shouldRegisterWooPush(TEST_TOKEN, siteTwo)
-            verify(pushNotificationRepository, times(2)).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
-            verify(pushNotificationRepository, times(2)).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
+            verify(pushNotificationRepository, times(2)).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne)
+            verify(pushNotificationRepository, times(2)).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo)
             // Each run registers the device with WPCom before the Woo registrations, so the
             // cancelled run registers it once and the forced restart registers it again.
             verify(pushNotificationRepository, times(2)).registerPushTokenInWpComSystem(TEST_TOKEN)
@@ -566,7 +559,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             // GIVEN
             runBlocking {
                 whenever(pushNotificationRepository.isWpComPushRegistered()).thenReturn(false)
-                whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any(), any()))
+                whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any()))
                     .thenReturn(Result.failure(Exception("registration failed")))
             }
 
@@ -574,8 +567,8 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             sut(LOGIN_SUCCESS)
 
             // THEN
-            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
-            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne)
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo)
             verify(pushNotificationRepository, times(1)).registerPushTokenInWpComSystem(TEST_TOKEN)
         }
 

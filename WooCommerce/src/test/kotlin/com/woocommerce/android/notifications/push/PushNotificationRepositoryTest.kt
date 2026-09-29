@@ -57,11 +57,7 @@ import kotlin.time.Duration.Companion.minutes
 class PushNotificationRepositoryTest : BaseUnitTest() {
     private val wooPushNotificationsStore: WooPushNotificationsStore = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
-    private val wpComPushNotificationStore: WpComPushNotificationStore = mock {
-        on {
-            registerDevice(any(), any())
-        } doReturn WpComPushNotificationStore.RegisterDeviceResponsePayload(deviceId = "device-id-123")
-    }
+    private val wpComPushNotificationStore: WpComPushNotificationStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val prefsWrapper: PreferenceUtils.PreferenceUtilsWrapper = mock()
     private val sharedPreferences: SharedPreferences = mock()
@@ -317,53 +313,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given stored uuid and not wpcom registered, when registering push token fails, then falls back to wpcom registration`() =
-        testBlocking {
-            whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
-            whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any(), any(), any()))
-                .thenReturn(PN_REGISTRATION_ERROR)
-            setupWpComRegistration(isRegistered = false)
-
-            val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
-
-            assertThat(result.isFailure).isTrue()
-            verify(wooPushNotificationsStore).registerPushToken(
-                eq(siteModel),
-                eq("token"),
-                eq("stored-uuid"),
-                any(),
-                any()
-            )
-            verify(wpComPushNotificationStore, never()).updateNotificationSettingsFor(any())
-            verify(wpComPushNotificationStore).registerDevice(
-                "token",
-                WpComPushNotificationStore.NotificationAppKey.WOOCOMMERCE
-            )
-        }
-
-    @Test
-    fun `given already wpcom registered, when registering push token fails, then does not fallback to wpcom registration`() =
-        testBlocking {
-            whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
-            whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any(), any(), any()))
-                .thenReturn(PN_REGISTRATION_ERROR)
-            setupWpComRegistration(isRegistered = true)
-
-            val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
-
-            assertThat(result.isFailure).isTrue()
-            verify(wooPushNotificationsStore).registerPushToken(
-                eq(siteModel),
-                eq("token"),
-                eq("stored-uuid"),
-                any(),
-                any()
-            )
-            verify(wpComPushNotificationStore, never()).registerDevice(any(), any())
-        }
-
-    @Test
-    fun `when registering push token fails and falls back to wpcom, then retries in four hours`() =
+    fun `given wpcom device not registered, when registering push token fails, then retries in four hours without wpcom calls`() =
         testBlocking {
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
             whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any(), any(), any()))
@@ -376,6 +326,8 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             assertThat(result.isFailure).isTrue()
             assertThat(stored.value[longPreferencesKey("woo_push_next_check_at_$SITE_ID")])
                 .isEqualTo(NOW_MILLIS + 4.hours.inWholeMilliseconds)
+            verify(wpComPushNotificationStore, never()).updateNotificationSettingsFor(any())
+            verify(wpComPushNotificationStore, never()).registerDevice(any(), any())
         }
 
     @Test
@@ -405,7 +357,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             stringPreferencesKey("push_device_uuid_$SITE_ID") to "stored-uuid"
         )
 
-        sut.registerPushTokenInWooCoreSystem("token", siteModel, allowWpComFallback = false)
+        sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
         assertThat(sut.shouldRegisterWooPush("token", siteModel)).isFalse()
     }
@@ -416,7 +368,6 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("")
             whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any(), any(), any()))
                 .thenReturn(PN_REGISTRATION_ERROR)
-            setupWpComRegistration(isRegistered = false)
 
             sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
@@ -951,7 +902,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                 val stored = givenStoredPushPreferences(*entries.toTypedArray())
                 assertThat(sut.shouldRegisterWooPush("token", siteModel)).isTrue()
 
-                val result = sut.registerPushTokenInWooCoreSystem("token", siteModel, allowWpComFallback = false)
+                val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
                 assertThat(result.isFailure).isTrue()
                 assertThat(stored.value[longPreferencesKey("woo_push_next_check_at_$SITE_ID")])
@@ -1167,25 +1118,6 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                 errorType = anyOrNull(),
                 errorCode = anyOrNull()
             )
-        }
-
-    @Test
-    fun `given registration fails and wpcom fallback is disabled, when registering push token, then does not register in wpcom`() =
-        testBlocking {
-            // GIVEN
-            whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
-            whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any(), any(), any()))
-                .thenReturn(PN_REGISTRATION_ERROR)
-
-            // WHEN
-            sut.registerPushTokenInWooCoreSystem(
-                token = "token",
-                selectedSite = siteModel,
-                allowWpComFallback = false
-            )
-
-            // THEN
-            verify(wpComPushNotificationStore, never()).registerDevice(any(), any())
         }
 
     @Test
