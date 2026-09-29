@@ -67,6 +67,14 @@ tags:
 # The toolbar Create action submits the order without starting the
 # payment flow. That leaves a safe automation-owned Pending payment
 # order whose detail screen exposes Collect Payment.
+# Create stays disabled while the order draft syncs, and a tap on it
+# does nothing until then.
+- extendedWaitUntil:
+    visible:
+      id: "menu_create"
+      enabled: true
+    timeout: 30000
+
 - tapOn:
     id: "menu_create"
     retryTapIfNoChange: true
