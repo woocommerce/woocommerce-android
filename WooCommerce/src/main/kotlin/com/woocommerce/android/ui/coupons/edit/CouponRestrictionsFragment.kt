@@ -13,7 +13,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.coupons.edit.CouponRestrictionsViewModel.OpenAllowedEmailsEditor
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorFragment
@@ -39,7 +39,7 @@ class CouponRestrictionsFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     CouponRestrictionsScreen(viewModel)
                 }
             }

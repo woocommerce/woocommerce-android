@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
@@ -124,6 +125,33 @@ class WooChoiceControlsTest {
                 click(Offset(filterChipBounds.center.x, filterChipBounds.top - 1f))
             }
         filterChip.assertIsOn()
+    }
+
+    @Test
+    fun `given action chip, when rendered, then it has button semantics and a minimum touch target`() {
+        var clicked = false
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                WooActionChip(
+                    onClick = { clicked = true },
+                    label = ACTION_CHIP_LABEL,
+                    modifier = Modifier.testTag(ACTION_CHIP_TAG),
+                )
+            }
+        }
+
+        val actionChip = composeTestRule.onNodeWithTag(ACTION_CHIP_TAG)
+        val actionChipBounds = actionChip.fetchSemanticsNode().boundsInRoot
+        val semantics = actionChip.fetchSemanticsNode().config
+
+        assertThat(semantics.getOrNull(SemanticsProperties.Role)).isEqualTo(Role.Button)
+        assertThat(semantics.getOrNull(SemanticsProperties.ToggleableState)).isNull()
+        composeTestRule.onRoot()
+            .assertHeightIsAtLeast(MIN_TOUCH_TARGET_SIZE)
+            .performTouchInput {
+                click(Offset(actionChipBounds.center.x, actionChipBounds.top - 1f))
+            }
+        composeTestRule.runOnIdle { assertThat(clicked).isTrue() }
     }
 
     @Test
@@ -379,6 +407,8 @@ class WooChoiceControlsTest {
 
     private companion object {
         const val CHIP_LABEL = "Selected"
+        const val ACTION_CHIP_LABEL = "Sort by"
+        const val ACTION_CHIP_TAG = "WooActionChip"
         const val FILTER_CHIP_LABEL = "Filter"
         const val FILTER_CHIP_TAG = "WooFilterChipMinTouchTarget"
         const val TRISTATE_CHECKBOX_TAG = "WooTriStateCheckbox"

@@ -14,6 +14,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus.JetpackStatusFetchResponse
+import com.woocommerce.android.ui.jetpack.IsJetpackInOfflineMode
 import com.woocommerce.android.ui.pushnotifications.introduction.WooPushNotificationsIntroductionViewModel.ViewState
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -49,6 +50,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
         )
     }
+    private val isJetpackInOfflineMode: IsJetpackInOfflineMode = mock()
     private val checkWCPluginSupport: CheckWooPluginPushNotificationsSupport = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
@@ -82,6 +84,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
         viewModel = WooPushNotificationsIntroductionViewModel(
             savedStateHandle = SavedStateHandle(),
             fetchJetpackStatus = fetchJetpackStatus,
+            isJetpackInOfflineMode = isJetpackInOfflineMode,
             checkWCPluginSupport = checkWCPluginSupport,
             selectedSite = selectedSite,
             analyticsTrackerWrapper = analyticsTrackerWrapper
@@ -255,10 +258,11 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given connection is forbidden, when screen opens, then ForbiddenError state is shown`() =
+    fun `given connection is forbidden and not in offline mode, when screen opens, then ForbiddenError state is shown`() =
         testBlocking {
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.ConnectionForbidden))
+            whenever(isJetpackInOfflineMode(any(), any())).thenReturn(false)
 
             setup()
 
@@ -268,6 +272,56 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
                 eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_ERROR),
                 eq(mapOf(AnalyticsTracker.KEY_ERROR_TYPE to "no_permission"))
             )
+        }
+
+    @Test
+    fun `given connection is forbidden and site is in offline mode, when screen opens, then OfflineModeError state is shown`() =
+        testBlocking {
+            whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
+                .thenReturn(Result.success(JetpackStatusFetchResponse.ConnectionForbidden))
+            whenever(isJetpackInOfflineMode(any(), any())).thenReturn(true)
+
+            setup()
+
+            val viewState = viewModel.viewState.getOrAwaitValue()
+            assertThat(viewState).isEqualTo(ViewState.OfflineModeError)
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_ERROR),
+                eq(mapOf(AnalyticsTracker.KEY_ERROR_TYPE to "offline_mode"))
+            )
+        }
+
+    @Test
+    fun `given site is not connected, when screen opens, then offline mode is not checked`() =
+        testBlocking {
+            val jetpackStatus = JetpackStatus(
+                isJetpackInstalled = false,
+                jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                    siteRegistrationStatus = JetpackSiteRegistrationStatus.NOT_REGISTERED,
+                    blogId = null
+                )
+            )
+            whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
+                .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
+
+            setup()
+
+            val viewState = viewModel.viewState.getOrAwaitValue()
+            assertThat(viewState).isEqualTo(ViewState.NotConnected)
+            verify(isJetpackInOfflineMode, never()).invoke(any(), any())
+        }
+
+    @Test
+    fun `given fetching jetpack status fails, when screen opens, then offline mode is not checked`() =
+        testBlocking {
+            whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
+                .thenReturn(Result.failure(Exception("Network error")))
+
+            setup()
+
+            val viewState = viewModel.viewState.getOrAwaitValue()
+            assertThat(viewState).isEqualTo(ViewState.GenericError)
+            verify(isJetpackInOfflineMode, never()).invoke(any(), any())
         }
 
     @Test

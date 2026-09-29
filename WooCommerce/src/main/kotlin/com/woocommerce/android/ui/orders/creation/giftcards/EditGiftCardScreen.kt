@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun EditGiftCardScreen(viewModel: OrderCreateEditGiftCardViewModel) {
@@ -71,7 +71,7 @@ fun EditGiftCardScreen(
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun EditGiftCardScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         EditGiftCardScreen("XPTO-1234-ABCD-XPTO", true, {}, {})
     }
 }

@@ -18,10 +18,12 @@ import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -32,6 +34,8 @@ import org.mockito.kotlin.argThat
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
@@ -255,9 +259,9 @@ class ProductListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Shows and hides add product button correctly when loading list of products`() =
+    fun `given displayed products, when refreshing, then add product button remains visible`() =
         testBlocking {
-            // when
+            // GIVEN
             doReturn(Result.success(productList)).whenever(productRepository).fetchProductList()
 
             createViewModel()
@@ -269,10 +273,11 @@ class ProductListViewModelTest : BaseUnitTest() {
                 }
             }
 
+            // WHEN
             viewModel.loadProducts()
 
-            // then
-            assertThat(isAddProductButtonVisible).containsExactly(true, false, true)
+            // THEN
+            assertThat(isAddProductButtonVisible).containsExactly(true)
         }
 
     @Test
@@ -318,12 +323,14 @@ class ProductListViewModelTest : BaseUnitTest() {
             assertThat(isAddProductButtonVisible).containsExactly(false)
         }
 
-    /* We show the Add Product FAB after searching is completed. */
     @Test
-    fun `Shows add product button after opening and closing search`() =
+    fun `given search is open, when the search returns no results, then the add product button is shown`() =
         testBlocking {
-            // when
-            doReturn(Result.success(emptyList<Product>())).whenever(productRepository).fetchProductList()
+            // GIVEN
+            doReturn(Result.success(productList)).whenever(productRepository).fetchProductList()
+            productRepository.stub {
+                on { searchProductList(any(), any(), any(), anyOrNull(), any()) } doReturn emptyList()
+            }
 
             createViewModel()
 
@@ -334,12 +341,133 @@ class ProductListViewModelTest : BaseUnitTest() {
                 }
             }
 
+            // WHEN
             viewModel.loadProducts()
+            advanceUntilIdle()
+            viewModel.onSearchOpened()
+            viewModel.onSearchQueryChanged("nomatch")
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(isAddProductButtonVisible).containsExactly(true, false, true)
+        }
+
+    @Test
+    fun `given a search returned no results, when the term is cleared, then the add product button is hidden`() =
+        testBlocking {
+            // GIVEN
+            doReturn(Result.success(productList)).whenever(productRepository).fetchProductList()
+            productRepository.stub {
+                on { searchProductList(any(), any(), any(), anyOrNull(), any()) } doReturn emptyList()
+            }
+
+            createViewModel()
+
+            val isAddProductButtonVisible = ArrayList<Boolean>()
+            viewModel.viewStateLiveData.observeForever { old, new ->
+                new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
+                    isAddProductButtonVisible.add(it)
+                }
+            }
+
+            // WHEN
+            viewModel.loadProducts()
+            advanceUntilIdle()
+            viewModel.onSearchOpened()
+            viewModel.onSearchQueryChanged("nomatch")
+            advanceUntilIdle()
+            viewModel.onSearchQueryChanged("")
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(isAddProductButtonVisible).containsExactly(true, false, true, false)
+        }
+
+    @Test
+    fun `given search is open, when a query too short to search is typed, then the add product button is hidden`() =
+        testBlocking {
+            // GIVEN
+            doReturn(Result.success(productList)).whenever(productRepository).fetchProductList()
+
+            createViewModel()
+
+            val isAddProductButtonVisible = ArrayList<Boolean>()
+            viewModel.viewStateLiveData.observeForever { old, new ->
+                new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
+                    isAddProductButtonVisible.add(it)
+                }
+            }
+
+            // WHEN
+            viewModel.loadProducts()
+            advanceUntilIdle()
+            viewModel.onSearchOpened()
+            viewModel.onSearchQueryChanged("no")
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(isAddProductButtonVisible).containsExactly(true, false)
+        }
+
+    @Test
+    fun `given a filter is set, when the term is cleared after a search with no results, then the button is hidden`() =
+        testBlocking {
+            // GIVEN
+            productRepository.stub {
+                on { fetchProductList(any(), any(), any(), anyOrNull(), any()) } doReturn Result.success(productList)
+                on { searchProductList(any(), any(), any(), anyOrNull(), any()) } doReturn emptyList()
+            }
+
+            createViewModel()
+
+            val isAddProductButtonVisible = ArrayList<Boolean>()
+            viewModel.viewStateLiveData.observeForever { old, new ->
+                new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
+                    isAddProductButtonVisible.add(it)
+                }
+            }
+
+            // WHEN
+            viewModel.onFiltersChanged("instock", null, null, null, null)
+            advanceUntilIdle()
+            viewModel.onSearchOpened()
+            viewModel.onSearchQueryChanged("nomatch")
+            advanceUntilIdle()
+            viewModel.onSearchQueryChanged("")
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(isAddProductButtonVisible).containsExactly(true, false, true, false)
+        }
+
+    @Test
+    fun `given cached products, when search closes during refresh, then add product button remains visible`() =
+        testBlocking {
+            // GIVEN
+            val fetchResult = CompletableDeferred<Result<List<Product>>>()
+            doReturn(false).whenever(networkStatus).isConnected()
+            doReturn(productList).whenever(productRepository).getProductList()
+            whenever(productRepository.fetchProductList()).doSuspendableAnswer { fetchResult.await() }
+
+            createViewModel()
+            doReturn(true).whenever(networkStatus).isConnected()
+
+            lateinit var latestViewState: ProductListViewState
+            viewModel.viewStateLiveData.observeForever { _, new -> latestViewState = new }
+
+            // WHEN
             viewModel.onSearchOpened()
             viewModel.onSearchClosed()
+            runCurrent()
 
-            // then
-            assertThat(isAddProductButtonVisible).containsExactly(false, true, false)
+            // THEN
+            assertThat(viewModel.productList.value).isEqualTo(productList)
+            assertThat(latestViewState.isLoading).isTrue()
+            assertThat(latestViewState.isAddProductButtonVisible).isTrue()
+
+            fetchResult.complete(Result.success(productList))
+            advanceUntilIdle()
+            assertThat(latestViewState.isAddProductButtonVisible).isTrue()
         }
 
     /* We hide the filters when searching. */
@@ -762,20 +890,21 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given open product id excluded, when reloadProductsFromDb, then value of it reseted`() = testBlocking {
+    fun `given open product id excluded, when reloadProductsFromDb, then open product is cleared`() = testBlocking {
         // GIVEN
         val openProductId = 1L
-        savedStateHandle["key_product_opened"] = openProductId
+        savedStateHandle[SELECTED_PRODUCT_ON_BIG_SCREEN_KEY] = openProductId
         whenever(productRepository.getProductList(any(), anyOrNull(), anyOrNull())).thenReturn(
             listOf(ProductTestUtils.generateProduct(productId = 2L))
         )
+        createViewModel()
+        assertThat(savedStateHandle.get<Long>(SELECTED_PRODUCT_ON_BIG_SCREEN_KEY)).isEqualTo(openProductId)
 
         // WHEN
-        createViewModel()
         viewModel.reloadProductsFromDb(excludeProductId = openProductId)
 
         // THEN
-        assertThat(savedStateHandle.get<Long>("key_product_selected_on_big_screen")).isNull()
+        assertThat(savedStateHandle.get<Long>(SELECTED_PRODUCT_ON_BIG_SCREEN_KEY)).isNull()
     }
 
     @Test
@@ -786,7 +915,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         createViewModel()
 
         // when
-        viewModel.onOpenProduct(1L, null)
+        viewModel.onOpenProduct(1L)
 
         // then
         verify(analyticsTracker).track(
@@ -803,7 +932,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         createViewModel()
 
         // when
-        viewModel.onOpenProduct(1L, null)
+        viewModel.onOpenProduct(1L)
 
         // then
         verify(analyticsTracker).track(
@@ -844,5 +973,375 @@ class ProductListViewModelTest : BaseUnitTest() {
             AnalyticsEvent.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED,
             mapOf("horizontal_size_class" to "compact")
         )
+    }
+
+    @Test
+    fun `given saved selection, when ViewModel is recreated, then selected IDs are restored`() = testBlocking {
+        val product = ProductTestUtils.generateProduct(productId = 11L)
+        doReturn(Result.success(listOf(product))).whenever(productRepository).fetchProductList(
+            productFilterOptions = emptyMap()
+        )
+        createViewModel()
+        viewModel.onProductLongPressed(product.remoteId)
+        advanceUntilIdle()
+
+        createViewModel()
+        advanceUntilIdle()
+
+        assertThat(viewModel.selectedProductIds.value).containsExactly(product.remoteId)
+    }
+
+    @Test
+    fun `given restored IDs, when first cache is empty, then reconciliation waits for completed load`() = testBlocking {
+        val loadedProduct = ProductTestUtils.generateProduct(productId = 21L)
+        savedStateHandle[SELECTED_PRODUCT_IDS_KEY] = linkedSetOf(loadedProduct.remoteId, 999L)
+        doReturn(emptyList<Product>()).whenever(productRepository).getProductList()
+        doReturn(Result.success(listOf(loadedProduct))).whenever(productRepository).fetchProductList(
+            productFilterOptions = emptyMap()
+        )
+
+        createViewModel()
+        advanceUntilIdle()
+
+        assertThat(viewModel.selectedProductIds.value).containsExactly(loadedProduct.remoteId)
+    }
+
+    @Test
+    fun `given restored selection, when initial load is offline, then IDs are preserved`() = testBlocking {
+        savedStateHandle[SELECTED_PRODUCT_IDS_KEY] = linkedSetOf(22L, 999L)
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        createViewModel()
+        advanceUntilIdle()
+
+        assertThat(viewModel.selectedProductIds.value).containsExactly(22L, 999L)
+    }
+
+    @Test
+    fun `given restored selection, when authoritative load fails, then IDs are preserved`() = testBlocking {
+        savedStateHandle[SELECTED_PRODUCT_IDS_KEY] = linkedSetOf(23L, 999L)
+        doReturn(Result.failure<List<Product>>(IllegalStateException("fetch failed")))
+            .whenever(productRepository).fetchProductList(productFilterOptions = emptyMap())
+
+        createViewModel()
+        advanceUntilIdle()
+
+        assertThat(viewModel.selectedProductIds.value).containsExactly(23L, 999L)
+    }
+
+    @Test
+    fun `given restored selection, when append cannot load more, then IDs are preserved`() = testBlocking {
+        savedStateHandle[SELECTED_PRODUCT_IDS_KEY] = linkedSetOf(24L, 999L)
+        doReturn(Result.failure<List<Product>>(IllegalStateException("fetch failed")))
+            .whenever(productRepository).fetchProductList(productFilterOptions = emptyMap())
+        doReturn(false).whenever(productRepository).canLoadMoreProducts
+        createViewModel()
+
+        viewModel.onLoadMoreRequested()
+        advanceUntilIdle()
+
+        assertThat(viewModel.selectedProductIds.value).containsExactly(24L, 999L)
+    }
+
+    @Test
+    fun `given loaded products, when Select All is tapped, then only currently loaded IDs are selected`() = testBlocking {
+        val firstPage = listOf(
+            ProductTestUtils.generateProduct(productId = 31L),
+            ProductTestUtils.generateProduct(productId = 32L),
+        )
+        val appendedList = firstPage + ProductTestUtils.generateProduct(productId = 33L)
+        doReturn(true).whenever(productRepository).canLoadMoreProducts
+        doReturn(Result.success(firstPage)).whenever(productRepository).fetchProductList(
+            loadMore = false,
+            productFilterOptions = emptyMap(),
+        )
+        doReturn(Result.success(appendedList)).whenever(productRepository).fetchProductList(
+            loadMore = true,
+            productFilterOptions = emptyMap(),
+        )
+        createViewModel()
+
+        viewModel.onSelectAllProductsClicked()
+        viewModel.onLoadMoreRequested()
+        advanceUntilIdle()
+
+        assertThat(viewModel.selectedProductIds.value).containsExactlyElementsOf(firstPage.map(Product::remoteId))
+        assertThat(viewModel.selectedProductIds.value).doesNotContain(33L)
+    }
+
+    @Test
+    fun `given browsing mode, when a row is tapped, then product opens without selecting`() = testBlocking {
+        createViewModel()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever(events::add)
+
+        viewModel.onProductTapped(41L)
+
+        assertThat(events.filterIsInstance<ProductListEvent.OpenProduct>().map { it.productId })
+            .containsExactly(41L)
+        assertThat(viewModel.selectedProductIds.value).isEmpty()
+    }
+
+    @Test
+    fun `given browsing mode, when a row is long pressed, then selection starts without navigation`() = testBlocking {
+        createViewModel()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever(events::add)
+
+        viewModel.onProductLongPressed(42L)
+
+        assertThat(viewModel.selectedProductIds.value).containsExactly(42L)
+        assertThat(events.filterIsInstance<ProductListEvent.OpenProduct>()).isEmpty()
+    }
+
+    @Test
+    fun `given selection mode, when rows are tapped, then selection toggles and final deselection exits`() = testBlocking {
+        createViewModel()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever(events::add)
+        viewModel.onProductLongPressed(51L)
+
+        viewModel.onProductTapped(52L)
+        viewModel.onProductTapped(51L)
+        assertThat(viewModel.selectedProductIds.value).containsExactly(52L)
+        viewModel.onProductTapped(52L)
+
+        assertThat(viewModel.selectedProductIds.value).isEmpty()
+        assertThat(events.filterIsInstance<ProductListEvent.OpenProduct>()).isEmpty()
+    }
+
+    @Test
+    fun `given search query below threshold, when debounce completes, then no search is requested`() = testBlocking {
+        createViewModel()
+        viewModel.onSearchOpened()
+
+        viewModel.onSearchQueryChanged("ab")
+        advanceUntilIdle()
+
+        verify(productRepository, never()).searchProductList(
+            searchQuery = any(),
+            skuSearchOptions = any(),
+            loadMore = any(),
+            excludedProductIds = anyOrNull(),
+            productFilterOptions = any(),
+        )
+    }
+
+    @Test
+    fun `given short search query, when search is submitted, then search is requested`() = testBlocking {
+        createViewModel()
+        viewModel.onSearchOpened()
+        viewModel.onSearchQueryChanged("ab")
+
+        viewModel.onSearchRequested()
+        advanceUntilIdle()
+
+        verify(productRepository).searchProductList(
+            searchQuery = "ab",
+            skuSearchOptions = WCProductStore.SkuSearchOptions.Disabled,
+            loadMore = false,
+            productFilterOptions = emptyMap(),
+        )
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_LIST_SEARCHED,
+            mapOf(
+                AnalyticsTracker.KEY_SEARCH to "ab",
+                AnalyticsTracker.KEY_SEARCH_FILTER to AnalyticsTracker.VALUE_SEARCH_ALL,
+            )
+        )
+    }
+
+    @Test
+    fun `given rapid search changes, when debounce completes, then latest All products search is tracked once`() =
+        testBlocking {
+            createViewModel()
+            viewModel.onSearchOpened()
+
+            viewModel.onSearchQueryChanged("hood")
+            viewModel.onSearchQueryChanged("hoodie")
+            viewModel.onSearchRequested()
+            advanceUntilIdle()
+
+            verify(productRepository, times(1)).searchProductList(
+                searchQuery = "hoodie",
+                skuSearchOptions = WCProductStore.SkuSearchOptions.Disabled,
+                loadMore = false,
+                productFilterOptions = emptyMap(),
+            )
+            verify(analyticsTracker, times(1)).track(
+                AnalyticsEvent.PRODUCT_LIST_SEARCHED,
+                mapOf(
+                    AnalyticsTracker.KEY_SEARCH to "hoodie",
+                    AnalyticsTracker.KEY_SEARCH_FILTER to AnalyticsTracker.VALUE_SEARCH_ALL,
+                )
+            )
+        }
+
+    @Test
+    fun `given accepted search, when results append, then search analytics is tracked only for initial intent`() =
+        testBlocking {
+            doReturn(true).whenever(productRepository).canLoadMoreProducts
+            createViewModel()
+            viewModel.onSearchOpened()
+
+            viewModel.onSearchQueryChanged("hoodie")
+            advanceUntilIdle()
+            viewModel.onLoadMoreRequested()
+            advanceUntilIdle()
+
+            verify(productRepository).searchProductList(
+                searchQuery = "hoodie",
+                skuSearchOptions = WCProductStore.SkuSearchOptions.Disabled,
+                loadMore = true,
+                productFilterOptions = emptyMap(),
+            )
+            verify(analyticsTracker, times(1)).track(
+                AnalyticsEvent.PRODUCT_LIST_SEARCHED,
+                mapOf(
+                    AnalyticsTracker.KEY_SEARCH to "hoodie",
+                    AnalyticsTracker.KEY_SEARCH_FILTER to AnalyticsTracker.VALUE_SEARCH_ALL,
+                )
+            )
+        }
+
+    @Test
+    fun `given overlapping search pages, when results append, then duplicate products are removed`() = testBlocking {
+        val firstProduct = ProductTestUtils.generateProduct(productId = 1L)
+        val secondProduct = ProductTestUtils.generateProduct(productId = 2L)
+        doReturn(true).whenever(productRepository).canLoadMoreProducts
+        doReturn("hoodie").whenever(productRepository).lastSearchQuery
+        doReturn(WCProductStore.SkuSearchOptions.Disabled).whenever(productRepository).lastIsSkuSearch
+        doReturn(listOf(firstProduct), listOf(firstProduct, secondProduct))
+            .whenever(productRepository).searchProductList(
+                searchQuery = "hoodie",
+                skuSearchOptions = WCProductStore.SkuSearchOptions.Disabled,
+                loadMore = false,
+                productFilterOptions = emptyMap(),
+            )
+        doReturn(listOf(firstProduct, secondProduct)).whenever(productRepository).searchProductList(
+            searchQuery = "hoodie",
+            skuSearchOptions = WCProductStore.SkuSearchOptions.Disabled,
+            loadMore = true,
+            productFilterOptions = emptyMap(),
+        )
+        createViewModel()
+        viewModel.onSearchOpened()
+
+        viewModel.onSearchQueryChanged("hoodie")
+        advanceUntilIdle()
+        viewModel.onLoadMoreRequested()
+        advanceUntilIdle()
+
+        assertThat(viewModel.productList.value.orEmpty().map(Product::remoteId)).containsExactly(1L, 2L)
+    }
+
+    @Test
+    fun `given restored active search, when ViewModel loads, then search analytics is not tracked`() = testBlocking {
+        savedStateHandle[ProductListViewState::class.java.name] = ProductListViewState(
+            isSearchActive = true,
+            query = "restored query",
+        )
+
+        createViewModel()
+        advanceUntilIdle()
+
+        verify(productRepository).searchProductList(
+            searchQuery = "restored query",
+            skuSearchOptions = WCProductStore.SkuSearchOptions.Disabled,
+            loadMore = false,
+            productFilterOptions = emptyMap(),
+        )
+        verify(analyticsTracker, never()).track(
+            eq(AnalyticsEvent.PRODUCT_LIST_SEARCHED),
+            any<Map<String, *>>(),
+        )
+    }
+
+    @Test
+    fun `given SKU scope, when query passes threshold, then partial SKU search is used`() = testBlocking {
+        createViewModel()
+        viewModel.onSearchOpened()
+        viewModel.onSearchTypeChanged(isSkuSearch = true)
+
+        viewModel.onSearchQueryChanged("alm")
+        advanceUntilIdle()
+
+        verify(productRepository).searchProductList(
+            searchQuery = "alm",
+            skuSearchOptions = WCProductStore.SkuSearchOptions.PartialMatch,
+            loadMore = false,
+            productFilterOptions = emptyMap(),
+        )
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_LIST_SEARCHED,
+            mapOf(
+                AnalyticsTracker.KEY_SEARCH to "alm",
+                AnalyticsTracker.KEY_SEARCH_FILTER to AnalyticsTracker.VALUE_SEARCH_SKU,
+            )
+        )
+    }
+
+    @Test
+    fun `given mutable selected IDs, when bulk update is requested, then event keeps an immutable snapshot`() {
+        createViewModel()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever(events::add)
+        val selectedIds = mutableListOf(61L, 62L)
+
+        viewModel.onBulkUpdatePriceClicked(selectedIds)
+        selectedIds.clear()
+
+        assertThat(events.filterIsInstance<ProductListEvent.ShowUpdateDialog.Price>().single().productIds)
+            .containsExactly(61L, 62L)
+    }
+
+    @Test
+    fun `given mutable selected IDs, when stock status is requested, then analytics and event use one snapshot`() {
+        createViewModel()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever(events::add)
+        val selectedIds = mutableListOf(71L, 72L)
+
+        viewModel.onBulkUpdateStockStatusClicked(selectedIds)
+        selectedIds.clear()
+
+        verify(analyticsTracker, times(1)).track(
+            AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_REQUESTED,
+            mapOf(
+                AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STOCK_STATUS,
+                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to 2,
+            )
+        )
+        assertThat(events.filterIsInstance<ProductListEvent.ShowProductUpdateStockStatusScreen>().single().productIds)
+            .containsExactly(71L, 72L)
+    }
+
+    @Test
+    fun `when search and barcode actions are tapped, then each analytics event is tracked exactly once`() {
+        createViewModel()
+
+        viewModel.onSearchButtonClicked()
+        viewModel.onBarcodeScannerClicked()
+
+        verify(analyticsTracker, times(1)).track(AnalyticsEvent.PRODUCT_LIST_MENU_SEARCH_TAPPED)
+        verify(analyticsTracker, times(1)).track(AnalyticsEvent.PRODUCT_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
+    }
+
+    @Test
+    fun `when browsing controls are used, then each existing analytics event is tracked exactly once`() {
+        createViewModel()
+
+        viewModel.onFiltersButtonTapped()
+        viewModel.onSortButtonTapped()
+        viewModel.onRefreshRequested()
+
+        verify(analyticsTracker, times(1)).track(AnalyticsEvent.PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED)
+        verify(analyticsTracker, times(1)).track(AnalyticsEvent.PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED)
+        verify(analyticsTracker, times(1)).track(AnalyticsEvent.PRODUCT_LIST_PULLED_TO_REFRESH)
+    }
+
+    private companion object {
+        const val SELECTED_PRODUCT_ON_BIG_SCREEN_KEY = "key_product_selected_on_big_screen"
+        const val SELECTED_PRODUCT_IDS_KEY = "key_selected_product_ids"
     }
 }

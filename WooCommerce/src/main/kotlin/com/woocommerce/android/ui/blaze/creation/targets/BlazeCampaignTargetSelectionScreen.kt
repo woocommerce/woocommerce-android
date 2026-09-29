@@ -52,7 +52,6 @@ import com.woocommerce.android.ui.compose.component.MultiSelectList
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCSearchField
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 
 @Composable
@@ -95,10 +94,10 @@ private fun TargetSelectionScreen(
                 onNavigationButtonClick = onBackPressed,
                 actions = {
                     if (state.searchState is SearchState.Hidden || state.searchState is Inactive) {
-                        WCTextButton(
+                        TextAction(
+                            text = stringResource(string.save),
                             onClick = onSaveTapped,
                             enabled = state.isSaveButtonEnabled,
-                            text = stringResource(string.save)
                         )
                     }
                 }

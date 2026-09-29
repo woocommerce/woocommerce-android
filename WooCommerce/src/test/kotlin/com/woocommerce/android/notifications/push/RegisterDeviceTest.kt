@@ -170,6 +170,45 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
     }
 
     @Test
+    fun `given login success trigger, when registration runs, then registers WPCom before the Woo sites`() =
+        testBlocking {
+            // GIVEN
+            runBlocking { whenever(pushNotificationRepository.isWpComPushRegistered()).thenReturn(false) }
+
+            // WHEN
+            sut(LOGIN_SUCCESS)
+
+            // THEN
+            val siteOneOrder = inOrder(pushNotificationRepository)
+            siteOneOrder.verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
+            siteOneOrder.verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
+            val siteTwoOrder = inOrder(pushNotificationRepository)
+            siteTwoOrder.verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
+            siteTwoOrder.verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
+        }
+
+    @Test
+    fun `given login success trigger, when WPCom registration returns an error, then still registers Woo sites`() =
+        testBlocking {
+            // GIVEN
+            runBlocking {
+                whenever(pushNotificationRepository.isWpComPushRegistered()).thenReturn(false)
+                whenever(pushNotificationRepository.registerPushTokenInWpComSystem(any())).thenReturn(
+                    WpComPushNotificationStore.RegisterDeviceResponsePayload(
+                        WpComPushNotificationStore.DeviceRegistrationError(message = "registration failed")
+                    )
+                )
+            }
+
+            // WHEN
+            sut(LOGIN_SUCCESS)
+
+            // THEN
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
+        }
+
+    @Test
     fun `given app foreground trigger, when WPCom is already registered, then skips WPCom registration`() = testBlocking {
         // GIVEN
         runBlocking { whenever(pushNotificationRepository.isWpComPushRegistered()).thenReturn(true) }
@@ -529,7 +568,9 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             ).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, false)
             verify(pushNotificationRepository, atLeast(1)).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
             verify(pushNotificationRepository, atLeast(1)).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
-            verify(pushNotificationRepository, times(1)).registerPushTokenInWpComSystem(TEST_TOKEN)
+            // Each run registers the device with WPCom before the Woo registrations, so the
+            // cancelled run registers it once and the forced restart registers it again.
+            verify(pushNotificationRepository, times(2)).registerPushTokenInWpComSystem(TEST_TOKEN)
         }
 
     @Test

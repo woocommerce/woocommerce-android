@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.DuplicateProduct
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductHelper
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageGallery
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductType
@@ -50,6 +51,7 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -74,6 +76,7 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.Date
 import kotlin.test.assertNull
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @ExperimentalCoroutinesApi
 class ProductDetailViewModelTest : BaseUnitTest() {
@@ -193,13 +196,13 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                             )
                         )
                     ),
-                    R.drawable.ic_gridicons_money
+                    DesignSystemR.drawable.woo_ds_ic_regular_square_dollar_24dp
                 ),
                 ProductProperty.RatingBar(
                     R.string.product_reviews,
                     resources.getString(R.string.product_ratings_count, productAggregate.product.ratingCount),
                     productAggregate.product.averageRating,
-                    R.drawable.ic_reviews
+                    DesignSystemR.drawable.woo_ds_ic_regular_star_24dp
                 ),
                 ProductProperty.PropertyGroup(
                     R.string.product_inventory,
@@ -209,7 +212,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                             resources.getString(R.string.product_stock_status_instock)
                         )
                     ),
-                    R.drawable.ic_gridicons_list_checkmark,
+                    DesignSystemR.drawable.woo_ds_ic_regular_list_check_24dp,
                     true
                 ),
                 ProductProperty.PropertyGroup(
@@ -225,35 +228,35 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                         ),
                         Pair(resources.getString(R.string.product_shipping_class), "")
                     ),
-                    R.drawable.ic_gridicons_shipping,
+                    DesignSystemR.drawable.woo_ds_ic_regular_truck_24dp,
                     true
                 ),
                 ProductProperty.ComplexProperty(
                     R.string.product_categories,
                     productWithTagsAndCategories.categories.joinToString(transform = { it.name }),
-                    R.drawable.ic_gridicons_folder,
+                    DesignSystemR.drawable.woo_ds_ic_regular_folder_24dp,
                     maxLines = 5
                 ),
                 ProductProperty.ComplexProperty(
                     R.string.product_tags,
                     productWithTagsAndCategories.tags.joinToString(transform = { it.name }),
-                    R.drawable.ic_gridicons_tag,
+                    DesignSystemR.drawable.woo_ds_ic_regular_tag_24dp,
                     maxLines = 5
                 ),
                 ProductProperty.ComplexProperty(
                     R.string.product_short_description,
                     productAggregate.product.shortDescription,
-                    R.drawable.ic_gridicons_align_left
+                    DesignSystemR.drawable.woo_ds_ic_regular_align_left_24dp
                 ),
                 ProductProperty.ComplexProperty(
                     R.string.product_downloadable_files,
                     resources.getString(R.string.product_downloadable_files_value_single),
-                    R.drawable.ic_gridicons_cloud
+                    DesignSystemR.drawable.woo_ds_ic_regular_cloud_24dp
                 ),
                 ProductProperty.ComplexProperty(
                     R.string.product_type,
                     resources.getString(R.string.product_detail_product_type_hint),
-                    R.drawable.ic_gridicons_product,
+                    DesignSystemR.drawable.woo_ds_ic_regular_box_24dp,
                     true
                 )
             )
@@ -346,6 +349,44 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given a persisted product, when its image is clicked, then analytics and navigation emit once`() =
+        testBlocking {
+            doReturn(productAggregate).whenever(productRepository).getProductAggregate(PRODUCT_REMOTE_ID)
+            savedState.set(ProductDetailViewModel.ProductDetailViewState::class.java.name, productWithParameters)
+            setup()
+            clearInvocations(tracker)
+
+            val events = viewModel.event.runAndCaptureValues {
+                viewModel.onImageClicked()
+            }
+
+            verify(tracker, times(1)).track(AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED)
+            verify(tracker, never()).track(AnalyticsEvent.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
+            assertThat(events.filterIsInstance<ViewProductImageGallery>()).containsExactly(
+                ViewProductImageGallery(PRODUCT_REMOTE_ID, productAggregate.product.images)
+            )
+        }
+
+    @Test
+    fun `given a persisted product, when add image is clicked, then add analytics and chooser emit once`() =
+        testBlocking {
+            doReturn(productAggregate).whenever(productRepository).getProductAggregate(PRODUCT_REMOTE_ID)
+            savedState.set(ProductDetailViewModel.ProductDetailViewState::class.java.name, productWithParameters)
+            setup()
+            clearInvocations(tracker)
+
+            val events = viewModel.event.runAndCaptureValues {
+                viewModel.onAddImageButtonClicked()
+            }
+
+            verify(tracker, times(1)).track(AnalyticsEvent.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
+            verify(tracker, never()).track(AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED)
+            assertThat(events.filterIsInstance<ViewProductImageGallery>()).containsExactly(
+                ViewProductImageGallery(PRODUCT_REMOTE_ID, productAggregate.product.images, true)
+            )
+        }
+
+    @Test
     fun `Displays the product detail properties correctly`() = testBlocking {
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(ProductAggregate(productWithTagsAndCategories)).whenever(productRepository).getProductAggregate(any())
@@ -429,6 +470,20 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         verify(productRepository, times(0)).fetchAndGetProductAggregate(any())
 
         Assertions.assertThat(snackbar).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
+    }
+
+    @Test
+    fun `given offline cache miss, when product loads, then None is emitted without a product`() = testBlocking {
+        doReturn(null).whenever(productRepository).getProductAggregate(PRODUCT_REMOTE_ID)
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        viewModel.start()
+
+        verify(productRepository, times(1)).getProductAggregate(PRODUCT_REMOTE_ID)
+        verify(productRepository, never()).fetchAndGetProductAggregate(any())
+        Assertions.assertThat(viewModel.getProduct().productDraft).isNull()
+        Assertions.assertThat(viewModel.getProduct().auxiliaryState)
+            .isEqualTo(ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.None)
     }
 
     @Test
@@ -1094,6 +1149,59 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             viewModel.updateProductDraft(title = productAggregate.product.name + "2")
 
             Assertions.assertThat(menuButtonsState?.saveOption).isTrue()
+        }
+
+    @Test
+    fun `given unchanged persisted public product, when sharing, then share is promoted and product form is tracked`() =
+        testBlocking {
+            // GIVEN
+            given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+            val menuButtonsState = viewModel.menuButtonsState.runAndCaptureValues {
+                viewModel.start()
+                viewModel.productDetailViewStateData.observeForever { _, _ -> }
+            }.last()
+
+            Assertions.assertThat(menuButtonsState.shareOption).isTrue()
+            Assertions.assertThat(menuButtonsState.showShareOptionAsAction).isTrue()
+
+            // WHEN
+            viewModel.onShareButtonClicked()
+
+            // THEN
+            verify(tracker).track(
+                AnalyticsEvent.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SHARE_BUTTON_SOURCE_PRODUCT_FORM
+                )
+            )
+        }
+
+    @Test
+    fun `given edited persisted public product, when sharing, then share is in overflow and more menu is tracked`() =
+        testBlocking {
+            // GIVEN
+            given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+            val menuButtonsStates = viewModel.menuButtonsState.runAndCaptureValues {
+                viewModel.start()
+                viewModel.productDetailViewStateData.observeForever { _, _ -> }
+                viewModel.onProductTitleChanged("Edited product")
+            }
+            val menuButtonsState = menuButtonsStates.last()
+
+            Assertions.assertThat(menuButtonsState.saveOption).isTrue()
+            Assertions.assertThat(menuButtonsState.shareOption).isTrue()
+            Assertions.assertThat(menuButtonsState.showShareOptionAsAction).isFalse()
+
+            // WHEN
+            viewModel.onShareButtonClicked()
+
+            // THEN
+            verify(tracker).track(
+                AnalyticsEvent.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SHARE_BUTTON_SOURCE_MORE_MENU
+                )
+            )
         }
 
     @Test

@@ -14,20 +14,21 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.payments.refunds.RefundDetailViewModel.ViewOrderedAddons
+import com.woocommerce.android.ui.products.ProductImageLoader
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @AndroidEntryPoint
 class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
-    @Inject lateinit var imageMap: ProductImageMap
+    @Inject lateinit var imageLoaderFactory: ProductImageLoader.Factory
 
     private val viewModel: RefundDetailViewModel by viewModels()
 
@@ -72,7 +73,7 @@ class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
         binding.toolbar.title = getString(R.string.order_refunds_refund_info_title)
         binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
             requireActivity(),
-            R.drawable.ic_back_24dp
+            DesignSystemR.drawable.woo_ds_ic_regular_arrow_left_24dp
         )
         binding.toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
@@ -101,7 +102,7 @@ class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
             new.currency?.takeIfNotEqualTo(old?.currency) {
                 productsBinding.issueRefundProducts.adapter = RefundProductListAdapter(
                     currencyFormatter.buildBigDecimalFormatter(new.currency),
-                    imageMap,
+                    imageLoaderFactory,
                     isProductDetailList = true,
                     onItemClicked = { uniqueId ->
                         (activity as? MainNavigationRouter)?.showProductDetail(uniqueId)

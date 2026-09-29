@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsSharedViewModel.NotificationType
 import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsSharedViewModel.NotificationTypeItem
 
@@ -233,7 +233,7 @@ private fun NotificationTypeRow(
 @Composable
 @LightDarkThemePreviews
 private fun WooPushNotificationSettingsScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooPushNotificationSettingsScreen(
             items = listOf(
                 NotificationTypeItem(

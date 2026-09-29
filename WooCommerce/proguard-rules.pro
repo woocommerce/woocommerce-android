@@ -36,6 +36,17 @@
 }
 ###### SavedStateHandleExt - end
 
+###### TagSoup (Aztec editor HTML parser) - begin
+# TagSoup is a plain JAR transitively pulled in by the Aztec editor, with no
+# consumer ProGuard rules. Parser.theContentHandler is a private field assigned
+# in Parser's constructor; Aztec's Html does `new Parser()` without subclassing,
+# so R8 full-mode optimization inlines that constructor into
+# org.wordpress.aztec.AztecParser (a different class), turning the private-field
+# write into an illegal cross-class access -> IllegalAccessError when opening the
+# Aztec editor (e.g. a product description). Keep TagSoup so it isn't inlined away.
+-keep class org.ccil.cowan.tagsoup.** { *; }
+###### TagSoup - end
+
 # Crypto Tink is still transitively present; its KeysDownloader references google-http-client
 # and joda-time, which aren't on the classpath. R8 fails to build without these.
 -dontwarn com.google.api.client.http.GenericUrl

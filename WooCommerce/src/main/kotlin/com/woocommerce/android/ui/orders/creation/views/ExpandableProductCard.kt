@@ -72,7 +72,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Companion.MAX_PRODUCT_QUANTITY
 import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
@@ -705,7 +705,7 @@ fun AmountPickerPreview() {
             hasDiscount = item.discount > BigDecimal.ZERO
         )
     )
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AmountPicker(Modifier, {}, product)
     }
 }
@@ -740,7 +740,7 @@ fun ExpandableProductCardPreview() {
         )
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ExpandableProductCard(state, product, {}, {}, {}, {}, { _, _ -> })
     }
 }
@@ -773,7 +773,7 @@ fun ExpandableProductCardExpandedPreview() {
         )
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ExpandableProductCard(state, product, {}, {}, {}, {}, { _, _ -> }, isExpanded = true)
     }
 }
@@ -806,7 +806,7 @@ fun ExpandableProductCardUnsyncedPreview() {
         )
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ExpandableProductCard(state, product, {}, {}, {}, {}, { _, _ -> })
     }
 }
@@ -840,7 +840,7 @@ fun ExtendedProductCardContentPreview() {
         )
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ExtendedProductCardContent(state, product, {}, {}, {}) {}
     }
 }
@@ -875,7 +875,7 @@ fun ExtendedConfigurableProductCardContentPreview() {
         )
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ExtendedProductCardContent(state, product, {}, {}, {}) {}
     }
 }

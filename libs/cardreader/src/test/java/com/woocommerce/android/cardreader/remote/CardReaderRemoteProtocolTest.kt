@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.remote
 
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -109,6 +110,7 @@ class CardReaderRemoteProtocolTest {
             requestId = "req-4",
             paymentIntentId = "pi_123",
             status = "requires_capture",
+            paymentMethodType = PaymentMethodType.INTERAC_PRESENT,
         )
 
         // WHEN
@@ -116,6 +118,20 @@ class CardReaderRemoteProtocolTest {
 
         // THEN
         assertThat(decoded).isEqualTo(original)
+    }
+
+    @Test
+    fun `given legacy payment result, when read back, then method type is absent`() {
+        // GIVEN
+        val json = """
+            {"requestId":"legacy","paymentIntentId":"pi_123","status":"succeeded","type":"payment_intent_result"}
+        """.trimIndent()
+
+        // WHEN
+        val decoded = readRaw(json) as CardReaderRemoteMessage.PaymentIntentResult
+
+        // THEN
+        assertThat(decoded.paymentMethodType).isNull()
     }
 
     @Test

@@ -1,7 +1,9 @@
 package org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords
 
+import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
 import com.android.volley.RequestQueue
+import com.android.volley.RetryPolicy
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Credentials
 import org.wordpress.android.fluxc.Dispatcher
@@ -14,7 +16,6 @@ import org.wordpress.android.fluxc.network.rest.wpapi.BaseWPAPIRestClient
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequestBuilder
-import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
@@ -24,6 +25,9 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 import kotlin.coroutines.resume
+
+private const val UNAUTHORIZED = 401
+private const val VALIDITY_CHECK_TIMEOUT_MS = 10_000
 
 @Singleton
 internal class WPApiApplicationPasswordsRestClient @Inject constructor(
@@ -86,12 +90,17 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
 
         return when (response) {
             is WPAPIResponse.Success -> {
-                response.data?.firstOrNull { it.name == applicationName }?.let {
-                    ApplicationPasswordUUIDFetchPayload(it.uuid)
+                val listedPassword = response.data?.firstOrNull { it.name == applicationName }
+                listedPassword?.uuid?.let {
+                    ApplicationPasswordUUIDFetchPayload(it)
                 } ?: ApplicationPasswordUUIDFetchPayload(
                     BaseNetworkError(
                         GenericErrorType.UNKNOWN,
-                        "UUID for application password $applicationName was not found"
+                        if (listedPassword == null) {
+                            "UUID for application password $applicationName was not found"
+                        } else {
+                            "UUID missing from response"
+                        }
                     )
                 )
             }
@@ -119,6 +128,41 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
         return response.toPayload()
     }
 
+    /**
+     * Asks the site whether [credentials] are still accepted. The introspection endpoint is used because a
+     * 401 from it can only mean the credentials themselves were rejected: WordPress answers every permission
+     * failure here with `rest_authorization_required_code()`, which is 403 when a user is authenticated and
+     * 401 when none is. A 403 therefore means we did authenticate, so it maps to
+     * [ApplicationPasswordValidity.UNKNOWN] rather than counting as a rejection.
+     */
+    suspend fun checkApplicationPasswordValidity(
+        site: SiteModel,
+        credentials: ApplicationPasswordCredentials
+    ): ApplicationPasswordValidity {
+        AppLog.d(T.MAIN, "Check the application password validity using the /introspect endpoint")
+
+        val response = invokeRequestUsingBasicAuth<ApplicationPasswordsFetchResponse>(
+            site = site,
+            credentials = credentials,
+            path = WPAPI.users.me.application_passwords.introspect.urlV2,
+            method = Request.Method.GET,
+            // Callers wait on this check, so answer or give up quickly rather than retrying for a minute.
+            retryPolicy = DefaultRetryPolicy(VALIDITY_CHECK_TIMEOUT_MS, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
+        )
+
+        return when (response) {
+            is WPAPIResponse.Success -> ApplicationPasswordValidity.VALID
+            is WPAPIResponse.Error -> {
+                val statusCode = response.error.volleyError?.networkResponse?.statusCode
+                if (statusCode == UNAUTHORIZED) {
+                    ApplicationPasswordValidity.INVALID
+                } else {
+                    ApplicationPasswordValidity.UNKNOWN
+                }
+            }
+        }
+    }
+
     suspend fun deleteApplicationPassword(
         site: SiteModel,
         credentials: ApplicationPasswordCredentials
@@ -126,11 +170,8 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
         AppLog.d(T.MAIN, "Delete application password using Basic Authentication")
 
         val uuid = credentials.uuid ?: fetchApplicationPasswordUsingBasicAuth(site, credentials).let {
-            if (it is WPAPIResponse.Success && it.data != null) {
-                it.data
-            } else {
-                return ApplicationPasswordDeletionPayload((it as WPAPIResponse.Error).error)
-            }
+            if (it.isError) return ApplicationPasswordDeletionPayload(it.error)
+            it.uuid
         }
 
         return deleteApplicationPasswordUsingBasicAuth(site, credentials, uuid).toPayload()
@@ -139,7 +180,7 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
     private suspend fun fetchApplicationPasswordUsingBasicAuth(
         site: SiteModel,
         applicationPasswordCredentials: ApplicationPasswordCredentials
-    ): WPAPIResponse<ApplicationPasswordUUID> {
+    ): ApplicationPasswordUUIDFetchPayload {
         AppLog.d(T.MAIN, "Fetching application password UUID using the /introspect endpoint")
 
         val path = WPAPI.users.me.application_passwords.introspect.urlV2
@@ -151,20 +192,17 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
             method = Request.Method.GET,
         )
 
-        @Suppress("UNCHECKED_CAST")
         return when (response) {
-            is WPAPIResponse.Success -> response.data?.let {
-                WPAPIResponse.Success(it.uuid, response.headers)
-            } ?: WPAPIResponse.Error(
-                WPAPINetworkError(
-                    BaseNetworkError(
-                        GenericErrorType.UNKNOWN,
-                        "Response is empty"
-                    )
+            is WPAPIResponse.Success -> response.data?.uuid?.let {
+                ApplicationPasswordUUIDFetchPayload(it)
+            } ?: ApplicationPasswordUUIDFetchPayload(
+                BaseNetworkError(
+                    GenericErrorType.UNKNOWN,
+                    if (response.data == null) "Response is empty" else "UUID missing from response"
                 )
             )
 
-            is WPAPIResponse.Error -> response as WPAPIResponse.Error<ApplicationPasswordUUID>
+            is WPAPIResponse.Error -> ApplicationPasswordUUIDFetchPayload(response.error)
         }
     }
 
@@ -204,7 +242,8 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
         site: SiteModel,
         credentials: ApplicationPasswordCredentials,
         path: String,
-        method: Int
+        method: Int,
+        retryPolicy: RetryPolicy? = null
     ): WPAPIResponse<T> {
         return suspendCancellableCoroutine { continuation ->
             val request = WPAPIGsonRequest(
@@ -221,8 +260,13 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
 
             request.addHeader("Authorization", Credentials.basic(credentials.userName, credentials.password))
             request.setUserAgent(userAgent.apiUserAgent)
+            retryPolicy?.let { request.retryPolicy = it }
 
             noCookieRequestQueue.add(request)
+
+            continuation.invokeOnCancellation {
+                request.cancel()
+            }
         }
     }
 

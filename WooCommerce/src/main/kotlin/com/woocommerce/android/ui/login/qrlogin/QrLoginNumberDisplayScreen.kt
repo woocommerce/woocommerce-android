@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import kotlinx.coroutines.delay
 
 /**
@@ -223,7 +223,7 @@ private const val MILLIS_PER_SECOND = 1_000L
 @LightDarkThemePreviews
 @Composable
 private fun QrLoginNumberDisplayScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         QrLoginNumberDisplayScreen(
             subtitleLabelRes = R.string.login_qr_match_host_label,
             subtitle = "store.example",

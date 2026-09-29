@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.moremenu.customer
 
 import android.content.res.Configuration
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -14,11 +15,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -30,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,27 +38,21 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.CustomerWithAnalytics
 import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.compose.theme.WooTheme
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun CustomerDetailsScreen(viewModel: CustomerDetailsViewModel) {
     val state by viewModel.viewState.observeAsState()
     state?.let { currentState ->
+        val scrollState = rememberScrollState()
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = { Text(currentState.customerName) },
-                    navigationIcon = {
-                        IconButton(viewModel::onNavigateBack) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(R.drawable.ic_back_24dp),
-                                contentDescription = stringResource(id = R.string.back)
-                            )
-                        }
-                    },
-                    backgroundColor = colorResource(id = R.color.color_toolbar),
-                    elevation = 0.dp,
+                Toolbar(
+                    title = currentState.customerName,
+                    onNavigationButtonClick = viewModel::onNavigateBack,
+                    showDivider = scrollState.canScrollBackward,
                 )
             }
         ) { padding ->
@@ -68,6 +60,7 @@ fun CustomerDetailsScreen(viewModel: CustomerDetailsViewModel) {
                 state = currentState,
                 onRefresh = viewModel::refresh,
                 onEmailTapped = viewModel::onEmailTapped,
+                scrollState = scrollState,
                 modifier = Modifier.padding(padding)
             )
         }
@@ -80,11 +73,12 @@ fun CustomerDetailsScreen(
     state: CustomerViewState,
     onRefresh: () -> Unit,
     onEmailTapped: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    scrollState: ScrollState = rememberScrollState()
 ) {
     val pullRefreshState = rememberPullRefreshState(state.isRefreshingData, { onRefresh() })
     Box(modifier = modifier.pullRefresh(pullRefreshState)) {
-        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+        Column(modifier = Modifier.verticalScroll(scrollState)) {
             CustomerSection(
                 customer = state.customerWithAnalytics,
                 isLoadingAnalytics = state.isLoadingAnalytics,
@@ -396,7 +390,7 @@ fun SectionValue(
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun SectionValuePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         SectionValue(
             title = "Name",
             value = "John"
@@ -408,7 +402,7 @@ fun SectionValuePreview() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun SectionValueComposablePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         SectionValue(
             title = "Name"
         ) {
@@ -425,7 +419,7 @@ fun SectionValueComposablePreview() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun SectionValueNoValuePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         SectionValue(title = "Name", value = null)
     }
 }

@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.model.WCProductSettingsModel
 import org.wordpress.android.fluxc.model.WCSSRModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.model.settings.Settings
+import org.wordpress.android.fluxc.model.settings.SubscriptionProductCreationSettingsEntity
 import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.model.settings.WCSettingsMapper
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
@@ -97,6 +98,7 @@ class WooCommerceStoreTest {
             productSettingsDao = wcDatabaseRule.db.productSettingsDao,
             settingsDao = wcDatabaseRule.db.settingsDao,
             analyticsScheduledImportDao = wcDatabaseRule.db.analyticsScheduledImportDao,
+            subscriptionProductCreationSettingsDao = wcDatabaseRule.db.subscriptionProductCreationSettingsDao,
             httpsUrlNormalizer = HttpsUrlNormalizer(),
         )
     }
@@ -129,6 +131,7 @@ class WooCommerceStoreTest {
     private val siteSettingsResponse = WCSettingsTestUtils.getSiteSettingsResponse()
     private val siteProductSettingsResponse = WCSettingsTestUtils.getSiteProductSettingsResponse()
     private val taxBasedOnSettingsResponse = WCSettingsTestUtils.getTaxBasedOnSettingsResponse()
+    private val subscriptionsSettingsResponse = WCSettingsTestUtils.getSubscriptionsSettingsResponse()
 
     @Before
     fun setUp() {
@@ -209,6 +212,41 @@ class WooCommerceStoreTest {
     }
 
     @Test
+    fun `when fetching plugins and settings, then both come from one request`() = test {
+        val settings = WCSystemPluginResponse.Settings(enabledFeatures = listOf("point_of_sale"))
+        whenever(restClient.fetchInstalledPlugins(any(), any()))
+            .thenReturn(WooPayload(response.copy(settings = settings)))
+
+        val result = wooCommerceStore.fetchSitePluginsAndSettings(site)
+
+        assertThat(result.isError).isFalse
+        assertThat(result.model?.plugins).hasSameSizeAs(response.plugins)
+        assertThat(result.model?.enabledFeatures)
+            .isEqualTo(WooCommerceStore.EnabledFeatures.Known(listOf("point_of_sale")))
+        verify(restClient).fetchInstalledPlugins(site, true)
+    }
+
+    @Test
+    fun `given the report omits settings, when fetching plugins and settings, then features are Unknown`() = test {
+        // Unknown must stay distinguishable from an empty list: the field being absent is not the same
+        // as the store having no features enabled.
+        whenever(restClient.fetchInstalledPlugins(any(), any())).thenReturn(WooPayload(response))
+
+        val result = wooCommerceStore.fetchSitePluginsAndSettings(site)
+
+        assertThat(result.model?.enabledFeatures).isEqualTo(WooCommerceStore.EnabledFeatures.Unknown)
+    }
+
+    @Test
+    fun `when fetching plugins only, then the settings are not requested`() = test {
+        whenever(restClient.fetchInstalledPlugins(any(), any())).thenReturn(WooPayload(response))
+
+        wooCommerceStore.fetchSitePlugins(site)
+
+        verify(restClient).fetchInstalledPlugins(site, false)
+    }
+
+    @Test
     fun `when fetching ssr fails, then error returned`() = test {
         val result = fetchSSR(isError = true)
 
@@ -263,6 +301,57 @@ class WooCommerceStoreTest {
     fun `when fetch site product settings fails, then error returned`() {
         runBlocking {
             val result: WooResult<WCProductSettingsModel> = fetchSiteProductSettings(isError = true)
+            assertThat(result.error).isEqualTo(error)
+            assertThat(result.model).isNull()
+        }
+    }
+
+    @Test
+    fun `when fetch subscription product creation settings succeeds, then per type values returned and cached`() {
+        runBlocking {
+            whenever(wcrestClient.fetchSiteSettingsSubscriptions(site))
+                .thenReturn(WooPayload(subscriptionsSettingsResponse))
+            assertThat(wooCommerceStore.getSubscriptionProductCreationSettings(site)).isNull()
+
+            val result = wooCommerceStore.fetchSubscriptionProductCreationSettings(site)
+
+            val expected = SubscriptionProductCreationSettingsEntity(
+                localSiteId = site.localId(),
+                isSimpleSubscriptionCreationEnabled = true,
+                isVariableSubscriptionCreationEnabled = false
+            )
+            assertThat(result.isError).isFalse
+            assertThat(result.model).isEqualTo(expected)
+            assertThat(wooCommerceStore.getSubscriptionProductCreationSettings(site)).isEqualTo(expected)
+        }
+    }
+
+    @Test
+    fun `when subscription product creation settings are not reported, then null values returned`() {
+        runBlocking {
+            whenever(wcrestClient.fetchSiteSettingsSubscriptions(site))
+                .thenReturn(WooPayload(siteProductSettingsResponse))
+
+            val result = wooCommerceStore.fetchSubscriptionProductCreationSettings(site)
+
+            assertThat(result.isError).isFalse
+            assertThat(result.model).isEqualTo(
+                SubscriptionProductCreationSettingsEntity(
+                    localSiteId = site.localId(),
+                    isSimpleSubscriptionCreationEnabled = null,
+                    isVariableSubscriptionCreationEnabled = null
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `when fetch subscription product creation settings fails, then error returned`() {
+        runBlocking {
+            whenever(wcrestClient.fetchSiteSettingsSubscriptions(site)).thenReturn(WooPayload(error))
+
+            val result = wooCommerceStore.fetchSubscriptionProductCreationSettings(site)
+
             assertThat(result.error).isEqualTo(error)
             assertThat(result.model).isNull()
         }
@@ -569,9 +658,9 @@ class WooCommerceStoreTest {
     private suspend fun getPlugin(isError: Boolean = false): WooResult<List<SitePluginModel>> {
         val payload = WooPayload(response)
         if (isError) {
-            whenever(restClient.fetchInstalledPlugins(any())).thenReturn(WooPayload(error))
+            whenever(restClient.fetchInstalledPlugins(any(), any())).thenReturn(WooPayload(error))
         } else {
-            whenever(restClient.fetchInstalledPlugins(any())).thenReturn(payload)
+            whenever(restClient.fetchInstalledPlugins(any(), any())).thenReturn(payload)
         }
         return wooCommerceStore.fetchSitePlugins(site)
     }

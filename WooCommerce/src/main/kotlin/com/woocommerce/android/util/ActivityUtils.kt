@@ -6,9 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build.VERSION.SDK_INT
 import android.os.Parcelable
 import androidx.core.content.FileProvider
+import androidx.core.content.IntentCompat
 import androidx.core.net.toUri
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.intentActivities
@@ -177,11 +177,7 @@ object ActivityUtils {
     }
 }
 
-@Suppress("MagicNumber")
-inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
-    SDK_INT >= 33 -> getParcelableExtra(key, T::class.java)
-    else ->
-        @Suppress("DEPRECATION")
-        getParcelableExtra(key)
-            as? T
-}
+// Uses IntentCompat to avoid the Android 13 (API 33) typed getParcelableExtra crash (b/232589966);
+// IntentCompat only calls the typed API on API 34+. See DataContainerExt for details.
+inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? =
+    IntentCompat.getParcelableExtra(this, key, T::class.java)

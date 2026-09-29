@@ -1,13 +1,16 @@
 package com.woocommerce.android.ui.dashboard
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.ui.dashboard.data.AnalyticsScheduledImportRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,34 +20,87 @@ class ScheduledImportInfoViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val scheduledImportRepository: AnalyticsScheduledImportRepository,
 ) : ScopedViewModel(savedState) {
-    private val navArgs = ScheduledImportInfoBottomSheetFragmentArgs.fromSavedStateHandle(savedState)
+    private var confirmedIsEnabled: Boolean
+        get() = savedState[IS_ENABLED_KEY] ?: false
+        set(value) {
+            savedState[IS_ENABLED_KEY] = value
+        }
 
     private val _viewState = MutableStateFlow(
         ViewState(
-            isEnabled = navArgs.isEnabled,
+            isVisible = savedState[IS_VISIBLE_KEY] ?: false,
+            isEnabled = confirmedIsEnabled,
             isUpdating = false,
             hasError = false
         )
     )
-    val viewState = _viewState.asLiveData()
+    val viewState = _viewState.asStateFlow()
 
-    fun onOptionSelected(scheduledEnabled: Boolean) {
-        if (_viewState.value.isUpdating) return
-        if (scheduledEnabled == _viewState.value.isEnabled) {
-            // Tapping the already-selected option keeps the value and simply closes the sheet.
-            triggerEvent(SettingUpdated)
+    private var updateJob: Job? = null
+
+    fun show(isEnabled: Boolean) {
+        if (_viewState.value.isUpdating) {
+            updateViewState { it.copy(isVisible = true) }
             return
         }
-        val previous = _viewState.value.isEnabled
-        _viewState.update { it.copy(isEnabled = scheduledEnabled, isUpdating = true, hasError = false) }
-        launch {
+
+        confirmedIsEnabled = isEnabled
+        updateViewState {
+            it.copy(
+                isVisible = true,
+                isEnabled = isEnabled,
+                isDismissRequested = false,
+                hasError = false,
+            )
+        }
+    }
+
+    fun onDismissed() {
+        updateJob?.cancel()
+        updateJob = null
+        updateViewState {
+            it.copy(
+                isVisible = false,
+                isEnabled = confirmedIsEnabled,
+                isDismissRequested = false,
+                isUpdating = false,
+                hasError = false,
+            )
+        }
+    }
+
+    fun onOptionSelected(scheduledEnabled: Boolean) {
+        if (_viewState.value.isUpdating || _viewState.value.isDismissRequested) return
+        if (scheduledEnabled == _viewState.value.isEnabled) {
+            updateViewState { it.copy(isDismissRequested = true) }
+            return
+        }
+        updateViewState {
+            it.copy(
+                isEnabled = scheduledEnabled,
+                isDismissRequested = false,
+                isUpdating = true,
+                hasError = false,
+            )
+        }
+        updateJob = launch {
             val result = scheduledImportRepository.setEnabled(scheduledEnabled)
+            currentCoroutineContext().ensureActive()
             val updatedValue = result.model
             if (result.isError || updatedValue == null) {
-                _viewState.update { it.copy(isEnabled = previous, isUpdating = false, hasError = true) }
+                updateViewState {
+                    it.copy(isEnabled = confirmedIsEnabled, isUpdating = false, hasError = true)
+                }
             } else {
-                _viewState.update { it.copy(isEnabled = updatedValue, isUpdating = false, hasError = false) }
-                triggerEvent(SettingUpdated)
+                confirmedIsEnabled = updatedValue
+                updateViewState {
+                    it.copy(
+                        isEnabled = updatedValue,
+                        isDismissRequested = true,
+                        isUpdating = false,
+                        hasError = false,
+                    )
+                }
             }
         }
     }
@@ -53,11 +109,21 @@ class ScheduledImportInfoViewModel @Inject constructor(
         triggerEvent(Event.LaunchUrlInChromeTab(AppUrls.ANALYTICS_SCHEDULED_IMPORT_DOCS))
     }
 
+    private fun updateViewState(transform: (ViewState) -> ViewState) {
+        _viewState.update(transform)
+        savedState[IS_VISIBLE_KEY] = _viewState.value.isVisible
+    }
+
     data class ViewState(
+        val isVisible: Boolean,
         val isEnabled: Boolean,
         val isUpdating: Boolean,
         val hasError: Boolean,
+        val isDismissRequested: Boolean = false,
     )
 
-    data object SettingUpdated : Event()
+    private companion object {
+        const val IS_VISIBLE_KEY = "scheduledImportInfoIsVisible"
+        const val IS_ENABLED_KEY = "scheduledImportInfoIsEnabled"
+    }
 }

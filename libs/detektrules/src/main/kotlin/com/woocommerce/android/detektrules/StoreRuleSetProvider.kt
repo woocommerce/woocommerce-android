@@ -1,6 +1,7 @@
 package com.woocommerce.android.detektrules
 
 import com.woocommerce.android.detektrules.store.MixedStoreThemeImportsRule
+import com.woocommerce.android.detektrules.store.StoreTopAppBarIconButtonUsageRule
 import io.gitlab.arturbosch.detekt.api.Config
 import io.gitlab.arturbosch.detekt.api.RuleSet
 import io.gitlab.arturbosch.detekt.api.RuleSetProvider
@@ -12,6 +13,7 @@ class StoreRuleSetProvider : RuleSetProvider {
         ruleSetId,
         listOf(
             MixedStoreThemeImportsRule(config),
+            StoreTopAppBarIconButtonUsageRule(config),
         )
     )
 }

@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.woopos.orders.details.refund
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -40,10 +38,6 @@ class WooPosRefundPreviewTest {
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock {
         on { invoke() } doReturn WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
     }
-    private val featureFlagRepository: FeatureFlagRepository = mock {
-        on { isEnabled(FeatureFlag.WOO_POS_SERVER_REFUNDS) } doReturn true
-    }
-
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     private val site = SiteModel().apply {
@@ -67,22 +61,7 @@ class WooPosRefundPreviewTest {
         selectedSite = selectedSite,
         availabilityCache = availabilityCache,
         getWooCoreVersion = getWooCoreVersion,
-        featureFlagRepository = featureFlagRepository,
     )
-
-    @Test
-    fun `given flag disabled, when invoked, then falls back without probing or marking availability`() = runTest {
-        // GIVEN
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_SERVER_REFUNDS)).thenReturn(false)
-
-        // WHEN
-        val result = sut(ORDER_ID, lineItems)
-
-        // THEN
-        assertThat(result).isEqualTo(WooPosRefundPreview.Result.FallbackToLocal)
-        assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID, MIN_VERSION)).isNull()
-        verify(refundStore, never()).previewRefund(any(), any(), any())
-    }
 
     @Test
     fun `given eligible store, when preview succeeds, then returns server-calculated and marks available`() = runTest {
@@ -154,9 +133,9 @@ class WooPosRefundPreviewTest {
     }
 
     @Test
-    fun `given flag disabled, when invoked, then does not track a fallback`() = runTest {
+    fun `given WC older than 11_1_0, when invoked, then does not track a fallback`() = runTest {
         // GIVEN
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_SERVER_REFUNDS)).thenReturn(false)
+        whenever(getWooCoreVersion.invoke()).thenReturn("11.0.5")
 
         // WHEN
         sut(ORDER_ID, lineItems)
@@ -225,17 +204,19 @@ class WooPosRefundPreviewTest {
     }
 
     @Test
-    fun `given WC older than 11_1_0, when invoked, then falls back without probing`() = runTest {
-        // GIVEN
-        whenever(getWooCoreVersion.invoke()).thenReturn("11.0.5")
+    fun `given WC older than 11_1_0, when invoked, then falls back without probing or marking availability`() =
+        runTest {
+            // GIVEN
+            whenever(getWooCoreVersion.invoke()).thenReturn("11.0.5")
 
-        // WHEN
-        val result = sut(ORDER_ID, lineItems)
+            // WHEN
+            val result = sut(ORDER_ID, lineItems)
 
-        // THEN
-        assertThat(result).isEqualTo(WooPosRefundPreview.Result.FallbackToLocal)
-        verify(refundStore, never()).previewRefund(any(), any(), any())
-    }
+            // THEN
+            assertThat(result).isEqualTo(WooPosRefundPreview.Result.FallbackToLocal)
+            assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID, MIN_VERSION)).isNull()
+            verify(refundStore, never()).previewRefund(any(), any(), any())
+        }
 
     @Test
     fun `given WC at 11_1_0, when invoked, then probes the preview route`() = runTest {

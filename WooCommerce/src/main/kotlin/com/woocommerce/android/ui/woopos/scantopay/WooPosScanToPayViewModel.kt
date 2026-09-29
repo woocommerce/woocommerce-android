@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ScanToPayPaymentDetectedViaPolling
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ScanToPayPaymentFailed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosPaymentSuccessProperties
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -34,6 +35,7 @@ class WooPosScanToPayViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val resourceProvider: ResourceProvider,
     private val priceFormat: WooPosFormatPrice,
+    private val paymentSuccessProperties: WooPosPaymentSuccessProperties,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val orderId: Long = requireNotNull(savedState[SCAN_TO_PAY_ROUTE_ORDER_ID_KEY])
@@ -135,7 +137,7 @@ class WooPosScanToPayViewModel @Inject constructor(
 
                 val snapshot = repository.fetchOrderSnapshot(orderId) ?: continue
                 if (snapshot.isOrderPaid) {
-                    onPaymentDetected()
+                    onPaymentDetected(snapshot)
                     return@launch
                 }
                 // Online gateways stamp `datePaid` when the money arrives. Offline ones such as
@@ -150,10 +152,10 @@ class WooPosScanToPayViewModel @Inject constructor(
         }
     }
 
-    private suspend fun onPaymentDetected() {
+    private suspend fun onPaymentDetected(order: Order) {
         _state.value = WooPosScanToPayState.PaymentDetected
         analyticsTracker.track(ScanToPayPaymentDetectedViaPolling)
-        analyticsTracker.track(ScanToPayCollectPaymentSuccess)
+        analyticsTracker.track(ScanToPayCollectPaymentSuccess(paymentSuccessProperties(order), order.paymentMethod))
         childrenToParentEventSender.sendToParent(
             ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.SCAN_TO_PAY)
         )

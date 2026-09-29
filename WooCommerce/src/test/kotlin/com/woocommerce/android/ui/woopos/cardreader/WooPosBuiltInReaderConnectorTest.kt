@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderLocation
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -39,6 +40,7 @@ class WooPosBuiltInReaderConnectorTest {
     private val developerOptionsRepository: DeveloperOptionsRepository = mock {
         on { isSimulatedCardReaderEnabled() } doReturn false
     }
+    private val trackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val logger: WooPosLogWrapper = mock()
     private val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.NotConnected())
     private val cardReaderManager: CardReaderManager = mock {
@@ -59,6 +61,7 @@ class WooPosBuiltInReaderConnectorTest {
         resourceProvider,
         fineLocationPermissionCheck,
         logger,
+        trackingInfoKeeper,
     )
 
     @Before
@@ -76,12 +79,14 @@ class WooPosBuiltInReaderConnectorTest {
 
     @Test
     fun `given reader already connected, when connect, then returns success without discovering`() = runTest {
-        readerStatus.value = CardReaderStatus.Connected(mock())
+        readerStatus.value = CardReaderStatus.Connected(mock { on { type } doReturn "STRIPE_M2" })
 
         val result = sut.connect()
 
         assertThat(result.isSuccess).isTrue()
         verify(cardReaderManager, never()).discoverReaders(any(), any())
+        verify(trackingInfoKeeper).setCardReaderModel("STRIPE_M2")
+        verify(trackingInfoKeeper).setTransport("bluetooth")
     }
 
     @Test
@@ -133,18 +138,23 @@ class WooPosBuiltInReaderConnectorTest {
 
     @Test
     fun `given reader discovered and connection succeeds, when connect, then returns success`() = runTest {
-        val discoveredReader: CardReader = mock { on { id } doReturn "tap-to-pay" }
+        val discoveredReader: CardReader = mock {
+            on { id } doReturn "tap-to-pay"
+            on { type } doReturn "TAP_TO_PAY_DEVICE"
+        }
         whenever(locationRepository.getDefaultLocationId(any()))
             .thenReturn(LocationIdFetchingResult.Success("loc"))
         whenever(cardReaderManager.discoverReaders(any(), any()))
             .thenReturn(flowOf(CardReaderDiscoveryEvents.ReadersFound(listOf(discoveredReader))))
         whenever(cardReaderManager.startConnectionToReader(discoveredReader, "loc")).then {
-            readerStatus.value = CardReaderStatus.Connected(mock())
+            readerStatus.value = CardReaderStatus.Connected(discoveredReader)
         }
 
         val result = sut.connect()
 
         assertThat(result.isSuccess).isTrue()
         verify(cardReaderManager).startConnectionToReader(discoveredReader, "loc")
+        verify(trackingInfoKeeper).setCardReaderModel("TAP_TO_PAY_DEVICE")
+        verify(trackingInfoKeeper).setTransport("built_in")
     }
 }

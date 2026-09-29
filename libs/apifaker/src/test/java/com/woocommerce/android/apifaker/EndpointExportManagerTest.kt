@@ -87,7 +87,7 @@ class EndpointExportManagerTest {
     fun `when exportEndpoints is called with clipboard destination, it should export the endpoints to the clipboard`() =
         runTest {
             val clipboardManager = mock<ClipboardManager>()
-            given(context.getSystemService(Context.CLIPBOARD_SERVICE)).willReturn(clipboardManager)
+            given(context.getSystemService(ClipboardManager::class.java)).willReturn(clipboardManager)
 
             val result = sut.exportEndpoints(mockedEndpoints, ExportImportDestination.Clipboard)
 
@@ -109,7 +109,7 @@ class EndpointExportManagerTest {
             val clipboardManager = mock<ClipboardManager> {
                 on { primaryClip } doReturn clipData
             }
-            given(context.getSystemService(Context.CLIPBOARD_SERVICE)).willReturn(clipboardManager)
+            given(context.getSystemService(ClipboardManager::class.java)).willReturn(clipboardManager)
 
             val result = sut.importEndpoints(ExportImportDestination.Clipboard)
 

@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.tooling.preview.Preview
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.Random
@@ -181,7 +181,7 @@ private fun DrawScope.drawHeart(center: Offset, size: Float, color: Color) {
 @Preview
 @Composable
 fun MagicSparklesPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         MagicSparkles()
     }
 }

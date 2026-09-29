@@ -1,6 +1,8 @@
 package com.woocommerce.android.cardreader.internal.connection
 
+import android.Manifest
 import android.app.Application
+import android.content.pm.PackageManager
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.TerminalErrorCode
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatIllegalStateException
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
@@ -214,6 +217,24 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
                 ReaderType.BuildInReader.TapToPayDevice.name
             )
             assertThat((result.first() as ReadersFound).list.size).isEqualTo(1)
+        }
+
+    @Test
+    fun `given required location permission denied, when discovering built-in readers, then error is thrown`() =
+        testBlocking {
+            // On the JVM Build.VERSION.SDK_INT is 0 (< S), so the required permission is ACCESS_FINE_LOCATION -
+            // the same permission the app requests on Android 11, where the built-in (Tap to Pay) path is reachable.
+            whenever(application.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION))
+                .thenReturn(PackageManager.PERMISSION_DENIED)
+
+            assertThatIllegalStateException().isThrownBy {
+                connectionManager.discoverReaders(
+                    true,
+                    CardReaderTypesToDiscover.SpecificReaders.BuiltInReaders(
+                        listOf(ReaderType.BuildInReader.TapToPayDevice)
+                    )
+                )
+            }
         }
 
     @Test

@@ -78,7 +78,7 @@ fun WooPosCustomAmountEntryRow(
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_shoppingmode_24dp),
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_tag_plus_outline_24dp),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(44.dp.toAdaptiveIconSize()),

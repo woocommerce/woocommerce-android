@@ -4,7 +4,9 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -15,6 +17,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ScanToPayPaymentDetectedViaPolling
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ScanToPayPaymentFailed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosPaymentSuccessProperties
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,11 +29,14 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.check
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
 
@@ -45,6 +51,9 @@ class WooPosScanToPayViewModelTest {
     @JvmField
     val instantTaskRule = InstantTaskExecutorRule()
 
+    private val selectedSite: SelectedSite = mock { on { get() }.thenReturn(SiteModel()) }
+    private val wooStore: WooCommerceStore = mock { on { getStoreCountryCode(any()) }.thenReturn("US") }
+    private val paymentSuccessProperties = WooPosPaymentSuccessProperties(PaymentUtils(mock()), selectedSite, wooStore)
     private val repository: WooPosScanToPayRepository = mock()
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val tracker: WooPosAnalyticsTracker = mock()
@@ -70,6 +79,7 @@ class WooPosScanToPayViewModelTest {
         analyticsTracker = tracker,
         resourceProvider = resourceProvider,
         priceFormat = priceFormat,
+        paymentSuccessProperties = paymentSuccessProperties,
         savedState = SavedStateHandle(mapOf(SCAN_TO_PAY_ROUTE_ORDER_ID_KEY to orderId)),
     )
 
@@ -141,7 +151,13 @@ class WooPosScanToPayViewModelTest {
                 datePaid = null,
                 status = Order.Status.Pending,
             )
-            val paidOrder = Order.getEmptyOrder(Date(), Date()).copy(id = orderId, datePaid = Date())
+            val paidOrder = Order.getEmptyOrder(Date(), Date()).copy(
+                id = orderId,
+                datePaid = Date(),
+                total = BigDecimal("51.25"),
+                currency = "EUR",
+                paymentMethod = "stripe",
+            )
             whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.success(Unit))
             whenever(repository.fetchOrderSnapshot(orderId))
                 .thenReturn(pendingOrder)
@@ -161,7 +177,17 @@ class WooPosScanToPayViewModelTest {
 
             // THEN
             verify(tracker).track(ScanToPayPaymentDetectedViaPolling)
-            verify(tracker).track(ScanToPayCollectPaymentSuccess)
+            verify(tracker).track(
+                check { event ->
+                    assertThat(event).isInstanceOf(ScanToPayCollectPaymentSuccess::class.java)
+                    val properties: Map<String, *> = (event as ScanToPayCollectPaymentSuccess).properties
+                    assertThat(properties["amount_normalized"]).isEqualTo(5125L)
+                    assertThat(properties["country"]).isEqualTo("US")
+                    assertThat(properties["currency"]).isEqualTo("EUR")
+                    assertThat(properties["order_id"]).isEqualTo(orderId)
+                    assertThat(properties["plugin_slug"]).isEqualTo("woocommerce-stripe")
+                }
+            )
             verify(childrenToParentEventSender).sendToParent(
                 ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.SCAN_TO_PAY)
             )
@@ -328,6 +354,7 @@ class WooPosScanToPayViewModelTest {
             analyticsTracker = tracker,
             resourceProvider = resourceProvider,
             priceFormat = priceFormat,
+            paymentSuccessProperties = paymentSuccessProperties,
             savedState = SavedStateHandle(
                 mapOf(
                     SCAN_TO_PAY_ROUTE_ORDER_ID_KEY to orderId,
@@ -354,6 +381,7 @@ class WooPosScanToPayViewModelTest {
                 analyticsTracker = tracker,
                 resourceProvider = resourceProvider,
                 priceFormat = priceFormat,
+                paymentSuccessProperties = paymentSuccessProperties,
                 savedState = SavedStateHandle(
                     mapOf(
                         SCAN_TO_PAY_ROUTE_ORDER_ID_KEY to orderId,
@@ -379,6 +407,7 @@ class WooPosScanToPayViewModelTest {
             analyticsTracker = tracker,
             resourceProvider = resourceProvider,
             priceFormat = priceFormat,
+            paymentSuccessProperties = paymentSuccessProperties,
             savedState = SavedStateHandle(
                 mapOf(
                     SCAN_TO_PAY_ROUTE_ORDER_ID_KEY to orderId,

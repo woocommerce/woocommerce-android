@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.blaze.creation.intro
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -55,13 +56,13 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.dismissWCModalBottomSheet
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun BlazeCampaignCreationIntroScreen(
     viewModel: BlazeCampaignCreationIntroViewModel
 ) {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         BlazeCampaignCreationIntroScreen(
             onContinueClick = viewModel::onContinueClick,
             onDismissClick = viewModel::onDismissClick,
@@ -80,12 +81,14 @@ fun BlazeCampaignCreationIntroScreen(
     val modalSheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onDismissClick,
-                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp)
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                showDivider = scrollState.canScrollBackward,
             )
         },
     ) { paddingValues ->
@@ -95,6 +98,7 @@ fun BlazeCampaignCreationIntroScreen(
                 showBottomSheet = true
                 onLearnMoreClick()
             },
+            scrollState = scrollState,
             modifier = Modifier
                 .padding(paddingValues)
                 .background(MaterialTheme.colors.surface)
@@ -121,6 +125,7 @@ fun BlazeCampaignCreationIntroScreen(
 private fun BlazeCampaignCreationIntroContent(
     onContinueClick: () -> Unit,
     onLearnMoreClick: () -> Unit,
+    scrollState: ScrollState,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -134,7 +139,7 @@ private fun BlazeCampaignCreationIntroContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(dimensionResource(id = R.dimen.major_100))
         ) {
             Row(
@@ -274,7 +279,7 @@ private fun BlazeCampaignBottomSheetContent(
 
         learnMoreItems.forEachIndexed { i, item ->
             if (i > 0) {
-                Divider(color = colorResource(id = R.color.color_surface_elevated), thickness = 1.dp)
+                Divider(color = colorResource(id = R.color.divider_color), thickness = 1.dp)
             }
 
             StepItem(
@@ -314,7 +319,7 @@ fun CircleNumber(number: String) {
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .size(dimensionResource(id = R.dimen.major_150))
-            .background(color = colorResource(id = R.color.color_surface_elevated), shape = CircleShape)
+            .background(color = colorResource(id = R.color.divider_color), shape = CircleShape)
     ) {
         Text(
             text = number,
@@ -364,7 +369,7 @@ fun StepItem(currentStep: Int, steps: Int, text: AnnotatedString) {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun BlazeCampaignCreationIntroScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         BlazeCampaignCreationIntroScreen(
             onContinueClick = {},
             onDismissClick = {},
@@ -377,7 +382,7 @@ private fun BlazeCampaignCreationIntroScreenPreview() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 private fun BlazeCampaignBottomSheetContentPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         BlazeCampaignBottomSheetContent(
             onDismissClick = {}
         )

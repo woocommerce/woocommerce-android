@@ -35,6 +35,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingP
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPaymentCompleted
 import com.woocommerce.android.cardreader.payments.CreatePaymentIntentResult
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.RetrieveAndCollectResult
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -782,6 +783,22 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         // THEN
         assertThat(result).isInstanceOf(CreatePaymentIntentResult.Failed::class.java)
         verify(createPaymentAction, never()).createPaymentIntent(any())
+    }
+
+    @Test
+    fun `given remote Interac payment, when collected, then result contains detected method`() = testBlocking {
+        // GIVEN
+        val intent = createPaymentIntent(SUCCEEDED, interacPresentDetails = createCardPresentDetails())
+        whenever(terminalWrapper.retrievePaymentIntent("secret")).thenReturn(intent)
+        whenever(terminalWrapper.processPaymentIntent(intent)).thenReturn(intent)
+
+        // WHEN
+        val result = manager.retrieveAndCollectPayment("secret", createPaymentInfo())
+
+        // THEN
+        assertThat(result).isEqualTo(
+            RetrieveAndCollectResult.Success("dummyId", "succeeded", PaymentMethodType.INTERAC_PRESENT)
+        )
     }
 
     private fun createPaymentIntent(

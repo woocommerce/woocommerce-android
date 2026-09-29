@@ -9,9 +9,16 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="?attr/appBarBackgroundColor"
+        android:elevation="0dp"
+        app:elevation="0dp"
+        app:liftOnScroll="false">
 
-        <include layout="@layout/view_toolbar" />
+        <com.woocommerce.android.ui.compose.designsystem.component.WooDesignSystemToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/woo_ds_toolbar_height" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.fragment.app.FragmentContainerView
@@ -23,4 +30,3 @@
         app:navGraph="@navigation/nav_graph_settings" />
 
 </LinearLayout>
-

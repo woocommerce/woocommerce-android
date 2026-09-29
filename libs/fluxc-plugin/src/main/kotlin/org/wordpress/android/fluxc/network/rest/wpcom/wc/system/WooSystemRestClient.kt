@@ -15,13 +15,22 @@ class WooSystemRestClient @Inject constructor(private val wooNetwork: WooNetwork
         private const val SAVE_SITE_TITLE_RESPONSE_FIELD = "title"
     }
 
-    suspend fun fetchInstalledPlugins(site: SiteModel): WooPayload<WCSystemPluginResponse> {
+    suspend fun fetchInstalledPlugins(
+        site: SiteModel,
+        includeSettings: Boolean = false
+    ): WooPayload<WCSystemPluginResponse> {
         val url = WOOCOMMERCE.system_status.pathV3
+
+        val fields = if (includeSettings) {
+            "active_plugins,inactive_plugins,settings"
+        } else {
+            "active_plugins,inactive_plugins"
+        }
 
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
             path = url,
-            params = mapOf("_fields" to "active_plugins,inactive_plugins"),
+            params = mapOf("_fields" to fields),
             clazz = WCSystemPluginResponse::class.java
         )
 

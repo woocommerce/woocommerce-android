@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-27 11:57:22+0000
+Translation-Revision-Date: 2026-09-09 09:56:45+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="age_verification_required_message">Google Play necesita que verifiques tu edad antes de que WooCommerce pueda comprobar si puedes usar la aplicación. Completa la verificación en Google Play, vuelve aquí e inténtalo de nuevo.</string>
+    <string name="age_verification_open_google_play">Abrir Google Play</string>
+    <string name="woopos_refund_review_remaining_items_button">Revisar los elementos restantes</string>
+    <string name="woopos_refund_error_store_not_updated">Se ha reembolsado la tarjeta, pero tu tienda no se ha actualizado. Registra este reembolso en la administración de tu tienda.</string>
+    <string name="age_verification_required_title">Verifica tu edad para continuar</string>
+    <string name="woopos_refund_error_item_already_refunded">Uno de los artículos seleccionados ya ha sido reembolsado en su totalidad.</string>
+    <string name="filter_history_delete">Eliminar</string>
+    <string name="filter_history_clear_confirmation">¿Seguro que quieres borrar todo el historial de filtros?</string>
+    <string name="filter_history_clear">Borrar historial</string>
+    <string name="filter_history_empty">No se han encontrado filtros anteriores</string>
+    <string name="filter_history_cancel">Cancelar</string>
+    <string name="filter_history_apply">Aplicar</string>
+    <string name="filter_history_recent_header">Reciente</string>
+    <string name="filter_history_title">Historial de filtros</string>
+    <string name="add_action">Añadir</string>
+    <string name="product_attribute_no_options_warning">Este atributo no tiene opciones y se eliminará. ¿Quieres continuar?</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_off">Activar la ubicación para ver los lectores de tarjetas</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Permitir la ubicación para ver los lectores de tarjetas</string>
     <string name="woopos_card_reader_bluetooth_unavailable_off">Activar el Bluetooth para ver los lectores de tarjetas</string>
@@ -16,7 +32,6 @@ Language: es
     <string name="woopos_refund_error_amount_exceeds_item_remaining">El importe del reembolso es superior a lo que queda por reembolsar para este artículo</string>
     <string name="woopos_refund_error_amount_exceeds_order_remaining">El importe del reembolso es superior a lo que queda por reembolsar en este pedido</string>
     <string name="woopos_refund_error_order_not_refundable">Este pedido no se puede reembolsar</string>
-    <string name="woopos_refund_error_item_already_refunded">Este artículo ya se ha reembolsado en su totalidad</string>
     <string name="woopos_refund_error_quantity_exceeds_refundable">La cantidad seleccionada es superior a lo que queda por reembolsar</string>
     <string name="woopos_scan_to_pay_pay_in_person_show_qr">Mostrar el código de nuevo</string>
     <string name="woopos_scan_to_pay_pay_in_person_collect">Recopilar en el registro</string>
@@ -649,15 +664,12 @@ Language: es
     <string name="woopos_orders_refund_complete">Reembolso completado</string>
     <string name="woopos_refund_creating_error_title">No se ha podido crear el reembolso</string>
     <string name="woopos_orders_via_payment_method">A través de %1$s</string>
-    <string name="woopos_wc_version_sunset_banner_dismiss">Descartar la advertencia de actualización de WooCommerce</string>
     <string name="woopos_orders_refund_success_message">Has reembolsado %1$s a través de %2$s.</string>
     <string name="woopos_refund_error_subtitle">Inténtalo de nuevo</string>
     <string name="woopos_refund_loading_error_title">No se han podido cargar los artículos del reembolso</string>
-    <string name="woopos_wc_version_sunset_banner_message">A partir del 1 de agosto de 2026, Point of Sale requerirá WooCommerce 10.5.0 o una versión posterior. Actualiza WooCommerce en tu tienda o consulta al administrador de la tienda.</string>
     <string name="restart">Reiniciar</string>
     <string name="dev_feature_flags">Indicadores de características</string>
     <string name="my_store_widget_push_notifications_title">No te pierdas ningún pedido nuevo</string>
-    <string name="woopos_wc_version_sunset_banner_title">Actualiza WooCommerce pronto</string>
     <string name="settings_enable_push_notifications">Activar notificaciones push</string>
     <string name="my_store_widget_push_notifications_menu_title">Activar notificaciones push</string>
     <string name="woopos_orders_refund_reason_save">Guardar</string>
@@ -1543,7 +1555,6 @@ Language: es
     <string name="my_store_widget_stats_title">Estadísticas</string>
     <string name="images_unavailable_notice">Las imágenes no están disponibles porque tu sitio está marcado como privado. Puedes modificar este ajuste cambiando al modo Próximamente.\n</string>
     <string name="dashboard_stats_edit_granularity_content_description">Botón de cambio de rango de fechas</string>
-    <string name="card_selection_control">Selección de tarjeta de análisis</string>
     <string name="login_app_password_exit_dialog_cancel">Cancelar</string>
     <string name="login_app_password_exit_dialog_confirmation">Salir igualmente</string>
     <string name="orderlist_connectivity_tool_summary_title">No hay problemas de conexión</string>
@@ -3492,7 +3503,7 @@ Language: es
     <string name="upsells_desc">Productos promocionados en lugar del producto que se está viendo actualmente (por ejemplo, productos más rentables)</string>
     <string name="upsells_label">Ventas dirigidas</string>
     <string name="product_detail_linked_products">Productos relacionados</string>
-    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="orderdetail_product_lineitem_attribute">%1$s: %2$s</string>
     <string name="login_get_link_by_email">Obtener un enlace de acceso por correo electrónico</string>
     <string name="email_not_registered_wpcom">Vaya, no encontramos una cuenta de WordPress.com conectada a esta dirección de correo electrónico.</string>
     <string name="settings_preferences">Preferencias</string>
@@ -3650,6 +3661,7 @@ Language: es
     <string name="product_sale_date_to">Hasta el %1$s</string>
     <string name="product_wip_title">Nuevas opciones de edición disponibles</string>
     <string name="orderdetail_product_multiple">Productos</string>
+    <string name="orderdetail_product_lineitem_quantity_and_price">%1$s x %2$s</string>
     <string name="product_type_external">Externo</string>
     <string name="product_type_simple">Sencillo</string>
     <string name="product_status_privately_published">Publicado como privado</string>

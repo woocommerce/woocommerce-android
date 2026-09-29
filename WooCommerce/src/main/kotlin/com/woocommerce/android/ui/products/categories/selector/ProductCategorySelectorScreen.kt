@@ -41,13 +41,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorViewModel.CategoryUiModel
 import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorViewModel.LoadingState
 import com.woocommerce.android.util.StringUtils
@@ -183,6 +184,7 @@ private fun CategoriesList(
 }
 
 private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
+    val indentMultiplier = ProductCategory.computeIndentationMultiplier(depth)
     item {
         Column(
             modifier = Modifier
@@ -200,7 +202,7 @@ private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
                     text = item.title,
                     style = MaterialTheme.typography.subtitle1,
                     modifier = Modifier
-                        .padding(start = dimensionResource(id = R.dimen.major_100) * depth)
+                        .padding(start = dimensionResource(id = R.dimen.major_100) * indentMultiplier)
                         .weight(1f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -216,7 +218,9 @@ private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
                 )
             }
 
-            Divider(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100) * (depth + 1)))
+            Divider(
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100) * (indentMultiplier + 1))
+            )
         }
     }
     item.children.forEach {
@@ -321,7 +325,7 @@ private fun PreviewProductCategorySelector() {
             generateCategory(it, childrenDepth = it.coerceAtMost(4).toInt())
         }
     }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ProductCategorySelectorScreen(
             viewState = ProductCategorySelectorViewModel.ViewState(
                 categories = categories,

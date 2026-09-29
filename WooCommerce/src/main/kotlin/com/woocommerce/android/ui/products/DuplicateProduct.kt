@@ -80,6 +80,7 @@ class DuplicateProduct @Inject constructor(
         val duplicatedVariations = buildList {
             do {
                 val variations = variationRepository.fetchProductVariations(product.remoteId, isLoadingMore)
+                    .getOrElse { return Result.failure(it) }
                     .map { it.copy(remoteProductId = duplicatedProductRemoteId, sku = "") }
                 addAll(variations)
                 isLoadingMore = true

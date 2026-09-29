@@ -26,7 +26,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCExposedDropDown
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.Companion.AVAILABLE_STOCK_STATUSES
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.StockStatusState
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.StockStatusState.Common
@@ -157,7 +157,7 @@ fun StockStatusDropdown(
 @Preview(name = "Single Status - Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(name = "Single Status - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun UpdateProductStockStatusSingleStatusPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         UpdateProductStockStatusScreen(
             currentStockStatusState = Common(ProductStockStatus.InStock),
             statusMessage = "5 products will be updated.",
@@ -175,7 +175,7 @@ private fun UpdateProductStockStatusSingleStatusPreview() {
 @Preview(name = "Mixed Statuses - Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(name = "Mixed Statuses - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun UpdateProductStockStatusMixedStatusPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         UpdateProductStockStatusScreen(
             currentStockStatusState = Mixed,
             statusMessage = "5 products will be updated.",
@@ -193,7 +193,7 @@ private fun UpdateProductStockStatusMixedStatusPreview() {
 @Preview(name = "Ignored Products - Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(name = "Ignored Products - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun UpdateProductStockStatusIgnoredProductsPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         UpdateProductStockStatusScreen(
             currentStockStatusState = Common(ProductStockStatus.OutOfStock),
             statusMessage = "5 products will be updated.",

@@ -149,7 +149,7 @@ private fun WooPosCardReaderDialogInternal(
     ) { granted ->
         val shouldShowRationale = ActivityCompat.shouldShowRequestPermissionRationale(
             context as Activity,
-            Manifest.permission.ACCESS_FINE_LOCATION
+            WooPermissionUtils.cardReaderLocationPermission()
         )
         viewModel.onLocationPermissionResult(granted, shouldShowRationale)
     }
@@ -224,7 +224,7 @@ private fun WooPosCardReaderDialogInternal(
                         bluetoothEnableLauncher.launch(enableBtIntent)
                     }
                     WooPosCardReaderConnectionViewModel.Event.RequestLocationPermission -> {
-                        locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                        WooPermissionUtils.requestCardReaderLocationPermission(locationPermissionLauncher)
                     }
                     WooPosCardReaderConnectionViewModel.Event.RequestLocalNetworkPermission -> {
                         WooPermissionUtils.requestLocalNetworkPermission(localNetworkPermissionLauncher)

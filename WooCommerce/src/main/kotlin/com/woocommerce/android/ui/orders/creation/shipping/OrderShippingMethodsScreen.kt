@@ -42,7 +42,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun OrderShippingMethodsScreen(
@@ -164,7 +164,7 @@ fun SelectableShippingMethodPreview(@PreviewParameter(IsSelectedProvider::class)
         ),
         isSelected = isSelected
     )
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         SelectableShippingMethod(method = method)
     }
 }
@@ -197,7 +197,7 @@ fun OrderShippingMethodsListSkeleton(modifier: Modifier) {
 @Preview
 @Composable
 fun OrderShippingMethodsSkeletonPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         OrderShippingMethodsListSkeleton(
             modifier = Modifier
                 .fillMaxSize()
@@ -246,7 +246,7 @@ private fun ErrorMessage(
 @Preview
 @Composable
 fun ErrorMessagePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ErrorMessage(
             onRetry = {},
             modifier = Modifier

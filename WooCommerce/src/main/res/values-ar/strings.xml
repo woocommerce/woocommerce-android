@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-27 11:56:11+0000
+Translation-Revision-Date: 2026-09-07 19:55:17+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="age_verification_open_google_play">افتح Google Play</string>
+    <string name="age_verification_required_message">يحتاج Google Play إلى التحقق من عمرك قبل أن يتمكن WooCommerce من التحقق مما إذا كان بإمكانك استخدام التطبيق. أتمِم التحقق في Google Play، ثم عُد إلى هنا وحاول مرة أخرى.</string>
+    <string name="age_verification_required_title">التحقق من عمرك للاستمرار</string>
+    <string name="woopos_refund_review_remaining_items_button">مراجعة العناصر المتبقية</string>
+    <string name="woopos_refund_error_store_not_updated">تم استرداد أموال البطاقة، ولكن لم يتم تحديث متجرك. سجِّل استرداد الأموال هذا في مشرف متجرك.</string>
+    <string name="woopos_refund_error_item_already_refunded">أحد العناصر المحددة تم استرداد أمواله بالكامل مسبقًا.</string>
+    <string name="filter_history_delete">حذف</string>
+    <string name="filter_history_clear_confirmation">هل أنت متأكد من رغبتك في مسح كل محفوظات التصفية؟</string>
+    <string name="filter_history_clear">مسح المحفوظات</string>
+    <string name="filter_history_empty">لم يتم العثور على عوامل التصفية السابقة</string>
+    <string name="filter_history_cancel">إلغاء</string>
+    <string name="filter_history_apply">تطبيق</string>
+    <string name="filter_history_recent_header">حديثة</string>
+    <string name="filter_history_title">محفوظات التصفية</string>
+    <string name="add_action">إضافة</string>
+    <string name="product_attribute_no_options_warning">ليس لهذه السمة خيارات، وستتم إزالتها. هل تريد المتابعة؟</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_off">قم بتشغيل الموقع الجغرافي لرؤية أجهزة قارئ البطاقات</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_permission">السماح للموقع الجغرافي برؤية أجهزة قارئ البطاقات</string>
     <string name="woopos_card_reader_bluetooth_unavailable_off">قم بتشغيل Bluetooth لرؤية أجهزة قارئ البطاقات</string>
@@ -16,7 +32,6 @@ Language: ar
     <string name="woopos_refund_error_amount_exceeds_item_remaining">مبلغ استرداد الأموال أكبر مما تبقى للاسترداد لهذا العنصر</string>
     <string name="woopos_refund_error_amount_exceeds_order_remaining">مبلغ استرداد الأموال أكبر مما تبقى للاسترداد في هذا الطلب</string>
     <string name="woopos_refund_error_order_not_refundable">لا يمكن استرداد أموال هذا الطلب</string>
-    <string name="woopos_refund_error_item_already_refunded">لقد تم بالفعل استرداد أموال هذا العنصر بالكامل</string>
     <string name="woopos_refund_error_quantity_exceeds_refundable">الكمية المحددة أكبر مما تبقى للاسترداد</string>
     <string name="woopos_scan_to_pay_pay_in_person_show_qr">أظهر الكود مرة أخرى</string>
     <string name="woopos_scan_to_pay_pay_in_person_collect">التحصيل على آلة التسجيل</string>
@@ -652,9 +667,6 @@ Language: ar
     <string name="woopos_refund_creating_error_title">فشل إنشاء عملية استرداد الأموال</string>
     <string name="woopos_refund_loading_error_title">فشل تحميل عناصر الاسترداد</string>
     <string name="woopos_orders_via_payment_method">بواسطة ⁦%1$s⁩</string>
-    <string name="woopos_wc_version_sunset_banner_dismiss">تجاهل تحذير تحديث WooCommerce</string>
-    <string name="woopos_wc_version_sunset_banner_message">اعتبارًا من 1 أغسطس 2026، ستتطلب نقطة البيع الإصدار 10.5.0 من WooCommerce أو إصدار أحدث. قم بتحديث WooCommerce على متجرك أو اسأل المسؤول في متجرك.</string>
-    <string name="woopos_wc_version_sunset_banner_title">قم بتحديث WooCommerce قريبًا</string>
     <string name="restart">إعادة البدء</string>
     <string name="dev_feature_flags">علامات الميزات</string>
     <string name="settings_enable_push_notifications">تمكين التنبيهات المنبثقة</string>
@@ -1543,7 +1555,6 @@ Language: ar
     <string name="analytics_session_no_available_description">تعتمد تحليلات الجلسة على أعداد الزائرين الفريدة غير المتاحة لنطاقات التواريخ المخصصة</string>
     <string name="dashboard_stats_edit_granularity_content_description">تغيير زر نطاق التاريخ</string>
     <string name="images_unavailable_notice">الصور غير متاحة نظرًا إلى وسم موقعك بأنه \"خاص\". يمكنك تغيير ذلك عن طريق التبديل إلى وضع \"قريبًا\".\n</string>
-    <string name="card_selection_control">تحديد البطاقة التحليلية</string>
     <string name="login_app_password_exit_dialog_cancel">إلغاء</string>
     <string name="login_app_password_exit_dialog_confirmation">الإنهاء على أي حال</string>
     <string name="login_app_password_exit_dialog_message">يبدو أنك لم توافق على ربط التطبيق حتى الآن. هل تريد بالتأكيد الإنهاء؟</string>
@@ -3492,7 +3503,7 @@ Language: ar
     <string name="upsells_desc">المنتجات التي يتم الترويج لها بدلاً من المنتج المعروض حاليًا (على سبيل المثال: المنتجات الأكثر ربحية)</string>
     <string name="upsells_label">منتجات يوصى بها</string>
     <string name="product_detail_linked_products">المنتجات المرتبطة</string>
-    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="orderdetail_product_lineitem_attribute">%1$s: %2$s</string>
     <string name="login_get_link_by_email">الحصول على رابط تسجيل الدخول عن طريق البريد الإلكتروني</string>
     <string name="email_not_registered_wpcom">حسناً، لا يمكننا العثور على حساب WordPress.com متصلاً بعنوان البريد الإلكتروني هذا.</string>
     <string name="settings_preferences">التفضيلات</string>
@@ -3650,6 +3661,7 @@ Language: ar
     <string name="product_sale_date_to">حتى %1$s</string>
     <string name="product_wip_title">تتوافر خيارات تحرير جديدة</string>
     <string name="orderdetail_product_multiple">المنتجات</string>
+    <string name="orderdetail_product_lineitem_quantity_and_price">%1$s x %2$s</string>
     <string name="product_type_external">خارجي</string>
     <string name="product_type_simple">بسيط</string>
     <string name="product_status_privately_published">تم النشر سرًا</string>

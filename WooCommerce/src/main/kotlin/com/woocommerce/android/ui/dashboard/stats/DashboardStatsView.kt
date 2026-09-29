@@ -67,6 +67,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DisplayUtils
 import java.util.Locale
 import kotlin.math.round
+import com.woocommerce.android.ui.compose.designsystem.R as WooDesignSystemR
 
 @OptIn(FlowPreview::class)
 @Suppress("MagicNumber")
@@ -548,7 +549,7 @@ class DashboardStatsView @JvmOverloads constructor(
         lastUpdated.compoundDrawablePadding = resources.getDimensionPixelSize(R.dimen.minor_50)
         TextViewCompat.setCompoundDrawableTintList(
             lastUpdated,
-            ColorStateList.valueOf(ContextCompat.getColor(context, R.color.color_primary))
+            ColorStateList.valueOf(ContextCompat.getColor(context, WooDesignSystemR.color.woo_ds_color_primary))
         )
         lastUpdated.setOnClickListener { onInfoClick() }
         // Tell screen readers what activating the footer does (the visible text is still read).
@@ -651,10 +652,6 @@ class DashboardStatsView @JvmOverloads constructor(
         val maxRevenue = dataSet.values.maxOf { it.y }
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
         with(binding.chart) {
-            data = LineData(dataSet)
-            if (wasEmpty) {
-                animateY(duration)
-            }
             with(xAxis) {
                 labelCount = getChartXAxisLabelCount()
                 valueFormatter = StartEndDateAxisFormatter()
@@ -664,8 +661,12 @@ class DashboardStatsView @JvmOverloads constructor(
                     setDrawZeroLine(true)
                     zeroLineColor = ContextCompat.getColor(context, R.color.divider_color)
                 }
-                axisMinimum = minRevenue.roundToTheNextPowerOfTen()
-                axisMaximum = maxRevenue.roundToTheNextPowerOfTen()
+                axisMinimum = minRevenue.coerceAtMost(0f).roundToTheNextPowerOfTen()
+                axisMaximum = maxRevenue.coerceAtLeast(0f).roundToTheNextPowerOfTen()
+            }
+            data = LineData(dataSet)
+            if (wasEmpty) {
+                animateY(duration)
             }
             val dot = MarkerImage(context, R.drawable.chart_highlight_dot)
             val offset = DisplayUtils.dpToPx(context, LINE_CHART_DOT_OFFSET).toFloat()
@@ -829,7 +830,7 @@ class DashboardStatsView @JvmOverloads constructor(
                 currencyFormatter.formatCurrencyRounded(
                     value.toDouble(),
                     revenueStatsModel?.currencyCode.orEmpty()
-                ).replace(".0", "")
+                )
             }
         }
     }

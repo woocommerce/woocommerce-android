@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidFailed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidSuccess
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosPaymentSuccessProperties
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -31,6 +32,7 @@ class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val resourceProvider: ResourceProvider,
     private val priceFormat: WooPosFormatPrice,
+    private val paymentSuccessProperties: WooPosPaymentSuccessProperties,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val orderId: Long = requireNotNull(savedState[MARK_ORDER_AS_COMPLETE_ROUTE_ORDER_ID_KEY])
@@ -140,7 +142,8 @@ class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
     }
 
     private suspend fun onMarkAsPaidSucceeded() {
-        analyticsTracker.track(MarkAsPaidSuccess)
+        val paymentProps = repository.getOrderById(orderId)?.let(paymentSuccessProperties::invoke).orEmpty()
+        analyticsTracker.track(MarkAsPaidSuccess(paymentProps))
         childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.EXTERNAL))
         _navigationEvent.emit(WooPosNavigationEvent.GoBack)
     }

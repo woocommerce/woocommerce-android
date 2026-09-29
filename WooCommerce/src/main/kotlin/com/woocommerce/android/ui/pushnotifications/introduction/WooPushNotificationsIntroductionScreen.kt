@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.pushnotifications.introduction
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +35,7 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.wpcom.components.WPComConsent
 import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
 import com.woocommerce.android.ui.pushnotifications.introduction.WooPushNotificationsIntroductionViewModel.ViewState
@@ -63,12 +64,14 @@ fun WooPushNotificationsIntroductionScreen(
     onContactSupportClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onCloseClick,
                 navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                windowInsets = TopAppBarDefaults.windowInsets
+                windowInsets = TopAppBarDefaults.windowInsets,
+                showDivider = viewState != ViewState.Loading && scrollState.canScrollBackward
             )
         },
     ) { paddingValues ->
@@ -86,12 +89,14 @@ fun WooPushNotificationsIntroductionScreen(
                     onContinueClick = onContinueClick,
                     onNotNowClick = onNotNowClick,
                     onWhatIsWPComClick = onWhatIsWPComClick,
+                    scrollState = scrollState,
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 ViewState.Connected -> ConnectedContent(
                     onContinueClick = onContinueClick,
                     onNotNowClick = onNotNowClick,
+                    scrollState = scrollState,
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -101,6 +106,17 @@ fun WooPushNotificationsIntroductionScreen(
                     ),
                     onContactSupportClick = onContactSupportClick,
                     onNotNowClick = onNotNowClick,
+                    scrollState = scrollState,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                ViewState.OfflineModeError -> ErrorContent(
+                    bodyText = stringResource(
+                        id = R.string.woo_push_notifications_introduction_error_offline_mode_body
+                    ),
+                    onContactSupportClick = onContactSupportClick,
+                    onNotNowClick = onNotNowClick,
+                    scrollState = scrollState,
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -110,6 +126,7 @@ fun WooPushNotificationsIntroductionScreen(
                     ),
                     onContactSupportClick = onContactSupportClick,
                     onNotNowClick = onNotNowClick,
+                    scrollState = scrollState,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -184,6 +201,7 @@ private fun IntroContent(
     onContinueClick: () -> Unit,
     onNotNowClick: () -> Unit,
     onWhatIsWPComClick: () -> Unit,
+    scrollState: ScrollState,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -193,7 +211,7 @@ private fun IntroContent(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(vertical = 16.dp)
         ) {
             WordPressWooBadge(
@@ -287,6 +305,7 @@ private fun IntroContent(
 private fun ConnectedContent(
     onContinueClick: () -> Unit,
     onNotNowClick: () -> Unit,
+    scrollState: ScrollState,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -296,7 +315,7 @@ private fun ConnectedContent(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(vertical = 16.dp)
         ) {
             WordPressWooBadge(
@@ -344,6 +363,7 @@ private fun ErrorContent(
     bodyText: String,
     onContactSupportClick: () -> Unit,
     onNotNowClick: () -> Unit,
+    scrollState: ScrollState,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -353,7 +373,7 @@ private fun ErrorContent(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(vertical = 16.dp)
         ) {
             Icon(
@@ -402,7 +422,7 @@ private fun ErrorContent(
 @Composable
 @Preview
 private fun WooPushNotificationsIntroductionLoadingPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.Loading,
             onContinueClick = {},
@@ -417,7 +437,7 @@ private fun WooPushNotificationsIntroductionLoadingPreview() {
 @Composable
 @Preview
 private fun WooPushNotificationsIntroductionNotConnectedPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.NotConnected,
             onContinueClick = {},
@@ -432,7 +452,7 @@ private fun WooPushNotificationsIntroductionNotConnectedPreview() {
 @Composable
 @Preview
 private fun WooPushNotificationsIntroductionUpdateRequiredPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.UpdateRequired,
             onContinueClick = {},
@@ -447,7 +467,7 @@ private fun WooPushNotificationsIntroductionUpdateRequiredPreview() {
 @Composable
 @Preview
 private fun WooPushNotificationsIntroductionConnectedPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.Connected,
             onContinueClick = {},
@@ -462,9 +482,24 @@ private fun WooPushNotificationsIntroductionConnectedPreview() {
 @Composable
 @Preview
 private fun WooPushNotificationsIntroductionErrorPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.GenericError,
+            onContinueClick = {},
+            onCloseClick = {},
+            onNotNowClick = {},
+            onWhatIsWPComClick = {},
+            onContactSupportClick = {}
+        )
+    }
+}
+
+@Composable
+@Preview
+private fun WooPushNotificationsIntroductionOfflineModeErrorPreview() {
+    LegacyWooThemeWithBackground {
+        WooPushNotificationsIntroductionScreen(
+            viewState = ViewState.OfflineModeError,
             onContinueClick = {},
             onCloseClick = {},
             onNotNowClick = {},

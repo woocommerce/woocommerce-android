@@ -6,8 +6,6 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.dispatchAndAwait
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.ThemeActionBuilder
 import org.wordpress.android.fluxc.model.ThemeModel
@@ -66,9 +64,8 @@ class ThemeRepository @Inject constructor(
         }
     }
 
-    suspend fun getTheme(themeId: String): Theme? = withContext(Dispatchers.IO) {
+    suspend fun getTheme(themeId: String): Theme? =
         themeStore.getWpComThemeByThemeId(themeId)?.toAppModel()
-    }
 
     suspend fun fetchCurrentTheme(): Result<Theme> {
         val currentThemResult: OnCurrentThemeFetched = dispatcher.dispatchAndAwait(

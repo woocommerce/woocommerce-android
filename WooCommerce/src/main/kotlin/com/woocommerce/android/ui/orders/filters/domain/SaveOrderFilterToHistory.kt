@@ -138,7 +138,7 @@ class SaveOrderFilterToHistory @Inject constructor(
         orderFilterOptions = options.filter { it.isSelected }
     )
 
-    private fun productFilterOptions(): List<OrderFilterOptionUiModel> = listOfNotNull(
+    private suspend fun productFilterOptions(): List<OrderFilterOptionUiModel> = listOfNotNull(
         orderFiltersRepository.productFilter?.let { productId ->
             OrderFilterOptionUiModel(
                 key = productId.toString(),

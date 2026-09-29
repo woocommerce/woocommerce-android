@@ -35,7 +35,7 @@ import com.woocommerce.android.ui.compose.component.DialogButtonsRowLayout
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun BlazeCampaignCreationAdDestinationScreen(viewModel: BlazeCampaignCreationAdDestinationViewModel) {
@@ -217,7 +217,7 @@ private fun UrlOption(
 @LightDarkThemePreviews
 @Composable
 fun PreviewAdDestinationScreen() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AdDestinationScreen(
             viewState = ViewState(
                 productUrl = "https://woocommerce.com/products/1",

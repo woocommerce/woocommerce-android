@@ -92,6 +92,22 @@ class JetpackWPAPIRestClient @Inject constructor(
         }
     }
 
+    suspend fun fetchJetpackConnection(
+        site: SiteModel,
+        useApplicationPasswords: Boolean = false
+    ): JetpackWPAPIPayload<JetpackConnectionStatusResponse> {
+        val response = makeGetWPAPIRequest<JetpackConnectionStatusResponse>(
+            site = site,
+            path = JPAPI.connection.pathV4,
+            useApplicationPasswords = useApplicationPasswords
+        )
+
+        return when (response) {
+            is Success<JetpackConnectionStatusResponse> -> JetpackWPAPIPayload(response.data)
+            is Error -> JetpackWPAPIPayload(response.error)
+        }
+    }
+
     suspend fun fetchJetpackConnectionData(
         site: SiteModel,
         useApplicationPasswords: Boolean = false

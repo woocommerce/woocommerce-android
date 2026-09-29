@@ -14,7 +14,7 @@ import androidx.work.WorkQuery
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.compose.legacyComposeView
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateFrequencyUiModel
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,7 +25,7 @@ class DeveloperOptionsFragment : BaseFragment() {
     val viewModel: DeveloperOptionsViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return composeView {
+        return legacyComposeView {
             DeveloperOptionsScreen(viewModel)
         }
     }

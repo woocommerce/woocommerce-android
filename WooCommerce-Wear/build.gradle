@@ -1,4 +1,5 @@
 import io.sentry.android.gradle.extensions.InstrumentationFeature
+import io.sentry.android.gradle.tasks.SentryCliExecTask
 
 plugins {
     alias(libs.plugins.android.application)
@@ -10,8 +11,17 @@ plugins {
     alias(libs.plugins.dependency.analysis)
 }
 
+def sentryAuthToken = providers.environmentVariable("SENTRY_AUTH_TOKEN").orNull?.trim() ?: null
+def shouldUploadToSentry = gradle.ext.isCi
+        && !providers.gradleProperty("skipSentryUpload").orNull?.toBoolean()
+
 sentry {
-    includeSourceContext = true
+    org = "a8c"
+    projectName = "woocommerce-wear"
+    authToken = sentryAuthToken
+
+    includeProguardMapping = shouldUploadToSentry
+    includeSourceContext = shouldUploadToSentry
     autoUploadSourceContext = true
     tracingInstrumentation {
         enabled = true
@@ -29,6 +39,16 @@ sentry {
     (if enabled in WCCrashLoggingDataProvider).
     */
     ignoredBuildTypes = ["debug"]
+}
+
+tasks.withType(SentryCliExecTask).configureEach {
+    doFirst {
+        if (sentryAuthToken == null) {
+            throw new GradleException("SENTRY_AUTH_TOKEN is not set (or is blank). " +
+                    "Export it to upload debug files to Sentry, " +
+                    "or pass -PskipSentryUpload=true to skip the upload.")
+        }
+    }
 }
 
 def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properties"))

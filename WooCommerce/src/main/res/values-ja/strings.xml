@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-27 09:58:09+0000
+Translation-Revision-Date: 2026-09-08 09:57:10+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="age_verification_open_google_play">Google Play を開く</string>
+    <string name="age_verification_required_message">WooCommerce でアプリを利用できるか確認するには、事前に Google Play で年齢確認を完了する必要があります。Google Play で確認を完了してから、こちらに戻ってもう一度お試しください。</string>
+    <string name="age_verification_required_title">年齢を確認して続行</string>
+    <string name="woopos_refund_review_remaining_items_button">残りの項目を確認</string>
+    <string name="woopos_refund_error_store_not_updated">カードへの返金は完了しましたが、ストアには反映されませんでした。 この返金をストア管理画面に記録してください。</string>
+    <string name="woopos_refund_error_item_already_refunded">選択した商品のうち1点は、すでに全額返金されています。</string>
+    <string name="filter_history_delete">削除</string>
+    <string name="filter_history_clear_confirmation">フィルター履歴をすべて消去してもよいですか ?</string>
+    <string name="filter_history_clear">履歴を消去</string>
+    <string name="filter_history_empty">過去のフィルターが見つかりません</string>
+    <string name="filter_history_cancel">キャンセル</string>
+    <string name="filter_history_apply">適用</string>
+    <string name="filter_history_recent_header">最近</string>
+    <string name="filter_history_title">フィルター履歴</string>
+    <string name="add_action">追加</string>
+    <string name="product_attribute_no_options_warning">この属性にはオプションがないため、削除されます。 続行しますか ?</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_off">位置情報をオンにしてカードリーダーを表示</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_permission">位置情報にカードリーダーの表示を許可</string>
     <string name="woopos_card_reader_bluetooth_unavailable_off">Bluetooth をオンにしてカードリーダーを表示</string>
@@ -16,7 +32,6 @@ Language: ja_JP
     <string name="woopos_refund_error_amount_exceeds_item_remaining">返金額が、このアイテムの返金可能残額を超えています</string>
     <string name="woopos_refund_error_amount_exceeds_order_remaining">返金額が、この注文の返金可能残額を超えています</string>
     <string name="woopos_refund_error_order_not_refundable">この注文は返金できません</string>
-    <string name="woopos_refund_error_item_already_refunded">このアイテムはすでに全額返金されています</string>
     <string name="woopos_refund_error_quantity_exceeds_refundable">選択した数量が、返金可能残量を超えています。</string>
     <string name="woopos_scan_to_pay_pay_in_person_show_qr">コードを再表示</string>
     <string name="woopos_scan_to_pay_pay_in_person_collect">レジで集金</string>
@@ -652,9 +667,6 @@ Language: ja_JP
     <string name="woopos_refund_creating_error_title">返金を作成できませんでした</string>
     <string name="woopos_refund_loading_error_title">返金アイテムの読み込みに失敗しました</string>
     <string name="woopos_orders_via_payment_method">支払手段 %1$s</string>
-    <string name="woopos_wc_version_sunset_banner_dismiss">WooCommerce 更新の警告を閉じる</string>
-    <string name="woopos_wc_version_sunset_banner_message">2026年8月1日以降、販売時点管理には WooCommerce 10.5.0以降が必要になります。 ストアで WooCommerce を更新するか、ストア管理者に問い合わせてください。</string>
-    <string name="woopos_wc_version_sunset_banner_title">お早めに WooCommerce を更新してください</string>
     <string name="restart">再開</string>
     <string name="dev_feature_flags">機能フラグ</string>
     <string name="settings_enable_push_notifications">プッシュ通知を有効化</string>
@@ -1543,7 +1555,6 @@ Language: ja_JP
     <string name="my_store_widget_stats_title">パフォーマンス</string>
     <string name="dashboard_stats_edit_granularity_content_description">日付の範囲の変更ボタン</string>
     <string name="images_unavailable_notice">サイトが「非公開」として設定されているため、画像が利用できません。 これは、「近日公開」モードに切り替えることで変更できます。\n</string>
-    <string name="card_selection_control">分析カードの選択</string>
     <string name="login_app_password_exit_dialog_cancel">キャンセル</string>
     <string name="login_app_password_exit_dialog_confirmation">終了</string>
     <string name="login_app_password_exit_dialog_message">アプリの連携をまだ承認していないようです。 終了してもよろしいですか ?</string>
@@ -3492,7 +3503,7 @@ Language: ja_JP
     <string name="upsells_desc">現在表示中の商品の代わりに宣伝される商品です (より安価な商品など)</string>
     <string name="upsells_label">アップセル</string>
     <string name="product_detail_linked_products">関連商品</string>
-    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="orderdetail_product_lineitem_attribute">%1$s: %2$s</string>
     <string name="login_get_link_by_email">ログインリンクをメールで取得</string>
     <string name="email_not_registered_wpcom">このメールアドレスに紐付けられている WordPress.com アカウントが見つかりません</string>
     <string name="settings_enable_product_addons_teaser_message">起動の準備ができたら、注文アドオンの表示をテストします</string>
@@ -3650,6 +3661,7 @@ Language: ja_JP
     <string name="product_sale_date_to">%1$sまで</string>
     <string name="product_wip_title">新しい編集オプションが利用可能</string>
     <string name="orderdetail_product_multiple">商品</string>
+    <string name="orderdetail_product_lineitem_quantity_and_price">%1$s x %2$s</string>
     <string name="product_type_external">外部</string>
     <string name="product_type_simple">シンプル</string>
     <string name="product_status_privately_published">非公開</string>

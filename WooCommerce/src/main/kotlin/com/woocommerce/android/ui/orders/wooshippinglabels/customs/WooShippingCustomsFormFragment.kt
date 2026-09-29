@@ -18,7 +18,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.FinishCustomsForm
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowContentTypeDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowCountrySelector
@@ -45,7 +45,7 @@ class WooShippingCustomsFormFragment : BaseFragment() {
             setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 CompositionLocalProvider(LocalUriHandler provides chromeTabUriHandler) {
-                    WooThemeWithBackground {
+                    LegacyWooThemeWithBackground {
                         Surface {
                             WooShippingCustomsFormScreen(viewModel = viewModel)
                         }

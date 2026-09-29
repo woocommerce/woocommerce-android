@@ -11,7 +11,7 @@ import javax.inject.Inject
  * Returns true when the selected site's country is allowed to launch POS.
  *
  * - When [FeatureFlag.WOO_POS_ALL_COUNTRIES] is enabled, every country is allowed.
- * - Otherwise, POS is restricted to the IPP-supported POS countries listed below.
+ * - Otherwise, POS is restricted to the countries in [WooPosSupportedCountries].
  *
  * Inside POS, card-payment availability is still checked separately from launch eligibility;
  * this gate only decides whether POS is reachable at all.
@@ -26,7 +26,7 @@ class WooPosIsCountryAllowed @Inject constructor(
 
         val site = selectedSite.getOrNull() ?: return false
         val countryCode = getStoreCountryCode(site) ?: return false
-        return countryCode in SUPPORTED_COUNTRIES
+        return WooPosSupportedCountries.isSupported(countryCode)
     }
 
     private suspend fun getStoreCountryCode(site: SiteModel): String? {
@@ -37,14 +37,5 @@ class WooPosIsCountryAllowed @Inject constructor(
         // visibility is resolved without requiring an app restart.
         wooCommerceStore.fetchSiteGeneralSettings(site)
         return wooCommerceStore.getStoreCountryCode(site)?.uppercase()
-    }
-
-    private companion object {
-        val SUPPORTED_COUNTRIES = setOf(
-            "US", "PR", "GB", "CA",
-            "IE", "NL", "FI", "LU",
-            "SG", "NZ",
-            "AU",
-        )
     }
 }

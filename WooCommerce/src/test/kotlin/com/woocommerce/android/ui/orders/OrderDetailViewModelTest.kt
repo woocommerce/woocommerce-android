@@ -22,7 +22,6 @@ import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.EditOrder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
@@ -32,6 +31,7 @@ import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWit
 import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.details.GetOrderSubscriptions
+import com.woocommerce.android.ui.orders.details.GetShippingLabelSupport
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailTracker
@@ -42,13 +42,13 @@ import com.woocommerce.android.ui.orders.details.OrderDetailsTransactionLauncher
 import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.ui.orders.details.OrderProductMapper
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
-import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.ShippingLabelSupport
+import com.woocommerce.android.ui.orders.details.ShippingLabelSupport
 import com.woocommerce.android.ui.orders.wooshippinglabels.GetShipments
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingEligibilityDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.EligibilityResponse
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
-import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.products.addons.AddonRepository
@@ -87,6 +87,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
@@ -128,10 +129,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
     }
-    private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock {
-        doReturn(ShippingLabelSupport.WCS_SUPPORTED).whenever(it).shippingPluginSupport
-        on { shouldShowWcShippingBanner(any(), any()) } doReturn false
+        on { shouldShowWcShippingBanner(any()) } doReturn false
+    }
+    private val getShippingLabelSupport: GetShippingLabelSupport = mock {
+        on { invoke() } doReturn ShippingLabelSupport.WCS_SUPPORTED
     }
     private val shippingLabelRepository: WooShippingLabelRepository = mock()
     private val shippingEligibilityDataStore: WooShippingEligibilityDataStore = mock()
@@ -142,7 +144,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         allOrderIds = arrayOf(ORDER_ID).toLongArray()
     ).toSavedStateHandle()
 
-    private val productImageMap = mock<ProductImageMap>()
     private val orderDetailsTransactionLauncher = mock<OrderDetailsTransactionLauncher>()
     private val orderProductMapper = OrderProductMapper()
     private val productDetailRepository: ProductDetailRepository = mock()
@@ -203,11 +204,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 orderDetailRepository,
                 addonsRepository,
                 selectedSite,
-                productImageMap,
-                paymentCollectibilityChecker,
                 paymentsFlowTracker,
                 orderDetailTracker,
                 shippingLabelOnboardingRepository,
+                getShippingLabelSupport,
                 shippingLabelRepository,
                 shippingEligibilityDataStore,
                 getWooShippingShipments,
@@ -238,9 +238,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             it
         }
         doReturn(site).whenever(selectedSite).getIfExists()
-        testBlocking {
-            doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
-        }
+        doReturn(site).whenever(selectedSite).get()
 
         pluginsInfo.clear()
 
@@ -262,14 +260,63 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given product and shipping refunds, when loaded, then expose counts and grouped shipping`() = testBlocking {
+        // GIVEN
+        val refund = testOrderRefunds.single()
+        val refunds = listOf(refund, refund.copy(id = 2))
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(refunds).whenever(orderDetailRepository).getOrderRefunds(any())
+
+        // WHEN
+        val states = viewModel.orderRefunds.runAndCaptureValues { viewModel.start() }
+
+        // THEN
+        val state = states.last()
+        assertThat(state.refunds).isEqualTo(refunds)
+        assertThat(state.refundedProductsCount).isEqualTo(2)
+        assertThat(state.shippingLines).containsExactly(
+            refund.shippingLines.single().copy(total = BigDecimal("26.0"), totalTax = BigDecimal("6.0"))
+        )
+        assertThat(state.isVisible).isTrue()
+    }
+
+    @Test
+    fun `given shipping only refund, when loaded, then expose visible state without products`() = testBlocking {
+        // GIVEN
+        val refund = testOrderRefunds.single().copy(items = emptyList())
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(listOf(refund)).whenever(orderDetailRepository).getOrderRefunds(any())
+
+        // WHEN
+        val states = viewModel.orderRefunds.runAndCaptureValues { viewModel.start() }
+
+        // THEN
+        assertThat(states.last().refundedProductsCount).isZero()
+        assertThat(states.last().shippingLines).isEqualTo(refund.shippingLines)
+        assertThat(states.last().isVisible).isTrue()
+    }
+
+    @Test
+    fun `given no refunds, when loaded, then expose hidden refund state`() = testBlocking {
+        // GIVEN
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+
+        // WHEN
+        val states = viewModel.orderRefunds.runAndCaptureValues { viewModel.start() }
+
+        // THEN
+        assertThat(states.last().refundedProductsCount).isZero()
+        assertThat(states.last().shippingLines).isEmpty()
+        assertThat(states.last().isVisible).isFalse()
+    }
+
+    @Test
     fun `Displays the order detail view correctly`() = testBlocking {
         val nonRefundedOrder = order.copy(refundTotal = BigDecimal.ZERO)
 
         val expectedViewState = orderWithParameters.copy(
             orderInfo = orderInfo.copy(order = nonRefundedOrder)
         )
-
-        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
 
         doReturn(nonRefundedOrder).whenever(orderDetailRepository).getOrderById(any())
 
@@ -313,7 +360,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         // refunds
         val refunds = ArrayList<Refund>()
         viewModel.orderRefunds.observeForever {
-            it?.let { refunds.addAll(it) }
+            it?.let { refunds.addAll(it.refunds) }
         }
 
         // shipping Labels
@@ -342,7 +389,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(true)
-            whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(false)
             whenever(orderDetailRepository.getOrderById(any())).thenReturn(
                 order.copy(
                     datePaid = Date()
@@ -371,7 +417,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(true)
-            whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(true)
             whenever(orderDetailRepository.getOrderById(any())).thenReturn(
                 order.copy(
                     datePaid = null
@@ -400,7 +445,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(false)
-            whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(false)
             whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
             whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(true)
             whenever(orderDetailRepository.getOrderNotes(any())).thenReturn(testOrderNotes)
@@ -418,38 +462,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             assertThat(detailViewState!!.orderInfo!!.receiptButtonStatus).isEqualTo(
                 OrderDetailViewState.ReceiptButtonStatus.Hidden
             )
-        }
-
-    @Test
-    fun `collect button hidden if payment is not collectable`() =
-        testBlocking {
-            // GIVEN
-            doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
-            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-
-            // WHEN
-            viewModel.start()
-
-            // THEN
-            assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
-        }
-
-    @Test
-    fun `collect button shown if payment is collectable`() =
-        testBlocking {
-            // GIVEN
-            doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
-            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-
-            // WHEN
-            viewModel.start()
-
-            // THEN
-            assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isTrue()
         }
 
     @Test
@@ -575,7 +587,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             val refunds = ArrayList<Refund>()
             viewModel.orderRefunds.observeForever {
-                it?.let { refunds.addAll(it) }
+                it?.let { refunds.addAll(it.refunds) }
             }
 
             var areProductsVisible: Boolean? = null
@@ -592,7 +604,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given the legacy shipping labels, when shipping labels are available, then show products menu`() =
         testBlocking {
-            whenever(shippingLabelOnboardingRepository.shippingPluginSupport)
+            whenever(getShippingLabelSupport())
                 .doReturn(ShippingLabelSupport.WCS_SUPPORTED)
             whenever(orderDetailRepository.getOrderShippingLabels(any()))
                 .doReturn(OrderTestUtils.generateShippingLabels(2))
@@ -619,7 +631,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given the legacy shipping labels, when no shipping labels are available, then hide products menu`() =
         testBlocking {
-            whenever(shippingLabelOnboardingRepository.shippingPluginSupport)
+            whenever(getShippingLabelSupport())
                 .doReturn(ShippingLabelSupport.WCS_SUPPORTED)
             whenever(orderDetailRepository.isOrderEligibleForSLCreation(any())).doReturn(true)
             whenever(orderDetailRepository.getOrderShippingLabels(any())).doReturn(emptyList())
@@ -678,7 +690,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-            doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
@@ -893,7 +904,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given using legacy shipping labels plugin, when order is eligible, then show shipping label creation button`() =
         testBlocking {
-            whenever(shippingLabelOnboardingRepository.shippingPluginSupport)
+            whenever(getShippingLabelSupport())
                 .doReturn(ShippingLabelSupport.WCS_SUPPORTED)
             whenever(orderDetailRepository.getOrderShippingLabels(any()))
                 .doReturn(OrderTestUtils.generateShippingLabels(2))
@@ -916,37 +927,67 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(isCreateShippingLabelButtonVisible).isTrue()
+            verify(orderDetailTracker).trackOrderEligibleForShippingLabelCreation(order.status.value, false)
         }
 
     @Test
     fun `given using new Woo Shipping plugin, when order is eligible, then show shipments section`() = testBlocking {
-        whenever(shippingLabelOnboardingRepository.shippingPluginSupport)
+        val unpaidCashOrder = order.copy(datePaid = null, isCashPayment = true)
+        val shipment = ShippingLabelSampleData.getShippingLabelUIModel()
+        whenever(getShippingLabelSupport())
             .doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
         whenever(getWooShippingShipments.invoke(any()))
-            .doReturn(listOf(ShippingLabelSampleData.getShippingLabelUIModel()))
+            .doReturn(listOf(shipment))
         whenever(shippingEligibilityDataStore.observeEligibility(any())).doReturn(flowOf(true))
-        whenever(orderDetailRepository.getOrderById(any())).doReturn(order)
-        whenever(orderDetailRepository.fetchOrderById(any())).doReturn(order)
+        whenever(shippingLabelRepository.fetchShippingEligibility(selectedSite.get(), ORDER_ID))
+            .doReturn(WooResult(EligibilityResponse(isEligible = true)))
+        whenever(orderDetailRepository.getOrderById(any())).doReturn(unpaidCashOrder)
+        whenever(orderDetailRepository.fetchOrderById(any())).doReturn(unpaidCashOrder)
+        whenever(orderDetailRepository.fetchOrderNotes(ORDER_ID)).doReturn(true)
 
         var isCreateShippingLabelButtonVisible: Boolean? = null
         viewModel.viewStateData.observeForever { _, new ->
             isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
         }
-        val shipments = viewModel.shippingLabels.captureValues()
+        val shipments = viewModel.wooShippingShipments.runAndCaptureValues {
+            viewModel.start()
+        }
 
-        viewModel.start()
-
-        assertThat(isCreateShippingLabelButtonVisible).isFalse
-        assertThat(shipments).isNotEmpty
+        assertThat(isCreateShippingLabelButtonVisible).isFalse()
+        assertThat(shipments.last()).containsExactly(shipment)
+        verify(shippingLabelRepository).fetchShippingEligibility(selectedSite.get(), ORDER_ID)
+        verify(getWooShippingShipments, times(2)).invoke(unpaidCashOrder)
+        verify(getShippingLabelSupport).invoke()
+        verify(orderDetailTracker).trackOrderEligibleForShippingLabelCreation(unpaidCashOrder.status.value, true)
     }
+
+    @Test
+    fun `given using new Woo Shipping plugin, when order is ineligible, then do not track eligibility`() =
+        testBlocking {
+            whenever(getShippingLabelSupport())
+                .doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
+            whenever(shippingEligibilityDataStore.observeEligibility(any())).doReturn(flowOf(false))
+            whenever(shippingLabelRepository.fetchShippingEligibility(selectedSite.get(), ORDER_ID))
+                .doReturn(WooResult(EligibilityResponse(isEligible = false)))
+            whenever(orderDetailRepository.getOrderById(any())).doReturn(order)
+            whenever(orderDetailRepository.fetchOrderById(any())).doReturn(order)
+            whenever(orderDetailRepository.fetchOrderNotes(ORDER_ID)).doReturn(true)
+
+            val shipments = viewModel.wooShippingShipments.runAndCaptureValues {
+                viewModel.start()
+            }
+
+            assertThat(shipments.last()).isEmpty()
+            verify(shippingEligibilityDataStore, times(2)).observeEligibility(ORDER_ID)
+            verify(orderDetailTracker, never()).trackOrderEligibleForShippingLabelCreation(any(), any())
+        }
 
     @Test
     fun `hide shipping label creation if wcs is older than supported version`() =
         testBlocking {
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-            doReturn(ShippingLabelSupport.NOT_SUPPORTED)
-                .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+            whenever(getShippingLabelSupport()).doReturn(ShippingLabelSupport.NOT_SUPPORTED)
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
             doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
@@ -989,8 +1030,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `hide shipping label creation if wcs plugin is not installed`() =
         testBlocking {
-            doReturn(ShippingLabelSupport.NOT_SUPPORTED)
-                .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+            whenever(getShippingLabelSupport()).doReturn(ShippingLabelSupport.NOT_SUPPORTED)
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
@@ -1605,8 +1645,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when service plugin is installed and active, then fetch plugin data`() = testBlocking {
-        doReturn(ShippingLabelSupport.WCS_SUPPORTED)
-            .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+        whenever(getShippingLabelSupport()).doReturn(ShippingLabelSupport.WCS_SUPPORTED)
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         createViewModel()
@@ -1619,7 +1658,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when service plugin is NOT active, then DON'T fetch plugin data`() = testBlocking {
-        doReturn(ShippingLabelSupport.NOT_SUPPORTED).whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+        whenever(getShippingLabelSupport()).doReturn(ShippingLabelSupport.NOT_SUPPORTED)
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         createViewModel()
@@ -1632,7 +1671,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when service plugin is NOT installed, then DON'T fetch plugin data`() = testBlocking {
-        doReturn(ShippingLabelSupport.NOT_SUPPORTED).whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+        whenever(getShippingLabelSupport()).doReturn(ShippingLabelSupport.NOT_SUPPORTED)
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         createViewModel()
@@ -1699,8 +1738,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when there is no info about the plugins, then optimistically fetch plugin data`() = testBlocking {
-        doReturn(ShippingLabelSupport.WCS_SUPPORTED)
-            .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+        whenever(getShippingLabelSupport()).doReturn(ShippingLabelSupport.WCS_SUPPORTED)
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
 
@@ -2202,7 +2240,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(flowOf(emptyList<ShippingMethod>())).whenever(getShippingMethodsWithOtherValue).invoke()
 
-        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
         doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
@@ -2226,7 +2263,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(flowOf(emptyList<ShippingMethod>())).whenever(getShippingMethodsWithOtherValue).invoke()
 
-        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
         doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
@@ -2245,8 +2281,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `when woo shipping is installed, then navigate to the new shipping flow`() = testBlocking {
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
-            .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+        whenever(getShippingLabelSupport()).doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
 
         createViewModel()
 
@@ -2260,8 +2295,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `when woo shipping and tax is installed, then navigate to the legacy shipping flow`() = testBlocking {
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-        doReturn(ShippingLabelSupport.WCS_SUPPORTED)
-            .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+        whenever(getShippingLabelSupport()).doReturn(ShippingLabelSupport.WCS_SUPPORTED)
 
         createViewModel()
 
@@ -2342,7 +2376,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(observedViewState!!.orderInfo!!.order).isEqualTo(newOrder)
-        assertThat(observedViewState.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
     }
 
     @Test

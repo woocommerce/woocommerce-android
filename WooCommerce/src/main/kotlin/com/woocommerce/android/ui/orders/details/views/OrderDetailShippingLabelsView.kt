@@ -7,11 +7,11 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.databinding.OrderDetailShippingLabelListBinding
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
+import com.woocommerce.android.ui.products.ProductImageLoader
 import java.math.BigDecimal
 
 class OrderDetailShippingLabelsView @JvmOverloads constructor(
@@ -24,7 +24,7 @@ class OrderDetailShippingLabelsView @JvmOverloads constructor(
     @Suppress("LongParameterList")
     fun updateShippingLabels(
         shippingLabels: List<ShippingLabelModel>,
-        productImageMap: ProductImageMap,
+        productImageLoaderFactory: ProductImageLoader.Factory,
         formatCurrencyForDisplay: (BigDecimal) -> String,
         productClickListener: OrderProductActionListener,
         shippingLabelClickListener: OnShippingLabelClickListener
@@ -32,7 +32,7 @@ class OrderDetailShippingLabelsView @JvmOverloads constructor(
         val viewAdapter = binding.shippingLabelList.adapter as? OrderDetailShippingLabelsAdapter
             ?: OrderDetailShippingLabelsAdapter(
                 formatCurrencyForDisplay = formatCurrencyForDisplay,
-                productImageMap = productImageMap,
+                productImageLoaderFactory = productImageLoaderFactory,
                 listener = shippingLabelClickListener,
                 productClickListener = productClickListener
             )

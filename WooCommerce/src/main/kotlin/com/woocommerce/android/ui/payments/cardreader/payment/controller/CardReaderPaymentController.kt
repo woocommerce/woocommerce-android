@@ -280,13 +280,21 @@ class CardReaderPaymentController(
         }
     }
 
-    fun retry(orderId: Long, billingEmail: String, paymentData: PaymentData, amountLabel: String) {
+    fun retry(
+        orderId: Long,
+        billingEmail: String,
+        paymentData: PaymentData,
+        amountLabel: String,
+        onPaymentSucceeded: () -> Unit = { tracker.trackPaymentSucceeded() },
+    ) {
         paymentFlowJob = scope.launch {
             _paymentState.value = CardReaderPaymentState.LoadingData(::onCancelPaymentFlow)
             delay(ARTIFICIAL_RETRY_DELAY)
             val previousStatusKey = orderRepository.getOrderById(orderId)?.status?.value
             cardReaderManager.retryCollectPayment(orderId, paymentData).collect { paymentStatus ->
-                onPaymentStatusChanged(orderId, previousStatusKey, billingEmail, paymentStatus, amountLabel)
+                onPaymentStatusChanged(
+                    orderId, previousStatusKey, billingEmail, paymentStatus, amountLabel, onPaymentSucceeded
+                )
             }
         }
     }
@@ -337,7 +345,8 @@ class CardReaderPaymentController(
                 order.status.value,
                 customerEmail,
                 paymentStatus,
-                cardReaderPaymentOrderHelper.getAmountLabel(order)
+                cardReaderPaymentOrderHelper.getAmountLabel(order),
+                onPaymentSucceeded = { tracker.trackPaymentSucceeded(order) },
             )
         }
     }
@@ -348,7 +357,8 @@ class CardReaderPaymentController(
         previousStatusKey: String?,
         billingEmail: String,
         paymentStatus: CardPaymentStatus,
-        amountLabel: String
+        amountLabel: String,
+        onPaymentSucceeded: () -> Unit,
     ) {
         paymentDataForRetry = null
         when (paymentStatus) {
@@ -382,7 +392,7 @@ class CardReaderPaymentController(
             }
 
             is PaymentCompleted -> {
-                tracker.trackPaymentSucceeded()
+                onPaymentSucceeded()
                 onPaymentCompleted(paymentStatus, orderId, previousStatusKey)
             }
 
@@ -393,7 +403,7 @@ class CardReaderPaymentController(
             is PaymentFailed -> {
                 paymentDataForRetry = paymentStatus.paymentDataForRetry
                 tracker.trackPaymentFailed(paymentStatus.errorMessage, paymentStatus.type)
-                emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel)
+                emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel, onPaymentSucceeded)
             }
         }
     }
@@ -574,13 +584,14 @@ class CardReaderPaymentController(
         orderId: Long,
         billingEmail: String,
         error: PaymentFailed,
-        amountLabel: String
+        amountLabel: String,
+        onPaymentSucceeded: () -> Unit,
     ) {
         WooLog.e(WooLog.T.CARD_READER, error.errorMessage)
         cardReaderOnboardingChecker.invalidateCache()
         val onRetryClicked = error.paymentDataForRetry?.let {
             {
-                retry(orderId, billingEmail, it, amountLabel)
+                retry(orderId, billingEmail, it, amountLabel, onPaymentSucceeded)
             }
         } ?: { initPaymentFlow(isRetry = true) }
 

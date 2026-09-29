@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-27 09:58:57+0000
+Translation-Revision-Date: 2026-09-09 09:56:48+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="age_verification_open_google_play">Open Google Play</string>
+    <string name="age_verification_required_message">Google Play moet je leeftijd verifiëren voordat WooCommerce kan controleren of je de app kan gebruiken. Voltooi de verificatie in Google Play, keer hier terug en probeer het opnieuw.</string>
+    <string name="woopos_refund_review_remaining_items_button">Resterende items bekijken</string>
+    <string name="age_verification_required_title">Verifieer je leeftijd om door te gaan</string>
+    <string name="woopos_refund_error_store_not_updated">De betaling met de kaart is terugbetaald, maar je winkel is niet bijgewerkt. Registreer deze terugbetaling in je winkelbeheer.</string>
+    <string name="woopos_refund_error_item_already_refunded">Een van de geselecteerde artikelen is al volledig terugbetaald.</string>
+    <string name="filter_history_delete">Verwijderen</string>
+    <string name="filter_history_empty">Geen eerdere filters gevonden</string>
+    <string name="filter_history_cancel">Annuleren</string>
+    <string name="filter_history_apply">Toepassen</string>
+    <string name="filter_history_title">Filtergeschiedenis</string>
+    <string name="filter_history_clear_confirmation">Weet je zeker dat je de hele filtergeschiedenis wilt wissen?</string>
+    <string name="filter_history_clear">Geschiedenis wissen</string>
+    <string name="filter_history_recent_header">Recent</string>
+    <string name="add_action">Toevoegen</string>
+    <string name="product_attribute_no_options_warning">Deze eigenschap heeft geen opties en wordt verwijderd. Wil je doorgaan?</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_off">Schakel locatie in om kaartlezers te zien</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Locatie toestaan om kaartlezers te zien</string>
     <string name="woopos_card_reader_bluetooth_unavailable_off">Schakel Bluetooth in om kaartlezers te zien</string>
@@ -16,7 +32,6 @@ Language: nl
     <string name="woopos_refund_error_amount_exceeds_item_remaining">Het restitutiebedrag is meer dan wat er nog over is voor terugbetaling van dit artikel</string>
     <string name="woopos_refund_error_amount_exceeds_order_remaining">Het restitutiebedrag is meer dan wat er nog over is voor terugbetaling van deze bestelling</string>
     <string name="woopos_refund_error_order_not_refundable">Bestelling kan niet terugbetaald worden</string>
-    <string name="woopos_refund_error_item_already_refunded">Dit artikel is al volledig terugbetaald</string>
     <string name="woopos_refund_error_quantity_exceeds_refundable">Het geselecteerde aantal is meer dan wat er nog over is voor terugbetaling</string>
     <string name="woopos_scan_to_pay_pay_in_person_show_qr">Toon de code opnieuw</string>
     <string name="woopos_scan_to_pay_pay_in_person_collect">Verzamel in het register</string>
@@ -652,9 +667,6 @@ Language: nl
     <string name="woopos_refund_creating_error_title">Aanmaken terugbetaling mislukt</string>
     <string name="woopos_refund_loading_error_title">Terugbetalingsitems laden mislukt</string>
     <string name="woopos_orders_via_payment_method">Via %1$s</string>
-    <string name="woopos_wc_version_sunset_banner_dismiss">Updatewaarschuwing voor WooCommerce negeren</string>
-    <string name="woopos_wc_version_sunset_banner_message">Vanaf 1 augustus 2026 is WooCommerce 10.5.0 of nieuwer vereist voor Point of Sale. Update WooCommerce in je winkel of vraag het aan je winkelbeheerder.</string>
-    <string name="woopos_wc_version_sunset_banner_title">Update WooCommerce binnenkort</string>
     <string name="restart">Opnieuw beginnen</string>
     <string name="dev_feature_flags">Functievlaggen</string>
     <string name="settings_enable_push_notifications">Pushmeldingen inschakelen</string>
@@ -1543,7 +1555,6 @@ Language: nl
     <string name="analytics_session_no_available_description">Sessie-analyses gebruiken tellingen van unieke bezoekers, die niet beschikbaar zijn voor aangepaste datumbereiken</string>
     <string name="dashboard_stats_edit_granularity_content_description">Knop Datumbereik aanpassen</string>
     <string name="images_unavailable_notice">De afbeeldingen zijn niet beschikbaar omdat je site als Privé is aangemerkt. Je kan dit wijzigingen door over te schakelen naar de modus Binnenkort beschikbaar.\n</string>
-    <string name="card_selection_control">Selectie analysekaarten</string>
     <string name="login_app_password_exit_dialog_cancel">Annuleren</string>
     <string name="login_app_password_exit_dialog_confirmation">Toch afsluiten</string>
     <string name="login_app_password_exit_dialog_message">Het lijkt erop dat je de verbinding met de app nog niet hebt goedgekeurd. Weet je zeker dat je wilt afsluiten?</string>
@@ -3492,7 +3503,7 @@ Language: nl
     <string name="upsells_desc">Gepromote producten in plaats van de momenteel weergegeven producten (ofwel winstgevendere producten)</string>
     <string name="upsells_label">Upsells</string>
     <string name="product_detail_linked_products">Gekoppelde producten</string>
-    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="orderdetail_product_lineitem_attribute">%1$s: %2$s</string>
     <string name="login_get_link_by_email">Krijg een inloglink via e-mail</string>
     <string name="email_not_registered_wpcom">We kunnen geen WordPress.com-account vinden dat is gekoppeld aan dit e-mailadres.</string>
     <string name="settings_preferences">Voorkeuren</string>
@@ -3650,6 +3661,7 @@ Language: nl
     <string name="product_sale_date_to">Tot %1$s</string>
     <string name="product_wip_title">Nieuwe bewerkingsopties beschikbaar</string>
     <string name="orderdetail_product_multiple">Producten</string>
+    <string name="orderdetail_product_lineitem_quantity_and_price">%1$s x %2$s</string>
     <string name="product_type_external">Extern</string>
     <string name="product_type_simple">Simpel</string>
     <string name="product_status_privately_published">Gepubliceerd als privé</string>

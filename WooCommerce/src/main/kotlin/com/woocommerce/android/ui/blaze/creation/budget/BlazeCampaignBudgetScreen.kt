@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.blaze.creation.budget
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -106,10 +107,11 @@ private fun CampaignBudgetScreen(
     val modalSheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
-            Toolbar(onNavigationButtonClick = onBackPressed)
+            Toolbar(onNavigationButtonClick = onBackPressed, showDivider = scrollState.canScrollBackward)
         },
         modifier = Modifier.background(MaterialTheme.colors.surface)
     ) { paddingValues ->
@@ -130,6 +132,7 @@ private fun CampaignBudgetScreen(
                     onEditDurationTapped()
                     showBottomSheet = true
                 },
+                scrollState = scrollState,
                 modifier = Modifier.weight(1f)
             )
             CampaignBudgetFooter(
@@ -184,12 +187,13 @@ private fun EditBudgetSection(
     onImpressionsInfoTapped: () -> Unit,
     onBudgetChangeFinished: () -> Unit,
     onEditDurationTapped: () -> Unit,
+    scrollState: ScrollState,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
             .padding(start = 16.dp, end = 16.dp)
-            .verticalScroll(rememberScrollState()),
+            .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(

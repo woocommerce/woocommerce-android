@@ -54,6 +54,7 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
 import javax.inject.Inject
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @AndroidEntryPoint
 class ProductImagesFragment :
@@ -117,7 +118,7 @@ class ProductImagesFragment :
             }
 
             ProductImagesState.Browsing -> {
-                setHomeIcon(R.drawable.ic_back_24dp)
+                setHomeIcon(DesignSystemR.drawable.woo_ds_ic_regular_arrow_left_24dp)
             }
 
             null -> Unit // Do nothing

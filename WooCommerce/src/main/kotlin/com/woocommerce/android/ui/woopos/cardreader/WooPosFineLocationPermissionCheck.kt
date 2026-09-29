@@ -10,5 +10,5 @@ import javax.inject.Inject
 class WooPosFineLocationPermissionCheck @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
-    fun isGranted(): Boolean = WooPermissionUtils.hasFineLocationPermission(context)
+    fun isGranted(): Boolean = WooPermissionUtils.hasCardReaderLocationPermission(context)
 }

@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-27 17:58:20+0000
+Translation-Revision-Date: 2026-09-08 12:56:34+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="age_verification_open_google_play">Открыть Google Play</string>
+    <string name="age_verification_required_message">Для проверки возможности использования приложения WooCommerce в Google Play требуется подтверждение возраста. Пройдите проверку в Google Play, затем вернитесь сюда и попробуйте снова.</string>
+    <string name="age_verification_required_title">Чтобы продолжить, подтвердите ваш возраст</string>
+    <string name="woopos_refund_review_remaining_items_button">Просмотреть оставшиеся позиции</string>
+    <string name="woopos_refund_error_store_not_updated">Средства возвращены на карту, но данные вашего магазина не были обновлены. Зарегистрируйте этот возврат в меню администрирования магазина.</string>
+    <string name="woopos_refund_error_item_already_refunded">Средства по одной из выбранных позиций уже возвращены в полном объёме.</string>
+    <string name="filter_history_delete">Удалить</string>
+    <string name="filter_history_clear_confirmation">Вы уверены, что хотите очистить весь журнал фильтров?</string>
+    <string name="filter_history_clear">Очистить журнал</string>
+    <string name="filter_history_empty">Предыдущих фильтров не найдено</string>
+    <string name="filter_history_cancel">Отмена</string>
+    <string name="filter_history_apply">Применить</string>
+    <string name="filter_history_recent_header">Недавние</string>
+    <string name="filter_history_title">История фильтров</string>
+    <string name="add_action">Добавить</string>
+    <string name="product_attribute_no_options_warning">Этот атрибут не имеет параметров и будет удалён. Продолжить?</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_off">Включите определение местоположения, чтобы просмотреть устройства чтения карт</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Разрешить определение местоположения для просмотра устройств чтения карт</string>
     <string name="woopos_card_reader_bluetooth_unavailable_off">Включите Bluetooth, чтобы просмотреть устройства чтения карт</string>
@@ -20,7 +36,6 @@ Language: ru
     <string name="woopos_scan_to_pay_pay_in_person_show_qr">Показать код снова</string>
     <string name="woopos_scan_to_pay_pay_in_person_collect">Принять через кассу</string>
     <string name="woopos_scan_to_pay_pay_in_person_message">Платёж не был произведён онлайн. Примите его через кассу или покажите код снова.</string>
-    <string name="woopos_refund_error_item_already_refunded">Средства за этот товар уже возвращены в полном объёме</string>
     <string name="woopos_scan_to_pay_pay_in_person_title">Клиент выбрал очную оплату</string>
     <string name="woopos_remote_reader_failed_token_invalid">Ошибка платёжной системы. Попробуйте подключиться ещё раз.</string>
     <string name="woopos_remote_reader_failed_nfc_disabled">Включите NFC на телефоне и повторите попытку.</string>
@@ -652,9 +667,6 @@ Language: ru
     <string name="woopos_refund_creating_error_title">Не удалось создать возврат средств</string>
     <string name="woopos_refund_loading_error_title">Не удалось загрузить товары к возврату средств</string>
     <string name="woopos_orders_via_payment_method">Посредством %1$s</string>
-    <string name="woopos_wc_version_sunset_banner_dismiss">Отклонить предупреждение об обновлении WooCommerce</string>
-    <string name="woopos_wc_version_sunset_banner_message">С 1 августа 2026 года для работы Point of Sale требуется WooCommerce 10.5.0 или более поздней версии. Обновите WooCommerce в вашем магазине или обратитесь к администратору магазина.</string>
-    <string name="woopos_wc_version_sunset_banner_title">Требуется обновить WooCommerce</string>
     <string name="restart">Перезапуск</string>
     <string name="dev_feature_flags">Флажки функций</string>
     <string name="settings_enable_push_notifications">Отправлять push-уведомления</string>
@@ -1543,7 +1555,6 @@ Language: ru
     <string name="my_store_widget_stats_title">Производительность</string>
     <string name="dashboard_stats_edit_granularity_content_description">Кнопка «Изменить период»</string>
     <string name="images_unavailable_notice">Изображения недоступны, так как статус вашего сайта — «Закрытый». Вы можете изменить его на «Скоро будет доступно».\n</string>
-    <string name="card_selection_control">Выбор карт аналитики</string>
     <string name="login_app_password_exit_dialog_cancel">Отмена</string>
     <string name="login_app_password_exit_dialog_confirmation">Всё равно выйти</string>
     <string name="login_app_password_exit_dialog_message">Похоже, вы ещё не одобрили соединение с приложением. Вы уверены, что хотите выйти?</string>
@@ -3492,7 +3503,7 @@ Language: ru
     <string name="upsells_desc">Продукты, которые будут предложены пользователю вместо просматриваемого в настоящий момент продукта (например, более прибыльные продукты)</string>
     <string name="upsells_label">Апсейл</string>
     <string name="product_detail_linked_products">Связанные продукты</string>
-    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="orderdetail_product_lineitem_attribute">%1$s: %2$s</string>
     <string name="login_get_link_by_email">Получить ссылку для входа по email</string>
     <string name="email_not_registered_wpcom">Не получается найти учётную запись WordPress.com для этого адреса email.</string>
     <string name="settings_preferences">Параметры</string>
@@ -3650,6 +3661,7 @@ Language: ru
     <string name="product_sale_date_to">До %1$s</string>
     <string name="product_wip_title">Доступны новые опции редактирования</string>
     <string name="orderdetail_product_multiple">Товары</string>
+    <string name="orderdetail_product_lineitem_quantity_and_price">%1$s x %2$s</string>
     <string name="product_type_external">Сторонний</string>
     <string name="product_type_simple">Обычный</string>
     <string name="product_status_privately_published">Опубликован как скрытый</string>

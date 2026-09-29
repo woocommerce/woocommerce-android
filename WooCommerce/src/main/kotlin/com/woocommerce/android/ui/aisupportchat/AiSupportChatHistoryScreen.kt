@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 
 @Composable
@@ -262,7 +262,7 @@ private fun Long.relativeTime(): String =
 @LightDarkThemePreviews
 @Composable
 private fun AiSupportChatHistoryScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AiSupportChatHistoryScreen(
             viewState = AiSupportChatHistoryViewState(
                 bookmarks = listOf(

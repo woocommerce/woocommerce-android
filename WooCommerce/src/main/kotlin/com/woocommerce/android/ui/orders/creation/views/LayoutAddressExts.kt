@@ -68,6 +68,7 @@ fun LayoutAddressFormBinding?.inflateLocationFields(countryLocation: Location, s
             this?.stateSpinner?.setText(stateLocation.value.name)
         }
         is AmbiguousLocation.Raw -> {
+            this?.stateSpinner?.setText(stateLocation.value)
             this?.stateSpinner?.visibility = View.GONE
             this?.stateEditText?.visibility = View.VISIBLE
             this?.stateEditText?.setTextIfDifferent(stateLocation.value)

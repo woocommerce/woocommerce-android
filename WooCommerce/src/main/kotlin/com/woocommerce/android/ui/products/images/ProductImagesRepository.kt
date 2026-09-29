@@ -10,6 +10,6 @@ class ProductImagesRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
-    fun getProduct(remoteProductId: Long): Product? =
+    suspend fun getProduct(remoteProductId: Long): Product? =
         productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)?.toAppModel()
 }

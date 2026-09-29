@@ -44,15 +44,18 @@ class VariationRepository @Inject constructor(
 
     /**
      * Submits a fetch request to get a list of products variations for the current site and productId
-     * and returns the full list of product variations from the database
+     * and returns the full list of product variations from the database, or a failure if the request failed
      */
-    suspend fun fetchProductVariations(remoteProductId: Long, loadMore: Boolean = false): List<ProductVariation> {
-        offset = if (loadMore) offset + PRODUCT_VARIATIONS_PAGE_SIZE else 0
+    suspend fun fetchProductVariations(
+        remoteProductId: Long,
+        loadMore: Boolean = false
+    ): Result<List<ProductVariation>> {
+        val requestedOffset = if (loadMore) offset + PRODUCT_VARIATIONS_PAGE_SIZE else 0
         val payload = WCProductStore.FetchProductVariationsPayload(
             selectedSite.get(),
             remoteProductId,
             pageSize = PRODUCT_VARIATIONS_PAGE_SIZE,
-            offset = offset
+            offset = requestedOffset
         )
         val result = productStore.fetchProductVariations(payload)
 
@@ -63,12 +66,14 @@ class VariationRepository @Inject constructor(
                 result.error.type.toString(),
                 result.error.message
             )
-        } else {
-            canLoadMoreProductVariations = requireNotNull(result.model).canLoadMore
-            AnalyticsTracker.track(AnalyticsEvent.PRODUCT_VARIANTS_LOADED)
+            return Result.failure(WooException(result.error))
         }
 
-        return getProductVariationList(remoteProductId)
+        offset = requestedOffset
+        canLoadMoreProductVariations = requireNotNull(result.model).canLoadMore
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_VARIANTS_LOADED)
+
+        return Result.success(getProductVariationList(remoteProductId))
     }
 
     /**
@@ -164,7 +169,7 @@ class VariationRepository @Inject constructor(
 
     suspend fun getAllVariations(remoteProductId: Long): Collection<ProductVariation> = withContext(dispatchers.io) {
         while (canLoadMoreProductVariations) {
-            fetchProductVariations(remoteProductId, true)
+            if (fetchProductVariations(remoteProductId, true).isFailure) break
         }
         getProductVariationList(remoteProductId)
     }

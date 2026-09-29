@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationListFragmentArgs
 import com.woocommerce.android.ui.products.variations.VariationListViewModel
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowFetchVariationsError
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationConfirmation
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError.LimitExceeded
@@ -63,7 +64,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         }
 
         variationRepository = mock {
-            on { fetchProductVariations(any(), any()) } doReturn emptyList()
+            on { fetchProductVariations(any(), any()) } doReturn Result.success(emptyList())
             on { bulkCreateVariations(any(), any()) } doReturn RequestResult.SUCCESS
         }
     }
@@ -136,8 +137,8 @@ class VariationListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display empty view on fetch product variations error`() = testBlocking {
-        whenever(variationRepository.fetchProductVariations(productRemoteId)).thenReturn(emptyList())
+    fun `given no variations are returned, when screen starts, then skeleton is shown and hidden`() = testBlocking {
+        whenever(variationRepository.fetchProductVariations(productRemoteId)).thenReturn(Result.success(emptyList()))
         whenever(variationRepository.getProductVariationList(productRemoteId)).thenReturn(emptyList())
 
         createViewModel()
@@ -151,6 +152,100 @@ class VariationListViewModelTest : BaseUnitTest() {
 
         verify(variationRepository, times(1)).fetchProductVariations(productRemoteId)
         assertThat(showEmptyView).containsExactly(true, false)
+    }
+
+    @Test
+    fun `given fetching variations fails, when screen starts, then fetch error is shown`() = testBlocking {
+        // GIVEN
+        givenFetchFails()
+        createViewModel()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever { events.add(it) }
+
+        // WHEN
+        viewModel.start()
+
+        // THEN
+        assertThat(events.last()).isEqualTo(ShowFetchVariationsError(loadMore = false))
+    }
+
+    @Test
+    fun `given fetching variations fails, when screen starts, then cached variations are kept without empty view`() =
+        testBlocking {
+            // GIVEN
+            givenFetchFails(cachedVariations = variations)
+            createViewModel()
+            val shownVariations = mutableListOf<List<ProductVariation>>()
+            viewModel.variationList.observeForever { shownVariations.add(it) }
+
+            // WHEN
+            viewModel.start()
+
+            // THEN
+            assertThat(shownVariations.last()).isEqualTo(variations)
+            assertThat(viewModel.viewStateLiveData.liveData.value?.isEmptyViewVisible).isFalse()
+        }
+
+    @Test
+    fun `given fetching variations fails with nothing cached, when screen starts, then empty view is not shown`() =
+        testBlocking {
+            // GIVEN
+            givenFetchFails()
+            createViewModel()
+
+            // WHEN
+            viewModel.start()
+
+            // THEN
+            val viewState = viewModel.viewStateLiveData.liveData.value
+            assertThat(viewState?.isEmptyViewVisible).isNotEqualTo(true)
+            assertThat(viewState?.isSkeletonShown).isFalse()
+        }
+
+    @Test
+    fun `given loading more fails, when loading more, then fetch error for loading more is shown`() = testBlocking {
+        // GIVEN
+        givenLoadMoreFails()
+        createViewModel()
+        viewModel.start()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever { events.add(it) }
+
+        // WHEN
+        viewModel.onLoadMoreRequested(productRemoteId)
+
+        // THEN
+        assertThat(events.last()).isEqualTo(ShowFetchVariationsError(loadMore = true))
+    }
+
+    @Test
+    fun `given loading more fails, when retry is clicked, then more variations are requested again`() =
+        testBlocking {
+            // GIVEN
+            givenLoadMoreFails()
+            createViewModel()
+            viewModel.start()
+            viewModel.onLoadMoreRequested(productRemoteId)
+
+            // WHEN
+            viewModel.onFetchVariationsRetryClicked(loadMore = true)
+
+            // THEN
+            verify(variationRepository, times(2)).fetchProductVariations(productRemoteId, true)
+        }
+
+    @Test
+    fun `given refreshing fails, when retry is clicked, then variations are refreshed`() = testBlocking {
+        // GIVEN
+        givenFetchFails()
+        createViewModel()
+        viewModel.start()
+
+        // WHEN
+        viewModel.onFetchVariationsRetryClicked(loadMore = false)
+
+        // THEN
+        verify(variationRepository, times(2)).fetchProductVariations(productRemoteId, false)
     }
 
     @Test
@@ -424,5 +519,20 @@ class VariationListViewModelTest : BaseUnitTest() {
             .let { lastEvent ->
                 assertThat(lastEvent).isEqualTo(ShowGenerateVariationsError.NoCandidates)
             }
+    }
+
+    private suspend fun givenFetchFails(cachedVariations: List<ProductVariation> = emptyList()) {
+        variationRepository.stub {
+            on { getProductVariationList(productRemoteId) } doReturn cachedVariations
+            on { fetchProductVariations(productRemoteId, false) } doReturn Result.failure(Exception())
+        }
+    }
+
+    private suspend fun givenLoadMoreFails() {
+        variationRepository.stub {
+            on { canLoadMoreProductVariations } doReturn true
+            on { getProductVariationList(productRemoteId) } doReturn variations
+            on { fetchProductVariations(productRemoteId, true) } doReturn Result.failure(Exception())
+        }
     }
 }

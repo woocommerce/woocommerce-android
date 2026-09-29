@@ -4,6 +4,7 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
+import com.woocommerce.android.ui.woopos.tab.WooPosLaunchabilityRefreshPolicy
 import com.woocommerce.android.ui.woopos.tab.WooPosTabShouldBeVisible
 import javax.inject.Inject
 
@@ -38,7 +39,7 @@ class WooPosIsLocalCatalogSupported @Inject constructor(
             }
         }
 
-        val launchability = posCanBeLaunchedInTab()
+        val launchability = posCanBeLaunchedInTab(WooPosLaunchabilityRefreshPolicy.UseCache)
         if (launchability !is WooPosLaunchability.Launchable) {
             return false.also {
                 wooPosLogWrapper.d("Local Catalog not supported: POS not launchable: $launchability.")

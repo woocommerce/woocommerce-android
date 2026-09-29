@@ -45,7 +45,7 @@ class UpdateOrdersListBySelectedStoreTest : BaseUnitTest() {
         // Mock dependencies
         whenever(getWCOrderListDescriptorWithFilters.invoke()).thenReturn(defaultListDescriptor)
         whenever(ordersStore.fetchOrdersListFirstPage(defaultListDescriptor))
-            .thenReturn(WooResult(defaultOrderResponse))
+            .thenReturn(WooResult(WCOrderStore.OrdersListFirstPage(defaultOrderResponse, canLoadMore = false)))
 
         val result = sut()
 
@@ -97,7 +97,7 @@ class UpdateOrdersListBySelectedStoreTest : BaseUnitTest() {
         // Mock dependencies
         whenever(getWCOrderListDescriptorWithFilters.invoke()).thenReturn(defaultListDescriptor)
         whenever(ordersStore.fetchOrdersListFirstPage(defaultListDescriptor))
-            .thenReturn(WooResult(emptyList()))
+            .thenReturn(WooResult(WCOrderStore.OrdersListFirstPage(emptyList(), canLoadMore = false)))
 
         val result = sut()
 

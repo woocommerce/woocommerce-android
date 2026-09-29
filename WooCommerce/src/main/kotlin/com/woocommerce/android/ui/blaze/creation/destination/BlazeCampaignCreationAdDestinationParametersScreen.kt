@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.imeNestedScroll
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
@@ -42,7 +43,7 @@ import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun BlazeCampaignCreationAdDestinationParametersScreen(
@@ -75,17 +76,20 @@ fun AdDestinationParametersScreen(
     onParameterBottomSheetDismissed: () -> Unit
 ) {
     val modalSheetState = rememberModalBottomSheetState()
+    val listState = rememberLazyListState()
 
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.blaze_campaign_edit_ad_destination_parameters_property_title),
                 onNavigationButtonClick = onBackPressed,
+                showDivider = listState.canScrollBackward,
             )
         },
         modifier = Modifier.background(MaterialTheme.colors.surface)
     ) { paddingValues ->
         LazyColumn(
+            state = listState,
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
                 .padding(paddingValues)
@@ -227,7 +231,7 @@ private fun ParameterItem(
 @LightDarkThemePreviews
 @Composable
 fun PreviewAdDestinationParametersScreen() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AdDestinationParametersScreen(
             viewState = ViewState(
                 targetUrl = "https://woocommerce.com",
@@ -330,7 +334,7 @@ private fun ParameterBottomSheetContent(
 @LightDarkThemePreviews
 @Composable
 fun PreviewEmptyAdDestinationParametersScreen() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AdDestinationParametersScreen(
             viewState = ViewState(
                 targetUrl = "https://woocommerce.com?utm_source=woocommerce&utm_medium=android&utm_campaign=blaze",

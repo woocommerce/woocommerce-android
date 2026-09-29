@@ -1,6 +1,7 @@
 package com.woocommerce.android.cardreader.remote
 
 import com.woocommerce.android.cardreader.LogWrapper
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.CollectPaymentRequest
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectAck
@@ -60,7 +61,11 @@ sealed class ConnectOutcome {
 }
 
 sealed class CollectPaymentOutcome {
-    data class Success(val paymentIntentId: String, val status: String) : CollectPaymentOutcome()
+    data class Success(
+        val paymentIntentId: String,
+        val status: String,
+        val paymentMethodType: PaymentMethodType?,
+    ) : CollectPaymentOutcome()
     data class Rejected(val error: CardReaderRemoteError, val description: String) : CollectPaymentOutcome()
     data object TimedOut : CollectPaymentOutcome()
     data class Failed(val cause: Throwable) : CollectPaymentOutcome()
@@ -170,7 +175,11 @@ internal class DefaultCardReaderRemoteTabletClient(
                     ?: throw CardReaderRemoteConnectionLostException(null)
             }
             when (reply) {
-                is PaymentIntentResult -> CollectPaymentOutcome.Success(reply.paymentIntentId, reply.status)
+                is PaymentIntentResult -> CollectPaymentOutcome.Success(
+                    reply.paymentIntentId,
+                    reply.status,
+                    reply.paymentMethodType
+                )
                 is ErrorMessage ->
                     CollectPaymentOutcome.Rejected(CardReaderRemoteError.fromCode(reply.code), reply.description)
                 is ConnectAck,

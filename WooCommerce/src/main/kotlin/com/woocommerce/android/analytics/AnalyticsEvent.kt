@@ -566,6 +566,9 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     REMOTE_TTP_PHONE_SESSION_STARTED,
     REMOTE_TTP_PHONE_SESSION_ENDED,
     REMOTE_TTP_PHONE_SESSION_ERROR,
+    REMOTE_TTP_PHONE_PAYMENT_FAILED,
+    REMOTE_TTP_PHONE_INTRO_SHOWN,
+    REMOTE_TTP_PHONE_INTRO_DISMISSED,
 
     // -- POS Local Catalog Beta Toggle
     POS_LOCAL_CATALOG_BETA_FEATURES_SWITCH_TOGGLED,
@@ -1179,6 +1182,7 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     // Age restriction check
     ACCOUNT_AGE_RESTRICTION_CHECKED,
     ACCOUNT_AGE_RESTRICTION_DIALOG_SHOWN,
+    ACCOUNT_AGE_RESTRICTION_CONTACT_SUPPORT_TAPPED,
     ACCOUNT_AGE_VERIFICATION_ACTION;
 
     override val isPosEvent: Boolean = false

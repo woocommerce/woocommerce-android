@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -50,17 +52,20 @@ private fun MediaUploadErrorListScreen(
     onBackPressed: () -> Unit,
     onRetryClicked: (ErrorUiModel) -> Unit
 ) {
+    val listState = rememberLazyListState()
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.product_upload_error_title),
                 onNavigationButtonClick = onBackPressed,
+                showDivider = listState.canScrollBackward,
             )
         },
         content = { padding ->
             MediaUploadErrorList(
                 errors = state.uploadErrorList,
                 onRetryClicked = onRetryClicked,
+                listState = listState,
                 modifier = Modifier
                     .padding(padding)
                     .background(MaterialTheme.colorScheme.surface)
@@ -74,9 +79,10 @@ private fun MediaUploadErrorListScreen(
 private fun MediaUploadErrorList(
     errors: List<ErrorUiModel>,
     onRetryClicked: (ErrorUiModel) -> Unit,
+    listState: LazyListState,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier.fillMaxWidth()) {
+    LazyColumn(state = listState, modifier = modifier.fillMaxWidth()) {
         items(errors) { error ->
             MediaUploadErrorListItem(
                 error = error,

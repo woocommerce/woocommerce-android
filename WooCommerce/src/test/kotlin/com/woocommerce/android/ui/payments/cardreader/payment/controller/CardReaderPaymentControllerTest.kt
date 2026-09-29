@@ -844,7 +844,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
             controller.start()
 
-            verify(tracker).trackPaymentSucceeded()
+            verify(tracker).trackPaymentSucceeded(mockedOrder)
         }
 
     @Test
@@ -1255,12 +1255,16 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(paymentFailedWithValidDataForRetry) }
             }
+            whenever(
+                cardReaderManager.retryCollectPayment(any(), any())
+            ).thenReturn(flow { emit(PaymentCompleted("")) })
             controller.start()
 
             (controller.paymentState.value as CardReaderPaymentState.PaymentFailed).onRetry!!()
             advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), any())
+            verify(tracker).trackPaymentSucceeded(mockedOrder)
         }
 
     @Test

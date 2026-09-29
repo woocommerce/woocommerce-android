@@ -44,6 +44,19 @@ steps:
         artifact_paths:
           - "**/build/reports/detekt/detekt.html"
 
+      # Type-resolution detekt (guards against reflective toString() crashes under R8 full mode). The
+      # unqualified task name fans out to every app/library module that registers it, each analyzing its
+      # debug variant — which PRs already compile — so only detekt's analysis pass is extra.
+      - label: "detekt (type resolution)"
+        command: |
+          if .buildkite/commands/should-skip-job.sh --job-type validation; then
+            exit 0
+          fi
+          ./gradlew detektWithTypeResolutionPR
+        plugins: [$CI_TOOLKIT]
+        artifact_paths:
+          - "**/build/reports/detekt/detektWithTypeResolutionPR.xml"
+
       - label: "lint"
         command: .buildkite/commands/lint.sh
         plugins: [$CI_TOOLKIT]

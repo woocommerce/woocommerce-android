@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-26 20:54:59+0000
+Translation-Revision-Date: 2026-09-07 19:54:50+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="age_verification_open_google_play">פתיחת Google Play</string>
+    <string name="age_verification_required_message">השירות של Google Play דורש ממך לאמת את גילך לפני ש-WooCommerce יוכל לבדוק אם באפשרותך להשתמש באפליקציה. יש להשלים את אימות הגיל ב-Google Play, ולאחר מכן לחזור לכאן ולנסות שוב.</string>
+    <string name="age_verification_required_title">עליך לאמת את גילך כדי להמשיך</string>
+    <string name="woopos_refund_review_remaining_items_button">בדיקת הפריטים שנותרו</string>
+    <string name="woopos_refund_error_store_not_updated">בוצע החזר כספי לכרטיס, אבל החנות שלך לא עודכנה. יש לרשום החזר כספי זה במנהל המערכת של החנות שלך.</string>
+    <string name="woopos_refund_error_item_already_refunded">ההחזר הכספי עבור אחד מהפריטים שנבחרו כבר הונפק במלואו.</string>
+    <string name="filter_history_delete">מחיקה</string>
+    <string name="filter_history_clear_confirmation">האם ברצונך למחוק את היסטוריית המסננים במלואה?</string>
+    <string name="filter_history_clear">מחיקת היסטוריה</string>
+    <string name="filter_history_empty">לא נמצאו מסננים שבהם השתמשת בעבר</string>
+    <string name="filter_history_cancel">ביטול</string>
+    <string name="filter_history_apply">החלה</string>
+    <string name="filter_history_recent_header">אחרונים</string>
+    <string name="filter_history_title">היסטוריית מסננים</string>
+    <string name="add_action">הוספה</string>
+    <string name="product_attribute_no_options_warning">למאפיין זה אין אפשרויות, והוא יוסר. האם ברצונך להמשיך?</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_off">הפעלת מיקום להצגת קוראי כרטיסים</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_permission">לאפשר מיקום להצגת קוראי כרטיסים</string>
     <string name="woopos_card_reader_bluetooth_unavailable_off">הפעלת Bluetooth להצגת קוראי כרטיסים</string>
@@ -16,7 +32,6 @@ Language: he_IL
     <string name="woopos_refund_error_amount_exceeds_item_remaining">סכום ההחזר הכספי גבוה מהסכום שנותר להחזר כספי עבור פריט זה</string>
     <string name="woopos_refund_error_amount_exceeds_order_remaining">סכום ההחזר הכספי גבוה מהסכום שנותר להחזר כספי עבור הזמנה זו</string>
     <string name="woopos_refund_error_order_not_refundable">לא ניתן להנפיק החזר כספי עבור הזמנה זו</string>
-    <string name="woopos_refund_error_item_already_refunded">כבר הונפק החזר כספי מלא עבור פריט זה</string>
     <string name="woopos_refund_error_quantity_exceeds_refundable">הכמות שנבחרה גדולה יותר מהכמות שנותרה להחזר כספי</string>
     <string name="woopos_scan_to_pay_pay_in_person_show_qr">הצגה חוזרת של הקוד</string>
     <string name="woopos_scan_to_pay_pay_in_person_collect">גבייה בקופה</string>
@@ -650,9 +665,6 @@ Language: he_IL
     <string name="woopos_refund_creating_error_title">יצירת ההחזר הכספי נכשלה</string>
     <string name="woopos_refund_loading_error_title">נכשלה טעינת פריטי ההחזר</string>
     <string name="woopos_orders_via_payment_method">באמצעות ⁦%1$s⁩</string>
-    <string name="woopos_wc_version_sunset_banner_dismiss">להתעלם מאזהרת העדכון של WooCommerce</string>
-    <string name="woopos_wc_version_sunset_banner_message">החל מתאריך 1 באוגוסט 2026, לנקודת המכירה יהיה צורך ב-WooCommerce 10.5.0 ומעלה. עליך לעדכן את WooCommerce בחנות שלך או לפנות למנהל המערכת של החנות שלך.</string>
-    <string name="woopos_wc_version_sunset_banner_title">לעדכן את WooCommerce בקרוב</string>
     <string name="restart">הפעל מחדש</string>
     <string name="dev_feature_flags">דגלי האפשרות</string>
     <string name="settings_enable_push_notifications">הפעל התראות דחיפה</string>
@@ -1541,7 +1553,6 @@ Language: he_IL
     <string name="my_store_widget_stats_title">ביצועים</string>
     <string name="dashboard_stats_edit_granularity_content_description">הכפתור \'לשנות טווח תאריכים\'</string>
     <string name="images_unavailable_notice">התמונות לא זמינות מאחר שהאתר שלך מסומן כ\'פרטי\'. אפשר לשנות את ההגדרה הזאת על ידי מעבר למצב \'בקרוב\'.\n</string>
-    <string name="card_selection_control">בחירת כרטיס לניתוח אנליטי</string>
     <string name="login_app_password_exit_dialog_cancel">ביטול</string>
     <string name="login_app_password_exit_dialog_confirmation">לצאת בכל מקרה</string>
     <string name="login_app_password_exit_dialog_message">נראה שעדיין לא אישרת את החיבור לאפליקציה. האם ברצונך לצאת?</string>
@@ -3490,7 +3501,7 @@ Language: he_IL
     <string name="upsells_desc">מוצרים שמקודמים במקום המוצרים שמוצגים עכשיו (כלומר, מוצרים רווחיים יותר)</string>
     <string name="upsells_label">שדרוגי מכירות</string>
     <string name="product_detail_linked_products">מוצרים מקושרים</string>
-    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="orderdetail_product_lineitem_attribute">%1$s: %2$s</string>
     <string name="login_get_link_by_email">לקבל קישור להתחברות באימייל</string>
     <string name="email_not_registered_wpcom">מצטערים, לא הצלחנו לאתר את חשבון ה-WordPress.com שמקושר לכתובת האימייל הזו.</string>
     <string name="settings_enable_product_addons_teaser_message">כדאי לבדוק את האפשרות להצגת הרחבות של הזמנות בזמן שאנחנו מתכוננים להשקה</string>
@@ -3648,6 +3659,7 @@ Language: he_IL
     <string name="product_sale_date_to">עד %1$s</string>
     <string name="product_wip_title">אפשרויות עריכה נוספות זמינות</string>
     <string name="orderdetail_product_multiple">מוצרים</string>
+    <string name="orderdetail_product_lineitem_quantity_and_price">%1$s x %2$s</string>
     <string name="product_type_external">חיצוני</string>
     <string name="product_type_simple">פשוט</string>
     <string name="product_status_privately_published">פורסם כפרטי</string>

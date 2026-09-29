@@ -2,16 +2,61 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.8
+-----
+- [**] Fixed push notifications that could stay off for the next store logged in on the same device [https://github.com/woocommerce/woocommerce-android/pull/16620]
+- [*] POS: custom amount form keeps its button above the keyboard, shows custom amounts in checkout and order totals, and formats amounts correctly [https://github.com/woocommerce/woocommerce-android/pull/16598]
+- [*] The app no longer signs you out when a single store endpoint returns an authorization error [https://github.com/woocommerce/woocommerce-android/pull/16571]
+- [Internal] Push notification analytics now attribute store and plan properties to the notification's origin site instead of the currently selected store [https://github.com/woocommerce/woocommerce-android/pull/16575]
+- [*] Background order sync now fetches 25 orders at a time instead of 60, so large stores no longer time out and retry [https://github.com/woocommerce/woocommerce-android/pull/16597]
+- [*****] Refreshed My Store, Orders, Products, and the More menu with the new design system — new top app bars, bottom navigation, list styling, and icons [https://github.com/woocommerce/woocommerce-android/pull/16322]
+- [*] Fixed the add product button staying on screen after clearing the product search term [https://github.com/woocommerce/woocommerce-android/pull/16451]
+- [Internal] Card Reader Mode on the phone now tracks when it rejects a Remote Tap to Pay payment from the tablet [https://github.com/woocommerce/woocommerce-android/pull/16584]
+- [Internal] [WEAR] Wear stack traces in Sentry now carry source context: the source bundle uploads to the `woocommerce-wear` project rather than the phone app's [https://github.com/woocommerce/woocommerce-android/pull/16427]
+
+- [*] Card Reader Mode on the phone now explains what it is for before it starts [https://github.com/woocommerce/woocommerce-android/pull/16579]
+- [*] The variations list now shows an error with a retry option when a page of variations fails to load, instead of silently skipping it [https://github.com/woocommerce/woocommerce-android/pull/16580]
+- [*] POS no longer flips between portrait and landscape on tablets whose screen is just above the tablet size threshold [https://github.com/woocommerce/woocommerce-android/pull/16574]
+- [*] Logging in with the www form of a store address no longer shows "not connected to this account" for a store the account owns [https://github.com/woocommerce/woocommerce-android/pull/16567]
+- [*] POS: Cart items discounted by a coupon or another source are now marked "Discount applied" at checkout [https://github.com/woocommerce/woocommerce-android/pull/16570]
+- [*] Custom fields no longer show REST API addresses as links that open an authorization error [https://github.com/woocommerce/woocommerce-android/pull/16607]
+
 25.7
 -----
+- [*] Customers list no longer reshuffles its rows once the fresh results arrive from the server [https://github.com/woocommerce/woocommerce-android/pull/16573]
+- [*] Updated the create shipping label button visibility on the order details screen [https://github.com/woocommerce/woocommerce-android/pull/16572]
+- [Internal] Defer push notification handler initialization until a message is received on the Firebase worker thread.
+- [*] Rounded currency amounts on charts, Blaze campaigns, payment screens, and widgets now follow the app's language [https://github.com/woocommerce/woocommerce-android/pull/16556]
+- [Internal] POS no longer repeats initial ineligibility events when the same screen is recomposed or initialized again [https://github.com/woocommerce/woocommerce-android/pull/16553]
+- [*] Push notifications setup now explains when a store's Jetpack is in Offline Mode instead of wrongly telling administrators to "ask your store administrator" [https://github.com/woocommerce/woocommerce-android/pull/16551]
+- [**] Fixed push notifications that could stop after restoring or transferring the app to a new device [https://github.com/woocommerce/woocommerce-android/pull/16547]
+- [*] Order details now shows refunded shipping lines, including refunds that only contain shipping [https://github.com/woocommerce/woocommerce-android/pull/16552]
+- [*] Product thumbnails in orders, refunds, and reviews now load without blocking the screen.
+- [*] Changing the country on an order address now clears the previous region from the form [https://github.com/woocommerce/woocommerce-android/pull/16527]
+- [Internal] Removed the POS server-calculated refunds feature flag; the flow is on for every store running WooCommerce 11.1.0 or later [https://github.com/woocommerce/woocommerce-android/pull/16539]
+- [*] The linked products promo no longer appears after creating a product on a store with fewer than three published products [https://github.com/woocommerce/woocommerce-android/pull/16511]
+- [**] POS now blocks stores that iOS already blocks: a store currency that does not match the store country, a store country POS does not support, a missing or deactivated WooCommerce plugin, and the Point of Sale feature switch turned off in WooCommerce settings [https://github.com/woocommerce/woocommerce-android/pull/16524]
+- [*] Logging out of a store-credentials login no longer restarts the app or leaves account data behind when the selected site is reset mid-logout [https://github.com/woocommerce/woocommerce-android/pull/16483]
+- [*] Logging in with site credentials no longer crashes when the store lists an application password without a UUID [https://github.com/woocommerce/woocommerce-android/pull/16483]
+- [Internal] The age restriction dialog now offers a Contact Support action that opens Help & Support while keeping the restriction enforced [https://github.com/woocommerce/woocommerce-android/pull/16523]
+- [*] Order detail: the "Need a shipping label?" banner dismiss button is now announced as "Dismiss" by TalkBack instead of a refund message [https://github.com/woocommerce/woocommerce-android/pull/16538]
+- [*****] Updated the Stripe Terminal SDK to 5.8.0; card readers now use coarse location on Android 12+ so the app no longer requests precise location for in-person payments except on older devices [https://github.com/woocommerce/woocommerce-android/pull/16507]
 - [*] Stores configured with an HTTP address now connect securely over HTTPS, with guidance to update their WordPress address [https://github.com/woocommerce/woocommerce-android/pull/16470]
 - [*] The "not a WordPress site" login error screen now shows a title and a back arrow instead of an empty toolbar [https://github.com/woocommerce/woocommerce-android/pull/16515]
+- [*] Product category lists no longer push deeply nested category names off the right edge of the screen. Indentation now stops after five levels, so the names stay readable [https://github.com/woocommerce/woocommerce-android/pull/16501]
 - [Internal] Card reader connection failures now report the error type and description, so remote Tap to Pay and Bluetooth connect failures can be told apart in Tracks [https://github.com/woocommerce/woocommerce-android/pull/16499]
 - [*] Order creation: editing a shipping line now shows the current amount instead of an empty field [https://github.com/woocommerce/woocommerce-android/pull/16478]
+- [*****] Updated constraintlayout-compose to 1.1.2 and fixed the order-creation product and bundle cards and the read-only shipping-label address, which the update collapsed [https://github.com/woocommerce/woocommerce-android/pull/16521]
+- [Internal] Order details no longer checks each product for add-ons on the main thread [https://github.com/woocommerce/woocommerce-android/pull/16489]
+- [Internal] Added a type-resolution detekt guard (on PRs and in the release pipeline) that flags stringifying a lambda-bearing object, which triggers a reflective toString() that crashes under R8 full mode [https://github.com/woocommerce/woocommerce-android/pull/16518]
+- [*] The Top performers card on My Store no longer stays on "Unable to load data" after a retry or pull to refresh succeeds [https://github.com/woocommerce/woocommerce-android/pull/16542]
+- [Internal] Fixed the WPCom order notifications not being disabled for stores registered for Woo push [https://github.com/woocommerce/woocommerce-android/pull/16504]
+- [*] Subscription product types now follow the Woo Subscriptions store settings [https://github.com/woocommerce/woocommerce-android/pull/16503]
 
 25.6
 -----
-- [*****] Updated constraintlayout-compose to 1.1.2 and fixed the order-creation product and bundle cards and the read-only shipping-label address, which the update collapsed [https://github.com/woocommerce/woocommerce-android/pull/16521]
+- [Internal] Fixed an Android 13 crash when returning to a screen (e.g. Product details) after the app was backgrounded, caused by R8 full mode tripping the API 33 typed Bundle.getParcelable bug; reflective reads now go through AndroidX compat [https://github.com/woocommerce/woocommerce-android/pull/16562]
+- [Internal] Fixed an IllegalAccessError crash when opening the Aztec editor (e.g. a product's description) in release builds, caused by R8 full mode inlining TagSoup's HTML parser across a package boundary [https://github.com/woocommerce/woocommerce-android/pull/16530]
 - [*] The toolbar search icon on the Products and Orders lists is purple again, like the other toolbar icons, instead of black [https://github.com/woocommerce/woocommerce-android/pull/16508]
 - [*****] [Internal] Migrated Google Play Age Signals to SDK 0.0.4 with recoverable verification and privacy-bounded monitoring [https://github.com/woocommerce/woocommerce-android/pull/16377]
 - [Internal] Fixed R8 full mode stripping/abstracting reflectively-deserialized Gson DTOs in release builds, which broke several features (POS, analytics, subscriptions, shipping labels) [https://github.com/woocommerce/woocommerce-android/pull/16485]

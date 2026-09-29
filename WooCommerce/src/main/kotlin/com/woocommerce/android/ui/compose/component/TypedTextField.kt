@@ -22,7 +22,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -195,7 +195,8 @@ class NullableBigDecimalTextFieldValueMapper private constructor(
 
 class NullableCurrencyTextFieldValueMapper @VisibleForTesting constructor(
     private val decimalSeparator: String,
-    private val numberOfDecimals: Int
+    private val numberOfDecimals: Int,
+    private val keepTrailingZeros: Boolean = false
 ) : TextFieldValueMapper<BigDecimal?> {
     private val acceptedChars = "0123456789.$decimalSeparator"
 
@@ -204,7 +205,12 @@ class NullableCurrencyTextFieldValueMapper @VisibleForTesting constructor(
 
     override fun printValue(value: BigDecimal?): String =
         value?.setScale(numberOfDecimals, RoundingMode.HALF_UP)
-            ?.stripTrailingZeros()
+            ?.let {
+                when (keepTrailingZeros) {
+                    true -> it
+                    false -> it.stripTrailingZeros()
+                }
+            }
             ?.toPlainString()
             ?.replace(".", decimalSeparator)
             .orEmpty()
@@ -224,9 +230,10 @@ class NullableCurrencyTextFieldValueMapper @VisibleForTesting constructor(
 
     companion object {
         @Composable
-        fun create(decimalSeparator: String, numberOfDecimals: Int) = remember(decimalSeparator, numberOfDecimals) {
-            NullableCurrencyTextFieldValueMapper(decimalSeparator, numberOfDecimals)
-        }
+        fun create(decimalSeparator: String, numberOfDecimals: Int, keepTrailingZeros: Boolean = false) =
+            remember(decimalSeparator, numberOfDecimals, keepTrailingZeros) {
+                NullableCurrencyTextFieldValueMapper(decimalSeparator, numberOfDecimals, keepTrailingZeros)
+            }
     }
 }
 
@@ -252,7 +259,7 @@ class NullableIntTextFieldValueMapper(
 @Preview
 @Composable
 private fun PreviewTypedTextFields() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             var signedDecimal by remember {
                 mutableStateOf(BigDecimal.ZERO)

@@ -63,7 +63,7 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.customfields.CustomField
 import com.woocommerce.android.ui.customfields.CustomFieldContentType
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
@@ -120,10 +120,10 @@ private fun CustomFieldsScreen(
                 title = stringResource(id = R.string.custom_fields_list_title),
                 onNavigationButtonClick = onBackClick,
                 actions = {
-                    WCTextButton(
+                    TextAction(
                         text = stringResource(id = R.string.save),
                         onClick = onSaveClicked,
-                        enabled = state.hasChanges
+                        enabled = state.hasChanges,
                     )
                 }
             )
@@ -387,7 +387,7 @@ private fun JsonCustomFieldViewer(
 @LightDarkThemePreviews
 @Composable
 private fun CustomFieldsScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         CustomFieldsScreen(
             state = CustomFieldsViewModel.UiState(
                 customFields = listOf(
@@ -419,7 +419,7 @@ private fun CustomFieldsScreenPreview() {
 @LightDarkThemePreviews
 @Composable
 private fun JsonCustomFieldViewerPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         JsonCustomFieldViewer(
             customField = CustomFieldUiModel(
                 CustomField(
@@ -436,7 +436,7 @@ private fun JsonCustomFieldViewerPreview() {
 @LightDarkThemePreviews
 @Composable
 private fun CustomFieldsEmptyViewPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         CustomFieldsScreen(
             state = CustomFieldsViewModel.UiState(
                 customFields = emptyList(),

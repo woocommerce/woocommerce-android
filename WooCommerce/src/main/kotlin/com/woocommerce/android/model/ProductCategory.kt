@@ -8,6 +8,7 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import java.util.Locale
 import java.util.Stack
+import kotlin.math.roundToInt
 
 @Parcelize
 data class ProductCategory(
@@ -36,13 +37,25 @@ data class ProductCategory(
         resourceProvider: ResourceProvider,
         hierarchy: Map<Long, Long>
     ): Int {
-        var margin = resourceProvider.getDimensionPixelSize(R.dimen.major_125)
+        var indentLevel = 0
         var parent = this.parentId
-        while (parent != 0L) {
-            margin += resourceProvider.getDimensionPixelSize(R.dimen.major_125)
+        while (parent != 0L && indentLevel < MAX_INDENT_LEVELS) {
+            indentLevel++
             parent = hierarchy[parent] ?: 0L
         }
-        return margin
+        val step = resourceProvider.getDimensionPixelSize(R.dimen.major_100)
+        return (step * (computeIndentationMultiplier(indentLevel) + 1)).roundToInt()
+    }
+
+    companion object {
+        private const val FULL_STEP_LEVELS = 8
+        private const val MAX_INDENT_LEVELS = 16
+
+        fun computeIndentationMultiplier(depth: Int): Float {
+            val fullSteps = depth.coerceAtMost(FULL_STEP_LEVELS)
+            val halfSteps = (depth - FULL_STEP_LEVELS).coerceIn(0, MAX_INDENT_LEVELS - FULL_STEP_LEVELS)
+            return fullSteps + halfSteps / 2f
+        }
     }
 }
 

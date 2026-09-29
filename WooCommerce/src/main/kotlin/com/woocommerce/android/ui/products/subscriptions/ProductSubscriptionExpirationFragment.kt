@@ -30,7 +30,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCExposedDropDown
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitProductSubscriptionExpiration
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -52,7 +52,7 @@ class ProductSubscriptionExpirationFragment : BaseProductFragment() {
             val subscription = navArgs.subscription
             selectedExpiration = subscription.length
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     SubscriptionExpirationPicker(
                         items = subscription.expirationDisplayOptions(resourceProvider),
                         currentValue = subscription.expirationDisplayValue(resourceProvider),

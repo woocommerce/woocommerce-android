@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 25.7
+Customer lists now stay in place while refreshing, push notifications keep working after a device transfer, and refunded shipping appears in orders. We’ve also improved POS eligibility checks, reduced location access for card readers, and polished login, product images, currency formatting, and accessibility.
+
 ## 25.6
 This release makes the app smaller and faster. Product editing is safer: you're warned before losing an attribute option or tag you typed, and editing options no longer wipes other attributes. Order details show product add-ons clearly, images load reliably on more stores, and the unread reviews badge no longer gets stuck. Plus crash fixes.
 

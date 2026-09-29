@@ -118,6 +118,37 @@ class CustomerDaoTest {
     }
 
     @Test
+    fun `given customers saved in remote order, when customers for site are read, then the same order is returned`() = runTest {
+        // GIVEN
+        val charlie = WCCustomerModel(
+            remoteCustomerId = RemoteId(1L),
+            localSiteId = LocalId(site.id),
+            firstName = "Charlie",
+            lastName = "Brown"
+        )
+        val alice = WCCustomerModel(
+            remoteCustomerId = RemoteId(2L),
+            localSiteId = LocalId(site.id),
+            firstName = "alice",
+            lastName = "Smith"
+        )
+        val bob = WCCustomerModel(
+            remoteCustomerId = RemoteId(0L),
+            analyticsCustomerId = 7L,
+            localSiteId = LocalId(site.id),
+            firstName = "Bob",
+            lastName = "Jones"
+        )
+
+        // WHEN
+        sut.upsertCustomers(listOf(charlie, alice, bob))
+
+        // THEN
+        val storedCustomers = sut.getCustomersForSite(LocalId(site.id))
+        assertThat(storedCustomers.map { it.firstName }).containsExactly("Charlie", "alice", "Bob")
+    }
+
+    @Test
     fun `delete customers for site deletes all customers for the site`() = runTest {
         // given
         val usernameOne = "userNameOne"

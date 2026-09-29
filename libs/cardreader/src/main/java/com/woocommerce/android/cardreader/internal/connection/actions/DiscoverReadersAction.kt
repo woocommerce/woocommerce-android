@@ -34,16 +34,18 @@ internal class DiscoverReadersAction(
     }
 
     @RequiresPermission(
-        value = "android.permission.ACCESS_FINE_LOCATION",
+        anyOf = [
+            "android.permission.ACCESS_FINE_LOCATION",
+            "android.permission.ACCESS_COARSE_LOCATION"
+        ],
     )
     fun discoverBuildInReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> =
         discoverReaders(DiscoveryConfiguration.TapToPayDiscoveryConfiguration(isSimulated))
 
     @RequiresPermission(
-        allOf = [
+        anyOf = [
             "android.permission.ACCESS_FINE_LOCATION",
-            "android.permission.BLUETOOTH_CONNECT",
-            "android.permission.BLUETOOTH_SCAN"
+            "android.permission.ACCESS_COARSE_LOCATION"
         ]
     )
     fun discoverExternalReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> =

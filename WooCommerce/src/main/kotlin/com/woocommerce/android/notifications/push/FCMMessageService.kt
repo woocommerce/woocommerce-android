@@ -6,6 +6,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.notifications.push.RegisterDevice.Trigger.TOKEN_REFRESH
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class FCMMessageService : FirebaseMessagingService() {
-    @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
+    @Inject lateinit var notificationMessageHandler: Lazy<NotificationMessageHandler>
 
     @Inject lateinit var appPrefsWrapper: AppPrefsWrapper
 
@@ -37,7 +38,7 @@ class FCMMessageService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         WooLog.v(T.NOTIFICATIONS, "Received message from Firebase")
-        notificationMessageHandler.onNewMessageReceived(message.data)
+        notificationMessageHandler.get().onNewMessageReceived(message.data)
     }
 
     override fun onDestroy() {

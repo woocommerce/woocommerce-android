@@ -56,12 +56,10 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
-import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.Subscription
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.BottomNavigationPosition
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -91,6 +89,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelM
 import com.woocommerce.android.ui.orders.wooshippinglabels.refund.WooShippingLabelRefundFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment
+import com.woocommerce.android.ui.products.ProductImageLoader
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -104,6 +103,7 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @Suppress("LargeClass")
 @AndroidEntryPoint
@@ -129,7 +129,7 @@ class OrderDetailFragment :
     lateinit var uiMessageResolver: UIMessageResolver
 
     @Inject
-    lateinit var productImageMap: ProductImageMap
+    lateinit var productImageLoaderFactory: ProductImageLoader.Factory
 
     @Inject
     lateinit var dateUtils: DateUtils
@@ -302,7 +302,10 @@ class OrderDetailFragment :
         if (requireContext().isTwoPanesShouldBeUsed && !navArgs.ignoreTwoPaneLayoutLogic) {
             binding.toolbar.navigationIcon = null
         } else {
-            binding.toolbar.navigationIcon = AppCompatResources.getDrawable(requireActivity(), R.drawable.ic_back_24dp)
+            binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+                requireActivity(),
+                DesignSystemR.drawable.woo_ds_ic_regular_arrow_left_24dp
+            )
             binding.toolbar.setNavigationOnClickListener {
                 if (!findNavController().popBackStack(R.id.orders, false)) {
                     // in case the back stack is empty, indicating that the OrderDetailsFragment is shown in details pane
@@ -428,7 +431,6 @@ class OrderDetailFragment :
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
                 binding.orderRefreshLayout.isRefreshing = it
             }
-            new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
             new.wcShippingBannerVisible?.takeIfNotEqualTo(old?.wcShippingBannerVisible) {
                 showInstallWcShippingBanner(it, new.isWcShippingBannerEnabled)
             }
@@ -511,7 +513,7 @@ class OrderDetailFragment :
                 }
 
                 shippingLineList.observeAsState().value?.let { shippingLines ->
-                    WooThemeWithBackground {
+                    LegacyWooThemeWithBackground {
                         ShippingLineSection(
                             shippingLineDetails = shippingLines,
                             formatCurrency = { amount ->
@@ -572,7 +574,7 @@ class OrderDetailFragment :
 
             setContent {
                 orderAttributionInfo.observeAsState().value?.let {
-                    WooThemeWithBackground {
+                    LegacyWooThemeWithBackground {
                         OrderDetailAttributionInfoView(attributionInfo = it)
                     }
                 }
@@ -711,32 +713,22 @@ class OrderDetailFragment :
         }
     }
 
-    private fun refreshProduct(remoteProductId: Long) {
-        binding.orderDetailProductList.notifyProductChanged(remoteProductId)
-    }
-
     private fun showOrderNotes(orderNotes: List<OrderNote>) {
         binding.orderDetailNoteList.updateOrderNotesView(orderNotes) {
             viewModel.onAddOrderNoteClicked()
         }
     }
 
-    private fun showOrderRefunds(refunds: List<Refund>, order: Order) {
+    private fun showOrderRefunds(state: OrderDetailViewState.RefundsState, order: Order) {
+        val formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
+
         // display the refunds count in the refunds section
-        val refundsCount = refunds.sumOf { refund -> refund.items.sumOf { it.quantity } }
-        if (refundsCount > 0) {
-            binding.orderDetailRefundsInfo.show()
-            binding.orderDetailRefundsInfo.updateRefundCount(refundsCount) {
-                viewModel.onViewRefundedProductsClicked()
-            }
-        } else {
-            binding.orderDetailRefundsInfo.hide()
+        binding.orderDetailRefundsInfo.updateRefunds(state, formatCurrency) {
+            viewModel.onViewRefundedProductsClicked()
         }
 
         // display refunds list in the payment info section, if available
-        val formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
-
-        refunds.whenNotNullNorEmpty {
+        state.refunds.whenNotNullNorEmpty {
             binding.orderDetailPaymentInfo.showRefunds(order, it, formatCurrency)
         }.otherwise {
             binding.orderDetailPaymentInfo.showRefundTotal(
@@ -752,7 +744,7 @@ class OrderDetailFragment :
             with(binding.orderDetailProductList) {
                 updateProductItemsList(
                     orderProductItems = products,
-                    productImageMap = productImageMap,
+                    productImageLoaderFactory = productImageLoaderFactory,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
                     productClickListener = this@OrderDetailFragment,
                     onProductMenuItemClicked = viewModel::onCreateShippingLabelButtonTapped,
@@ -771,7 +763,7 @@ class OrderDetailFragment :
                     value = viewModel.awaitOrder().currency
                 }.value
                 if (feeLineState.value.isEmpty().not()) {
-                    WooThemeWithBackground {
+                    LegacyWooThemeWithBackground {
                         Column(
                             modifier = Modifier.padding(bottom = 1.dp)
                         ) {
@@ -830,7 +822,7 @@ class OrderDetailFragment :
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     OrderDetailWooShippingShipmentListView(
                         shipments = shipments,
                         onCreateShippingLabelClicked = viewModel::onCreateShippingLabelButtonTapped,
@@ -851,7 +843,7 @@ class OrderDetailFragment :
                 show()
                 updateShippingLabels(
                     shippingLabels = shippingLabels,
-                    productImageMap = productImageMap,
+                    productImageLoaderFactory = productImageLoaderFactory,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
                     productClickListener = this@OrderDetailFragment,
                     shippingLabelClickListener = object : OnShippingLabelClickListener {
