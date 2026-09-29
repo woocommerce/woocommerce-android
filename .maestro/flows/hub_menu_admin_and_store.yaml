@@ -103,20 +103,22 @@ tags:
     label: "Back on More Menu"
 
 # ── Change store ─────────────────────────────────────────────────────
-# Require the visible title for diagnostics and use normalized URL-host
+# Require the store header for diagnostics and use normalized URL-host
 # equality for identity. Display names are not unique and are never used to
 # decide whether the selected store changed.
 - assertVisible:
-    id: "more_menu_store_title"
+    id: "more_menu_store_header"
 - copyTextFrom:
-    id: "more_menu_store_url"
+    text: "^[^\\s]+\\.[^\\s]+$"
+    childOf:
+      id: "more_menu_store_header"
 - evalScript: ${output.originalStoreUrl = maestro.copiedText.trim()}
 - assertTrue:
     condition: ${output.originalStoreUrl.length > 0}
     label: "Capture original store identity"
 
 - tapOn:
-    id: "more_menu_store_switcher"
+    id: "more_menu_store_header"
     label: "Open store picker"
 
 - extendedWaitUntil:
@@ -185,7 +187,9 @@ tags:
     file: ../subflows/navigate_to_more_menu.yaml
 
 - copyTextFrom:
-    id: "more_menu_store_url"
+    text: "^[^\\s]+\\.[^\\s]+$"
+    childOf:
+      id: "more_menu_store_header"
 - evalScript: ${output.selectedAlternateStoreUrl = maestro.copiedText.trim()}
 - assertTrue:
     condition: ${String(output.selectedAlternateStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] == String(output.alternateStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] && String(output.selectedAlternateStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] != String(output.originalStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}
@@ -207,7 +211,7 @@ tags:
 - runFlow:
     file: ../subflows/navigate_to_more_menu.yaml
 - tapOn:
-    id: "more_menu_store_switcher"
+    id: "more_menu_store_header"
     label: "Open store picker to restore original store"
 - extendedWaitUntil:
     visible:
@@ -237,7 +241,9 @@ tags:
 - runFlow:
     file: ../subflows/navigate_to_more_menu.yaml
 - copyTextFrom:
-    id: "more_menu_store_url"
+    text: "^[^\\s]+\\.[^\\s]+$"
+    childOf:
+      id: "more_menu_store_header"
 - evalScript: ${output.restoredStoreUrl = maestro.copiedText.trim()}
 - assertTrue:
     condition: ${String(output.restoredStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] == String(output.originalStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}

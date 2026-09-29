@@ -4,7 +4,9 @@ appId: com.woocommerce.android
     file: navigate_to_more_menu.yaml
 
 - copyTextFrom:
-    id: "more_menu_store_url"
+    text: "^[^\\s]+\\.[^\\s]+$"
+    childOf:
+      id: "more_menu_store_header"
 - evalScript: ${output.configuredCurrentStoreUrl = maestro.copiedText.trim()}
 
 - runFlow:
@@ -12,7 +14,7 @@ appId: com.woocommerce.android
       true: ${String(output.configuredCurrentStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] != String(MAESTRO_WOO_JETPACK_STORE_URL).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}
     commands:
       - tapOn:
-          id: "more_menu_store_switcher"
+          id: "more_menu_store_header"
           label: "Open store picker for configured fixture"
       - extendedWaitUntil:
           visible:
@@ -39,7 +41,9 @@ appId: com.woocommerce.android
 - runFlow:
     file: navigate_to_more_menu.yaml
 - copyTextFrom:
-    id: "more_menu_store_url"
+    text: "^[^\\s]+\\.[^\\s]+$"
+    childOf:
+      id: "more_menu_store_header"
 - evalScript: ${output.configuredSelectedStoreUrl = maestro.copiedText.trim()}
 - assertTrue:
     condition: ${String(output.configuredSelectedStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] == String(MAESTRO_WOO_JETPACK_STORE_URL).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}
