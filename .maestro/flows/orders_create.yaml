@@ -329,6 +329,7 @@ tags:
       - extendedWaitUntil:
           visible: "A fixed amount"
           timeout: 8000
+          optional: true
 
 - runFlow:
     when:

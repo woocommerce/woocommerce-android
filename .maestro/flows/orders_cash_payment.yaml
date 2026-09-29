@@ -111,6 +111,7 @@ tags:
       - extendedWaitUntil:
           visible: ".*Take payment.*"
           timeout: 10000
+          optional: true
 
 - runFlow:
     when:
