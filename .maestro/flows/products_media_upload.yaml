@@ -260,7 +260,7 @@ tags:
 # device back can pop the destination without delivering that result
 # on some app/back-stack states.
 - tapOn:
-    point: "7%,6%"
+    point: "7%,8%"
     retryTapIfNoChange: true
     label: "Tap image gallery toolbar back"
 
@@ -344,7 +344,7 @@ tags:
 - takeScreenshot: media_upload_device_image_in_gallery
 
 - tapOn:
-    point: "7%,6%"
+    point: "7%,8%"
     retryTapIfNoChange: true
     label: "Return to product detail after device media"
 

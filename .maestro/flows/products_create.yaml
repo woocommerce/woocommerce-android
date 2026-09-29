@@ -134,7 +134,7 @@ tags:
 - inputText: "Maestro description ${SUITE_RUN_ID}"
 - hideKeyboard
 - tapOn:
-    point: "7%,6%"
+    point: "7%,8%"
     retryTapIfNoChange: true
     label: "Save main description through the editor toolbar"
 
@@ -159,7 +159,7 @@ tags:
         throw new Error('Draft product did not retain its main description');
     }
 - tapOn:
-    point: "7%,6%"
+    point: "7%,8%"
     retryTapIfNoChange: true
     label: "Return from verified main description"
 - extendedWaitUntil:
@@ -199,7 +199,7 @@ tags:
 
 # Use the toolbar affordance so ProductPricingFragment delivers its result.
 - tapOn:
-    point: "7%,6%"
+    point: "7%,8%"
     retryTapIfNoChange: true
     label: "Save price through the editor toolbar"
 
@@ -261,7 +261,7 @@ tags:
 - takeScreenshot: product_create_inventory
 
 - tapOn:
-    point: "7%,6%"
+    point: "7%,8%"
     retryTapIfNoChange: true
     label: "Save inventory through the editor toolbar"
 
@@ -319,7 +319,7 @@ tags:
 - takeScreenshot: product_create_shipping
 
 - tapOn:
-    point: "7%,6%"
+    point: "7%,8%"
     retryTapIfNoChange: true
     label: "Save shipping through the editor toolbar"
 
@@ -391,7 +391,7 @@ tags:
     label: "Run-owned tag is selected"
 
 - tapOn:
-    point: "7%,6%"
+    point: "7%,8%"
     retryTapIfNoChange: true
     label: "Save tags through the editor toolbar"
 
@@ -464,7 +464,7 @@ tags:
           timeout: 15000
 
 - tapOn:
-    point: "7%,6%"
+    point: "7%,8%"
     retryTapIfNoChange: true
     label: "Confirm the run-owned tag after asynchronous creation"
 
@@ -576,7 +576,7 @@ tags:
     label: "The seeded product is the attached Upsell"
 
 - tapOn:
-    point: "7%,6%"
+    point: "7%,8%"
     retryTapIfNoChange: true
     label: "Save selected Upsell through the toolbar"
 
@@ -593,7 +593,7 @@ tags:
 - takeScreenshot: product_create_linked_product
 
 - tapOn:
-    point: "7%,6%"
+    point: "7%,8%"
     retryTapIfNoChange: true
     label: "Save Linked products through the toolbar"
 
@@ -722,7 +722,7 @@ tags:
 - takeScreenshot: product_create_short_description_entered
 
 - tapOn:
-    point: "7%,6%"
+    point: "7%,8%"
     retryTapIfNoChange: true
     label: "Save short description through the editor toolbar"
 
@@ -918,7 +918,7 @@ tags:
         throw new Error('Published product did not retain its main description');
     }
 - tapOn:
-    point: "7%,6%"
+    point: "7%,8%"
     retryTapIfNoChange: true
     label: "Return from persisted main description"
 - extendedWaitUntil:
@@ -1199,7 +1199,7 @@ tags:
         throw new Error('Published product did not retain its short description');
     }
 - tapOn:
-    point: "7%,6%"
+    point: "7%,8%"
     retryTapIfNoChange: true
     label: "Return from verified short description"
 - extendedWaitUntil:
