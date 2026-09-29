@@ -41,14 +41,14 @@ tags:
 
 # Open the first product
 - tapOn:
-    id: "productName"
+    id: "product_list_title_.*"
     index: 0
     label: "Tap first product"
 
 # Wait for product detail screen.
 - extendedWaitUntil:
     visible:
-      id: "cardsRecyclerView"
+      id: "productDetailList"
     timeout: 25000
     label: "Wait for product detail to load"
 
@@ -61,16 +61,16 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "cardsRecyclerView"
+      id: "productDetailList"
     timeout: 10000
 
 - takeScreenshot: product_detail_top
 
-# Scroll to the properties RecyclerView so type-agnostic rows come
+# Scroll to the property rows so type-agnostic rows come
 # into view.
 - scrollUntilVisible:
     element:
-      id: "propertiesRecyclerView"
+      id: "productDetailRow_.*"
     direction: DOWN
     timeout: 10000
     label: "Scroll to product properties"
@@ -83,7 +83,7 @@ tags:
     commands:
       - scrollUntilVisible:
           element:
-            id: "productDetail_addMoreButton"
+            id: "productDetailFooter"
           direction: DOWN
           timeout: 15000
           label: "Scroll to the end of the detail card list"
@@ -93,7 +93,7 @@ tags:
       notVisible: "Categories"
     commands:
       - tapOn:
-          id: "productDetail_addMoreButton"
+          id: "productDetailFooter"
           retryTapIfNoChange: true
           label: "Open additional product details"
       - extendedWaitUntil:
@@ -118,7 +118,7 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "cardsRecyclerView"
+      id: "productDetailList"
     timeout: 15000
     label: "Back on product detail"
 
@@ -137,5 +137,5 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "productsRecycler"
+      id: "product_list"
     timeout: 10000

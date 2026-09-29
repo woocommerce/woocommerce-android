@@ -62,7 +62,7 @@ tags:
 # 1. Start product creation
 # ─────────────────────────────────────────────────────────────────────
 - tapOn:
-    id: "addProductButton"
+    id: "product_list_add_fab"
     retryTapIfNoChange: true
     label: "Tap Add Product FAB"
 
@@ -276,13 +276,13 @@ tags:
 # ─────────────────────────────────────────────────────────────────────
 - scrollUntilVisible:
     element:
-      id: "productDetail_addMoreButton"
+      id: "productDetailFooter"
     direction: DOWN
     timeout: 10000
     label: "Scroll to Add more details for Shipping"
 
 - tapOn:
-    id: "productDetail_addMoreButton"
+    id: "productDetailFooter"
     retryTapIfNoChange: true
     label: "Open Add more details for Shipping"
 
@@ -350,13 +350,13 @@ tags:
 # Tags — create a run-unique tag and attach it to this run-owned draft.
 - scrollUntilVisible:
     element:
-      id: "productDetail_addMoreButton"
+      id: "productDetailFooter"
     direction: DOWN
     timeout: 10000
     label: "Reach Add more details for Tags"
 
 - tapOn:
-    id: "productDetail_addMoreButton"
+    id: "productDetailFooter"
     retryTapIfNoChange: true
     label: "Open Add more details for Tags"
 
@@ -405,7 +405,7 @@ tags:
 # first request returned no tag, repeat the same unique selection once.
 - scrollUntilVisible:
     element:
-      id: "productDetail_addMoreButton"
+      id: "productDetailFooter"
     direction: DOWN
     timeout: 10000
 
@@ -428,7 +428,7 @@ tags:
         id: "productTagsRecycler"
     commands:
       - tapOn:
-          id: "productDetail_addMoreButton"
+          id: "productDetailFooter"
           retryTapIfNoChange: true
           label: "Reopen Add more details for tag recovery"
       - extendedWaitUntil:
@@ -478,13 +478,13 @@ tags:
 # ─────────────────────────────────────────────────────────────────────
 - scrollUntilVisible:
     element:
-      id: "productDetail_addMoreButton"
+      id: "productDetailFooter"
     direction: DOWN
     timeout: 10000
     label: "Scroll to Add more details for Linked products"
 
 - tapOn:
-    id: "productDetail_addMoreButton"
+    id: "productDetailFooter"
     retryTapIfNoChange: true
     label: "Open Add more details for Linked products"
 
@@ -608,13 +608,13 @@ tags:
 # ─────────────────────────────────────────────────────────────────────
 - scrollUntilVisible:
     element:
-      id: "productDetail_addMoreButton"
+      id: "productDetailFooter"
     direction: DOWN
     timeout: 10000
     label: "Scroll to Add more details for Downloadable files"
 
 - tapOn:
-    id: "productDetail_addMoreButton"
+    id: "productDetailFooter"
     retryTapIfNoChange: true
     label: "Open Add more details for Downloadable files"
 
@@ -678,13 +678,13 @@ tags:
 # ─────────────────────────────────────────────────────────────────────
 - scrollUntilVisible:
     element:
-      id: "productDetail_addMoreButton"
+      id: "productDetailFooter"
     direction: DOWN
     timeout: 10000
     label: "Scroll to Add more details button"
 
 - tapOn:
-    id: "productDetail_addMoreButton"
+    id: "productDetailFooter"
     retryTapIfNoChange: true
     label: "Tap Add more details"
 
@@ -740,13 +740,13 @@ tags:
 # ─────────────────────────────────────────────────────────────────────
 - scrollUntilVisible:
     element:
-      id: "productDetail_addMoreButton"
+      id: "productDetailFooter"
     direction: DOWN
     timeout: 10000
     label: "Scroll to Add more details button again"
 
 - tapOn:
-    id: "productDetail_addMoreButton"
+    id: "productDetailFooter"
     retryTapIfNoChange: true
     label: "Tap Add more details (Categories)"
 
@@ -850,27 +850,27 @@ tags:
 - runFlow:
     when:
       notVisible:
-        id: "productsRecycler"
+        id: "product_list"
     commands:
       - back
 
 - extendedWaitUntil:
     visible:
-      id: "productsRecycler"
+      id: "product_list"
     timeout: 15000
     label: "Wait for products list"
 
 - tapOn:
-    id: "menu_search"
+    id: "product_list_search_action"
     label: "Open product search"
 
 - extendedWaitUntil:
     visible:
-      id: "search_src_text"
+      id: "product_list_search_field"
     timeout: 10000
 
 - tapOn:
-    id: "search_src_text"
+    id: "product_list_search_field"
 
 - inputText: ${SUITE_RUN_ID}
 
@@ -1210,7 +1210,7 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "productsRecycler"
+      id: "product_list"
     timeout: 10000
     label: "Return to filtered product results"
 
@@ -1219,5 +1219,5 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "productsRecycler"
+      id: "product_list"
     timeout: 10000

@@ -75,7 +75,7 @@ tags:
       visible: "Filters.*[0-9]"
     commands:
       - tapOn:
-          id: "btn_product_filter"
+          id: "product_list_filters"
           retryTapIfNoChange: true
           label: "Open active product filters"
       - extendedWaitUntil:
@@ -92,23 +92,23 @@ tags:
           label: "Show products without filters"
       - extendedWaitUntil:
           visible:
-            id: "productsRecycler"
+            id: "product_list"
           timeout: 15000
 
 # Open this run's newly-created product — never an arbitrary first row.
 # This flow persists an image on whatever product it opens, and on the
 # shared store index-0 can be a manual tester's real product.
 - tapOn:
-    id: "menu_search"
+    id: "product_list_search_action"
     label: "Open product search"
 
 - extendedWaitUntil:
     visible:
-      id: "search_src_text"
+      id: "product_list_search_field"
     timeout: 10000
 
 - tapOn:
-    id: "search_src_text"
+    id: "product_list_search_field"
 - inputText: "Maestro Smoke Product ${SUITE_RUN_ID}"
 - hideKeyboard
 
@@ -121,14 +121,14 @@ tags:
 - hideKeyboard
 
 - tapOn:
-    id: "productName"
+    id: "product_list_title_.*"
     index: 0
     retryTapIfNoChange: true
     label: "Open this run's product"
 
 - extendedWaitUntil:
     visible:
-      id: "cardsRecyclerView"
+      id: "productDetailList"
     timeout: 25000
     label: "Wait for product detail to load"
 
@@ -147,7 +147,7 @@ tags:
 
 # Tap the add-image affordance. Newly-created products show the
 # empty-gallery "Add a product image" row; products that already have
-# media show the gallery add icon/container. All paths call
+# media show the gallery "Add image" button. All paths call
 # ProductDetailViewModel.onAddImageButtonClicked which navigates to
 # ProductImagesFragment with showChooser = true.
 - runFlow:
@@ -167,18 +167,11 @@ tags:
       notVisible: "Select an upload method"
     commands:
       - tapOn:
-          id: "addImageIcon"
+          text: "Add image"
+          childOf:
+            id: "productDetailImageGallery"
           retryTapIfNoChange: true
-          label: "Tap add image icon (gallery)"
-
-- runFlow:
-    when:
-      notVisible: "Select an upload method"
-    commands:
-      - tapOn:
-          id: "addImageContainer"
-          retryTapIfNoChange: true
-          label: "Tap add image container (fallback)"
+          label: "Tap add image button (gallery)"
 
 - runFlow:
     when:
@@ -293,18 +286,11 @@ tags:
       notVisible: "Select an upload method"
     commands:
       - tapOn:
-          id: "addImageIcon"
+          text: "Add image"
+          childOf:
+            id: "productDetailImageGallery"
           retryTapIfNoChange: true
-          label: "Tap add image icon for device media"
-
-- runFlow:
-    when:
-      notVisible: "Select an upload method"
-    commands:
-      - tapOn:
-          id: "addImageContainer"
-          retryTapIfNoChange: true
-          label: "Tap add image container for device media"
+          label: "Tap add image button for device media"
 
 - extendedWaitUntil:
     visible: "Select an upload method"
@@ -393,7 +379,7 @@ tags:
 - runFlow:
     when:
       notVisible:
-        id: "productsRecycler"
+        id: "product_list"
     commands:
       - back
 
@@ -405,5 +391,5 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "productsRecycler"
+      id: "product_list"
     timeout: 15000

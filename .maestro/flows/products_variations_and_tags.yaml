@@ -37,11 +37,11 @@
 #   - filterOptionList                — RecyclerView on the per-filter
 #                                       options screen
 #   - filterOptionList_btnShowProducts — "Show products" CTA on options
-#   - empty_view                      — shown on products list when no
+#   - product_list_empty              — shown on products list when no
 #                                       results match the active filter
 #   - variationList                   — RecyclerView on VariationListFragment
-#   - cardsRecyclerView               — RecyclerView on product and
-#                                       variation detail
+#   - productDetailList               — list on product detail
+#   - cardsRecyclerView               — RecyclerView on variation detail
 appId: com.woocommerce.android
 name: "Products - Variations via Variable filter"
 tags:
@@ -62,13 +62,13 @@ tags:
 # ─────────────────────────────────────────────────────────────────────
 - scrollUntilVisible:
     element:
-      id: "btn_product_filter"
+      id: "product_list_filters"
     direction: UP
     timeout: 10000
     label: "Make sure the Filters button is visible"
 
 - tapOn:
-    id: "btn_product_filter"
+    id: "product_list_filters"
     retryTapIfNoChange: true
     label: "Tap Filters button"
 
@@ -133,16 +133,16 @@ tags:
 # and only one renders at a time based on the filter result.
 - extendedWaitUntil:
     visible:
-      id: "productsRecycler"
+      id: "product_list"
     timeout: 20000
     label: "Wait for products list container"
 
 - assertNotVisible:
-    id: "empty_view"
+    id: "product_list_empty"
     label: "FAIL: store has no Variable products"
 
 - assertVisible:
-    id: "productName"
+    id: "product_list_title_.*"
     label: "At least one Variable product is in the filtered list"
 
 - takeScreenshot: products_filtered_variable
@@ -165,7 +165,7 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "cardsRecyclerView"
+      id: "productDetailList"
     timeout: 25000
     label: "Wait for product detail"
 
@@ -177,7 +177,7 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "cardsRecyclerView"
+      id: "productDetailList"
     timeout: 10000
 
 - takeScreenshot: products_variable_detail
@@ -189,13 +189,13 @@ tags:
 # ─────────────────────────────────────────────────────────────────────
 - scrollUntilVisible:
     element:
-      id: "productDetail_addMoreButton"
+      id: "productDetailFooter"
     direction: DOWN
     timeout: 15000
     label: "Scroll to Add more details"
 
 - tapOn:
-    id: "productDetail_addMoreButton"
+    id: "productDetailFooter"
     retryTapIfNoChange: true
     label: "Open additional product details"
 
@@ -247,7 +247,7 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "cardsRecyclerView"
+      id: "productDetailList"
     timeout: 10000
 
 - scrollUntilVisible:
@@ -304,7 +304,7 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "cardsRecyclerView"
+      id: "productDetailList"
     timeout: 10000
 
 # ─────────────────────────────────────────────────────────────────────
@@ -322,7 +322,7 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "productsRecycler"
+      id: "product_list"
     timeout: 15000
 
 # If the product search is still active, exit it so downstream flows
@@ -330,12 +330,12 @@ tags:
 - runFlow:
     when:
       visible:
-        id: "search_src_text"
+        id: "product_list_search_field"
     commands:
       - back
       - back
 
 - extendedWaitUntil:
     visible:
-      id: "productsRecycler"
+      id: "product_list"
     timeout: 10000

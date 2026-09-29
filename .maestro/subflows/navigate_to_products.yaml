@@ -5,5 +5,5 @@ appId: com.woocommerce.android
     id: "products"
 - extendedWaitUntil:
     visible:
-      id: "productsRecycler"
+      id: "product_list"
     timeout: 15000
