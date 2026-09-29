@@ -172,7 +172,6 @@ platform :android do
       configuration_file_path: '.github/developer-release-notes.yml',
       release_notes_file_path: DEV_RELEASE_NOTES_PATH
     )
-    git_add(path: DEV_RELEASE_NOTES_PATH)
     git_commit(path: DEV_RELEASE_NOTES_PATH, message: "Generate release notes for #{new_version}", allow_nothing_to_commit: true)
 
     # Bump the version and build code
