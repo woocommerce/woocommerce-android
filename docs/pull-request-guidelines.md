@@ -24,7 +24,7 @@ Start the Description section with `Fixes WOOMOB-XYZ` on the first line.
 
 ## PR Template
 
-The project uses a PR template (`.github/PULL_REQUEST_TEMPLATE.md`) — follow it for the structure and examples of a good PR. Key sections: Description, Test Steps, Images/gif, and RELEASE-NOTES.txt checkbox.
+The project uses a PR template (`.github/PULL_REQUEST_TEMPLATE.md`) — follow it for the structure and examples of a good PR. Key sections: Description, Test Steps, Images/gif, and the release-notes impact checkbox. Choose `impact: user-visible` or `impact: internal` and follow the [release notes guidelines](release-notes.md).
 
 ## Labels
 

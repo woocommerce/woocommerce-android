@@ -1,0 +1,11 @@
+# Used explicitly by start_code_freeze; GitHub release changelogs keep their full PR list.
+changelog:
+  exclude:
+    labels:
+      - 'impact: internal'
+      - 'Releases'
+      - 'status: feature-flagged'
+  categories:
+    - title: Changes
+      labels:
+        - '*'
