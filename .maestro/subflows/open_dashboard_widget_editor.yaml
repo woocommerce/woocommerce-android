@@ -6,8 +6,17 @@ appId: com.woocommerce.android
     timeout: 20000
     label: "Wait for dashboard before customization"
 
+# The Customize button sits below the last card and has no test tag. With
+# every card turned on, reaching it takes a long scroll.
+- scrollUntilVisible:
+    element:
+      text: "Customize"
+    direction: DOWN
+    timeout: 60000
+    label: "Scroll to the Customize button"
+
 - tapOn:
-    id: "menu_edit_screen_widgets"
+    text: "Customize"
     retryTapIfNoChange: true
     label: "Open dashboard customization"
 
