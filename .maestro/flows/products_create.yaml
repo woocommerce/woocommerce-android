@@ -667,6 +667,13 @@ tags:
     timeout: 15000
     label: "Downloadable files row was added"
 
+# The row can stop under the fixed "Add more details" footer, which hides
+# its count, so keep scrolling until the count itself is visible.
+- scrollUntilVisible:
+    element: "1 file"
+    direction: DOWN
+    timeout: 15000
+
 - assertVisible: "1 file"
 - takeScreenshot: product_create_downloadable_file
 
