@@ -7,6 +7,7 @@ sealed class WPAPIResponse<T> {
         val data: T?,
         val headers: List<Header>,
         val networkingMode: WPAPINetworkingMode? = null,
+        val statusCode: Int? = null,
     ) : WPAPIResponse<T>()
 
     data class Error<T>(
