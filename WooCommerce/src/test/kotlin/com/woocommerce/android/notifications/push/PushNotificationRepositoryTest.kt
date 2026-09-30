@@ -166,6 +166,26 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given site already registered, when registering push token succeeds, then does not update wpcom notification settings`() =
+        testBlocking {
+            whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
+            whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any(), any(), any()))
+                .thenReturn(WooResult(RETURNED_TOKEN))
+            setupWpComRegistration(isRegistered = true)
+            givenStoredPushPreferences(
+                stringPreferencesKey("push_token_$SITE_ID") to RETURNED_TOKEN,
+                stringPreferencesKey("push_token_value_$SITE_ID") to "token",
+                stringPreferencesKey("push_locale_$SITE_ID") to "en_US",
+                stringPreferencesKey("push_device_uuid_$SITE_ID") to "stored-uuid"
+            )
+
+            val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
+
+            assertThat(result.isSuccess).isTrue()
+            verify(wpComPushNotificationStore, never()).updateNotificationSettingsFor(any())
+        }
+
+    @Test
     fun `given legacy registration, when registration succeeds, then saves current identity and stops retrying`() =
         testBlocking {
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")

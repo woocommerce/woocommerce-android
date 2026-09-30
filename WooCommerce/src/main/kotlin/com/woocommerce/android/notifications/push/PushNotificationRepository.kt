@@ -126,8 +126,11 @@ class PushNotificationRepository @Inject constructor(
                     stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_SUCCESS,
                     siteId = selectedSite.siteId
                 )
+                val wasRegistered = pushNotificationsDataStore.data.first()
+                    .getPushRegistration(selectedSite.siteId) != null
                 savePushTokenForSite(selectedSite, WooPushRegistrationData(tokenId, token, deviceLocale, uuid))
-                disableWpComNotificationsForSite(selectedSite.siteId)
+                // Already disabled when the store registered; repeating it on refreshes would override user settings.
+                if (!wasRegistered) disableWpComNotificationsForSite(selectedSite.siteId)
                 Result.success(Unit)
             } ?: run {
                 val errorMsg = "Push token registration in Woo Core succeeded but API returned null token"
