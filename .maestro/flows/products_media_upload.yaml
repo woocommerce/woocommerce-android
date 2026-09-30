@@ -348,8 +348,9 @@ tags:
     label: "Select the deterministic device media item"
 
 - extendedWaitUntil:
-    visible: "Done|Add.*"
+    visible: "Done|Add \\(?[0-9]+\\)?"
     timeout: 10000
+    label: "Wait for the photo picker confirm button"
 
 - runFlow:
     when:
