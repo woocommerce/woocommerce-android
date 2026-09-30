@@ -58,6 +58,35 @@ class WPApiApplicationPasswordsRestClientTest {
     )
 
     @Test
+    fun `given the creation response has no password, when creating a password, then return an error payload`() =
+        runTest {
+            // GIVEN the site answers 200 but omits the password field, so Gson leaves it null
+            givenCreationResponse("""{"uuid":"the-uuid","name":"woo-app"}""")
+
+            // WHEN
+            val payload = restClient.createApplicationPassword(testSite, "woo-app")
+
+            // THEN
+            assertTrue(payload.isError)
+            assertEquals("Password missing from response", payload.error.message)
+        }
+
+    @Test
+    fun `given the creation response has a password, when creating a password, then return it with its uuid`() =
+        runTest {
+            // GIVEN
+            givenCreationResponse("""{"uuid":"the-uuid","name":"woo-app","password":"the-password"}""")
+
+            // WHEN
+            val payload = restClient.createApplicationPassword(testSite, "woo-app")
+
+            // THEN
+            assertFalse(payload.isError)
+            assertEquals("the-password", payload.password)
+            assertEquals("the-uuid", payload.uuid)
+        }
+
+    @Test
     fun `given the introspect response has no uuid, when deleting a password, then return an error payload`() =
         runTest {
             // GIVEN the server answers 200 but omits the uuid field, so Gson leaves it null
@@ -332,6 +361,17 @@ class WPApiApplicationPasswordsRestClientTest {
             deliverMethod.invoke(request, ResponseWithHeaders(remaining.removeAt(0), emptyList()))
             return@thenAnswer request
         }
+    }
+
+    private suspend fun givenCreationResponse(json: String) {
+        whenever(
+            cookieNonceAuthenticator.makeAuthenticatedWPAPIRequest<ApplicationPasswordCreationResponse>(
+                eq(testSite),
+                any()
+            )
+        ).thenReturn(
+            WPAPIResponse.Success(Gson().fromJson(json, ApplicationPasswordCreationResponse::class.java), emptyList())
+        )
     }
 
     private suspend fun givenCookieAuthReturns(response: WPAPIResponse<Array<ApplicationPasswordsFetchResponse>>) {
