@@ -7,6 +7,8 @@ import com.google.gson.Gson
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.eq
+import org.mockito.ArgumentMatchers.startsWith
 import org.mockito.Mockito.mockStatic
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
@@ -193,10 +195,8 @@ class JetpackTunnelGsonRequestTest {
             appLog.verify {
                 AppLog.w(
                     AppLog.T.API,
-                    "Jetpack Tunnel raw_body error: method=GET, path=/wc/v3/orders, " +
-                        "transport_status=502, proxy_status=500, error_code=no_response_body, " +
-                        "error_message=Remote site returned non-JSON response, " +
-                        "raw_body_truncated=false, raw_body_snippet=<html>Fatal error</html>"
+                    "Unexpected store response: kind=unacceptable_status_code, status=500, content_type=, " +
+                        "request=GET /wc/v3/orders, excerpt=Fatal error"
                 )
             }
         }
@@ -206,7 +206,7 @@ class JetpackTunnelGsonRequestTest {
     }
 
     @Test
-    fun `given failed direct tunnel requests, when errors are delivered, then each factory logs method and path`() {
+    fun `given failed direct tunnel requests, when errors are delivered, then each factory logs the request type`() {
         val methods = listOf("GET", "POST", "PATCH", "PUT", "DELETE")
         methods.forEach { method ->
             val path = "/wc/v3/orders/${method.lowercase()}"
@@ -219,10 +219,8 @@ class JetpackTunnelGsonRequestTest {
                 appLog.verify {
                     AppLog.w(
                         AppLog.T.API,
-                        "Jetpack Tunnel raw_body error: method=$method, path=$path, " +
-                            "transport_status=502, proxy_status=500, error_code=no_response_body, " +
-                            "error_message=Remote site returned non-JSON response, " +
-                            "raw_body_truncated=false, raw_body_snippet=<html>Fatal error</html>"
+                        "Unexpected store response: kind=unacceptable_status_code, status=500, content_type=, " +
+                            "request=$method $path, excerpt=Fatal error"
                     )
                 }
             }
@@ -269,6 +267,34 @@ class JetpackTunnelGsonRequestTest {
         assertEquals(429, details?.statusCode)
         assertEquals("POST /wc/v3/orders", details?.requestType)
         assertEquals("429 Too Many Requests", details?.excerpt)
+    }
+
+    @Test
+    fun `given a raw body that is not an unexpected response, when it is delivered, then the raw body error is logged`() {
+        val receivedErrors = mutableListOf<WPComGsonNetworkError>()
+        val request = buildRequest("GET", "/wc/v3/orders", receivedErrors)
+        val responseJson = """
+            {
+              "error": "no_response_body",
+              "message": "Remote site returned non-JSON response",
+              "data": {
+                "status": 403,
+                "raw_body": "Forbidden"
+              }
+            }
+        """.trimIndent()
+
+        mockStatic(AppLog::class.java).use { appLog ->
+            request.deliverError(VolleyError(NetworkResponse(502, responseJson.toByteArray(), emptyMap(), true)))
+
+            appLog.verify {
+                AppLog.w(
+                    eq(AppLog.T.API),
+                    startsWith("Jetpack Tunnel raw_body error: method=GET")
+                )
+            }
+        }
+        assertNull(receivedErrors.single().unexpectedStoreResponse)
     }
 
     @Test
