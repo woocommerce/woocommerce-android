@@ -1,11 +1,17 @@
 package org.wordpress.android.fluxc.network.rest.wpapi;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
+import com.android.volley.Response;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse;
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseParseError;
 import org.wordpress.android.fluxc.network.rest.GsonRequest;
+import org.wordpress.android.fluxc.network.rest.ResponseWithHeaders;
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticateErrorPayload;
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError;
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType;
@@ -37,10 +43,30 @@ public class WPAPIGsonRequest<T> extends GsonRequest<T> {
     }
 
     @Override
+    protected Response<ResponseWithHeaders<T>> parseNetworkResponse(NetworkResponse response) {
+        Response<ResponseWithHeaders<T>> result = super.parseNetworkResponse(response);
+        if (result.error instanceof ParseError) {
+            UnexpectedStoreResponse unexpectedStoreResponse =
+                    UnexpectedStoreResponse.from(response, getMethod(), getUrl());
+            if (unexpectedStoreResponse != null) {
+                return Response.error(
+                        new UnexpectedStoreResponseParseError(result.error.getCause(), unexpectedStoreResponse));
+            }
+        }
+        return result;
+    }
+
+    @Override
     public BaseNetworkError deliverBaseNetworkError(@NonNull BaseNetworkError error) {
         String errorCode = null;
         JSONObject errorData = null;
+        if (error.volleyError instanceof UnexpectedStoreResponseParseError) {
+            error.unexpectedStoreResponse =
+                    ((UnexpectedStoreResponseParseError) error.volleyError).getUnexpectedStoreResponse();
+        }
         if (error.hasVolleyError() && error.volleyError.networkResponse != null) {
+            error.unexpectedStoreResponse =
+                    UnexpectedStoreResponse.from(error.volleyError.networkResponse, getMethod(), getUrl());
             String jsonString;
             try {
                 jsonString = new String(error.volleyError.networkResponse.data,
