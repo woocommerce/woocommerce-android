@@ -10,6 +10,8 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.mockStatic
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseKind
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequest
@@ -226,6 +228,58 @@ class JetpackTunnelGsonRequestTest {
             }
             assertThat(receivedErrors).hasSize(1)
         }
+    }
+
+    @Test
+    fun `given a tunnel error with a raw body, when it is delivered, then it has the store response details`() {
+        val receivedErrors = mutableListOf<WPComGsonNetworkError>()
+        val request = buildRequest("GET", "/wc/v3/orders", receivedErrors)
+
+        request.deliverError(buildVolleyError())
+
+        assertEquals(
+            UnexpectedStoreResponse(
+                kind = UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE,
+                statusCode = 500,
+                contentType = null,
+                requestType = "GET /wc/v3/orders",
+                excerpt = "Fatal error"
+            ),
+            receivedErrors.single().unexpectedStoreResponse
+        )
+    }
+
+    @Test
+    fun `given a raw body without the store status, when it is delivered, then the transport status is used`() {
+        val receivedErrors = mutableListOf<WPComGsonNetworkError>()
+        val request = buildRequest("POST", "/wc/v3/orders", receivedErrors)
+        val responseJson = """
+            {
+              "error": "no_response_body",
+              "message": "Remote site returned non-JSON response",
+              "data": {
+                "raw_body": "429 Too Many Requests"
+              }
+            }
+        """.trimIndent()
+
+        request.deliverError(VolleyError(NetworkResponse(429, responseJson.toByteArray(), emptyMap(), true)))
+
+        val details = receivedErrors.single().unexpectedStoreResponse
+        assertEquals(429, details?.statusCode)
+        assertEquals("POST /wc/v3/orders", details?.requestType)
+        assertEquals("429 Too Many Requests", details?.excerpt)
+    }
+
+    @Test
+    fun `given a tunnel error without a raw body, when it is delivered, then it has no store response details`() {
+        val receivedErrors = mutableListOf<WPComGsonNetworkError>()
+        val request = buildRequest("GET", "/wc/v3/orders", receivedErrors)
+        val responseJson = """{"error":"rest_invalid_signature","message":"The request is not signed correctly."}"""
+
+        request.deliverError(VolleyError(NetworkResponse(400, responseJson.toByteArray(), emptyMap(), true)))
+
+        assertNull(receivedErrors.single().unexpectedStoreResponse)
     }
 
     private fun buildRequest(
