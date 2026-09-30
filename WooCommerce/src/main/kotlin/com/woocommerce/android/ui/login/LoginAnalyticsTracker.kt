@@ -214,9 +214,9 @@ class LoginAnalyticsTracker(
         AnalyticsTracker.track(AnalyticsEvent.LOGIN_URL_HELP_SCREEN_VIEWED)
     }
 
-    override fun trackUsernamePasswordFormViewed() {
+    override fun trackUsernamePasswordFormViewed(isWpcom: Boolean) {
         AnalyticsTracker.track(AnalyticsEvent.LOGIN_USERNAME_PASSWORD_FORM_VIEWED)
-        unifiedLoginTracker.track(Flow.LOGIN_STORE_CREDS, Step.USERNAME_PASSWORD)
+        unifiedLoginTracker.track(usernamePasswordFlow(isWpcom), Step.USERNAME_PASSWORD)
     }
 
     override fun trackWpComBackgroundServiceUpdate(properties: Map<String, *>) {
@@ -338,8 +338,8 @@ class LoginAnalyticsTracker(
         unifiedLoginTracker.setStep(Step.MAGIC_LINK_REQUESTED)
     }
 
-    override fun usernamePasswordScreenResumed() {
-        unifiedLoginTracker.setStep(Step.USERNAME_PASSWORD)
+    override fun usernamePasswordScreenResumed(isWpcom: Boolean) {
+        unifiedLoginTracker.setFlowAndStep(usernamePasswordFlow(isWpcom), Step.USERNAME_PASSWORD)
     }
 
     override fun trackLogin2faNeeded() {
@@ -357,6 +357,9 @@ class LoginAnalyticsTracker(
     override fun trackUseSecurityKeyClicked() {
         AnalyticsTracker.track(AnalyticsEvent.LOGIN_USE_SECURITY_KEY_CLICKED)
     }
+
+    private fun usernamePasswordFlow(isWpcom: Boolean) =
+        if (isWpcom) Flow.WORDPRESS_COM else Flow.LOGIN_STORE_CREDS
 
     private companion object {
         const val VALUE_NO_SIGN_IN_RESULT = "no_sign_in_result"

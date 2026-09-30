@@ -4090,6 +4090,7 @@
     <string name="woopos_receipt_sent_to_customer">A receipt has been sent to %1$s.</string>
     <string name="woopos_payment_discount_label">Discount total</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
+    <string name="woopos_payment_custom_amounts_label">Custom amounts</string>
     <string name="woopos_payment_tax_label">Taxes</string>
     <string name="woopos_payment_total_label">Total</string>
     <string name="woopos_payment_take_cash_payment_label">Cash payment</string>
@@ -4279,6 +4280,7 @@
     <string name="woopos_orders_details_totals_title">Totals</string>
     <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
     <string name="woopos_orders_details_breakdown_products_label">Products</string>
+    <string name="woopos_orders_details_breakdown_custom_amounts_label">Custom amounts</string>
     <string name="woopos_orders_details_breakdown_discount_label">Discount total</string>
     <string name="woopos_orders_details_breakdown_discount_with_code_label">Discount total (%1$s)</string>
     <string name="woopos_orders_details_breakdown_taxes_label">Taxes</string>

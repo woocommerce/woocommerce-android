@@ -27,6 +27,7 @@ class GetAcceptedOriginCountries @Inject constructor(
             "UM", // United States Minor Outlying Islands
             "MH", // Marshall Islands
             "FM", // Micronesia
+            "PW", // Palau
             "MP" // Northern Mariana Islands
         )
     }

@@ -73,6 +73,7 @@ object WooPosOrdersState {
                 @Immutable
                 data class TotalsBreakdown(
                     val products: String,
+                    val customAmounts: String?,
                     val discount: String?,
                     val discountCode: String?,
                     val taxes: String,

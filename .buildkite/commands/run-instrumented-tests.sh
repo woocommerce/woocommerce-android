@@ -27,7 +27,7 @@ if [[ "$TESTS_EXIT_STATUS" -ne 0 ]]; then
 fi
 
 echo "--- 🚦 Report Tests Status"
-results_file=$(find "build/instrumented-tests" -type f -name "*.xml" -print -quit)
+results_file="build/instrumented-tests/JUnitReport.xml"
 
 if [[ $BUILDKITE_BRANCH == trunk ]] || [[ $BUILDKITE_BRANCH == release/* ]]; then
     annotate_test_failures "$results_file" --slack "build-and-ship"

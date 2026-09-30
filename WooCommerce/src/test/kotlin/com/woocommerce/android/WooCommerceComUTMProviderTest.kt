@@ -6,7 +6,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class WooCommerceComUTMProviderTest {
 
     private fun provideDefaultUTMProvider() = UtmProvider(
@@ -175,7 +178,7 @@ class WooCommerceComUTMProviderTest {
     }
 
     @Test
-    fun `testCampaignIsAddedAsRawValueWithoutPrefix`() {
+    fun `when campaign is supplied, then it is added as raw value without prefix`() {
         val utmCampaign = "feature_announcement_card"
         val defaultUTMMedium = "woo_android"
         val url = "https://www.woocommerce.com/us/hw"
@@ -194,7 +197,7 @@ class WooCommerceComUTMProviderTest {
     }
 
     @Test
-    fun `testContentIsAddedAsRawValueWithoutPrefix`() {
+    fun `when content is supplied, then it is added as raw value without prefix`() {
         val utmContent = "test_content"
         val defaultUTMMedium = "woo_android"
         val url = "https://www.woocommerce.com/us/hw"
