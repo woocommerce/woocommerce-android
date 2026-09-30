@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
 import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseLogger
 import org.wordpress.android.fluxc.network.rest.GsonRequest
 import org.wordpress.android.fluxc.network.rest.Header
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest
@@ -272,8 +273,13 @@ object JetpackTunnelGsonRequest {
         errorListener: WPComErrorListener
     ): WPComErrorListener {
         return WPComErrorListener { error ->
-            error.unexpectedStoreResponse = error.toUnexpectedStoreResponse(method, wpApiEndpoint)
-            JetpackTunnelRawBodyErrorLogger.logIfPresent(method, wpApiEndpoint, error)
+            val unexpectedStoreResponse = error.toUnexpectedStoreResponse(method, wpApiEndpoint)
+            error.unexpectedStoreResponse = unexpectedStoreResponse
+            if (unexpectedStoreResponse != null) {
+                UnexpectedStoreResponseLogger.log(unexpectedStoreResponse)
+            } else {
+                JetpackTunnelRawBodyErrorLogger.logIfPresent(method, wpApiEndpoint, error)
+            }
             errorListener.onErrorResponse(error)
         }
     }
