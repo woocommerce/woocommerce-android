@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.network.rest.wpapi
 
 import com.android.volley.NetworkResponse
 import com.android.volley.NoConnectionError
+import com.android.volley.Request.Method
 import com.android.volley.RequestQueue
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -9,6 +10,7 @@ import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.INVALID_SSL_CERTIFICATE
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.AdminBaseVerification
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.Available
@@ -97,7 +99,13 @@ class NonceRestClient @Inject constructor(
                         }
                         else -> response.data.loginFormSubmissionUrl(currentUrl, endpoints)
                             ?.let(LoginPreflight::LoginForm)
-                            ?: LoginPreflight.Failure(failed(username, CookieNonceErrorType.INVALID_RESPONSE))
+                            ?: LoginPreflight.Failure(
+                                failed(
+                                    username = username,
+                                    type = CookieNonceErrorType.INVALID_RESPONSE,
+                                    unexpectedStoreResponse = response.unexpectedStoreResponse(Method.GET, currentUrl)
+                                )
+                            )
                     }
                 }
                 is Error -> {
@@ -106,7 +114,9 @@ class NonceRestClient @Inject constructor(
                     }
                     val networkResponse = response.error.volleyError?.networkResponse
                     if (networkResponse?.statusCode?.isRedirect() != true) {
-                        return LoginPreflight.Failure(loginFailure(username, response, networkResponse))
+                        return LoginPreflight.Failure(
+                            loginFailure(username, response, networkResponse, Method.GET, currentUrl)
+                        )
                     }
                     if (redirectsFollowed == MAX_ENDPOINT_REDIRECTS) {
                         return LoginPreflight.Failure(
@@ -140,7 +150,7 @@ class NonceRestClient @Inject constructor(
                 "redirect_to" to transaction.nonceUrl.toString()
             )
         )) {
-            is Success -> loginBodyFailure(response, transaction.username)
+            is Success -> loginBodyFailure(response, transaction)
             is Error -> handleCredentialError(response, transaction)
         }
     }
@@ -153,7 +163,7 @@ class NonceRestClient @Inject constructor(
 
         val networkResponse = response.error.volleyError?.networkResponse
         if (networkResponse?.statusCode?.isRedirect() != true) {
-            return loginFailure(transaction.username, response, networkResponse)
+            return loginFailure(transaction.username, response, networkResponse, Method.POST, transaction.loginUrl)
         }
 
         val redirectUrl = networkResponse.location()
@@ -197,7 +207,12 @@ class NonceRestClient @Inject constructor(
                     }
                     val networkResponse = response.error.volleyError?.networkResponse
                     if (networkResponse?.statusCode?.isRedirect() != true) {
-                        return failed(username, CookieNonceErrorType.CUSTOM_ADMIN_URL, response)
+                        return failed(
+                            username = username,
+                            type = CookieNonceErrorType.CUSTOM_ADMIN_URL,
+                            response = response,
+                            unexpectedStoreResponse = response.unexpectedStoreResponse(Method.GET, currentUrl)
+                        )
                     }
                     if (redirectsFollowed == MAX_ENDPOINT_REDIRECTS) {
                         return failed(username, CookieNonceErrorType.CUSTOM_ADMIN_URL, response)
@@ -214,7 +229,7 @@ class NonceRestClient @Inject constructor(
         }
     }
 
-    private fun loginBodyFailure(response: Success<String>, username: String): Nonce {
+    private fun loginBodyFailure(response: Success<String>, transaction: LoginTransaction): Nonce {
         val responseBody = response.data.orEmpty()
         val errorMessage = extractErrorMessage(responseBody)
         val errorType = if (responseBody.contains(INVALID_CREDENTIAL_HTML_PATTERN) &&
@@ -224,14 +239,32 @@ class NonceRestClient @Inject constructor(
         } else {
             CookieNonceErrorType.INVALID_RESPONSE
         }
-        return failed(username, errorType, errorMessage = errorMessage)
+        val isUnexpectedPage = errorType == CookieNonceErrorType.INVALID_RESPONSE && errorMessage == null
+        return failed(
+            username = transaction.username,
+            type = errorType,
+            errorMessage = errorMessage,
+            unexpectedStoreResponse = response.unexpectedStoreResponse(Method.POST, transaction.loginUrl)
+                .takeIf { isUnexpectedPage }
+        )
     }
 
     private fun loginFailure(
         username: String,
         response: Error<String>,
-        networkResponse: NetworkResponse?
-    ): Nonce = failed(username, getLoginErrorType(networkResponse), response)
+        networkResponse: NetworkResponse?,
+        method: Int,
+        url: HttpUrl
+    ): Nonce {
+        val type = getLoginErrorType(networkResponse)
+        return failed(
+            username = username,
+            type = type,
+            response = response,
+            unexpectedStoreResponse = response.unexpectedStoreResponse(method, url)
+                .takeIf { type == CookieNonceErrorType.GENERIC_ERROR }
+        )
+    }
 
     private fun getLoginErrorType(networkResponse: NetworkResponse?): CookieNonceErrorType = when {
         networkResponse?.statusCode == NOT_FOUND_STATUS_CODE ||
@@ -244,14 +277,34 @@ class NonceRestClient @Inject constructor(
         username: String,
         type: CookieNonceErrorType,
         response: Error<String>? = null,
-        errorMessage: String? = response?.error?.message
+        errorMessage: String? = response?.error?.message,
+        unexpectedStoreResponse: UnexpectedStoreResponse? = null
     ) = FailedRequest(
         timeOfResponse = currentTimeProvider.currentDate().time,
         username = username,
         type = type,
         networkError = response?.error,
-        errorMessage = errorMessage
+        errorMessage = errorMessage,
+        unexpectedStoreResponse = unexpectedStoreResponse
     )
+
+    private fun Success<String>.unexpectedStoreResponse(method: Int, url: HttpUrl) = UnexpectedStoreResponse.from(
+        statusCode = this.statusCode ?: SUCCESS_STATUS_CODE,
+        contentType = headers.firstOrNull { it.key.equals(CONTENT_TYPE_HEADER, ignoreCase = true) }?.value,
+        body = data.orEmpty(),
+        requestType = UnexpectedStoreResponse.requestType(method, url.toString())
+    )
+
+    /**
+     * 404 and 410 aren't unexpected here: they start the custom login and admin address recovery.
+     */
+    private fun Error<String>.unexpectedStoreResponse(method: Int, url: HttpUrl): UnexpectedStoreResponse? {
+        val networkResponse = error.volleyError?.networkResponse ?: return null
+        if (networkResponse.statusCode == NOT_FOUND_STATUS_CODE || networkResponse.statusCode == GONE_STATUS_CODE) {
+            return null
+        }
+        return UnexpectedStoreResponse.from(networkResponse, method, url.toString())
+    }
 
     private fun isBasicAuthError(networkResponse: NetworkResponse?): Boolean =
         networkResponse?.headers?.keys?.any { it.equals(AUTH_HEADER_KEY, ignoreCase = true) } == true &&
@@ -261,7 +314,13 @@ class NonceRestClient @Inject constructor(
         return when (val response = wpApiEncodedBodyRequestBuilder.syncGetRequest(this, nonceUrl.toString())) {
             is Success -> if (response.data?.matches("[0-9a-zA-Z]{2,}".toRegex()) == true) {
                 Available(value = response.data, username = username)
-            } else failed(username, CookieNonceErrorType.INVALID_NONCE)
+            } else {
+                failed(
+                    username = username,
+                    type = CookieNonceErrorType.INVALID_NONCE,
+                    unexpectedStoreResponse = response.unexpectedStoreResponse(Method.GET, nonceUrl)
+                )
+            }
 
             is Error -> {
                 val statusCode = response.error.volleyError?.networkResponse?.statusCode
@@ -270,7 +329,12 @@ class NonceRestClient @Inject constructor(
                 } else {
                     CookieNonceErrorType.GENERIC_ERROR
                 }
-                failed(username, errorType, response)
+                failed(
+                    username = username,
+                    type = errorType,
+                    response = response,
+                    unexpectedStoreResponse = response.unexpectedStoreResponse(Method.GET, nonceUrl)
+                )
             }
         }
     }
@@ -445,6 +509,8 @@ class NonceRestClient @Inject constructor(
         private const val PASSWORD_INPUT_TYPE = "password"
         private const val POST_METHOD = "post"
         private const val LOCATION_HEADER = "Location"
+        private const val CONTENT_TYPE_HEADER = "Content-Type"
+        private const val SUCCESS_STATUS_CODE = 200
         private const val NOT_FOUND_STATUS_CODE = 404
         private const val GONE_STATUS_CODE = 410
         private const val MAX_ENDPOINT_REDIRECTS = 3
