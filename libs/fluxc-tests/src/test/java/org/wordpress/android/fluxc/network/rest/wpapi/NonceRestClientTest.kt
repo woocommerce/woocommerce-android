@@ -16,6 +16,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseKind
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.AdminBaseVerification
 import org.wordpress.android.fluxc.test
@@ -25,6 +26,7 @@ import javax.net.ssl.SSLHandshakeException
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
+import org.wordpress.android.fluxc.network.rest.Header as ResponseHeader
 
 class NonceRestClientTest {
     private val requestBuilder: WPAPIEncodedBodyRequestBuilder = mock()
@@ -651,6 +653,105 @@ class NonceRestClientTest {
         assertEquals(GenericErrorType.INVALID_SSL_CERTIFICATE, failure.networkError?.type)
     }
 
+    @Test
+    fun `given a firewall page instead of the login page, when preflighting, then keep the response details`() = test {
+        givenGet(DEFAULT_LOGIN_URL, error(403, FIREWALL_PAGE, HTML_HEADERS))
+
+        val failure = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+
+        assertEquals(Nonce.CookieNonceErrorType.GENERIC_ERROR, failure.type)
+        assertEquals(UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE, failure.unexpectedStoreResponse?.kind)
+        assertEquals("GET /store/wp-login.php", failure.unexpectedStoreResponse?.requestType)
+        assertEquals("Access Denied | Blocked by the firewall.", failure.unexpectedStoreResponse?.excerpt)
+    }
+
+    @Test
+    fun `given a login page without a login form, when preflighting, then keep the response details`() = test {
+        givenGet(DEFAULT_LOGIN_URL, WPAPIResponse.Success(CHALLENGE_PAGE, HTML_RESPONSE_HEADERS, statusCode = 202))
+
+        val failure = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+
+        assertEquals(Nonce.CookieNonceErrorType.INVALID_RESPONSE, failure.type)
+        assertEquals(UnexpectedStoreResponseKind.UNEXPECTED_CONTENT, failure.unexpectedStoreResponse?.kind)
+        assertEquals(202, failure.unexpectedStoreResponse?.statusCode)
+        assertEquals("GET /store/wp-login.php", failure.unexpectedStoreResponse?.requestType)
+    }
+
+    @Test
+    fun `given an unexpected page after posting credentials, when requesting a nonce, then keep the details`() = test {
+        givenLoginForm(DEFAULT_LOGIN_URL)
+        givenCredentialResponse(
+            DEFAULT_LOGIN_URL,
+            DEFAULT_NONCE_URL,
+            WPAPIResponse.Success(FIREWALL_PAGE, HTML_RESPONSE_HEADERS)
+        )
+
+        val failure = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+
+        assertEquals(Nonce.CookieNonceErrorType.INVALID_RESPONSE, failure.type)
+        assertEquals("POST /store/wp-login.php", failure.unexpectedStoreResponse?.requestType)
+    }
+
+    @Test
+    fun `given a captcha error after posting credentials, when requesting a nonce, then add no details`() = test {
+        givenLoginForm(DEFAULT_LOGIN_URL)
+        givenCredentialResponse(
+            DEFAULT_LOGIN_URL,
+            DEFAULT_NONCE_URL,
+            WPAPIResponse.Success(
+                "<div id=\"login_error\"><strong>Error:</strong> Please complete the captcha.</div>",
+                HTML_RESPONSE_HEADERS
+            )
+        )
+
+        val failure = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+
+        assertEquals(Nonce.CookieNonceErrorType.INVALID_RESPONSE, failure.type)
+        assertNull(failure.unexpectedStoreResponse)
+    }
+
+    @Test
+    fun `given a page instead of a nonce, when requesting a nonce, then keep the response details`() = test {
+        givenLoginForm(DEFAULT_LOGIN_URL)
+        givenCredentialRedirect(DEFAULT_LOGIN_URL, DEFAULT_NONCE_URL, DEFAULT_NONCE_URL)
+        givenGet(DEFAULT_NONCE_URL, WPAPIResponse.Success(FIREWALL_PAGE, HTML_RESPONSE_HEADERS))
+
+        val failure = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+
+        assertEquals(Nonce.CookieNonceErrorType.INVALID_NONCE, failure.type)
+        assertEquals(UnexpectedStoreResponseKind.UNEXPECTED_CONTENT, failure.unexpectedStoreResponse?.kind)
+        assertEquals("GET /store/wp-admin/admin-ajax.php", failure.unexpectedStoreResponse?.requestType)
+    }
+
+    @Test
+    fun `given a rate limit on the nonce request, when requesting a nonce, then keep the response details`() = test {
+        givenLoginForm(DEFAULT_LOGIN_URL)
+        givenCredentialRedirect(DEFAULT_LOGIN_URL, DEFAULT_NONCE_URL, DEFAULT_NONCE_URL)
+        givenGet(DEFAULT_NONCE_URL, error(429, "Too Many Requests"))
+
+        val failure = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+
+        assertEquals(Nonce.CookieNonceErrorType.GENERIC_ERROR, failure.type)
+        assertEquals(UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE, failure.unexpectedStoreResponse?.kind)
+        assertEquals(429, failure.unexpectedStoreResponse?.statusCode)
+    }
+
+    @Test
+    fun `given known login failures, when requesting a nonce, then add no response details`() = test {
+        givenGet(DEFAULT_LOGIN_URL, error(404, FIREWALL_PAGE, HTML_HEADERS))
+        val customLoginUrl = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+        assertEquals(Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL, customLoginUrl.type)
+        assertNull(customLoginUrl.unexpectedStoreResponse, "custom login URL")
+
+        givenGet(
+            DEFAULT_LOGIN_URL,
+            error(401, FIREWALL_PAGE, HTML_HEADERS + Header("WWW-Authenticate", "Basic realm=restricted"))
+        )
+        val basicAuth = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+        assertEquals(Nonce.CookieNonceErrorType.BASIC_AUTH_REQUIRED, basicAuth.type)
+        assertNull(basicAuth.unexpectedStoreResponse, "basic auth")
+    }
+
     private suspend fun givenLoginForm(url: String, html: String = LOGIN_FORM) {
         givenGet(url, WPAPIResponse.Success(html, emptyList()))
     }
@@ -708,13 +809,20 @@ class NonceRestClientTest {
     private fun redirect(location: String) = error(302, listOf(Header("Location", location)))
 
     private fun error(statusCode: Int, headers: List<Header> = emptyList()): WPAPIResponse.Error<String> =
+        error(statusCode, body = "", headers = headers)
+
+    private fun error(
+        statusCode: Int,
+        body: String,
+        headers: List<Header> = emptyList()
+    ): WPAPIResponse.Error<String> =
         WPAPIResponse.Error(
             WPAPINetworkError(
                 BaseNetworkError(
                     VolleyError(
                         NetworkResponse(
                             statusCode,
-                            byteArrayOf(),
+                            body.toByteArray(),
                             false,
                             System.currentTimeMillis(),
                             headers
@@ -731,6 +839,12 @@ class NonceRestClientTest {
     }
 
     private companion object {
+        val HTML_HEADERS = listOf(Header("Content-Type", "text/html; charset=UTF-8"))
+        val HTML_RESPONSE_HEADERS = listOf(ResponseHeader("Content-Type", "text/html; charset=UTF-8"))
+        const val FIREWALL_PAGE = "<html><head><title>Access Denied</title></head>" +
+            "<body><p>Blocked by the firewall.</p></body></html>"
+        const val CHALLENGE_PAGE = "<html><head><title>Just a moment...</title></head>" +
+            "<body><p>Checking your browser.</p></body></html>"
         const val RESPONSE_TIME = 123456L
         const val SITE_HOST = "https://site.example"
         const val SITE_ORIGIN = "$SITE_HOST/store"

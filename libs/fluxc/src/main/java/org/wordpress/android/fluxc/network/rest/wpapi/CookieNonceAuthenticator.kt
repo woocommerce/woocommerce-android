@@ -3,6 +3,7 @@ package org.wordpress.android.fluxc.network.rest.wpapi
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
 import org.wordpress.android.fluxc.network.discovery.DiscoveryWPAPIRestClient
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.Available
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.FailedRequest
@@ -45,7 +46,8 @@ class CookieNonceAuthenticator @Inject constructor(
                         type = nonce.type,
                         message = nonce.errorMessage,
                         networkError = nonce.networkError,
-                        loginEntryVerified = nonce.loginEntryVerified
+                        loginEntryVerified = nonce.loginEntryVerified,
+                        unexpectedStoreResponse = nonce.unexpectedStoreResponse
                     )
                 }
 
@@ -187,6 +189,7 @@ class CookieNonceAuthenticator @Inject constructor(
             val message: String? = null,
             val networkError: BaseNetworkError? = null,
             val loginEntryVerified: Boolean = false,
+            val unexpectedStoreResponse: UnexpectedStoreResponse? = null,
         ) : CookieNonceAuthenticationResult
     }
 

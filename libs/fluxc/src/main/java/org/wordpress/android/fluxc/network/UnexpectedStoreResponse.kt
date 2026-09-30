@@ -31,8 +31,11 @@ data class UnexpectedStoreResponse(
             contentType = response.headers?.entries?.firstOrNull { it.key.equals(CONTENT_TYPE, ignoreCase = true) }
                 ?.value,
             body = response.data?.let { String(it, response.charset()) }.orEmpty(),
-            requestType = "${method.toMethodName()} ${url.toRestRoute()}"
+            requestType = requestType(method, url)
         )
+
+        @JvmStatic
+        fun requestType(method: Int, url: String): String = "${method.toMethodName()} ${url.toRestRoute()}"
 
         private fun NetworkResponse.charset(): Charset = runCatching {
             Charset.forName(HttpHeaderParser.parseCharset(headers, Charsets.UTF_8.name()))
