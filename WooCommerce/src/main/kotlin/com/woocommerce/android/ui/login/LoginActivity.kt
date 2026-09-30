@@ -372,6 +372,7 @@ class LoginActivity :
     }
 
     override fun onQrLoginFallbackClicked() {
+        unifiedLoginTracker.trackClick(Click.LOGIN_QR_FALLBACK)
         disableDynamicEdgeToEdge()
         loginViaSiteAddress(prefilledSiteUrl = null)
     }

@@ -71,7 +71,6 @@ class QrLoginPrologueViewModelTest : BaseUnitTest() {
 
         viewModel.onSiteAddressLoginClicked()
 
-        verify(unifiedLoginTracker).trackClick(Click.LOGIN_QR_FALLBACK)
         assertThat(events.last()).isEqualTo(Dispatch.NavigateToSiteAddressLogin)
     }
 
