@@ -20,7 +20,7 @@ class WPAPIEncodedBodyRequest(
     url: String,
     private val params: Map<String, String>,
     private val body: Map<String, String>,
-    private val listener: (String?, List<Header>) -> Unit,
+    private val listener: (String?, List<Header>, Int?) -> Unit,
     errorListener: OnWPAPIErrorListener
 ) : BaseRequest<ResponseWithHeaders<String>>(method, url, WPAPIErrorListenerWrapper(errorListener)) {
     override fun getBody(): ByteArray {
@@ -55,11 +55,15 @@ class WPAPIEncodedBodyRequest(
         return Response.success(
             ResponseWithHeaders(
                 data,
-                response?.allHeaders?.map { Header(it.name, it.value) } ?: emptyList()), null)
+                response?.allHeaders?.map { Header(it.name, it.value) } ?: emptyList(),
+                response?.statusCode
+            ),
+            null
+        )
     }
 
     override fun deliverResponse(response: ResponseWithHeaders<String>) {
-        listener(response.data, response.headers)
+        listener(response.data, response.headers, response.statusCode)
     }
 
     /**
