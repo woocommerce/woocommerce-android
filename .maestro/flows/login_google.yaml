@@ -21,6 +21,9 @@
 #     Symptom of a missing link: app shows "Logging in" briefly, then
 #     returns to the empty email screen with no visible error.
 #
+# Quarantined: Google sign-in only accepts the Play-signed build, and the
+# runner installs the GitHub release or a local build.
+#
 # Required env vars:
 #   MAESTRO_WOO_JETPACK_STORE_URL   (any Jetpack-connected store the linked account accesses)
 appId: com.woocommerce.android
@@ -28,6 +31,7 @@ name: "Login - Social login (Google)"
 tags:
   - smoke_core
   - login
+  - flaky_quarantine
 ---
 - launchApp:
     clearState: true

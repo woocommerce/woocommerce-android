@@ -111,7 +111,9 @@ class MaestroCiContractTests(unittest.TestCase):
             with self.subTest(path=path):
                 source = path.read_text(encoding="utf-8")
                 self.assertIn("  - smoke_core\n", source)
-                self.assertNotIn("  - flaky_quarantine\n", source)
+                # Google sign-in only accepts the Play-signed build, which the runner never installs.
+                if path.name != "login_google.yaml":
+                    self.assertNotIn("  - flaky_quarantine\n", source)
 
     def test_not_woo_store_requires_the_rejection_and_another_account_action(self) -> None:
         flow = (
