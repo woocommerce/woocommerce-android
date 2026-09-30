@@ -7,9 +7,12 @@ Feature PRs use a title and an impact label instead of editing `RELEASE-NOTES.tx
 - `impact: user-visible`: use a descriptive title, e.g. "Fix checkout getting stuck after a declined payment".
 - `impact: internal`: exclude refactoring, tooling, analytics, and other internal changes from the notes.
 
-Danger requires one impact label; an `[Internal]` title prefix alone does not exclude a PR. `Releases` PRs are exempt. Feature-flagged changes are excluded; describe their effect in the PR that enables them.
+Danger requires one impact label; `Releases` PRs are exempt. Feature-flagged changes are excluded; describe their effect in the PR that enables them.
 
-Include `[*****]` in the title when broader smoke testing is needed, and `[WEAR]` for Wear changes. No priority marker is added automatically. Keep internal testing requirements in the PR's test plan.
+Also add these labels when applicable:
+
+- `feature: android wear`: group Wear changes under **Android Wear** in the generated notes.
+- `testing: release smoke test`: request smoke testing of the final APK, including for internal changes. Describe the required checks in the PR's test steps.
 
 ## Release workflow
 
@@ -17,6 +20,8 @@ Include `[*****]` in the title when broader smoke testing is needed, and `[WEAR]
 
 The toolkit uses `get_prs_between_tags` with [developer-release-notes.yml](../.github/developer-release-notes.yml) to exclude internal, release-process, and feature-flagged PRs. It keeps the generated Markdown, including headings, author attribution, contributors, and links, under the existing version heading. Full GitHub release changelogs are unaffected.
 
-Release managers edit the extracted Play Store text, separate Wear notes, and run `complete_code_freeze` as usual. Translation uses the same files. The existing backmerge brings `RELEASE-NOTES.txt` to trunk for Mission Control/ReleasesV2 summaries.
+The same lane uses [release-testing.yml](../.github/release-testing.yml) to list PRs labeled for release smoke testing over the same commit range. This separate report includes internal and feature-flagged changes. Review the **Release smoke testing** annotation on the code-freeze build and complete the requested checks before release. The report is also printed in the lane output; it is not added to store notes.
 
-Regenerate only before editorial review: generation replaces the version's draft. Release managers still add late-fix and hotfix notes in the release PR.
+Release managers edit the extracted Play Store text, use the **Android Wear** section for Wear notes, and run `complete_code_freeze` as usual. Translation uses the same files. The existing backmerge brings `RELEASE-NOTES.txt` to trunk for Mission Control/ReleasesV2 summaries.
+
+Regenerate only before editorial review: generation replaces the version's draft. Release managers still add late-fix and hotfix notes and testing requirements in the release PR; the code-freeze testing report is a snapshot.
