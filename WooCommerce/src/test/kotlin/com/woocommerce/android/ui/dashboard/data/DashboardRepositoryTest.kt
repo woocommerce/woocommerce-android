@@ -4,6 +4,8 @@ import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
 import com.woocommerce.android.util.CoroutineDispatchers
+import dagger.hilt.android.ActivityRetainedLifecycle
+import dagger.hilt.android.lifecycle.RetainedLifecycle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,10 +20,12 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.check
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
@@ -40,6 +44,7 @@ class DashboardRepositoryTest {
     private val observeStockWidgetStatus: ObserveStockWidgetStatus = mock()
     private val observeGoogleAdsWidgetStatus: ObserveGoogleAdsWidgetStatus = mock()
     private val observeAIAssistantWidgetStatus: ObserveAIAssistantWidgetStatus = mock()
+    private val activityRetainedLifecycle: ActivityRetainedLifecycle = mock()
 
     private val siteOrdersSource = MutableSharedFlow<DashboardWidget.Status>()
     private val blazeSource = MutableSharedFlow<DashboardWidget.Status>()
@@ -176,27 +181,25 @@ class DashboardRepositoryTest {
         }
 
     @Test
-    fun `given widgets are collected, when another store is selected, then statuses are observed again`() = runTest {
-        // Given
-        val siteFlow = MutableStateFlow<SiteModel?>(site(name = "Store"))
-        givenStatusSources(siteFlow)
-        whenever(dashboardDataStore.widgets).thenReturn(flowOf(listOf(blazeDataModel(isAdded = true))))
-        val repository = createRepository()
-        val emissions = mutableListOf<List<DashboardWidget>>()
-        val collector = launch { repository.widgets.collect { emissions.add(it) } }
-        advanceUntilIdle()
-        blazeSource.emit(DashboardWidget.Status.Available)
-        advanceUntilIdle()
+    fun `given widgets are collected, when another store is selected, then the status sources are observed again`() =
+        runTest {
+            // Given
+            val siteFlow = MutableStateFlow<SiteModel?>(site(name = "Store"))
+            givenStatusSources(siteFlow)
+            whenever(dashboardDataStore.widgets).thenReturn(flowOf(listOf(blazeDataModel(isAdded = true))))
+            val repository = createRepository()
+            val collector = launch { repository.widgets.collect {} }
+            advanceUntilIdle()
 
-        // When
-        siteFlow.value = SiteModel().apply { id = 2 }
-        advanceUntilIdle()
+            // When
+            siteFlow.value = SiteModel().apply { id = 2 }
+            advanceUntilIdle()
 
-        // Then
-        assertThat(emissions.last().single().status).isEqualTo(DashboardWidget.Status.Hidden)
-        assertThat(blazeSource.subscriptionCount.value).isEqualTo(1)
-        collector.cancel()
-    }
+            // Then
+            verify(observeBlazeWidgetStatus, times(2)).invoke()
+            assertThat(blazeSource.subscriptionCount.value).isEqualTo(1)
+            collector.cancel()
+        }
 
     @Test
     fun `given widgets collection was cancelled, when the same store is refreshed, then order statuses are not read`() =
@@ -228,6 +231,69 @@ class DashboardRepositoryTest {
             verify(orderStore, never()).getOrderStatusOptionsForSite(any())
         }
 
+    @Test
+    fun `given two collectors, when widgets are collected at the same time, then each status source is subscribed once`() =
+        runTest {
+            // Given
+            givenStatusSources(MutableStateFlow(site(name = "Store")))
+            whenever(dashboardDataStore.widgets).thenReturn(flowOf(emptyList()))
+            val repository = createRepository()
+
+            // When
+            val firstCollector = launch { repository.widgets.collect {} }
+            val secondCollector = launch { repository.widgets.collect {} }
+            advanceUntilIdle()
+
+            // Then
+            assertThat(siteOrdersSource.subscriptionCount.value).isEqualTo(1)
+            assertThat(blazeSource.subscriptionCount.value).isEqualTo(1)
+            firstCollector.cancel()
+            secondCollector.cancel()
+        }
+
+    @Test
+    fun `given a status was received, when widgets are collected again for the same store, then the last status is emitted`() =
+        runTest {
+            // Given
+            givenStatusSources(MutableStateFlow(site(name = "Store")))
+            whenever(dashboardDataStore.widgets).thenReturn(flowOf(listOf(blazeDataModel(isAdded = true))))
+            val repository = createRepository()
+            val collector = launch { repository.widgets.collect {} }
+            advanceUntilIdle()
+            blazeSource.emit(DashboardWidget.Status.Available)
+            advanceUntilIdle()
+            collector.cancel()
+            advanceUntilIdle()
+
+            // When
+            val widgets = repository.widgets.first()
+
+            // Then
+            assertThat(widgets.single().status).isEqualTo(DashboardWidget.Status.Available)
+        }
+
+    @Test
+    fun `given widgets are collected, when the retained lifecycle is cleared, then the status sources are released`() =
+        runTest {
+            // Given
+            givenStatusSources(MutableStateFlow(site(name = "Store")))
+            whenever(dashboardDataStore.widgets).thenReturn(flowOf(emptyList()))
+            val repository = createRepository()
+            val collector = launch { repository.widgets.collect {} }
+            advanceUntilIdle()
+            val onClearedListener = argumentCaptor<RetainedLifecycle.OnClearedListener>()
+            verify(activityRetainedLifecycle).addOnClearedListener(onClearedListener.capture())
+
+            // When
+            onClearedListener.firstValue.onCleared()
+            advanceUntilIdle()
+
+            // Then
+            assertThat(siteOrdersSource.subscriptionCount.value).isEqualTo(0)
+            assertThat(blazeSource.subscriptionCount.value).isEqualTo(0)
+            collector.cancel()
+        }
+
     private fun TestScope.createRepository(
         siteOrdersState: ObserveSiteOrdersState = observeSiteOrdersState
     ): DashboardRepository {
@@ -242,7 +308,8 @@ class DashboardRepositoryTest {
             observeStockWidgetStatus,
             observeGoogleAdsWidgetStatus,
             observeAIAssistantWidgetStatus,
-            CoroutineDispatchers(testDispatcher, testDispatcher, testDispatcher)
+            CoroutineDispatchers(testDispatcher, testDispatcher, testDispatcher),
+            activityRetainedLifecycle
         )
     }
 

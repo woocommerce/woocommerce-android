@@ -8,16 +8,20 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.data.DashboardDataModel
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
 import com.woocommerce.android.util.CoroutineDispatchers
+import dagger.hilt.android.ActivityRetainedLifecycle
 import dagger.hilt.android.scopes.ActivityRetainedScoped
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @ActivityRetainedScoped
@@ -33,9 +37,14 @@ class DashboardRepository @Inject constructor(
     observeStockWidgetStatus: ObserveStockWidgetStatus,
     observeGoogleAdsWidgetStatus: ObserveGoogleAdsWidgetStatus,
     observeAIAssistantWidgetStatus: ObserveAIAssistantWidgetStatus,
-    private val dispatchers: CoroutineDispatchers
+    dispatchers: CoroutineDispatchers,
+    activityRetainedLifecycle: ActivityRetainedLifecycle
 ) {
     private val selectedSiteIdFlow = selectedSite.observe().map { it?.id }.distinctUntilChanged()
+
+    private val widgetStatusScope = CoroutineScope(SupervisorJob() + dispatchers.computation).also { scope ->
+        activityRetainedLifecycle.addOnClearedListener { scope.cancel() }
+    }
 
     private fun widgetStatusFlow(
         initialValue: DashboardWidget.Status = DashboardWidget.Status.Hidden,
@@ -45,11 +54,8 @@ class DashboardRepository @Inject constructor(
             flowOf(initialValue)
         } else {
             flowProvider()
-                .flowOn(dispatchers.computation)
-                .onStart { emit(initialValue) }
-                .distinctUntilChanged()
         }
-    }
+    }.stateIn(widgetStatusScope, SharingStarted.WhileSubscribed(), initialValue)
 
     private val siteOrdersState = widgetStatusFlow(
         initialValue = DashboardWidget.Status.Unavailable(R.string.my_store_widget_unavailable)
