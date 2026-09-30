@@ -3,19 +3,33 @@ package com.woocommerce.android.ui.dashboard.data
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
+import com.woocommerce.android.util.CoroutineDispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Assert.assertNotNull
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.check
+import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.store.WCOrderStore
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class DashboardRepositoryTest {
     private val selectedSite: SelectedSite = mock()
     private val dashboardDataStore: DashboardDataStore = mock()
@@ -27,29 +41,8 @@ class DashboardRepositoryTest {
     private val observeGoogleAdsWidgetStatus: ObserveGoogleAdsWidgetStatus = mock()
     private val observeAIAssistantWidgetStatus: ObserveAIAssistantWidgetStatus = mock()
 
-    @Test
-    fun `given site component is null, when repository is initialized, then it completes without crash`() = runTest {
-        // Given
-        whenever(dashboardDataStore.widgets).thenReturn(flowOf(emptyList()))
-        whenever(selectedSite.observe()).thenReturn(flowOf(null))
-        whenever(selectedSite.siteComponent).thenReturn(null)
-
-        // When
-        val repository = DashboardRepository(
-            selectedSite,
-            dashboardDataStore,
-            observeSiteOrdersState,
-            observeBlazeWidgetStatus,
-            observePushNotificationsWidgetStatus,
-            observeOnboardingWidgetStatus,
-            observeStockWidgetStatus,
-            observeGoogleAdsWidgetStatus,
-            observeAIAssistantWidgetStatus
-        )
-
-        // Then
-        assertNotNull(repository)
-    }
+    private val siteOrdersSource = MutableSharedFlow<DashboardWidget.Status>()
+    private val blazeSource = MutableSharedFlow<DashboardWidget.Status>()
 
     @Test
     fun `given ai assistant is missing, when inserting ai assistant, then it is persisted as first selected widget`() =
@@ -124,7 +117,6 @@ class DashboardRepositoryTest {
             // Given
             whenever(dashboardDataStore.widgets).thenReturn(flowOf(listOf(aiAssistantDataModel(isAdded = true))))
             whenever(selectedSite.observe()).thenReturn(flowOf(null))
-            whenever(selectedSite.siteComponent).thenReturn(null)
             val repository = createRepository()
 
             // When
@@ -136,17 +128,148 @@ class DashboardRepositoryTest {
             assertThat(widgets.single().isVisible).isFalse()
         }
 
-    private fun createRepository() = DashboardRepository(
-        selectedSite,
-        dashboardDataStore,
-        observeSiteOrdersState,
-        observeBlazeWidgetStatus,
-        observePushNotificationsWidgetStatus,
-        observeOnboardingWidgetStatus,
-        observeStockWidgetStatus,
-        observeGoogleAdsWidgetStatus,
-        observeAIAssistantWidgetStatus
-    )
+    @Test
+    fun `given widgets collected three times, when every collector is cancelled, then no status source is subscribed`() =
+        runTest {
+            // Given
+            givenStatusSources(MutableStateFlow(site(name = "Store")))
+            whenever(dashboardDataStore.widgets).thenReturn(flowOf(emptyList()))
+            val repository = createRepository()
+
+            // When
+            collectAndCancelWidgets(repository, times = 3)
+
+            // Then
+            assertThat(siteOrdersSource.subscriptionCount.value).isEqualTo(0)
+            assertThat(blazeSource.subscriptionCount.value).isEqualTo(0)
+        }
+
+    @Test
+    fun `given widgets are collected, when the same store is refreshed with new data, then statuses are kept`() =
+        runTest {
+            // Given
+            val siteFlow = MutableStateFlow<SiteModel?>(site(name = "Old name"))
+            givenStatusSources(siteFlow)
+            whenever(dashboardDataStore.widgets).thenReturn(
+                flowOf(listOf(statsDataModel(isAdded = true), blazeDataModel(isAdded = true)))
+            )
+            val repository = createRepository()
+            val emissions = mutableListOf<List<DashboardWidget>>()
+            val collector = launch { repository.widgets.collect { emissions.add(it) } }
+            advanceUntilIdle()
+            siteOrdersSource.emit(DashboardWidget.Status.Available)
+            blazeSource.emit(DashboardWidget.Status.Available)
+            advanceUntilIdle()
+            val emissionsBeforeRefresh = emissions.size
+
+            // When
+            siteFlow.value = site(name = "New name")
+            advanceUntilIdle()
+
+            // Then
+            assertThat(emissions).hasSize(emissionsBeforeRefresh)
+            assertThat(emissions.last().map { it.status })
+                .containsExactly(DashboardWidget.Status.Available, DashboardWidget.Status.Available)
+            assertThat(siteOrdersSource.subscriptionCount.value).isEqualTo(1)
+            assertThat(blazeSource.subscriptionCount.value).isEqualTo(1)
+            collector.cancel()
+        }
+
+    @Test
+    fun `given widgets are collected, when another store is selected, then statuses are observed again`() = runTest {
+        // Given
+        val siteFlow = MutableStateFlow<SiteModel?>(site(name = "Store"))
+        givenStatusSources(siteFlow)
+        whenever(dashboardDataStore.widgets).thenReturn(flowOf(listOf(blazeDataModel(isAdded = true))))
+        val repository = createRepository()
+        val emissions = mutableListOf<List<DashboardWidget>>()
+        val collector = launch { repository.widgets.collect { emissions.add(it) } }
+        advanceUntilIdle()
+        blazeSource.emit(DashboardWidget.Status.Available)
+        advanceUntilIdle()
+
+        // When
+        siteFlow.value = SiteModel().apply { id = 2 }
+        advanceUntilIdle()
+
+        // Then
+        assertThat(emissions.last().single().status).isEqualTo(DashboardWidget.Status.Hidden)
+        assertThat(blazeSource.subscriptionCount.value).isEqualTo(1)
+        collector.cancel()
+    }
+
+    @Test
+    fun `given widgets collection was cancelled, when the same store is refreshed, then order statuses are not read`() =
+        runTest {
+            // Given
+            val siteFlow = MutableStateFlow<SiteModel?>(site(name = "Old name"))
+            givenStatusSources(siteFlow)
+            whenever(dashboardDataStore.widgets).thenReturn(flowOf(emptyList()))
+            val orderStore: WCOrderStore = mock()
+            whenever(orderStore.getOrderStatusOptionsForSite(any())).thenReturn(
+                listOf(WCOrderStatusModel(statusKey = "processing", statusCount = 1))
+            )
+            val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+            val realObserveSiteOrdersState = ObserveSiteOrdersState(
+                selectedSite = selectedSite,
+                orderStore = orderStore,
+                coroutineDispatchers = CoroutineDispatchers(testDispatcher, testDispatcher, testDispatcher),
+                dispatcher = mock<Dispatcher>()
+            )
+            val repository = createRepository(realObserveSiteOrdersState)
+            collectAndCancelWidgets(repository, times = 3)
+            clearInvocations(orderStore)
+
+            // When
+            siteFlow.value = site(name = "New name")
+            advanceUntilIdle()
+
+            // Then
+            verify(orderStore, never()).getOrderStatusOptionsForSite(any())
+        }
+
+    private fun TestScope.createRepository(
+        siteOrdersState: ObserveSiteOrdersState = observeSiteOrdersState
+    ): DashboardRepository {
+        val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+        return DashboardRepository(
+            selectedSite,
+            dashboardDataStore,
+            siteOrdersState,
+            observeBlazeWidgetStatus,
+            observePushNotificationsWidgetStatus,
+            observeOnboardingWidgetStatus,
+            observeStockWidgetStatus,
+            observeGoogleAdsWidgetStatus,
+            observeAIAssistantWidgetStatus,
+            CoroutineDispatchers(testDispatcher, testDispatcher, testDispatcher)
+        )
+    }
+
+    private fun givenStatusSources(siteFlow: MutableStateFlow<SiteModel?>) {
+        whenever(selectedSite.observe()).thenReturn(siteFlow)
+        whenever(observeSiteOrdersState()).thenReturn(siteOrdersSource)
+        whenever(observeBlazeWidgetStatus()).thenReturn(blazeSource)
+        whenever(observePushNotificationsWidgetStatus()).thenReturn(MutableSharedFlow())
+        whenever(observeOnboardingWidgetStatus()).thenReturn(MutableSharedFlow())
+        whenever(observeStockWidgetStatus()).thenReturn(MutableSharedFlow())
+        whenever(observeGoogleAdsWidgetStatus()).thenReturn(MutableSharedFlow())
+        whenever(observeAIAssistantWidgetStatus()).thenReturn(MutableSharedFlow())
+    }
+
+    private fun TestScope.collectAndCancelWidgets(repository: DashboardRepository, times: Int) {
+        repeat(times) {
+            val collector = launch { repository.widgets.collect {} }
+            advanceUntilIdle()
+            collector.cancel()
+            advanceUntilIdle()
+        }
+    }
+
+    private fun site(name: String) = SiteModel().apply {
+        id = 1
+        this.name = name
+    }
 
     private fun widgetDataModel(type: DashboardWidget.Type, isAdded: Boolean = true): DashboardWidgetDataModel =
         DashboardWidgetDataModel.newBuilder()
@@ -160,4 +283,6 @@ class DashboardRepositoryTest {
     private fun statsDataModel(isAdded: Boolean = true) = widgetDataModel(DashboardWidget.Type.STATS, isAdded)
 
     private fun ordersDataModel(isAdded: Boolean = true) = widgetDataModel(DashboardWidget.Type.ORDERS, isAdded)
+
+    private fun blazeDataModel(isAdded: Boolean = true) = widgetDataModel(DashboardWidget.Type.BLAZE, isAdded)
 }
