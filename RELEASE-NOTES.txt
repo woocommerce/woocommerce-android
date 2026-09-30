@@ -1,5 +1,5 @@
 *** Generated from PR titles during code freeze. Do not add entries in feature PRs; see docs/release-notes.md.
-*** Entries use [*] by default; preserve higher QA priority by starting the PR title with e.g. [*****].
+*** Notes keep GitHub's Markdown; include [*****] in the PR title when broader smoke testing is needed.
 *** For user-visible Android Wear changes, include [WEAR] in the PR title.
 
 25.8
