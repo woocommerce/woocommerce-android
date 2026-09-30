@@ -38,6 +38,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @AndroidEntryPoint
 class IssueRefundFragment :
@@ -129,7 +130,7 @@ class IssueRefundFragment :
     private fun setupToolbar() {
         binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
             requireActivity(),
-            R.drawable.ic_back_24dp
+            DesignSystemR.drawable.woo_ds_ic_regular_arrow_left_24dp
         )
         binding.toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()

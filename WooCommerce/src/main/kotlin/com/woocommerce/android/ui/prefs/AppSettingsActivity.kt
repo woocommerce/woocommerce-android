@@ -36,6 +36,7 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @AndroidEntryPoint
 class AppSettingsActivity :
@@ -153,7 +154,7 @@ class AppSettingsActivity :
     override fun onSupportNavigateUp(): Boolean {
         AnalyticsTracker.trackBackPressed(this)
         return if (findNavController(R.id.nav_host_fragment).navigateUp()) {
-            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_24dp)
+            supportActionBar?.setHomeAsUpIndicator(DesignSystemR.drawable.woo_ds_ic_regular_arrow_left_24dp)
             true
         } else {
             finish()

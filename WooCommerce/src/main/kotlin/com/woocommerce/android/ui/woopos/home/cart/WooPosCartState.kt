@@ -60,6 +60,7 @@ sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: St
         open val description: String?,
         open val imageUrl: String?,
         open val productDoesNotExist: Boolean,
+        open val discounted: Boolean,
     ) : WooPosCartItemViewState(itemNumber, name) {
         @Parcelize
         data class Simple(
@@ -70,7 +71,8 @@ sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: St
             override val description: String?,
             override val imageUrl: String?,
             override val productDoesNotExist: Boolean = false,
-        ) : Product(itemNumber, id, name, price, description, imageUrl, productDoesNotExist)
+            override val discounted: Boolean = false,
+        ) : Product(itemNumber, id, name, price, description, imageUrl, productDoesNotExist, discounted)
 
         @Parcelize
         data class Variation(
@@ -82,7 +84,8 @@ sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: St
             override val description: String?,
             override val imageUrl: String?,
             override val productDoesNotExist: Boolean = false,
-        ) : Product(itemNumber, id, name, price, description, imageUrl, productDoesNotExist)
+            override val discounted: Boolean = false,
+        ) : Product(itemNumber, id, name, price, description, imageUrl, productDoesNotExist, discounted)
     }
 
     @Parcelize

@@ -16,7 +16,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.shipping.OrderShippingMethodsFragment.Companion.SELECTED_METHOD_RESULT
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,7 +28,7 @@ class OrderShippingFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     Surface {
                         UpdateShippingScreen(viewModel = viewModel, modifier = Modifier.fillMaxSize())
                     }

@@ -18,7 +18,7 @@ import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.FragmentProductListBinding
+import com.woocommerce.android.databinding.FragmentProductSelectionListBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
@@ -38,7 +38,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductSelectionListFragment :
-    BaseFragment(R.layout.fragment_product_list),
+    BaseFragment(R.layout.fragment_product_selection_list),
     OnLoadMoreListener,
     OnActionModeEventListener,
     OnQueryTextListener,
@@ -71,7 +71,7 @@ class ProductSelectionListFragment :
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
 
-    private var _binding: FragmentProductListBinding? = null
+    private var _binding: FragmentProductSelectionListBinding? = null
     private val binding get() = _binding!!
 
     override fun onDestroyView() {
@@ -90,7 +90,7 @@ class ProductSelectionListFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = FragmentProductListBinding.bind(view)
+        _binding = FragmentProductSelectionListBinding.bind(view)
 
         setupObservers(viewModel)
 

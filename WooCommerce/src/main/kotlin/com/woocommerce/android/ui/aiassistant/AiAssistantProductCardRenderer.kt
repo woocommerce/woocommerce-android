@@ -9,8 +9,8 @@ import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
-import com.woocommerce.android.ui.products.compose.ProductSummaryRow
-import com.woocommerce.android.ui.products.compose.ProductSummaryRowInfo
+import com.woocommerce.android.ui.products.compose.LegacyProductSummaryRow
+import com.woocommerce.android.ui.products.compose.LegacyProductSummaryRowInfo
 import java.math.BigDecimal
 
 internal class AiAssistantProductCardRenderer(
@@ -24,14 +24,14 @@ internal class AiAssistantProductCardRenderer(
     ) {
         val context = LocalContext.current
         val rowModel = card.toProductSummaryRowModel(context, currencyFormatter)
-        ProductSummaryRow(
+        LegacyProductSummaryRow(
             title = rowModel.title,
             imageUrl = rowModel.imageUrl,
             onClick = { onAction(AssistantCardAction.OpenProduct(card.remoteProductId)) },
             modifier = modifier,
         ) {
-            ProductSummaryRowInfo(rowModel.stockStatusPriceText)
-            rowModel.skuText?.let { sku -> ProductSummaryRowInfo(sku) }
+            LegacyProductSummaryRowInfo(rowModel.stockStatusPriceText)
+            rowModel.skuText?.let { sku -> LegacyProductSummaryRowInfo(sku) }
         }
     }
 }

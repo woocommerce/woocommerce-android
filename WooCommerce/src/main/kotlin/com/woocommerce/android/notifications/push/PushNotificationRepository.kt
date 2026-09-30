@@ -18,6 +18,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.locale.LocaleProvider
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -33,6 +34,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.SiteNotificationSetting
 import org.wordpress.android.fluxc.utils.PreferenceUtils
+import java.io.IOException
 import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
@@ -322,15 +324,41 @@ class PushNotificationRepository @Inject constructor(
         .toSet()
 
     suspend fun unregisterDeviceFromPushNotifications() {
-        coroutineScope {
-            val unregisterWpComToken = async {
-                if (isWpComPushRegistered()) {
-                    wpComPushNotificationStore.unregisterWpComPushToken()
+        try {
+            coroutineScope {
+                val unregisterWpComToken = async {
+                    if (isWpComPushRegistered()) {
+                        wpComPushNotificationStore.unregisterWpComPushToken()
+                    }
                 }
-            }
-            val unregisterWooCoreTokens = async { unregisterWooCoreTokensFromServer() }
+                val unregisterWooCoreTokens = async { unregisterWooCoreTokensFromServer() }
 
-            awaitAll(unregisterWpComToken, unregisterWooCoreTokens)
+                awaitAll(unregisterWpComToken, unregisterWooCoreTokens)
+            }
+        } finally {
+            // The server delete can't be retried once the account is gone, and every application-password
+            // store shares the same keys, so a leftover entry makes the next store look already registered.
+            withContext(NonCancellable) { clearAllWooPushRegistrations() }
+        }
+    }
+
+    private suspend fun clearAllWooPushRegistrations() {
+        var clearedSiteIds: Set<Long> = emptySet()
+        try {
+            pushNotificationsDataStore.edit { preferences ->
+                clearedSiteIds = preferences.registeredSiteIds()
+                preferences.clear()
+            }
+        } catch (e: IOException) {
+            // Runs from the logout cleanup path, so it must never abort the logout or mask its error.
+            WooLog.e(WooLog.T.NOTIFICATIONS, "Failed to clear local Woo push registrations at logout", e)
+            return
+        }
+        if (clearedSiteIds.isNotEmpty()) {
+            WooLog.w(
+                WooLog.T.NOTIFICATIONS,
+                "Cleared local Woo push registrations left behind at logout for sites $clearedSiteIds"
+            )
         }
     }
 

@@ -10,7 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.compose.legacyComposeView
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -28,7 +28,7 @@ class NewOrderNotificationSettingsFragment : BaseFragment() {
     override fun getFragmentTitle() = getString(R.string.settings_notifs_new_orders)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return composeView {
+        return legacyComposeView {
             NewOrderNotificationSettingsScreen(
                 viewModel = viewModel,
                 sharedViewModel = sharedViewModel

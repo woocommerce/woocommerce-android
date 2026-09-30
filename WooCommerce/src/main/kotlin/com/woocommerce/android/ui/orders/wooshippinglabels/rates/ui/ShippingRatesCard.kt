@@ -60,7 +60,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.SelectionCheck
 import com.woocommerce.android.ui.compose.modifiers.dashedBorder
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel
@@ -95,7 +95,7 @@ internal fun ShippingRatesCard(
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO, device = Devices.PIXEL)
 @Composable
 private fun ShippingRatesCardPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ShippingRatesCard(
             state = ShippingLabelSampleData.getShippingRatesSection(),
             onSelectedRateSortOrderChanged = {},
@@ -204,7 +204,7 @@ private fun ShippingRatesHeader(
 @Preview
 @Composable
 private fun ShippingRatesHeaderPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ShippingRatesHeader(
             selectedSortOption = ShippingSortOption.CHEAPEST,
             onSortOptionSelected = {},

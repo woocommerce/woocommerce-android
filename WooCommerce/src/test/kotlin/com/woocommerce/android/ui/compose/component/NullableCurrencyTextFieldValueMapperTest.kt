@@ -67,4 +67,28 @@ class NullableCurrencyTextFieldValueMapperTest : BaseUnitTest() {
         val transformedText = sut.transformText("123,,45", "123,45")
         assertThat(transformedText).isEqualTo("123,45")
     }
+
+    @Test
+    fun `given trailing zeros retained, when printing decimal amount, then preserve currency precision`() {
+        // GIVEN
+        val sut = NullableCurrencyTextFieldValueMapper(",", 2, keepTrailingZeros = true)
+
+        // WHEN
+        val result = sut.printValue(BigDecimal("12.5"))
+
+        // THEN
+        assertThat(result).isEqualTo("12,50")
+    }
+
+    @Test
+    fun `given trailing zeros retained, when printing whole amount, then include currency decimals`() {
+        // GIVEN
+        val sut = NullableCurrencyTextFieldValueMapper(".", 2, keepTrailingZeros = true)
+
+        // WHEN
+        val result = sut.printValue(BigDecimal("123"))
+
+        // THEN
+        assertThat(result).isEqualTo("123.00")
+    }
 }

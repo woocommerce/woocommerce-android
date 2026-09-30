@@ -14,7 +14,7 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.WooShippingLabelHazmatFormViewModel.Companion.HAZMAT_CATEGORY_RESULT
@@ -37,7 +37,7 @@ class WooShippingLabelHazmatFormFragment : BaseFragment(), BackPressListener {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     Surface {
                         WooShippingLabelHazmatFormScreen(viewModel)
                     }

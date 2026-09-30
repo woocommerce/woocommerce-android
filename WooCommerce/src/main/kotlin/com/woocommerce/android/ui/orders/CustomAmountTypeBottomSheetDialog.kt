@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 
@@ -23,7 +23,7 @@ class CustomAmountTypeBottomSheetDialog : WCBottomSheetDialogFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     CustomAmountTypeBottomSheet(sharedViewModel.getCurrencySymbol()) { customAmountType ->
                         sharedViewModel.onCustomAmountTypeSelected(customAmountType)
                         dismiss()

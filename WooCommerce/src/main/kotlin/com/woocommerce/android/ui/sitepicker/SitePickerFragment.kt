@@ -62,6 +62,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @AndroidEntryPoint
 class SitePickerFragment :
@@ -88,12 +89,10 @@ class SitePickerFragment :
             // Hide the back arrow when there's no back stack (e.g. the picker is the start destination
             // after a recovery reset), otherwise tapping it just closes the app.
             navigationIcon = if (!navArgs.openedFromLogin && findNavController().previousBackStackEntry != null) {
-                R.drawable.ic_back_24dp
+                DesignSystemR.drawable.woo_ds_ic_regular_arrow_left_24dp
             } else {
                 null
             },
-            hasShadow = false,
-            hasDivider = false,
         )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -39,6 +39,8 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.WCOrderSummaryModel
+import org.wordpress.android.fluxc.model.metadata.WCMetaData
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.BatchOrderApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.COMPLETED
@@ -785,6 +787,36 @@ internal class WCOrderStoreTest {
 
             // THEN
             verify(orderRestClient).sendOrderPOSSpecificReceipt(site, orderId, email, true, null)
+        }
+    }
+
+    @Test
+    fun `given a full first page, when fetching the order list first page, then reports more can be loaded`() {
+        runBlocking {
+            val site = SiteModel().apply { id = 1 }
+            val listDescriptor = WCOrderListDescriptor(site)
+            val fullPage = List(25) { generateSampleOrder(it.toLong()) to emptyList<WCMetaData>() }
+            whenever(orderRestClient.fetchOrdersListFirstPage(eq(listDescriptor), any())).thenReturn(WooPayload(fullPage))
+
+            val result = orderStore.fetchOrdersListFirstPage(listDescriptor)
+
+            assertEquals(25, result.model?.orders?.size)
+            assertEquals(true, result.model?.canLoadMore)
+        }
+    }
+
+    @Test
+    fun `given a short first page, when fetching the order list first page, then reports nothing more to load`() {
+        runBlocking {
+            val site = SiteModel().apply { id = 1 }
+            val listDescriptor = WCOrderListDescriptor(site)
+            val shortPage = List(5) { generateSampleOrder(it.toLong()) to emptyList<WCMetaData>() }
+            whenever(orderRestClient.fetchOrdersListFirstPage(eq(listDescriptor), any())).thenReturn(WooPayload(shortPage))
+
+            val result = orderStore.fetchOrdersListFirstPage(listDescriptor)
+
+            assertEquals(5, result.model?.orders?.size)
+            assertEquals(false, result.model?.canLoadMore)
         }
     }
 

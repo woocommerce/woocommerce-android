@@ -15,7 +15,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
@@ -56,7 +56,7 @@ class WooShippingLabelCreationFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     Surface {
                         WooShippingLabelCreationScreen(viewModel)
                     }

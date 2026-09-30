@@ -3,8 +3,8 @@
 This playbook is for AI-assisted Store Management App screen migrations.
 
 Use [rollout-direction.md](rollout-direction.md) as the canonical source for first-wave scope. The
-assigned first-wave surfaces are Dashboard, Products, Orders, More, top Product Detail, and top Order
-Detail.
+assigned first-wave surfaces are Dashboard, Products, Orders, More, and top Product Detail. Order
+Detail is postponed and remains legacy until separately scheduled.
 
 ## Supported Outcomes
 
@@ -111,18 +111,18 @@ Migrated first-wave screens use one design-system component tree. Do not create 
 
 - Screen migration is explicit: migrated screens opt into the design-system root; non-migrated
   screens stay on the legacy root.
-- During migration work, use a DS-specific builder such as `designSystemComposeView {}` for migrated
-  screens.
-- Do not add root-selection indirection to existing `composeView {}` calls. A screen is migrated by
-  changing its call site to the DS root builder.
+- Use `composeView {}` for migrated Fragment hosts and `setDesignSystemContent {}` for migrated
+  content embedded in an XML `ComposeView` host.
+- Use `legacyComposeView {}` for non-migrated Fragment hosts and
+  `LegacyWooThemeWithBackground {}` for other legacy roots.
+- Do not add compatibility aliases or root-selection indirection.
 - Temporary full-screen fallbacks inside in-scope screens are allowed only for genuinely high-risk
   migration gaps and must include an expiry/removal plan.
 - Out-of-scope child flows may remain legacy for this wave without an expiry plan.
 
-Before the final merge of the migration branch, follow the controlled root-API rename boundary and
-audit steps defined in [rollout-direction.md](rollout-direction.md). A legacy-compatible
-design-system foundation bridge is not required by this rollout path unless a future implementation
-explicitly chooses it.
+The final root API contract and audit steps are defined in
+[rollout-direction.md](rollout-direction.md). A legacy-compatible design-system foundation bridge is
+not required by this rollout path unless a future implementation explicitly chooses it.
 
 ## Chrome Components
 
@@ -149,8 +149,8 @@ The current toolbar direction is a unified design-system visual look, not one fo
 4. Keep the existing host. For XML/View migration, replace content with Compose or embed `ComposeView`
    sections inside a compatibility XML shell. For existing Compose adoption, keep the current Compose
    root.
-5. Keep one migrated screen implementation. Use an explicit DS root builder for migrated screens;
-   keep non-migrated screens on the legacy root.
+5. Keep one migrated screen implementation. Use `composeView` or `setDesignSystemContent` for
+   migrated screens; use `legacyComposeView` for non-migrated Fragment hosts.
 6. Build a stateless screen composable and a VM-aware overload only if the screen needs ViewModel state.
 7. Use design-system components and `WooTheme.*` foundations where they are production-ready.
 8. Do not use preview-only components in production screens. Preview-only implementations should not
@@ -162,8 +162,25 @@ The current toolbar direction is a unified design-system visual look, not one fo
     accessibility regression check against the original screen.
 12. Verify design-system components do not fall back to static light defaults under the
     design-system root.
-13. Before final merge, verify the controlled root-API rename boundary with the strict `rg` audits
-    defined in [rollout-direction.md](rollout-direction.md).
+13. Before final merge, verify the root API contract with the strict `rg` audits defined in
+    [rollout-direction.md](rollout-direction.md).
+
+### Segment Control and Modal Bottom Sheet adoption
+
+- Use `WooSegmentControl` only for controlled, label-only selection with two to five options. Pass
+  the selected index and update it in the caller; do not add internal selection or per-item enabled
+  state. The whole-control disabled treatment is an Android fallback because Figma has no disabled
+  variant.
+- Keep modal sheet composition, `WooModalBottomSheetState`, dismissal callbacks, and business
+  content in the screen. Use `rememberWooModalBottomSheetState()` and `WooModalBottomSheet` without
+  reaching through to Material sheet types or adding screen-specific styling knobs. For animated
+  programmatic dismissal, use `rememberWooModalBottomSheetDismisser()` while retaining caller-owned
+  composition and business visibility.
+- The Woo wrapper owns the semantic scrim color. Material owns modal gestures, scrim rendering, back
+  handling, focus/pane/traversal semantics, maximum width, insets, IME, and platform behavior.
+  Screen code must not reproduce those behaviors around the Woo wrapper.
+- Migrating a sheet or segment control does not authorize copy, analytics, navigation, ViewModel,
+  loading/error, or merchant-action changes.
 
 ## Android Migration Skill
 

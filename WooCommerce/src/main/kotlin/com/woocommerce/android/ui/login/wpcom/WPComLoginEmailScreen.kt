@@ -30,7 +30,7 @@ import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 import com.woocommerce.android.ui.login.wpcom.components.WPComConsent
 
@@ -60,11 +60,13 @@ fun WPComLoginEmailScreen(
         R.string.login_jetpack_install
     }
 
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onCloseClick,
-                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp)
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                showDivider = scrollState.canScrollBackward,
             )
         }
     ) { paddingValues ->
@@ -73,7 +75,7 @@ fun WPComLoginEmailScreen(
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(paddingValues)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
         ) {
             Column(
                 modifier = Modifier
@@ -160,7 +162,7 @@ fun WPComLoginEmailScreen(
 @Preview
 @Composable
 private fun JetpackModePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WPComLoginEmailScreen(
             viewState = WPComLoginEmailViewModel.ViewState(
                 isJetpackInstalled = false,

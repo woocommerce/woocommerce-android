@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.OpenLinkEvent
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -32,7 +32,7 @@ class InstallWCShippingFragment : BaseFragment() {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     InstallWCShippingScreen(viewModel)
                 }
             }

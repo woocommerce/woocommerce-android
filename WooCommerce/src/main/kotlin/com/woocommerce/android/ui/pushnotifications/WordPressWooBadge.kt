@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun WordPressWooBadge(
@@ -56,7 +56,7 @@ fun WordPressWooBadge(
 @Preview
 @Composable
 private fun WordPressWooBadgePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WordPressWooBadge()
     }
 }
@@ -64,7 +64,7 @@ private fun WordPressWooBadgePreview() {
 @Preview
 @Composable
 private fun WordPressWooBadgeSmallPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WordPressWooBadge(iconSize = 24.dp)
     }
 }

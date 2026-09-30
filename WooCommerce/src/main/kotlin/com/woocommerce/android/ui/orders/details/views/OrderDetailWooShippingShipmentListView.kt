@@ -45,7 +45,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOverflowMenu
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.OrderShipmentTrackingHelper
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
@@ -374,7 +374,7 @@ private fun OrderDetailWooShippingShipmentListViewPreview() {
         )
     }
 
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         OrderDetailWooShippingShipmentListView(
             shipments = shipments,
             onCreateShippingLabelClicked = {},

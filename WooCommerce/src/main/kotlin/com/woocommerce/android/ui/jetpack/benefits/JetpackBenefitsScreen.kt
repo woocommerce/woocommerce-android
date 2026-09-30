@@ -37,7 +37,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun JetpackBenefitsScreen(viewModel: JetpackBenefitsViewModel) {
@@ -179,7 +179,7 @@ private fun BenefitEntry(
 @Composable
 @Preview
 private fun JetpackBenefitsScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         JetpackBenefitsScreen(
             viewState = JetpackBenefitsViewModel.ViewState(
                 isUsingJetpackCP = false,
@@ -193,7 +193,7 @@ private fun JetpackBenefitsScreenPreview() {
 @Composable
 @Preview
 private fun JetpackBenefitsScreenWithoutNativeInstallPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         JetpackBenefitsScreen(
             viewState = JetpackBenefitsViewModel.ViewState(
                 isUsingJetpackCP = false,

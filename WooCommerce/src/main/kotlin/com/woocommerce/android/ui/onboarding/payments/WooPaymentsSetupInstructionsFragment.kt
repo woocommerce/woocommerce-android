@@ -13,7 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -28,7 +28,7 @@ class WooPaymentsSetupInstructionsFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     WooPaymentsSetupInstructionsScreen(
                         onCloseButtonClick = { findNavController().popBackStack() },
                         onWPComAccountMoreDetailsClick = { onWPComAccountMoreDetailsClick() },

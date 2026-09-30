@@ -18,7 +18,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.jetpack.GoToStore
 import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewFragment
@@ -51,7 +51,7 @@ class JetpackActivationMainFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     JetpackActivationMainScreen(viewModel)
                 }
             }

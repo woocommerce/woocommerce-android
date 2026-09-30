@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.designSystemComposeView
+import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.compose.designsystem.preview.WooDesignSystemComponentCatalogScreen
 import com.woocommerce.android.ui.main.AppBarStatus
 
@@ -15,7 +15,7 @@ class StoreDesignSystemComponentCatalogFragment : BaseFragment() {
         get() = AppBarStatus.Hidden
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return designSystemComposeView {
+        return composeView {
             WooDesignSystemComponentCatalogScreen(
                 initialPath = "",
                 onBackClick = { findNavController().navigateUp() },

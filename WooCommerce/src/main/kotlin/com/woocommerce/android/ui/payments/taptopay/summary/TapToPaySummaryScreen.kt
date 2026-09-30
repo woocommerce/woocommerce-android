@@ -29,7 +29,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.LearnMoreAboutSection
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryViewModel.UiState
 
 @Composable
@@ -51,11 +51,13 @@ fun TapToPaySummaryScreen(
     onBackClick: () -> Unit,
     onLearnMoreClicked: () -> Unit,
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.card_reader_tap_to_pay_explanation_screen_title),
                 onNavigationButtonClick = onBackClick,
+                showDivider = scrollState.canScrollBackward,
             )
         }
     ) { paddingValues ->
@@ -64,7 +66,7 @@ fun TapToPaySummaryScreen(
                 .background(MaterialTheme.colors.surface)
                 .padding(paddingValues)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(scrollState),
             horizontalAlignment = CenterHorizontally,
             verticalArrangement = SpaceBetween
         ) {
@@ -149,7 +151,7 @@ fun TapToPaySummaryScreen(
 @PreviewLightDark
 @Composable
 fun TapToPaySummaryScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         TapToPaySummaryScreen(
             uiState = UiState(
                 isProgressVisible = false,

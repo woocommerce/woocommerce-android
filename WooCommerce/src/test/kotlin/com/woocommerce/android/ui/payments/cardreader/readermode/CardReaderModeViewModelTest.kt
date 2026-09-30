@@ -14,6 +14,7 @@ import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayError
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayIntro
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocalNetworkPermissionDenied
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocalNetworkPermissionExplainer
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionDenied
@@ -25,6 +26,7 @@ import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -43,8 +45,10 @@ import org.wordpress.android.fluxc.model.SiteModel
 @ExperimentalCoroutinesApi
 class CardReaderModeViewModelTest : BaseUnitTest() {
     private val sessionState = MutableStateFlow<CardReaderRemoteSessionState>(CardReaderRemoteSessionState.Idle)
+    private val paymentRejections = MutableSharedFlow<CardReaderRemoteSession.PaymentRejection>()
     private val session: CardReaderRemoteSession = mock {
         on { state }.thenReturn(sessionState)
+        on { paymentRejections }.thenReturn(paymentRejections)
         on { certificateKeyType }.thenReturn(CardReaderRemoteCertificateKeyType.ECDSA_256)
     }
     private val cardReaderManager: CardReaderManager = mock {
@@ -94,6 +98,61 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     fun `when view model initialized, then session is not started yet`() {
         // THEN
         verify(session, never()).start(any(), any(), any(), any())
+    }
+
+    @Test
+    fun `given never paired with a tablet, when screen resumed, then intro is shown and tracked`() = testBlocking {
+        // GIVEN
+        whenever(appPrefsWrapper.wooPosRemoteReaderPairedOnce).thenReturn(false)
+
+        // WHEN
+        viewModel.onScreenResumed()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(viewModel.viewState.value).isInstanceOf(RemoteTapToPayIntro::class.java)
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.REMOTE_TTP_PHONE_INTRO_SHOWN)
+    }
+
+    @Test
+    fun `given paired with a tablet before, when screen resumed, then permission check is requested`() =
+        testBlocking {
+            // GIVEN
+            whenever(appPrefsWrapper.wooPosRemoteReaderPairedOnce).thenReturn(true)
+
+            // WHEN
+            viewModel.onScreenResumed()
+
+            // THEN
+            assertThat(viewModel.events.first()).isEqualTo(CardReaderModeEvent.CheckPermissions)
+            assertThat(viewModel.viewState.value).isNull()
+        }
+
+    @Test
+    fun `given intro shown, when start clicked, then permission check is requested`() = testBlocking {
+        // GIVEN
+        whenever(appPrefsWrapper.wooPosRemoteReaderPairedOnce).thenReturn(false)
+        viewModel.onScreenResumed()
+        advanceUntilIdle()
+
+        // WHEN
+        (viewModel.viewState.value as RemoteTapToPayIntro).onPrimaryActionClicked()
+
+        // THEN
+        assertThat(viewModel.events.first()).isEqualTo(CardReaderModeEvent.CheckPermissions)
+    }
+
+    @Test
+    fun `given session running, when a tablet connects, then pairing is remembered`() = testBlocking {
+        // GIVEN
+        viewModel.onPermissionsGranted()
+
+        // WHEN
+        sessionState.value = CardReaderRemoteSessionState.WaitingForPayment(tabletName = "Tablet 1")
+        advanceUntilIdle()
+
+        // THEN
+        verify(appPrefsWrapper).wooPosRemoteReaderPairedOnce = true
     }
 
     @Test
@@ -302,6 +361,34 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper).track(
                 eq(AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_STARTED),
                 eq(mapOf("is_simulated" to false, "certificate_key_type" to "rsa_2048")),
+            )
+        }
+
+    @Test
+    fun `given session started, when phone rejects a payment, then payment failed is tracked with code and cause`() =
+        testBlocking {
+            // GIVEN
+            viewModel.onPermissionsGranted()
+            advanceUntilIdle()
+
+            // WHEN
+            paymentRejections.emit(
+                CardReaderRemoteSession.PaymentRejection(
+                    error = CardReaderRemoteError.CollectFailed,
+                    description = "java.lang.IllegalStateException: card declined",
+                )
+            )
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.REMOTE_TTP_PHONE_PAYMENT_FAILED),
+                eq(
+                    mapOf(
+                        "error_code" to "collect_failed",
+                        "error_description" to "java.lang.IllegalStateException: card declined",
+                    )
+                ),
             )
         }
 

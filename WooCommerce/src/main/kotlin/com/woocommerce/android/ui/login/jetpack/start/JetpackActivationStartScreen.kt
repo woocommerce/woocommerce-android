@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -37,13 +35,11 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
-import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.start.JetpackActivationStartViewModel.JetpackActivationState
 import com.woocommerce.android.ui.login.wpcom.components.WPComConsent
 
@@ -76,16 +72,10 @@ fun JetpackActivationStartScreen(
                     onHelpButtonClick = onHelpButtonClick,
                 )
             } else {
-                Toolbar(
-                    title = { Text("") },
-                    actions = {
-                        IconButton(onClick = onHelpButtonClick) {
-                            Icon(
-                                painter = painterResource(id = drawable.ic_help_24dp),
-                                contentDescription = stringResource(id = string.help)
-                            )
-                        }
-                    }
+                ToolbarWithHelpButton(
+                    title = "",
+                    navigationIcon = null,
+                    onHelpButtonClick = onHelpButtonClick,
                 )
             }
         }
@@ -259,7 +249,7 @@ private fun SiteUrlAndIcon(
 @Composable
 @Preview
 private fun JetpackActivationStartPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         JetpackActivationStartScreen(
             viewState = JetpackActivationState(
                 url = "reallyniceshirts.com",
@@ -274,7 +264,7 @@ private fun JetpackActivationStartPreview() {
 @Composable
 @Preview
 private fun JetpackConnectionDismissPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         JetpackActivationStartScreen(
             viewState = JetpackActivationState(
                 url = "reallyniceshirts.com",

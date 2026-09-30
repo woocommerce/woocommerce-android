@@ -18,7 +18,7 @@ import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.compose.legacyComposeView
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -43,7 +43,7 @@ class ReviewListFragment :
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return composeView {
+        return legacyComposeView {
             ReviewListScreen(
                 viewModel = viewModel,
                 onReviewClick = { review -> onReviewClick(review) },

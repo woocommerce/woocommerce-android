@@ -57,7 +57,7 @@ import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.component.web.WCWebView
 import com.woocommerce.android.ui.compose.modifiers.dashedBorder
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodModel
 
@@ -463,7 +463,7 @@ private fun EditDisabledWarning(
 @LightDarkThemePreviews
 @Composable
 private fun LoadingScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooShippingEditPaymentScreen(
             viewState = WooShippingEditPaymentViewModel.ViewState.Loading
         )
@@ -473,7 +473,7 @@ private fun LoadingScreenPreview() {
 @LightDarkThemePreviews
 @Composable
 private fun ContentScreenEmptyPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooShippingEditPaymentScreen(
             viewState = WooShippingEditPaymentViewModel.ViewState.Content(
                 canManagePaymentMethods = false,
@@ -494,7 +494,7 @@ private fun ContentScreenEmptyPreview() {
 @LightDarkThemePreviews
 @Composable
 private fun ContentScreenWithPaymentMethodsPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooShippingEditPaymentScreen(
             viewState = WooShippingEditPaymentViewModel.ViewState.Content(
                 canManagePaymentMethods = true,

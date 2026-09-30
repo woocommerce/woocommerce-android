@@ -83,6 +83,7 @@ class WooPosCheckoutBottomBarTest {
     private fun checkoutState(isCardPaymentEnabledForCountry: Boolean) = WooPosTotalsViewState.Checkout(
         totals = WooPosTotalsViewState.Totals.Visible(
             orderDiscountText = null,
+            orderCustomAmountsText = null,
             orderSubtotalText = "$10.00",
             orderTaxText = "$1.00",
             orderTotalText = "$11.00",

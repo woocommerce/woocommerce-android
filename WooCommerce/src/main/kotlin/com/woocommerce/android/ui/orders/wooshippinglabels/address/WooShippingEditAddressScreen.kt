@@ -85,7 +85,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.dismissWCModalBottomSheet
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShipmentDetailsSectionTitle
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.RoundedBorderDropDownWithLabel
@@ -158,6 +158,7 @@ fun WooShippingEditAddressScreen(
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val scrollState = rememberScrollState()
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState) {
@@ -170,7 +171,8 @@ fun WooShippingEditAddressScreen(
         topBar = {
             Toolbar(
                 title = screenTitle,
-                onNavigationButtonClick = onNavigateBack
+                onNavigationButtonClick = onNavigateBack,
+                showDivider = scrollState.canScrollBackward
             )
         },
         containerColor = MaterialTheme.colorScheme.surface
@@ -178,7 +180,7 @@ fun WooShippingEditAddressScreen(
         Column(modifier = modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
                     .padding(padding)
                     .padding(16.dp)
                     .weight(1f),
@@ -896,7 +898,7 @@ fun LoadingModal(
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO, device = "spec:width=1280dp,height=800dp,dpi=240")
 @Composable
 fun LoadingModalPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         LoadingModal(title = "Loading", description = "Please wait")
     }
 }

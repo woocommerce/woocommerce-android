@@ -189,6 +189,8 @@ object AppPrefs {
         // this phone's stable device id when it advertises itself as a Woo POS remote tap-to-pay reader
         WOO_POS_REMOTE_READER_DEVICE_UUID,
 
+        WOO_POS_REMOTE_READER_PAIRED_ONCE,
+
         // show card reader tutorial after a reader is connected
         SHOW_CARD_READER_CONNECTED_TUTORIAL,
 
@@ -697,6 +699,10 @@ object AppPrefs {
     var wooPosRemoteReaderDeviceUUID: String
         get() = getString(UndeletablePrefKey.WOO_POS_REMOTE_READER_DEVICE_UUID, "")
         set(value) = setString(UndeletablePrefKey.WOO_POS_REMOTE_READER_DEVICE_UUID, value)
+
+    var wooPosRemoteReaderPairedOnce: Boolean
+        get() = getBoolean(UndeletablePrefKey.WOO_POS_REMOTE_READER_PAIRED_ONCE, false)
+        set(value) = setBoolean(UndeletablePrefKey.WOO_POS_REMOTE_READER_PAIRED_ONCE, value)
 
     fun getShowCardReaderConnectedTutorial() = getBoolean(UndeletablePrefKey.SHOW_CARD_READER_CONNECTED_TUTORIAL, true)
 

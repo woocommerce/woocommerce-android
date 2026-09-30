@@ -67,6 +67,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DisplayUtils
 import java.util.Locale
 import kotlin.math.round
+import com.woocommerce.android.ui.compose.designsystem.R as WooDesignSystemR
 
 @OptIn(FlowPreview::class)
 @Suppress("MagicNumber")
@@ -548,7 +549,7 @@ class DashboardStatsView @JvmOverloads constructor(
         lastUpdated.compoundDrawablePadding = resources.getDimensionPixelSize(R.dimen.minor_50)
         TextViewCompat.setCompoundDrawableTintList(
             lastUpdated,
-            ColorStateList.valueOf(ContextCompat.getColor(context, R.color.color_primary))
+            ColorStateList.valueOf(ContextCompat.getColor(context, WooDesignSystemR.color.woo_ds_color_primary))
         )
         lastUpdated.setOnClickListener { onInfoClick() }
         // Tell screen readers what activating the footer does (the visible text is still read).

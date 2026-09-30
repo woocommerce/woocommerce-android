@@ -15,6 +15,14 @@ internal sealed interface ApplicationPasswordCreationResult {
     data class Failure(val error: BaseNetworkError) : ApplicationPasswordCreationResult
 }
 
+internal enum class ApplicationPasswordValidity {
+    VALID,
+    INVALID,
+
+    /** The check itself couldn't be completed, so the credentials' state is undetermined. */
+    UNKNOWN
+}
+
 internal sealed interface ApplicationPasswordDeletionResult {
     object Success : ApplicationPasswordDeletionResult
     data class Failure(val error: BaseNetworkError) : ApplicationPasswordDeletionResult

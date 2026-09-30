@@ -26,7 +26,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -99,7 +99,7 @@ fun AutoTaxRateSettingBottomSheetScreen(
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun AutoTaxRateSettingBottomSheetScreenPreview() = WooThemeWithBackground {
+fun AutoTaxRateSettingBottomSheetScreenPreview() = LegacyWooThemeWithBackground {
     val viewState = MutableStateFlow(
         OrderCreateEditViewModel.ViewState(
             autoTaxRateSetting = OrderCreateEditViewModel.AutoTaxRateSettingState(

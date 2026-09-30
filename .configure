@@ -14,11 +14,6 @@
       "encrypt": true
     },
     {
-      "file": "android/WCAndroid/sentry.properties",
-      "destination": "sentry.properties",
-      "encrypt": true
-    },
-    {
       "file": "android/debug.keystore",
       "destination": "~/.configure/woocommerce-android/secrets/debug_a8c.keystore",
       "encrypt": true

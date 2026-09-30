@@ -217,7 +217,7 @@ class OrderRestClientTest {
         )
 
         // When
-        orderRestClient.fetchOrdersListFirstPage(listDescriptor)
+        orderRestClient.fetchOrdersListFirstPage(listDescriptor, pageSize = 25)
 
         // Then
         val paramsCaptor = argumentCaptor<Map<String, String>>()
@@ -234,6 +234,7 @@ class OrderRestClientTest {
         )
 
         assertThat(paramsCaptor.firstValue["created_via"]).isEqualTo(expectedCreatedVia)
+        assertThat(paramsCaptor.firstValue["per_page"]).isEqualTo("25")
     }
 
     @Test

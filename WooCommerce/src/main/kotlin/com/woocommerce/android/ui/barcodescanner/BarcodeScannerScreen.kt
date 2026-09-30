@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun BarcodeScannerScreen(
@@ -140,7 +140,7 @@ private fun PermissionAlertDialog(
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun DeniedOnceAlertDialog() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PermissionAlertDialog(
             title = stringResource(id = R.string.barcode_scanning_alert_dialog_title),
             message = stringResource(id = R.string.barcode_scanning_alert_dialog_rationale_message),
@@ -156,7 +156,7 @@ fun DeniedOnceAlertDialog() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun DeniedPermanentlyAlertDialog() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PermissionAlertDialog(
             title = stringResource(id = R.string.barcode_scanning_alert_dialog_title),
             message = stringResource(id = R.string.barcode_scanning_alert_dialog_permanently_denied_message),

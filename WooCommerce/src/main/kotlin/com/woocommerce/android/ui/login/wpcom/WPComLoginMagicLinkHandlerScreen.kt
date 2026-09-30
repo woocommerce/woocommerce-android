@@ -24,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun WPComLoginMagicLinkHandlerScreen(viewModel: WPComLoginMagicLinkHandlerViewModel) {
@@ -89,7 +89,7 @@ fun WPComLoginMagicLinkHandlerScreen(
 @Preview
 @Composable
 private fun ErrorPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WPComLoginMagicLinkHandlerScreen(
             viewState = WPComLoginMagicLinkHandlerViewModel.ViewState.Error
         )
@@ -99,7 +99,7 @@ private fun ErrorPreview() {
 @Preview
 @Composable
 private fun LoadingPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WPComLoginMagicLinkHandlerScreen(
             viewState = WPComLoginMagicLinkHandlerViewModel.ViewState.Loading
         )

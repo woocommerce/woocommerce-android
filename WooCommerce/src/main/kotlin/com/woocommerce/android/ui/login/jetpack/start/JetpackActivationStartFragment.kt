@@ -12,7 +12,7 @@ import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainFragment
 import com.woocommerce.android.ui.login.jetpack.start.JetpackActivationStartViewModel.ContinueJetpackConnection
 import com.woocommerce.android.ui.login.jetpack.start.JetpackActivationStartViewModel.NavigateToSiteCredentialsScreen
@@ -33,7 +33,7 @@ class JetpackActivationStartFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     JetpackActivationStartScreen(viewModel = viewModel)
                 }
             }

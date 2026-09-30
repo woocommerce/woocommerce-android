@@ -90,19 +90,21 @@ private fun BlazeCampaignCreationPreviewScreen(
     onHelpTapped: () -> Unit,
     onTosAccepted: (Boolean) -> Unit
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             ToolbarWithHelpButton(
                 title = stringResource(id = R.string.blaze_campaign_screen_fragment_title),
                 onNavigationButtonClick = onBackPressed,
                 onHelpButtonClick = onHelpTapped,
+                showDivider = scrollState.canScrollBackward,
             )
         },
         modifier = Modifier.background(MaterialTheme.colors.surface)
     ) { paddingValues ->
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .fillMaxSize()
                 .padding(paddingValues)
                 .background(color = MaterialTheme.colors.surface)

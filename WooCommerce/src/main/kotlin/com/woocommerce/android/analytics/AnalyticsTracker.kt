@@ -118,8 +118,8 @@ class AnalyticsTracker private constructor(
 
         if (!siteLess && selectedSiteModel != null) {
             finalProperties.putIfAbsent(KEY_BLOG_ID, selectedSiteModel.siteId)
-            finalProperties[KEY_IS_WPCOM_STORE] = selectedSiteModel.isWpComStore
-            finalProperties[KEY_PLAN_PRODUCT_SLUG] = selectedSiteModel.planProductSlug
+            finalProperties.putIfAbsent(KEY_IS_WPCOM_STORE, selectedSiteModel.isWpComStore)
+            finalProperties.putIfAbsent(KEY_PLAN_PRODUCT_SLUG, selectedSiteModel.planProductSlug)
             appPrefs.getWCStoreID(selectedSiteModel.siteId)?.let { finalProperties[KEY_STORE_ID] = it }
             finalProperties.putIfAbsent(IS_JETPACK_INSTALLED, selectedSiteModel.isJetpackInstalled)
             finalProperties.putIfAbsent(IS_JETPACK_CONNECTED, selectedSiteModel.isJetpackConnected)
@@ -127,7 +127,7 @@ class AnalyticsTracker private constructor(
         }
 
         finalProperties[IS_DEBUG] = BuildConfig.DEBUG
-        selectedSiteModel?.url?.let { finalProperties[KEY_SITE_URL] = it }
+        selectedSiteModel?.url?.let { finalProperties.putIfAbsent(KEY_SITE_URL, it) }
         getWooVersion()?.let { finalProperties[KEY_CACHED_WOO_VERSION] = it }
 
         return finalProperties
