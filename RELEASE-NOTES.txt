@@ -1,6 +1,6 @@
 *** Generated from PR titles during code freeze. Do not add entries in feature PRs; see docs/release-notes.md.
-*** Notes keep GitHub's Markdown; include [*****] in the PR title when broader smoke testing is needed.
-*** For user-visible Android Wear changes, include [WEAR] in the PR title.
+*** Use feature: android wear to group Wear changes in the generated notes.
+*** Use testing: release smoke test to request release testing, with details in the PR's test steps.
 
 25.8
 -----

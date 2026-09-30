@@ -10,7 +10,7 @@ gem 'rubocop', '~> 1.91'
 ### Fastlane Plugins
 
 # Proposal dependency: replace with a released gem before merging. See release-toolkit#776.
-gem 'fastlane-plugin-wpmreleasetoolkit', git: 'https://github.com/wordpress-mobile/release-toolkit', ref: 'ce3e8caecdb3ab44a75c08f29602853c7f53f2ad'
+gem 'fastlane-plugin-wpmreleasetoolkit', git: 'https://github.com/wordpress-mobile/release-toolkit', ref: '23b18dec4f8b6789a55c2092a117110259423102'
 # gem 'fastlane-plugin-wpmreleasetoolkit', path: '../../release-toolkit'
 # gem 'fastlane-plugin-wpmreleasetoolkit', git: 'https://github.com/wordpress-mobile/release-toolkit', branch: ''
 

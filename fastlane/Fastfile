@@ -163,12 +163,20 @@ platform :android do
     UI.success("Done! New release branch is: #{git_branch}")
 
     # Compare with the preceding release before bumping the local version or creating unpublished commits.
-    generate_release_notes_file(
+    release_notes_comparison = {
       repository: GITHUB_REPO,
-      version: new_version,
       tag_name: new_version,
       previous_tag: release_version_current,
-      target_commitish: last_git_commit[:commit_hash],
+      target_commitish: last_git_commit[:commit_hash]
+    }
+    release_testing = get_prs_between_tags(
+      **release_notes_comparison,
+      configuration_file_path: '.github/release-testing.yml',
+      fail_on_error: true
+    )
+    generate_release_notes_file(
+      **release_notes_comparison,
+      version: new_version,
       configuration_file_path: '.github/developer-release-notes.yml',
       release_notes_file_path: DEV_RELEASE_NOTES_PATH
     )
@@ -236,6 +244,11 @@ platform :android do
                      end
 
     buildkite_annotate(style: moved_prs.empty? ? 'success' : 'warning', context: 'start-code-freeze', message: moved_prs_info) if is_ci
+
+    testing_message = "## Release smoke testing\n\n" \
+                      "Review the test steps in the PRs below and smoke test the final APK before release. Internal changes are included.\n\n#{release_testing}"
+    UI.message(testing_message)
+    buildkite_annotate(style: 'info', context: 'release-smoke-testing', message: testing_message) if is_ci
   end
 
   # This lane executes the last steps planned on code freeze, creating a new release branch from the current trunk

@@ -5,3 +5,10 @@ changelog:
       - 'impact: internal'
       - 'Releases'
       - 'status: feature-flagged'
+  categories:
+    - title: Android Wear
+      labels:
+        - 'feature: android wear'
+    - title: Changes
+      labels:
+        - '*'
