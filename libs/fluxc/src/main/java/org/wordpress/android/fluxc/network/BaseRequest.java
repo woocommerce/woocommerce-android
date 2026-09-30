@@ -8,6 +8,7 @@ import android.net.Uri.Builder;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Cache;
@@ -71,11 +72,13 @@ public abstract class BaseRequest<T> extends Request<T> {
         public String message;
         public VolleyError volleyError;
         public XmlRpcErrorType xmlRpcErrorType = NOT_SET;
+        @Nullable public UnexpectedStoreResponse unexpectedStoreResponse;
 
         public BaseNetworkError(@NonNull BaseNetworkError error) {
             this.message = error.message;
             this.type = error.type;
             this.volleyError = error.volleyError;
+            this.unexpectedStoreResponse = error.unexpectedStoreResponse;
         }
 
         public BaseNetworkError(@NonNull GenericErrorType error, @NonNull String message,
