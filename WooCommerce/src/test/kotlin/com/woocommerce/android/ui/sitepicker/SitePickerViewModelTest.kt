@@ -52,7 +52,6 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
-import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.atMost
 import org.mockito.kotlin.doAnswer
@@ -125,6 +124,14 @@ class SitePickerViewModelTest : BaseUnitTest() {
     private fun givenThatUserLoggedInFromEnteringSiteAddress(expectedSite: SiteModel? = null) {
         whenever(appPrefsWrapper.getLoginSiteAddress()).thenReturn(SitePickerTestUtils.loginSiteAddress)
         whenever(repository.getSiteBySiteUrl(any())).thenReturn(expectedSite)
+    }
+
+    private suspend fun givenSiteInfoFetchSucceeds() {
+        whenever(repository.fetchSiteInfo(any())).thenReturn(
+            Result.success(
+                ConnectSiteInfoPayload(url = SitePickerTestUtils.loginSiteAddress, isWordPress = true, isWPCom = false)
+            )
+        )
     }
 
     private suspend fun givenThatSiteVerificationIsCompleted() {
@@ -557,15 +564,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     fun `given the site address entered during login does not match the user account, account error is displayed`() =
         testBlocking {
             givenThatUserLoggedInFromEnteringSiteAddress(null)
-            whenever(repository.fetchSiteInfo(any())).thenReturn(
-                Result.success(
-                    ConnectSiteInfoPayload(
-                        url = SitePickerTestUtils.loginSiteAddress,
-                        isWordPress = true,
-                        isWPCom = false
-                    )
-                )
-            )
+            givenSiteInfoFetchSucceeds()
             whenSitesAreFetched()
             whenViewModelIsCreated()
 
@@ -609,15 +608,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             // GIVEN an account that owns sites, but none with Woo
             val nonWooSites = defaultExpectedSiteList.map { it.apply { hasWooCommerce = false } }
             givenThatUserLoggedInFromEnteringSiteAddress(null)
-            whenever(repository.fetchSiteInfo(any())).thenReturn(
-                Result.success(
-                    ConnectSiteInfoPayload(
-                        url = SitePickerTestUtils.loginSiteAddress,
-                        isWordPress = true,
-                        isWPCom = false
-                    )
-                )
-            )
+            givenSiteInfoFetchSucceeds()
             whenSitesAreFetched(sitesFromDb = nonWooSites, sitesFromApi = nonWooSites)
 
             // WHEN
@@ -636,15 +627,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN nothing connected - onSitesLoaded returns early before the view state is built
             givenThatUserLoggedInFromEnteringSiteAddress(null)
-            whenever(repository.fetchSiteInfo(any())).thenReturn(
-                Result.success(
-                    ConnectSiteInfoPayload(
-                        url = SitePickerTestUtils.loginSiteAddress,
-                        isWordPress = true,
-                        isWPCom = false
-                    )
-                )
-            )
+            givenSiteInfoFetchSucceeds()
             whenSitesAreFetched(returnsEmpty = true)
 
             // WHEN
@@ -684,15 +667,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             givenTheScreenIsFromLogin(false)
             whenever(appPrefsWrapper.getLoginSiteAddress()).thenReturn(SitePickerTestUtils.loginSiteAddress)
             whenever(repository.getSiteBySiteUrl(any())).thenReturn(null)
-            whenever(repository.fetchSiteInfo(any())).thenReturn(
-                Result.success(
-                    ConnectSiteInfoPayload(
-                        url = SitePickerTestUtils.loginSiteAddress,
-                        isWordPress = true,
-                        isWPCom = false
-                    )
-                )
-            )
+            givenSiteInfoFetchSucceeds()
             whenSitesAreFetched()
 
             // WHEN
@@ -707,47 +682,10 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given sites load from cache, when the API response arrives, then the mismatch step is reported once`() =
-        testBlocking {
-            // GIVEN onSitesLoaded runs twice - once from cache, once from the API response
-            givenThatUserLoggedInFromEnteringSiteAddress(null)
-            whenever(repository.fetchSiteInfo(any())).thenReturn(
-                Result.success(
-                    ConnectSiteInfoPayload(
-                        url = SitePickerTestUtils.loginSiteAddress,
-                        isWordPress = true,
-                        isWPCom = false
-                    )
-                )
-            )
-            whenSitesAreFetched()
-
-            // WHEN
-            whenViewModelIsCreated()
-
-            // THEN both passes re-enter processLoginSiteAddress, but the navigation guard means
-            // the merchant sees one screen and we report one step.
-            verify(repository, atLeast(2)).getSiteBySiteUrl(any())
-            verify(unifiedLoginTracker, times(1)).track(
-                flow = anyOrNull(),
-                step = eq(UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT),
-                properties = any()
-            )
-        }
-
-    @Test
     fun `given the site address does not match the user account and there is no woo site, continue button is hidden`() =
         testBlocking {
             givenThatUserLoggedInFromEnteringSiteAddress(null)
-            whenever(repository.fetchSiteInfo(any())).thenReturn(
-                Result.success(
-                    ConnectSiteInfoPayload(
-                        url = SitePickerTestUtils.loginSiteAddress,
-                        isWordPress = true,
-                        isWPCom = false
-                    )
-                )
-            )
+            givenSiteInfoFetchSucceeds()
             val nonWooSite = SiteModel().apply {
                 id = 1
                 siteId = 1

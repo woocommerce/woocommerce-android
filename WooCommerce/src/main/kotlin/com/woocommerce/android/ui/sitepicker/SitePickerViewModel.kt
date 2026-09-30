@@ -384,9 +384,6 @@ class SitePickerViewModel @Inject constructor(
                 }
                 if (event.value !is NavigateToAccountMismatchScreen) {
                     // The check is to avoid triggering the navigation multiple times
-                    // Tracked here rather than before the fetch, so the event describes a screen
-                    // the merchant actually saw and fires once: onSitesLoaded runs twice (cache,
-                    // then API) and each pass re-enters processLoginSiteAddress.
                     trackLoginEvent(
                         currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT,
                         properties = mapOf(
