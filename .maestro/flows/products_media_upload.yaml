@@ -109,8 +109,10 @@ tags:
 - inputText: "Maestro Smoke Product ${SUITE_RUN_ID}"
 - hideKeyboard
 
+# Match the result row's title: the search field holds the same text.
 - extendedWaitUntil:
     visible:
+      id: "product_list_title_.*"
       text: "Maestro Smoke Product ${SUITE_RUN_ID}"
     timeout: 20000
     label: "Wait for this run's product in search results"
@@ -119,7 +121,7 @@ tags:
 
 - tapOn:
     id: "product_list_title_.*"
-    index: 0
+    text: "Maestro Smoke Product ${SUITE_RUN_ID}"
     retryTapIfNoChange: true
     label: "Open this run's product"
 
