@@ -22,6 +22,7 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     // -- Login
     SIGNED_IN(siteless = true),
     ACCOUNT_LOGOUT(siteless = true),
+    ACCOUNT_INVOLUNTARY_LOGOUT(siteless = true),
     LOGIN_ACCESSED(siteless = true),
     LOGIN_MAGIC_LINK_EXITED(siteless = true),
     LOGIN_MAGIC_LINK_FAILED(siteless = true),

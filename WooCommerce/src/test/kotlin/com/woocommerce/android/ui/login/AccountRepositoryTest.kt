@@ -4,6 +4,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FakeDispatcher
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
@@ -48,6 +51,7 @@ class AccountRepositoryTest : BaseUnitTest() {
     private val visibleWooSitesDataStore: VisibleWooSitesDataStore = mock()
     private val pushNotificationRepository: PushNotificationRepository = mock()
     private val posDataStore: DataStore<Preferences> = mock()
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val appCoroutineScope = CoroutineScope(coroutinesTestRule.testDispatcher)
     private val dispatcher = FakeDispatcher().apply {
         registerActionHandler(AccountAction.SIGN_OUT) {
@@ -70,8 +74,40 @@ class AccountRepositoryTest : BaseUnitTest() {
         siteVisibilityDataStore = visibleWooSitesDataStore,
         dispatchers = coroutinesTestRule.testDispatchers,
         pushNotificationRepository = pushNotificationRepository,
-        posDataStore = posDataStore
+        posDataStore = posDataStore,
+        analyticsTracker = analyticsTracker
     )
+
+    @Test
+    fun `given user is logged in, when logged out involuntarily, then track the event with the reason`() =
+        testBlocking {
+            // GIVEN
+            given(accountStore.hasAccessToken()).willReturn(true)
+
+            // WHEN
+            repository.logoutInvoluntarily(InvoluntaryLogoutReason.INVALID_TOKEN)
+
+            // THEN
+            verify(analyticsTracker).track(
+                AnalyticsEvent.ACCOUNT_INVOLUNTARY_LOGOUT,
+                mapOf(AnalyticsTracker.KEY_REASON to "invalid_token")
+            )
+            verify(pushNotificationRepository).unregisterDeviceFromPushNotifications()
+        }
+
+    @Test
+    fun `given user is not logged in, when logged out involuntarily, then don't track the event`() =
+        testBlocking {
+            // GIVEN
+            given(accountStore.hasAccessToken()).willReturn(false)
+            given(selectedSite.connectionType).willReturn(null)
+
+            // WHEN
+            repository.logoutInvoluntarily(InvoluntaryLogoutReason.INVALID_TOKEN)
+
+            // THEN
+            verify(analyticsTracker, never()).track(any(), any<Map<String, *>>())
+        }
 
     @Test
     fun `given signed in using wordpress_com, when logout is called, then unregister device from push notifications`() =

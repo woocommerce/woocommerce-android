@@ -48,6 +48,7 @@ import com.woocommerce.android.ui.common.RefreshWPSettings
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.InvoluntaryLogoutReason
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.prefs.CrashReportingSettingSync
@@ -207,6 +208,13 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                             // The previously selected site doesn't have Woo anymore, take the user to the login screen
                             WooLog.w(T.LOGIN, "Selected site no longer has WooCommerce")
 
+                            analyticsTracker.track(
+                                AnalyticsEvent.ACCOUNT_INVOLUNTARY_LOGOUT,
+                                mapOf(
+                                    AnalyticsTracker.KEY_REASON to
+                                        InvoluntaryLogoutReason.WOOCOMMERCE_NOT_AVAILABLE.trackingValue
+                                )
+                            )
                             selectedSite.reset()
                             restartMainActivity()
                         }
@@ -390,8 +398,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     private fun monitorApplicationPasswordsStatus() {
-        suspend fun logUserOut() {
-            accountRepository.get().logout()
+        suspend fun logUserOut(reason: InvoluntaryLogoutReason) {
+            accountRepository.get().logoutInvoluntarily(reason)
             restartMainActivity()
         }
 
@@ -401,7 +409,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 .onEach {
                     if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
                         WooLog.w(T.LOGIN, "Application Passwords support has been disabled in the current site")
-                        logUserOut()
+                        logUserOut(InvoluntaryLogoutReason.APPLICATION_PASSWORDS_DISABLED)
                     }
                 }.launchIn(this)
 
@@ -411,7 +419,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 .onEach {
                     if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
                         WooLog.w(T.LOGIN, "Use is unauthorized to generate a new application password")
-                        logUserOut()
+                        logUserOut(InvoluntaryLogoutReason.APPLICATION_PASSWORD_UNAUTHORIZED)
                     }
                 }.launchIn(this)
         }

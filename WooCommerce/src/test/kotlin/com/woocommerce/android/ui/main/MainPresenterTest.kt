@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.main
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.InvoluntaryLogoutReason
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -156,7 +157,7 @@ class MainPresenterTest : BaseUnitTest() {
         event.error = AuthenticationError(INVALID_TOKEN, "Invalid token")
         mainPresenter.onAuthenticationChanged(event)
 
-        verify(accountRepository).logout()
+        verify(accountRepository).logoutInvoluntarily(InvoluntaryLogoutReason.INVALID_TOKEN)
         verify(mainContractView).restart()
     }
 }

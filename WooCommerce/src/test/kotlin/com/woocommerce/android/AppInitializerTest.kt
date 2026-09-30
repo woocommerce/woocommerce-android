@@ -16,6 +16,7 @@ import com.woocommerce.android.network.WPComSiteInvalidationNotifier
 import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.RefreshWPSettings
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
@@ -26,6 +27,7 @@ import org.mockito.MockedStatic
 import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
@@ -37,6 +39,7 @@ import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WPComSiteInvalidationEvent
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WPComSiteInvalidationReason
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
@@ -54,6 +57,7 @@ class AppInitializerTest : BaseUnitTest() {
     private val workManagerMock: WorkManagerImpl = mock()
     private val selectedSiteMock: SelectedSite = mock()
     private val wooCommerceStoreMock: WooCommerceStore = mock()
+    private val refreshWPSettingsMock: RefreshWPSettings = mock()
     private val prefsMock: AppPrefs = mock()
     private val wpComSiteInvalidationNotifier = WPComSiteInvalidationNotifier()
     private val processLifecycle = ProcessLifecycleOwner.get().lifecycle as LifecycleRegistry
@@ -76,6 +80,7 @@ class AppInitializerTest : BaseUnitTest() {
             this.connectionReceiver = connectionReceiverMock
             this.selectedSite = selectedSiteMock
             this.wooCommerceStore = wooCommerceStoreMock
+            this.refreshWPSettings = refreshWPSettingsMock
             this.prefs = prefsMock
             this.wpComSiteInvalidationNotifier = this@AppInitializerTest.wpComSiteInvalidationNotifier
             this.appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
@@ -230,6 +235,50 @@ class AppInitializerTest : BaseUnitTest() {
         verify(selectedSiteMock, never()).reset(persistSynchronously = true)
     }
 
+    @Test
+    fun `given selected site lost WooCommerce, when site is updated, then track involuntary logout`() = testBlocking {
+        // GIVEN
+        val site = SiteModel().apply {
+            siteId = SITE_ID
+            origin = SiteModel.ORIGIN_WPAPI
+            hasWooCommerce = false
+        }
+        whenever(selectedSiteMock.getIfExists()).thenReturn(site)
+        whenever(wooCommerceStoreMock.fetchWooCommerceSite(site)).thenReturn(WooResult(site))
+
+        // WHEN
+        triggerUpdateSelectedSite()
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+        // THEN
+        verify(analyticsTrackerMock).track(
+            AnalyticsEvent.ACCOUNT_INVOLUNTARY_LOGOUT,
+            mapOf(AnalyticsTracker.KEY_REASON to "woocommerce_not_available")
+        )
+        verify(selectedSiteMock).reset()
+    }
+
+    @Test
+    fun `given selected site still has WooCommerce, when site is updated, then do not track involuntary logout`() =
+        testBlocking {
+            // GIVEN
+            val site = SiteModel().apply {
+                siteId = SITE_ID
+                origin = SiteModel.ORIGIN_WPAPI
+                hasWooCommerce = true
+            }
+            whenever(selectedSiteMock.getIfExists()).thenReturn(site)
+            whenever(wooCommerceStoreMock.fetchWooCommerceSite(site)).thenReturn(WooResult(site))
+
+            // WHEN
+            triggerUpdateSelectedSite()
+            coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTrackerMock, never()).track(eq(AnalyticsEvent.ACCOUNT_INVOLUNTARY_LOGOUT), any())
+            verify(selectedSiteMock, never()).reset()
+        }
+
     private fun givenSelectedSite() {
         whenever(selectedSiteMock.getOrNull()).thenReturn(
             SiteModel().apply { siteId = SITE_ID }
@@ -253,6 +302,13 @@ class AppInitializerTest : BaseUnitTest() {
             isAccessible = true
             setBoolean(this@setConnectionReceiverRegistered, true)
         }
+    }
+
+    private fun triggerUpdateSelectedSite() {
+        val task = AppInitializer::class.java.getDeclaredField("updateSelectedSite").apply {
+            isAccessible = true
+        }.get(sut)
+        task.javaClass.getDeclaredMethod("run").apply { isAccessible = true }.invoke(task)
     }
 
     private fun AppInitializer.startWPComSiteInvalidationMonitor() {
