@@ -19,7 +19,8 @@ public class SiteErrorUtils {
             }
         }
 
-        SiteError siteError = new SiteError(errorType, error.message, SelfHostedErrorType.NOT_SET);
+        SiteError siteError = new SiteError(
+                errorType, error.message, SelfHostedErrorType.NOT_SET, null, error.unexpectedStoreResponse);
 
         switch (error.xmlRpcErrorType) {
             case METHOD_NOT_ALLOWED:
