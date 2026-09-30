@@ -165,6 +165,20 @@ tags:
     when:
       notVisible: "Select an upload method"
     commands:
+      # The gallery scrolls sideways and the button follows the last image.
+      - repeat:
+          while:
+            notVisible:
+              text: "Add image"
+              childOf:
+                id: "productDetailImageGallery"
+          times: 5
+          commands:
+            - swipe:
+                from:
+                  id: "productDetailImageGallery"
+                direction: LEFT
+                duration: 400
       - tapOn:
           text: "Add image"
           childOf:
@@ -284,6 +298,20 @@ tags:
     when:
       notVisible: "Select an upload method"
     commands:
+      # The gallery scrolls sideways and the button follows the last image.
+      - repeat:
+          while:
+            notVisible:
+              text: "Add image"
+              childOf:
+                id: "productDetailImageGallery"
+          times: 5
+          commands:
+            - swipe:
+                from:
+                  id: "productDetailImageGallery"
+                direction: LEFT
+                duration: 400
       - tapOn:
           text: "Add image"
           childOf:
