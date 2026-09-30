@@ -141,9 +141,6 @@ open class WooCommerceStore @Inject internal constructor(
     suspend fun getSiteSettings(site: SiteModel): Settings? =
         settingsDao.getSettings(site.localId())?.let { WCSettingsMapper.mapToDomain(it) }
 
-    private fun getSiteSettingsBlocking(site: SiteModel): Settings? =
-        runBlocking { getSiteSettings(site) }
-
     /**
      * Returns a Flow that emits all WooCommerce site settings whenever any of them change.
      */
@@ -612,24 +609,22 @@ open class WooCommerceStore @Inject internal constructor(
     /**
      * Formats currency amounts for display based on the site's settings and the device locale.
      *
-     * If there is no [WCSettingsModel] associated with the given [site], the [rawValue] will be returned without
+     * If [siteSettings] is null, the [rawValue] will be returned without
      * decimal formatting, but with the appropriate currency symbol prepended to the [rawValue].
      *
      * @param rawValue the amount to be formatted
-     * @param site the associated [SiteModel] - this will be used to resolve the corresponding [WCSettingsModel]
+     * @param siteSettings the site's settings, or null if no settings are stored for the site
      * @param currencyCode an optional, ISO 4217 currency code to use. If not supplied, the site's currency code
-     * will be used (obtained from the [WCSettingsModel] corresponding to the given [site]
+     * will be used (obtained from [siteSettings])
      * @param applyDecimalFormatting whether or not to apply decimal formatting to the value. If `false`, only the
      * currency symbol and positioning will be applied. This is useful for values for 'pretty' display, e.g. $1.2k.
      */
     fun formatCurrencyForDisplay(
         rawValue: String,
-        site: SiteModel,
+        siteSettings: Settings?,
         currencyCode: String? = null,
         applyDecimalFormatting: Boolean
     ): String {
-        val siteSettings = getSiteSettingsBlocking(site)
-
         // Resolve the currency code to a localized symbol
         val resolvedCurrencyCode = currencyCode?.takeIf { it.isNotEmpty() } ?: siteSettings?.currencyCode
         val currencySymbol = resolvedCurrencyCode?.let {
@@ -684,11 +679,11 @@ open class WooCommerceStore @Inject internal constructor(
 
     fun formatCurrencyForDisplay(
         amount: Double,
-        site: SiteModel,
+        siteSettings: Settings?,
         currencyCode: String? = null,
         applyDecimalFormatting: Boolean
     ): String {
-        return formatCurrencyForDisplay(amount.toString(), site, currencyCode, applyDecimalFormatting)
+        return formatCurrencyForDisplay(amount.toString(), siteSettings, currencyCode, applyDecimalFormatting)
     }
 }
 
