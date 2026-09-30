@@ -9,6 +9,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wordpress.android.fluxc.network.UnexpectedStoreResponse;
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseLogger;
 import org.wordpress.android.fluxc.network.UnexpectedStoreResponseParseError;
 import org.wordpress.android.fluxc.network.rest.GsonRequest;
 import org.wordpress.android.fluxc.network.rest.ResponseWithHeaders;
@@ -101,6 +102,10 @@ public class WPAPIGsonRequest<T> extends GsonRequest<T> {
             if (mOnAuthFailedListener != null && authenticationError != null) {
                 mOnAuthFailedListener.onAuthFailed(new AuthenticateErrorPayload(authenticationError));
             }
+        }
+
+        if (error.unexpectedStoreResponse != null) {
+            UnexpectedStoreResponseLogger.log(error.unexpectedStoreResponse);
         }
 
         return new WPAPINetworkError(error, errorCode, errorData);
