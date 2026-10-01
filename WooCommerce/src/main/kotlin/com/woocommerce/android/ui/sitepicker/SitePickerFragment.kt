@@ -106,6 +106,11 @@ class SitePickerFragment :
         handleResults()
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.restoreEpilogueFlow()
+    }
+
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_site_picker, menu)
     }
