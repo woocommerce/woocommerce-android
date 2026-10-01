@@ -194,7 +194,7 @@ def main() -> int:
         lint = subprocess.run(lint_command, cwd=REPO_ROOT, capture_output=True, text=True)
         checks.append(Check("ok" if lint.returncode == 0 else "fail", f"{args.env_file} lint {'passed' if lint.returncode == 0 else 'failed'}"))
     else:
-        checks.append(Check("warn", f"{args.env_file} not found; expecting credentials from exported environment or CI secrets"))
+        checks.append(Check("warn", f"{args.env_file} not found; expecting credentials from the exported environment"))
 
     env = dict(os.environ)
     env.update(parse_env_file(args.env_file))

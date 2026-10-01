@@ -48,7 +48,7 @@ Validate the file before running flows, especially after pasting passwords:
 .maestro/scripts/lint-env.py
 ```
 
-Run the pre-flight doctor when setting up a machine, changing credentials, or preparing CI secrets:
+Run the pre-flight doctor when setting up a machine or changing credentials:
 
 ```bash
 .maestro/scripts/doctor.sh --profile phone-full --store lab --device emulator-5554
