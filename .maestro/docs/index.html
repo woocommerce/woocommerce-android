@@ -55,7 +55,7 @@
       <tr><td><code>android_system</code></td><td>Launcher/system-surface flows on an English Pixel Launcher AVD.</td></tr>
       <tr><td><code>system_surface</code></td><td>Flows that enter Android-owned UI and stop at the documented handoff boundary.</td></tr>
       <tr><td><code>destructive</code></td><td>Mutates store data.</td></tr>
-      <tr><td><code>flaky_quarantine</code></td><td>Excluded from real runs until promotion.</td></tr>
+      <tr><td><code>flaky_quarantine</code></td><td>Excluded from real runs.</td></tr>
     </tbody>
   </table>
 
@@ -64,7 +64,7 @@
   <p><code>point:</code> selectors require an inline YAML comment explaining why no semantic selector exists.</p>
 
   <h2>Reliability Policy</h2>
-  <p>Each failed flow gets one automatic retry. Pass-on-retry and pass-with-recovery count as flaky and make the run non-clean. Promotion requires clean results across two consecutive bi-weekly Thursday bursts. Quarantine is triggered by two flaky results in one burst or flaky results in two consecutive bursts.</p>
+  <p>Each failed flow gets one automatic retry. Pass-on-retry and pass-with-recovery count as flaky and make the run non-clean.</p>
 
   <h2>Coverage</h2>
   <p>The committed snapshot is <code>.maestro/smoke-coverage.yaml</code>. Flow headers declare checklist IDs with <code># p2:</code>. Validate locally:</p>

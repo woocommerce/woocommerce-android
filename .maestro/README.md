@@ -201,8 +201,7 @@ The runner:
 
 All login flows are required `smoke_core` coverage except `login_google`. It stays tagged `flaky_quarantine` because
 Google sign-in only accepts the Play-signed build, and the runner installs the GitHub release or a local build.
-Other provisional imported flows remain tagged `flaky_quarantine`
-until they graduate through the burst-based promotion policy.
+Other provisional imported flows remain tagged `flaky_quarantine`.
 
 ## Coverage
 

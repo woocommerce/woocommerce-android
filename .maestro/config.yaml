@@ -17,7 +17,7 @@
 #   pos_tablet        POS flows, tablet AVD required.
 #   destructive       Mutates store data; lab store only.
 #   flaky_quarantine  Provisional or known-unstable flows excluded by runner
-#                     defaults until promotion criteria are met.
+#                     defaults.
 #
 # The local runner `.maestro/scripts/run-smoke-tests.sh` owns default tag
 # filtering, store selection, fixture seed/cleanup, retry accounting, and
