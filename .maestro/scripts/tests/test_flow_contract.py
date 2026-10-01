@@ -8,7 +8,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
-class MaestroCiContractTests(unittest.TestCase):
+class MaestroFlowContractTests(unittest.TestCase):
     def test_given_login_credentials_when_referenced_then_they_keep_the_maestro_prefix(self) -> None:
         login_files = [
             *sorted((REPO_ROOT / ".maestro" / "flows").glob("login_*.yaml")),
