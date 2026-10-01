@@ -703,7 +703,7 @@ resolve_device() {
     echo "  $index) $serial ${avd:+($avd)}" >&2
     index=$((index + 1))
   done
-  if [[ -n "${CI:-}" || -n "${BUILDKITE:-}" || ! -t 0 ]]; then
+  if [[ ! -t 0 ]]; then
     echo "Pass --device when multiple devices are connected." >&2
     exit 1
   fi
@@ -1348,7 +1348,7 @@ echo "Report: $REPORT_FILE"
 echo "JUnit:  $JUNIT_FILE"
 echo "Result: $PASSED passed ($FLAKY flaky), $FAILED failed out of $TOTAL_RUNS flow executions; cleanup $CLEANUP_STATUS (${SUITE_DURATION}s)"
 
-if [[ -f "$REPORT_FILE" && "$OPEN_REPORT" == "auto" && -z "${CI:-}" && -z "${BUILDKITE:-}" && "$(uname)" == "Darwin" ]]; then
+if [[ -f "$REPORT_FILE" && "$OPEN_REPORT" == "auto" && "$(uname)" == "Darwin" ]]; then
   open "$REPORT_FILE" || true
 fi
 

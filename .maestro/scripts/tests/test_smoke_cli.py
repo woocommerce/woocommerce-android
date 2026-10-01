@@ -101,7 +101,7 @@ class SmokeCliContractTest(unittest.TestCase):
             "WOO_MAESTRO_OUTPUT_DIR": str(output_root),
         }
         result = subprocess.run(
-            [str(RUNNER), *args],
+            [str(RUNNER), "--no-open", *args],
             cwd=REPO_ROOT,
             env=env,
             capture_output=True,
@@ -145,7 +145,6 @@ class SmokeCliContractTest(unittest.TestCase):
         env = {key: value for key, value in os.environ.items() if not key.startswith("MAESTRO_WOO_")}
         env.update(
             {
-                "CI": "1",
                 "HOME": str(temporary_path),
                 "PATH": f"{fake_bin}:/usr/bin:/bin",
                 "WOO_MAESTRO_ENV_FILE": str(temporary_path / "missing.env"),
@@ -154,7 +153,7 @@ class SmokeCliContractTest(unittest.TestCase):
         )
         env.update(env_overrides or {})
         result = subprocess.run(
-            [str(RUNNER), *args],
+            [str(RUNNER), "--no-open", *args],
             cwd=REPO_ROOT,
             env=env,
             capture_output=True,
@@ -202,7 +201,6 @@ class SmokeCliContractTest(unittest.TestCase):
         env = {key: value for key, value in os.environ.items() if not key.startswith("MAESTRO_WOO_")}
         env.update(
             {
-                "CI": "1",
                 "HOME": str(temporary_path),
                 "PATH": f"{fake_bin}:/usr/bin:/bin",
                 "WOO_MAESTRO_ENV_FILE": str(temporary_path / "missing.env"),
@@ -212,7 +210,7 @@ class SmokeCliContractTest(unittest.TestCase):
             }
         )
         result = subprocess.run(
-            [str(RUNNER), *args],
+            [str(RUNNER), "--no-open", *args],
             cwd=REPO_ROOT,
             env=env,
             capture_output=True,
@@ -298,7 +296,6 @@ class SmokeCliContractTest(unittest.TestCase):
         env = {key: value for key, value in os.environ.items() if not key.startswith("MAESTRO_WOO_")}
         env.update(
             {
-                "CI": "1",
                 "HOME": str(temporary_path),
                 "PATH": f"{fake_bin}:/usr/bin:/bin",
                 "WOO_MAESTRO_ENV_FILE": str(temporary_path / "missing.env"),
@@ -307,7 +304,7 @@ class SmokeCliContractTest(unittest.TestCase):
             }
         )
         result = subprocess.run(
-            [str(RUNNER), *args],
+            [str(RUNNER), "--no-open", *args],
             cwd=REPO_ROOT,
             env=env,
             capture_output=True,
