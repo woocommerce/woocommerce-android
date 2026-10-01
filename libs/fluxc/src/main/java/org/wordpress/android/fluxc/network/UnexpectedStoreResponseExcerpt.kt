@@ -1,19 +1,43 @@
 package org.wordpress.android.fluxc.network
 
+import com.google.gson.JsonObject
+import com.google.gson.JsonParseException
+import com.google.gson.JsonParser
 import org.apache.commons.text.StringEscapeUtils
 
 object UnexpectedStoreResponseExcerpt {
     fun from(body: String): String? {
+        val excerpt = jsonErrorText(body) ?: pageText(body)
+        return excerpt.masked().truncated().ifEmpty { null }
+    }
+
+    private fun pageText(body: String): String {
         val visibleBody = body.replace(HIDDEN_REGION_PATTERN, " ")
         val title = TITLE_PATTERN.find(visibleBody)?.groupValues?.get(1)?.visibleText()?.cleaned().orEmpty()
         val text = visibleBody.replace(HEAD_PATTERN, " ").visibleText().substringBeforeJson().cleaned()
-        val excerpt = when {
+        return when {
             title.isEmpty() || text.startsWith(title) -> text
             text.isEmpty() -> title
             else -> "$title | $text"
         }
-        return excerpt.masked().truncated().ifEmpty { null }
     }
+
+    private fun jsonErrorText(body: String): String? {
+        val error = body.takeIf { it.trimStart().startsWith("{") }?.toJsonObjectOrNull()
+        val code = error?.stringOrNull("code")
+        val message = error?.stringOrNull("message")
+        return if (code != null && message != null) "$code | ${message.visibleText()}".cleaned() else null
+    }
+
+    @Suppress("SwallowedException")
+    private fun String.toJsonObjectOrNull(): JsonObject? = try {
+        JsonParser.parseString(this).takeIf { it.isJsonObject }?.asJsonObject
+    } catch (e: JsonParseException) {
+        null
+    }
+
+    private fun JsonObject.stringOrNull(name: String): String? =
+        get(name)?.takeIf { it.isJsonPrimitive }?.asString
 
     private fun String.visibleText(): String {
         val text = replace(TAG_PATTERN, " ").replace(WHITESPACE_PATTERN, " ").trim()

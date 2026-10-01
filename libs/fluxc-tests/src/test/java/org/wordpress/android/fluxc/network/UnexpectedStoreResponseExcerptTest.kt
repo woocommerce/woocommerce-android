@@ -85,8 +85,17 @@ class UnexpectedStoreResponseExcerptTest {
     }
 
     @Test
-    fun `given a JSON body, when the excerpt is built, then it is null`() {
+    fun `given a WordPress JSON error, when the excerpt is built, then it has the code and the message`() {
         val body = """{"code":"internal_server_error","message":"<p>There has been a critical error.</p>"}"""
+
+        val excerpt = UnexpectedStoreResponseExcerpt.from(body)
+
+        assertThat(excerpt).isEqualTo("internal_server_error | There has been a critical error.")
+    }
+
+    @Test
+    fun `given JSON data, when the excerpt is built, then it is null`() {
+        val body = """{"id":727,"billing":{"first_name":"Jane","last_name":"Doe"}}"""
 
         val excerpt = UnexpectedStoreResponseExcerpt.from(body)
 
