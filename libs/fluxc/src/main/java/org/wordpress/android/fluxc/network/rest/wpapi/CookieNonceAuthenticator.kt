@@ -179,7 +179,9 @@ class CookieNonceAuthenticator @Inject constructor(
             )
             is Available -> error("An available nonce cannot be converted to an error response")
         }
-        return WPAPIResponse.Error(WPAPINetworkError(BaseNetworkError(genericErrorType, message)))
+        val error = BaseNetworkError(genericErrorType, message)
+        error.unexpectedStoreResponse = (this as? FailedRequest)?.unexpectedStoreResponse
+        return WPAPIResponse.Error(WPAPINetworkError(error))
     }
 
     sealed interface CookieNonceAuthenticationResult {
