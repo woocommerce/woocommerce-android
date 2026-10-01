@@ -21,7 +21,14 @@ object UnexpectedStoreResponseExcerpt {
         } else {
             text
         }
-        return SensitiveDataSanitizer.sanitize(StringEscapeUtils.unescapeHtml4(textStart))
+        return SensitiveDataSanitizer.sanitize(textStart.unescapedHtml())
+    }
+
+    @Suppress("SwallowedException")
+    private fun String.unescapedHtml(): String = try {
+        StringEscapeUtils.unescapeHtml4(this)
+    } catch (e: IllegalArgumentException) {
+        this
     }
 
     private fun String.masked(): String =
