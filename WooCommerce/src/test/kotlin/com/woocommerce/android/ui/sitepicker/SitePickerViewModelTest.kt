@@ -716,6 +716,13 @@ class SitePickerViewModelTest : BaseUnitTest() {
             viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
 
             verify(repository, atLeastOnce()).getSiteBySiteUrl(any())
+            verify(analyticsTrackerWrapper, atLeastOnce()).track(
+                AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE,
+                mapOf(
+                    AnalyticsTracker.KEY_URL to url,
+                    AnalyticsTracker.KEY_HAS_CONNECTED_STORES to true
+                )
+            )
             verify(unifiedLoginTracker).track(
                 flow = anyOrNull(),
                 step = eq(UnifiedLoginTracker.Step.NOT_WOO_STORE),
@@ -1121,6 +1128,37 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 flow = anyOrNull(),
                 step = eq(UnifiedLoginTracker.Step.NOT_WOO_STORE),
                 properties = argThat { get(AnalyticsTracker.KEY_URL) == "simple.wordpress.com" }
+            )
+        }
+
+    @Test
+    fun `given the picker was not opened from login, when a site has no Woo, then only the legacy event fires`() =
+        testBlocking {
+            // GIVEN a merchant connecting another store from the app, not logging in
+            givenTheScreenIsFromLogin(false)
+            givenThatUserLoggedInFromEnteringSiteAddress(
+                defaultExpectedSiteList[1].apply {
+                    hasWooCommerce = false
+                    setIsJetpackConnected(true)
+                }
+            )
+            whenSitesAreFetched()
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN the step is login-only, so the legacy event is what keeps this route measured
+            verify(analyticsTrackerWrapper, atLeastOnce()).track(
+                AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE,
+                mapOf(
+                    AnalyticsTracker.KEY_URL to SitePickerTestUtils.loginSiteAddress,
+                    AnalyticsTracker.KEY_HAS_CONNECTED_STORES to true
+                )
+            )
+            verify(unifiedLoginTracker, never()).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.NOT_WOO_STORE),
+                properties = anyOrNull()
             )
         }
 

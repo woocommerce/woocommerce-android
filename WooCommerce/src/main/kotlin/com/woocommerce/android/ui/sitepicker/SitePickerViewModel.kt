@@ -414,6 +414,14 @@ class SitePickerViewModel @Inject constructor(
     }
 
     private fun loadWooNotFoundView(site: SiteModel) {
+        // Tracks this screen outside a login journey, which the login-only step below does not.
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE,
+            mapOf(
+                AnalyticsTracker.KEY_URL to site.url,
+                AnalyticsTracker.KEY_HAS_CONNECTED_STORES to sitePickerViewState.hasConnectedStores
+            )
+        )
         trackNotWooStore(site)
         // Make sure installation is enabled only for selfhosted and atomic sites
         // TODO remove this when we handle non-atomic sites
