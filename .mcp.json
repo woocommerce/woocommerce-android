@@ -5,8 +5,8 @@
       "args": ["-y", "@mobilenext/mobile-mcp@latest"]
     },
     "maestro": {
-      "command": "maestro",
-      "args": ["mcp"]
+      "command": "bash",
+      "args": [".maestro/scripts/maestro-mcp.sh"]
     },
     "context-a8c": {
       "command": "npx",
