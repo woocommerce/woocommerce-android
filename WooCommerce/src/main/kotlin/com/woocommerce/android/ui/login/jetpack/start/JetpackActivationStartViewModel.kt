@@ -50,6 +50,7 @@ class JetpackActivationStartViewModel @Inject constructor(
     }.asLiveData()
 
     init {
+        // Tracks this screen outside a login journey, which the login-only step below does not.
         analyticsTrackerWrapper.track(
             stat = if (navArgs.jetpackStatus.isJetpackInstalled) {
                 AnalyticsEvent.LOGIN_JETPACK_CONNECTION_ERROR_SHOWN
@@ -57,17 +58,18 @@ class JetpackActivationStartViewModel @Inject constructor(
                 AnalyticsEvent.LOGIN_JETPACK_REQUIRED_SCREEN_VIEWED
             }
         )
-        // Reachable outside a login session too, where no flow has been set yet.
-        unifiedLoginTracker.track(
-            flow = unifiedLoginTracker.getFlow() ?: UnifiedLoginTracker.Flow.EPILOGUE,
-            step = if (navArgs.jetpackStatus.isJetpackInstalled) {
-                UnifiedLoginTracker.Step.JETPACK_NOT_CONNECTED
-            } else {
-                UnifiedLoginTracker.Step.JETPACK_NOT_INSTALLED
-            },
-            // The tracker appends the selected store, which is not the site being connected.
-            properties = mapOf(AnalyticsTracker.KEY_URL to UrlUtils.removeScheme(navArgs.siteUrl))
-        )
+        if (navArgs.openedFromLogin) {
+            unifiedLoginTracker.track(
+                flow = unifiedLoginTracker.getFlow() ?: UnifiedLoginTracker.Flow.EPILOGUE,
+                step = if (navArgs.jetpackStatus.isJetpackInstalled) {
+                    UnifiedLoginTracker.Step.JETPACK_NOT_CONNECTED
+                } else {
+                    UnifiedLoginTracker.Step.JETPACK_NOT_INSTALLED
+                },
+                // The tracker appends the selected store, not the site being connected.
+                properties = mapOf(AnalyticsTracker.KEY_URL to UrlUtils.removeScheme(navArgs.siteUrl))
+            )
+        }
     }
 
     fun onHelpButtonClick() {

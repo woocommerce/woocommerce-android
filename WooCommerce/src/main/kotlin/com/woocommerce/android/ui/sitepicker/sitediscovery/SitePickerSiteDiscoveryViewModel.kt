@@ -22,6 +22,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScre
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -56,11 +57,16 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
         private const val ADDRESS_VALIDATION_DEBOUNCE_DELAY_MS = 1000L
     }
 
+    private val navArgs: SitePickerSiteDiscoveryFragmentArgs by savedStateHandle.navArgs()
+
     init {
-        unifiedLoginTracker.track(
-            flow = UnifiedLoginTracker.Flow.SITE_DISCOVERY,
-            step = UnifiedLoginTracker.Step.START
-        )
+        // The picker also opens from the store switcher, which is not a login journey.
+        if (navArgs.openedFromLogin) {
+            unifiedLoginTracker.track(
+                flow = UnifiedLoginTracker.Flow.SITE_DISCOVERY,
+                step = UnifiedLoginTracker.Step.START
+            )
+        }
     }
 
     private val siteAddressFlow = savedStateHandle.getStateFlow(viewModelScope, "")
