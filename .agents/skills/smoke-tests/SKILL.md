@@ -94,7 +94,7 @@ Tell the user:
 
 - The default command runs `smoke_core` only and excludes `flaky_quarantine`.
 - Use `--include-tags smoke_extended` or a single flow path for provisional repair work.
-- Use `--store shared` only for non-destructive ad-hoc runs; destructive shared-store runs are CI-only under the store lock.
+- Use `--store shared` only for non-destructive ad-hoc runs; the runner refuses destructive flows there.
 - The runner seeds fixtures, writes a manifest, and cleans exactly those IDs on exit.
 - It captures and restores device animation settings.
 - Screen recordings are kept only for failed lab-store flows; shared-store credential paths use screenshots only.

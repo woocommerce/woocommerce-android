@@ -26,14 +26,6 @@ class FailingWooClient:
         return {"id": 101}
 
 
-class LockWooClient:
-    def list(self, path: str, **query) -> list[dict]:
-        return []
-
-    def create(self, path: str, payload: dict) -> dict:
-        return {"id": 202, "name": payload["name"]}
-
-
 class PartiallyFailingCleanupClient:
     def __init__(self) -> None:
         self.delete_count = 0
@@ -94,28 +86,6 @@ class SeedFixturesTests(unittest.TestCase):
             [{"id": 101, "label": "variable product tag", "type": "product_tag"}],
             saved["entities"],
         )
-
-    def test_lock_lifecycle_is_separate_from_fixture_entities(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            manifest = Path(directory) / "run-manifest.json"
-            args = argparse.Namespace(
-                run_id="SUITE-20260805-abc123",
-                store="shared",
-                manifest=str(manifest),
-                ttl_seconds=60,
-            )
-            original_client = seed_fixtures.WooClient
-            seed_fixtures.WooClient = LockWooClient
-            try:
-                with contextlib.redirect_stdout(io.StringIO()):
-                    seed_fixtures.lock(args)
-            finally:
-                seed_fixtures.WooClient = original_client
-
-            saved = json.loads(manifest.read_text(encoding="utf-8"))
-
-        self.assertEqual(202, saved["lock"]["id"])
-        self.assertEqual([], saved["entities"])
 
     def test_cleanup_journals_each_successful_deletion_before_continuing(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

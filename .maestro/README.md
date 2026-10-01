@@ -16,9 +16,7 @@ site credentials as the `lab` store block when running the broader suite. The ru
 `/wp-admin` or `/wp-admin/` from this flow's site URL. WordPress.com-hosted not-Woo fixtures require the dedicated
 `MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL/PASSWORD` pair.
 
-Destructive flows against the shared store are refused outside CI. In CI, they require `--seed`, the complete
-`MAESTRO_WOO_SHARED_*` login and REST credential block, and the exact `inpersonpayments.wpcomstaging.com` host. The
-runner acquires a REST-backed store lock before any ADB interaction and removes it on exit.
+The runner refuses destructive flows against the shared store. Run them with `--store lab`.
 
 ## Local Setup
 
@@ -166,8 +164,8 @@ Profiles are copy/paste-safe presets:
   production app discoverable as `Woo` in the app drawer.
 
 Use `--plan` with a profile or tag selection to print the exact store, repeat count, filters, and ordered flow list.
-Planning is side-effect-free: it does not load credentials, create output directories, call Maestro/ADB, or acquire a
-store lock. `flaky_quarantine` stays excluded unless the selected profile includes it or `--include-quarantine` is
+Planning is side-effect-free: it does not load credentials, create output directories, or call Maestro/ADB.
+`flaky_quarantine` stays excluded unless the selected profile includes it or `--include-quarantine` is
 passed explicitly. A zero-flow selection is an error in both the runner and doctor.
 
 `--rerun-failed report.xml` reads failed/flaky JUnit test cases and runs only those flow files. It still honors

@@ -15,7 +15,7 @@
 #   smoke_core        Stable non-destructive release-signal paths.
 #   smoke_extended    Broader P2 coverage.
 #   pos_tablet        POS flows, tablet AVD required.
-#   destructive       Mutates store data; shared store only in CI under lock.
+#   destructive       Mutates store data; lab store only.
 #   flaky_quarantine  Provisional or known-unstable flows excluded by runner
 #                     defaults until promotion criteria are met.
 #
