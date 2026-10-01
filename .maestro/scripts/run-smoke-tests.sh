@@ -23,7 +23,6 @@ PLAN_SCRIPT="$REPO_ROOT/.maestro/scripts/smoke_plan.py"
 CHECK_TOOLCHAIN_SCRIPT="$REPO_ROOT/.maestro/scripts/check-toolchain.py"
 CHECK_DEVICE_LOCALE_SCRIPT="$REPO_ROOT/.maestro/scripts/device_locale.py"
 ENSURE_RELEASE_APP_SCRIPT="$REPO_ROOT/.maestro/scripts/ensure_release_app.py"
-SHARED_STORE_HOST="inpersonpayments.wpcomstaging.com"
 APP_ID="com.woocommerce.android"
 
 RUN_STAMP="$(date +%Y%m%d%H%M%S)"
@@ -76,7 +75,7 @@ Usage:
   .maestro/scripts/run-smoke-tests.sh .maestro/flows/orders_list_and_search.yaml
 
 Options:
-  --profile name              Preset: core, phone-full, release, burst, pos-tablet, android-system.
+  --profile name              Preset: core, phone-full, pos-tablet, android-system.
   --store lab|shared          Select fixture/credential namespace. Default: lab.
   --device serial|avd-name    Device serial or emulator AVD name.
   --apk path                  Validate and install a production release APK before running.
@@ -123,8 +122,6 @@ apply_profile() {
   EXCLUDE_TAGS=()
   while IFS=$'\t' read -r key value; do
     case "$key" in
-      store) STORE="$value" ;;
-      repeat) REPEAT="$value" ;;
       include) add_csv_tags INCLUDE_TAGS "$value" ;;
       exclude) add_csv_tags EXCLUDE_TAGS "$value" ;;
     esac
@@ -561,46 +558,11 @@ if [[ "$SEED" == "yes" && "$SUITE_HAS_DESTRUCTIVE" != "yes" ]]; then
   echo "No destructive flows selected; skipping fixture seeding."
   SEED="no"
 fi
-if [[ "$STORE" == "shared" && "$SUITE_HAS_DESTRUCTIVE" == "yes" && -z "${CI:-}" && -z "${BUILDKITE:-}" ]]; then
-  echo "Refusing to run destructive flows against the shared store outside CI." >&2
+if [[ "$STORE" == "shared" && "$SUITE_HAS_DESTRUCTIVE" == "yes" ]]; then
+  echo "Refusing to run destructive flows against the shared store." >&2
   echo "Use --store lab for destructive iteration, or remove destructive flows from the selection." >&2
   exit 1
 fi
-if [[ "$STORE" == "shared" && "$SUITE_HAS_DESTRUCTIVE" == "yes" && "$SEED" != "yes" ]]; then
-  echo "Shared destructive runs require --seed so fixtures and the store lock are mandatory." >&2
-  exit 1
-fi
-
-validate_shared_destructive_config() {
-  [[ "$STORE" == "shared" && "$SUITE_HAS_DESTRUCTIVE" == "yes" ]] || return 0
-
-  local required missing=() name
-  for required in \
-    MAESTRO_WOO_SHARED_JETPACK_STORE_URL \
-    MAESTRO_WOO_SHARED_WPCOM_EMAIL \
-    MAESTRO_WOO_SHARED_WPCOM_PASSWORD \
-    MAESTRO_WOO_SHARED_CONSUMER_KEY \
-    MAESTRO_WOO_SHARED_CONSUMER_SECRET; do
-    if [[ -z "${!required:-}" ]]; then
-      missing+=("$required")
-    fi
-  done
-  if [[ ${#missing[@]} -gt 0 ]]; then
-    echo "Missing scoped shared store configuration:" >&2
-    for name in "${missing[@]}"; do
-      echo "  - $name" >&2
-    done
-    exit 1
-  fi
-
-  local configured_host
-  configured_host="$(url_host "$MAESTRO_WOO_SHARED_JETPACK_STORE_URL")"
-  if [[ "$configured_host" != "$SHARED_STORE_HOST" ]]; then
-    echo "Shared destructive runs require host $SHARED_STORE_HOST; configured host is ${configured_host:-<empty>}." >&2
-    exit 1
-  fi
-}
-validate_shared_destructive_config
 
 is_optional_flow_env_ref() {
   local flow="$1"
@@ -695,30 +657,11 @@ prepare_login_flow_env() {
 }
 prepare_login_flow_env
 
-LOCK_ACQUIRED="no"
 SETTINGS_CAPTURED="no"
 RECORDER_PID=""
 CLEANUP_DONE="no"
 CLEANUP_STATUS="NOT_REQUESTED"
 CLEANUP_ERROR=""
-
-release_shared_lock() {
-  if [[ "$LOCK_ACQUIRED" == "yes" && -f "$MANIFEST_FILE" ]]; then
-    "$SEED_SCRIPT" unlock --manifest "$MANIFEST_FILE" --store shared || true
-    LOCK_ACQUIRED="no"
-  fi
-}
-
-trap release_shared_lock EXIT
-if [[ "$STORE" == "shared" && "$SUITE_HAS_DESTRUCTIVE" == "yes" ]]; then
-  if [[ ! -x "$SEED_SCRIPT" ]]; then
-    echo "Shared destructive lock helper is not executable: $SEED_SCRIPT" >&2
-    exit 1
-  fi
-  echo "--- Acquiring shared-store destructive lock"
-  "$SEED_SCRIPT" lock --store shared --run-id "$SUITE_RUN_ID" --manifest "$MANIFEST_FILE" >/dev/null
-  LOCK_ACQUIRED="yes"
-fi
 
 DEVICE_SERIALS=()
 while read -r serial state _rest; do
@@ -760,7 +703,7 @@ resolve_device() {
     echo "  $index) $serial ${avd:+($avd)}" >&2
     index=$((index + 1))
   done
-  if [[ -n "${CI:-}" || -n "${BUILDKITE:-}" || ! -t 0 ]]; then
+  if [[ ! -t 0 ]]; then
     echo "Pass --device when multiple devices are connected." >&2
     exit 1
   fi
@@ -846,7 +789,6 @@ cleanup_on_exit() {
       exit_code=1
     fi
   fi
-  release_shared_lock
   restore_animation_settings
   exit "$exit_code"
 }
@@ -1406,7 +1348,7 @@ echo "Report: $REPORT_FILE"
 echo "JUnit:  $JUNIT_FILE"
 echo "Result: $PASSED passed ($FLAKY flaky), $FAILED failed out of $TOTAL_RUNS flow executions; cleanup $CLEANUP_STATUS (${SUITE_DURATION}s)"
 
-if [[ -f "$REPORT_FILE" && "$OPEN_REPORT" == "auto" && -z "${CI:-}" && -z "${BUILDKITE:-}" && "$(uname)" == "Darwin" ]]; then
+if [[ -f "$REPORT_FILE" && "$OPEN_REPORT" == "auto" && "$(uname)" == "Darwin" ]]; then
   open "$REPORT_FILE" || true
 fi
 

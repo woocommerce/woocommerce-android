@@ -16,7 +16,6 @@ Use this skill only for repairing existing Maestro smoke flows under `.maestro/f
 - Never ask the user to paste credentials. Validate that `.maestro/.env.local` has the required variable names without echoing values.
 - Use Maestro MCP as the selector source of truth: `run` executes the YAML we ship, and `inspect_screen` shows the hierarchy Maestro selectors see.
 - Keep fixes minimal: selector, wait, setup, or fixture query changes only. Do not broaden coverage while repairing a flake.
-- Promotion still requires burst evidence; a local `--repeat` pass is repair evidence, not promotion.
 
 ## Workflow
 

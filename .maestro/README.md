@@ -9,17 +9,14 @@ The suite has two store targets:
 
 - `lab`: default for local development, repair loops, can-fail checks, and destructive iteration. Use an
   automation-owned WooCommerce store that is connected to Jetpack/WP.com with a dedicated WP.com test account.
-- `shared`: `inpersonpayments.wpcomstaging.com`, used for release-tool runs, Thursday burst runs, and explicit
-  non-destructive developer runs.
+- `shared`: `inpersonpayments.wpcomstaging.com`, used for explicit non-destructive developer runs.
 
 The no-Jetpack login scenario uses its own `MAESTRO_WOO_NO_JETPACK_*` variables. Do not reuse those Jurassic Ninja
 site credentials as the `lab` store block when running the broader suite. The runner removes a trailing
 `/wp-admin` or `/wp-admin/` from this flow's site URL. WordPress.com-hosted not-Woo fixtures require the dedicated
 `MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL/PASSWORD` pair.
 
-Destructive flows against the shared store are refused outside CI. In CI, they require `--seed`, the complete
-`MAESTRO_WOO_SHARED_*` login and REST credential block, and the exact `inpersonpayments.wpcomstaging.com` host. The
-runner acquires a REST-backed store lock before any ADB interaction and removes it on exit.
+The runner refuses destructive flows against the shared store. Run them with `--store lab`.
 
 ## Local Setup
 
@@ -35,8 +32,8 @@ remain active in the current shell.
 
 The script selects an installed JDK 21, downloads the immutable Maestro 2.9.0
 release archive into the workspace, verifies the SHA-256 in
-`toolchain.properties`, and runs the checker. The runner, doctor, and CI fail
-fast when either version differs; Buildkite uses the same path before building.
+`toolchain.properties`, and runs the checker. The runner and doctor fail fast
+when either version differs.
 
 Create local credentials:
 
@@ -51,7 +48,7 @@ Validate the file before running flows, especially after pasting passwords:
 .maestro/scripts/lint-env.py
 ```
 
-Run the pre-flight doctor when setting up a machine, changing credentials, or preparing CI secrets:
+Run the pre-flight doctor when setting up a machine or changing credentials:
 
 ```bash
 .maestro/scripts/doctor.sh --profile phone-full --store lab --device emulator-5554
@@ -146,8 +143,6 @@ Common variants:
 .maestro/scripts/run-smoke-tests.sh --profile core
 .maestro/scripts/run-smoke-tests.sh --plan --profile phone-full
 .maestro/scripts/run-smoke-tests.sh --profile phone-full --device emulator-5554
-.maestro/scripts/run-smoke-tests.sh --profile release
-.maestro/scripts/run-smoke-tests.sh --profile burst
 .maestro/scripts/run-smoke-tests.sh --profile pos-tablet --device Pixel_Tablet_API_35
 .maestro/scripts/run-smoke-tests.sh --profile android-system --device Pixel_8_API_35
 .maestro/scripts/doctor.sh --profile phone-full --store lab
@@ -164,15 +159,13 @@ Profiles are copy/paste-safe presets:
 
 - `core`: lab store, all login flows except `login_google`, plus the other `smoke_core` paths, with quarantine and Android system surfaces excluded.
 - `phone-full`: lab store, `smoke_core,smoke_extended`, tablet POS and Android system surfaces excluded. This includes quarantined phone flows.
-- `release`: shared store, `smoke_core,smoke_extended,destructive`, quarantine, tablet POS, and Android system surfaces excluded.
-- `burst`: same as `release`, repeated 3 times.
 - `pos-tablet`: lab store, `pos_tablet`, quarantine included.
 - `android-system`: lab store, `android_system`, quarantine included. Requires an English Pixel Launcher AVD with the
   production app discoverable as `Woo` in the app drawer.
 
 Use `--plan` with a profile or tag selection to print the exact store, repeat count, filters, and ordered flow list.
-Planning is side-effect-free: it does not load credentials, create output directories, call Maestro/ADB, or acquire a
-store lock. `flaky_quarantine` stays excluded unless the selected profile includes it or `--include-quarantine` is
+Planning is side-effect-free: it does not load credentials, create output directories, or call Maestro/ADB.
+`flaky_quarantine` stays excluded unless the selected profile includes it or `--include-quarantine` is
 passed explicitly. A zero-flow selection is an error in both the runner and doctor.
 
 `--rerun-failed report.xml` reads failed/flaky JUnit test cases and runs only those flow files. It still honors
@@ -208,8 +201,7 @@ The runner:
 
 All login flows are required `smoke_core` coverage except `login_google`. It stays tagged `flaky_quarantine` because
 Google sign-in only accepts the Play-signed build, and the runner installs the GitHub release or a local build.
-Other provisional imported flows remain tagged `flaky_quarantine`
-until they graduate through the burst-based promotion policy.
+Other provisional imported flows remain tagged `flaky_quarantine`.
 
 ## Coverage
 

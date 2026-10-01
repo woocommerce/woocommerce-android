@@ -16,32 +16,18 @@ FLOWS_DIR = REPO_ROOT / ".maestro" / "flows"
 
 @dataclass(frozen=True)
 class Profile:
-    store: str
     include: tuple[str, ...]
     exclude: tuple[str, ...]
-    repeat: int = 1
 
 
 PROFILES = {
-    "core": Profile("lab", ("smoke_core",), ("flaky_quarantine", "android_system")),
+    "core": Profile(("smoke_core",), ("flaky_quarantine", "android_system")),
     "phone-full": Profile(
-        "lab",
         ("smoke_core", "smoke_extended"),
         ("pos_tablet", "android_system"),
     ),
-    "release": Profile(
-        "shared",
-        ("smoke_core", "smoke_extended", "destructive"),
-        ("flaky_quarantine", "pos_tablet", "android_system"),
-    ),
-    "burst": Profile(
-        "shared",
-        ("smoke_core", "smoke_extended", "destructive"),
-        ("flaky_quarantine", "pos_tablet", "android_system"),
-        repeat=3,
-    ),
-    "pos-tablet": Profile("lab", ("pos_tablet",), ()),
-    "android-system": Profile("lab", ("android_system",), ()),
+    "pos-tablet": Profile(("pos_tablet",), ()),
+    "android-system": Profile(("android_system",), ()),
 }
 
 P2_ORDERED_FLOW_NAMES = (
@@ -122,8 +108,6 @@ def selected_flows(
 
 def print_profile(name: str) -> None:
     profile = PROFILES[name]
-    print(f"store\t{profile.store}")
-    print(f"repeat\t{profile.repeat}")
     print(f"include\t{','.join(profile.include)}")
     print(f"exclude\t{','.join(profile.exclude)}")
 

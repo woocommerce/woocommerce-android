@@ -101,7 +101,7 @@ class SmokeCliContractTest(unittest.TestCase):
             "WOO_MAESTRO_OUTPUT_DIR": str(output_root),
         }
         result = subprocess.run(
-            [str(RUNNER), *args],
+            [str(RUNNER), "--no-open", *args],
             cwd=REPO_ROOT,
             env=env,
             capture_output=True,
@@ -145,7 +145,6 @@ class SmokeCliContractTest(unittest.TestCase):
         env = {key: value for key, value in os.environ.items() if not key.startswith("MAESTRO_WOO_")}
         env.update(
             {
-                "CI": "1",
                 "HOME": str(temporary_path),
                 "PATH": f"{fake_bin}:/usr/bin:/bin",
                 "WOO_MAESTRO_ENV_FILE": str(temporary_path / "missing.env"),
@@ -154,7 +153,7 @@ class SmokeCliContractTest(unittest.TestCase):
         )
         env.update(env_overrides or {})
         result = subprocess.run(
-            [str(RUNNER), *args],
+            [str(RUNNER), "--no-open", *args],
             cwd=REPO_ROOT,
             env=env,
             capture_output=True,
@@ -195,22 +194,13 @@ class SmokeCliContractTest(unittest.TestCase):
         seed_script.write_text(
             "#!/bin/sh\n"
             "command=$1\n"
-            "shift\n"
             f"printf '%s\\n' \"$command\" >> '{events}'\n"
-            "manifest=\n"
-            "while [ $# -gt 0 ]; do\n"
-            "  if [ \"$1\" = --manifest ]; then manifest=$2; shift 2; else shift; fi\n"
-            "done\n"
-            "if [ \"$command\" = lock ] && [ -n \"$manifest\" ]; then\n"
-            "  printf '{\"lock\": {\"id\": 1}, \"entities\": []}\\n' > \"$manifest\"\n"
-            "fi\n"
         )
         seed_script.chmod(0o755)
 
         env = {key: value for key, value in os.environ.items() if not key.startswith("MAESTRO_WOO_")}
         env.update(
             {
-                "CI": "1",
                 "HOME": str(temporary_path),
                 "PATH": f"{fake_bin}:/usr/bin:/bin",
                 "WOO_MAESTRO_ENV_FILE": str(temporary_path / "missing.env"),
@@ -220,7 +210,7 @@ class SmokeCliContractTest(unittest.TestCase):
             }
         )
         result = subprocess.run(
-            [str(RUNNER), *args],
+            [str(RUNNER), "--no-open", *args],
             cwd=REPO_ROOT,
             env=env,
             capture_output=True,
@@ -306,7 +296,6 @@ class SmokeCliContractTest(unittest.TestCase):
         env = {key: value for key, value in os.environ.items() if not key.startswith("MAESTRO_WOO_")}
         env.update(
             {
-                "CI": "1",
                 "HOME": str(temporary_path),
                 "PATH": f"{fake_bin}:/usr/bin:/bin",
                 "WOO_MAESTRO_ENV_FILE": str(temporary_path / "missing.env"),
@@ -315,7 +304,7 @@ class SmokeCliContractTest(unittest.TestCase):
             }
         )
         result = subprocess.run(
-            [str(RUNNER), *args],
+            [str(RUNNER), "--no-open", *args],
             cwd=REPO_ROOT,
             env=env,
             capture_output=True,
@@ -359,16 +348,6 @@ class SmokeCliContractTest(unittest.TestCase):
         result, _ = self.run_runner("--plan", "--profile", "phone-full")
 
         self.assert_golden(result, "phone-full-plan.txt")
-
-    def test_release_plan_excludes_quarantine(self) -> None:
-        result, _ = self.run_runner("--plan", "--profile", "release")
-
-        self.assert_golden(result, "release-plan.txt")
-
-    def test_burst_plan_repeats_release_selection(self) -> None:
-        result, _ = self.run_runner("--plan", "--profile", "burst")
-
-        self.assert_golden(result, "burst-plan.txt")
 
     def test_extended_plan_requires_explicit_quarantine_opt_in(self) -> None:
         result, _ = self.run_runner(
@@ -467,22 +446,21 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertEqual(result.stderr, "No flows matched the current filters.\n")
         self.assertFalse(output_root.exists())
 
-    def test_shared_destructive_run_requires_seed_before_adb(self) -> None:
+    def test_shared_destructive_run_is_refused_before_adb(self) -> None:
         result, adb_marker = self.run_with_fake_device_tools(
             "--store",
             "shared",
+            "--seed",
             ".maestro/flows/orders_create.yaml",
             env_overrides={
                 "MAESTRO_WOO_SHARED_JETPACK_STORE_URL": "https://inpersonpayments.wpcomstaging.com/",
                 "MAESTRO_WOO_SHARED_WPCOM_EMAIL": "shared@example.com",
                 "MAESTRO_WOO_SHARED_WPCOM_PASSWORD": "shared-password",
-                "MAESTRO_WOO_SHARED_CONSUMER_KEY": "ck_shared",
-                "MAESTRO_WOO_SHARED_CONSUMER_SECRET": "cs_shared",
             },
         )
 
         self.assertEqual(result.returncode, 1)
-        self.assertIn("Shared destructive runs require --seed", result.stderr)
+        self.assertIn("Refusing to run destructive flows against the shared store.", result.stderr)
         self.assertFalse(adb_marker.exists())
 
     def test_runtime_rejects_a_mismatched_maestro_before_adb(self) -> None:
@@ -502,70 +480,6 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertIn("Maestro version mismatch: expected 2.9.0, actual 2.7.0", result.stderr)
         self.assertFalse(adb_marker.exists())
 
-    def test_lab_and_generic_credentials_cannot_satisfy_shared_destructive_preflight(self) -> None:
-        result, adb_marker = self.run_with_fake_device_tools(
-            "--store",
-            "shared",
-            "--seed",
-            ".maestro/flows/orders_create.yaml",
-            env_overrides={
-                "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
-                "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
-                "MAESTRO_WOO_LAB_WPCOM_PASSWORD": "lab-password",
-                "MAESTRO_WOO_LAB_CONSUMER_KEY": "ck_lab",
-                "MAESTRO_WOO_LAB_CONSUMER_SECRET": "cs_lab",
-                "MAESTRO_WOO_JETPACK_STORE_URL": "https://lab.example.com/",
-                "MAESTRO_WOO_WPCOM_EMAIL": "lab@example.com",
-                "MAESTRO_WOO_WPCOM_PASSWORD": "lab-password",
-                "MAESTRO_WOO_CONSUMER_KEY": "ck_lab",
-                "MAESTRO_WOO_CONSUMER_SECRET": "cs_lab",
-            },
-        )
-
-        self.assertEqual(result.returncode, 1)
-        self.assertIn("Missing scoped shared store configuration", result.stderr)
-        self.assertFalse(adb_marker.exists())
-
-    def test_shared_destructive_preflight_requires_the_exact_shared_host(self) -> None:
-        result, adb_marker = self.run_with_fake_device_tools(
-            "--store",
-            "shared",
-            "--seed",
-            ".maestro/flows/orders_create.yaml",
-            env_overrides={
-                "MAESTRO_WOO_SHARED_JETPACK_STORE_URL": "https://lookalike.example.com/",
-                "MAESTRO_WOO_SHARED_WPCOM_EMAIL": "shared@example.com",
-                "MAESTRO_WOO_SHARED_WPCOM_PASSWORD": "shared-password",
-                "MAESTRO_WOO_SHARED_CONSUMER_KEY": "ck_shared",
-                "MAESTRO_WOO_SHARED_CONSUMER_SECRET": "cs_shared",
-            },
-        )
-
-        self.assertEqual(result.returncode, 1)
-        self.assertIn(
-            "Shared destructive runs require host inpersonpayments.wpcomstaging.com",
-            result.stderr,
-        )
-        self.assertFalse(adb_marker.exists())
-
-    def test_shared_destructive_lock_is_acquired_before_adb(self) -> None:
-        result, events = self.run_with_order_recording_tools(
-            "--store",
-            "shared",
-            "--seed",
-            ".maestro/flows/orders_create.yaml",
-            env_overrides={
-                "MAESTRO_WOO_SHARED_JETPACK_STORE_URL": "https://inpersonpayments.wpcomstaging.com/",
-                "MAESTRO_WOO_SHARED_WPCOM_EMAIL": "shared@example.com",
-                "MAESTRO_WOO_SHARED_WPCOM_PASSWORD": "shared-password",
-                "MAESTRO_WOO_SHARED_CONSUMER_KEY": "ck_shared",
-                "MAESTRO_WOO_SHARED_CONSUMER_SECRET": "cs_shared",
-            },
-        )
-
-        self.assertEqual(result.returncode, 1)
-        self.assertEqual(events, ["lock", "adb", "unlock"])
-
     def test_seed_request_does_not_create_unused_fixtures_without_destructive_flows(self) -> None:
         result, events = self.run_with_order_recording_tools(
             "--store",
@@ -576,8 +490,6 @@ class SmokeCliContractTest(unittest.TestCase):
                 "MAESTRO_WOO_SHARED_JETPACK_STORE_URL": "https://inpersonpayments.wpcomstaging.com/",
                 "MAESTRO_WOO_SHARED_WPCOM_EMAIL": "shared@example.com",
                 "MAESTRO_WOO_SHARED_WPCOM_PASSWORD": "shared-password",
-                "MAESTRO_WOO_SHARED_CONSUMER_KEY": "ck_shared",
-                "MAESTRO_WOO_SHARED_CONSUMER_SECRET": "cs_shared",
             },
         )
 

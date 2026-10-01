@@ -14,7 +14,6 @@ import json
 import os
 import re
 import sys
-import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -25,7 +24,6 @@ from typing import Any
 CONSUMABLE_MULTIPLIER = 2
 RUN_ID_RE = re.compile(r"^SUITE-\d{8,14}-[A-Za-z0-9]+$")
 ORPHAN_AGE_HOURS = 48
-LOCK_TTL_SECONDS = 60 * 60
 API_PREFIX = "/wp-json/wc/v3/"
 
 
@@ -138,7 +136,6 @@ def manifest_template(run_id: str, store: str) -> dict[str, Any]:
         "entities": [],
         "env": {},
         "sweep_deletions": [],
-        "lock": None,
     }
 
 
@@ -356,7 +353,6 @@ def cleanup(args: argparse.Namespace) -> None:
         "product": "products",
         "product_tag": "products/tags",
         "customer": "customers",
-        "lock_product": "products",
     }
     for entity in reversed(list(manifest.get("entities", []))):
         entity_type = entity.get("type")
@@ -459,60 +455,6 @@ def sweep(args: argparse.Namespace) -> None:
     print(f"{action} {len(deleted)} stale automation orphan(s)")
 
 
-def lock(args: argparse.Namespace) -> None:
-    run_id = strict_run_id(args.run_id)
-    load_store_env(args.store)
-    client = WooClient()
-    locks = client.list("products", search="SUITE-LOCK-", status="any")
-    now = utc_now()
-    for item in locks:
-        name = str(item.get("name", ""))
-        if not name.startswith("SUITE-LOCK-"):
-            continue
-        created = parse_wc_date(item.get("date_created_gmt") or item.get("date_created"))
-        expired = created is None or (now - created).total_seconds() > args.ttl_seconds
-        if expired:
-            print(f"Deleting expired shared-store lock product {item.get('id')}: {name}")
-            client.delete("products", int(item["id"]))
-            continue
-        raise SmokeSetupError(f"Shared store is locked by {name} (product {item.get('id')}).")
-
-    product = client.create(
-        "products",
-        {
-            "name": f"SUITE-LOCK-{run_id}-{int(time.time())}",
-            "type": "simple",
-            "status": "draft",
-            "catalog_visibility": "hidden",
-            "regular_price": "0",
-            "sku": f"lock-{run_id}",
-        },
-    )
-    lock_record = {"type": "lock_product", "id": int(product["id"]), "label": product["name"]}
-    if args.manifest:
-        path = Path(args.manifest)
-        manifest = read_json(path) if path.exists() else manifest_template(run_id, args.store)
-        manifest["lock"] = lock_record
-        manifest.setdefault("entities", [])
-        write_json(path, manifest)
-    print(json.dumps(lock_record))
-
-
-def unlock(args: argparse.Namespace) -> None:
-    load_store_env(args.store)
-    client = WooClient()
-    lock_id = args.lock_id
-    if not lock_id and args.manifest and Path(args.manifest).exists():
-        manifest = read_json(Path(args.manifest))
-        lock_data = manifest.get("lock") or {}
-        lock_id = lock_data.get("id")
-    if not lock_id:
-        print("No lock id supplied; nothing to unlock")
-        return
-    client.delete("products", int(lock_id))
-    print(f"Deleted shared-store lock product {lock_id}")
-
-
 def entity_label(entity_type: str, item: dict[str, Any]) -> str:
     if entity_type == "coupon":
         return str(item.get("code", ""))
@@ -575,19 +517,6 @@ def build_parser() -> argparse.ArgumentParser:
     sweep_parser.add_argument("--report")
     sweep_parser.add_argument("--dry-run", action="store_true")
     sweep_parser.set_defaults(func=sweep)
-
-    lock_parser = subparsers.add_parser("lock")
-    lock_parser.add_argument("--store", choices=("shared",), default="shared")
-    lock_parser.add_argument("--run-id", required=True)
-    lock_parser.add_argument("--manifest")
-    lock_parser.add_argument("--ttl-seconds", type=int, default=LOCK_TTL_SECONDS)
-    lock_parser.set_defaults(func=lock)
-
-    unlock_parser = subparsers.add_parser("unlock")
-    unlock_parser.add_argument("--store", choices=("shared",), default="shared")
-    unlock_parser.add_argument("--manifest")
-    unlock_parser.add_argument("--lock-id", type=int)
-    unlock_parser.set_defaults(func=unlock)
 
     return parser
 

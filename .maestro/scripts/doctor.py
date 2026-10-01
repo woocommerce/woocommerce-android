@@ -21,9 +21,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent.parent
 DEFAULT_ENV_FILE = REPO_ROOT / ".maestro" / ".env.local"
 LINT_ENV = SCRIPT_DIR / "lint-env.py"
-SEED_SCRIPT = SCRIPT_DIR / "seed-fixtures.py"
 CHECK_TOOLCHAIN = SCRIPT_DIR / "check-toolchain.py"
-SHARED_STORE_HOST = "inpersonpayments.wpcomstaging.com"
 
 ASSIGNMENT_RE = re.compile(r"^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)$")
 REF_RE = re.compile(r"\$\{MAESTRO_(WOO_[A-Z0-9_]+)\}")
@@ -171,7 +169,7 @@ def main() -> int:
     args = parser.parse_args()
 
     profile = PROFILES[args.profile]
-    store = args.store or profile.store
+    store = args.store or "lab"
     include_tags = parse_csv(args.include_tags)
     if include_tags is None:
         include_tags = list(profile.include)
@@ -196,7 +194,7 @@ def main() -> int:
         lint = subprocess.run(lint_command, cwd=REPO_ROOT, capture_output=True, text=True)
         checks.append(Check("ok" if lint.returncode == 0 else "fail", f"{args.env_file} lint {'passed' if lint.returncode == 0 else 'failed'}"))
     else:
-        checks.append(Check("warn", f"{args.env_file} not found; expecting credentials from exported environment or CI secrets"))
+        checks.append(Check("warn", f"{args.env_file} not found; expecting credentials from the exported environment"))
 
     env = dict(os.environ)
     env.update(parse_env_file(args.env_file))
@@ -238,22 +236,7 @@ def main() -> int:
 
     has_destructive_flow = any("destructive" in flow_tags(flow) for flow in flows)
     if store == "shared" and has_destructive_flow:
-        if not args.seed:
-            checks.append(Check("fail", "shared destructive flows require --seed"))
-        shared_url = env.get("MAESTRO_WOO_SHARED_JETPACK_STORE_URL", "")
-        shared_host = url_host(shared_url)
-        if shared_host != SHARED_STORE_HOST:
-            checks.append(
-                Check(
-                    "fail",
-                    f"shared destructive host must be {SHARED_STORE_HOST}; "
-                    f"configured host is {shared_host or '<empty>'}",
-                )
-            )
-        if not os.access(SEED_SCRIPT, os.X_OK):
-            checks.append(Check("fail", f"shared-store lock helper is not executable: {SEED_SCRIPT}"))
-        if not os.environ.get("CI") and not os.environ.get("BUILDKITE"):
-            checks.append(Check("fail", "shared destructive runs are refused outside CI"))
+        checks.append(Check("fail", "destructive flows are refused on the shared store"))
 
     devices = adb_devices()
     selected_device: str | None = None
