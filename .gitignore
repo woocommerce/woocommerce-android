@@ -141,4 +141,3 @@ docs/superpowers
 .maestro/report.xml
 .maestro/*.maestro-screenshots/
 *.maestro-screenshots/
-report.xml
