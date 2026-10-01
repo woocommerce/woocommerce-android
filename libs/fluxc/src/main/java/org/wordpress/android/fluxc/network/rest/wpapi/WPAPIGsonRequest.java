@@ -44,7 +44,8 @@ public class WPAPIGsonRequest<T> extends GsonRequest<T> {
     }
 
     @Override
-    protected Response<ResponseWithHeaders<T>> parseNetworkResponse(NetworkResponse response) {
+    @NonNull
+    protected Response<ResponseWithHeaders<T>> parseNetworkResponse(@NonNull NetworkResponse response) {
         Response<ResponseWithHeaders<T>> result = super.parseNetworkResponse(response);
         if (result.error instanceof ParseError) {
             UnexpectedStoreResponse unexpectedStoreResponse =
