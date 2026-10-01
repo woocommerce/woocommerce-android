@@ -87,6 +87,24 @@ class UnexpectedStoreResponseExcerptTest {
     }
 
     @Test
+    fun `given a script that is never closed, when the excerpt is built, then the rest of the page is left out`() {
+        val body = "<p>Blocked</p><script>var page = 'not closed'; <p>Hidden</p>"
+
+        val excerpt = UnexpectedStoreResponseExcerpt.from(body)
+
+        assertThat(excerpt).isEqualTo("Blocked")
+    }
+
+    @Test
+    fun `given a head that is never closed, when the excerpt is built, then the body text is kept`() {
+        val body = "<html><head><title>Forbidden</title><body><p>Access denied.</p></body></html>"
+
+        val excerpt = UnexpectedStoreResponseExcerpt.from(body)
+
+        assertThat(excerpt).isEqualTo("Forbidden | Access denied.")
+    }
+
+    @Test
     fun `given a page without readable text, when the excerpt is built, then it is null`() {
         val excerpt = UnexpectedStoreResponseExcerpt.from("<html><head><script>run();</script></head></html>")
 
