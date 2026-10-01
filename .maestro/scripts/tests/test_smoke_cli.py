@@ -456,8 +456,6 @@ class SmokeCliContractTest(unittest.TestCase):
                 "MAESTRO_WOO_SHARED_JETPACK_STORE_URL": "https://inpersonpayments.wpcomstaging.com/",
                 "MAESTRO_WOO_SHARED_WPCOM_EMAIL": "shared@example.com",
                 "MAESTRO_WOO_SHARED_WPCOM_PASSWORD": "shared-password",
-                "MAESTRO_WOO_SHARED_CONSUMER_KEY": "ck_shared",
-                "MAESTRO_WOO_SHARED_CONSUMER_SECRET": "cs_shared",
             },
         )
 
@@ -492,8 +490,6 @@ class SmokeCliContractTest(unittest.TestCase):
                 "MAESTRO_WOO_SHARED_JETPACK_STORE_URL": "https://inpersonpayments.wpcomstaging.com/",
                 "MAESTRO_WOO_SHARED_WPCOM_EMAIL": "shared@example.com",
                 "MAESTRO_WOO_SHARED_WPCOM_PASSWORD": "shared-password",
-                "MAESTRO_WOO_SHARED_CONSUMER_KEY": "ck_shared",
-                "MAESTRO_WOO_SHARED_CONSUMER_SECRET": "cs_shared",
             },
         )
 
