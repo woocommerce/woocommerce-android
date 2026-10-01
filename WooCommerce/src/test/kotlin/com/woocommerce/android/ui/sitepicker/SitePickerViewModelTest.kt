@@ -906,6 +906,260 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given the account owns several woo stores, when the picker loads, then site_list is reported once`() =
+        testBlocking {
+            // GIVEN an account whose stores the merchant has to choose between
+            givenTheScreenIsFromLogin(true)
+            whenSitesAreFetched()
+
+            // WHEN both the cache pass and the api pass run
+            whenViewModelIsCreated()
+
+            // THEN the list shown to the merchant counts once, not once per pass
+            verify(unifiedLoginTracker, times(1)).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SITE_LIST),
+                properties = any()
+            )
+        }
+
+    @Test
+    fun `given the account owns no woo store, when the picker loads, then site_list is reported once`() =
+        testBlocking {
+            // GIVEN an account whose only sites do not sell, so the list shows an empty state
+            val nonWooSites = defaultExpectedSiteList.map { it.apply { hasWooCommerce = false } }
+            givenTheScreenIsFromLogin(true)
+            whenSitesAreFetched(sitesFromDb = nonWooSites, sitesFromApi = nonWooSites)
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN the empty list is still a list the merchant is looking at
+            verify(unifiedLoginTracker, times(1)).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SITE_LIST),
+                properties = any()
+            )
+        }
+
+    @Test
+    fun `given an address matching no site, when the mismatch screen opens, then site_list is not reported`() =
+        testBlocking {
+            // GIVEN an address that belongs to none of the account's sites
+            givenThatUserLoggedInFromEnteringSiteAddress(null)
+            givenSiteInfoFetchSucceeds()
+            whenSitesAreFetched()
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN the merchant is routed to the mismatch screen and never sees the list
+            verify(unifiedLoginTracker).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT),
+                properties = any()
+            )
+            verify(unifiedLoginTracker, never()).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SITE_LIST),
+                properties = any()
+            )
+        }
+
+    @Test
+    fun `given an address for a site without woo, when its screen opens, then site_list is not reported`() =
+        testBlocking {
+            // GIVEN the entered address belongs to a site of the account that does not sell
+            val nonWooSite = defaultExpectedSiteList[1].apply {
+                hasWooCommerce = false
+                setIsJetpackConnected(true)
+            }
+            givenThatUserLoggedInFromEnteringSiteAddress(nonWooSite)
+            whenSitesAreFetched()
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN the merchant is routed to the not-a-store screen and never sees the list
+            verify(unifiedLoginTracker).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.NOT_WOO_STORE),
+                properties = any()
+            )
+            verify(unifiedLoginTracker, never()).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SITE_LIST),
+                properties = any()
+            )
+        }
+
+    @Test
+    fun `given a single woo store, when login continues into it, then site_list is not reported`() =
+        testBlocking {
+            // GIVEN an account owning exactly one store, which login selects without asking
+            givenTheScreenIsFromLogin(calledFromLogin = true)
+            givenThatSiteVerificationIsCompleted()
+            val siteList = listOf(defaultExpectedSiteList.first())
+            whenSitesAreFetched(sitesFromDb = siteList, sitesFromApi = siteList)
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN the merchant lands on the dashboard without ever choosing from a list
+            assertThat(viewModel.event.captureValues().last()).isEqualTo(NavigateToMainActivityEvent)
+            verify(unifiedLoginTracker, never()).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SITE_LIST),
+                properties = any()
+            )
+        }
+
+    @Test
+    fun `given the picker was not opened from login, when the list is shown, then site_list is not reported`() =
+        testBlocking {
+            // GIVEN the store switcher rather than a login journey
+            givenTheScreenIsFromLogin(false)
+            whenSitesAreFetched()
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN no login step is invented for a merchant who is not logging in
+            verify(unifiedLoginTracker, never()).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SITE_LIST),
+                properties = any()
+            )
+        }
+
+    @Test
+    fun `given one cached store, when the api pass returns several, then site_list is reported once`() =
+        testBlocking {
+            // GIVEN a cache holding the single store login would continue into
+            givenTheScreenIsFromLogin(true)
+            givenThatSiteVerificationIsCompleted()
+            val cachedSites = defaultExpectedSiteList.take(1)
+            val apiSites = defaultExpectedSiteList.take(2)
+            val apiResult = CompletableDeferred<WooResult<List<SiteModel>>>()
+            whenever(getWooVisibleSites()).thenReturn(cachedSites)
+            whenever(repository.getSites()).thenReturn(cachedSites.toMutableList())
+            whenever(repository.fetchWooCommerceSites()).doSuspendableAnswer { apiResult.await() }
+
+            // WHEN the cache pass runs on its own
+            whenViewModelIsCreated()
+            advanceUntilIdle()
+
+            // THEN nothing is reported yet, because one store means no list to look at
+            verify(unifiedLoginTracker, never()).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SITE_LIST),
+                properties = any()
+            )
+
+            // WHEN the api pass returns a second store
+            whenever(getWooVisibleSites()).thenReturn(apiSites)
+            whenever(repository.getSites()).thenReturn(apiSites.toMutableList())
+            apiResult.complete(WooResult(apiSites))
+            advanceUntilIdle()
+
+            // THEN the list the merchant now has to choose from is reported
+            verify(unifiedLoginTracker, times(1)).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SITE_LIST),
+                properties = any()
+            )
+        }
+
+    @Test
+    fun `given the list was skipped, when view connected stores is tapped, then site_list is reported`() =
+        testBlocking {
+            // GIVEN an address that routed the merchant to the not-a-store screen
+            val nonWooSite = defaultExpectedSiteList[1].apply {
+                hasWooCommerce = false
+                setIsJetpackConnected(true)
+            }
+            givenThatUserLoggedInFromEnteringSiteAddress(nonWooSite)
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            // WHEN they ask to see the stores they do have
+            viewModel.onViewConnectedStoresButtonClick()
+
+            // THEN the list reaches the screen for the first time in the visit
+            verify(unifiedLoginTracker, times(1)).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SITE_LIST),
+                properties = any()
+            )
+        }
+
+    @Test
+    fun `given the list was reported, when the merchant comes back to it, then site_list is not reported again`() =
+        testBlocking {
+            // GIVEN a visit that already showed the list
+            givenTheScreenIsFromLogin(true)
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            // WHEN the merchant leaves for a non-woo site and returns
+            viewModel.onNonWooSiteSelected(defaultExpectedSiteList[1])
+            viewModel.onViewConnectedStoresButtonClick()
+
+            // THEN the visit still counts once
+            verify(unifiedLoginTracker, times(1)).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SITE_LIST),
+                properties = any()
+            )
+        }
+
+    @Test
+    fun `given a single woo store, when the list is skipped, then stores shown still fires`() =
+        testBlocking {
+            // GIVEN the route on which the login step is now suppressed
+            givenTheScreenIsFromLogin(calledFromLogin = true)
+            givenThatSiteVerificationIsCompleted()
+            val siteList = listOf(defaultExpectedSiteList.first())
+            whenSitesAreFetched(sitesFromDb = siteList, sitesFromApi = siteList)
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN the legacy event keeps its existing trigger and payload
+            verify(analyticsTrackerWrapper, times(1)).track(
+                AnalyticsEvent.SITE_PICKER_STORES_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_NUMBER_OF_STORES to 1,
+                    AnalyticsTracker.KEY_NUMBER_OF_NON_WOO_SITES to 0
+                )
+            )
+        }
+
+    @Test
+    fun `given an address routes off the list, when the list is skipped, then stores shown still fires`() =
+        testBlocking {
+            // GIVEN the entered address belongs to a site of the account that does not sell
+            val nonWooSite = defaultExpectedSiteList[1].apply {
+                hasWooCommerce = false
+                setIsJetpackConnected(true)
+            }
+            givenThatUserLoggedInFromEnteringSiteAddress(nonWooSite)
+            whenSitesAreFetched()
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN the legacy event keeps its existing trigger and payload
+            verify(analyticsTrackerWrapper, times(1)).track(
+                AnalyticsEvent.SITE_PICKER_STORES_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_NUMBER_OF_STORES to 4,
+                    AnalyticsTracker.KEY_NUMBER_OF_NON_WOO_SITES to 1
+                )
+            )
+        }
+
+    @Test
     fun `given a site address was entered, when the mismatch screen opens, then no_woo_stores is not reported`() =
         testBlocking {
             // GIVEN an account with no woo store, and an address that belongs to none of its sites
