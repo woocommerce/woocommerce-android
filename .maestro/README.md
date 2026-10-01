@@ -35,8 +35,8 @@ remain active in the current shell.
 
 The script selects an installed JDK 21, downloads the immutable Maestro 2.9.0
 release archive into the workspace, verifies the SHA-256 in
-`toolchain.properties`, and runs the checker. The runner, doctor, and CI fail
-fast when either version differs; Buildkite uses the same path before building.
+`toolchain.properties`, and runs the checker. The runner and doctor fail fast
+when either version differs.
 
 Create local credentials:
 

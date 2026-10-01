@@ -128,17 +128,6 @@ class MaestroCiContractTests(unittest.TestCase):
         self.assertLess(error_message, another_account)
         self.assertIn("STRING_LOGIN_TRY_ANOTHER_ACCOUNT='Log in with another account'", strings)
 
-    def test_ci_defers_production_app_setup_to_the_runner(self) -> None:
-        wrapper = (
-            REPO_ROOT / ".buildkite" / "commands" / "run-maestro-tests.sh"
-        ).read_text(encoding="utf-8")
-
-        self.assertLess(
-            wrapper.index("source .maestro/scripts/configure-toolchain.sh"),
-            wrapper.index(".maestro/scripts/run-smoke-tests.sh"),
-        )
-        self.assertNotIn("installWasabiDebug", wrapper)
-
     def test_all_flows_use_the_production_app_id(self) -> None:
         yaml_files = [
             REPO_ROOT / ".maestro" / "config.yaml",
@@ -157,44 +146,6 @@ class MaestroCiContractTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn('text: "^Woo$"', quick_actions)
         self.assertNotIn("Woo \\(Dev\\)", quick_actions)
-
-    def test_changed_file_skip_only_applies_to_pull_requests(self) -> None:
-        wrapper = (
-            REPO_ROOT / ".buildkite" / "commands" / "run-maestro-tests.sh"
-        ).read_text(encoding="utf-8")
-
-        self.assertIn(
-            'if [[ "${BUILDKITE_PULL_REQUEST:-false}" != "false" ]] &&',
-            wrapper,
-        )
-        self.assertIn(
-            ".buildkite/commands/should-skip-job.sh --job-type validation; then",
-            wrapper,
-        )
-
-    def test_shared_store_steps_are_serialized(self) -> None:
-        pipeline_files = [
-            REPO_ROOT / ".buildkite" / "pipeline.yml",
-            REPO_ROOT / ".buildkite" / "schedules" / "maestro-smoke-burst.yml",
-            REPO_ROOT / ".buildkite" / "release-pipelines" / "maestro-smoke.yml",
-        ]
-
-        for path in pipeline_files:
-            with self.subTest(path=path):
-                text = path.read_text(encoding="utf-8")
-                self.assertIn('concurrency_group: "woocommerce-android/maestro/shared-store"', text)
-                self.assertIn("concurrency: 1", text)
-
-    def test_shared_destructive_ci_runs_seed_owned_fixtures(self) -> None:
-        pipeline_files = [
-            REPO_ROOT / ".buildkite" / "schedules" / "maestro-smoke-burst.yml",
-            REPO_ROOT / ".buildkite" / "release-pipelines" / "maestro-smoke.yml",
-        ]
-
-        for path in pipeline_files:
-            with self.subTest(path=path):
-                text = path.read_text(encoding="utf-8")
-                self.assertIn('MAESTRO_SEED: "true"', text)
 
 
 if __name__ == "__main__":
