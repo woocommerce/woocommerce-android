@@ -50,6 +50,13 @@ class UnexpectedStoreResponseExcerptTest {
     }
 
     @Test
+    fun `given an invalid numeric entity, when the excerpt is built, then the text is kept as it is`() {
+        val excerpt = UnexpectedStoreResponseExcerpt.from("<p>Error &#1234567; on this page</p>")
+
+        assertThat(excerpt).isEqualTo("Error &#1234567; on this page")
+    }
+
+    @Test
     fun `given a page with emails and IP addresses, when the excerpt is built, then they are masked`() {
         val body = "<p>Contact admin@example.com. Your IP: 203.0.113.7, or 2001:db8::1 on IPv6.</p>"
 
