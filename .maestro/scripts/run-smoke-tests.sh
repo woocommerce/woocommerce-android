@@ -76,7 +76,7 @@ Usage:
   .maestro/scripts/run-smoke-tests.sh .maestro/flows/orders_list_and_search.yaml
 
 Options:
-  --profile name              Preset: core, phone-full, release, burst, pos-tablet, android-system.
+  --profile name              Preset: core, phone-full, pos-tablet, android-system.
   --store lab|shared          Select fixture/credential namespace. Default: lab.
   --device serial|avd-name    Device serial or emulator AVD name.
   --apk path                  Validate and install a production release APK before running.
@@ -123,8 +123,6 @@ apply_profile() {
   EXCLUDE_TAGS=()
   while IFS=$'\t' read -r key value; do
     case "$key" in
-      store) STORE="$value" ;;
-      repeat) REPEAT="$value" ;;
       include) add_csv_tags INCLUDE_TAGS "$value" ;;
       exclude) add_csv_tags EXCLUDE_TAGS "$value" ;;
     esac

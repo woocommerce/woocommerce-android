@@ -360,16 +360,6 @@ class SmokeCliContractTest(unittest.TestCase):
 
         self.assert_golden(result, "phone-full-plan.txt")
 
-    def test_release_plan_excludes_quarantine(self) -> None:
-        result, _ = self.run_runner("--plan", "--profile", "release")
-
-        self.assert_golden(result, "release-plan.txt")
-
-    def test_burst_plan_repeats_release_selection(self) -> None:
-        result, _ = self.run_runner("--plan", "--profile", "burst")
-
-        self.assert_golden(result, "burst-plan.txt")
-
     def test_extended_plan_requires_explicit_quarantine_opt_in(self) -> None:
         result, _ = self.run_runner(
             "--plan",

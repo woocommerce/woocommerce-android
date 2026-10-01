@@ -171,7 +171,7 @@ def main() -> int:
     args = parser.parse_args()
 
     profile = PROFILES[args.profile]
-    store = args.store or profile.store
+    store = args.store or "lab"
     include_tags = parse_csv(args.include_tags)
     if include_tags is None:
         include_tags = list(profile.include)

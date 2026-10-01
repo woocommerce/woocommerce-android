@@ -9,8 +9,7 @@ The suite has two store targets:
 
 - `lab`: default for local development, repair loops, can-fail checks, and destructive iteration. Use an
   automation-owned WooCommerce store that is connected to Jetpack/WP.com with a dedicated WP.com test account.
-- `shared`: `inpersonpayments.wpcomstaging.com`, used for release-tool runs, Thursday burst runs, and explicit
-  non-destructive developer runs.
+- `shared`: `inpersonpayments.wpcomstaging.com`, used for explicit non-destructive developer runs.
 
 The no-Jetpack login scenario uses its own `MAESTRO_WOO_NO_JETPACK_*` variables. Do not reuse those Jurassic Ninja
 site credentials as the `lab` store block when running the broader suite. The runner removes a trailing
@@ -146,8 +145,6 @@ Common variants:
 .maestro/scripts/run-smoke-tests.sh --profile core
 .maestro/scripts/run-smoke-tests.sh --plan --profile phone-full
 .maestro/scripts/run-smoke-tests.sh --profile phone-full --device emulator-5554
-.maestro/scripts/run-smoke-tests.sh --profile release
-.maestro/scripts/run-smoke-tests.sh --profile burst
 .maestro/scripts/run-smoke-tests.sh --profile pos-tablet --device Pixel_Tablet_API_35
 .maestro/scripts/run-smoke-tests.sh --profile android-system --device Pixel_8_API_35
 .maestro/scripts/doctor.sh --profile phone-full --store lab
@@ -164,8 +161,6 @@ Profiles are copy/paste-safe presets:
 
 - `core`: lab store, all login flows except `login_google`, plus the other `smoke_core` paths, with quarantine and Android system surfaces excluded.
 - `phone-full`: lab store, `smoke_core,smoke_extended`, tablet POS and Android system surfaces excluded. This includes quarantined phone flows.
-- `release`: shared store, `smoke_core,smoke_extended,destructive`, quarantine, tablet POS, and Android system surfaces excluded.
-- `burst`: same as `release`, repeated 3 times.
 - `pos-tablet`: lab store, `pos_tablet`, quarantine included.
 - `android-system`: lab store, `android_system`, quarantine included. Requires an English Pixel Launcher AVD with the
   production app discoverable as `Woo` in the app drawer.
