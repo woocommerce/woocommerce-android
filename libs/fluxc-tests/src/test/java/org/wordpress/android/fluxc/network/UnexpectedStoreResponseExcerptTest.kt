@@ -66,13 +66,21 @@ class UnexpectedStoreResponseExcerptTest {
     }
 
     @Test
-    fun `given a JSON critical error, when the excerpt is built, then the HTML in the message is removed`() {
+    fun `given plugin output before the JSON, when the excerpt is built, then the JSON is left out`() {
+        val body = "Debug: /wc/v3/orders\n[{\"id\":727,\"billing\":{\"first_name\":\"Jane\",\"last_name\":\"Doe\"}}]"
+
+        val excerpt = UnexpectedStoreResponseExcerpt.from(body)
+
+        assertThat(excerpt).isEqualTo("Debug: /wc/v3/orders")
+    }
+
+    @Test
+    fun `given a JSON body, when the excerpt is built, then it is null`() {
         val body = """{"code":"internal_server_error","message":"<p>There has been a critical error.</p>"}"""
 
         val excerpt = UnexpectedStoreResponseExcerpt.from(body)
 
-        assertThat(excerpt)
-            .isEqualTo("""{"code":"internal_server_error","message":" There has been a critical error. "}""")
+        assertThat(excerpt).isNull()
     }
 
     @Test
