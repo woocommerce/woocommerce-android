@@ -4,8 +4,8 @@ import org.apache.commons.text.StringEscapeUtils
 
 object UnexpectedStoreResponseExcerpt {
     fun from(body: String): String? {
-        val title = TITLE_PATTERN.find(body)?.groupValues?.get(1)?.toPlainText().orEmpty()
-        val text = body.replace(NON_RENDERED_REGION_PATTERN, " ").toPlainText()
+        val title = TITLE_PATTERN.find(body)?.groupValues?.get(1)?.visibleText()?.cleaned().orEmpty()
+        val text = body.replace(NON_RENDERED_REGION_PATTERN, " ").visibleText().substringBeforeJson().cleaned()
         val excerpt = when {
             title.isEmpty() || text.startsWith(title) -> text
             text.isEmpty() -> title
@@ -14,15 +14,21 @@ object UnexpectedStoreResponseExcerpt {
         return excerpt.masked().truncated().ifEmpty { null }
     }
 
-    private fun String.toPlainText(): String {
+    private fun String.visibleText(): String {
         val text = replace(TAG_PATTERN, " ").replace(WHITESPACE_PATTERN, " ").trim()
-        val textStart = if (text.length > MAX_CLEANED_LENGTH) {
+        return if (text.length > MAX_CLEANED_LENGTH) {
             text.take(MAX_CLEANED_LENGTH).substringBeforeLast(' ')
         } else {
             text
         }
-        return SensitiveDataSanitizer.sanitize(textStart.unescapedHtml())
     }
+
+    private fun String.substringBeforeJson(): String {
+        val jsonStart = indexOfFirst { it == '{' || it == '[' }
+        return if (jsonStart == -1) this else take(jsonStart).trimEnd()
+    }
+
+    private fun String.cleaned(): String = SensitiveDataSanitizer.sanitize(unescapedHtml())
 
     @Suppress("SwallowedException")
     private fun String.unescapedHtml(): String = try {
