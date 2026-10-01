@@ -84,12 +84,6 @@ import com.woocommerce.android.util.getVariationAttributesAndStockText
 import java.math.BigDecimal
 
 const val ANIM_DURATION_MILLIS = 128
-
-internal object ExpandableProductCardTestTags {
-    const val PRODUCT_CARD = "order_product_card"
-    const val DISCOUNT_AMOUNT = "order_product_discount_amount"
-}
-
 const val MULTIPLICATION_CHAR = "×"
 
 @SuppressLint("UnusedTransitionTargetStateParameter")
@@ -878,4 +872,9 @@ fun ExtendedConfigurableProductCardContentPreview() {
     LegacyWooThemeWithBackground {
         ExtendedProductCardContent(state, product, {}, {}, {}) {}
     }
+}
+
+internal object ExpandableProductCardTestTags {
+    const val PRODUCT_CARD = "order_product_card"
+    const val DISCOUNT_AMOUNT = "order_product_discount_amount"
 }
