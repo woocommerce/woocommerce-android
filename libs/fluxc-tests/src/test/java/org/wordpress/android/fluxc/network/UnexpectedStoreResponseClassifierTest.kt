@@ -32,6 +32,13 @@ class UnexpectedStoreResponseClassifierTest {
     }
 
     @Test
+    fun `given a long JSON string with a 400 status, when classified, then it is not unexpected`() {
+        val kind = classify(statusCode = 400, contentType = JSON, body = "\"${"a".repeat(100_000)}\"")
+
+        assertThat(kind).isNull()
+    }
+
+    @Test
     fun `given an empty body with a 404 status, when classified, then it is not unexpected`() {
         val kind = classify(statusCode = 404, contentType = null, body = " ")
 

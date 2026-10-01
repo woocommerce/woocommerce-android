@@ -16,7 +16,8 @@ object UnexpectedStoreResponseClassifier {
         }
     }
 
-    private fun String.isJson(): Boolean = startsWith("{") || startsWith("[") || matches(JSON_SCALAR_REGEX)
+    private fun String.isJson(): Boolean =
+        startsWith("{") || startsWith("[") || startsWith("\"") || matches(JSON_LITERAL_REGEX)
 
     private fun isHtml(contentType: String?, body: String): Boolean {
         val mediaType = contentType?.substringBefore(';')?.trim()?.lowercase(Locale.ROOT)
@@ -27,7 +28,5 @@ object UnexpectedStoreResponseClassifier {
     private val SUCCESS_STATUS_CODES = 200..299
     private val SERVER_ERROR_STATUS_CODES = 500..599
     private val HTML_MEDIA_TYPES = setOf("text/html", "application/xhtml+xml")
-    private val JSON_SCALAR_REGEX = Regex(
-        """true|false|null|-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?|"(?:[^"\\]|\\.)*""""
-    )
+    private val JSON_LITERAL_REGEX = Regex("""true|false|null|-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?""")
 }
