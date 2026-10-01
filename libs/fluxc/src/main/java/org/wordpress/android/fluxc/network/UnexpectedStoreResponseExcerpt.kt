@@ -14,8 +14,15 @@ object UnexpectedStoreResponseExcerpt {
         return excerpt.masked().truncated().ifEmpty { null }
     }
 
-    private fun String.toPlainText(): String =
-        SensitiveDataSanitizer.sanitize(StringEscapeUtils.unescapeHtml4(replace(TAG_PATTERN, " ")))
+    private fun String.toPlainText(): String {
+        val text = replace(TAG_PATTERN, " ").replace(WHITESPACE_PATTERN, " ").trim()
+        val textStart = if (text.length > MAX_CLEANED_LENGTH) {
+            text.take(MAX_CLEANED_LENGTH).substringBeforeLast(' ')
+        } else {
+            text
+        }
+        return SensitiveDataSanitizer.sanitize(StringEscapeUtils.unescapeHtml4(textStart))
+    }
 
     private fun String.masked(): String =
         replace(EMAIL_PATTERN, "[email]").replace(IPV4_PATTERN, "[ip]").replace(IPV6_PATTERN, "[ip]")
@@ -25,15 +32,18 @@ object UnexpectedStoreResponseExcerpt {
 
     private const val MAX_LENGTH = 300
     private const val ELLIPSIS = "…"
+    private const val MAX_CLEANED_LENGTH = 4096
     private val TITLE_PATTERN = Regex(
-        pattern = """<title\b[^>]*>(.*?)</title\s*>""",
-        options = setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)
+        pattern = """<title\b[^<>]*>([^<]*)</title\s*>""",
+        option = RegexOption.IGNORE_CASE
     )
     private val NON_RENDERED_REGION_PATTERN = Regex(
-        pattern = """<!--.*?-->|<(head|script|style|noscript|template|svg|iframe)\b[^>]*>.*?</\1\s*>""",
+        pattern = """<!--.*?(?:-->|\z)|<head\b[^<>]*>.*?(?:</head\s*>|(?=<body\b)|\z)|""" +
+            """<(script|style|noscript|template|svg|iframe)\b[^<>]*>.*?(?:</\1\s*>|\z)""",
         options = setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)
     )
-    private val TAG_PATTERN = Regex("""<[^>]*>""")
+    private val TAG_PATTERN = Regex("""<[^<>]*>""")
+    private val WHITESPACE_PATTERN = Regex("""\s+""")
     private val EMAIL_PATTERN = Regex("""[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}""")
     private val IPV4_PATTERN = Regex("""\b(?:\d{1,3}\.){3}\d{1,3}\b""")
     private val IPV6_PATTERN = Regex(
