@@ -30,6 +30,16 @@ class UnexpectedStoreResponseExcerptTest {
     }
 
     @Test
+    fun `given a title inside a comment or an SVG, when the excerpt is built, then the page title is used`() {
+        val body = "<html><head><!-- <title>Internal staging build 7</title> --><svg><title>Logo</title></svg>" +
+            "<title>Maintenance</title></head><body><p>Back soon.</p></body></html>"
+
+        val excerpt = UnexpectedStoreResponseExcerpt.from(body)
+
+        assertThat(excerpt).isEqualTo("Maintenance | Back soon.")
+    }
+
+    @Test
     fun `given the page text starts with the title, when the excerpt is built, then the title is not repeated`() {
         val body = "<html><head><title>Just a moment...</title></head>" +
             "<body><h1>Just a moment...</h1><p>Checking your browser.</p></body></html>"

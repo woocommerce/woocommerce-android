@@ -4,8 +4,9 @@ import org.apache.commons.text.StringEscapeUtils
 
 object UnexpectedStoreResponseExcerpt {
     fun from(body: String): String? {
-        val title = TITLE_PATTERN.find(body)?.groupValues?.get(1)?.visibleText()?.cleaned().orEmpty()
-        val text = body.replace(NON_RENDERED_REGION_PATTERN, " ").visibleText().substringBeforeJson().cleaned()
+        val visibleBody = body.replace(HIDDEN_REGION_PATTERN, " ")
+        val title = TITLE_PATTERN.find(visibleBody)?.groupValues?.get(1)?.visibleText()?.cleaned().orEmpty()
+        val text = visibleBody.replace(HEAD_PATTERN, " ").visibleText().substringBeforeJson().cleaned()
         val excerpt = when {
             title.isEmpty() || text.startsWith(title) -> text
             text.isEmpty() -> title
@@ -50,9 +51,12 @@ object UnexpectedStoreResponseExcerpt {
         pattern = """<title\b[^<>]*>([^<]*)</title\s*>""",
         option = RegexOption.IGNORE_CASE
     )
-    private val NON_RENDERED_REGION_PATTERN = Regex(
-        pattern = """<!--.*?(?:-->|\z)|<head\b[^<>]*>.*?(?:</head\s*>|(?=<body\b)|\z)|""" +
-            """<(script|style|noscript|template|svg|iframe)\b[^<>]*>.*?(?:</\1\s*>|\z)""",
+    private val HIDDEN_REGION_PATTERN = Regex(
+        pattern = """<!--.*?(?:-->|\z)|<(script|style|noscript|template|svg|iframe)\b[^<>]*>.*?(?:</\1\s*>|\z)""",
+        options = setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)
+    )
+    private val HEAD_PATTERN = Regex(
+        pattern = """<head\b[^<>]*>.*?(?:</head\s*>|(?=<body\b)|\z)""",
         options = setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)
     )
     private val TAG_PATTERN = Regex("""<[^<>]*>""")
