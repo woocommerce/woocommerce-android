@@ -21,8 +21,8 @@
 #     └─ tap mnu_confirm_selection ("Add N") in the toolbar
 #   Device media → system photo picker (AndroidX
 #   PickMultipleVisualMedia, backed by the MediaProvider module)
-#     └─ tap first icon_thumbnail in picker_tab_recyclerview
-#     └─ tap button_add ("Add N")
+#     └─ tap the first "Photo taken on ..." tile
+#     └─ tap "Done", or "Add N" on the older picker
 #        └─ result returned to ProductImagesFragment
 #           ▼
 #   ProductImagesFragment — gallery now shows the image
@@ -45,12 +45,9 @@
 #   - mnu_confirm_selection    — "Add N" action-mode menu item
 #   - soft_ask_view            — storage-permission prompt (guarded)
 #
-# System photo picker resource IDs. The MediaProvider package name
-# varies by OEM and Android version, so these are matched as regex
-# suffixes rather than fully qualified IDs:
-#   - picker_tab_recyclerview  — media thumbnail grid
-#   - icon_thumbnail           — per-tile ImageView
-#   - button_add               — "Add N" confirm button
+# Both system photo pickers label each tile "Photo taken on ...". The
+# newer one has no resource IDs and confirms with "Done"; the older one
+# confirms with the button_add ("Add N") button.
 appId: com.woocommerce.android
 name: "Products - Media upload via WP media library and device media"
 tags:
@@ -112,8 +109,10 @@ tags:
 - inputText: "Maestro Smoke Product ${SUITE_RUN_ID}"
 - hideKeyboard
 
+# Match the result row's title: the search field holds the same text.
 - extendedWaitUntil:
     visible:
+      id: "product_list_title_.*"
       text: "Maestro Smoke Product ${SUITE_RUN_ID}"
     timeout: 20000
     label: "Wait for this run's product in search results"
@@ -122,7 +121,7 @@ tags:
 
 - tapOn:
     id: "product_list_title_.*"
-    index: 0
+    text: "Maestro Smoke Product ${SUITE_RUN_ID}"
     retryTapIfNoChange: true
     label: "Open this run's product"
 
@@ -166,6 +165,20 @@ tags:
     when:
       notVisible: "Select an upload method"
     commands:
+      # The gallery scrolls sideways and the button follows the last image.
+      - repeat:
+          while:
+            notVisible:
+              text: "Add image"
+              childOf:
+                id: "productDetailImageGallery"
+          times: 5
+          commands:
+            - swipe:
+                from:
+                  id: "productDetailImageGallery"
+                direction: LEFT
+                duration: 400
       - tapOn:
           text: "Add image"
           childOf:
@@ -285,6 +298,20 @@ tags:
     when:
       notVisible: "Select an upload method"
     commands:
+      # The gallery scrolls sideways and the button follows the last image.
+      - repeat:
+          while:
+            notVisible:
+              text: "Add image"
+              childOf:
+                id: "productDetailImageGallery"
+          times: 5
+          commands:
+            - swipe:
+                from:
+                  id: "productDetailImageGallery"
+                direction: LEFT
+                duration: 400
       - tapOn:
           text: "Add image"
           childOf:
@@ -310,21 +337,39 @@ tags:
           text: ".*Allow access.*|.*Allow.*"
 
 - extendedWaitUntil:
-    visible:
-      id: ".*picker_tab_recyclerview"
+    visible: "Photo taken on .*"
     timeout: 30000
     label: "Wait for device media grid"
 
 - tapOn:
-    id: ".*icon_thumbnail"
+    text: "Photo taken on .*"
     index: 0
     retryTapIfNoChange: true
     label: "Select the deterministic device media item"
 
-- tapOn:
-    id: ".*button_add"
-    retryTapIfNoChange: true
-    label: "Add the selected device media"
+- extendedWaitUntil:
+    visible: "Done|Add \\(?[0-9]+\\)?"
+    timeout: 10000
+    label: "Wait for the photo picker confirm button"
+
+- runFlow:
+    when:
+      visible: "Done"
+    commands:
+      - tapOn:
+          text: "Done"
+          retryTapIfNoChange: true
+          label: "Add the selected device media"
+
+- runFlow:
+    when:
+      visible:
+        id: ".*button_add"
+    commands:
+      - tapOn:
+          id: ".*button_add"
+          retryTapIfNoChange: true
+          label: "Add the selected device media on the older picker"
 
 # One product image was already added from the WP media library. Requiring
 # index 1 proves this second selection added another image instead of merely
