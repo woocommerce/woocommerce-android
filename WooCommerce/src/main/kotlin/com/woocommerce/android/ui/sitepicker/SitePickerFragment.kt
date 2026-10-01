@@ -361,7 +361,11 @@ class SitePickerFragment :
 
     private fun navigateToAddStoreScreen() {
         findNavController()
-            .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToSitePickerSiteDiscoveryFragment())
+            .navigateSafely(
+                SitePickerFragmentDirections.actionSitePickerFragmentToSitePickerSiteDiscoveryFragment(
+                    openedFromLogin = navArgs.openedFromLogin
+                )
+            )
     }
 
     private fun navigateToNeedHelpFindingEmailScreen() {
@@ -384,7 +388,8 @@ class SitePickerFragment :
         findNavController().navigateSafely(
             SitePickerFragmentDirections.actionSitePickerFragmentToAccountMismatchErrorFragment(
                 siteUrl = event.siteUrl,
-                primaryButton = event.primaryButton
+                primaryButton = event.primaryButton,
+                openedFromLogin = navArgs.openedFromLogin
             )
         )
     }

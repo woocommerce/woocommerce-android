@@ -33,6 +33,10 @@
             android:id="@+id/action_jetpackBenefitsDialog_to_jetpack_activation"
             app:destination="@id/nav_graph_jetpack_activation">
             <argument
+                android:name="openedFromLogin"
+                android:defaultValue="false"
+                app:argType="boolean" />
+            <argument
                 android:name="siteUrl"
                 app:argType="string" />
             <argument
@@ -58,6 +62,10 @@
             app:destination="@id/nav_graph_jetpack_activation"
             app:popUpTo="@id/jetpackActivationEligibilityErrorFragment"
             app:popUpToInclusive="true">
+            <argument
+                android:name="openedFromLogin"
+                android:defaultValue="false"
+                app:argType="boolean" />
             <argument
                 android:name="siteUrl"
                 app:argType="string" />

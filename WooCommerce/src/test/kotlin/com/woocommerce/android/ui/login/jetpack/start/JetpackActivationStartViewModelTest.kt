@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.jetpack.start
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackConnectionStatus
@@ -15,6 +16,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -23,8 +25,12 @@ class JetpackActivationStartViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val unifiedLoginTracker: UnifiedLoginTracker = mock()
 
-    private fun whenViewModelIsCreated(isJetpackInstalled: Boolean) = JetpackActivationStartViewModel(
+    private fun whenViewModelIsCreated(
+        isJetpackInstalled: Boolean,
+        openedFromLogin: Boolean = true
+    ) = JetpackActivationStartViewModel(
         savedStateHandle = JetpackActivationStartFragmentArgs(
+            openedFromLogin = openedFromLogin,
             siteUrl = SITE_URL,
             jetpackStatus = JetpackStatus(
                 isJetpackInstalled = isJetpackInstalled,
@@ -104,6 +110,35 @@ class JetpackActivationStartViewModelTest : BaseUnitTest() {
         // THEN
         verify(unifiedLoginTracker).track(
             flow = eq(UnifiedLoginTracker.Flow.SITE_DISCOVERY),
+            step = any(),
+            properties = any()
+        )
+    }
+
+    @Test
+    fun `given the screen was not opened from login, when it is shown, then the legacy event still fires`() {
+        // GIVEN the merchant reached it from the dashboard, long after signing in
+
+        // WHEN
+        whenViewModelIsCreated(isJetpackInstalled = false, openedFromLogin = false)
+
+        // THEN the screen is still counted; only the login step is suppressed
+        verify(analyticsTrackerWrapper).track(
+            stat = eq(AnalyticsEvent.LOGIN_JETPACK_REQUIRED_SCREEN_VIEWED),
+            properties = any()
+        )
+    }
+
+    @Test
+    fun `given the screen was not opened from login, when it is shown, then no step is reported`() {
+        // GIVEN the merchant reached it from the dashboard, long after signing in
+
+        // WHEN
+        whenViewModelIsCreated(isJetpackInstalled = true, openedFromLogin = false)
+
+        // THEN a store connection outside a login journey is not a login step
+        verify(unifiedLoginTracker, never()).track(
+            flow = anyOrNull(),
             step = any(),
             properties = any()
         )
