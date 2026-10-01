@@ -248,8 +248,11 @@ class NonceRestClient @Inject constructor(
             username = transaction.username,
             type = errorType,
             errorMessage = errorMessage,
-            unexpectedStoreResponse = response.unexpectedStoreResponse(Method.POST, transaction.loginUrl)
-                .takeIf { isUnexpectedPage }
+            unexpectedStoreResponse = if (isUnexpectedPage) {
+                response.unexpectedStoreResponse(Method.POST, transaction.loginUrl)
+            } else {
+                null
+            }
         )
     }
 
@@ -265,8 +268,11 @@ class NonceRestClient @Inject constructor(
             username = username,
             type = type,
             response = response,
-            unexpectedStoreResponse = response.unexpectedStoreResponse(method, url)
-                .takeIf { type == CookieNonceErrorType.GENERIC_ERROR }
+            unexpectedStoreResponse = if (type == CookieNonceErrorType.GENERIC_ERROR) {
+                response.unexpectedStoreResponse(method, url)
+            } else {
+                null
+            }
         )
     }
 
