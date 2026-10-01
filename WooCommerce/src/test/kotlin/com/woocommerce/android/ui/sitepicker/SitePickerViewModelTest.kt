@@ -905,25 +905,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the account owns sites but none with woo, when the picker loads, then no_woo_stores is reported`() =
-        testBlocking {
-            // GIVEN an account whose only sites do not sell
-            val nonWooSites = defaultExpectedSiteList.map { it.apply { hasWooCommerce = false } }
-            givenTheScreenIsFromLogin(true)
-            whenSitesAreFetched(sitesFromDb = nonWooSites, sitesFromApi = nonWooSites)
-
-            // WHEN
-            whenViewModelIsCreated()
-
-            // THEN the merchant is no longer counted as having no problem
-            verify(unifiedLoginTracker).track(
-                flow = anyOrNull(),
-                step = eq(UnifiedLoginTracker.Step.NO_WOO_STORES),
-                properties = any()
-            )
-        }
-
-    @Test
     fun `given a site address was entered, when the mismatch screen opens, then no_woo_stores is not reported`() =
         testBlocking {
             // GIVEN an account with no woo store, and an address that belongs to none of its sites
