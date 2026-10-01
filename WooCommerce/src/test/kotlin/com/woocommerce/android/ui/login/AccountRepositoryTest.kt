@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.push.PushNotificationRepository
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -28,6 +29,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.given
+import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -50,6 +52,7 @@ class AccountRepositoryTest : BaseUnitTest() {
     private val appPrefs: AppPrefs = mock()
     private val visibleWooSitesDataStore: VisibleWooSitesDataStore = mock()
     private val pushNotificationRepository: PushNotificationRepository = mock()
+    private val registerDevice: RegisterDevice = mock()
     private val posDataStore: DataStore<Preferences> = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val appCoroutineScope = CoroutineScope(coroutinesTestRule.testDispatcher)
@@ -74,6 +77,7 @@ class AccountRepositoryTest : BaseUnitTest() {
         siteVisibilityDataStore = visibleWooSitesDataStore,
         dispatchers = coroutinesTestRule.testDispatchers,
         pushNotificationRepository = pushNotificationRepository,
+        registerDevice = registerDevice,
         posDataStore = posDataStore,
         analyticsTracker = analyticsTracker
     )
@@ -110,7 +114,7 @@ class AccountRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given signed in using wordpress_com, when logout is called, then unregister device from push notifications`() =
+    fun `given signed in using wordpress_com, when logout is called, then cancel in-progress push registration before unregistering the device`() =
         testBlocking {
             // GIVEN
             given(accountStore.hasAccessToken()).willReturn(true)
@@ -119,7 +123,10 @@ class AccountRepositoryTest : BaseUnitTest() {
             repository.logout()
 
             // THEN
-            verify(pushNotificationRepository).unregisterDeviceFromPushNotifications()
+            inOrder(registerDevice, pushNotificationRepository) {
+                verify(registerDevice).cancelInProgressRegistration()
+                verify(pushNotificationRepository).unregisterDeviceFromPushNotifications()
+            }
         }
 
     @Test

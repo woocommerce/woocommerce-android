@@ -7,6 +7,7 @@
 - [Internal] The login_social_button_failure event now includes the Google Sign-In failure reason [https://github.com/woocommerce/woocommerce-android/pull/16593]
 - [*] Fixed a crash when a store's site doesn't send back the password for a new application password [https://github.com/woocommerce/woocommerce-android/pull/16628]
 - [*] The Payments payout summary no longer disappears for 24 hours after a manual payout [https://github.com/woocommerce/woocommerce-android/pull/16629]
+- [*] The app now periodically refreshes push notification registrations for visible stores, so notifications keep working [https://github.com/woocommerce/woocommerce-android/pull/16625]
 - [**] Fixed push notifications that could stay off for the next store logged in on the same device [https://github.com/woocommerce/woocommerce-android/pull/16620]
 - [*] POS: custom amount form keeps its button above the keyboard, shows custom amounts in checkout and order totals, and formats amounts correctly [https://github.com/woocommerce/woocommerce-android/pull/16598]
 - [*] The app no longer signs you out when a single store endpoint returns an authorization error [https://github.com/woocommerce/woocommerce-android/pull/16571]
