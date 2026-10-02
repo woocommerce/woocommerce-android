@@ -17,10 +17,13 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.UnexpectedStoreResponseKind
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseLogger
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.AdminBaseVerification
 import org.wordpress.android.fluxc.test
+import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
+import org.wordpress.android.util.AppLog
 import java.util.Date
 import javax.net.ssl.SSLHandshakeException
 import kotlin.test.assertEquals
@@ -31,6 +34,7 @@ import org.wordpress.android.fluxc.network.rest.Header as ResponseHeader
 class NonceRestClientTest {
     private val requestBuilder: WPAPIEncodedBodyRequestBuilder = mock()
     private val currentTimeProvider: CurrentTimeProvider = mock()
+    private val appLogWrapper: AppLogWrapper = mock()
     private lateinit var subject: NonceRestClient
 
     @Before
@@ -38,6 +42,7 @@ class NonceRestClientTest {
         subject = NonceRestClient(
             requestBuilder,
             currentTimeProvider,
+            appLogWrapper,
             mock<Dispatcher>(),
             mock<RequestQueue>(),
             mock<UserAgent>()
@@ -663,6 +668,10 @@ class NonceRestClientTest {
         assertEquals(UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE, failure.unexpectedStoreResponse?.kind)
         assertEquals("GET /store/wp-login.php", failure.unexpectedStoreResponse?.requestType)
         assertEquals("Access Denied | Blocked by the firewall.", failure.unexpectedStoreResponse?.excerpt)
+        verify(appLogWrapper).w(
+            AppLog.T.API,
+            UnexpectedStoreResponseLogger.buildMessage(requireNotNull(failure.unexpectedStoreResponse))
+        )
     }
 
     @Test
