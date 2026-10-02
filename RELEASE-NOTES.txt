@@ -4,7 +4,7 @@
 
 25.9
 -----
-
+- [*] The Blaze campaign list now shows an outstanding balance notice with a Pay button for each unpaid order [https://github.com/woocommerce/woocommerce-android/pull/16612]
 
 25.8
 -----
@@ -30,7 +30,6 @@
 - [Internal] Track when the app signs the merchant out on its own (invalid token, application password failures) [https://github.com/woocommerce/woocommerce-android/pull/16594]
 - [*] POS: Cart items discounted by a coupon or another source are now marked "Discount applied" at checkout [https://github.com/woocommerce/woocommerce-android/pull/16570]
 - [*] Custom fields no longer show REST API addresses as links that open an authorization error [https://github.com/woocommerce/woocommerce-android/pull/16607]
-- [*] Blaze: the campaign list now shows a notice with the outstanding balance and the unpaid orders to pay [https://github.com/woocommerce/woocommerce-android/pull/16612]
 
 25.7
 -----
