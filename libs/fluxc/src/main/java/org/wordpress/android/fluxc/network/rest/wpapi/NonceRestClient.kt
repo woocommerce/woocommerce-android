@@ -327,7 +327,7 @@ class NonceRestClient @Inject constructor(
 
     private suspend fun requestNonce(nonceUrl: HttpUrl, username: String): Nonce {
         return when (val response = wpApiEncodedBodyRequestBuilder.syncGetRequest(this, nonceUrl.toString())) {
-            is Success -> if (response.data?.matches("[0-9a-zA-Z]{2,}".toRegex()) == true) {
+            is Success -> if (response.data?.isValidNonce() == true) {
                 Available(value = response.data, username = username)
             } else {
                 failed(
@@ -449,6 +449,8 @@ class NonceRestClient @Inject constructor(
         it.groupValues[1].equals(name, ignoreCase = true)
     }?.groups?.drop(2)?.firstNotNullOfOrNull { it?.value }
 
+    private fun String.isValidNonce(): Boolean = matches(NONCE_PATTERN)
+
     private fun String?.isWordPressAdminDashboard(): Boolean {
         val body = this ?: return false
         val bodyClasses = BODY_CLASS_PATTERN.find(body)?.groupValues?.get(2) ?: return false
@@ -509,6 +511,7 @@ class NonceRestClient @Inject constructor(
                 """(?:\s*=\s*(?:\"([^\"]*)\"|'([^']*)'|([^\s\"'=<>`]+)))?"""
         )
         private val WHITESPACE_PATTERN = Regex("\\s+")
+        private val NONCE_PATTERN = Regex("[0-9a-zA-Z]{2,}")
         private const val ID_ATTRIBUTE = "id"
         private const val NAME_ATTRIBUTE = "name"
         private const val TYPE_ATTRIBUTE = "type"
