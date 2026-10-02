@@ -125,7 +125,7 @@ class NonceRestClient @Inject constructor(
                     }
                     if (redirectsFollowed == MAX_ENDPOINT_REDIRECTS) {
                         return LoginPreflight.Failure(
-                            failed(username, CookieNonceErrorType.CUSTOM_LOGIN_URL, response)
+                            unfollowedRedirect(username, CookieNonceErrorType.CUSTOM_LOGIN_URL, response, currentUrl)
                         )
                     }
                     val redirectUrl = networkResponse.location()
@@ -133,7 +133,7 @@ class NonceRestClient @Inject constructor(
                         ?.withoutFragment()
                         ?.takeIf { endpoints.allows(it, currentUrl) }
                         ?: return LoginPreflight.Failure(
-                            failed(username, CookieNonceErrorType.CUSTOM_LOGIN_URL, response)
+                            unfollowedRedirect(username, CookieNonceErrorType.CUSTOM_LOGIN_URL, response, currentUrl)
                         )
                     currentUrl = redirectUrl
                     redirectsFollowed++
@@ -185,7 +185,12 @@ class NonceRestClient @Inject constructor(
             transaction.endpoints.isNonceEndpoint(redirectUrl) -> {
                 failed(transaction.username, CookieNonceErrorType.CUSTOM_ADMIN_URL, response)
             }
-            else -> failed(transaction.username, CookieNonceErrorType.INVALID_NONCE, response)
+            else -> failed(
+                username = transaction.username,
+                type = CookieNonceErrorType.INVALID_NONCE,
+                response = response,
+                unexpectedStoreResponse = response.unexpectedRedirect(Method.POST, transaction.loginUrl)
+            )
         }
     }
 
@@ -236,13 +241,18 @@ class NonceRestClient @Inject constructor(
                         )
                     }
                     if (redirectsFollowed == MAX_ENDPOINT_REDIRECTS) {
-                        return failed(username, CookieNonceErrorType.CUSTOM_ADMIN_URL, response)
+                        return unfollowedRedirect(username, CookieNonceErrorType.CUSTOM_ADMIN_URL, response, currentUrl)
                     }
                     val redirectUrl = networkResponse.location()
                         ?.let(currentUrl::resolve)
                         ?.withoutFragment()
                         ?.takeIf { endpoints.allows(it, currentUrl) }
-                        ?: return failed(username, CookieNonceErrorType.CUSTOM_ADMIN_URL, response)
+                        ?: return unfollowedRedirect(
+                            username,
+                            CookieNonceErrorType.CUSTOM_ADMIN_URL,
+                            response,
+                            currentUrl
+                        )
                     currentUrl = redirectUrl
                     redirectsFollowed++
                 }
@@ -288,6 +298,18 @@ class NonceRestClient @Inject constructor(
         } else {
             response.unexpectedStatus(Method.GET, url) { it.loginFormSubmissionUrl(url, endpoints) != null }
         }
+    )
+
+    private fun unfollowedRedirect(
+        username: String,
+        type: CookieNonceErrorType,
+        response: Error<String>,
+        url: HttpUrl
+    ) = failed(
+        username = username,
+        type = type,
+        response = response,
+        unexpectedStoreResponse = response.unexpectedRedirect(Method.GET, url)
     )
 
     private fun getLoginErrorType(networkResponse: NetworkResponse?): CookieNonceErrorType = when {
@@ -344,6 +366,11 @@ class NonceRestClient @Inject constructor(
         }
     }
 
+    private fun Error<String>.unexpectedRedirect(method: Int, url: HttpUrl): UnexpectedStoreResponse? =
+        error.volleyError?.networkResponse?.let {
+            UnexpectedStoreResponse.of(UnexpectedStoreResponseKind.UNEXPECTED_CONTENT, it, method, url.toString())
+        }
+
     /**
      * A missing login page, dashboard or nonce endpoint isn't unexpected: the store may use a custom login or admin
      * address.
@@ -380,10 +407,10 @@ class NonceRestClient @Inject constructor(
                     username = username,
                     type = errorType,
                     response = response,
-                    unexpectedStoreResponse = if (statusCode.isMissingPage()) {
-                        null
-                    } else {
-                        response.unexpectedStatus(Method.GET, nonceUrl) { it.isValidNonce() }
+                    unexpectedStoreResponse = when {
+                        statusCode?.isRedirect() == true -> response.unexpectedRedirect(Method.GET, nonceUrl)
+                        statusCode.isMissingPage() -> null
+                        else -> response.unexpectedStatus(Method.GET, nonceUrl) { it.isValidNonce() }
                     }
                 )
             }
