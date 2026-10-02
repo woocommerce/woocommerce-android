@@ -217,6 +217,12 @@ tags:
 - takeScreenshot: order_create_with_product
 
 # ── Adjust quantity and apply a product discount ─────────────────────
+# The order sync overlay catches taps until it has faded out.
+- extendedWaitUntil:
+    notVisible:
+      id: "order_update_overlay"
+    timeout: 20000
+    label: "Wait for the order sync to finish"
 - tapOn:
     id: "order_product_card"
     index: 0
@@ -245,20 +251,15 @@ tags:
     text: ".*1 ×.*|.*1 x.*"
     label: "Quantity decreased to one"
 
+- extendedWaitUntil:
+    notVisible:
+      id: "order_update_overlay"
+    timeout: 20000
+    label: "Wait for the quantity sync to finish"
 - tapOn:
     text: "Add discount"
     retryTapIfNoChange: true
     label: "Open product discount"
-# The tap is ignored while the quantity change is still syncing.
-- runFlow:
-    when:
-      notVisible: "Discount"
-    commands:
-      - waitForAnimationToEnd:
-          timeout: 5000
-      - tapOn:
-          text: "Add discount"
-          label: "Reopen product discount after the quantity sync"
 
 - extendedWaitUntil:
     visible: "Discount"
