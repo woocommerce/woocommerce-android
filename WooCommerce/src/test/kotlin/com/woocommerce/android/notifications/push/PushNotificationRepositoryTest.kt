@@ -853,6 +853,27 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given token stored but selected site plugin incompatible, when hasWooPushTokenForSite, then returns true`() =
+        testBlocking {
+            whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
+            whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
+            setupPluginCompatibility(isCompatible = false)
+
+            val result = sut.hasWooPushTokenForSite(SITE_ID)
+
+            assertThat(result).isTrue()
+        }
+
+    @Test
+    fun `given no token stored, when hasWooPushTokenForSite, then returns false`() =
+        testBlocking {
+            val result = sut.hasWooPushTokenForSite(SITE_ID)
+
+            assertThat(result).isFalse()
+        }
+
+    @Test
     fun `given registration without next check, when checking whether woo push should register, then returns true`() =
         testBlocking {
             setupMatchingWooRegistration()
