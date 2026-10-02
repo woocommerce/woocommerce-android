@@ -3614,6 +3614,10 @@
     -->
     <string name="blaze_campaign_list_title">Blaze campaigns</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">There was an error refreshing the list of campaigns. Please try again later.</string>
+    <string name="blaze_campaign_list_outstanding_balance_title">Outstanding balance</string>
+    <string name="blaze_campaign_list_outstanding_balance_message">Your account currently has an outstanding balance of %1$s. Please pay it before creating new campaigns.</string>
+    <string name="blaze_campaign_list_outstanding_balance_pay">Pay</string>
+    <string name="blaze_campaign_list_outstanding_balance_payment_title">Pay outstanding balance</string>
 
     <!--
     Blaze campaign creation intro

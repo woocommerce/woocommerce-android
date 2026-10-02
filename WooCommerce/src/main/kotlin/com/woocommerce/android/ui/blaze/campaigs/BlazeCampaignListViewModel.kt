@@ -8,8 +8,10 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_DETAIL_SE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NumberExtensionsWrapper
+import com.woocommerce.android.extensions.formatToLocalizedMedium
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
+import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.CampaignStopped
@@ -28,6 +30,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.blaze.BlazeBillingSummary
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import javax.inject.Inject
 
@@ -36,6 +39,7 @@ import javax.inject.Inject
 class BlazeCampaignListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val blazeCampaignsStore: BlazeCampaignsStore,
+    private val blazeRepository: BlazeRepository,
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
@@ -62,8 +66,9 @@ class BlazeCampaignListViewModel @Inject constructor(
                 0L
             }
         }.map { it.value },
-        isCampaignCelebrationShown
-    ) { campaigns, loadingMore, isBlazeCelebrationScreenShown ->
+        isCampaignCelebrationShown,
+        blazeRepository.outstandingBalance
+    ) { campaigns, loadingMore, isBlazeCelebrationScreenShown, balance ->
         BlazeCampaignListState(
             campaigns = campaigns.map {
                 ClickableCampaign(
@@ -73,7 +78,8 @@ class BlazeCampaignListViewModel @Inject constructor(
             },
             onAddNewCampaignClicked = { onAddNewCampaignClicked() },
             isLoading = loadingMore,
-            isCampaignCelebrationShown = isBlazeCelebrationScreenShown
+            isCampaignCelebrationShown = isBlazeCelebrationScreenShown,
+            outstandingBalance = balance?.toUi()
         )
     }.asLiveData()
 
@@ -88,6 +94,9 @@ class BlazeCampaignListViewModel @Inject constructor(
         }
         launch {
             loadCampaigns(offset = 0)
+        }
+        launch {
+            blazeRepository.fetchOutstandingBalance()
         }
     }
 
@@ -106,6 +115,11 @@ class BlazeCampaignListViewModel @Inject constructor(
         isCampaignCelebrationShown.value = false
     }
 
+    fun onPaymentPageClosed() {
+        launch { blazeRepository.fetchOutstandingBalance() }
+        launch { loadCampaigns(offset = 0) }
+    }
+
     private suspend fun loadCampaigns(offset: Int) {
         val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), offset)
         if (result.isError || result.model == null) {
@@ -113,6 +127,26 @@ class BlazeCampaignListViewModel @Inject constructor(
         } else {
             totalItems = result.model?.totalItems ?: 0
         }
+    }
+
+    private fun BlazeBillingSummary.toUi() = OutstandingBalanceUi(
+        formattedDebt = formatBlazeAmount(debt),
+        unpaidOrders = paymentLinks.map { paymentLink ->
+            UnpaidOrderUi(
+                formattedDate = paymentLink.date?.formatToLocalizedMedium(),
+                formattedAmount = formatBlazeAmount(paymentLink.amount),
+                onPayClicked = { onPayClicked(paymentLink.url) }
+            )
+        }
+    )
+
+    private fun formatBlazeAmount(amount: Double) = currencyFormatter.formatCurrency(
+        amount = amount.toBigDecimal(),
+        currencyCode = BlazeRepository.BLAZE_DEFAULT_CURRENCY_CODE
+    )
+
+    private fun onPayClicked(url: String) {
+        triggerEvent(ShowOutstandingBalancePayment(url))
     }
 
     private fun onCampaignClicked(campaignId: String) {
@@ -154,7 +188,19 @@ class BlazeCampaignListViewModel @Inject constructor(
         val campaigns: List<ClickableCampaign>,
         val onAddNewCampaignClicked: () -> Unit,
         val isLoading: Boolean,
-        val isCampaignCelebrationShown: Boolean
+        val isCampaignCelebrationShown: Boolean,
+        val outstandingBalance: OutstandingBalanceUi? = null
+    )
+
+    data class OutstandingBalanceUi(
+        val formattedDebt: String,
+        val unpaidOrders: List<UnpaidOrderUi>
+    )
+
+    data class UnpaidOrderUi(
+        val formattedDate: String?,
+        val formattedAmount: String,
+        val onPayClicked: () -> Unit
     )
 
     data class ClickableCampaign(
@@ -169,4 +215,5 @@ class BlazeCampaignListViewModel @Inject constructor(
     ) : Event()
 
     data class ShowCampaignDetails(val campaignId: String) : Event()
+    data class ShowOutstandingBalancePayment(val url: String) : Event()
 }
