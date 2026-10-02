@@ -759,6 +759,81 @@ class NonceRestClientTest {
         val basicAuth = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
         assertEquals(Nonce.CookieNonceErrorType.BASIC_AUTH_REQUIRED, basicAuth.type)
         assertNull(basicAuth.unexpectedStoreResponse, "basic auth")
+
+        givenLoginForm(DEFAULT_LOGIN_URL)
+        givenCredentialRedirect(DEFAULT_LOGIN_URL, DEFAULT_NONCE_URL, DEFAULT_NONCE_URL)
+        givenGet(
+            DEFAULT_NONCE_URL,
+            error(401, FIREWALL_PAGE, HTML_HEADERS + Header("WWW-Authenticate", "Basic realm=restricted"))
+        )
+        val nonceBasicAuth = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+        assertNull(nonceBasicAuth.unexpectedStoreResponse, "basic auth on the nonce request")
+
+        givenGet(DEFAULT_NONCE_URL, error(410, FIREWALL_PAGE, HTML_HEADERS))
+        val nonceGone = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+        assertNull(nonceGone.unexpectedStoreResponse, "missing nonce endpoint")
+    }
+
+    @Test
+    fun `given an empty error response, when preflighting, then keep the status details`() = test {
+        givenGet(DEFAULT_LOGIN_URL, error(403))
+
+        val failure = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+
+        assertEquals(Nonce.CookieNonceErrorType.GENERIC_ERROR, failure.type)
+        assertEquals(UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE, failure.unexpectedStoreResponse?.kind)
+        assertEquals(403, failure.unexpectedStoreResponse?.statusCode)
+        assertNull(failure.unexpectedStoreResponse?.excerpt)
+    }
+
+    @Test
+    fun `given the login cookie isn't kept, when requesting the nonce, then keep the status details`() = test {
+        givenLoginForm(DEFAULT_LOGIN_URL)
+        givenCredentialRedirect(DEFAULT_LOGIN_URL, DEFAULT_NONCE_URL, DEFAULT_NONCE_URL)
+        givenGet(DEFAULT_NONCE_URL, error(400, "0"))
+
+        val failure = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+
+        assertEquals(Nonce.CookieNonceErrorType.GENERIC_ERROR, failure.type)
+        assertEquals(UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE, failure.unexpectedStoreResponse?.kind)
+        assertEquals(400, failure.unexpectedStoreResponse?.statusCode)
+        assertEquals("GET /store/wp-admin/admin-ajax.php", failure.unexpectedStoreResponse?.requestType)
+    }
+
+    @Test
+    fun `given a 404 after posting credentials, when requesting a nonce, then keep the status details`() = test {
+        givenLoginForm(DEFAULT_LOGIN_URL)
+        givenCredentialResponse(DEFAULT_LOGIN_URL, DEFAULT_NONCE_URL, error(404, FIREWALL_PAGE, HTML_HEADERS))
+
+        val failure = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+
+        assertEquals(Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL, failure.type)
+        assertEquals(UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE, failure.unexpectedStoreResponse?.kind)
+        assertEquals(404, failure.unexpectedStoreResponse?.statusCode)
+    }
+
+    @Test
+    fun `given an error status on the page a step expects, when requesting a nonce, then add no details`() = test {
+        givenGet(DEFAULT_LOGIN_URL, error(500, LOGIN_FORM))
+        val loginPage = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+        assertNull(loginPage.unexpectedStoreResponse, "login page")
+
+        givenLoginForm(DEFAULT_LOGIN_URL)
+        givenCredentialResponse(DEFAULT_LOGIN_URL, DEFAULT_NONCE_URL, error(403, LOGIN_ERROR))
+        val loginError = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+        assertNull(loginError.unexpectedStoreResponse, "login error")
+
+        givenCredentialRedirect(DEFAULT_LOGIN_URL, CUSTOM_NONCE_URL, CUSTOM_NONCE_URL)
+        givenGet(CUSTOM_ADMIN_URL, error(500, ADMIN_DASHBOARD))
+        val dashboard = assertIs<Nonce.FailedRequest>(
+            subject.requestNonce(MANUAL_ADMIN_ENDPOINTS, USERNAME, PASSWORD)
+        )
+        assertNull(dashboard.unexpectedStoreResponse, "dashboard")
+
+        givenCredentialRedirect(DEFAULT_LOGIN_URL, DEFAULT_NONCE_URL, DEFAULT_NONCE_URL)
+        givenGet(DEFAULT_NONCE_URL, error(500, EXPECTED_NONCE))
+        val nonce = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+        assertNull(nonce.unexpectedStoreResponse, "nonce")
     }
 
     private suspend fun givenLoginForm(url: String, html: String = LOGIN_FORM) {
@@ -870,6 +945,7 @@ class NonceRestClientTest {
                 "<input type=\"text\" name=\"log\" id=\"user_login\">" +
                 "<input type=\"password\" name=\"pwd\" id=\"user_pass\"></form>"
         const val HOME_PAGE = "<html><body class=\"home page\"><main>Storefront</main></body></html>"
+        const val LOGIN_ERROR = "<div id=\"login_error\"><strong>Error:</strong> Too many failed login attempts.</div>"
         const val ADMIN_DASHBOARD =
             "<html><body class=\"wp-admin wp-core-ui index-php\">" +
                 "<div id=\"dashboard-widgets-wrap\"></div></body></html>"

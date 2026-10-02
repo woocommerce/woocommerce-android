@@ -41,6 +41,14 @@ data class UnexpectedStoreResponse(
             excerpt = UnexpectedStoreResponseExcerpt.from(body)
         )
 
+        fun of(kind: UnexpectedStoreResponseKind, response: NetworkResponse, method: Int, url: String) = of(
+            kind = kind,
+            statusCode = response.statusCode,
+            contentType = response.contentType(),
+            body = response.body(),
+            requestType = requestType(method, url)
+        )
+
         @JvmStatic
         fun requestType(method: Int, url: String): String = "${method.toMethodName()} ${url.toRestRoute()}"
 
