@@ -297,6 +297,9 @@ class PushNotificationRepository @Inject constructor(
         }
     }
 
+    suspend fun hasWooPushTokenForSite(siteId: Long): Boolean =
+        pushNotificationsDataStore.data.first().getPushRegistration(siteId)?.tokenId.isNotNullOrEmpty()
+
     suspend fun getWooPushRegisteredSiteIds(): Set<Long> =
         pushNotificationsDataStore.data.first().getRegisteredSiteIds()
 
