@@ -18,12 +18,12 @@ import org.wordpress.android.util.AppLog
 @RunWith(RobolectricTestRunner::class)
 class JetpackTunnelRawBodyErrorLoggerTest {
     @Test
-    fun `given raw body is present, when message is built, then it includes sanitized snippet`() {
+    fun `given raw body is present, when message is built, then it includes the cleaned excerpt`() {
         val error = buildError(rawBody = "<html>\nFatal error</html>")
 
         val message = JetpackTunnelRawBodyErrorLogger.buildMessage("GET", "/wc/v3/orders", error)
 
-        assertThat(message).contains("raw_body_snippet=<html> Fatal error</html>")
+        assertThat(message).contains("raw_body_excerpt=Fatal error")
     }
 
     @Test
@@ -45,8 +45,7 @@ class JetpackTunnelRawBodyErrorLoggerTest {
         assertThat(message).contains("proxy_status=500")
         assertThat(message).contains("error_code=no_response_body")
         assertThat(message).contains("error_message=Remote site returned non-JSON response")
-        assertThat(message).contains("raw_body_truncated=false")
-        assertThat(message).contains("raw_body_snippet=<html>Fatal error</html>")
+        assertThat(message).contains("raw_body_excerpt=Fatal error")
     }
 
     @Test
@@ -113,28 +112,13 @@ class JetpackTunnelRawBodyErrorLoggerTest {
     }
 
     @Test
-    fun `given raw body at exact limit, when message is built, then complete raw body is included`() {
-        val rawBody = "a".repeat(MAX_RAW_BODY_LOG_CHARS)
-        val error = buildError(rawBody = rawBody)
-
-        val message = JetpackTunnelRawBodyErrorLogger.buildMessage("GET", "/wc/v3/orders", error)
-
-        assertThat(message).contains("raw_body_truncated=false")
-        assertThat(rawBodySnippet(message)).hasSize(MAX_RAW_BODY_LOG_CHARS)
-        assertThat(rawBodySnippet(message)).isEqualTo(rawBody)
-    }
-
-    @Test
-    fun `given raw body above limit, when message is built, then raw body is capped and marked truncated`() {
-        val retainedPrefix = "a".repeat(MAX_RAW_BODY_LOG_CHARS)
+    fun `given a long raw body, when message is built, then only a short excerpt is included`() {
         val truncatedTail = "tail-content"
-        val error = buildError(rawBody = retainedPrefix + truncatedTail)
+        val error = buildError(rawBody = "a".repeat(2048) + truncatedTail)
 
         val message = JetpackTunnelRawBodyErrorLogger.buildMessage("GET", "/wc/v3/orders", error)
 
-        assertThat(message).contains("raw_body_truncated=true")
-        assertThat(rawBodySnippet(message)).hasSize(MAX_RAW_BODY_LOG_CHARS)
-        assertThat(rawBodySnippet(message)).isEqualTo(retainedPrefix)
+        assertThat(message?.substringAfter("raw_body_excerpt=")).hasSize(300).endsWith("…")
         assertThat(message).doesNotContain(truncatedTail)
     }
 
@@ -155,12 +139,7 @@ class JetpackTunnelRawBodyErrorLoggerTest {
         }
     }
 
-    private fun rawBodySnippet(message: String?): String {
-        return message?.substringAfter("raw_body_snippet=").orEmpty()
-    }
-
     private companion object {
-        const val MAX_RAW_BODY_LOG_CHARS = 2048
         const val requestBodySecretValue = "requestBodyShouldNotAppear"
 
         val rawBodyWithSecrets = """
