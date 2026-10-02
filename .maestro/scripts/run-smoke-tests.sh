@@ -9,6 +9,7 @@ set -euo pipefail
 #   - flaky_quarantine excluded unless explicitly requested
 #   - no REST fixture seed unless --seed is passed
 #   - animation settings captured and restored
+#   - autofill service turned off and restored
 #   - one retry per failed flow, recorded as flaky
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -61,6 +62,7 @@ Defaults:
   - flaky_quarantine excluded unless explicitly requested
   - no REST fixture seed unless --seed is passed
   - animation settings captured and restored
+  - autofill service turned off and restored
   - one retry per failed flow, recorded as flaky
 
 Usage:
@@ -746,6 +748,28 @@ restore_animation_settings() {
   done
 }
 
+# Google Password Manager's save sheet covers the app after a password is typed.
+ORIGINAL_AUTOFILL_SERVICE=""
+AUTOFILL_CAPTURED="no"
+
+disable_autofill_service() {
+  ORIGINAL_AUTOFILL_SERVICE="$(
+    adb -s "$DEVICE_SERIAL" shell settings get secure autofill_service 2>/dev/null | tr -d '\r' || true
+  )"
+  adb -s "$DEVICE_SERIAL" shell settings put secure autofill_service null >/dev/null
+  AUTOFILL_CAPTURED="yes"
+}
+
+restore_autofill_service() {
+  [[ "$AUTOFILL_CAPTURED" == "yes" ]] || return 0
+  if [[ -z "$ORIGINAL_AUTOFILL_SERVICE" || "$ORIGINAL_AUTOFILL_SERVICE" == "null" ]]; then
+    adb -s "$DEVICE_SERIAL" shell settings delete secure autofill_service >/dev/null 2>&1 || true
+  else
+    adb -s "$DEVICE_SERIAL" shell settings put secure autofill_service "$ORIGINAL_AUTOFILL_SERVICE" \
+      >/dev/null 2>&1 || true
+  fi
+}
+
 prepare_device_media_fixture() {
   local flow selected="no"
   for flow in "${ORDERED_FLOWS[@]}"; do
@@ -790,11 +814,13 @@ cleanup_on_exit() {
     fi
   fi
   restore_animation_settings
+  restore_autofill_service
   exit "$exit_code"
 }
 trap cleanup_on_exit EXIT INT TERM
 
 capture_animation_settings
+disable_autofill_service
 
 echo "--- Ensuring production release app"
 release_app_args=(--device "$DEVICE_SERIAL")

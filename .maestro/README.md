@@ -177,6 +177,8 @@ The runner:
 - downloads and installs the latest stable GitHub release when no production app or candidate APK is installed;
 - selects one connected device automatically, or prompts when several are attached;
 - captures and restores animation settings;
+- turns off the device's autofill service during the run, so password save sheets cannot cover the app, and restores
+  it afterwards;
 - can seed deterministic fixtures through the WooCommerce REST API when `--seed` is used;
 - writes created entity IDs to `run-manifest.json` when seeding;
 - deletes exactly those manifest IDs during cleanup when seeding;

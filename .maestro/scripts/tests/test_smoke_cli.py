@@ -15,6 +15,7 @@ REPO_ROOT = SCRIPT_DIR.parent.parent.parent
 RUNNER = REPO_ROOT / ".maestro" / "scripts" / "run-smoke-tests.sh"
 DOCTOR = REPO_ROOT / ".maestro" / "scripts" / "doctor.py"
 GOLDEN_DIR = SCRIPT_DIR / "golden"
+GOOGLE_AUTOFILL_SERVICE = "com.google.android.gms/.autofill.service.AutofillService"
 LOGIN_NOT_WP_SITE_FLOW = REPO_ROOT / ".maestro" / "flows" / "login_not_wp_site.yaml"
 GOOGLE_PASSWORD_MANAGER_SUBFLOW = (
     REPO_ROOT / ".maestro" / "subflows" / "dismiss_google_password_manager.yaml"
@@ -276,8 +277,13 @@ class SmokeCliContractTest(unittest.TestCase):
         adb = fake_bin / "adb"
         adb.write_text(
             "#!/bin/sh\n"
+            "if printf '%s\\n' \"$*\" | grep -q 'secure autofill_service'; then\n"
+            f"  printf 'ADB:%s\\n' \"$*\" >> '{maestro_args}'\n"
+            "fi\n"
             "if [ \"${1:-}\" = devices ]; then\n"
             "  printf 'List of devices attached\\nemulator-5554\\tdevice\\n'\n"
+            "elif printf '%s\\n' \"$*\" | grep -q 'settings get secure autofill_service'; then\n"
+            f"  printf '%s\\n' '{GOOGLE_AUTOFILL_SERVICE}'\n"
             "elif printf '%s\\n' \"$*\" | grep -q 'shell cmd locale get-device-locale'; then\n"
             f"  printf '%s\\n' '{device_locale}'\n"
             "elif printf '%s\\n' \"$*\" | grep -q 'shell pm path com.woocommerce.android'; then\n"
@@ -525,6 +531,24 @@ class SmokeCliContractTest(unittest.TestCase):
                 self.assertNotIn("selected-password", line)
         self.assertNotIn("selected-rest-secret", args)
         self.assertNotIn("other-store-secret", args)
+
+    def test_autofill_is_turned_off_for_the_run_and_restored(self) -> None:
+        result, args, _ = self.run_login_successful_with_recorded_maestro_args()
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        events = [line for line in args.splitlines() if line.startswith(("ADB:", "ARGS:"))]
+        self.assertEqual(
+            [
+                "ADB:-s emulator-5554 shell settings get secure autofill_service",
+                "ADB:-s emulator-5554 shell settings put secure autofill_service null",
+            ],
+            events[:2],
+        )
+        self.assertTrue(events[2].startswith("ARGS:"))
+        self.assertEqual(
+            f"ADB:-s emulator-5554 shell settings put secure autofill_service {GOOGLE_AUTOFILL_SERVICE}",
+            events[-1],
+        )
 
     def test_non_english_device_locale_fails_before_maestro_runs(self) -> None:
         result, args, _ = self.run_with_recorded_maestro_args(
