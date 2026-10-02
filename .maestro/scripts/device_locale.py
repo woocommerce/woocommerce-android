@@ -48,6 +48,7 @@ def read_device_locale(device: str, command_runner: CommandRunner = run_command)
         ("persist.sys.locale", ["shell", "getprop", "persist.sys.locale"]),
         ("system_locales", ["shell", "settings", "get", "system", "system_locales"]),
         ("persist.sys.language", ["shell", "getprop", "persist.sys.language"]),
+        ("ro.product.locale", ["shell", "getprop", "ro.product.locale"]),
     )
     for source, arguments in probes:
         result = command_runner(["adb", "-s", device, *arguments])
