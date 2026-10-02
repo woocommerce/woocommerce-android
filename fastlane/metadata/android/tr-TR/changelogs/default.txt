@@ -1,0 +1,2 @@
+25.7:
+Yenileme işlemi sırasında müşteri listeleri yerinde kalır, cihaz aktarımından sonra anlık bildirimler çalışmaya devam eder ve siparişlerde iade edilen gönderim görünür. Ayrıca POS uygunluk denetimlerini iyileştirdik, kart okuyucuları için konum erişimini kısalttık ve oturum açma, ürün görselleri, para birimi biçimlendirmesi ve erişilebilirlik özelliklerini iyileştirdik.

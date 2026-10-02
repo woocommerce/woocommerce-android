@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-07 19:54:50+0000
+Translation-Revision-Date: 2026-09-22 09:59:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_reason_unsupported_country_generic">מערכת POS אינה זמינה במדינה של החנות שלך. יש לבדוק את הגדרות הכתובת של החנות או לפנות לתמיכה לקבלת סיוע.</string>
+    <string name="woopos_eligibility_reason_unsupported_country">מערכת POS אינה זמינה ב⁦%1$s⁩. יש לבדוק את הגדרות הכתובת של החנות או לפנות לתמיכה לקבלת סיוע.</string>
+    <string name="woo_push_notifications_introduction_error_offline_mode_body">לא ניתן להגדיר התראות בדחיפה, מכיוון שהחנות שלך נמצאת במצב לא מקוון. אם עדיין דרושה לך עזרה, ניתן ליצור קשר עם התמיכה.</string>
+    <string name="order_refunds_refunded_items">פריטים שהונפק עבורם החזר כספי</string>
+    <string name="login_not_wordpress_site_title">לא אתר של WordPress</string>
+    <string name="https_configuration_warning_dismiss">התעלמות מהודעת האבטחה של HTTPS</string>
+    <string name="https_configuration_warning_message">החנות שלך תומכת ב-HTTPS, אך הכתובת שלה מוגדרת לשימוש ב-HTTP. יש לעדכן אותה ל-HTTPS כדי להגן על החנות שלך ולמנוע בעיות חיבור.</string>
+    <string name="https_configuration_warning_title">אבטחת החנות שלך עם HTTPS</string>
     <string name="age_verification_open_google_play">פתיחת Google Play</string>
     <string name="age_verification_required_message">השירות של Google Play דורש ממך לאמת את גילך לפני ש-WooCommerce יוכל לבדוק אם באפשרותך להשתמש באפליקציה. יש להשלים את אימות הגיל ב-Google Play, ולאחר מכן לחזור לכאן ולנסות שוב.</string>
     <string name="age_verification_required_title">עליך לאמת את גילך כדי להמשיך</string>
@@ -922,8 +930,12 @@ Language: he_IL
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">בריטניה</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">ארצות הברית</string>
     <string name="woopos_eligibility_screen_unable_to_load">לא ניתן לטעון</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">מערכת POS אינה זמינה במטבע של החנות שלך. יש לבדוק את הגדרות המטבע של החנות או לפנות לתמיכה לקבלת סיוע.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">מערכת POS לא זמינה במטבע של החנות שלך. ב-⁦%1$s⁩, כרגע המערכת תומכת רק ב-⁦%2$s⁩. יש לבדוק את הגדרות המטבע של החנות או לפנות לתמיכה לקבלת סיוע.</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">כדי להמשיך, יש להפעיל את \'נקודת מכירה\'. יש להפעיל את האפשרות POS ממנהל המערכת של WordPress במקטע \'הגדרות WooCommerce\' &gt; \'מתקדם\' &gt; \'אפשרויות\' ולנסות שוב.</string>
     <string name="woopos_eligibility_reason_check_connection">יש לבדוק את החיבור לאינטרנט ולנסות להפעיל מחדש את האפליקציה. אם הבעיה נמשכת, ניתן ליצור קשר עם התמיכה.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">הגרסה של WooCommerce שברשותך לא נתמכת. למערכת POS נדרשת גרסת WooCommerce של ⁦%1$s⁩ ומעלה. עליך לעדכן את WooCommerce לגרסה האחרונה.</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">יש לוודא שהתוסף של WooCommerce הותקן והופעל ממנהל המערכת של WordPress. אם עדיין קיימת בעיה, יש ליצור קשר עם התמיכה לעזרה.</string>
     <string name="orderfilters_sales_channel_filter">ערוץ מכירות</string>
     <string name="barcode_ean13_content_description">ברקוד של EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">טיפול נוסף</string>
@@ -2789,7 +2801,7 @@ Language: he_IL
     <string name="coupon_details_menu_share">לשתף קופון</string>
     <string name="coupon_details_menu_copy">להעתיק קוד קופון</string>
     <string name="inbox_note_survey_actioned">תודה ששלחת את המשוב!</string>
-    <string name="card_reader_connect_permission_rationale_hint">לתשלומים בקורא הכרטיסים נדרשת הרשאה למיקום מדויק</string>
+    <string name="card_reader_connect_permission_rationale_hint">לתשלומים בקורא הכרטיסים נדרשת הרשאת מיקום</string>
     <string name="card_reader_connect_permission_rationale_header">נדרשת גישה למיקום</string>
     <string name="simple_payments_share_payment_dialog_title">תשלום בקופה – %s</string>
     <string name="simple_payments_share_payment_link">לשתף קישור לתשלום</string>
@@ -3297,7 +3309,7 @@ Language: he_IL
     <string name="card_reader_connect_open_permission_settings">לפתוח את ההגדרות</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth מושבת</string>
     <string name="card_reader_connect_location_provider_disabled_header">המיקום מושבת</string>
-    <string name="card_reader_connect_missing_permissions_header">חסרה הרשאה שנדרשת למיקום מדויק</string>
+    <string name="card_reader_connect_missing_permissions_header">חסרה הרשאת מיקום נדרשת</string>
     <string name="card_reader_connect_connecting_header">מתחבר אל Reader</string>
     <string name="card_reader_connect_to_reader">יש להתחבר אל Reader</string>
     <string name="card_reader_connect_reader_found_header">האם ברצונך לחבר את Reader %s?</string>

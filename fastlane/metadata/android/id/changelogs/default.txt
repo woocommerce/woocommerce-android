@@ -1,0 +1,2 @@
+25.7:
+Daftar pelanggan kini tetap di tempat saat menyegarkan, pemberitahuan push tetap berfungsi setelah transfer perangkat, dan pengiriman yang dananya dikembalikan akan ditampilkan dalam pesanan. Kami juga meningkatkan pemeriksaan kelayakan POS, pengurangan akses lokasi untuk pembaca kartu, serta login, gambar produk, pemformatan mata uang, dan aksesibilitas yang lebih baik.
