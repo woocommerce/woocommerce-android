@@ -108,7 +108,7 @@ class NonceRestClient @Inject constructor(
                                 failed(
                                     username = username,
                                     type = CookieNonceErrorType.INVALID_RESPONSE,
-                                    unexpectedStoreResponse = response.unexpectedStoreResponse(Method.GET, currentUrl)
+                                    unexpectedStoreResponse = response.unexpectedContent(Method.GET, currentUrl)
                                 )
                             )
                     }
@@ -208,8 +208,15 @@ class NonceRestClient @Inject constructor(
         while (true) {
             when (val response = wpApiEncodedBodyRequestBuilder.syncGetRequest(this, currentUrl.toString())) {
                 is Success -> {
-                    return if (response.data.isWordPressAdminDashboard()) null
-                    else failed(username, CookieNonceErrorType.CUSTOM_ADMIN_URL)
+                    return if (response.data.isWordPressAdminDashboard()) {
+                        null
+                    } else {
+                        failed(
+                            username = username,
+                            type = CookieNonceErrorType.CUSTOM_ADMIN_URL,
+                            unexpectedStoreResponse = response.unexpectedContent(Method.GET, currentUrl)
+                        )
+                    }
                 }
                 is Error -> {
                     if (response.error.isUnclassifiedNoConnectionError()) {
@@ -259,7 +266,7 @@ class NonceRestClient @Inject constructor(
             type = errorType,
             errorMessage = errorMessage,
             unexpectedStoreResponse = if (isUnexpectedPage) {
-                response.unexpectedStoreResponse(Method.POST, transaction.loginUrl)
+                response.unexpectedContent(Method.POST, transaction.loginUrl)
             } else {
                 null
             }
@@ -310,7 +317,8 @@ class NonceRestClient @Inject constructor(
         )
     }
 
-    private fun Success<String>.unexpectedStoreResponse(method: Int, url: HttpUrl) = UnexpectedStoreResponse.from(
+    private fun Success<String>.unexpectedContent(method: Int, url: HttpUrl) = UnexpectedStoreResponse.of(
+        kind = UnexpectedStoreResponseKind.UNEXPECTED_CONTENT,
         statusCode = this.statusCode ?: SUCCESS_STATUS_CODE,
         contentType = headers.firstOrNull { it.key.equals(CONTENT_TYPE_HEADER, ignoreCase = true) }?.value,
         body = data.orEmpty(),
@@ -357,7 +365,7 @@ class NonceRestClient @Inject constructor(
                 failed(
                     username = username,
                     type = CookieNonceErrorType.INVALID_NONCE,
-                    unexpectedStoreResponse = response.unexpectedStoreResponse(Method.GET, nonceUrl)
+                    unexpectedStoreResponse = response.unexpectedContent(Method.GET, nonceUrl)
                 )
             }
 

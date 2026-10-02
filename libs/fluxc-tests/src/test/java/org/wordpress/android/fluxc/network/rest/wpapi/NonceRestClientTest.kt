@@ -836,6 +836,31 @@ class NonceRestClientTest {
         assertNull(nonce.unexpectedStoreResponse, "nonce")
     }
 
+    @Test
+    fun `given a 2xx without what the step expects, when requesting a nonce, then keep the content details`() = test {
+        givenGet(DEFAULT_LOGIN_URL, WPAPIResponse.Success("", emptyList()))
+        val loginPage = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+        assertEquals(UnexpectedStoreResponseKind.UNEXPECTED_CONTENT, loginPage.unexpectedStoreResponse?.kind, "login")
+
+        givenLoginForm(DEFAULT_LOGIN_URL)
+        givenCredentialResponse(DEFAULT_LOGIN_URL, DEFAULT_NONCE_URL, WPAPIResponse.Success("{}", emptyList()))
+        val credentials = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+        assertEquals(UnexpectedStoreResponseKind.UNEXPECTED_CONTENT, credentials.unexpectedStoreResponse?.kind, "post")
+
+        givenCredentialRedirect(DEFAULT_LOGIN_URL, CUSTOM_NONCE_URL, CUSTOM_NONCE_URL)
+        givenGet(CUSTOM_ADMIN_URL, WPAPIResponse.Success(HOME_PAGE, emptyList()))
+        val dashboard = assertIs<Nonce.FailedRequest>(
+            subject.requestNonce(MANUAL_ADMIN_ENDPOINTS, USERNAME, PASSWORD)
+        )
+        assertEquals(Nonce.CookieNonceErrorType.CUSTOM_ADMIN_URL, dashboard.type)
+        assertEquals(UnexpectedStoreResponseKind.UNEXPECTED_CONTENT, dashboard.unexpectedStoreResponse?.kind, "admin")
+
+        givenCredentialRedirect(DEFAULT_LOGIN_URL, DEFAULT_NONCE_URL, DEFAULT_NONCE_URL)
+        givenGet(DEFAULT_NONCE_URL, WPAPIResponse.Success("0", emptyList()))
+        val nonce = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+        assertEquals(UnexpectedStoreResponseKind.UNEXPECTED_CONTENT, nonce.unexpectedStoreResponse?.kind, "nonce")
+    }
+
     private suspend fun givenLoginForm(url: String, html: String = LOGIN_FORM) {
         givenGet(url, WPAPIResponse.Success(html, emptyList()))
     }
