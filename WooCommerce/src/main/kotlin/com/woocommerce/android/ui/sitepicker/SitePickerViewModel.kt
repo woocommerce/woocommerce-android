@@ -110,6 +110,13 @@ class SitePickerViewModel @Inject constructor(
     // leaves the screen — back to the list, or into the installer — so a second showing counts.
     private var lastNoWooSiteReported: Long? = null
 
+    // The step describes the list being on screen, not the sites finishing loading: a typed address
+    // or a lone store routes the merchant straight past it, and an error screen can hand them back
+    // to it. Raised wherever the list is first shown and never lowered, so a visit counts once.
+    private var siteListReported = false
+
+    private var isContinueInFlight = false
+
     private val selectedSiteId: MutableLiveData<Int> = savedState.getLiveData("selected-site-id")
 
     private val _isWooUpgradeDialogVisible: MutableState<Boolean> by lazy { mutableStateOf(false) }
@@ -251,10 +258,13 @@ class SitePickerViewModel @Inject constructor(
         val nonWooSites = sites.filter { !it.hasWooCommerce }
         loadedWooSites = wooSites
 
+        val staysOnList = staysOnList(wooSites)
+
         if (_sites.value == null) {
             // Track events only on the first call
-            trackSiteListShown(wooSites, nonWooSites, staysOnList = loginSiteAddress == null)
+            trackStoresShown(wooSites, nonWooSites, staysOnList)
         }
+        if (staysOnList) trackSiteListShown()
         val shouldSelectFirstSite = shouldSelectFirstSite(wooSites.size, isApiResponse)
         val selectedSiteId = selectedSiteId.value ?: wooSites.firstOrNull()?.id?.takeIf { shouldSelectFirstSite }
         val isSelectedSiteVisible = getWooVisibleSites().any { it.id == selectedSiteId }
@@ -278,7 +288,7 @@ class SitePickerViewModel @Inject constructor(
             processLoginSiteAddress(it)
             return
         }
-        if (navArgs.openedFromLogin && isApiResponse && wooSites.size == 1) {
+        if (autoLoginsIntoSingleStore(wooSites) && isApiResponse) {
             wooSites.singleOrNull()?.let {
                 onSiteSelected(it)
                 onContinueButtonClick(isAutoLogin = true)
@@ -296,6 +306,21 @@ class SitePickerViewModel @Inject constructor(
             unifiedLoginTracker.setFlow(UnifiedLoginTracker.Flow.EPILOGUE.value)
         }
     }
+
+    /**
+     * Whether the list reaches the screen, rather than merely finishing loading. A typed address
+     * always routes off it — to the mismatch, the not-a-store or the dashboard screen — and a lone
+     * store is continued into without asking, so neither list was ever looked at.
+     */
+    private fun staysOnList(wooSites: List<SiteModel>) =
+        loginSiteAddress == null && !autoLoginsIntoSingleStore(wooSites)
+
+    /**
+     * Shares the condition with the auto-continue below it so the two cannot drift apart. The cache
+     * pass cannot see that the API pass is the one about to log in, so the count alone decides.
+     */
+    private fun autoLoginsIntoSingleStore(wooSites: List<SiteModel>) =
+        navArgs.openedFromLogin && wooSites.size == 1
 
     private fun shouldSelectFirstSite(wooSiteCount: Int, isApiResponse: Boolean) = when {
         !navArgs.openedFromLogin -> true
@@ -463,12 +488,11 @@ class SitePickerViewModel @Inject constructor(
         )
     }
 
-    private fun trackSiteListShown(wooSites: List<SiteModel>, nonWooSites: List<SiteModel>, staysOnList: Boolean) {
-        // A typed address routes elsewhere, so a list the merchant never saw is not reported.
-        // Emitted before SITE_LIST so the tracker's current step ends on the screen the merchant
-        // is looking at, since that is what later clicks on it are attributed to.
+    private fun trackStoresShown(wooSites: List<SiteModel>, nonWooSites: List<SiteModel>, staysOnList: Boolean) {
+        // An account with no store still lands on the list, shown as an empty state, so both steps
+        // describe the same screen. This one goes first so the tracker's current step ends on
+        // SITE_LIST, since that is what later clicks on the screen are attributed to.
         if (staysOnList && wooSites.isEmpty()) trackLoginEvent(currentStep = UnifiedLoginTracker.Step.NO_WOO_STORES)
-        trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SITE_LIST)
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_PICKER_STORES_SHOWN,
             mapOf(
@@ -476,6 +500,12 @@ class SitePickerViewModel @Inject constructor(
                 AnalyticsTracker.KEY_NUMBER_OF_NON_WOO_SITES to nonWooSites.size
             )
         )
+    }
+
+    private fun trackSiteListShown() {
+        if (siteListReported) return
+        siteListReported = true
+        trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SITE_LIST)
     }
 
     private fun trackNotWooStore(site: SiteModel) {
@@ -526,6 +556,10 @@ class SitePickerViewModel @Inject constructor(
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
         trackLoginEvent(clickEvent = UnifiedLoginTracker.Click.VIEW_CONNECTED_STORES)
         lastNoWooSiteReported = null
+        // The list the typed address routed past is on screen now, so this is the point in the
+        // visit where it is first seen. Reported after the click, which still belongs to the
+        // screen the merchant is leaving.
+        trackSiteListShown()
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = false,
             isPrimaryBtnVisible = sites.value!!.any { it is WooSiteUiModel },
@@ -569,6 +603,9 @@ class SitePickerViewModel @Inject constructor(
     }
 
     fun onContinueButtonClick(isAutoLogin: Boolean = false) {
+        // Both the cache and the API pass auto-continue into a typed address, and the selected
+        // site is only set once verification returns, too late to tell the second apart.
+        if (isContinueInFlight) return
         val selectedSiteModel = getSelectedWooSite() ?: return
 
         // the current site is selected again so do nothing
@@ -594,8 +631,24 @@ class SitePickerViewModel @Inject constructor(
             )
         }
 
-        sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
+        setContinueInFlight(true)
         launch {
+            try {
+                continueIntoSelectedSite(selectedSiteModel)
+            } finally {
+                setContinueInFlight(false)
+            }
+        }
+    }
+
+    /**
+     * The list is only skipped on the prediction that a lone store is continued into. When that
+     * continuation fails the merchant is left looking at the list after all, and this is the only
+     * chance to report it — the other reporting point is on a screen they never reached.
+     */
+    private suspend fun continueIntoSelectedSite(selectedSiteModel: SiteModel) {
+        var reachedTheDashboard = false
+        run {
             val siteVerificationResult = repository.verifySiteWooAPIVersion(selectedSiteModel)
             val siteVerificationModel = siteVerificationResult.model
             when {
@@ -616,6 +669,7 @@ class SitePickerViewModel @Inject constructor(
                             registerDevice.kickoff(registerDeviceTrigger)
 
                             sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
+                            reachedTheDashboard = true
                             triggerEvent(SitePickerEvent.NavigateToMainActivityEvent)
                         },
                         onFailure = {
@@ -628,8 +682,18 @@ class SitePickerViewModel @Inject constructor(
                     _isWooUpgradeDialogVisible.value = true
                 }
             }
-            sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
         }
+        if (!reachedTheDashboard) trackSiteListShown()
+    }
+
+    /**
+     * The progress dialog and the in-flight guard describe the same thing, so they move together.
+     * Only the guard is kept out of saved state: a restored "true" would block the recreated login
+     * behind a dialog that nothing is left running to dismiss.
+     */
+    private fun setContinueInFlight(inFlight: Boolean) {
+        isContinueInFlight = inFlight
+        sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = inFlight)
     }
 
     private fun getSelectedWooSite(): SiteModel? {
