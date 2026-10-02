@@ -137,6 +137,8 @@ tags:
       id: "dashboard_top_performers_card"
     direction: DOWN
     timeout: 15000
+    # The empty card is taller than the space above the tab bar, so it never shows in full.
+    visibilityPercentage: 50
     label: "Scroll to top performers card"
 
 - assertVisible:
