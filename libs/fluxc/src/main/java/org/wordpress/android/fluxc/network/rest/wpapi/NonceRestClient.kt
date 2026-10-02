@@ -11,6 +11,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.INVALID_SSL_CERTIFICATE
 import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseLogger
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.AdminBaseVerification
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.Available
@@ -19,7 +20,9 @@ import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.FailedRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.Unknown
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Error
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Success
+import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
+import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.HtmlUtils
 import javax.inject.Inject
 import javax.inject.Named
@@ -31,6 +34,7 @@ private typealias ValidatedEndpoints = CookieNonceAuthenticationEndpoints.Valida
 class NonceRestClient @Inject constructor(
     private val wpApiEncodedBodyRequestBuilder: WPAPIEncodedBodyRequestBuilder,
     private val currentTimeProvider: CurrentTimeProvider,
+    private val appLogWrapper: AppLogWrapper,
     dispatcher: Dispatcher,
     @Named("no-redirects") requestQueue: RequestQueue,
     userAgent: UserAgent
@@ -279,14 +283,19 @@ class NonceRestClient @Inject constructor(
         response: Error<String>? = null,
         errorMessage: String? = response?.error?.message,
         unexpectedStoreResponse: UnexpectedStoreResponse? = null
-    ) = FailedRequest(
-        timeOfResponse = currentTimeProvider.currentDate().time,
-        username = username,
-        type = type,
-        networkError = response?.error,
-        errorMessage = errorMessage,
-        unexpectedStoreResponse = unexpectedStoreResponse
-    )
+    ): FailedRequest {
+        unexpectedStoreResponse?.let {
+            appLogWrapper.w(AppLog.T.API, UnexpectedStoreResponseLogger.buildMessage(it))
+        }
+        return FailedRequest(
+            timeOfResponse = currentTimeProvider.currentDate().time,
+            username = username,
+            type = type,
+            networkError = response?.error,
+            errorMessage = errorMessage,
+            unexpectedStoreResponse = unexpectedStoreResponse
+        )
+    }
 
     private fun Success<String>.unexpectedStoreResponse(method: Int, url: HttpUrl) = UnexpectedStoreResponse.from(
         statusCode = this.statusCode ?: SUCCESS_STATUS_CODE,
