@@ -17,8 +17,6 @@ if github.pr_labels.include?('Releases')
   return
 end
 
-common_release_checker.check_internal_release_notes_changed(report_type: :message)
-
 tracks_checker.check_tracks_changes(
   tracks_files: [
     'AnalyticsTracker.kt',
@@ -51,11 +49,10 @@ if github.pr_draft?
   return
 end
 
-labels_checker.check(
-  do_not_merge_labels: ['status: do not merge'],
-  required_labels: [//],
-  required_labels_error: 'PR requires at least one label.'
-)
+labels_checker.check(do_not_merge_labels: ['status: do not merge'])
+
+impact_labels = github.pr_labels & ['impact: user-visible', 'impact: internal']
+failure('Choose exactly one release-notes label: `impact: user-visible` or `impact: internal`. See docs/release-notes.md.') unless impact_labels.one?
 
 # runs the milestone check if this is not a WIP feature and the PR is against the main branch or the release branch
 if (github_utils.main_branch? || github_utils.release_branch?) && !github_utils.wip_feature?
