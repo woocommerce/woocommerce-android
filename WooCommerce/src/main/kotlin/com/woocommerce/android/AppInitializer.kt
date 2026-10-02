@@ -76,6 +76,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
@@ -204,12 +205,15 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             selectedSite.getIfExists()?.let { site ->
                 appCoroutineScope.launch {
                     wooCommerceStore.fetchWooCommerceSite(site).model?.let {
+                        val current = selectedSite.getOrNull()
                         if (!it.hasWooCommerce && it.connectionType == ApplicationPasswords) {
                             // The previously selected site doesn't have Woo anymore, take the user to the login screen
                             WooLog.w(T.LOGIN, "Selected site no longer has WooCommerce")
                             accountRepository.get()
                                 .logoutInvoluntarily(InvoluntaryLogoutReason.WOOCOMMERCE_NOT_AVAILABLE)
                             restartMainActivity()
+                        } else if (current?.id == it.id && current != it) {
+                            selectedSite.set(it)
                         }
                         if (it.connectionType != ApplicationPasswords && it.isApplicationPasswordsSupported) {
                             analyticsTracker.track(AnalyticsEvent.JETPACK_SITE_ELIGIBLE_FOR_APP_PASSWORD_SUPPORT)
@@ -516,6 +520,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     fun observeSiteChangesForCatalogSync() {
         appCoroutineScope.launch {
             selectedSite.observe()
+                .distinctUntilChanged { old, new -> old?.id == new?.id }
                 .drop(1) // invoke only on site change not on app initialization
                 .collect { selectedSite ->
                     if (selectedSite != null) {

@@ -4,8 +4,6 @@ import android.app.Application
 import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.AppInitializer
 import com.woocommerce.android.di.AppCoroutineScope
-import com.woocommerce.android.di.SiteComponentEntryPoint
-import com.woocommerce.android.tools.SelectedSite
 import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
@@ -23,7 +21,6 @@ class InitializationRule : TestRule {
         fun initializer(): AppInitializer
 
         @AppCoroutineScope fun appCoroutineScope(): CoroutineScope
-        fun selectedSite(): SelectedSite
     }
 
     private val instrumentation
@@ -44,10 +41,6 @@ class InitializationRule : TestRule {
                     base.evaluate()
                 } finally {
                     entryPoint.appCoroutineScope().cancel()
-                    // Cancel site coroutine scope
-                    entryPoint.selectedSite().siteComponent?.let {
-                        EntryPoints.get(it, SiteComponentEntryPoint::class.java)
-                    }?.siteCoroutineScope()?.cancel()
                 }
             }
         }
