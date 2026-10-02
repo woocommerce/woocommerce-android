@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 25.8
+My Store, Orders, Products, and the More menu have a fresh new look. Push notifications are more reliable, you'll see fewer unexpected sign-outs, and large stores sync orders without timing out. In POS, custom amounts and discounts are clearer at checkout. Plus fixes for login, payouts, product variations, and store updates.
+
 ## 25.7
 Customer lists now stay in place while refreshing, push notifications keep working after a device transfer, and refunded shipping appears in orders. We’ve also improved POS eligibility checks, reduced location access for card readers, and polished login, product images, currency formatting, and accessibility.
 

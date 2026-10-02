@@ -16,8 +16,11 @@ import com.woocommerce.android.network.WPComSiteInvalidationNotifier
 import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.RefreshWPSettings
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestScope
 import org.junit.After
 import org.junit.Before
@@ -26,9 +29,11 @@ import org.mockito.MockedStatic
 import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.whenever
@@ -37,6 +42,7 @@ import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WPComSiteInvalidationEvent
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WPComSiteInvalidationReason
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
@@ -54,7 +60,9 @@ class AppInitializerTest : BaseUnitTest() {
     private val workManagerMock: WorkManagerImpl = mock()
     private val selectedSiteMock: SelectedSite = mock()
     private val wooCommerceStoreMock: WooCommerceStore = mock()
+    private val refreshWPSettingsMock: RefreshWPSettings = mock()
     private val prefsMock: AppPrefs = mock()
+    private val posLocalCatalogSchedulerMock: WooPosLocalCatalogSyncScheduler = mock()
     private val wpComSiteInvalidationNotifier = WPComSiteInvalidationNotifier()
     private val processLifecycle = ProcessLifecycleOwner.get().lifecycle as LifecycleRegistry
 
@@ -76,7 +84,9 @@ class AppInitializerTest : BaseUnitTest() {
             this.connectionReceiver = connectionReceiverMock
             this.selectedSite = selectedSiteMock
             this.wooCommerceStore = wooCommerceStoreMock
+            this.refreshWPSettings = refreshWPSettingsMock
             this.prefs = prefsMock
+            this.posLocalCatalogScheduler = posLocalCatalogSchedulerMock
             this.wpComSiteInvalidationNotifier = this@AppInitializerTest.wpComSiteInvalidationNotifier
             this.appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
             setPrivateApplication(application)
@@ -230,10 +240,168 @@ class AppInitializerTest : BaseUnitTest() {
         verify(selectedSiteMock, never()).reset(persistSynchronously = true)
     }
 
+    @Test
+    fun `given selected site lost WooCommerce, when site is updated, then track involuntary logout`() = testBlocking {
+        // GIVEN
+        val site = SiteModel().apply {
+            siteId = SITE_ID
+            origin = SiteModel.ORIGIN_WPAPI
+            hasWooCommerce = false
+        }
+        whenever(selectedSiteMock.getIfExists()).thenReturn(site)
+        whenever(wooCommerceStoreMock.fetchWooCommerceSite(site)).thenReturn(WooResult(site))
+
+        // WHEN
+        triggerUpdateSelectedSite()
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+        // THEN
+        verify(analyticsTrackerMock).track(
+            AnalyticsEvent.ACCOUNT_INVOLUNTARY_LOGOUT,
+            mapOf(AnalyticsTracker.KEY_REASON to "woocommerce_not_available")
+        )
+        verify(selectedSiteMock).reset()
+    }
+
+    @Test
+    fun `given selected site still has WooCommerce, when site is updated, then do not track involuntary logout`() =
+        testBlocking {
+            // GIVEN
+            val site = SiteModel().apply {
+                siteId = SITE_ID
+                origin = SiteModel.ORIGIN_WPAPI
+                hasWooCommerce = true
+            }
+            whenever(selectedSiteMock.getIfExists()).thenReturn(site)
+            whenever(wooCommerceStoreMock.fetchWooCommerceSite(site)).thenReturn(WooResult(site))
+
+            // WHEN
+            triggerUpdateSelectedSite()
+            coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTrackerMock, never()).track(eq(AnalyticsEvent.ACCOUNT_INVOLUNTARY_LOGOUT), any())
+            verify(selectedSiteMock, never()).reset()
+        }
+
+    @Test
+    fun `given the same store is still selected, when the fetched site changed, then the selected site is updated`() =
+        testBlocking {
+            // GIVEN
+            val fetched = site(id = 1, name = "New name")
+            givenSiteFetch(selected = site(id = 1, name = "Old name"), fetched = fetched)
+
+            // WHEN
+            triggerUpdateSelectedSite()
+            coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+            // THEN
+            verify(selectedSiteMock).set(fetched)
+        }
+
+    @Test
+    fun `given another store is selected during the fetch, when the fetched site changed, then it is not selected`() =
+        testBlocking {
+            // GIVEN
+            givenSiteFetch(
+                selected = site(id = 1, name = "Old name"),
+                fetched = site(id = 1, name = "New name"),
+                selectedAfterFetch = site(id = 2, name = "Other store")
+            )
+
+            // WHEN
+            triggerUpdateSelectedSite()
+            coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+            // THEN
+            verify(selectedSiteMock, never()).set(any())
+        }
+
+    @Test
+    fun `given the user logs out during the fetch, when the fetched site changed, then it is not selected`() =
+        testBlocking {
+            // GIVEN
+            givenSiteFetch(
+                selected = site(id = 1, name = "Old name"),
+                fetched = site(id = 1, name = "New name"),
+                selectedAfterFetch = null
+            )
+
+            // WHEN
+            triggerUpdateSelectedSite()
+            coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+            // THEN
+            verify(selectedSiteMock, never()).set(any())
+        }
+
+    @Test
+    fun `given the fetched site equals the selected one, when the site is updated, then the selected site is kept`() =
+        testBlocking {
+            // GIVEN
+            givenSiteFetch(selected = site(id = 1, name = "Store"), fetched = site(id = 1, name = "Store"))
+
+            // WHEN
+            triggerUpdateSelectedSite()
+            coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+            // THEN
+            verify(selectedSiteMock, never()).set(any())
+        }
+
+    @Test
+    fun `given the selected site is refreshed with new data, when observing site changes, then no catalog sync starts`() =
+        testBlocking {
+            // GIVEN
+            val siteFlow = MutableStateFlow<SiteModel?>(site(id = 1, name = "Old name"))
+            whenever(selectedSiteMock.observe()).thenReturn(siteFlow)
+            sut.observeSiteChangesForCatalogSync()
+            coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+            // WHEN
+            siteFlow.value = site(id = 1, name = "New name")
+            coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+            // THEN
+            verify(posLocalCatalogSchedulerMock, never()).triggerManualFullCatalogSync()
+        }
+
+    @Test
+    fun `given a store is selected, when a different store is selected, then a catalog sync starts`() = testBlocking {
+        // GIVEN
+        val siteFlow = MutableStateFlow<SiteModel?>(site(id = 1, name = "Store"))
+        whenever(selectedSiteMock.observe()).thenReturn(siteFlow)
+        sut.observeSiteChangesForCatalogSync()
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+        // WHEN
+        siteFlow.value = site(id = 2, name = "Other store")
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+        // THEN
+        verify(posLocalCatalogSchedulerMock, times(1)).triggerManualFullCatalogSync()
+    }
+
     private fun givenSelectedSite() {
         whenever(selectedSiteMock.getOrNull()).thenReturn(
             SiteModel().apply { siteId = SITE_ID }
         )
+    }
+
+    private suspend fun givenSiteFetch(
+        selected: SiteModel,
+        fetched: SiteModel,
+        selectedAfterFetch: SiteModel? = selected
+    ) {
+        whenever(selectedSiteMock.getIfExists()).thenReturn(selected)
+        whenever(selectedSiteMock.getOrNull()).thenReturn(selectedAfterFetch)
+        whenever(wooCommerceStoreMock.fetchWooCommerceSite(selected)).thenReturn(WooResult(fetched))
+    }
+
+    private fun site(id: Int, name: String) = SiteModel().apply {
+        this.id = id
+        this.name = name
+        setHasWooCommerce(true)
     }
 
     private fun verifySiteRecovery() {
@@ -253,6 +421,13 @@ class AppInitializerTest : BaseUnitTest() {
             isAccessible = true
             setBoolean(this@setConnectionReceiverRegistered, true)
         }
+    }
+
+    private fun triggerUpdateSelectedSite() {
+        val task = AppInitializer::class.java.getDeclaredField("updateSelectedSite").apply {
+            isAccessible = true
+        }.get(sut)
+        task.javaClass.getDeclaredMethod("run").apply { isAccessible = true }.invoke(task)
     }
 
     private fun AppInitializer.startWPComSiteInvalidationMonitor() {

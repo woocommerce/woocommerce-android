@@ -1,0 +1,56 @@
+{
+  "deposit": {
+    "last_paid": [
+      {
+        "id": "po_1Ny2TfFz6mcKuCueGefQoVJL",
+        "date": 1696550400000,
+        "type": "deposit",
+        "amount": 5214,
+        "status": "paid",
+        "bankAccount": "STRIPE TEST BANK •••• 5432 (USD)",
+        "currency": "usd",
+        "automatic": true,
+        "fee": 0,
+        "fee_percentage": 0,
+        "created": 1696550400
+      }
+    ],
+    "last_manual_deposits": [
+      {
+        "currency": "usd",
+        "date": "2026-09-28 12:05:11"
+      }
+    ]
+  },
+  "balance": {
+    "pending": [
+      {
+        "amount": 2018,
+        "currency": "usd",
+        "source_types": {
+          "card": 2018
+        }
+      }
+    ],
+    "available": [
+      {
+        "amount": 0,
+        "currency": "usd",
+        "source_types": {
+          "card": 0
+        }
+      }
+    ],
+    "instant": []
+  },
+  "account": {
+    "deposits_enabled": true,
+    "deposits_blocked": false,
+    "deposits_schedule": {
+      "delay_days": 7,
+      "interval": "weekly",
+      "weekly_anchor": "wednesday"
+    },
+    "default_currency": "usd"
+  }
+}

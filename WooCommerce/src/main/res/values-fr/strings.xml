@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-08 09:57:31+0000
+Translation-Revision-Date: 2026-09-22 21:55:02+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_reason_unsupported_country_generic">Le système PDV n’est pas disponible dans le pays de votre boutique. Veuillez vérifier les réglages d’adresse de votre boutique ou contacter l’assistance pour recevoir de l’aide.</string>
+    <string name="woopos_eligibility_reason_unsupported_country">Le système PDV n’est pas disponible dans ce pays : %1$s. Veuillez vérifier les réglages d’adresse de votre boutique ou contacter l’assistance pour recevoir de l’aide.</string>
+    <string name="woo_push_notifications_introduction_error_offline_mode_body">Les notifications push ne peuvent pas être configurées, car votre boutique est en mode hors ligne. Si vous avez besoin d’aide, veuillez contacter l’assistance.</string>
+    <string name="order_refunds_refunded_items">Articles remboursés</string>
+    <string name="login_not_wordpress_site_title">Site non WordPress</string>
+    <string name="https_configuration_warning_dismiss">Ignorer l’avis de sécurité HTTPS</string>
+    <string name="https_configuration_warning_message">Votre boutique est compatible avec le protocole HTTPS, mais son adresse est configurée pour utiliser le protocole HTTP. Passez au HTTPS pour protéger votre boutique et éviter les problèmes de connexion.</string>
+    <string name="https_configuration_warning_title">Sécuriser votre boutique avec le protocole HTTPS</string>
     <string name="age_verification_open_google_play">Ouvrir Google Play</string>
     <string name="age_verification_required_message">Google Play requiert que vous vérifiiez votre âge avant que WooCommerce ne vérifie si vous pouvez utiliser l’application. Terminez la vérification dans Google Play, puis revenez ici et réessayez.</string>
-    <string name="age_verification_required_title">Vérifier votre messagerie pour poursuivre</string>
+    <string name="age_verification_required_title">Vérifier votre age pour poursuivre</string>
     <string name="woopos_refund_review_remaining_items_button">Examiner les éléments restants</string>
     <string name="woopos_refund_error_store_not_updated">La carte a été remboursée, mais votre boutique n’a pas été mise à jour. Enregistrez ce remboursement dans l’administration de votre boutique.</string>
     <string name="woopos_refund_error_item_already_refunded">L’un des articles sélectionnés a déjà été intégralement remboursé.</string>
@@ -924,8 +932,12 @@ Language: fr
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">Au Royaume-Uni</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">Aux États-Unis</string>
     <string name="woopos_eligibility_screen_unable_to_load">Chargement impossible</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">Le système PDV n’est pas disponible pour la devise de votre boutique. Veuillez vérifier les réglages de devise de votre boutique ou contacter l’assistance pour recevoir de l’aide.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Le système PDV n’est pas disponible pour la devise de votre boutique. %1$s, il ne prend actuellement en charge que %2$s. Veuillez vérifier les réglages de devise de votre boutique ou contacter l’assistance pour obtenir de l’aide.</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">Point de vente doit être activé pour continuer. Veuillez activer la fonctionnalité PDV depuis votre interface d’administration WordPress dans Réglages WooCommerce &gt; Avancé &gt; Fonctionnalités et réessayer.</string>
     <string name="woopos_eligibility_reason_check_connection">Vérifiez votre connexion Internet et essayez de relancer l’application. Si le problème persiste, veuillez contacter l’assistance.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Votre version de WooCommerce n’est pas prise en charge. Le système PDV nécessite WooCommerce version %1$s ou supérieure. Veuillez procéder à la mise à jour de WooCommerce vers la dernière version.</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Veuillez vérifier que l’extension WooCommerce est installée et activée dans votre interface d’administration WordPress. Si le problème persiste, contactez l’assistance pour recevoir de l’aide.</string>
     <string name="orderfilters_sales_channel_filter">Canal de vente</string>
     <string name="barcode_ean13_content_description">Code-barres EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">Prise en charge supplémentaire</string>
@@ -2791,7 +2803,7 @@ Language: fr
     <string name="coupon_details_menu_share">Partager des codes promo</string>
     <string name="coupon_details_menu_copy">Copier le code promo</string>
     <string name="inbox_note_survey_actioned">Merci de votre retour.</string>
-    <string name="card_reader_connect_permission_rationale_hint">Les paiements par lecteur de carte nécessitent une autorisation de localisation précise</string>
+    <string name="card_reader_connect_permission_rationale_hint">Les paiements par lecteur de carte nécessitent une autorisation d’accès à l’emplacement.</string>
     <string name="card_reader_connect_permission_rationale_header">Accès à la localisation requise</string>
     <string name="simple_payments_share_payment_dialog_title">Validation de la commande - %s</string>
     <string name="simple_payments_share_payment_link">Partager le lien de paiement</string>
@@ -3299,7 +3311,7 @@ Language: fr
     <string name="card_reader_connect_open_permission_settings">Ouvrir les réglages</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Le Bluetooth est désactivé</string>
     <string name="card_reader_connect_location_provider_disabled_header">La localisation est désactivée</string>
-    <string name="card_reader_connect_missing_permissions_header">Autorisation de géolocalisation précise requise manquante</string>
+    <string name="card_reader_connect_missing_permissions_header">Autorisation d’accès à l’emplacement manquante</string>
     <string name="card_reader_connect_connecting_header">Connexion au lecteur</string>
     <string name="card_reader_connect_to_reader">Se connecter au lecteur</string>
     <string name="card_reader_connect_reader_found_header">Voulez-vous connecter le lecteur %s ?</string>

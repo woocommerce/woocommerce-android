@@ -158,7 +158,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }.asLiveData()
 
     init {
-        loginAnalyticsListener.trackUsernamePasswordFormViewed()
+        loginAnalyticsListener.trackUsernamePasswordFormViewed(isWpcom = false)
         applicationPasswordsNotifier.featureUnavailableEvents
             .onEach {
                 triggerEvent(
