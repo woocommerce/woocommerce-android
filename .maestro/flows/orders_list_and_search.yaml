@@ -1,0 +1,123 @@
+# Smoke Test: Orders - List and Search
+# p2: orders.list, orders.search
+# P2 ref: Orders > Order list, Search for an order
+#
+# Verifies:
+#   - Orders list loads with order data
+#   - Search for an order by number or keyword
+appId: com.woocommerce.android
+name: "Orders - List and search"
+tags:
+  - smoke_core
+  - orders
+---
+# Reuse the logged-in session — login flows run first and leave the
+# app authenticated. See subflows/ensure_logged_in.yaml.
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+# Navigate to Orders
+- runFlow:
+    file: ../subflows/navigate_to_orders.yaml
+
+# Verify orders list loaded
+- assertVisible:
+    id: "order_list"
+    label: "Orders list is visible"
+
+# A cached row can belong to an order that a prior run's cleanup deleted, and
+# the list refreshes in the background. When the search cannot find the
+# captured order, leave the search, pull to refresh and capture again.
+- evalScript: ${output.orderFound = false}
+- repeat:
+    while:
+      true: ${!output.orderFound}
+    times: 3
+    commands:
+      - swipe:
+          from:
+            id: "order_list"
+          direction: DOWN
+          duration: 800
+
+      - extendedWaitUntil:
+          visible:
+            text: "#\\d+"
+            childOf:
+              id: "order_list"
+          timeout: 15000
+          label: "At least one order number is visible"
+
+      # Validate first order has a non-empty number via JavaScript
+      - copyTextFrom:
+          text: "#\\d+"
+          childOf:
+            id: "order_list"
+          index: 0
+      - evalScript: |
+          var text = maestro.copiedText;
+          if (!text || text.trim() === '') {
+              throw new Error('Order number text is empty');
+          }
+      - evalScript: ${output.orderSearchText = maestro.copiedText.trim()}
+      # Search matches the numeric order id, so strip the leading "#" for the query
+      # while keeping the full "#<n>" text for the row assertions below.
+      - evalScript: ${output.orderSearchTerm = output.orderSearchText.replace(/[^0-9]/g, '')}
+
+      # Capture a second, different order number that must NOT match the search term.
+      # Asserting it disappears from the results proves the search actually filtered
+      # the list rather than just leaving the already-visible first order on screen.
+      - copyTextFrom:
+          text: "#\\d+"
+          childOf:
+            id: "order_list"
+          index: 1
+      - evalScript: ${output.otherOrderText = maestro.copiedText.trim()}
+
+      - takeScreenshot: orders_list
+
+      # Test search against the first visible order from the loaded list.
+      - tapOn:
+          id: "order_list_search_action"
+          label: "Open order search"
+
+      - extendedWaitUntil:
+          visible:
+            id: "order_list_search_field"
+          timeout: 10000
+
+      - tapOn:
+          id: "order_list_search_field"
+      - inputText: ${output.orderSearchTerm}
+      - pressKey: Enter
+
+      # Wait for search results
+      - extendedWaitUntil:
+          visible:
+            text: "#\\d+|We're sorry, we couldn't find results.*"
+          timeout: 15000
+
+      - runFlow:
+          when:
+            notVisible: "We're sorry, we couldn't find results.*"
+          commands:
+            - evalScript: ${output.orderFound = true}
+      - runFlow:
+          when:
+            visible: "We're sorry, we couldn't find results.*"
+          commands:
+            - tapOn: "Cancel"
+
+- assertVisible:
+    text: "${output.orderSearchText}"
+    label: "Captured order appears in search results"
+
+- assertNotVisible:
+    text: "${output.otherOrderText}"
+    label: "Non-matching order is filtered out (search actually ran)"
+
+- takeScreenshot: orders_search_results
+
+# Go back from search
+- back
+- back

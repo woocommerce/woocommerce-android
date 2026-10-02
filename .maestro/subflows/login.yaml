@@ -1,0 +1,128 @@
+# Reusable login subflow
+# Logs into the WooCommerce app with store URL + email + password.
+#
+# Required env vars: MAESTRO_WOO_JETPACK_STORE_URL, MAESTRO_WOO_WPCOM_EMAIL,
+# MAESTRO_WOO_WPCOM_PASSWORD
+appId: com.woocommerce.android
+---
+- launchApp:
+    clearState: true
+
+- runFlow:
+    file: dismiss_login_carousel.yaml
+
+# Continue through the QR prologue when present, then enter the store URL.
+- runFlow:
+    file: open_site_address_login.yaml
+
+- tapOn:
+    id: "input"
+- inputText: ${MAESTRO_WOO_JETPACK_STORE_URL}
+# Dismiss the keyboard only if it is covering the continue button — see
+# hide_keyboard.yaml. A blind hideKeyboard is a BACK press that navigates off
+# the login step on devices with no on-screen keyboard.
+- runFlow:
+    file: hide_keyboard.yaml
+    env:
+      KEYBOARD_TARGET_ID: "bottom_button"
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+# Enter email address
+- extendedWaitUntil:
+    visible:
+      id: "login_continue_button"
+    timeout: 15000
+- tapOn:
+    id: "input"
+- inputText: ${MAESTRO_WOO_WPCOM_EMAIL}
+- runFlow:
+    file: hide_keyboard.yaml
+    env:
+      KEYBOARD_TARGET_ID: "login_continue_button"
+- tapOn:
+    id: "login_continue_button"
+    retryTapIfNoChange: true
+
+# Handle Magic Link screen - tap "Enter your password instead"
+- runFlow:
+    when:
+      visible:
+        id: "login_enter_password"
+    commands:
+      - tapOn:
+          id: "login_enter_password"
+
+# Enter password
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 10000
+- tapOn:
+    id: "input"
+- inputText: ${MAESTRO_WOO_WPCOM_PASSWORD}
+- runFlow:
+    file: hide_keyboard.yaml
+    env:
+      KEYBOARD_TARGET_ID: "bottom_button"
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+# WP.com can refuse the email login and open the magic link screen instead.
+# Its fallback button opens the WP.com username and password screen.
+- extendedWaitUntil:
+    visible: ".*My store.*|.*Manage privacy.*|Use username and password instead"
+    timeout: 30000
+- runFlow:
+    when:
+      visible:
+        id: "login_magic_link_fallback_button"
+    commands:
+      - assertTrue:
+          condition: ${typeof MAESTRO_WOO_WPCOM_USERNAME !== 'undefined' && !!MAESTRO_WOO_WPCOM_USERNAME}
+          label: "WP.com username is set for the email-login fallback"
+      - tapOn:
+          id: "login_magic_link_fallback_button"
+      - tapOn:
+          id: "input"
+          childOf:
+            id: "login_username_row"
+      - inputText: ${MAESTRO_WOO_WPCOM_USERNAME}
+      - tapOn:
+          id: "input"
+          childOf:
+            id: "login_password_row"
+      - inputText: ${MAESTRO_WOO_WPCOM_PASSWORD}
+      - runFlow:
+          file: hide_keyboard.yaml
+          env:
+            KEYBOARD_TARGET_ID: "bottom_button"
+      - tapOn:
+          id: "bottom_button"
+          retryTapIfNoChange: true
+
+# Wait for dashboard to load. The privacy dialog may appear first, so accept either as "booted".
+- extendedWaitUntil:
+    visible: ".*My store.*|.*Manage privacy.*"
+    timeout: 30000
+
+# Dismiss privacy dialog if it appears
+- runFlow:
+    when:
+      visible: "Save"
+    commands:
+      - tapOn: "Save"
+
+# Dismiss any store setup or onboarding dialogs
+- runFlow:
+    when:
+      visible: ".*Got it.*"
+    commands:
+      - tapOn: ".*Got it.*"
+
+# Verify dashboard is loaded
+- extendedWaitUntil:
+    visible: "My store"
+    timeout: 10000
