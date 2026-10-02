@@ -9,7 +9,12 @@ The suite has two store targets:
 
 - `lab`: default for local development, repair loops, can-fail checks, and destructive iteration. Use an
   automation-owned WooCommerce store that is connected to Jetpack/WP.com with a dedicated WP.com test account.
-- `shared`: `inpersonpayments.wpcomstaging.com`, used for explicit non-destructive developer runs.
+- `shared`: `inpersonpayments.wpcomstaging.com`, for the flows tagged `store_shared`. Their checks need what this
+  store's account has: a second store to switch to, and Google for WooCommerce.
+
+Each flow runs against the lab store unless it is tagged `store_shared`. When a run includes both, the lab flows run
+first, and the runner clears the app data before each store's flows so the next flow logs in with that store's
+account. `--store lab|shared` runs every selected flow against one store instead.
 
 The no-Jetpack login scenario uses its own `MAESTRO_WOO_NO_JETPACK_*` variables. Do not reuse those Jurassic Ninja
 site credentials as the `lab` store block when running the broader suite. The runner removes a trailing
@@ -51,7 +56,7 @@ Validate the file before running flows, especially after pasting passwords:
 Run the pre-flight doctor when setting up a machine or changing credentials:
 
 ```bash
-.maestro/scripts/doctor.sh --profile phone-full --store lab --device emulator-5554
+.maestro/scripts/doctor.sh --profile phone-full --device emulator-5554
 ```
 
 The doctor requires the non-debuggable production package (`com.woocommerce.android`). If it is missing from the
@@ -131,10 +136,10 @@ The configured store must have at least one existing customer with an email addr
 
 ## Running
 
-Default local run: lab store, `smoke_core` only, quarantine excluded.
+Default local run: `smoke_core` only, quarantine excluded, each flow against its own store.
 
 ```bash
-.maestro/scripts/run-smoke-tests.sh --store lab
+.maestro/scripts/run-smoke-tests.sh
 ```
 
 Common variants:
@@ -145,7 +150,7 @@ Common variants:
 .maestro/scripts/run-smoke-tests.sh --profile phone-full --device emulator-5554
 .maestro/scripts/run-smoke-tests.sh --profile pos-tablet --device Pixel_Tablet_API_35
 .maestro/scripts/run-smoke-tests.sh --profile android-system --device Pixel_8_API_35
-.maestro/scripts/doctor.sh --profile phone-full --store lab
+.maestro/scripts/doctor.sh --profile phone-full
 .maestro/scripts/run-smoke-tests.sh --device emulator-5554
 .maestro/scripts/run-smoke-tests.sh --apk /path/to/WooCommerce-production-release.apk
 .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --include-quarantine --store lab
@@ -157,10 +162,10 @@ Common variants:
 
 Profiles are copy/paste-safe presets:
 
-- `core`: lab store, all login flows except `login_google`, plus the other `smoke_core` paths, with quarantine and Android system surfaces excluded.
-- `phone-full`: lab store, `smoke_core,smoke_extended`, tablet POS and Android system surfaces excluded. This includes quarantined phone flows.
-- `pos-tablet`: lab store, `pos_tablet`, quarantine included.
-- `android-system`: lab store, `android_system`, quarantine included. Requires an English Pixel Launcher AVD with the
+- `core`: all login flows except `login_google`, plus the other `smoke_core` paths, with quarantine and Android system surfaces excluded.
+- `phone-full`: `smoke_core,smoke_extended`, tablet POS and Android system surfaces excluded. This includes quarantined phone flows.
+- `pos-tablet`: `pos_tablet`, quarantine included.
+- `android-system`: `android_system`, quarantine included. Requires an English Pixel Launcher AVD with the
   production app discoverable as `Woo` in the app drawer.
 
 Use `--plan` with a profile or tag selection to print the exact store, repeat count, filters, and ordered flow list.
@@ -199,6 +204,7 @@ The runner:
 - `android_system`: launcher/system-surface flows, English Pixel Launcher AVD required.
 - `system_surface`: flow enters Android-owned UI; assertions stop at the documented handoff boundary.
 - `destructive`: mutates store data.
+- `store_shared`: runs against the shared store unless `--store` is passed; never combined with `destructive`.
 - `flaky_quarantine`: provisional or unstable flows excluded from real runs.
 
 All login flows are required `smoke_core` coverage except `login_google`. It stays tagged `flaky_quarantine` because

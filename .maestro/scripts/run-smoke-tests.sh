@@ -4,7 +4,7 @@ set -euo pipefail
 # WooCommerce Android Maestro smoke-test runner.
 #
 # Defaults match the v2 smoke-test plan:
-#   - lab store by default
+#   - lab store, or the shared store for flows tagged store_shared
 #   - smoke_core only by default
 #   - flaky_quarantine excluded unless explicitly requested
 #   - no REST fixture seed unless --seed is passed
@@ -33,6 +33,7 @@ TIMESTAMP="$RUN_STAMP"
 
 DEFAULT_OUTPUT_ROOT="${WOO_MAESTRO_OUTPUT_DIR:-$HOME/woocommerce-maestro-output}"
 STORE="lab"
+STORE_OVERRIDE=""
 APK_PATH=""
 DEVICE_SELECTOR=""
 TARGET=""
@@ -57,7 +58,7 @@ usage() {
 WooCommerce Android Maestro smoke-test runner.
 
 Defaults:
-  - lab store
+  - lab store, or the shared store for flows tagged store_shared
   - smoke_core only
   - flaky_quarantine excluded unless explicitly requested
   - no REST fixture seed unless --seed is passed
@@ -78,7 +79,7 @@ Usage:
 
 Options:
   --profile name              Preset: core, phone-full, pos-tablet, android-system.
-  --store lab|shared          Select fixture/credential namespace. Default: lab.
+  --store lab|shared          Run every selected flow against this store. Default: each flow's own store.
   --device serial|avd-name    Device serial or emulator AVD name.
   --apk path                  Validate and install a production release APK before running.
   --repeat N                  Run the selected flow set N times.
@@ -152,6 +153,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     --store)
       STORE="${2:?--store requires lab or shared}"
+      STORE_OVERRIDE="$STORE"
       shift 2
       ;;
     --repeat)
@@ -280,11 +282,13 @@ if [[ "$PLAN" == "yes" ]]; then
   plan_args=(
     plan
     --profile-label "$PROFILE"
-    --store "$STORE"
     --repeat "$REPEAT"
     --include-tags "$INCLUDE_TAGS_CSV"
     --exclude-tags "$EXCLUDE_TAGS_CSV"
   )
+  if [[ -n "$STORE_OVERRIDE" ]]; then
+    plan_args+=(--store "$STORE_OVERRIDE")
+  fi
   if [[ "$SEED" == "yes" ]]; then
     plan_args+=(--seed)
   fi
@@ -548,7 +552,44 @@ if [[ ${#ORDERED_FLOWS[@]} -eq 0 ]]; then
   echo "No flows matched the current filters." >&2
   exit 1
 fi
-validate_login_store_env
+flow_store() {
+  if [[ -n "$STORE_OVERRIDE" ]]; then
+    printf '%s' "$STORE_OVERRIDE"
+  elif flow_has_any_tag "$1" store_shared; then
+    printf 'shared'
+  else
+    printf 'lab'
+  fi
+}
+
+# Lab flows run first, then the flows that need the shared store.
+LAB_FLOWS=()
+SHARED_FLOWS=()
+for flow in "${ORDERED_FLOWS[@]}"; do
+  if [[ "$(flow_store "$flow")" == "shared" ]]; then
+    SHARED_FLOWS+=("$flow")
+  else
+    LAB_FLOWS+=("$flow")
+  fi
+done
+ORDERED_FLOWS=(${LAB_FLOWS[@]+"${LAB_FLOWS[@]}"} ${SHARED_FLOWS[@]+"${SHARED_FLOWS[@]}"})
+RUN_STORES=()
+[[ ${#LAB_FLOWS[@]} -gt 0 ]] && RUN_STORES+=(lab)
+[[ ${#SHARED_FLOWS[@]} -gt 0 ]] && RUN_STORES+=(shared)
+
+use_store_group() {
+  STORE="$1"
+  if [[ "$STORE" == "shared" ]]; then
+    ORDERED_FLOWS=("${SHARED_FLOWS[@]}")
+  else
+    ORDERED_FLOWS=("${LAB_FLOWS[@]}")
+  fi
+  select_store_env
+}
+
+use_all_flows() {
+  ORDERED_FLOWS=(${LAB_FLOWS[@]+"${LAB_FLOWS[@]}"} ${SHARED_FLOWS[@]+"${SHARED_FLOWS[@]}"})
+}
 
 SUITE_HAS_DESTRUCTIVE="no"
 for flow in "${ORDERED_FLOWS[@]}"; do
@@ -560,11 +601,13 @@ if [[ "$SEED" == "yes" && "$SUITE_HAS_DESTRUCTIVE" != "yes" ]]; then
   echo "No destructive flows selected; skipping fixture seeding."
   SEED="no"
 fi
-if [[ "$STORE" == "shared" && "$SUITE_HAS_DESTRUCTIVE" == "yes" ]]; then
-  echo "Refusing to run destructive flows against the shared store." >&2
-  echo "Use --store lab for destructive iteration, or remove destructive flows from the selection." >&2
-  exit 1
-fi
+for flow in ${SHARED_FLOWS[@]+"${SHARED_FLOWS[@]}"}; do
+  if flow_has_any_tag "$flow" destructive; then
+    echo "Refusing to run destructive flows against the shared store." >&2
+    echo "Use --store lab for destructive iteration, or remove destructive flows from the selection." >&2
+    exit 1
+  fi
+done
 
 is_optional_flow_env_ref() {
   local flow="$1"
@@ -600,7 +643,12 @@ validate_referenced_env() {
     exit 1
   fi
 }
-validate_referenced_env
+for store in "${RUN_STORES[@]}"; do
+  use_store_group "$store"
+  validate_login_store_env
+  validate_referenced_env
+done
+use_all_flows
 
 validate_optional_not_woo_wpcom_env() {
   local flow selected="no"
@@ -809,7 +857,7 @@ cleanup_on_exit() {
     wait "$RECORDER_PID" 2>/dev/null || true
   fi
   if [[ "$CLEANUP_DONE" != "yes" && "$CLEANUP" == "yes" && "$SEED" == "yes" && -f "$MANIFEST_FILE" ]]; then
-    if ! "$SEED_SCRIPT" cleanup --manifest "$MANIFEST_FILE" --store "$STORE"; then
+    if ! "$SEED_SCRIPT" cleanup --manifest "$MANIFEST_FILE" --store lab; then
       exit_code=1
     fi
   fi
@@ -904,40 +952,49 @@ validate_google_login_apk
 
 if [[ "$SEED" == "yes" ]]; then
   echo "--- Stale automation orphan sweep"
-  sweep_args=(sweep --store "$STORE" --report "$SWEEP_REPORT")
+  sweep_args=(sweep --store lab --report "$SWEEP_REPORT")
   if [[ "$SWEEP_DRY_RUN" == "yes" ]]; then
     sweep_args+=(--dry-run)
   fi
   "$SEED_SCRIPT" "${sweep_args[@]}"
 
   echo "--- Seeding deterministic fixtures"
-  "$SEED_SCRIPT" seed --store "$STORE" --run-id "$SUITE_RUN_ID" --manifest "$MANIFEST_FILE" --env-file "$RUN_ENV_FILE"
+  "$SEED_SCRIPT" seed --store lab --run-id "$SUITE_RUN_ID" --manifest "$MANIFEST_FILE" --env-file "$RUN_ENV_FILE"
   # shellcheck disable=SC1090
   source "$RUN_ENV_FILE"
 fi
 
 MAESTRO_ENV_ARGS=(-e "SUITE_RUN_ID=$SUITE_RUN_ID")
-MAESTRO_PROCESS_ENV_ARGS=(env)
-while IFS='=' read -r name _value; do
-  [[ -n "$name" ]] && MAESTRO_PROCESS_ENV_ARGS+=(-u "$name")
-done < <(env | grep '^MAESTRO_WOO_' || true)
+build_maestro_process_env() {
+  MAESTRO_PROCESS_ENV_ARGS=(env)
+  local name _value ref value
+  while IFS='=' read -r name _value; do
+    if [[ -n "$name" ]]; then
+      MAESTRO_PROCESS_ENV_ARGS+=(-u "$name")
+    fi
+  done < <(env | grep '^MAESTRO_WOO_' || true)
 
-FLOW_ENV_REFS=()
-while IFS= read -r ref; do
-  [[ -n "$ref" ]] && FLOW_ENV_REFS+=("$ref")
-done < <(grep -Eoh '\$\{MAESTRO_WOO_[A-Z0-9_]+\}' "${ORDERED_FLOWS[@]}" | sed 's/[${}]//g' | sort -u || true)
-if flow_uses_wpcom_credentials; then
-  FLOW_ENV_REFS+=(MAESTRO_WOO_JETPACK_STORE_URL MAESTRO_WOO_WPCOM_EMAIL MAESTRO_WOO_WPCOM_PASSWORD MAESTRO_WOO_WPCOM_USERNAME)
-fi
-if [[ ${#FLOW_ENV_REFS[@]} -gt 0 ]]; then
+  FLOW_ENV_REFS=()
   while IFS= read -r ref; do
-    [[ -z "$ref" ]] && continue
-    value="${!ref:-}"
-    # Maestro imports MAESTRO_* shell variables without renaming them. Keep
-    # credentials in the process environment so they do not appear in CLI arguments.
-    [[ -n "$value" ]] && MAESTRO_PROCESS_ENV_ARGS+=("$ref=$value")
-  done < <(printf '%s\n' "${FLOW_ENV_REFS[@]}" | sort -u)
-fi
+    if [[ -n "$ref" ]]; then
+      FLOW_ENV_REFS+=("$ref")
+    fi
+  done < <(grep -Eoh '\$\{MAESTRO_WOO_[A-Z0-9_]+\}' "${ORDERED_FLOWS[@]}" | sed 's/[${}]//g' | sort -u || true)
+  if flow_uses_wpcom_credentials; then
+    FLOW_ENV_REFS+=(MAESTRO_WOO_JETPACK_STORE_URL MAESTRO_WOO_WPCOM_EMAIL MAESTRO_WOO_WPCOM_PASSWORD MAESTRO_WOO_WPCOM_USERNAME)
+  fi
+  if [[ ${#FLOW_ENV_REFS[@]} -gt 0 ]]; then
+    while IFS= read -r ref; do
+      [[ -z "$ref" ]] && continue
+      value="${!ref:-}"
+      # Maestro imports MAESTRO_* shell variables without renaming them. Keep
+      # credentials in the process environment so they do not appear in CLI arguments.
+      if [[ -n "$value" ]]; then
+        MAESTRO_PROCESS_ENV_ARGS+=("$ref=$value")
+      fi
+    done < <(printf '%s\n' "${FLOW_ENV_REFS[@]}" | sort -u)
+  fi
+}
 
 # Forward only the STRING_* variables the selected flows reference; forwarding
 # all generated strings would risk exceeding ARG_MAX.
@@ -1016,7 +1073,9 @@ selection_args() {
 }
 
 common_run_args() {
-  printf '%s\0%s\0' --store "$STORE"
+  if [[ -n "$STORE_OVERRIDE" ]]; then
+    printf '%s\0%s\0' --store "$STORE_OVERRIDE"
+  fi
   if [[ -n "$DEVICE_SELECTOR" ]]; then
     printf '%s\0%s\0' --device "$DEVICE_SELECTOR"
   fi
@@ -1062,7 +1121,9 @@ build_doctor_command() {
   while IFS= read -r -d '' value; do
     args+=("$value")
   done < <(selection_args)
-  args+=(--store "$STORE")
+  if [[ -n "$STORE_OVERRIDE" ]]; then
+    args+=(--store "$STORE_OVERRIDE")
+  fi
   if [[ -n "$DEVICE_SELECTOR" ]]; then
     args+=(--device "$DEVICE_SELECTOR")
   fi
@@ -1081,7 +1142,8 @@ SUITE_START=$(date +%s)
 
 echo "--- Running Maestro flows"
 echo "Run ID:       $SUITE_RUN_ID"
-echo "Store:        $STORE"
+RUN_STORES_LABEL="$(join_csv "${RUN_STORES[@]}")"
+echo "Store:        $RUN_STORES_LABEL"
 echo "Output:       $OUTPUT_DIR"
 echo "Repeat:       $REPEAT"
 echo "Include tags: ${INCLUDE_TAGS[*]:-<none>}"
@@ -1172,9 +1234,26 @@ run_one_attempt() {
   printf '%s|%s|%s|%s|%s|%s\n' "$exit_code" "$((ended - started))" "$media_rel" "logs/$(basename "$log_file")" "$error_line" "$recovery_count"
 }
 
+ACTIVE_STORE=""
+
+# Clearing app data makes the next flow log in with the new store's account.
+switch_store() {
+  ACTIVE_STORE="$1"
+  use_store_group "$1"
+  build_maestro_process_env
+  use_all_flows
+  if [[ ${#RUN_STORES[@]} -gt 1 ]]; then
+    echo "--- Clearing app data before the $1 store flows"
+    adb -s "$DEVICE_SERIAL" shell pm clear "$APP_ID" >/dev/null
+  fi
+}
+
 run_index=0
 for repeat_index in $(seq 1 "$REPEAT"); do
   for flow in "${ORDERED_FLOWS[@]}"; do
+    if [[ "$(flow_store "$flow")" != "$ACTIVE_STORE" ]]; then
+      switch_store "$(flow_store "$flow")"
+    fi
     run_index=$((run_index + 1))
     base="$(basename "$flow" .yaml)"
     echo "[$run_index/$TOTAL_RUNS] $base (repeat $repeat_index/$REPEAT)"
@@ -1245,7 +1324,7 @@ CLEANUP_FAILED=0
 if [[ "$SEED" == "yes" && "$CLEANUP" == "yes" && -f "$MANIFEST_FILE" ]]; then
   echo "--- Cleaning run-owned fixtures"
   CLEANUP_LOG="$LOGS_DIR/fixture-cleanup.log"
-  if "$SEED_SCRIPT" cleanup --manifest "$MANIFEST_FILE" --store "$STORE" >"$CLEANUP_LOG" 2>&1; then
+  if "$SEED_SCRIPT" cleanup --manifest "$MANIFEST_FILE" --store lab >"$CLEANUP_LOG" 2>&1; then
     CLEANUP_STATUS="PASS"
   else
     CLEANUP_STATUS="FAIL"
@@ -1312,7 +1391,7 @@ pre { background: #f6f8fa; border: 1px solid #d8dee4; border-radius: 6px; paddin
 </head>
 <body>
 <h1>WooCommerce Android Maestro smoke report</h1>
-<p><strong>Run:</strong> <code>$SUITE_RUN_ID</code> | <strong>Store:</strong> $STORE | <strong>Device:</strong> <code>$DEVICE_SERIAL</code> | <strong>Duration:</strong> ${SUITE_DURATION}s</p>
+<p><strong>Run:</strong> <code>$SUITE_RUN_ID</code> | <strong>Store:</strong> $RUN_STORES_LABEL | <strong>Device:</strong> <code>$DEVICE_SERIAL</code> | <strong>Duration:</strong> ${SUITE_DURATION}s</p>
 <p><strong>Result:</strong> $PASSED passed ($FLAKY flaky), $FAILED failed out of $TOTAL_RUNS flow executions. <strong>Cleanup:</strong> $CLEANUP_STATUS.</p>
 <section class="commands">
   <div class="command-card">

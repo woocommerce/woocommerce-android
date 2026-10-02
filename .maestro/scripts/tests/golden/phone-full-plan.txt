@@ -1,6 +1,6 @@
 Maestro smoke plan
   profile: phone-full
-  store:   lab
+  store:   per flow
   repeat:  1
   include: smoke_core,smoke_extended
   exclude: pos_tablet,android_system
@@ -36,6 +36,6 @@ Selected flows:
   - .maestro/flows/hub_menu_payments.yaml
   - .maestro/flows/hub_menu_coupons.yaml
   - .maestro/flows/hub_menu_customers_inbox.yaml
-  - .maestro/flows/hub_menu_admin_and_store.yaml
   - .maestro/flows/blaze_campaign.yaml
-  - .maestro/flows/google_for_woo.yaml
+  - .maestro/flows/hub_menu_admin_and_store.yaml (shared store)
+  - .maestro/flows/google_for_woo.yaml (shared store)

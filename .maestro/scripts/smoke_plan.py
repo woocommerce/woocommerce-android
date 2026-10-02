@@ -12,6 +12,7 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent.parent
 FLOWS_DIR = REPO_ROOT / ".maestro" / "flows"
+SHARED_STORE_TAG = "store_shared"
 
 
 @dataclass(frozen=True)
@@ -87,6 +88,19 @@ def flow_tags(path: Path) -> frozenset[str]:
     return frozenset(tags)
 
 
+def flow_store(path: Path, store_override: str | None = None) -> str:
+    if store_override:
+        return store_override
+    return "shared" if SHARED_STORE_TAG in flow_tags(path) else "lab"
+
+
+def in_store_order(flows: tuple[Path, ...], store_override: str | None = None) -> tuple[Path, ...]:
+    """Lab flows run first, then the flows that need the shared store."""
+    return tuple(flow for flow in flows if flow_store(flow, store_override) == "lab") + tuple(
+        flow for flow in flows if flow_store(flow, store_override) == "shared"
+    )
+
+
 def selected_flows(
     include_tags: tuple[str, ...],
     exclude_tags: tuple[str, ...],
@@ -115,14 +129,14 @@ def print_profile(name: str) -> None:
 def print_plan(args: argparse.Namespace) -> int:
     include_tags = parse_csv(args.include_tags)
     exclude_tags = parse_csv(args.exclude_tags)
-    flows = selected_flows(include_tags, exclude_tags)
+    flows = in_store_order(selected_flows(include_tags, exclude_tags), args.store)
     if not flows:
         print("No flows matched the current filters.", file=sys.stderr)
         return 1
 
     print("Maestro smoke plan")
     print(f"  profile: {args.profile_label or '<custom>'}")
-    print(f"  store:   {args.store}")
+    print(f"  store:   {args.store or 'per flow'}")
     print(f"  repeat:  {args.repeat}")
     print(f"  include: {','.join(include_tags) or '<none>'}")
     print(f"  exclude: {','.join(exclude_tags) or '<none>'}")
@@ -131,7 +145,8 @@ def print_plan(args: argparse.Namespace) -> int:
     print()
     print("Selected flows:")
     for flow in flows:
-        print(f"  - {flow.relative_to(REPO_ROOT)}")
+        suffix = " (shared store)" if not args.store and flow_store(flow) == "shared" else ""
+        print(f"  - {flow.relative_to(REPO_ROOT)}{suffix}")
     return 0
 
 
@@ -154,7 +169,7 @@ def main() -> int:
 
     plan_parser = subparsers.add_parser("plan")
     plan_parser.add_argument("--profile-label", default="")
-    plan_parser.add_argument("--store", choices=("lab", "shared"), required=True)
+    plan_parser.add_argument("--store", choices=("lab", "shared"))
     plan_parser.add_argument("--repeat", type=int, required=True)
     plan_parser.add_argument("--include-tags", default="")
     plan_parser.add_argument("--exclude-tags", default="")

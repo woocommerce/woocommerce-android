@@ -16,6 +16,7 @@
 #   smoke_extended    Broader P2 coverage.
 #   pos_tablet        POS flows, tablet AVD required.
 #   destructive       Mutates store data; lab store only.
+#   store_shared      Runs against the shared store; never destructive.
 #   flaky_quarantine  Provisional or known-unstable flows excluded by runner
 #                     defaults.
 #

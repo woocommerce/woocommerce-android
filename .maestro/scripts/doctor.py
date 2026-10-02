@@ -14,7 +14,7 @@ from pathlib import Path
 
 from device_locale import DeviceLocaleError, ensure_english_device_locale
 from ensure_release_app import ReleaseAppError, ensure_release_app
-from smoke_plan import PROFILES, flow_tags, selected_flows
+from smoke_plan import PROFILES, flow_store, flow_tags, selected_flows
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -169,7 +169,6 @@ def main() -> int:
     args = parser.parse_args()
 
     profile = PROFILES[args.profile]
-    store = args.store or "lab"
     include_tags = parse_csv(args.include_tags)
     if include_tags is None:
         include_tags = list(profile.include)
@@ -202,17 +201,23 @@ def main() -> int:
     flows = selected_flows(include_tags, exclude_tags)
     checks.append(Check("ok" if flows else "fail", f"{len(flows)} flow(s) selected for profile {args.profile}"))
 
-    refs = referenced_env(flows, args.seed)
-    missing = sorted(ref for ref in refs if not has_value(env, candidates_for(ref, store)))
-    if missing:
-        checks.append(Check("fail", "missing required env vars: " + ", ".join("MAESTRO_" + ref for ref in missing)))
-    else:
-        checks.append(Check("ok", f"all {len(refs)} referenced WOO_* env value(s) are available"))
+    stores = [store for store in ("lab", "shared") if any(flow_store(flow, args.store) == store for flow in flows)]
+    for store in stores:
+        store_flows = [flow for flow in flows if flow_store(flow, args.store) == store]
+        refs = referenced_env(store_flows, args.seed and store == "lab")
+        missing = sorted(ref for ref in refs if not has_value(env, candidates_for(ref, store)))
+        if missing:
+            names = ", ".join(candidates_for(ref, store)[0] for ref in missing)
+            checks.append(Check("fail", f"missing required env vars for the {store} store: {names}"))
+        else:
+            checks.append(
+                Check("ok", f"all {len(refs)} referenced WOO_* env value(s) for the {store} store are available")
+            )
 
     if any(flow.name == "login_not_woo_store.yaml" for flow in flows):
         wpcom_fallback = [
-            has_value(env, candidates_for("WOO_NOT_A_WOO_STORE_WPCOM_EMAIL", store)),
-            has_value(env, candidates_for("WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD", store)),
+            has_value(env, candidates_for("WOO_NOT_A_WOO_STORE_WPCOM_EMAIL", "lab")),
+            has_value(env, candidates_for("WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD", "lab")),
         ]
         not_woo_url = env.get("MAESTRO_WOO_NOT_A_WOO_STORE_URL", "")
         not_woo_host = url_host(not_woo_url)
@@ -227,15 +232,13 @@ def main() -> int:
         elif any(wpcom_fallback) and not all(wpcom_fallback):
             checks.append(Check("fail", "not-Woo-store WP.com fallback requires both email and password"))
 
-    jetpack_candidates = candidates_for("WOO_JETPACK_STORE_URL", store)
-    no_jetpack_candidates = candidates_for("WOO_NO_JETPACK_SITE_URL", store)
-    jetpack_url = next((env[name] for name in jetpack_candidates if env.get(name)), "")
-    no_jetpack_url = next((env[name] for name in no_jetpack_candidates if env.get(name)), "")
-    if jetpack_url and no_jetpack_url and url_host(jetpack_url) == url_host(no_jetpack_url):
-        checks.append(Check("fail", "selected Jetpack store URL matches the no-Jetpack site URL"))
+    no_jetpack_url = next((env[name] for name in candidates_for("WOO_NO_JETPACK_SITE_URL", "lab") if env.get(name)), "")
+    for store in stores:
+        jetpack_url = next((env[name] for name in candidates_for("WOO_JETPACK_STORE_URL", store) if env.get(name)), "")
+        if jetpack_url and no_jetpack_url and url_host(jetpack_url) == url_host(no_jetpack_url):
+            checks.append(Check("fail", f"the {store} Jetpack store URL matches the no-Jetpack site URL"))
 
-    has_destructive_flow = any("destructive" in flow_tags(flow) for flow in flows)
-    if store == "shared" and has_destructive_flow:
+    if any("destructive" in flow_tags(flow) and flow_store(flow, args.store) == "shared" for flow in flows):
         checks.append(Check("fail", "destructive flows are refused on the shared store"))
 
     devices = adb_devices()
@@ -272,7 +275,7 @@ def main() -> int:
 
     print("Maestro smoke doctor")
     print(f"  profile: {args.profile}")
-    print(f"  store:   {store}")
+    print(f"  store:   {args.store or 'per flow'}")
     print(f"  include: {','.join(include_tags) or '<none>'}")
     print(f"  exclude: {','.join(exclude_tags) or '<none>'}")
     print(f"  seed:    {'yes' if args.seed else 'no'}")

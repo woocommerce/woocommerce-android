@@ -1,5 +1,5 @@
 # Smoke Test: Google for Woo
-# P2 probe: hub.google-for-woo (the lab store must be eligible)
+# P2 probe: hub.google-for-woo (runs on the shared store, which is eligible)
 # P2 ref: Google for Woo > Trigger campaign creation, check webview loads
 #
 # Google for Woo is a CONDITIONAL hub-menu item — only shown when BOTH:
@@ -7,7 +7,7 @@
 #      version >= 2.7.7 (see IsGoogleForWooEnabled.kt), AND
 #   2. A Google Ads account is connected to that site.
 #
-# The lab store meets both, so a missing "Google for WooCommerce" row
+# The shared store meets both, so a missing "Google for WooCommerce" row
 # fails the flow. We verify tapping it launches the Google Ads webview
 # (GoogleAdsWebViewFragment, hosts a WebView with AppBarStatus.Hidden and
 # pulls the Google campaign creation/dashboard URL).
@@ -23,6 +23,7 @@ tags:
   - smoke_extended
   - flaky_quarantine
   - hub_menu
+  - store_shared
 ---
 - runFlow:
     file: ../subflows/ensure_logged_in.yaml
@@ -43,7 +44,7 @@ tags:
     element: "Google for WooCommerce"
     direction: UP
     timeout: 10000
-    label: "Require a Google for WooCommerce-eligible lab store"
+    label: "Require a Google for WooCommerce-eligible store"
 - tapOn:
     text: "Google for WooCommerce"
     retryTapIfNoChange: true

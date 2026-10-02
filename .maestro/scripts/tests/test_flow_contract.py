@@ -128,6 +128,13 @@ class MaestroFlowContractTests(unittest.TestCase):
         self.assertLess(error_message, another_account)
         self.assertIn("STRING_LOGIN_TRY_ANOTHER_ACCOUNT='Log in with another account'", strings)
 
+    def test_shared_store_flows_are_never_destructive(self) -> None:
+        for path in sorted((REPO_ROOT / ".maestro" / "flows").glob("*.yaml")):
+            header = path.read_text(encoding="utf-8").split("\n---", 1)[0]
+            if "  - store_shared" in header:
+                with self.subTest(path=path):
+                    self.assertNotIn("  - destructive", header)
+
     def test_all_flows_use_the_production_app_id(self) -> None:
         yaml_files = [
             REPO_ROOT / ".maestro" / "config.yaml",

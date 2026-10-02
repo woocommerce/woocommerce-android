@@ -255,7 +255,7 @@ class SmokeCliContractTest(unittest.TestCase):
         adb = fake_bin / "adb"
         adb.write_text(
             "#!/bin/sh\n"
-            "if printf '%s\\n' \"$*\" | grep -q 'secure autofill_service'; then\n"
+            "if printf '%s\\n' \"$*\" | grep -qE 'secure autofill_service|pm clear'; then\n"
             f"  printf 'ADB:%s\\n' \"$*\" >> '{maestro_args}'\n"
             "fi\n"
             "if [ \"${1:-}\" = devices ]; then\n"
@@ -526,6 +526,54 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertEqual(
             f"ADB:-s emulator-5554 shell settings put secure autofill_service {GOOGLE_AUTOFILL_SERVICE}",
             events[-1],
+        )
+
+    def test_each_flow_runs_against_its_own_store(self) -> None:
+        temporary_directory = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary_directory.cleanup)
+        report = Path(temporary_directory.name) / "report.xml"
+        report.write_text(
+            '<testsuites><testsuite name="previous run">'
+            '<testcase name="google_for_woo"><failure message="failed" /></testcase>'
+            '<testcase name="hub_menu_settings"><failure message="failed" /></testcase>'
+            "</testsuite></testsuites>",
+            encoding="utf-8",
+        )
+
+        result, args, _ = self.run_with_recorded_maestro_args(
+            "--device",
+            "emulator-5554",
+            "--rerun-failed",
+            str(report),
+            env_overrides={
+                "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
+                "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
+                "MAESTRO_WOO_LAB_WPCOM_PASSWORD": "lab-password",
+                "MAESTRO_WOO_SHARED_JETPACK_STORE_URL": "https://shared.example.com/",
+                "MAESTRO_WOO_SHARED_WPCOM_EMAIL": "shared@example.com",
+                "MAESTRO_WOO_SHARED_WPCOM_PASSWORD": "shared-password",
+            },
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        events = []
+        for line in args.splitlines():
+            if line.startswith("ADB:") and "pm clear" in line:
+                events.append("clear app data")
+            elif line.startswith("ARGS:"):
+                events.append(Path(line.split()[-1]).stem)
+            elif line.startswith("MAESTRO_WOO_WPCOM_EMAIL="):
+                events.append(line.split("=", 1)[1])
+        self.assertEqual(
+            [
+                "clear app data",
+                "hub_menu_settings",
+                "lab@example.com",
+                "clear app data",
+                "google_for_woo",
+                "shared@example.com",
+            ],
+            events,
         )
 
     def test_non_english_device_locale_fails_before_maestro_runs(self) -> None:

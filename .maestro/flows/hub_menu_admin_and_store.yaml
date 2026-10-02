@@ -1,6 +1,7 @@
 # Smoke Test: Hub Menu - WC Admin, View Store, Change store
 # p2: hub.change-store, hub.wc-admin, hub.view-store
 # P2 ref: Hub menu > WC Admin, View Store, Change store
+# Runs on the shared store, whose account owns a second store to switch to.
 #
 # Verifies:
 #   - Tapping "View Store" launches the authenticated webview for the
@@ -22,6 +23,7 @@ tags:
   - smoke_extended
   - flaky_quarantine
   - hub_menu
+  - store_shared
 ---
 - runFlow:
     file: ../subflows/ensure_logged_in.yaml

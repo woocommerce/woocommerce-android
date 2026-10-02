@@ -1,6 +1,6 @@
 Maestro smoke plan
   profile: core
-  store:   lab
+  store:   per flow
   repeat:  1
   include: smoke_core
   exclude: flaky_quarantine,android_system
