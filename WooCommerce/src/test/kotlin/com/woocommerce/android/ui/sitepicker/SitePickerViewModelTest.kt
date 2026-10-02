@@ -1161,6 +1161,46 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given a single woo store, when the auto-login fails, then site_list is reported after all`() =
+        testBlocking {
+            // GIVEN one store, whose verification times out, leaving the merchant looking at the
+            // list the auto-login was predicted to skip
+            givenTheScreenIsFromLogin(calledFromLogin = true)
+            givenThatSiteVerificationIsCompleted()
+            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
+                WooResult(
+                    WooError(
+                        type = WooErrorType.TIMEOUT,
+                        message = "",
+                        original = BaseRequest.GenericErrorType.TIMEOUT
+                    )
+                )
+            )
+            val siteList = listOf(defaultExpectedSiteList.first())
+            whenSitesAreFetched(sitesFromDb = siteList, sitesFromApi = siteList)
+
+            // WHEN
+            whenViewModelIsCreated()
+            viewModel.event.captureValues()
+
+            // THEN the auto-login was attempted and never reached the dashboard
+            verify(repository, times(1)).verifySiteWooAPIVersion(any())
+            verify(selectedSite, never()).set(any())
+
+            // THEN the list they are left on is reported, and no success is
+            verify(unifiedLoginTracker, times(1)).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SITE_LIST),
+                properties = any()
+            )
+            verify(unifiedLoginTracker, never()).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SUCCESS),
+                properties = any()
+            )
+        }
+
+    @Test
     fun `given the progress dialog was restored, when login continues, then it is not blocked`() =
         testBlocking {
             // GIVEN a saved state carrying the progress flag from before process death, with no

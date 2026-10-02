@@ -633,6 +633,22 @@ class SitePickerViewModel @Inject constructor(
 
         setContinueInFlight(true)
         launch {
+            try {
+                continueIntoSelectedSite(selectedSiteModel)
+            } finally {
+                setContinueInFlight(false)
+            }
+        }
+    }
+
+    /**
+     * The list is only skipped on the prediction that a lone store is continued into. When that
+     * continuation fails the merchant is left looking at the list after all, and this is the only
+     * chance to report it — the other reporting point is on a screen they never reached.
+     */
+    private suspend fun continueIntoSelectedSite(selectedSiteModel: SiteModel) {
+        var reachedTheDashboard = false
+        run {
             val siteVerificationResult = repository.verifySiteWooAPIVersion(selectedSiteModel)
             val siteVerificationModel = siteVerificationResult.model
             when {
@@ -653,6 +669,7 @@ class SitePickerViewModel @Inject constructor(
                             registerDevice.kickoff(registerDeviceTrigger)
 
                             sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
+                            reachedTheDashboard = true
                             triggerEvent(SitePickerEvent.NavigateToMainActivityEvent)
                         },
                         onFailure = {
@@ -665,8 +682,8 @@ class SitePickerViewModel @Inject constructor(
                     _isWooUpgradeDialogVisible.value = true
                 }
             }
-            setContinueInFlight(false)
         }
+        if (!reachedTheDashboard) trackSiteListShown()
     }
 
     /**
