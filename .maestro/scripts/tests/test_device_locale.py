@@ -69,6 +69,24 @@ class DeviceLocaleTest(unittest.TestCase):
 
         self.assertEqual(result, device_locale.DeviceLocale("en", "persist.sys.language"))
 
+    def test_falls_back_to_the_image_default_locale(self) -> None:
+        responses = iter(
+            (
+                command_result(returncode=255),
+                command_result(""),
+                command_result("null\n"),
+                command_result(""),
+                command_result("en-US\n"),
+            )
+        )
+
+        result = device_locale.ensure_english_device_locale(
+            "emulator-5554",
+            lambda _command: next(responses),
+        )
+
+        self.assertEqual(result, device_locale.DeviceLocale("en-US", "ro.product.locale"))
+
     def test_fails_when_no_locale_probe_returns_a_locale(self) -> None:
         with self.assertRaisesRegex(
             device_locale.DeviceLocaleError,
