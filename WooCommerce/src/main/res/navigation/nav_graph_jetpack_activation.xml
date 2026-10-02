@@ -22,6 +22,10 @@
         <argument
             android:name="siteUrl"
             app:argType="string" />
+        <argument
+            android:name="openedFromLogin"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_jetpackActivationDispatcherFragment_to_jetpackActivationStartFragment"
             app:destination="@id/jetpackActivationStartFragment"
@@ -43,6 +47,10 @@
         <argument
             android:name="siteUrl"
             app:argType="string" />
+        <argument
+            android:name="openedFromLogin"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_jetpackActivationStartFragment_to_jetpackActivationSiteCredentialsFragment"
             app:destination="@id/jetpackActivationSiteCredentialsFragment" />

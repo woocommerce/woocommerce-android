@@ -149,6 +149,7 @@ class UnifiedLoginTracker
         GOOGLE_SIGNUP("google_signup"),
         EPILOGUE("epilogue"),
         LOGIN_QR("login_qr"),
+        SITE_DISCOVERY("site_discovery"),
     }
 
     enum class Step(val value: String) {
@@ -168,6 +169,7 @@ class UnifiedLoginTracker
         NO_WOO_STORES("no_woo_stores"),
         SITE_LIST("site_list"),
         JETPACK_NOT_CONNECTED("jetpack_not_connected"),
+        JETPACK_NOT_INSTALLED("jetpack_not_installed"),
         NOT_WOO_STORE("not_woo_store"),
         NO_WPCOM_ACCOUNT_FOUND("no_wpcom_account_found"),
         NOT_WORDPRESS_SITE("not_wordpress_site"),

@@ -36,9 +36,17 @@
         android:id="@+id/sitePickerSiteDiscoveryFragment"
         android:name="com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment"
         android:label="SitePickerSiteDiscoveryFragment">
+        <argument
+            android:name="openedFromLogin"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_sitePickerSiteDiscoveryFragment_to_jetpackActivation"
             app:destination="@id/nav_graph_jetpack_activation">
+            <argument
+                android:name="openedFromLogin"
+                android:defaultValue="false"
+                app:argType="boolean" />
             <argument
                 android:name="siteUrl"
                 app:argType="string" />
@@ -58,9 +66,17 @@
             android:name="primaryButton"
             android:defaultValue="NONE"
             app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchPrimaryButton" />
+        <argument
+            android:name="openedFromLogin"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_accountMismatchErrorFragment_to_nav_graph_jetpack_activation"
             app:destination="@id/nav_graph_jetpack_activation" >
+            <argument
+                android:name="openedFromLogin"
+                android:defaultValue="false"
+                app:argType="boolean" />
             <argument
                 android:name="siteUrl"
                 app:argType="string" />

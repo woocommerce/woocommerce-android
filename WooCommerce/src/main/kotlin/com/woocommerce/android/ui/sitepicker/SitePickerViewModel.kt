@@ -238,6 +238,7 @@ class SitePickerViewModel @Inject constructor(
     }
 
     private suspend fun onSitesLoaded(sites: List<SiteModel>, isApiResponse: Boolean) {
+        restoreEpilogueFlow()
         if (sites.isEmpty()) {
             when {
                 loginSiteAddress != null -> showAccountMismatchScreen(loginSiteAddress!!)
@@ -282,6 +283,17 @@ class SitePickerViewModel @Inject constructor(
                 onSiteSelected(it)
                 onContinueButtonClick(isAutoLogin = true)
             }
+        }
+    }
+
+    /**
+     * Site discovery sets its own flow and can leave either by handing an address back or by the
+     * merchant backing out, so the picker re-asserts its own flow whenever it is in front again
+     * rather than letting later steps inherit a stale one.
+     */
+    fun restoreEpilogueFlow() {
+        if (navArgs.openedFromLogin) {
+            unifiedLoginTracker.setFlow(UnifiedLoginTracker.Flow.EPILOGUE.value)
         }
     }
 

@@ -54,6 +54,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.atMost
+import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
@@ -1141,6 +1142,36 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 step = eq(UnifiedLoginTracker.Step.NOT_WOO_STORE),
                 properties = anyOrNull()
             )
+        }
+
+    @Test
+    fun `given the merchant came back from site discovery, when sites load, then the epilogue flow is restored`() =
+        testBlocking {
+            // GIVEN the picker is showing during login
+            givenTheScreenIsFromLogin(true)
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+            clearInvocations(unifiedLoginTracker)
+
+            // WHEN site discovery hands an address back
+            viewModel.onSiteAddressReceived(SitePickerTestUtils.loginSiteAddress)
+
+            // THEN the steps that follow are not attributed to the site_discovery flow
+            verify(unifiedLoginTracker, atLeastOnce()).setFlow(UnifiedLoginTracker.Flow.EPILOGUE.value)
+        }
+
+    @Test
+    fun `given the picker was not opened from login, when sites load, then the flow is left alone`() =
+        testBlocking {
+            // GIVEN the merchant is connecting another store from the app
+            givenTheScreenIsFromLogin(false)
+            whenSitesAreFetched()
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN nothing outside a login journey touches the shared tracker's flow
+            verify(unifiedLoginTracker, never()).setFlow(anyOrNull())
         }
 
     @Test
