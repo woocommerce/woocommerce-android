@@ -59,6 +59,15 @@ tags:
     text: "^Woo$"
     label: "Open Woo app shortcuts"
 
+# The Android 17 Pixel Launcher keeps app shortcuts under a collapsed "Shortcuts" row.
+- runFlow:
+    when:
+      visible: "Shortcuts"
+    commands:
+      - tapOn:
+          text: "Shortcuts"
+          label: "Expand the Shortcuts row"
+
 - assertVisible:
     text: "Create order"
     label: "Create order shortcut is present"
