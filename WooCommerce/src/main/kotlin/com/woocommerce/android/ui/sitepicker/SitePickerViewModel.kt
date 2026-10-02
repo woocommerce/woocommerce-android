@@ -118,6 +118,8 @@ class SitePickerViewModel @Inject constructor(
     // to it. Raised wherever the list is first shown and never lowered, so a visit counts once.
     private var siteListReported = false
 
+    private var isContinueInFlight = false
+
     private val selectedSiteId: MutableLiveData<Int> = savedState.getLiveData("selected-site-id")
 
     private val _isWooUpgradeDialogVisible: MutableState<Boolean> by lazy { mutableStateOf(false) }
@@ -605,6 +607,9 @@ class SitePickerViewModel @Inject constructor(
     }
 
     fun onContinueButtonClick(isAutoLogin: Boolean = false) {
+        // Both the cache and the API pass auto-continue into a typed address, and the selected
+        // site is only set once verification returns, too late to tell the second apart.
+        if (isContinueInFlight) return
         val selectedSiteModel = getSelectedWooSite() ?: return
 
         // the current site is selected again so do nothing
@@ -630,7 +635,7 @@ class SitePickerViewModel @Inject constructor(
             )
         }
 
-        sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
+        setContinueInFlight(true)
         launch {
             val siteVerificationResult = repository.verifySiteWooAPIVersion(selectedSiteModel)
             val siteVerificationModel = siteVerificationResult.model
@@ -664,8 +669,18 @@ class SitePickerViewModel @Inject constructor(
                     _isWooUpgradeDialogVisible.value = true
                 }
             }
-            sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
+            setContinueInFlight(false)
         }
+    }
+
+    /**
+     * The progress dialog and the in-flight guard describe the same thing, so they move together.
+     * Only the guard is kept out of saved state: a restored "true" would block the recreated login
+     * behind a dialog that nothing is left running to dismiss.
+     */
+    private fun setContinueInFlight(inFlight: Boolean) {
+        isContinueInFlight = inFlight
+        sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = inFlight)
     }
 
     private fun getSelectedWooSite(): SiteModel? {

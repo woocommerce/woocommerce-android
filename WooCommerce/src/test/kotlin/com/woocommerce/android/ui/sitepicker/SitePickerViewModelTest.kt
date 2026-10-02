@@ -70,6 +70,7 @@ import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCApiVersionResponse
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -1156,6 +1157,63 @@ class SitePickerViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_NUMBER_OF_STORES to 4,
                     AnalyticsTracker.KEY_NUMBER_OF_NON_WOO_SITES to 1
                 )
+            )
+        }
+
+    @Test
+    fun `given the progress dialog was restored, when login continues, then it is not blocked`() =
+        testBlocking {
+            // GIVEN a saved state carrying the progress flag from before process death, with no
+            // request in flight to ever clear it
+            givenTheScreenIsFromLogin(true)
+            savedState[SitePickerViewModel.SitePickerViewState::class.java.name] =
+                SitePickerViewModel.SitePickerViewState(isProgressDiaLogVisible = true)
+            givenThatSiteVerificationIsCompleted()
+            val siteList = listOf(defaultExpectedSiteList.first())
+            whenSitesAreFetched(sitesFromDb = siteList, sitesFromApi = siteList)
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN the recreated login still completes rather than sitting behind a dialog
+            assertThat(viewModel.event.captureValues().last()).isEqualTo(NavigateToMainActivityEvent)
+            verify(unifiedLoginTracker, times(1)).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SUCCESS),
+                properties = any()
+            )
+        }
+
+    @Test
+    fun `given an address auto-logs in, when both passes continue, then success is reported once`() =
+        testBlocking {
+            // GIVEN an entered address that matches a store of the account, so both the cache pass
+            // and the api pass auto-continue into it
+            val wooSite = defaultExpectedSiteList[1]
+            givenThatUserLoggedInFromEnteringSiteAddress(wooSite)
+            whenSitesAreFetched()
+            whenever(userEligibilityFetcher.fetchUserInfo(any()))
+                .thenReturn(Result.success(SitePickerTestUtils.userModel))
+            // held open so the second pass arrives while the first login is still in flight
+            val verification = CompletableDeferred<WooResult<WCApiVersionResponse>>()
+            whenever(repository.verifySiteWooAPIVersion(any())).doSuspendableAnswer { verification.await() }
+
+            // WHEN
+            whenViewModelIsCreated()
+            advanceUntilIdle()
+            verification.complete(WooResult(SitePickerTestUtils.apiVerificationResponse))
+            advanceUntilIdle()
+
+            // THEN one login produces one of each, rather than one per pass
+            verify(repository, times(1)).verifySiteWooAPIVersion(any())
+            verify(analyticsTrackerWrapper, times(1)).track(
+                eq(AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_SUBMITTED),
+                any()
+            )
+            verify(unifiedLoginTracker, times(1)).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SUCCESS),
+                properties = any()
             )
         }
 
