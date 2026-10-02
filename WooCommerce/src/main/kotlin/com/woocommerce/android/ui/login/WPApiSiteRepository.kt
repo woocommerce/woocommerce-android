@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.INVALID_SSL_CERTIFICATE
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator.CookieNonceAuthenticationResult.Error
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints
@@ -234,7 +235,8 @@ class WPApiSiteRepository @Inject constructor(
             errorType = type,
             networkStatusCode = networkStatusCode,
             loginEntryVerified = loginEntryVerified,
-            networkErrorType = networkError?.type
+            networkErrorType = networkError?.type,
+            unexpectedStoreResponse = unexpectedStoreResponse
         )
     }
 
@@ -267,7 +269,8 @@ class WPApiSiteRepository @Inject constructor(
         val errorType: Nonce.CookieNonceErrorType,
         val networkStatusCode: Int?,
         val loginEntryVerified: Boolean = false,
-        val networkErrorType: GenericErrorType? = null
+        val networkErrorType: GenericErrorType? = null,
+        val unexpectedStoreResponse: UnexpectedStoreResponse? = null
     ) : Exception((errorMessage as? UiStringText)?.text)
 
     companion object {
