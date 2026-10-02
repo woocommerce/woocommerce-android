@@ -1,2 +1,0 @@
-25.7:
-Kundenlisten bleiben jetzt während der Aktualisierung am gewünschten Ort, Push-Benachrichtigungen funktionieren nach einem Gerätetransfer weiterhin und erstattete Versandkosten werden in Bestellungen angezeigt. Außerdem haben wir die POS-Berechtigungsprüfungen verbessert, den Standortzugriff für Kartenlesegeräte eingeschränkt und den Anmeldevorgang, Produktbilder, die Währungsformatierung und die Barrierefreiheit verbessert.

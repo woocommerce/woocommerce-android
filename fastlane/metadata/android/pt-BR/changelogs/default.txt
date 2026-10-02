@@ -1,2 +1,0 @@
-25.7:
-As listas de clientes agora permanecem no lugar durante a atualização, as notificações por push continuam funcionando após uma transferência de dispositivo e o reembolso do envio aparece nos pedidos. Também melhoramos as verificações de elegibilidade para pontos de venda, reduzimos o acesso à localização para leitores de cartão e melhoramos o login, as imagens de produtos, a formatação de moeda e a acessibilidade.
