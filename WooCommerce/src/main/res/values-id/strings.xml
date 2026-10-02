@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-08 09:56:42+0000
+Translation-Revision-Date: 2026-09-29 09:58:16+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_reason_unsupported_country_generic">Sistem POS tidak tersedia dalam mata uang toko Anda. Harap periksa pengaturan alamat toko Anda atau hubungi bagian dukungan untuk mendapatkan bantuan.</string>
+    <string name="woopos_eligibility_reason_unsupported_country">Sistem POS tidak tersedia di %1$s. Harap periksa pengaturan alamat toko Anda atau hubungi bagian dukungan untuk mendapatkan bantuan.</string>
+    <string name="woo_push_notifications_introduction_error_offline_mode_body">Pemberitahuan push tidak dapat diatur karena toko Anda berada dalam Mode Offline. Jika butuh bantuan, hubungi dukungan.</string>
+    <string name="order_refunds_refunded_items">Barang yang dananya dikembalikan</string>
+    <string name="login_not_wordpress_site_title">Bukan situs WordPress.</string>
+    <string name="https_configuration_warning_dismiss">Tutup pemberitahuan keamanan HTTPS</string>
+    <string name="https_configuration_warning_message">Toko Anda mendukung HTTPS, tetapi alamatnya dikonfigurasi untuk menggunakan HTTP. Perbarui ke HTTPS untuk melindungi toko Anda dan mencegah masalah sambungan.</string>
+    <string name="https_configuration_warning_title">Amankan toko Anda dengan HTTPS</string>
     <string name="age_verification_open_google_play">Buka Google Play</string>
     <string name="age_verification_required_message">Google Play meminta Anda memverifikasi usia sebelum WooCommerce dapat memeriksa apakah Anda dapat menggunakan aplikasi. Selesaikan verifikasi di Google Play, lalu kembali ke sini dan coba lagi.</string>
-    <string name="age_verification_required_title">Verifikasi email Anda untuk melanjutkan</string>
     <string name="woopos_refund_review_remaining_items_button">Tinjau item yang tersisa</string>
     <string name="woopos_refund_error_store_not_updated">Kartu dikembalikan dananya, tetapi toko Anda tidak diperbarui. Catat pengembalian dana ini di admin toko Anda.</string>
+    <string name="age_verification_required_title">Verifikasi usia Anda untuk melanjutkan</string>
     <string name="woopos_refund_error_item_already_refunded">Salah satu item yang dipilih telah dikembalikan dananya sepenuhnya.</string>
     <string name="filter_history_delete">Hapus</string>
     <string name="filter_history_clear_confirmation">Anda yakin ingin menghapus semua riwayat filter?</string>
@@ -585,6 +593,7 @@ Language: id
     <string name="dashboard_stats_placed_orders">Pesanan dibuat</string>
     <string name="dashboard_stats_paid_orders">Pesanan dibayar</string>
     <string name="dashboard_stats_revenue_type_total">Total Pendapatan</string>
+    <string name="dashboard_stats_revenue_type_net">Bersih</string>
     <string name="dashboard_stats_revenue_type_gross">Pendapatan Kotor</string>
     <string name="wpp_shipping_fedex_tos_condition_terms">Saya menyetujui &lt;a href=\"fedex-tos\"&gt;Ketentuan Layanan FedEx&lt;/a&gt;.</string>
     <string name="wpp_shipping_fedex_tos_description">Untuk membeli label pengiriman FedEx, Anda perlu menyetujui persyaratan berikut:</string>
@@ -923,8 +932,12 @@ Language: id
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">Britania Raya</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">Amerika Serikat</string>
     <string name="woopos_eligibility_screen_unable_to_load">Tidak dapat memuat</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">Sistem POS tidak tersedia untuk mata uang toko Anda. Harap periksa pengaturan mata uang toko Anda atau hubungi bagian dukungan untuk mendapatkan bantuan.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Sistem POS tidak tersedia untuk mata uang toko Anda. Di %1$s, saat ini hanya mendukung %2$s. Harap periksa pengaturan mata uang toko Anda atau hubungi bagian dukungan untuk mendapatkan bantuan.</string>
     <string name="woopos_eligibility_reason_check_connection">Periksa sambungan internet, lalu coba luncurkan ulang aplikasi. Jika kendala ini terus berlanjut, hubungi bagian dukungan.</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">Point of Sale harus diaktifkan untuk melanjutkan. Aktifkan fitur POS dari admin WordPress Anda di pengaturan WooCommerce &gt; Lanjutan &gt; Fitur, dan coba lagi.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Versi WooCommerce Anda tidak didukung. Sistem POS memerlukan WooCommerce versi %1$s atau yang lebih tinggi. Harap perbarui WooCommerce dengan versi terbaru.</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Pastikan plugin WooCommerce telah diinstal dan diaktifkan dari admin WordPress Anda. Jika masih terjadi kendala, hubungi dukungan untuk mendapatkan bantuan.</string>
     <string name="orderfilters_sales_channel_filter">Kanal Penjualan</string>
     <string name="barcode_ean13_content_description">Barcode EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">Penanganan tambahan</string>
@@ -2065,8 +2078,8 @@ Language: id
     <string name="store_onboarding_task_name_store_title">Beri nama untuk toko Anda</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Aktifkan NFC</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Paket Pengadaan Kuantitas Kecil (wajib ditandai)</string>
-    <string name="shipping_label_hazmat_option_limited_quantity">Paket Jalur Darat Kuantitas Terbatas - Aerosol, disinfektan semprot, cat semprot, hair spray, propana, butana, produk-produk kebersihan, dll. - Parfum, cat kuku, pembersih cat kuku, pelarut, penyanitasi tangan, alkohol medis, produk-produk berbahan dasar etanol, dll. - Bahan-bahan jalur darat kuantitas terbatas lainnya (kosmetik, produk-produk kebersihan, cat, dll.)</string>
     <string name="shipping_label_hazmat_option_lighters">Paket Pemantik Api - Pemantik Api Resmi</string>
+    <string name="shipping_label_hazmat_option_limited_quantity">Paket Jalur Darat Kuantitas Terbatas - Aerosol, disinfektan semprot, cat semprot, hair spray, propana, butana, produk-produk kebersihan, dll. - Parfum, cat kuku, pembersih cat kuku, pelarut, penyanitasi tangan, alkohol medis, produk-produk berbahan dasar etanol, dll. - Bahan-bahan jalur darat kuantitas terbatas lainnya (kosmetik, produk-produk kebersihan, cat, dll.)</string>
     <string name="shipping_label_hazmat_option_id8000">Paket Barang Konsumen ID8000 - Barang Konsumen ID8000 yang Memenuhi Syarat Jalur Udara (Aerosol yang tidak mudah terbakar, Cairan yang mudah terbakar, Zat Beracun, Aneka bahan berbahaya)</string>
     <string name="shipping_label_hazmat_option_ground_only">Bahan-Bahan Berbahaya Khusus Jalur Darat (Untuk item yang tidak masuk dalam daftar, tetapi terbatas hanya untuk jalur darat)</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">Paket Pengadaan Kuantitas Pengecualian (mis. cairan mudah terbakar, bahan-bahan berbahaya bagi lingkungan, beracun, atau korosif dalam volume kecil - wajib ditandai)</string>
@@ -2790,11 +2803,11 @@ Language: id
     <string name="coupon_details_menu_share">Bagikan Kupon</string>
     <string name="coupon_details_menu_copy">Salin Kode Kupon</string>
     <string name="inbox_note_survey_actioned">Terima kasih atas masukan Anda!</string>
-    <string name="card_reader_connect_permission_rationale_hint">Pembayaran pembaca kartu memerlukan izin lokasi yang tepat</string>
     <string name="card_reader_connect_permission_rationale_header">Akses Lokasi Diperlukan</string>
     <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
     <string name="simple_payments_share_payment_link">Bagikan tautan pembayaran</string>
     <string name="amount">Jumlah</string>
+    <string name="card_reader_connect_permission_rationale_hint">Pembayaran pembaca kartu memerlukan izin lokasi yang tepat</string>
     <string name="coupon_list_view_coupon">Lihat ringkasan kupon</string>
     <string name="coupon_list_empty_heading">Tidak ada kupon ditemukan</string>
     <string name="coupon_list_item_label_everything">semua</string>
@@ -3304,7 +3317,7 @@ Language: id
     <string name="product_type_simple_desc">Produk fisik unik yang mungkin perlu dikirimkan kepada pelanggan</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth dinonaktifkan</string>
     <string name="card_reader_connect_location_provider_disabled_header">Lokasi dinonaktifkan</string>
-    <string name="card_reader_connect_missing_permissions_header">Izin lokasi tepat tidak ditemukan</string>
+    <string name="card_reader_connect_missing_permissions_header">Izin lokasi yang diperlukan tidak ada</string>
     <string name="variation_confirm_delete">Apakah Anda ingin menghapus Variasi ini?</string>
     <string name="product_delete_dialog_title">Menghapus produk</string>
     <string name="card_reader_payment_send_receipt">Kirimkan tanda terima</string>
