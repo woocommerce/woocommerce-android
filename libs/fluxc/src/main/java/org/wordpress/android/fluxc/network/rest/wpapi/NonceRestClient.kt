@@ -11,6 +11,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.INVALID_SSL_CERTIFICATE
 import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseKind
 import org.wordpress.android.fluxc.network.UnexpectedStoreResponseLogger
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.AdminBaseVerification
@@ -119,7 +120,7 @@ class NonceRestClient @Inject constructor(
                     val networkResponse = response.error.volleyError?.networkResponse
                     if (networkResponse?.statusCode?.isRedirect() != true) {
                         return LoginPreflight.Failure(
-                            loginFailure(username, response, networkResponse, Method.GET, currentUrl)
+                            loginPageFailure(username, response, networkResponse, currentUrl, endpoints)
                         )
                     }
                     if (redirectsFollowed == MAX_ENDPOINT_REDIRECTS) {
@@ -167,7 +168,12 @@ class NonceRestClient @Inject constructor(
 
         val networkResponse = response.error.volleyError?.networkResponse
         if (networkResponse?.statusCode?.isRedirect() != true) {
-            return loginFailure(transaction.username, response, networkResponse, Method.POST, transaction.loginUrl)
+            return failed(
+                username = transaction.username,
+                type = getLoginErrorType(networkResponse),
+                response = response,
+                unexpectedStoreResponse = response.unexpectedStatus(Method.POST, transaction.loginUrl)
+            )
         }
 
         val redirectUrl = networkResponse.location()
@@ -215,7 +221,11 @@ class NonceRestClient @Inject constructor(
                             username = username,
                             type = CookieNonceErrorType.CUSTOM_ADMIN_URL,
                             response = response,
-                            unexpectedStoreResponse = response.unexpectedStoreResponse(Method.GET, currentUrl)
+                            unexpectedStoreResponse = if (networkResponse?.statusCode.isMissingPage()) {
+                                null
+                            } else {
+                                response.unexpectedStatus(Method.GET, currentUrl) { it.isWordPressAdminDashboard() }
+                            }
                         )
                     }
                     if (redirectsFollowed == MAX_ENDPOINT_REDIRECTS) {
@@ -256,25 +266,22 @@ class NonceRestClient @Inject constructor(
         )
     }
 
-    private fun loginFailure(
+    private fun loginPageFailure(
         username: String,
         response: Error<String>,
         networkResponse: NetworkResponse?,
-        method: Int,
-        url: HttpUrl
-    ): Nonce {
-        val type = getLoginErrorType(networkResponse)
-        return failed(
-            username = username,
-            type = type,
-            response = response,
-            unexpectedStoreResponse = if (type == CookieNonceErrorType.GENERIC_ERROR) {
-                response.unexpectedStoreResponse(method, url)
-            } else {
-                null
-            }
-        )
-    }
+        url: HttpUrl,
+        endpoints: ValidatedEndpoints
+    ): Nonce = failed(
+        username = username,
+        type = getLoginErrorType(networkResponse),
+        response = response,
+        unexpectedStoreResponse = if (networkResponse?.statusCode.isMissingPage()) {
+            null
+        } else {
+            response.unexpectedStatus(Method.GET, url) { it.loginFormSubmissionUrl(url, endpoints) != null }
+        }
+    )
 
     private fun getLoginErrorType(networkResponse: NetworkResponse?): CookieNonceErrorType = when {
         networkResponse?.statusCode == NOT_FOUND_STATUS_CODE ||
@@ -310,16 +317,33 @@ class NonceRestClient @Inject constructor(
         requestType = UnexpectedStoreResponse.requestType(method, url.toString())
     )
 
-    /**
-     * 404 and 410 aren't unexpected here: they start the custom login and admin address recovery.
-     */
-    private fun Error<String>.unexpectedStoreResponse(method: Int, url: HttpUrl): UnexpectedStoreResponse? {
+    private fun Error<String>.unexpectedStatus(
+        method: Int,
+        url: HttpUrl,
+        isExpectedPage: (String) -> Boolean = { false }
+    ): UnexpectedStoreResponse? {
         val networkResponse = error.volleyError?.networkResponse ?: return null
-        if (networkResponse.statusCode == NOT_FOUND_STATUS_CODE || networkResponse.statusCode == GONE_STATUS_CODE) {
-            return null
+        val body = networkResponse.data?.decodeToString().orEmpty()
+        return if (isBasicAuthError(networkResponse) || body.hasLoginError() || isExpectedPage(body)) {
+            null
+        } else {
+            UnexpectedStoreResponse.of(
+                UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE,
+                networkResponse,
+                method,
+                url.toString()
+            )
         }
-        return UnexpectedStoreResponse.from(networkResponse, method, url.toString())
     }
+
+    /**
+     * A missing login page, dashboard or nonce endpoint isn't unexpected: the store may use a custom login or admin
+     * address.
+     */
+    private fun Int?.isMissingPage(): Boolean = this == NOT_FOUND_STATUS_CODE || this == GONE_STATUS_CODE
+
+    private fun String.hasLoginError(): Boolean =
+        contains(INVALID_CREDENTIAL_HTML_PATTERN) || extractErrorMessage(this) != null
 
     private fun isBasicAuthError(networkResponse: NetworkResponse?): Boolean =
         networkResponse?.headers?.keys?.any { it.equals(AUTH_HEADER_KEY, ignoreCase = true) } == true &&
@@ -348,7 +372,11 @@ class NonceRestClient @Inject constructor(
                     username = username,
                     type = errorType,
                     response = response,
-                    unexpectedStoreResponse = response.unexpectedStoreResponse(Method.GET, nonceUrl)
+                    unexpectedStoreResponse = if (statusCode.isMissingPage()) {
+                        null
+                    } else {
+                        response.unexpectedStatus(Method.GET, nonceUrl) { it.isValidNonce() }
+                    }
                 )
             }
         }
