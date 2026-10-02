@@ -121,7 +121,7 @@ class WooPosPaymentsFlowTrackerEventProvider(
             addProperties(props)
         }
 
-    override fun paymentSuccessEvent(order: Order): IAnalyticsEvent =
+    override suspend fun paymentSuccessEvent(order: Order): IAnalyticsEvent =
         CARD_PRESENT_COLLECT_PAYMENT_SUCCESS.apply { addProperties(paymentSuccessProperties(order)) }
 
     override val CARD_PRESENT_COLLECT_INTERAC_PAYMENT_SUCCESS: IAnalyticsEvent

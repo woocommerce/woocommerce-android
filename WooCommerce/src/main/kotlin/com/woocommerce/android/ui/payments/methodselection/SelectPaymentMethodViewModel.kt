@@ -243,7 +243,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         return rows
     }
 
-    private fun isTapToPayAvailable(): Boolean {
+    private suspend fun isTapToPayAvailable(): Boolean {
         val result = tapToPayAvailabilityStatus()
         return if (result is NotAvailable) {
             paymentsFlowTracker.trackTapToPayNotAvailableReason(result, SOURCE)

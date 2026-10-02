@@ -172,10 +172,8 @@ open class WooCommerceStore @Inject internal constructor(
      * Given a [SiteModel], returns its WooCommerce store country name,
      * or null if no settings are stored for this site OR if country is empty/blank
      */
-    fun getStoreCountryCode(site: SiteModel): String? {
-        val siteSettings = runBlocking { settingsDao.getSettings(site.localId()) }
-        return siteSettings?.countryCode
-    }
+    suspend fun getStoreCountryCode(site: SiteModel): String? =
+        settingsDao.getSettings(site.localId())?.countryCode
 
     fun getSitePlugin(site: SiteModel, plugin: WooPlugin): SitePluginModel? {
         return runBlocking {
