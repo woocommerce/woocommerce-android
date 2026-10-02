@@ -22,6 +22,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
@@ -249,10 +250,16 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    suspend fun hasSubscriptionProducts(remoteProductIds: List<Long>): Boolean {
+    /**
+     * Only detects the legacy subscription product types (subscription / variable-subscription). It
+     * does NOT catch plan-based subscriptions (a subscription plan on any product type), so it isn't
+     * sufficient on its own to decide whether an order is a subscription — use
+     * [com.woocommerce.android.ui.payments.cardreader.payment.OrderSubscriptionChecker] for that.
+     */
+    suspend fun hasLegacySubscriptionProducts(remoteProductIds: List<Long>): Boolean {
         return if (remoteProductIds.isNotEmpty()) {
             productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
-                .any { it.type == PRODUCT_SUBSCRIPTION_TYPE }
+                .any { ProductType.fromString(it.type).isSubscriptionProduct() }
         } else {
             false
         }
@@ -370,8 +377,4 @@ class OrderDetailRepository @Inject constructor(
     suspend fun getOrderAttributionInfo(orderId: Long) = OrderAttributionInfo(
         orderStore.getOrderMetadata(orderId, selectedSite.get())
     )
-
-    companion object {
-        const val PRODUCT_SUBSCRIPTION_TYPE = "subscription"
-    }
 }
