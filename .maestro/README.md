@@ -13,8 +13,9 @@ The suite has two store targets:
   store's account has: a second store to switch to, and Google for WooCommerce.
 
 Each flow runs against the lab store unless it is tagged `store_shared`. When a run includes both, the lab flows run
-first, and the runner clears the app data before each store's flows so the next flow logs in with that store's
-account. `--store lab|shared` runs every selected flow against one store instead.
+first. Before each store's flows, the runner clears the app data if the app was last logged in to a different store,
+in this run or an earlier one, so the next flow logs in with this store's account. `--store lab|shared` runs every
+selected flow against one store instead.
 
 The no-Jetpack login scenario uses its own `MAESTRO_WOO_NO_JETPACK_*` variables. Do not reuse those Jurassic Ninja
 site credentials as the `lab` store block when running the broader suite. The runner removes a trailing

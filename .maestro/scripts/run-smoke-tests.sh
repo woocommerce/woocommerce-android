@@ -1235,16 +1235,22 @@ run_one_attempt() {
 }
 
 ACTIVE_STORE=""
+STORE_MARKER="/data/local/tmp/woo-maestro-store"
 
-# Clearing app data makes the next flow log in with the new store's account.
+# The marker holds the host the app last logged in to, also across runs. Clearing app
+# data when it differs makes the next flow log in with this store's account.
 switch_store() {
   ACTIVE_STORE="$1"
   use_store_group "$1"
   build_maestro_process_env
   use_all_flows
-  if [[ ${#RUN_STORES[@]} -gt 1 ]]; then
+  local store_host logged_in_host
+  store_host="$(url_host "${MAESTRO_WOO_JETPACK_STORE_URL:-}")"
+  logged_in_host="$(adb -s "$DEVICE_SERIAL" shell cat "$STORE_MARKER" 2>/dev/null | tr -d '\r' || true)"
+  if [[ "$store_host" != "$logged_in_host" ]]; then
     echo "--- Clearing app data before the $1 store flows"
     adb -s "$DEVICE_SERIAL" shell pm clear "$APP_ID" >/dev/null
+    adb -s "$DEVICE_SERIAL" shell "echo '$store_host' > $STORE_MARKER" >/dev/null
   fi
 }
 

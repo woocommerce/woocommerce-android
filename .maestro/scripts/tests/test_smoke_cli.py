@@ -206,6 +206,7 @@ class SmokeCliContractTest(unittest.TestCase):
         fail_first_attempt: bool = False,
         device_locale: str = "en-US",
         screenshot_names: tuple[str, ...] = (),
+        device_store_host: str = "",
     ) -> tuple[subprocess.CompletedProcess[str], str, Path]:
         temporary_directory = tempfile.TemporaryDirectory()
         self.addCleanup(temporary_directory.cleanup)
@@ -213,6 +214,9 @@ class SmokeCliContractTest(unittest.TestCase):
         fake_bin = temporary_path / "bin"
         fake_bin.mkdir()
         maestro_args = temporary_path / "maestro-args"
+        store_marker = temporary_path / "store-marker"
+        if device_store_host:
+            store_marker.write_text(device_store_host + "\n")
         first_attempt_marker = temporary_path / "first-attempt-failed"
 
         maestro = fake_bin / "maestro"
@@ -255,6 +259,14 @@ class SmokeCliContractTest(unittest.TestCase):
         adb = fake_bin / "adb"
         adb.write_text(
             "#!/bin/sh\n"
+            "if printf '%s\\n' \"$*\" | grep -q 'cat /data/local/tmp/woo-maestro-store'; then\n"
+            f"  cat '{store_marker}' 2>/dev/null\n"
+            "  exit 0\n"
+            "fi\n"
+            "if printf '%s\\n' \"$*\" | grep -q '> /data/local/tmp/woo-maestro-store'; then\n"
+            f"  printf '%s\\n' \"$*\" | sed -E \"s/.*echo '([^']*)'.*/\\1/\" > '{store_marker}'\n"
+            "  exit 0\n"
+            "fi\n"
             "if printf '%s\\n' \"$*\" | grep -qE 'secure autofill_service|pm clear'; then\n"
             f"  printf 'ADB:%s\\n' \"$*\" >> '{maestro_args}'\n"
             "fi\n"
@@ -514,7 +526,9 @@ class SmokeCliContractTest(unittest.TestCase):
         result, args, _ = self.run_login_successful_with_recorded_maestro_args()
 
         self.assertEqual(result.returncode, 0, result.stderr)
-        events = [line for line in args.splitlines() if line.startswith(("ADB:", "ARGS:"))]
+        events = [
+            line for line in args.splitlines() if line.startswith("ARGS:") or "autofill_service" in line
+        ]
         self.assertEqual(
             [
                 "ADB:-s emulator-5554 shell settings get secure autofill_service",
@@ -575,6 +589,22 @@ class SmokeCliContractTest(unittest.TestCase):
             ],
             events,
         )
+
+    def test_app_data_is_kept_when_the_app_is_already_on_the_flow_store(self) -> None:
+        result, args, _ = self.run_with_recorded_maestro_args(
+            "--device",
+            "emulator-5554",
+            ".maestro/flows/login_successful.yaml",
+            env_overrides={
+                "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
+                "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
+                "MAESTRO_WOO_LAB_WPCOM_PASSWORD": "lab-password",
+            },
+            device_store_host="lab.example.com",
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("pm clear", args)
 
     def test_non_english_device_locale_fails_before_maestro_runs(self) -> None:
         result, args, _ = self.run_with_recorded_maestro_args(
