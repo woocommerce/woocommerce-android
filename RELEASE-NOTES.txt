@@ -2,6 +2,10 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.9
+-----
+
+
 25.8
 -----
 - [*] Fixed an issue where changes made to a store outside the app, like renaming it, needed a second app restart to show up [https://github.com/woocommerce/woocommerce-android/pull/16637]

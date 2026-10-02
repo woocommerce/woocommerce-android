@@ -1,2 +1,0 @@
-25.7:
-Kundlistor ligger nu kvar vid uppdatering, pushnotiser fortsätter att fungera efter enhetsbyten och återbetald frakt visas i beställningar. Vi har också förbättrat POS-behörighetakontrollerna, minskat platsåtkomsten för kortläsare och finjusterat inloggningen, produktbilderna, valutaformateringen och tillgängligheten.

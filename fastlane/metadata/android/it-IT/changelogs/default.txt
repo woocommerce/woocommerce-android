@@ -1,2 +1,0 @@
-25.7:
-Gli elenchi dei clienti ora rimangono invariati durante l'aggiornamento, le notifiche push continuano a funzionare dopo il trasferimento del dispositivo e le spese di spedizione rimborsate vengono visualizzate negli ordini. Abbiamo inoltre migliorato i controlli di idoneità nei punti vendita, ridotto l'accesso alle postazioni per i lettori di carte e perfezionato la procedura di accesso, le immagini dei prodotti, la formattazione delle valute e l'accessibilità.

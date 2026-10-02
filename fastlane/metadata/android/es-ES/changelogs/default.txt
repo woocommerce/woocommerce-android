@@ -1,2 +1,0 @@
-25.7:
-Ahora, las listas de clientes permanecen activas mientras se actualizan, las notificaciones push siguen funcionando después de la transferencia de un dispositivo y los envíos reembolsados aparecen en los pedidos. También hemos mejorado las comprobaciones de idoneidad para POS, reducido el acceso a la ubicación para los lectores de tarjetas y mejorado el acceso, las imágenes de productos, el formato de la moneda y la accesibilidad.

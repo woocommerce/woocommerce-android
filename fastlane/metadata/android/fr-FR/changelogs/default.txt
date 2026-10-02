@@ -1,2 +1,0 @@
-25.7 :
-Les listes de clients restent désormais en place pendant l’actualisation, les notifications push continuent de fonctionner après le transfert d’appareil et les expéditions remboursées apparaissent dans les commandes. Nous avons également amélioré les contrôles d’éligibilité pour le PDV, réduit l’accès à l’emplacement pour les lecteurs de carte, et amélioré la connexion, les images de produits, le formatage des devises et l’accessibilité.

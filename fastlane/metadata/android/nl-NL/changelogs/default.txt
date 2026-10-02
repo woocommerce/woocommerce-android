@@ -1,2 +1,0 @@
-25,7:
-Klantenlijsten blijven nu op hun plaats terwijl ze worden vernieuwd, pushmeldingen blijven werken na een apparaatoverdracht en terugbetaalde verzending verschijnt in bestellingen. We hebben ook de geschiktheidscontroles voor POS verbeterd, de toegang tot de locatie voor kaartlezers verminderd en de inloggegevens, productafbeeldingen, valutatransformatie en toegankelijkheid gepolijst.
