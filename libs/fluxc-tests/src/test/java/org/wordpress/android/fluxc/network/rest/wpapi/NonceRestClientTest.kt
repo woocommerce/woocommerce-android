@@ -537,6 +537,10 @@ class NonceRestClientTest {
         )
 
         assertFailed(Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL, actual, "redirect cap")
+        assertEquals(
+            UnexpectedStoreResponseKind.UNEXPECTED_CONTENT,
+            (actual as Nonce.FailedRequest).unexpectedStoreResponse?.kind
+        )
         verify(requestBuilder, never()).syncGetRequest(subject, redirects.last())
         verifyNoCredentialPost()
     }
@@ -861,6 +865,34 @@ class NonceRestClientTest {
         assertEquals(UnexpectedStoreResponseKind.UNEXPECTED_CONTENT, nonce.unexpectedStoreResponse?.kind, "nonce")
     }
 
+    @Test
+    fun `given redirects the login can't follow, when requesting a nonce, then keep the redirect details`() = test {
+        givenGet(DEFAULT_LOGIN_URL, redirect(SSO_LOGIN_URL))
+        val loginPage = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+        assertEquals(Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL, loginPage.type)
+        assertEquals(UnexpectedStoreResponseKind.UNEXPECTED_CONTENT, loginPage.unexpectedStoreResponse?.kind, "login")
+        assertEquals(302, loginPage.unexpectedStoreResponse?.statusCode)
+
+        givenLoginForm(DEFAULT_LOGIN_URL)
+        givenCredentialRedirect(DEFAULT_LOGIN_URL, DEFAULT_NONCE_URL, "$SITE_ORIGIN/shop/")
+        val credentials = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+        assertEquals(Nonce.CookieNonceErrorType.INVALID_NONCE, credentials.type)
+        assertEquals(UnexpectedStoreResponseKind.UNEXPECTED_CONTENT, credentials.unexpectedStoreResponse?.kind, "post")
+        assertEquals("POST /store/wp-login.php", credentials.unexpectedStoreResponse?.requestType)
+
+        givenCredentialRedirect(DEFAULT_LOGIN_URL, CUSTOM_NONCE_URL, CUSTOM_NONCE_URL)
+        givenGet(CUSTOM_ADMIN_URL, redirect(SSO_LOGIN_URL))
+        val dashboard = assertIs<Nonce.FailedRequest>(
+            subject.requestNonce(MANUAL_ADMIN_ENDPOINTS, USERNAME, PASSWORD)
+        )
+        assertEquals(UnexpectedStoreResponseKind.UNEXPECTED_CONTENT, dashboard.unexpectedStoreResponse?.kind, "admin")
+
+        givenCredentialRedirect(DEFAULT_LOGIN_URL, DEFAULT_NONCE_URL, DEFAULT_NONCE_URL)
+        givenGet(DEFAULT_NONCE_URL, redirect(DEFAULT_LOGIN_URL))
+        val nonce = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+        assertEquals(UnexpectedStoreResponseKind.UNEXPECTED_CONTENT, nonce.unexpectedStoreResponse?.kind, "nonce")
+    }
+
     private suspend fun givenLoginForm(url: String, html: String = LOGIN_FORM) {
         givenGet(url, WPAPIResponse.Success(html, emptyList()))
     }
@@ -960,6 +992,7 @@ class NonceRestClientTest {
         const val DEFAULT_LOGIN_URL = "$SITE_ORIGIN/wp-login.php"
         const val DEFAULT_NONCE_URL = "$SITE_ORIGIN/wp-admin/admin-ajax.php?action=rest-nonce"
         const val CUSTOM_LOGIN_URL = "$SITE_HOST/secret-login"
+        const val SSO_LOGIN_URL = "https://sso.example/login"
         const val CUSTOM_ADMIN_URL = "$SITE_HOST/private-dashboard/"
         const val CUSTOM_NONCE_URL = "$SITE_HOST/private-dashboard/admin-ajax.php?action=rest-nonce"
         const val USERNAME = "a_username"
