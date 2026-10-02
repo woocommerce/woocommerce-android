@@ -210,7 +210,7 @@ tags:
     file: ../subflows/navigate_to_products.yaml
 - extendedWaitUntil:
     visible:
-      id: "productName|empty_view"
+      id: "product_list_title_.*|product_list_empty"
     timeout: 30000
     label: "Require alternate store Products result"
 - assertNotVisible: ".*A network error occurred.*"
@@ -262,7 +262,7 @@ tags:
     file: ../subflows/navigate_to_products.yaml
 - extendedWaitUntil:
     visible:
-      id: "productName|empty_view"
+      id: "product_list_title_.*|product_list_empty"
     timeout: 30000
     label: "Require restored store Products result"
 - assertNotVisible: ".*A network error occurred.*"
