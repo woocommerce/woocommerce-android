@@ -17,8 +17,11 @@ import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.RefreshWPSettings
+import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.InvoluntaryLogoutReason
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import dagger.Lazy
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestScope
@@ -29,7 +32,6 @@ import org.mockito.MockedStatic
 import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
@@ -62,6 +64,7 @@ class AppInitializerTest : BaseUnitTest() {
     private val wooCommerceStoreMock: WooCommerceStore = mock()
     private val refreshWPSettingsMock: RefreshWPSettings = mock()
     private val prefsMock: AppPrefs = mock()
+    private val accountRepositoryMock: AccountRepository = mock()
     private val posLocalCatalogSchedulerMock: WooPosLocalCatalogSyncScheduler = mock()
     private val wpComSiteInvalidationNotifier = WPComSiteInvalidationNotifier()
     private val processLifecycle = ProcessLifecycleOwner.get().lifecycle as LifecycleRegistry
@@ -86,6 +89,7 @@ class AppInitializerTest : BaseUnitTest() {
             this.wooCommerceStore = wooCommerceStoreMock
             this.refreshWPSettings = refreshWPSettingsMock
             this.prefs = prefsMock
+            this.accountRepository = Lazy { accountRepositoryMock }
             this.posLocalCatalogScheduler = posLocalCatalogSchedulerMock
             this.wpComSiteInvalidationNotifier = this@AppInitializerTest.wpComSiteInvalidationNotifier
             this.appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
@@ -241,7 +245,7 @@ class AppInitializerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given selected site lost WooCommerce, when site is updated, then track involuntary logout`() = testBlocking {
+    fun `given selected site lost WooCommerce, when site is updated, then log user out involuntarily`() = testBlocking {
         // GIVEN
         val site = SiteModel().apply {
             siteId = SITE_ID
@@ -256,15 +260,11 @@ class AppInitializerTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
 
         // THEN
-        verify(analyticsTrackerMock).track(
-            AnalyticsEvent.ACCOUNT_INVOLUNTARY_LOGOUT,
-            mapOf(AnalyticsTracker.KEY_REASON to "woocommerce_not_available")
-        )
-        verify(selectedSiteMock).reset()
+        verify(accountRepositoryMock).logoutInvoluntarily(InvoluntaryLogoutReason.WOOCOMMERCE_NOT_AVAILABLE)
     }
 
     @Test
-    fun `given selected site still has WooCommerce, when site is updated, then do not track involuntary logout`() =
+    fun `given selected site still has WooCommerce, when site is updated, then do not log user out`() =
         testBlocking {
             // GIVEN
             val site = SiteModel().apply {
@@ -280,8 +280,7 @@ class AppInitializerTest : BaseUnitTest() {
             coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
 
             // THEN
-            verify(analyticsTrackerMock, never()).track(eq(AnalyticsEvent.ACCOUNT_INVOLUNTARY_LOGOUT), any())
-            verify(selectedSiteMock, never()).reset()
+            verify(accountRepositoryMock, never()).logoutInvoluntarily(any())
         }
 
     @Test
