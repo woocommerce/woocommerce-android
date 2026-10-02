@@ -50,7 +50,7 @@ class WooPosSurveysNotificationScheduler @Inject constructor(
     }
 
     private suspend fun isAllowedCountry(): Boolean {
-        val countryCode = wooCommerceStore.getSiteSettingsAsync(selectedSite.get())?.countryCode
+        val countryCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.countryCode
         return countryCode?.lowercase() in ALLOWED_COUNTRIES
     }
 }

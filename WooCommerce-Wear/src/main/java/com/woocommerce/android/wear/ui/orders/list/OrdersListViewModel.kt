@@ -66,13 +66,16 @@ class OrdersListViewModel @Inject constructor(
         fetchOrders(selectedSite)
             .onEach { request ->
                 when (request) {
-                    is Finished -> _viewState.update { viewState ->
-                        analyticsTracker.track(WATCH_ORDERS_LIST_DATA_SUCCEEDED)
-                        viewState.copy(
-                            orders = formatOrders(selectedSite, request.orders),
-                            isError = false,
-                            isLoading = false
-                        )
+                    is Finished -> {
+                        val orders = formatOrders(selectedSite, request.orders)
+                        _viewState.update { viewState ->
+                            analyticsTracker.track(WATCH_ORDERS_LIST_DATA_SUCCEEDED)
+                            viewState.copy(
+                                orders = orders,
+                                isError = false,
+                                isLoading = false
+                            )
+                        }
                     }
                     is Waiting -> _viewState.update {
                         it.copy(isLoading = true, isError = false)

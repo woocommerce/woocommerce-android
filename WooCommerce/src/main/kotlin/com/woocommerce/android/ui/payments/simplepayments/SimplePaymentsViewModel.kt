@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATE_
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATE_ON
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooLog
@@ -65,6 +66,7 @@ class SimplePaymentsViewModel @Inject constructor(
         }
 
     init {
+        OrderDurationRecorder.reset()
         val hasTaxes = order.totalTax > BigDecimal.ZERO
         updateViewState(hasTaxes)
     }

@@ -10,6 +10,7 @@
 - [*****] Refreshed My Store, Orders, Products, and the More menu with the new design system — new top app bars, bottom navigation, list styling, and icons [https://github.com/woocommerce/woocommerce-android/pull/16322]
 - [*] Fixed the add product button staying on screen after clearing the product search term [https://github.com/woocommerce/woocommerce-android/pull/16451]
 - [Internal] Card Reader Mode on the phone now tracks when it rejects a Remote Tap to Pay payment from the tablet [https://github.com/woocommerce/woocommerce-android/pull/16584]
+- [Internal][WEAR] Currency amounts on the phone and the watch are formatted without a blocking read of the store settings [https://github.com/woocommerce/woocommerce-android/pull/16606]
 
 - [*] Card Reader Mode on the phone now explains what it is for before it starts [https://github.com/woocommerce/woocommerce-android/pull/16579]
 - [*] The variations list now shows an error with a retry option when a page of variations fails to load, instead of silently skipping it [https://github.com/woocommerce/woocommerce-android/pull/16580]
