@@ -108,6 +108,13 @@ tags:
 # Require the store header for diagnostics and use normalized URL-host
 # equality for identity. Display names are not unique and are never used to
 # decide whether the selected store changed.
+# The Menu keeps the scroll position of the row we opened, so scroll back to the header.
+- scrollUntilVisible:
+    element:
+      id: "more_menu_store_header"
+    direction: UP
+    timeout: 10000
+    label: "Scroll back to the store header"
 - assertVisible:
     id: "more_menu_store_header"
 - copyTextFrom:
