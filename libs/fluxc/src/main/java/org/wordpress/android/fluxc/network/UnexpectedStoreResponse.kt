@@ -16,26 +16,38 @@ data class UnexpectedStoreResponse(
         @JvmStatic
         fun from(statusCode: Int, contentType: String?, body: String, requestType: String): UnexpectedStoreResponse? {
             val kind = UnexpectedStoreResponseClassifier.classify(statusCode, contentType, body) ?: return null
-            return UnexpectedStoreResponse(
-                kind = kind,
-                statusCode = statusCode,
-                contentType = contentType,
-                requestType = requestType,
-                excerpt = UnexpectedStoreResponseExcerpt.from(body)
-            )
+            return of(kind, statusCode, contentType, body, requestType)
         }
 
         @JvmStatic
         fun from(response: NetworkResponse, method: Int, url: String): UnexpectedStoreResponse? = from(
             statusCode = response.statusCode,
-            contentType = response.headers?.entries?.firstOrNull { it.key.equals(CONTENT_TYPE, ignoreCase = true) }
-                ?.value,
-            body = response.data?.let { String(it, response.charset()) }.orEmpty(),
+            contentType = response.contentType(),
+            body = response.body(),
             requestType = requestType(method, url)
+        )
+
+        fun of(
+            kind: UnexpectedStoreResponseKind,
+            statusCode: Int,
+            contentType: String?,
+            body: String,
+            requestType: String
+        ) = UnexpectedStoreResponse(
+            kind = kind,
+            statusCode = statusCode,
+            contentType = contentType,
+            requestType = requestType,
+            excerpt = UnexpectedStoreResponseExcerpt.from(body)
         )
 
         @JvmStatic
         fun requestType(method: Int, url: String): String = "${method.toMethodName()} ${url.toRestRoute()}"
+
+        private fun NetworkResponse.contentType(): String? =
+            headers?.entries?.firstOrNull { it.key.equals(CONTENT_TYPE, ignoreCase = true) }?.value
+
+        private fun NetworkResponse.body(): String = data?.let { String(it, charset()) }.orEmpty()
 
         private fun NetworkResponse.charset(): Charset = runCatching {
             Charset.forName(HttpHeaderParser.parseCharset(headers, Charsets.UTF_8.name()))
