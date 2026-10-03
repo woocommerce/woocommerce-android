@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.error.ApplicationPasswordsDisabledDialogFragment
@@ -129,6 +130,15 @@ class LoginSiteCredentialsFragment : Fragment() {
                 ?.takeIf { it.isNotEmpty() }
                 ?.let { viewModel.onWebAuthorizationUrlLoaded(it) }
                 ?: viewModel.onPasswordTutorialAborted()
+        }
+
+        parentFragmentManager.setFragmentResultListener(
+            ApplicationPasswordTutorialFragment.RETRY_LOGIN_RESULT,
+            viewLifecycleOwner
+        ) { _, result ->
+            result.parcelable<LoginUnexpectedResponseFailure>(
+                ApplicationPasswordTutorialFragment.RETRY_LOGIN_RESULT_FAILURE_KEY
+            )?.let { viewModel.onApplicationPasswordTutorialRetryRequested(it) }
         }
     }
 

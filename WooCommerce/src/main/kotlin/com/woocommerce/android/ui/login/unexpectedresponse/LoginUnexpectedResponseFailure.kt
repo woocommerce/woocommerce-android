@@ -25,20 +25,20 @@ data class LoginUnexpectedResponseFailure(
         APP_PASSWORD_GENERATION("app_password_generation"),
         USER_ROLE_CHECK("user_role_check"),
         WOO_PLUGIN_CHECK("woo_plugin_check"),
-        APP_PASSWORD_AUTHORIZATION_URL("app_password_authorization_url")
+        APP_PASSWORD_AUTHORIZATION_URL("app_password_authorization_url");
+
+        companion object {
+            fun of(step: CookieNonceLoginStep) = when (step) {
+                CookieNonceLoginStep.LOGIN_PAGE -> LOGIN_PAGE
+                CookieNonceLoginStep.CREDENTIALS_SUBMISSION -> CREDENTIALS_SUBMISSION
+                CookieNonceLoginStep.DASHBOARD_VERIFICATION -> DASHBOARD_VERIFICATION
+                CookieNonceLoginStep.NONCE_RETRIEVAL -> NONCE_RETRIEVAL
+            }
+        }
     }
 
     companion object {
         fun siteCredentials(step: CookieNonceLoginStep, response: UnexpectedStoreResponse) =
-            LoginUnexpectedResponseFailure(
-                flow = Flow.SITE_CREDENTIALS,
-                step = when (step) {
-                    CookieNonceLoginStep.LOGIN_PAGE -> Step.LOGIN_PAGE
-                    CookieNonceLoginStep.CREDENTIALS_SUBMISSION -> Step.CREDENTIALS_SUBMISSION
-                    CookieNonceLoginStep.DASHBOARD_VERIFICATION -> Step.DASHBOARD_VERIFICATION
-                    CookieNonceLoginStep.NONCE_RETRIEVAL -> Step.NONCE_RETRIEVAL
-                },
-                response = response
-            )
+            LoginUnexpectedResponseFailure(flow = Flow.SITE_CREDENTIALS, step = Step.of(step), response = response)
     }
 }
