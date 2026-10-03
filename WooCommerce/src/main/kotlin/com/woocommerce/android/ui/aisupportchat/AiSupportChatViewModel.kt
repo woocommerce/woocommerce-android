@@ -412,7 +412,7 @@ class AiSupportChatViewModel @Inject constructor(
                 messages = listOf(greetingMessage()),
                 selectedIssueType = SupportIssueType.OTHER,
                 diagnosticResult = result,
-                connectivityDiagnosticLog = checks.toConnectivityDiagnosticLog(),
+                diagnosticLog = checks.toConnectivityDiagnosticLog(),
                 hasProceededToChat = true,
                 canPersistChatHistory = accountRepository.isUserLoggedIn(),
                 showSendError = false
@@ -949,7 +949,7 @@ class AiSupportChatViewModel @Inject constructor(
             siteAddress = siteAddress,
             hasReceivedBotResponse = _viewState.value.hasReceivedBotResponse,
             ticketAnalyticsContext = supportArea.toTicketAnalyticsContext(_viewState.value.entryPoint),
-            diagnosticLog = _viewState.value.connectivityDiagnosticLog
+            diagnosticLog = _viewState.value.diagnosticLog
         )
     }
 
@@ -1055,7 +1055,7 @@ data class AiSupportChatViewState(
     val selectedIssueLabel: String? = null,
     val launchExtraTags: List<String> = emptyList(),
     val diagnosticResult: DiagnosticResult? = null,
-    val connectivityDiagnosticLog: String? = null,
+    val diagnosticLog: String? = null,
     val diagnosticSuggestedActionOverride: SuggestedFixAction? = null,
     val isRunningDiagnostics: Boolean = false,
     val isLoadingHistory: Boolean = false,
