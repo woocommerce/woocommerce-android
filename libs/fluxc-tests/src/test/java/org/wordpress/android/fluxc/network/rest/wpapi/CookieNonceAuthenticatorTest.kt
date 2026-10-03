@@ -63,6 +63,22 @@ class CookieNonceAuthenticatorTest {
     }
 
     @Test
+    fun `given a login step fails with a page, when authenticating, then keep the step and its details`() = test {
+        whenever(nonceClient.requestNonce(ENDPOINTS, USERNAME, PASSWORD)).thenReturn(
+            nonceFailure().copy(
+                unexpectedStoreResponse = UNEXPECTED_RESPONSE,
+                step = Nonce.CookieNonceLoginStep.NONCE_RETRIEVAL
+            )
+        )
+
+        val actual = subject.authenticate(ENDPOINTS, USERNAME, PASSWORD)
+
+        val error = assertIs<CookieNonceAuthenticator.CookieNonceAuthenticationResult.Error>(actual)
+        assertEquals(UNEXPECTED_RESPONSE, error.unexpectedStoreResponse)
+        assertEquals(Nonce.CookieNonceLoginStep.NONCE_RETRIEVAL, error.step)
+    }
+
+    @Test
     fun `given initial nonce acquisition fails, when making a protected request, then return before REST`() = test {
         val site = site()
         whenever(nonceClient.getNonce(SITE_URL, USERNAME)).thenReturn(null)
