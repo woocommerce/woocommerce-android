@@ -863,6 +863,30 @@ class NonceRestClientTest {
     }
 
     @Test
+    fun `given a failure at each login step, when requesting a nonce, then the failure keeps its step`() = test {
+        givenGet(DEFAULT_LOGIN_URL, error(403, FIREWALL_PAGE, HTML_HEADERS))
+        val loginPage = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+        assertEquals(Nonce.CookieNonceLoginStep.LOGIN_PAGE, loginPage.step)
+
+        givenLoginForm(DEFAULT_LOGIN_URL)
+        givenCredentialResponse(DEFAULT_LOGIN_URL, DEFAULT_NONCE_URL, WPAPIResponse.Success(FIREWALL_PAGE, emptyList()))
+        val credentials = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+        assertEquals(Nonce.CookieNonceLoginStep.CREDENTIALS_SUBMISSION, credentials.step)
+
+        givenCredentialRedirect(DEFAULT_LOGIN_URL, CUSTOM_NONCE_URL, CUSTOM_NONCE_URL)
+        givenGet(CUSTOM_ADMIN_URL, WPAPIResponse.Success(HOME_PAGE, emptyList()))
+        val dashboard = assertIs<Nonce.FailedRequest>(
+            subject.requestNonce(MANUAL_ADMIN_ENDPOINTS, USERNAME, PASSWORD)
+        )
+        assertEquals(Nonce.CookieNonceLoginStep.DASHBOARD_VERIFICATION, dashboard.step)
+
+        givenCredentialRedirect(DEFAULT_LOGIN_URL, DEFAULT_NONCE_URL, DEFAULT_NONCE_URL)
+        givenGet(DEFAULT_NONCE_URL, WPAPIResponse.Success(FIREWALL_PAGE, emptyList()))
+        val nonce = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+        assertEquals(Nonce.CookieNonceLoginStep.NONCE_RETRIEVAL, nonce.step)
+    }
+
+    @Test
     fun `given redirects the login can't follow, when requesting a nonce, then keep the redirect details`() = test {
         givenGet(DEFAULT_LOGIN_URL, redirect(SSO_LOGIN_URL))
         val loginPage = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
