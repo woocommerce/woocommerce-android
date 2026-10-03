@@ -408,6 +408,8 @@
     <string name="login_site_credentials_fetching_site_failed">An error occurred while fetching your website</string>
     <string name="login_site_credentials_fetching_site">Fetching site…</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Unable to login because application password creation is not approved.</string>
+    <string name="login_unexpected_response_title">Unable to log in</string>
+    <string name="login_unexpected_response_message">Your store returned an unexpected response, so we couldn\'t finish logging you in. Try again or contact support for help.</string>
     <string name="login_app_login_malformed_link">We couldn\'t process your app login request</string>
     <string name="login_jetpack_connection_create_account">If you don\'t have an account, we\'ll use this email to create one.</string>
     <string name="login_wpcom_connection_consent">%1$s, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
