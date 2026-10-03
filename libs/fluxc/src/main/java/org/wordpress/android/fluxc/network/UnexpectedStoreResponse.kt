@@ -1,17 +1,20 @@
 package org.wordpress.android.fluxc.network
 
+import android.os.Parcelable
 import com.android.volley.NetworkResponse
 import com.android.volley.toolbox.HttpHeaderParser
+import kotlinx.parcelize.Parcelize
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.nio.charset.Charset
 
+@Parcelize
 data class UnexpectedStoreResponse(
     val kind: UnexpectedStoreResponseKind,
     val statusCode: Int,
     val contentType: String?,
     val requestType: String,
     val excerpt: String?
-) {
+) : Parcelable {
     companion object {
         @JvmStatic
         fun from(statusCode: Int, contentType: String?, body: String, requestType: String): UnexpectedStoreResponse? {
