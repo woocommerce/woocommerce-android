@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResp
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatSupportArea
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
@@ -81,6 +82,7 @@ class AiSupportChatViewModel @Inject constructor(
             is AiSupportChatLaunchMode.PreLogin -> startFromPreLogin()
             is AiSupportChatLaunchMode.ConnectivityTool -> startFromConnectivityTool(launchMode.checks)
             is AiSupportChatLaunchMode.StoreConnectionError -> startFromStoreConnectionError()
+            is AiSupportChatLaunchMode.LoginUnexpectedResponse -> startFromLoginUnexpectedResponse(launchMode.failure)
             is AiSupportChatLaunchMode.Resume -> resumeChat(launchMode)
         }
     }
@@ -445,6 +447,32 @@ class AiSupportChatViewModel @Inject constructor(
         }
         launch {
             sendMessage(resourceProvider.getString(R.string.ai_support_chat_store_connection_error_message))
+        }
+    }
+
+    private fun startFromLoginUnexpectedResponse(failure: LoginUnexpectedResponseFailure) {
+        val result = DiagnosticResult(
+            issueType = SupportIssueType.OTHER,
+            statuses = listOf(
+                DiagnosticStatus(
+                    test = DiagnosticTest.STORE_CONNECTION,
+                    status = TestStatus.Failed(technicalDetails = failure.supportDetails)
+                )
+            )
+        )
+        _viewState.update {
+            it.copy(
+                input = resourceProvider.getString(R.string.ai_support_chat_login_unexpected_response_message),
+                messages = listOf(greetingMessage()),
+                selectedIssueType = SupportIssueType.OTHER,
+                diagnosticResult = result,
+                diagnosticLog = failure.supportDetails,
+                launchExtraTags = listOf(LoginUnexpectedResponseFailure.SUPPORT_TAG),
+                hasProceededToChat = true,
+                hasStartedChat = true,
+                canPersistChatHistory = accountRepository.isUserLoggedIn(),
+                showSendError = false
+            )
         }
     }
 
@@ -1217,6 +1245,7 @@ private val AiSupportChatLaunchMode.entryPoint: AiSupportChatEntryPoint
         is AiSupportChatLaunchMode.PreLogin -> AiSupportChatEntryPoint.PRE_LOGIN
         is AiSupportChatLaunchMode.ConnectivityTool -> AiSupportChatEntryPoint.CONNECTIVITY_TOOL
         is AiSupportChatLaunchMode.StoreConnectionError -> AiSupportChatEntryPoint.STORE_CONNECTION_ERROR
+        is AiSupportChatLaunchMode.LoginUnexpectedResponse -> AiSupportChatEntryPoint.LOGIN_UNEXPECTED_RESPONSE
         is AiSupportChatLaunchMode.Resume -> AiSupportChatEntryPoint.CHAT_HISTORY
     }
 
