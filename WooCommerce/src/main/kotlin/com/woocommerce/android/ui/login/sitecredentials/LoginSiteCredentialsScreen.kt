@@ -29,6 +29,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -53,6 +54,7 @@ fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
             onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
             onStartWebAuthorizationClick = viewModel::onStartWebAuthorizationClick,
             onUnexpectedResponseRetryClick = viewModel::onUnexpectedResponseRetryClick,
+            onUnexpectedResponseContactSupportClick = viewModel::onUnexpectedResponseContactSupportClick,
             onUnexpectedResponseDismissClick = viewModel::onUnexpectedResponseDismissClick,
             onUnexpectedResponseBrowserLoginClick = viewModel::onUnexpectedResponseBrowserLoginClick
         )
@@ -73,6 +75,7 @@ fun LoginSiteCredentialsScreen(
     onErrorDialogDismissed: () -> Unit,
     onStartWebAuthorizationClick: () -> Unit,
     onUnexpectedResponseRetryClick: () -> Unit,
+    onUnexpectedResponseContactSupportClick: () -> Unit,
     onUnexpectedResponseDismissClick: () -> Unit,
     onUnexpectedResponseBrowserLoginClick: () -> Unit
 ) {
@@ -142,6 +145,16 @@ fun LoginSiteCredentialsScreen(
                 Text(
                     text = stringResource(id = R.string.continue_button)
                 )
+            }
+            if (viewState.formUnexpectedResponse != null) {
+                WCOutlinedButton(
+                    onClick = onUnexpectedResponseContactSupportClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                ) {
+                    Text(text = stringResource(id = R.string.login_unexpected_response_contact_support))
+                }
             }
             if (viewState.endpointRecovery == null && viewState.offersBrowserLogin) {
                 WCTextButton(
@@ -332,6 +345,7 @@ private fun LoginSiteCredentialsScreenPreview(viewState: LoginSiteCredentialsVie
             onErrorDialogDismissed = {},
             onStartWebAuthorizationClick = {},
             onUnexpectedResponseRetryClick = {},
+            onUnexpectedResponseContactSupportClick = {},
             onUnexpectedResponseDismissClick = {},
             onUnexpectedResponseBrowserLoginClick = {}
         )

@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseSupport
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker.Action
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
@@ -83,7 +84,8 @@ class SitePickerViewModel @Inject constructor(
     private val getWooVisibleSites: GetWooVisibleSites,
     private val visibleWooSitesDataStore: VisibleWooSitesDataStore,
     private val registerDevice: RegisterDevice,
-    private val unexpectedResponseTracker: LoginUnexpectedResponseTracker
+    private val unexpectedResponseTracker: LoginUnexpectedResponseTracker,
+    private val unexpectedResponseSupport: LoginUnexpectedResponseSupport
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
@@ -758,6 +760,15 @@ class SitePickerViewModel @Inject constructor(
                 setContinueInFlight(false)
             }
         }
+    }
+
+    fun onUnexpectedResponseContactSupportClick() {
+        val failure = _unexpectedResponse.value ?: return
+        unexpectedResponseTracker.trackActionTapped(failure, Action.CONTACT_SUPPORT)
+        _unexpectedResponse.value = null
+        triggerEvent(
+            unexpectedResponseSupport.contactSupportEvent(failure, getSelectedWooSite()?.url, HelpOrigin.LOGIN_EPILOGUE)
+        )
     }
 
     fun onUnexpectedResponseDismissClick() {
