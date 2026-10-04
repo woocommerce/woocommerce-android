@@ -1256,14 +1256,21 @@ switch_store() {
   use_store_group "$1"
   build_maestro_process_env
   use_all_flows
-  local store_host logged_in_host
-  store_host="$(url_host "${MAESTRO_WOO_JETPACK_STORE_URL:-}")"
+  local logged_in_host
   logged_in_host="$(adb -s "$DEVICE_SERIAL" shell cat "$STORE_MARKER" 2>/dev/null | tr -d '\r' || true)"
-  if [[ "$store_host" != "$logged_in_host" ]]; then
+  if [[ "$(url_host "${MAESTRO_WOO_JETPACK_STORE_URL:-}")" != "$logged_in_host" ]]; then
     echo "--- Clearing app data before the $1 store flows"
     adb -s "$DEVICE_SERIAL" shell pm clear "$APP_ID" >/dev/null
-    adb -s "$DEVICE_SERIAL" shell "echo '$store_host' > $STORE_MARKER" >/dev/null
+    remember_store
   fi
+}
+
+remember_store() {
+  adb -s "$DEVICE_SERIAL" shell "echo '$(url_host "${MAESTRO_WOO_JETPACK_STORE_URL:-}")' > $STORE_MARKER" >/dev/null
+}
+
+forget_store() {
+  adb -s "$DEVICE_SERIAL" shell rm -f "$STORE_MARKER" >/dev/null 2>&1 || true
 }
 
 run_index=0
@@ -1272,6 +1279,9 @@ for repeat_index in $(seq 1 "$REPEAT"); do
     if [[ "$(flow_store "$flow")" != "$ACTIVE_STORE" ]]; then
       switch_store "$(flow_store "$flow")"
     fi
+    # A flow that fails or is stopped half way can leave the app signed in to
+    # another site, so the marker names a store only between flows.
+    forget_store
     run_index=$((run_index + 1))
     base="$(basename "$flow" .yaml)"
     echo "[$run_index/$TOTAL_RUNS] $base (repeat $repeat_index/$REPEAT)"
@@ -1332,10 +1342,12 @@ for repeat_index in $(seq 1 "$REPEAT"); do
 
     RESULTS+=("$status|$repeat_index|$base|$duration|$media|$log_rel|$error|$recovery")
     echo "  $status in ${duration}s"
-    # Login flows can end signed in to another site, so the next flow signs in again.
-    if flow_has_any_tag "$flow" login; then
-      adb -s "$DEVICE_SERIAL" shell rm -f "$STORE_MARKER" >/dev/null 2>&1 || true
+    # Login flows and failed flows can end signed in to another site, so the next
+    # flow signs in again.
+    if flow_has_any_tag "$flow" login || [[ "$status" == "FAIL" ]]; then
       ACTIVE_STORE=""
+    else
+      remember_store
     fi
   done
 done

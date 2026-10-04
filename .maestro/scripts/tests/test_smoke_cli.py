@@ -207,6 +207,7 @@ class SmokeCliContractTest(unittest.TestCase):
         device_locale: str = "en-US",
         screenshot_names: tuple[str, ...] = (),
         device_store_host: str = "",
+        failing_flows: tuple[str, ...] = (),
     ) -> tuple[subprocess.CompletedProcess[str], str, Path]:
         temporary_directory = tempfile.TemporaryDirectory()
         self.addCleanup(temporary_directory.cleanup)
@@ -243,6 +244,7 @@ class SmokeCliContractTest(unittest.TestCase):
                 if screenshot_names
                 else ""
             )
+            + "".join(f"case \"$*\" in *{name}.yaml*) exit 1 ;; esac\n" for name in failing_flows)
             + (
                 f"if [ ! -f '{first_attempt_marker}' ]; then\n"
                 f"  : > '{first_attempt_marker}'\n"
@@ -648,6 +650,40 @@ class SmokeCliContractTest(unittest.TestCase):
             if line.startswith("ARGS:") or (line.startswith("ADB:") and "pm clear" in line)
         ]
         self.assertEqual(["login_successful", "clear app data", "hub_menu_settings"], events)
+
+    def test_the_flow_after_a_failed_flow_signs_in_again(self) -> None:
+        temporary_directory = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary_directory.cleanup)
+        report = Path(temporary_directory.name) / "report.xml"
+        report.write_text(
+            '<testsuites><testsuite name="previous run">'
+            '<testcase name="hub_menu_settings"><failure message="failed" /></testcase>'
+            '<testcase name="hub_menu_payments"><failure message="failed" /></testcase>'
+            "</testsuite></testsuites>",
+            encoding="utf-8",
+        )
+
+        result, args, _ = self.run_with_recorded_maestro_args(
+            "--device",
+            "emulator-5554",
+            "--rerun-failed",
+            str(report),
+            env_overrides={
+                "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
+                "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
+                "MAESTRO_WOO_LAB_WPCOM_PASSWORD": "lab-password",
+            },
+            device_store_host="lab.example.com",
+            failing_flows=("hub_menu_settings",),
+        )
+
+        self.assertEqual(result.returncode, 1, result.stderr)
+        events = [
+            "clear app data" if "pm clear" in line else Path(line.split()[-1]).stem
+            for line in args.splitlines()
+            if line.startswith("ARGS:") or (line.startswith("ADB:") and "pm clear" in line)
+        ]
+        self.assertEqual(["hub_menu_settings", "hub_menu_settings", "clear app data", "hub_menu_payments"], events)
 
     def test_rerun_skips_the_cleanup_testcase_and_fails_on_a_missing_report(self) -> None:
         temporary_directory = tempfile.TemporaryDirectory()
