@@ -87,6 +87,14 @@ tags:
 #
 # Assert each tile separately. A single alternation over several labels
 # passes when only one of them is on screen, which hides a missing tile.
+# Cards above this one can push the tile row under the bottom bar.
+- scrollUntilVisible:
+    element:
+      text: "Conversion"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to the stat tiles"
+
 - assertVisible:
     text: ".*Placed orders.*|.*Paid orders.*"
     label: "Orders stats tile is visible"
