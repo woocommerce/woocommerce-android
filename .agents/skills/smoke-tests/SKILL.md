@@ -27,6 +27,8 @@ Everything below the handoff — P2 ordering, store selection, seed/cleanup, ani
 
 Run `source .maestro/scripts/configure-toolchain.sh`. It installs the pinned Maestro 2.9.0 into the workspace, selects Java 21 and fails with a clear message when either is missing. Then run `command -v adb`; if adb is missing, tell the user to install the Android SDK platform-tools and stop.
 
+Each Bash call starts a new shell, so put `source .maestro/scripts/configure-toolchain.sh &&` in front of every later command that runs Maestro, the doctor or the runner.
+
 ### 2. Ensure an emulator is running
 
 Run `adb devices`. Count the lines whose second column is `device`.
@@ -60,7 +62,7 @@ Never commit `.env.local`. Never ask the user to paste secret values into chat. 
 Once steps 1–4 all pass, print the command the user should run:
 
 ```
-.maestro/scripts/run-smoke-tests.sh --profile phone-full --seed --device <serial>
+source .maestro/scripts/configure-toolchain.sh && .maestro/scripts/run-smoke-tests.sh --profile phone-full --seed --device <serial>
 ```
 
 Tell the user:

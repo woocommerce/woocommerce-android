@@ -22,9 +22,9 @@ Use this skill only for repairing existing Maestro smoke flows under `.maestro/f
 1. Confirm the target flow path exists under `.maestro/flows/`.
 2. Run syntax and coverage checks:
    - `.maestro/scripts/check-smoke-coverage.py`
-   - `maestro check-syntax <flow>`
+   - `source .maestro/scripts/configure-toolchain.sh && maestro check-syntax <flow>`
 3. Reproduce on a device:
-   - `.maestro/scripts/run-smoke-tests.sh --seed --include-tags flaky_quarantine --device <serial> <flow>`
+   - `source .maestro/scripts/configure-toolchain.sh && .maestro/scripts/run-smoke-tests.sh --seed --include-tags flaky_quarantine --device <serial> <flow>`
 4. At the failure point, use Maestro MCP `inspect_screen`.
 5. Compare the failing selector with the hierarchy:
    - Prefer `id:` selectors exposed through `testTag`.
@@ -32,9 +32,9 @@ Use this skill only for repairing existing Maestro smoke flows under `.maestro/f
    - Do not add `point:` selectors unless the flow comment explains why no semantic selector exists.
 6. Patch the smallest file set.
 7. Rerun the single flow with repeat evidence:
-   - Non-destructive flow: `.maestro/scripts/run-smoke-tests.sh --repeat 3 --device <serial> <flow>`
+   - Non-destructive flow: `source .maestro/scripts/configure-toolchain.sh && .maestro/scripts/run-smoke-tests.sh --repeat 3 --device <serial> <flow>`
    - Destructive flow, which uses up the fixtures of one seed, so it runs once per seed:
-     `for i in 1 2 3; do .maestro/scripts/run-smoke-tests.sh --seed --device <serial> <flow> || break; done`
+     `source .maestro/scripts/configure-toolchain.sh && for i in 1 2 3; do .maestro/scripts/run-smoke-tests.sh --seed --device <serial> <flow> || break; done`
 8. Summarize:
    - root cause,
    - files changed,
