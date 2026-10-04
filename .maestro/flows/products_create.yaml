@@ -154,10 +154,9 @@ tags:
     timeout: 15000
 - copyTextFrom:
     id: "visualEditor"
-- evalScript: |
-    if (!maestro.copiedText || !maestro.copiedText.includes('Maestro description ' + String(SUITE_RUN_ID))) {
-        throw new Error('Draft product did not retain its main description');
-    }
+- assertTrue:
+    condition: ${!!maestro.copiedText && maestro.copiedText.includes('Maestro description ' + String(SUITE_RUN_ID))}
+    label: Draft product keeps its main description
 - tapOn:
     point: "7%,8%"
     retryTapIfNoChange: true
@@ -920,10 +919,9 @@ tags:
     timeout: 15000
 - copyTextFrom:
     id: "visualEditor"
-- evalScript: |
-    if (!maestro.copiedText || !maestro.copiedText.includes('Maestro description ' + String(SUITE_RUN_ID))) {
-        throw new Error('Published product did not retain its main description');
-    }
+- assertTrue:
+    condition: ${!!maestro.copiedText && maestro.copiedText.includes('Maestro description ' + String(SUITE_RUN_ID))}
+    label: Published product keeps its main description
 - tapOn:
     point: "7%,8%"
     retryTapIfNoChange: true
@@ -946,12 +944,14 @@ tags:
     visible:
       id: "product_regular_price"
     timeout: 15000
+# These fields keep their value in an inner edit_text; the outer view has no text.
 - copyTextFrom:
-    id: "product_regular_price"
-- evalScript: |
-    if (!maestro.copiedText || maestro.copiedText.trim().replace(',', '.') !== '19.99') {
-        throw new Error('Published product did not retain regular price 19.99');
-    }
+    id: "edit_text"
+    childOf:
+      id: "product_regular_price"
+- assertTrue:
+    condition: ${!!maestro.copiedText && maestro.copiedText.trim().replace(',', '.') == '19.99'}
+    label: Published product keeps regular price 19.99
 - back
 - extendedWaitUntil:
     visible: "Price"
@@ -971,21 +971,23 @@ tags:
     timeout: 15000
 
 - copyTextFrom:
-    id: "product_sku"
-- evalScript: |
-    if (!maestro.copiedText || !maestro.copiedText.includes('SMOKE-' + String(SUITE_RUN_ID))) {
-        throw new Error('Published product did not retain its run-owned SKU');
-    }
+    id: "edit_text"
+    childOf:
+      id: "product_sku"
+- assertTrue:
+    condition: ${!!maestro.copiedText && maestro.copiedText.includes('SMOKE-' + String(SUITE_RUN_ID))}
+    label: Published product keeps its run-owned SKU
 - assertVisible:
     id: "manageStock_switch"
     checked: true
     label: "Published product retains managed stock"
 - copyTextFrom:
-    id: "product_stock_quantity"
-- evalScript: |
-    if (!maestro.copiedText || !maestro.copiedText.includes('7')) {
-        throw new Error('Published product did not retain stock quantity 7');
-    }
+    id: "edit_text"
+    childOf:
+      id: "product_stock_quantity"
+- assertTrue:
+    condition: ${!!maestro.copiedText && maestro.copiedText.includes('7')}
+    label: Published product keeps stock quantity 7
 - takeScreenshot: product_persisted_inventory
 - back
 
@@ -1006,26 +1008,22 @@ tags:
       id: "product_weight"
     timeout: 15000
 
-- copyTextFrom: { id: "product_weight" }
-- evalScript: |
-    if (!maestro.copiedText || !maestro.copiedText.includes('1.25')) {
-        throw new Error('Published product did not retain weight 1.25');
-    }
-- copyTextFrom: { id: "product_length" }
-- evalScript: |
-    if (!maestro.copiedText || !maestro.copiedText.includes('2.5')) {
-        throw new Error('Published product did not retain length 2.5');
-    }
-- copyTextFrom: { id: "product_width" }
-- evalScript: |
-    if (!maestro.copiedText || !maestro.copiedText.includes('3.75')) {
-        throw new Error('Published product did not retain width 3.75');
-    }
-- copyTextFrom: { id: "product_height" }
-- evalScript: |
-    if (!maestro.copiedText || !maestro.copiedText.includes('4.5')) {
-        throw new Error('Published product did not retain height 4.5');
-    }
+- copyTextFrom: { id: "edit_text", childOf: { id: "product_weight" } }
+- assertTrue:
+    condition: ${!!maestro.copiedText && maestro.copiedText.includes('1.25')}
+    label: Published product keeps weight 1.25
+- copyTextFrom: { id: "edit_text", childOf: { id: "product_length" } }
+- assertTrue:
+    condition: ${!!maestro.copiedText && maestro.copiedText.includes('2.5')}
+    label: Published product keeps length 2.5
+- copyTextFrom: { id: "edit_text", childOf: { id: "product_width" } }
+- assertTrue:
+    condition: ${!!maestro.copiedText && maestro.copiedText.includes('3.75')}
+    label: Published product keeps width 3.75
+- copyTextFrom: { id: "edit_text", childOf: { id: "product_height" } }
+- assertTrue:
+    condition: ${!!maestro.copiedText && maestro.copiedText.includes('4.5')}
+    label: Published product keeps height 4.5
 - takeScreenshot: product_persisted_shipping
 - back
 
@@ -1047,10 +1045,9 @@ tags:
     timeout: 15000
 - copyTextFrom:
     id: "upsells_count"
-- evalScript: |
-    if (!maestro.copiedText || !maestro.copiedText.trim().startsWith('1')) {
-        throw new Error('Published product did not retain its Upsell');
-    }
+- assertTrue:
+    condition: ${!!maestro.copiedText && maestro.copiedText.trim().startsWith('1')}
+    label: Published product keeps its Upsell
 
 # A count of one says an Upsell survived, not which one. Open the list
 # and check the seeded run-owned product is the one that is attached.
@@ -1201,10 +1198,9 @@ tags:
     timeout: 15000
 - copyTextFrom:
     id: "visualEditor"
-- evalScript: |
-    if (!maestro.copiedText || !maestro.copiedText.includes('Maestro short description ' + String(SUITE_RUN_ID))) {
-        throw new Error('Published product did not retain its short description');
-    }
+- assertTrue:
+    condition: ${!!maestro.copiedText && maestro.copiedText.includes('Maestro short description ' + String(SUITE_RUN_ID))}
+    label: Published product keeps its short description
 - tapOn:
     point: "7%,8%"
     retryTapIfNoChange: true

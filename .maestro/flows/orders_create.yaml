@@ -301,10 +301,9 @@ tags:
     label: "Product discount is reflected in the order"
 - copyTextFrom:
     id: "order_product_discount_amount"
-- evalScript: |
-    if (!maestro.copiedText || maestro.copiedText.trim().charAt(0) !== '-') {
-        throw new Error('Product discount amount is missing from the order');
-    }
+- assertTrue:
+    condition: ${!!maestro.copiedText && maestro.copiedText.trim().charAt(0) == '-'}
+    label: Product discount amount is on the order
 
 # ── Add a custom amount (fixed, with a name) ──────────────────────────
 - scrollUntilVisible:

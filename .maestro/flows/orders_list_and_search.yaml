@@ -54,11 +54,9 @@ tags:
           childOf:
             id: "order_list"
           index: 0
-      - evalScript: |
-          var text = maestro.copiedText;
-          if (!text || text.trim() === '') {
-              throw new Error('Order number text is empty');
-          }
+      - assertTrue:
+          condition: ${!!maestro.copiedText && maestro.copiedText.trim() != ''}
+          label: Order number text is not empty
       - evalScript: ${output.orderSearchText = maestro.copiedText.trim()}
       # Search matches the numeric order id, so strip the leading "#" for the query
       # while keeping the full "#<n>" text for the row assertions below.

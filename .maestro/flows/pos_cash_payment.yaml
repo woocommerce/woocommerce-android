@@ -59,11 +59,9 @@ tags:
 
 - copyTextFrom:
     id: "woo_pos_cart_items_count"
-- evalScript: |
-    var count = parseInt(maestro.copiedText, 10);
-    if (isNaN(count) || count < 1) {
-        throw new Error('Owned POS cart should contain a product');
-    }
+- assertTrue:
+    condition: ${parseInt(maestro.copiedText, 10) >= 1}
+    label: Owned POS cart contains a product
 
 - extendedWaitUntil:
     visible:
