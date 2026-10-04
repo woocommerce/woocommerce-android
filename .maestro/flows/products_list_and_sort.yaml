@@ -143,3 +143,19 @@ tags:
     timeout: 10000
 - takeScreenshot: products_filters
 - back
+
+# The app keeps the chosen sort, so put the list back on its default A to Z order
+# for the flows that open the first product.
+- tapOn:
+    id: "product_list_sort"
+    retryTapIfNoChange: true
+    label: "Reopen product sorting"
+- extendedWaitUntil:
+    visible: "Title: A to Z"
+    timeout: 10000
+- tapOn:
+    text: "Title: A to Z"
+    label: "Restore the default A to Z sort"
+- extendedWaitUntil:
+    visible: "A to Z"
+    timeout: 15000
