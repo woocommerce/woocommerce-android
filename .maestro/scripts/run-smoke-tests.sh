@@ -861,10 +861,10 @@ collapse_system_ui() {
 
 cleanup_on_exit() {
   local exit_code=$?
-  if [[ -n "$RECORDER_PID" ]]; then
-    stop_screenrecord
-    wait "$RECORDER_PID" 2>/dev/null || true
-  fi
+  # Attempts record from a command substitution, so the recorder's PID never
+  # reaches this shell; stop it on the device and drop unpulled recordings.
+  stop_screenrecord
+  adb -s "$DEVICE_SERIAL" shell "rm -f /sdcard/maestro_*.mp4" >/dev/null 2>&1 || true
   if [[ "$CLEANUP_DONE" != "yes" && "$CLEANUP" == "yes" && "$SEED" == "yes" && -f "$MANIFEST_FILE" ]]; then
     if ! "$SEED_SCRIPT" cleanup --manifest "$MANIFEST_FILE" --store lab; then
       exit_code=1
@@ -874,7 +874,10 @@ cleanup_on_exit() {
   restore_autofill_service
   exit "$exit_code"
 }
-trap cleanup_on_exit EXIT INT TERM
+trap cleanup_on_exit EXIT
+# Exiting runs the EXIT trap once; trapping INT and TERM with it too ran it twice.
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 capture_animation_settings
 disable_autofill_service
