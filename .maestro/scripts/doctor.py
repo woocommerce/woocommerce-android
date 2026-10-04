@@ -156,6 +156,17 @@ def toolchain_check() -> Check:
     return Check("fail", message)
 
 
+def selection_checks(flows: list[Path], args: argparse.Namespace) -> list[Check]:
+    """Report the selections the runner refuses before it runs any flow."""
+    destructive = any("destructive" in flow_tags(flow) for flow in flows)
+    checks = []
+    if destructive and not args.seed:
+        checks.append(Check("fail", "destructive flows are selected, so the run needs --seed"))
+    if destructive and args.store == "shared":
+        checks.append(Check("fail", "destructive flows are refused on the shared store"))
+    return checks
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate Maestro smoke-test prerequisites without running flows.")
     parser.add_argument("--profile", choices=sorted(PROFILES), default="core")
@@ -200,6 +211,7 @@ def main() -> int:
 
     flows = selected_flows(include_tags, exclude_tags)
     checks.append(Check("ok" if flows else "fail", f"{len(flows)} flow(s) selected for profile {args.profile}"))
+    checks.extend(selection_checks(flows, args))
 
     stores = [store for store in ("lab", "shared") if any(flow_store(flow, args.store) == store for flow in flows)]
     for store in stores:

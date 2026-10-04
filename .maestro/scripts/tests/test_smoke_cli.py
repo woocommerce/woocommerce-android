@@ -408,6 +408,44 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("[FAIL] 0 flow(s) selected for profile core", result.stdout)
 
+    def test_doctor_reports_destructive_selections_the_runner_refuses(self) -> None:
+        cases = [
+            (
+                ["--profile", "phone-full"],
+                "[FAIL] destructive flows are selected, so the run needs --seed",
+            ),
+            (
+                ["--profile", "phone-full", "--seed", "--store", "shared"],
+                "[FAIL] destructive flows are refused on the shared store",
+            ),
+        ]
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            temporary_path = Path(temporary_directory)
+            fake_bin = temporary_path / "bin"
+            fake_bin.mkdir()
+            for name, body in {
+                "maestro": "#!/bin/sh\nprintf '%s\\n' '2.9.0'\n",
+                "java": "#!/bin/sh\nprintf '%s\\n' 'openjdk version \"21.0.8\"' >&2\n",
+                "adb": "#!/bin/sh\nprintf 'List of devices attached\\n'\n",
+            }.items():
+                executable = fake_bin / name
+                executable.write_text(body)
+                executable.chmod(0o755)
+            env = {**os.environ, "PATH": f"{fake_bin}:/usr/bin:/bin"}
+            for args, expected in cases:
+                with self.subTest(args=args):
+                    result = subprocess.run(
+                        [str(DOCTOR), *args, "--env-file", str(temporary_path / "missing.env")],
+                        cwd=REPO_ROOT,
+                        env=env,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+
+                    self.assertEqual(result.returncode, 1)
+                    self.assertIn(expected, result.stdout)
+
     def test_doctor_reports_a_toolchain_mismatch(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             temporary_path = Path(temporary_directory)
