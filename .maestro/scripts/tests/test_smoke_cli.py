@@ -297,6 +297,10 @@ class SmokeCliContractTest(unittest.TestCase):
         )
         adb.chmod(0o755)
 
+        seed_script = temporary_path / "seed-fixtures"
+        seed_script.write_text(f"#!/bin/sh\nprintf 'SEED:%s\\n' \"$1\" >> '{maestro_args}'\n")
+        seed_script.chmod(0o755)
+
         env = {key: value for key, value in os.environ.items() if not key.startswith("MAESTRO_WOO_")}
         env.update(
             {
@@ -304,6 +308,7 @@ class SmokeCliContractTest(unittest.TestCase):
                 "PATH": f"{fake_bin}:/usr/bin:/bin",
                 "WOO_MAESTRO_ENV_FILE": str(temporary_path / "missing.env"),
                 "WOO_MAESTRO_OUTPUT_DIR": str(temporary_path / "output"),
+                "WOO_MAESTRO_SEED_SCRIPT": str(seed_script),
                 **env_overrides,
             }
         )
@@ -506,7 +511,9 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertIn("R5CT1234ABC is not an emulator. Pass --device R5CT1234ABC", result.stderr)
 
     def test_seed_request_does_not_create_unused_fixtures_without_destructive_flows(self) -> None:
-        result, _ = self.run_with_order_recording_tools(
+        result, args, _ = self.run_with_recorded_maestro_args(
+            "--device",
+            "emulator-5554",
             "--store",
             "shared",
             "--seed",
@@ -518,8 +525,10 @@ class SmokeCliContractTest(unittest.TestCase):
             },
         )
 
-        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("No destructive flows selected; skipping fixture seeding", result.stdout)
+        self.assertIn("login_successful", args)
+        self.assertNotIn("SEED:", args)
 
     def test_generic_credentials_cannot_satisfy_a_scoped_lab_selection(self) -> None:
         result, adb_marker = self.run_with_fake_device_tools(
