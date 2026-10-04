@@ -1324,6 +1324,11 @@ for repeat_index in $(seq 1 "$REPEAT"); do
 
     RESULTS+=("$status|$repeat_index|$base|$duration|$media|$log_rel|$error|$recovery")
     echo "  $status in ${duration}s"
+    # Login flows can end signed in to another site, so the next flow signs in again.
+    if flow_has_any_tag "$flow" login; then
+      adb -s "$DEVICE_SERIAL" shell rm -f "$STORE_MARKER" >/dev/null 2>&1 || true
+      ACTIVE_STORE=""
+    fi
   done
 done
 

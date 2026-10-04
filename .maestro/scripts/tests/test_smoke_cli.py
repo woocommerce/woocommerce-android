@@ -267,6 +267,10 @@ class SmokeCliContractTest(unittest.TestCase):
             f"  printf '%s\\n' \"$*\" | sed -E \"s/.*echo '([^']*)'.*/\\1/\" > '{store_marker}'\n"
             "  exit 0\n"
             "fi\n"
+            "if printf '%s\\n' \"$*\" | grep -q 'rm -f /data/local/tmp/woo-maestro-store'; then\n"
+            f"  rm -f '{store_marker}'\n"
+            "  exit 0\n"
+            "fi\n"
             "if printf '%s\\n' \"$*\" | grep -qE 'secure autofill_service|pm clear'; then\n"
             f"  printf 'ADB:%s\\n' \"$*\" >> '{maestro_args}'\n"
             "fi\n"
@@ -612,6 +616,39 @@ class SmokeCliContractTest(unittest.TestCase):
 
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertNotIn("pm clear", args)
+
+    def test_the_flow_after_a_login_flow_signs_in_again(self) -> None:
+        temporary_directory = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary_directory.cleanup)
+        report = Path(temporary_directory.name) / "report.xml"
+        report.write_text(
+            '<testsuites><testsuite name="previous run">'
+            '<testcase name="login_successful"><failure message="failed" /></testcase>'
+            '<testcase name="hub_menu_settings"><failure message="failed" /></testcase>'
+            "</testsuite></testsuites>",
+            encoding="utf-8",
+        )
+
+        result, args, _ = self.run_with_recorded_maestro_args(
+            "--device",
+            "emulator-5554",
+            "--rerun-failed",
+            str(report),
+            env_overrides={
+                "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
+                "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
+                "MAESTRO_WOO_LAB_WPCOM_PASSWORD": "lab-password",
+            },
+            device_store_host="lab.example.com",
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        events = [
+            "clear app data" if "pm clear" in line else Path(line.split()[-1]).stem
+            for line in args.splitlines()
+            if line.startswith("ARGS:") or (line.startswith("ADB:") and "pm clear" in line)
+        ]
+        self.assertEqual(["login_successful", "clear app data", "hub_menu_settings"], events)
 
     def test_non_english_device_locale_fails_before_maestro_runs(self) -> None:
         result, args, _ = self.run_with_recorded_maestro_args(
