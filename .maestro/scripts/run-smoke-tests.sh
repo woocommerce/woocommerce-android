@@ -51,6 +51,7 @@ EXCLUDE_TAGS=("flaky_quarantine")
 INCLUDE_TAGS_EXPLICIT="no"
 EXCLUDE_TAGS_EXPLICIT="no"
 INCLUDE_QUARANTINE="no"
+TAGS_AFTER_PROFILE="no"
 PLAN="no"
 
 usage() {
@@ -131,6 +132,7 @@ apply_profile() {
   done <<< "$profile_output"
   INCLUDE_TAGS_EXPLICIT="yes"
   EXCLUDE_TAGS_EXPLICIT="yes"
+  TAGS_AFTER_PROFILE="no"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -169,6 +171,9 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     -t|--tag|--include-tags)
+      if [[ -n "$PROFILE" ]]; then
+        TAGS_AFTER_PROFILE="yes"
+      fi
       if [[ "$INCLUDE_TAGS_EXPLICIT" == "no" ]]; then
         INCLUDE_TAGS=()
         INCLUDE_TAGS_EXPLICIT="yes"
@@ -177,6 +182,9 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     --exclude-tags)
+      if [[ -n "$PROFILE" ]]; then
+        TAGS_AFTER_PROFILE="yes"
+      fi
       if [[ "$EXCLUDE_TAGS_EXPLICIT" == "no" ]]; then
         EXCLUDE_TAGS=()
         EXCLUDE_TAGS_EXPLICIT="yes"
@@ -1074,19 +1082,33 @@ render_command() {
   done
 }
 
+# A profile that later tag options changed is written as the tags it resolved to.
 selection_args() {
-  if [[ -n "$PROFILE" ]]; then
+  if [[ -n "$PROFILE" && "$TAGS_AFTER_PROFILE" == "no" ]]; then
     printf '%s\0%s\0' --profile "$PROFILE"
+    if [[ "$INCLUDE_QUARANTINE" == "yes" ]]; then
+      printf '%s\0' --include-quarantine
+    fi
+    return
+  fi
+  if [[ ${#INCLUDE_TAGS[@]} -gt 0 ]]; then
+    printf '%s\0%s\0' --include-tags "$(join_csv "${INCLUDE_TAGS[@]}")"
+  fi
+  if [[ ${#EXCLUDE_TAGS[@]} -gt 0 ]]; then
+    printf '%s\0%s\0' --exclude-tags "$(join_csv "${EXCLUDE_TAGS[@]}")"
   else
-    local include_csv="" exclude_csv=""
-    if [[ ${#INCLUDE_TAGS[@]} -gt 0 ]]; then
-      include_csv="$(join_csv "${INCLUDE_TAGS[@]}")"
-    fi
-    if [[ ${#EXCLUDE_TAGS[@]} -gt 0 ]]; then
-      exclude_csv="$(join_csv "${EXCLUDE_TAGS[@]}")"
-    fi
-    printf '%s\0%s\0' --include-tags "$include_csv"
-    printf '%s\0%s\0' --exclude-tags "$exclude_csv"
+    # The runner rejects an empty --exclude-tags, and without the option it skips
+    # flaky_quarantine.
+    printf '%s\0' --include-quarantine
+  fi
+}
+
+# A single flow or a rerun of an earlier report narrows the tag selection.
+target_args() {
+  if [[ -n "$TARGET" ]]; then
+    printf '%s\0' "$TARGET"
+  elif [[ -n "$RERUN_FAILED_FILE" ]]; then
+    printf '%s\0%s\0' --rerun-failed "$RERUN_FAILED_FILE"
   fi
 }
 
@@ -1112,6 +1134,9 @@ common_run_args() {
 build_current_command() {
   local args=(".maestro/scripts/run-smoke-tests.sh")
   local value
+  while IFS= read -r -d '' value; do
+    args+=("$value")
+  done < <(target_args)
   while IFS= read -r -d '' value; do
     args+=("$value")
   done < <(selection_args)

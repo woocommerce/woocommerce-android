@@ -710,6 +710,35 @@ class SmokeCliContractTest(unittest.TestCase):
         ]
         self.assertEqual(["hub_menu_settings", "hub_menu_settings", "clear app data", "hub_menu_payments"], events)
 
+    def test_report_commands_repeat_the_selection_that_ran(self) -> None:
+        lab = {
+            "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
+            "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
+            "MAESTRO_WOO_LAB_WPCOM_PASSWORD": "lab-password",
+        }
+        cases = [
+            (
+                ("--include-tags", "smoke_core", "--include-quarantine", ".maestro/flows/login_successful.yaml"),
+                ".maestro/scripts/run-smoke-tests.sh .maestro/flows/login_successful.yaml "
+                "--include-tags smoke_core --include-quarantine --device emulator-5554",
+            ),
+            (
+                ("--profile", "core", "--exclude-tags", "dashboard", ".maestro/flows/login_successful.yaml"),
+                ".maestro/scripts/run-smoke-tests.sh .maestro/flows/login_successful.yaml "
+                "--include-tags smoke_core --exclude-tags flaky_quarantine,android_system,dashboard --device emulator-5554",
+            ),
+        ]
+        for args, expected in cases:
+            with self.subTest(args=args):
+                result, _, output = self.run_with_recorded_maestro_args(
+                    "--device", "emulator-5554", *args, env_overrides=lab
+                )
+
+                self.assertEqual(result.returncode, 0, result.stderr)
+                report = next(output.glob("*/report.html")).read_text(encoding="utf-8")
+                self.assertIn(expected, report)
+                self.assertNotIn("--exclude-tags &#39;", report)
+
     def test_rerun_skips_the_cleanup_testcase_and_fails_on_a_missing_report(self) -> None:
         temporary_directory = tempfile.TemporaryDirectory()
         self.addCleanup(temporary_directory.cleanup)
