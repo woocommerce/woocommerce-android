@@ -217,10 +217,12 @@ tags:
 - takeScreenshot: order_create_with_product
 
 # ── Adjust quantity and apply a product discount ─────────────────────
-# The order sync overlay catches taps until it has faded out.
+# The order sync overlay catches taps until it has faded out, and the sync
+# starts after a 500 ms debounce. Create is enabled only once both are over.
 - extendedWaitUntil:
-    notVisible:
-      id: "order_update_overlay"
+    visible:
+      id: "menu_create"
+      enabled: true
     timeout: 20000
     label: "Wait for the order sync to finish"
 - tapOn:
@@ -240,8 +242,17 @@ tags:
 
 - assertVisible:
     text: ".*2 ×.*|.*2 x.*"
+    childOf:
+      id: "order_product_card"
+      index: 0
     label: "Quantity increased to two"
 
+- extendedWaitUntil:
+    visible:
+      id: "menu_create"
+      enabled: true
+    timeout: 20000
+    label: "Wait for the quantity sync to finish"
 - tapOn:
     text: "Decrease product quantity"
     retryTapIfNoChange: true
@@ -249,11 +260,15 @@ tags:
 
 - assertVisible:
     text: ".*1 ×.*|.*1 x.*"
+    childOf:
+      id: "order_product_card"
+      index: 0
     label: "Quantity decreased to one"
 
 - extendedWaitUntil:
-    notVisible:
-      id: "order_update_overlay"
+    visible:
+      id: "menu_create"
+      enabled: true
     timeout: 20000
     label: "Wait for the quantity sync to finish"
 - tapOn:
@@ -399,6 +414,12 @@ tags:
 - takeScreenshot: order_create_with_custom_amount
 
 # ── Add shipping ─────────────────────────────────────────────────────
+- extendedWaitUntil:
+    visible:
+      id: "menu_create"
+      enabled: true
+    timeout: 20000
+    label: "Wait for the custom amount sync to finish"
 - scrollUntilVisible:
     element:
       id: "add_shipping_button"
@@ -467,6 +488,12 @@ tags:
 # initCustomerAndNotesEmptySection). Once a customer is added, that
 # button migrates to notes_section whose bounds overlap with the Compose
 # totals_section, and the totals overlay intercepts taps on it.
+- extendedWaitUntil:
+    visible:
+      id: "menu_create"
+      enabled: true
+    timeout: 20000
+    label: "Wait for the shipping sync to finish"
 - scrollUntilVisible:
     element: "Add note"
     direction: DOWN
