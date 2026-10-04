@@ -124,22 +124,22 @@ tags:
 
 - takeScreenshot: products_search_results
 
-# Go back from search
+# Enter usually hides the keyboard already, so a second back is only needed while
+# the search is still open. An extra back would leave the Products tab.
 - back
-- back
-
-# Test filters
 - runFlow:
     when:
       visible:
-        id: "product_list_filters"
+        id: "product_list_search_field"
     commands:
-      - tapOn:
-          id: "product_list_filters"
-          label: "Open product filters"
-      - extendedWaitUntil:
-          visible: "Stock status"
-          timeout: 10000
-      - takeScreenshot: products_filters
       - back
 
+# Test filters
+- tapOn:
+    id: "product_list_filters"
+    label: "Open product filters"
+- extendedWaitUntil:
+    visible: "Stock status"
+    timeout: 10000
+- takeScreenshot: products_filters
+- back
