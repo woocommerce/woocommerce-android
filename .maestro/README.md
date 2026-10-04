@@ -148,17 +148,17 @@ Common variants:
 ```bash
 .maestro/scripts/run-smoke-tests.sh --profile core
 .maestro/scripts/run-smoke-tests.sh --plan --profile phone-full
-.maestro/scripts/run-smoke-tests.sh --profile phone-full --device emulator-5554
-.maestro/scripts/run-smoke-tests.sh --profile pos-tablet --device Pixel_Tablet_API_35
+.maestro/scripts/run-smoke-tests.sh --profile phone-full --seed --device emulator-5554
+.maestro/scripts/run-smoke-tests.sh --profile pos-tablet --seed --device Pixel_Tablet_API_35
 .maestro/scripts/run-smoke-tests.sh --profile android-system --device Pixel_8_API_35
 .maestro/scripts/doctor.sh --profile phone-full
 .maestro/scripts/run-smoke-tests.sh --device emulator-5554
 .maestro/scripts/run-smoke-tests.sh --apk /path/to/WooCommerce-production-release.apk
-.maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --include-quarantine --store lab
-.maestro/scripts/run-smoke-tests.sh --include-tags flaky_quarantine .maestro/flows/orders_create.yaml
+.maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --include-quarantine --seed
+.maestro/scripts/run-smoke-tests.sh --include-tags flaky_quarantine --seed .maestro/flows/orders_create.yaml
 .maestro/scripts/run-smoke-tests.sh --store shared --include-tags smoke_core
 .maestro/scripts/run-smoke-tests.sh --repeat 3 --store lab --include-tags smoke_core
-.maestro/scripts/run-smoke-tests.sh --rerun-failed ~/woocommerce-maestro-output/20260708141815/report.xml --store lab
+.maestro/scripts/run-smoke-tests.sh --profile phone-full --seed --rerun-failed ~/woocommerce-maestro-output/20260708141815/report.xml
 ```
 
 Profiles are copy/paste-safe presets:
@@ -185,9 +185,9 @@ The runner:
 - captures and restores animation settings;
 - turns off the device's autofill service during the run, so password save sheets cannot cover the app, and restores
   it afterwards;
-- can seed deterministic fixtures through the WooCommerce REST API when `--seed` is used;
+- seeds deterministic fixtures through the WooCommerce REST API with `--seed`, which destructive flows require;
 - writes created entity IDs to `run-manifest.json` when seeding;
-- deletes exactly those manifest IDs during cleanup when seeding;
+- deletes those manifest IDs, and entities that carry the run ID, during cleanup;
 - performs a guarded stale-orphan sweep for `SUITE-<date>-<hash>` entities older than 48h when seeding;
 - retries each failed non-destructive flow once and records pass-on-retry as a passing flaky result;
 - preserves flaky status in HTML/JUnit reports and `--rerun-failed` selection without failing the runner;
@@ -206,7 +206,7 @@ The runner:
 - `system_surface`: flow enters Android-owned UI; assertions stop at the documented handoff boundary.
 - `destructive`: mutates store data.
 - `store_shared`: runs against the shared store unless `--store` is passed; never combined with `destructive`.
-- `flaky_quarantine`: provisional or unstable flows excluded from real runs.
+- `flaky_quarantine`: provisional or unstable flows, excluded unless the profile or `--include-quarantine` includes them.
 
 All login flows are required `smoke_core` coverage except `login_google`. It stays tagged `flaky_quarantine` because
 Google sign-in only accepts the Play-signed build, and the runner installs the GitHub release or a local build.

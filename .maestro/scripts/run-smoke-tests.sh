@@ -10,7 +10,7 @@ set -euo pipefail
 #   - no REST fixture seed unless --seed is passed
 #   - animation settings captured and restored
 #   - autofill service turned off and restored
-#   - one retry per failed flow, recorded as flaky
+#   - one retry per failed non-destructive flow, recorded as flaky
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
@@ -64,7 +64,7 @@ Defaults:
   - no REST fixture seed unless --seed is passed
   - animation settings captured and restored
   - autofill service turned off and restored
-  - one retry per failed flow, recorded as flaky
+  - one retry per failed non-destructive flow, recorded as flaky
 
 Usage:
   .maestro/scripts/run-smoke-tests.sh

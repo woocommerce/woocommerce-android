@@ -28,7 +28,7 @@
     <thead><tr><th>Store</th><th>Purpose</th><th>Rules</th></tr></thead>
     <tbody>
       <tr><td><code>lab</code></td><td>Disposable Jurassic Ninja automation store.</td><td>Default for local runs, repair loops, destructive iteration, and can-fail checks.</td></tr>
-      <tr><td><code>shared</code></td><td><code>inpersonpayments.wpcomstaging.com</code>.</td><td>Explicit non-destructive developer runs. The runner refuses destructive flows here.</td></tr>
+      <tr><td><code>shared</code></td><td><code>inpersonpayments.wpcomstaging.com</code>.</td><td>Flows tagged <code>store_shared</code>, which need its second store and Google for WooCommerce. The runner refuses destructive flows here.</td></tr>
     </tbody>
   </table>
 
@@ -42,8 +42,8 @@
 .maestro/scripts/run-smoke-tests.sh --repeat 3 .maestro/flows/orders_list_and_search.yaml</pre>
 
   <h2>Fixtures and Cleanup</h2>
-  <p>The runner calls <code>seed-fixtures.py</code> before flows. It creates pending orders, refundable orders, a variable product with variations and tags, a simple product, a coupon, and a customer. Consumable fixtures are created twice.</p>
-  <p>Every created entity is written to <code>run-manifest.json</code>. Cleanup deletes exactly those IDs. A guarded stale-orphan sweep only matches strict <code>SUITE-&lt;date&gt;-&lt;hash&gt;</code> values older than 48 hours and logs deletions into the run report.</p>
+  <p>With <code>--seed</code>, which destructive flows require, the runner calls <code>seed-fixtures.py</code> before flows. It creates pending orders, refundable orders, a variable product with variations and tags, a simple product and a coupon. Consumable fixtures are created twice.</p>
+  <p>Every created entity is written to <code>run-manifest.json</code>. Cleanup deletes those IDs and anything else that carries the run ID. A guarded stale-orphan sweep only matches strict <code>SUITE-&lt;date&gt;-&lt;hash&gt;</code> values older than 48 hours and logs deletions into the run report.</p>
 
   <h2>Tags</h2>
   <table>
@@ -55,7 +55,7 @@
       <tr><td><code>android_system</code></td><td>Launcher/system-surface flows on an English Pixel Launcher AVD.</td></tr>
       <tr><td><code>system_surface</code></td><td>Flows that enter Android-owned UI and stop at the documented handoff boundary.</td></tr>
       <tr><td><code>destructive</code></td><td>Mutates store data.</td></tr>
-      <tr><td><code>flaky_quarantine</code></td><td>Excluded from real runs.</td></tr>
+      <tr><td><code>flaky_quarantine</code></td><td>Excluded unless the profile or <code>--include-quarantine</code> includes it.</td></tr>
     </tbody>
   </table>
 
@@ -64,7 +64,7 @@
   <p><code>point:</code> selectors require an inline YAML comment explaining why no semantic selector exists.</p>
 
   <h2>Reliability Policy</h2>
-  <p>Each failed flow gets one automatic retry. Pass-on-retry and pass-with-recovery count as flaky and make the run non-clean.</p>
+  <p>Each failed non-destructive flow gets one automatic retry. Pass-on-retry and pass-with-recovery count as flaky and make the run non-clean.</p>
 
   <h2>Coverage</h2>
   <p>The committed snapshot is <code>.maestro/smoke-coverage.yaml</code>. Flow headers declare checklist IDs with <code># p2:</code>. Validate locally:</p>
