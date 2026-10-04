@@ -106,13 +106,14 @@ tags:
       id: "add_coupon_button"
     timeout: 30000
 
+# Match the -UI code: the seeded coupon also carries the run id.
 - extendedWaitUntil:
-    visible: ".*${SUITE_RUN_ID}.*"
+    visible: ".*${SUITE_RUN_ID}-UI.*"
     timeout: 30000
     label: "Wait for created coupon"
 
 - assertVisible:
-    text: ".*${SUITE_RUN_ID}.*"
+    text: ".*${SUITE_RUN_ID}-UI.*"
     label: "Created coupon is visible in the list"
 
 - takeScreenshot: hub_coupons_created
