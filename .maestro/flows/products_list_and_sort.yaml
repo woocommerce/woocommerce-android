@@ -36,11 +36,9 @@ tags:
 - copyTextFrom:
     id: "product_list_title_.*"
     index: 0
-- evalScript: |
-    var name = maestro.copiedText;
-    if (!name || name.trim() === '') {
-        throw new Error('Product name is empty — list may not have loaded properly');
-    }
+- assertTrue:
+    condition: ${!!maestro.copiedText && maestro.copiedText.trim() != ''}
+    label: First product has a name
 - takeScreenshot: products_list
 
 # Test sorting with two explicit, opposing choices. Requiring different first
@@ -91,11 +89,9 @@ tags:
 - copyTextFrom:
     id: "product_list_title_.*"
     index: 0
-- evalScript: |
-    var descending = maestro.copiedText.trim();
-    if (!descending || descending === output.firstProductAscending) {
-        throw new Error('Opposing product sorts returned the same first product');
-    }
+- assertTrue:
+    condition: ${!!maestro.copiedText.trim() && maestro.copiedText.trim() != output.firstProductAscending}
+    label: Opposing product sorts return different first products
 
 - takeScreenshot: products_sorted
 
@@ -146,3 +142,4 @@ tags:
           timeout: 10000
       - takeScreenshot: products_filters
       - back
+
