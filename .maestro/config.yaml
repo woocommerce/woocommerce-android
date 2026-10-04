@@ -4,12 +4,9 @@
 #   Login → Dashboard → Orders → Products → Hub Menu →
 #   Blaze → Google for Woo → POS
 #
-# Within the Login group, login_successful is intentionally LAST so the
-# app ends the login sequence authenticated with the primary Woo account
-# (MAESTRO_WOO_WPCOM_EMAIL / MAESTRO_WOO_JETPACK_STORE_URL).
-# Subsequent flows reuse that session via subflows/ensure_logged_in.yaml, avoiding the WP.com
-# security screens that fire when the same account re-authenticates too
-# many times in quick succession.
+# Within the Login group, login_successful runs last. The runners clear the
+# app after every login flow, so the next flow signs in again through
+# subflows/ensure_logged_in.yaml.
 #
 # Tags follow the v2 smoke-test taxonomy:
 #   smoke_core        Stable non-destructive release-signal paths.
