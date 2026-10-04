@@ -48,19 +48,28 @@ tags:
           timeout: 15000
           label: "At least one order number is visible"
 
-      # Validate first order has a non-empty number via JavaScript
-      - copyTextFrom:
-          text: "#\\d+"
-          childOf:
-            id: "order_list"
-          index: 0
-      - assertTrue:
-          condition: ${!!maestro.copiedText && maestro.copiedText.trim() != ''}
-          label: Order number text is not empty
-      - evalScript: ${output.orderSearchText = maestro.copiedText.trim()}
       # Search matches the numeric order id, so strip the leading "#" for the query
-      # while keeping the full "#<n>" text for the row assertions below.
-      - evalScript: ${output.orderSearchTerm = output.orderSearchText.replace(/[^0-9]/g, '')}
+      # while keeping the full "#<n>" text for the row assertions below. Seeded
+      # orders carry the run id in fields the search also matches, so skip an order
+      # whose number appears in the run id's digits.
+      - evalScript: ${output.orderRow = 0}
+      - evalScript: ${output.orderSearchTerm = ''}
+      - repeat:
+          while:
+            true: ${output.orderSearchTerm == '' || String(SUITE_RUN_ID).replace(/[^0-9]/g, '').indexOf(output.orderSearchTerm) != -1}
+          times: 4
+          commands:
+            - copyTextFrom:
+                text: "#\\d+"
+                childOf:
+                  id: "order_list"
+                index: ${output.orderRow}
+            - evalScript: ${output.orderSearchText = String(maestro.copiedText || '').trim()}
+            - evalScript: ${output.orderSearchTerm = output.orderSearchText.replace(/[^0-9]/g, '')}
+            - evalScript: ${output.orderRow = output.orderRow + 1}
+      - assertTrue:
+          condition: ${output.orderSearchTerm != ''}
+          label: Order number text is not empty
 
       # Capture a second, different order number that must NOT match the search term.
       # Asserting it disappears from the results proves the search actually filtered
@@ -69,7 +78,7 @@ tags:
           text: "#\\d+"
           childOf:
             id: "order_list"
-          index: 1
+          index: ${output.orderRow}
       - evalScript: ${output.otherOrderText = maestro.copiedText.trim()}
 
       - takeScreenshot: orders_list
