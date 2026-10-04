@@ -35,7 +35,7 @@ Run `adb devices`. Count the lines whose second column is `device`.
 
 - **0 devices:** list AVDs with `emulator -list-avds`.
   - If none → tell the user to create one in Android Studio (AVD Manager) and stop.
-  - If exactly one → ask the user if they want to boot it, then `emulator -avd <name> -no-snapshot-save &` (backgrounded), `adb wait-for-device`, and poll `adb shell getprop sys.boot_completed` until `1` (up to ~90s).
+  - If exactly one → ask the user if they want to boot it, then `emulator -avd <name> -no-snapshot-save &` (backgrounded). Find its `emulator-*` serial in `adb devices` and poll `adb -s <serial> shell getprop sys.boot_completed` until `1` (up to ~90s); a phone on wireless adb can be attached too.
   - If multiple → ask which one to boot.
 - **1+ devices:** proceed.
 
