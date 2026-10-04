@@ -42,6 +42,10 @@ tags:
 # If it didn't (e.g. the site reports partial Jetpack support), the
 # email screen will show a "Log in with your site credentials" button
 # (id: login_site_creds) that we need to tap first.
+# The site lookup decides between the two screens, so wait for one of them first.
+- extendedWaitUntil:
+    visible: "Username|Continue with store credentials"
+    timeout: 30000
 - runFlow:
     when:
       visible:
