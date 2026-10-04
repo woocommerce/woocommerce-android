@@ -752,8 +752,13 @@ resolve_device() {
     exit 1
   fi
   if [[ ${#DEVICE_SERIALS[@]} -eq 1 ]]; then
-    printf '%s' "${DEVICE_SERIALS[0]}"
-    return
+    # The run clears the app's data, so only an emulator is picked without asking.
+    if [[ "${DEVICE_SERIALS[0]}" == emulator-* ]]; then
+      printf '%s' "${DEVICE_SERIALS[0]}"
+      return
+    fi
+    echo "${DEVICE_SERIALS[0]} is not an emulator. Pass --device ${DEVICE_SERIALS[0]} to run on it anyway." >&2
+    exit 1
   fi
   echo "Multiple Android devices are connected:" >&2
   local index=1

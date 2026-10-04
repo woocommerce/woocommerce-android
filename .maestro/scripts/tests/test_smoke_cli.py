@@ -94,6 +94,7 @@ class SmokeCliContractTest(unittest.TestCase):
         *args: str,
         env_overrides: dict[str, str] | None = None,
         maestro_version: str = "2.9.0",
+        attached_devices: tuple[str, ...] = (),
     ) -> tuple[subprocess.CompletedProcess[str], Path]:
         temporary_directory = tempfile.TemporaryDirectory()
         self.addCleanup(temporary_directory.cleanup)
@@ -118,6 +119,7 @@ class SmokeCliContractTest(unittest.TestCase):
             "#!/bin/sh\n"
             f": > '{adb_marker}'\n"
             "printf 'List of devices attached\\n'\n"
+            + "".join(f"printf '%s\\tdevice\\n' '{serial}'\n" for serial in attached_devices)
         )
         adb.chmod(0o755)
 
@@ -488,6 +490,20 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("Maestro version mismatch: expected 2.9.0, actual 2.7.0", result.stderr)
         self.assertFalse(adb_marker.exists())
+
+    def test_a_single_physical_device_is_not_picked_without_device(self) -> None:
+        result, _ = self.run_with_fake_device_tools(
+            ".maestro/flows/login_successful.yaml",
+            env_overrides={
+                "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
+                "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
+                "MAESTRO_WOO_LAB_WPCOM_PASSWORD": "lab-password",
+            },
+            attached_devices=("R5CT1234ABC",),
+        )
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("R5CT1234ABC is not an emulator. Pass --device R5CT1234ABC", result.stderr)
 
     def test_seed_request_does_not_create_unused_fixtures_without_destructive_flows(self) -> None:
         result, _ = self.run_with_order_recording_tools(
