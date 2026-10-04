@@ -41,6 +41,10 @@ release archive into the workspace, verifies the SHA-256 in
 `toolchain.properties`, and runs the checker. The runner and doctor fail fast
 when either version differs.
 
+The `maestro` server in `.mcp.json` is only used by the `maestro-flow-doctor` skill. It
+runs this script when it starts, so it downloads Maestro into `build/` and needs JDK 21;
+leave it disabled if you do not use that skill.
+
 Create local credentials:
 
 ```bash
