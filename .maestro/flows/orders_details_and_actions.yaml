@@ -233,7 +233,7 @@ tags:
 
 - tapOn:
     id: "addNote_editor"
-- inputText: "Maestro smoke test note"
+- inputText: "Order note ${SUITE_RUN_ID}"
 - hideKeyboard
 
 - takeScreenshot: order_note_typed
@@ -253,8 +253,13 @@ tags:
     timeout: 15000
     label: "Scroll to notes list"
 
+# orders_create gives this order a customer note that starts with the same
+# words as the old note, so match this note by the run id and only in the list.
 - scrollUntilVisible:
-    element: ".*Maestro smoke test note.*"
+    element:
+      text: ".*Order note ${SUITE_RUN_ID}.*"
+      childOf:
+        id: "notesList_notes"
     direction: DOWN
     timeout: 15000
     label: "Scroll to added note"
@@ -268,3 +273,4 @@ tags:
     visible:
       id: "order_list"
     timeout: 10000
+
