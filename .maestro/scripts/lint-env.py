@@ -12,7 +12,9 @@ from pathlib import Path
 
 ASSIGNMENT_RE = re.compile(r"^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)$")
 INLINE_COMMENT_RE = re.compile(r"\s+#")
-SHELL_META_RE = re.compile(r"""[\s()&;<>|`$]""")
+SHELL_META_RE = re.compile(r"""[\s()&;<>|`$\\]""")
+# Bash still expands these inside double quotes when the runner sources the file.
+DOUBLE_QUOTED_EXPANSION_RE = re.compile(r"""[$`\\]""")
 DEPRECATED_ALIASES = {
     "MAESTRO_WOO_LAB_STORE_URL": "MAESTRO_WOO_LAB_JETPACK_STORE_URL",
     "MAESTRO_WOO_LAB_EMAIL": "MAESTRO_WOO_LAB_WPCOM_EMAIL",
@@ -90,6 +92,10 @@ def lint(path: Path, example_path: Path, seed: bool) -> tuple[list[str], list[st
         if value and not is_quoted(value) and SHELL_META_RE.search(value):
             errors.append(
                 f"{path}:{line_number}: {name} has an unquoted value containing shell metacharacters; wrap it in single quotes."
+            )
+        elif is_quoted(value) and value[0] == '"' and DOUBLE_QUOTED_EXPANSION_RE.search(value[1:-1]):
+            errors.append(
+                f"{path}:{line_number}: {name} is double-quoted and contains $, ` or \\, which bash changes; wrap it in single quotes."
             )
 
     for name in sorted(seen):
