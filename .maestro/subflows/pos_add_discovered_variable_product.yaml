@@ -42,23 +42,18 @@ appId: com.woocommerce.android
     env:
       KEYBOARD_TARGET_ID: "woo_pos_product_item"
 
+# The first result can be a simple product whose name matches the query, so open
+# the Variable product row and require its variations list.
 - tapOn:
-    id: "woo_pos_product_item"
-    index: 0
+    text: "Variable Product .*"
     label: "Open discovered Variable product variations"
 
 - extendedWaitUntil:
-    notVisible: ".*Search products and variations.*"
-    timeout: 10000
-    label: "Require variation selection screen"
-
-- extendedWaitUntil:
-    visible:
-      id: "woo_pos_product_item"
+    visible: "Variation .*"
     timeout: 20000
     label: "Wait for POS variations"
 
 - tapOn:
-    id: "woo_pos_product_item"
+    text: "Variation .*"
     index: 0
     label: "Add first variation to cart"
