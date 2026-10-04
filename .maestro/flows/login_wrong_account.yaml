@@ -50,20 +50,15 @@ tags:
     id: "login_continue_button"
     retryTapIfNoChange: true
 
-- runFlow:
-    when:
-      visible:
-        id: "login_enter_password"
-    commands:
-      - tapOn:
-          id: "login_enter_password"
-
+# The e-mail field also has the id "input", so wait for the password row.
 - extendedWaitUntil:
     visible:
-      id: "input"
-    timeout: 10000
+      id: "login_password_row"
+    timeout: 30000
 - tapOn:
     id: "input"
+    childOf:
+      id: "login_password_row"
 - inputText: ${MAESTRO_WOO_WPCOM_PASSWORD}
 - runFlow:
     file: ../subflows/hide_keyboard.yaml
