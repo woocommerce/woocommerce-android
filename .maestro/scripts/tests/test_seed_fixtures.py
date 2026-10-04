@@ -5,6 +5,7 @@ import io
 import json
 import tempfile
 import unittest
+import unittest.mock
 from pathlib import Path
 
 
@@ -63,6 +64,12 @@ class RunOwnedStragglerClient:
 
 
 class SeedFixturesTests(unittest.TestCase):
+    def test_missing_store_value_names_the_selected_store_variable(self) -> None:
+        with unittest.mock.patch.dict(seed_fixtures.os.environ, {}, clear=True):
+            seed_fixtures.load_store_env("lab")
+            with self.assertRaisesRegex(seed_fixtures.SmokeSetupError, "MAESTRO_WOO_LAB_CONSUMER_KEY"):
+                seed_fixtures.env_required("MAESTRO_WOO_CONSUMER_KEY")
+
     def test_failed_seed_persists_every_entity_created_before_the_failure(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             manifest = Path(directory) / "run-manifest.json"

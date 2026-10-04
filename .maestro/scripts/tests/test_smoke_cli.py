@@ -598,7 +598,7 @@ class SmokeCliContractTest(unittest.TestCase):
         )
 
         self.assertEqual(result.returncode, 1)
-        self.assertIn("Missing required env var: MAESTRO_WOO_JETPACK_STORE_URL", result.stderr)
+        self.assertIn("Missing required env var: MAESTRO_WOO_LAB_JETPACK_STORE_URL", result.stderr)
         self.assertFalse(adb_marker.exists())
 
     def test_maestro_cli_receives_only_selected_flow_values_and_no_rest_or_other_store_secrets(self) -> None:

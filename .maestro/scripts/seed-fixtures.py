@@ -56,14 +56,27 @@ def strict_run_id(value: str) -> str:
     return value
 
 
+SELECTED_STORE = ""
+SCOPED_SUFFIXES = {
+    "MAESTRO_WOO_STORE_URL": "JETPACK_STORE_URL",
+    "MAESTRO_WOO_CONSUMER_KEY": "CONSUMER_KEY",
+    "MAESTRO_WOO_CONSUMER_SECRET": "CONSUMER_SECRET",
+}
+
+
 def env_required(name: str) -> str:
     value = os.environ.get(name, "").strip()
     if not value:
+        # The value comes from the selected store's block, so name that variable.
+        if SELECTED_STORE and name in SCOPED_SUFFIXES:
+            name = f"MAESTRO_WOO_{SELECTED_STORE.upper()}_{SCOPED_SUFFIXES[name]}"
         raise SmokeSetupError(f"Missing required environment variable: {name}")
     return value
 
 
 def load_store_env(store: str) -> None:
+    global SELECTED_STORE
+    SELECTED_STORE = store
     prefix = f"MAESTRO_WOO_{store.upper()}_"
     mappings = {
         "STORE_URL": ("JETPACK_STORE_URL", "STORE_URL"),

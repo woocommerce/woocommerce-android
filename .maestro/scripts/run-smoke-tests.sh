@@ -638,6 +638,22 @@ is_optional_flow_env_ref() {
       "$ref" == "MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD" ]]
 }
 
+# Store values come from the selected store's block, so errors name that block's variable.
+scoped_env_name() {
+  local upper
+  upper="$(printf '%s' "$STORE" | tr '[:lower:]' '[:upper:]')"
+  case "$1" in
+    MAESTRO_WOO_JETPACK_STORE_URL | MAESTRO_WOO_WPCOM_EMAIL | MAESTRO_WOO_WPCOM_PASSWORD | \
+      MAESTRO_WOO_WPCOM_USERNAME | MAESTRO_WOO_CONSUMER_KEY | MAESTRO_WOO_CONSUMER_SECRET)
+      printf '%s' "MAESTRO_WOO_${upper}_${1#MAESTRO_WOO_}"
+      ;;
+    MAESTRO_WOO_STORE_URL) printf '%s' "MAESTRO_WOO_${upper}_JETPACK_STORE_URL" ;;
+    MAESTRO_WOO_EMAIL) printf '%s' "MAESTRO_WOO_${upper}_WPCOM_EMAIL" ;;
+    MAESTRO_WOO_PASSWORD) printf '%s' "MAESTRO_WOO_${upper}_WPCOM_PASSWORD" ;;
+    *) printf '%s' "$1" ;;
+  esac
+}
+
 validate_referenced_env() {
   local missing=()
   local flow ref var
@@ -647,14 +663,14 @@ validate_referenced_env() {
       is_optional_flow_env_ref "$flow" "$ref" && continue
       var="$ref"
       if [[ -z "${!var:-}" ]]; then
-        missing+=("$var")
+        missing+=("$(scoped_env_name "$var")")
       fi
     done < <(grep -Eoh '\$\{MAESTRO_WOO_[A-Z0-9_]+\}' "$flow" | sed 's/[${}]//g' | sort -u)
   done
   if flow_uses_wpcom_credentials; then
     for var in MAESTRO_WOO_JETPACK_STORE_URL MAESTRO_WOO_WPCOM_EMAIL MAESTRO_WOO_WPCOM_PASSWORD; do
       if [[ -z "${!var:-}" ]]; then
-        missing+=("$var")
+        missing+=("$(scoped_env_name "$var")")
       fi
     done
   fi
