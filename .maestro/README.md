@@ -171,8 +171,10 @@ Profiles are copy/paste-safe presets:
 
 Use `--plan` with a profile or tag selection to print the exact store, repeat count, filters, and ordered flow list.
 Planning is side-effect-free: it does not load credentials, create output directories, or call Maestro/ADB.
-`flaky_quarantine` stays excluded unless the selected profile includes it or `--include-quarantine` is
-passed explicitly. A zero-flow selection is an error in both the runner and doctor.
+Without `--exclude-tags`, `flaky_quarantine` stays excluded unless the profile includes it,
+`--include-quarantine` is passed, or `--include-tags` names it. An explicit `--exclude-tags` list
+replaces that default, so add `flaky_quarantine` to it to keep quarantined flows out. A zero-flow
+selection is an error in both the runner and doctor.
 
 `--rerun-failed report.xml` reads failed/flaky JUnit test cases and runs only those flow files. It still honors
 store, device, APK, repeat, and profile options.
