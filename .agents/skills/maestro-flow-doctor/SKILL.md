@@ -1,6 +1,6 @@
 ---
 name: maestro-flow-doctor
-description: Repair a failing WooCommerce Android Maestro flow by reproducing it against the lab store, inspecting Maestro selectors, patching the smallest selector/wait/setup issue, and rerunning with repeat evidence. Human-triggered only.
+description: Repair a failing WooCommerce Android Maestro flow by reproducing it against the store it runs on, inspecting Maestro selectors, patching the smallest selector/wait/setup issue, and rerunning with repeat evidence. Human-triggered only.
 allowed-tools: Bash, Read, Edit, Grep, Glob
 user-invocable: true
 ---
@@ -11,8 +11,8 @@ Use this skill only for repairing existing Maestro smoke flows under `.maestro/f
 
 ## Ground Rules
 
-- Always run against the lab store: pass `--store lab`.
-- Never run destructive repair loops against the shared store.
+- Run each flow against the store it declares; don't pass `--store`. Flows tagged `store_shared` need the shared store's second store and Google for WooCommerce.
+- Never run destructive repair loops against the shared store; the runner refuses them.
 - Never ask the user to paste credentials. Validate that `.maestro/.env.local` has the required variable names without echoing values.
 - Use Maestro MCP as the selector source of truth: `run` executes the YAML we ship, and `inspect_screen` shows the hierarchy Maestro selectors see.
 - Keep fixes minimal: selector, wait, setup, or fixture query changes only. Do not broaden coverage while repairing a flake.
@@ -22,9 +22,9 @@ Use this skill only for repairing existing Maestro smoke flows under `.maestro/f
 1. Confirm the target flow path exists under `.maestro/flows/`.
 2. Run syntax and coverage checks:
    - `.maestro/scripts/check-smoke-coverage.py`
-   - `maestro test --dry-run <flow>` if supported by the installed Maestro version; otherwise continue with a real lab run.
-3. Reproduce on a lab-store device:
-   - `.maestro/scripts/run-smoke-tests.sh --store lab --include-tags flaky_quarantine <flow>`
+   - `maestro check-syntax <flow>`
+3. Reproduce on a device:
+   - `.maestro/scripts/run-smoke-tests.sh --seed --include-tags flaky_quarantine --device <serial> <flow>`
 4. At the failure point, use Maestro MCP `inspect_screen`.
 5. Compare the failing selector with the hierarchy:
    - Prefer `id:` selectors exposed through `testTag`.
@@ -32,7 +32,7 @@ Use this skill only for repairing existing Maestro smoke flows under `.maestro/f
    - Do not add `point:` selectors unless the flow comment explains why no semantic selector exists.
 6. Patch the smallest file set.
 7. Rerun the single flow with repeat evidence:
-   - `.maestro/scripts/run-smoke-tests.sh --store lab --repeat 3 <flow>`
+   - `.maestro/scripts/run-smoke-tests.sh --seed --repeat 3 --device <serial> <flow>`
 8. Summarize:
    - root cause,
    - files changed,
