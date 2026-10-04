@@ -650,6 +650,35 @@ class SmokeCliContractTest(unittest.TestCase):
         ]
         self.assertEqual(["login_successful", "clear app data", "hub_menu_settings"], events)
 
+    def test_rerun_skips_the_cleanup_testcase_and_fails_on_a_missing_report(self) -> None:
+        temporary_directory = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary_directory.cleanup)
+        report = Path(temporary_directory.name) / "report.xml"
+        report.write_text(
+            '<testsuites><testsuite name="previous run">'
+            '<testcase classname="maestro.1" name="hub_menu_settings"><failure message="failed" /></testcase>'
+            '<testcase classname="maestro.teardown" name="fixture_cleanup"><failure message="SETUP_ERROR" /></testcase>'
+            "</testsuite></testsuites>",
+            encoding="utf-8",
+        )
+        lab = {
+            "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
+            "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
+            "MAESTRO_WOO_LAB_WPCOM_PASSWORD": "lab-password",
+        }
+
+        result, args, _ = self.run_with_recorded_maestro_args(
+            "--device", "emulator-5554", "--rerun-failed", str(report), env_overrides=lab
+        )
+        missing, _, _ = self.run_with_recorded_maestro_args(
+            "--device", "emulator-5554", "--rerun-failed", str(report.with_name("missing.xml")), env_overrides=lab
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(["hub_menu_settings"], [Path(line.split()[-1]).stem for line in args.splitlines() if line.startswith("ARGS:")])
+        self.assertNotEqual(missing.returncode, 0)
+        self.assertIn("JUnit report not found", missing.stderr)
+
     def test_non_english_device_locale_fails_before_maestro_runs(self) -> None:
         result, args, _ = self.run_with_recorded_maestro_args(
             "--device",

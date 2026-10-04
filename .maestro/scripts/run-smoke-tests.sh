@@ -490,6 +490,9 @@ except ET.ParseError as error:
 
 seen = set()
 for testcase in root.iter("testcase"):
+    # The runner reports its own fixture cleanup as a testcase too; it is not a flow.
+    if testcase.attrib.get("classname") == "maestro.teardown":
+        continue
     status = testcase.find("./properties/property[@name='maestro.status']")
     is_flaky = status is not None and status.attrib.get("value") in {"FLAKY", "FLAKY_RECOVERY"}
     if testcase.find("failure") is None and testcase.find("error") is None and not is_flaky:
@@ -505,10 +508,12 @@ PY
 ORDERED_FLOWS=()
 if [[ -n "$RERUN_FAILED_FILE" ]]; then
   RERUN_FAILED_NAMES=()
+  # Read the names first: a failure inside a process substitution would not stop the run.
+  RERUN_FAILED_OUTPUT="$(read_failed_flow_names "$RERUN_FAILED_FILE")"
   while IFS= read -r name; do
     [[ -z "$name" ]] && continue
     RERUN_FAILED_NAMES+=("$name")
-  done < <(read_failed_flow_names "$RERUN_FAILED_FILE")
+  done <<< "$RERUN_FAILED_OUTPUT"
   if [[ ${#RERUN_FAILED_NAMES[@]} -eq 0 ]]; then
     echo "No failed or flaky testcases found in $RERUN_FAILED_FILE."
     exit 0
