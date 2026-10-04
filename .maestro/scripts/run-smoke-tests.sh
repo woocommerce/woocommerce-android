@@ -1137,9 +1137,8 @@ build_doctor_command() {
   if [[ -n "$STORE_OVERRIDE" ]]; then
     args+=(--store "$STORE_OVERRIDE")
   fi
-  if [[ -n "$DEVICE_SELECTOR" ]]; then
-    args+=(--device "$DEVICE_SELECTOR")
-  fi
+  # The doctor only accepts adb serials, not AVD names.
+  args+=(--device "$DEVICE_SERIAL")
   if [[ "$SEED" == "yes" ]]; then
     args+=(--seed)
   fi
