@@ -274,3 +274,24 @@ tags:
       id: "order_list"
     timeout: 10000
 
+# ── Clear the filter so later flows start from an unfiltered list ─────
+- tapOn:
+    id: "order_list_filters"
+    label: "Re-open filters to clear"
+
+- runFlow:
+    when:
+      visible: ".*Clear.*"
+    commands:
+      - tapOn:
+          text: ".*Clear.*"
+          label: "Clear filters"
+
+- tapOn:
+    id: "showOrdersButton"
+    label: "Apply cleared filter"
+
+- extendedWaitUntil:
+    visible:
+      id: "order_list"
+    timeout: 10000
