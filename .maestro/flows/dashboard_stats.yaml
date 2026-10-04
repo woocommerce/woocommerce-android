@@ -127,9 +127,13 @@ tags:
     retryTapIfNoChange: true
     label: "Select This Week range"
 
+# The menu closes even when the range does not change, so wait for the card
+# header itself. The menu is a popup, so this only matches the header.
 - extendedWaitUntil:
     visible:
-      id: "dashboard_stats_card"
+      text: "This Week"
+      childOf:
+        id: "dashboard_stats_card"
     timeout: 10000
     label: "Wait for weekly dashboard stats"
 
