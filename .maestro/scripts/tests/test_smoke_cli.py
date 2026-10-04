@@ -459,6 +459,13 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertIn("Refusing to run destructive flows against the shared store.", result.stderr)
         self.assertFalse(adb_marker.exists())
 
+    def test_destructive_run_without_seed_is_refused_before_adb(self) -> None:
+        result, adb_marker = self.run_with_fake_device_tools(".maestro/flows/orders_create.yaml")
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Destructive flows need --seed", result.stderr)
+        self.assertFalse(adb_marker.exists())
+
     def test_runtime_rejects_a_mismatched_maestro_before_adb(self) -> None:
         result, adb_marker = self.run_with_fake_device_tools(
             "--store",

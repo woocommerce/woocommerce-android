@@ -601,6 +601,10 @@ if [[ "$SEED" == "yes" && "$SUITE_HAS_DESTRUCTIVE" != "yes" ]]; then
   echo "No destructive flows selected; skipping fixture seeding."
   SEED="no"
 fi
+if [[ "$SUITE_HAS_DESTRUCTIVE" == "yes" && "$SEED" != "yes" ]]; then
+  echo "Destructive flows need --seed, which creates their fixtures and deletes what they create." >&2
+  exit 1
+fi
 for flow in ${SHARED_FLOWS[@]+"${SHARED_FLOWS[@]}"}; do
   if flow_has_any_tag "$flow" destructive; then
     echo "Refusing to run destructive flows against the shared store." >&2
