@@ -122,6 +122,13 @@ tags:
     direction: DOWN
     timeout: 15000
 - longPressOn: "^Woo$"
+- runFlow:
+    when:
+      visible: "Shortcuts"
+    commands:
+      - tapOn:
+          text: "Shortcuts"
+          label: "Expand the Shortcuts row"
 - tapOn:
     text: "Payments"
     label: "Launch Payments shortcut"
