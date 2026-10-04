@@ -32,7 +32,9 @@ Use this skill only for repairing existing Maestro smoke flows under `.maestro/f
    - Do not add `point:` selectors unless the flow comment explains why no semantic selector exists.
 6. Patch the smallest file set.
 7. Rerun the single flow with repeat evidence:
-   - `.maestro/scripts/run-smoke-tests.sh --seed --repeat 3 --device <serial> <flow>`
+   - Non-destructive flow: `.maestro/scripts/run-smoke-tests.sh --repeat 3 --device <serial> <flow>`
+   - Destructive flow, which uses up the fixtures of one seed, so it runs once per seed:
+     `for i in 1 2 3; do .maestro/scripts/run-smoke-tests.sh --seed --device <serial> <flow> || break; done`
 8. Summarize:
    - root cause,
    - files changed,

@@ -618,6 +618,10 @@ if [[ "$SUITE_HAS_DESTRUCTIVE" == "yes" && "$SEED" != "yes" ]]; then
   echo "Destructive flows need --seed, which creates their fixtures and deletes what they create." >&2
   exit 1
 fi
+if [[ "$SUITE_HAS_DESTRUCTIVE" == "yes" && "$REPEAT" -gt 1 ]]; then
+  echo "Destructive flows use up the fixtures of one seed, so run them once per run instead of with --repeat." >&2
+  exit 1
+fi
 for flow in ${SHARED_FLOWS[@]+"${SHARED_FLOWS[@]}"}; do
   if flow_has_any_tag "$flow" destructive; then
     echo "Refusing to run destructive flows against the shared store." >&2

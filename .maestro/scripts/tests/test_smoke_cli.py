@@ -496,6 +496,23 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertIn("Maestro version mismatch: expected 2.9.0, actual 2.7.0", result.stderr)
         self.assertFalse(adb_marker.exists())
 
+    def test_destructive_flows_are_not_repeated_on_one_seed(self) -> None:
+        result, adb_marker = self.run_with_fake_device_tools(
+            "--seed",
+            "--repeat",
+            "3",
+            ".maestro/flows/orders_refund.yaml",
+            env_overrides={
+                "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
+                "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
+                "MAESTRO_WOO_LAB_WPCOM_PASSWORD": "lab-password",
+            },
+        )
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("run them once per run instead of with --repeat", result.stderr)
+        self.assertFalse(adb_marker.exists())
+
     def test_a_single_physical_device_is_not_picked_without_device(self) -> None:
         result, _ = self.run_with_fake_device_tools(
             ".maestro/flows/login_successful.yaml",
