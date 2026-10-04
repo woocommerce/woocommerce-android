@@ -151,7 +151,7 @@ Common variants:
 .maestro/scripts/run-smoke-tests.sh --profile phone-full --seed --device emulator-5554
 .maestro/scripts/run-smoke-tests.sh --profile pos-tablet --seed --device Pixel_Tablet_API_35
 .maestro/scripts/run-smoke-tests.sh --profile android-system --device Pixel_8_API_35
-.maestro/scripts/doctor.sh --profile phone-full
+.maestro/scripts/doctor.sh --profile phone-full --seed
 .maestro/scripts/run-smoke-tests.sh --device emulator-5554
 .maestro/scripts/run-smoke-tests.sh --apk /path/to/WooCommerce-production-release.apk
 .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --include-quarantine --seed

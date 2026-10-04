@@ -47,7 +47,7 @@ Ask whether the user wants to test the current checkout instead. If so, run `./g
 
 ### 4. Validate `.maestro/.env.local`
 
-Run `.maestro/scripts/lint-env.py`, then `.maestro/scripts/doctor.sh --profile <profile> --device <serial>`. Both name missing or malformed variables without printing their values, and the doctor checks the store block each flow needs: flows tagged `store_shared` use the `MAESTRO_WOO_SHARED_*` block, every other flow the `MAESTRO_WOO_LAB_*` block. `.maestro/env.example` lists every variable and what it is for.
+Run `.maestro/scripts/lint-env.py`, then `source .maestro/scripts/configure-toolchain.sh && .maestro/scripts/doctor.sh --profile <profile> --seed --device <serial>`. Both name missing or malformed variables without printing their values, and the doctor checks the store block each flow needs: flows tagged `store_shared` use the `MAESTRO_WOO_SHARED_*` block, every other flow the `MAESTRO_WOO_LAB_*` block. `.maestro/env.example` lists every variable and what it is for.
 
 If anything is missing:
 

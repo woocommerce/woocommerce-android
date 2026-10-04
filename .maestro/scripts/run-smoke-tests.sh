@@ -70,11 +70,11 @@ Defaults:
 Usage:
   .maestro/scripts/run-smoke-tests.sh
   .maestro/scripts/run-smoke-tests.sh --profile core
-  .maestro/scripts/run-smoke-tests.sh --profile phone-full --device emulator-5554
-  .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --include-quarantine --store lab
+  .maestro/scripts/run-smoke-tests.sh --profile phone-full --seed --device emulator-5554
+  .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --include-quarantine --seed --store lab
   .maestro/scripts/run-smoke-tests.sh --store shared --include-tags smoke_core
   .maestro/scripts/run-smoke-tests.sh --device emulator-5554 --apk path/to/app.apk
-  .maestro/scripts/run-smoke-tests.sh --repeat 5 --store shared --include-tags smoke_core,smoke_extended
+  .maestro/scripts/run-smoke-tests.sh --repeat 5 --store shared --include-tags smoke_core
   .maestro/scripts/run-smoke-tests.sh --rerun-failed path/to/report.xml --store lab
   .maestro/scripts/run-smoke-tests.sh .maestro/flows/orders_list_and_search.yaml
 
