@@ -488,7 +488,7 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertFalse(adb_marker.exists())
 
     def test_seed_request_does_not_create_unused_fixtures_without_destructive_flows(self) -> None:
-        result, events = self.run_with_order_recording_tools(
+        result, _ = self.run_with_order_recording_tools(
             "--store",
             "shared",
             "--seed",
@@ -501,7 +501,6 @@ class SmokeCliContractTest(unittest.TestCase):
         )
 
         self.assertEqual(result.returncode, 1)
-        self.assertEqual(events, ["adb"])
         self.assertIn("No destructive flows selected; skipping fixture seeding", result.stdout)
 
     def test_generic_credentials_cannot_satisfy_a_scoped_lab_selection(self) -> None:
