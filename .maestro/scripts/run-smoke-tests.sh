@@ -1028,9 +1028,10 @@ import sys
 
 path = pathlib.Path(sys.argv[1])
 text = path.read_text(errors="replace")
-for key, value in os.environ.items():
-    if key.startswith("MAESTRO_WOO_") and value:
-        text = text.replace(value, "[REDACTED]")
+# Longest first, so a value that contains another one is hidden whole.
+values = {value for key, value in os.environ.items() if key.startswith("MAESTRO_WOO_") and value}
+for value in sorted(values, key=len, reverse=True):
+    text = text.replace(value, "[REDACTED]")
 path.write_text(text)
 PY
 }
