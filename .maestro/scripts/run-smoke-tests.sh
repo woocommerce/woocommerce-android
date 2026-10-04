@@ -240,7 +240,7 @@ if ! [[ "$REPEAT" =~ ^[0-9]+$ ]] || [[ "$REPEAT" -lt 1 ]]; then
   exit 2
 fi
 if [[ "$INCLUDE_TAGS_EXPLICIT" == "yes" ]]; then
-  for tag in "${INCLUDE_TAGS[@]}"; do
+  for tag in ${INCLUDE_TAGS[@]+"${INCLUDE_TAGS[@]}"}; do
     if [[ "$tag" == "flaky_quarantine" && "$EXCLUDE_TAGS_EXPLICIT" == "no" ]]; then
       EXCLUDE_TAGS=()
     fi
@@ -248,7 +248,7 @@ if [[ "$INCLUDE_TAGS_EXPLICIT" == "yes" ]]; then
 fi
 if [[ "$INCLUDE_QUARANTINE" == "yes" ]]; then
   FILTERED_EXCLUDE_TAGS_CSV=""
-  for tag in "${EXCLUDE_TAGS[@]}"; do
+  for tag in ${EXCLUDE_TAGS[@]+"${EXCLUDE_TAGS[@]}"}; do
     if [[ "$tag" != "flaky_quarantine" ]]; then
       FILTERED_EXCLUDE_TAGS_CSV="${FILTERED_EXCLUDE_TAGS_CSV:+$FILTERED_EXCLUDE_TAGS_CSV,}$tag"
     fi
