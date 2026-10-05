@@ -132,7 +132,8 @@ class SiteWPAPIRestClient @Inject constructor(
         restClient = this,
         url = wpApiUrl,
         clazz = RootWPAPIRestResponse::class.java,
-        params = mapOf("_fields" to FETCH_API_CALL_FIELDS)
+        params = mapOf("_fields" to FETCH_API_CALL_FIELDS),
+        readableBodyCheck = { !it.namespaces.isNullOrEmpty() }
     )
 
     private fun configurationState(serverUrl: HttpsUrlNormalizer.Result?, inputWasUpgraded: Boolean): Int {
