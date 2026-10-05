@@ -76,6 +76,7 @@ class SeededProductOrderClient:
             return [
                 {"id": 300, "line_items": [{"name": "Large", "product_id": 0, "variation_id": 202}]},
                 {"id": 301, "line_items": [{"name": "Album", "product_id": 15, "variation_id": 0}]},
+                {"id": 302, "line_items": [{"name": "Small", "product_id": 201, "variation_id": 202}]},
             ]
         return []
 
@@ -182,6 +183,7 @@ class SeedFixturesTests(unittest.TestCase):
                         "entities": [
                             {"type": "product", "id": 201},
                             {"type": "product_variation", "id": 202},
+                            {"type": "order", "id": 302},
                         ],
                     }
                 ),
@@ -198,6 +200,7 @@ class SeedFixturesTests(unittest.TestCase):
 
         self.assertIn(("orders", 300), client.deleted)
         self.assertNotIn(("orders", 301), client.deleted)
+        self.assertEqual(1, client.deleted.count(("orders", 302)))
         self.assertEqual("2026-08-05T10:00:00", client.order_queries[0]["after"])
         self.assertEqual(("orders", 300), client.deleted[0])
 
