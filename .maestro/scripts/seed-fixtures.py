@@ -352,6 +352,34 @@ def create_order(
     )
 
 
+def orders_with_seeded_products(client: WooClient, manifest: dict[str, Any]) -> list[int]:
+    """Return the orders made during the run that hold a seeded product or variation."""
+    seeded = {
+        int(entity["id"])
+        for entity in manifest.get("entities", [])
+        if entity.get("type") in {"product", "product_variation"}
+    }
+    recorded = {int(entity["id"]) for entity in manifest.get("entities", []) if entity.get("type") == "order"}
+    created = parse_wc_date(manifest.get("created_at"))
+    if not seeded or created is None:
+        return []
+    orders = client.list(
+        "orders",
+        after=created.strftime("%Y-%m-%dT%H:%M:%S"),
+        dates_are_gmt="true",
+        status="any",
+    )
+    return [
+        int(order["id"])
+        for order in orders
+        if int(order["id"]) not in recorded
+        and any(
+            line.get("product_id") in seeded or line.get("variation_id") in seeded
+            for line in order.get("line_items") or []
+        )
+    ]
+
+
 def cleanup(args: argparse.Namespace) -> None:
     manifest_path = Path(args.manifest)
     manifest = read_json(manifest_path)
@@ -367,6 +395,21 @@ def cleanup(args: argparse.Namespace) -> None:
         "product_tag": "products/tags",
         "customer": "customers",
     }
+    stragglers = 0
+    # A POS order names a seeded variation only by its attributes, so it carries no
+    # run id. Find it by product before the seeded products are deleted.
+    try:
+        seeded_orders = orders_with_seeded_products(client, manifest)
+    except SmokeSetupError as exc:
+        errors.append(str(exc))
+        seeded_orders = []
+    for order_id in seeded_orders:
+        try:
+            client.delete("orders", order_id)
+        except SmokeSetupError as exc:
+            errors.append(str(exc))
+        else:
+            stragglers += 1
     for entity in reversed(list(manifest.get("entities", []))):
         entity_type = entity.get("type")
         path = type_to_path.get(entity_type)
@@ -382,7 +425,6 @@ def cleanup(args: argparse.Namespace) -> None:
             manifest["entities"].remove(entity)
             write_json(manifest_path, manifest)
     run_id = str(manifest.get("run_id", "")).strip()
-    stragglers = 0
     if run_id:
         for entity_type, path in (
             ("coupon", "coupons"),

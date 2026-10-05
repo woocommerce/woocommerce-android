@@ -63,6 +63,26 @@ class RunOwnedStragglerClient:
         self.deleted.append((path, entity_id))
 
 
+class SeededProductOrderClient:
+    """Returns a POS order with a seeded variation and an unrelated order."""
+
+    def __init__(self) -> None:
+        self.deleted: list[tuple[str, int]] = []
+        self.order_queries: list[dict[str, object]] = []
+
+    def list(self, path: str, **query: object) -> list[dict[str, object]]:
+        if path == "orders" and "after" in query:
+            self.order_queries.append(query)
+            return [
+                {"id": 300, "line_items": [{"name": "Large", "product_id": 0, "variation_id": 202}]},
+                {"id": 301, "line_items": [{"name": "Album", "product_id": 15, "variation_id": 0}]},
+            ]
+        return []
+
+    def delete(self, path: str, entity_id: int) -> None:
+        self.deleted.append((path, entity_id))
+
+
 class SeedFixturesTests(unittest.TestCase):
     def test_missing_store_value_names_the_selected_store_variable(self) -> None:
         with unittest.mock.patch.dict(seed_fixtures.os.environ, {}, clear=True):
@@ -149,6 +169,37 @@ class SeedFixturesTests(unittest.TestCase):
                 seed_fixtures.WooClient = original_client
 
         self.assertEqual([("coupons", 900), ("products/tags", 910)], client.deleted)
+
+    def test_cleanup_deletes_run_orders_that_hold_a_seeded_product(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            manifest_path = Path(directory) / "run-manifest.json"
+            manifest_path.write_text(
+                json.dumps(
+                    {
+                        "run_id": "SUITE-20260805-abc123",
+                        "store": "lab",
+                        "created_at": "2026-08-05T10:00:00+00:00",
+                        "entities": [
+                            {"type": "product", "id": 201},
+                            {"type": "product_variation", "id": 202},
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            client = SeededProductOrderClient()
+            original_client = seed_fixtures.WooClient
+            seed_fixtures.WooClient = lambda: client
+            try:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    seed_fixtures.cleanup(argparse.Namespace(manifest=str(manifest_path), store="lab"))
+            finally:
+                seed_fixtures.WooClient = original_client
+
+        self.assertIn(("orders", 300), client.deleted)
+        self.assertNotIn(("orders", 301), client.deleted)
+        self.assertEqual("2026-08-05T10:00:00", client.order_queries[0]["after"])
+        self.assertEqual(("orders", 300), client.deleted[0])
 
 
 if __name__ == "__main__":

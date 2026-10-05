@@ -54,8 +54,11 @@ tags:
           text: "Clear cart"
           label: "Own an empty POS cart"
 
+# The seeded product's name carries the run id, so cleanup finds the POS order.
 - runFlow:
-    file: ../subflows/pos_add_discovered_variable_product.yaml
+    file: ../subflows/pos_add_variable_product.yaml
+    env:
+      POS_PRODUCT_NAME: ${MAESTRO_FIXTURE_VARIABLE_PRODUCT}
 
 - copyTextFrom:
     id: "woo_pos_cart_items_count"
