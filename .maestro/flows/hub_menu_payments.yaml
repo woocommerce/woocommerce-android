@@ -5,9 +5,9 @@
 #
 # Verifies:
 #   - Payments screen opens from the More Menu
-#   - Payments hub renders every first-level item the P2 mentions:
-#       SETTINGS header, "Pay In Person" toggle, CARD READERS header,
-#       "Order Card Reader", "Manage Card Reader", card-reader help link
+#   - Payments hub renders the first-level items the P2 mentions:
+#       "Pay In Person" toggle, "Order Card Reader", "Manage Card Reader",
+#       card-reader help link
 #   - Tapping "Order Card Reader" opens its dedicated screen (P2-level
 #     navigation check)
 #
@@ -55,8 +55,7 @@ tags:
 - takeScreenshot: hub_payments_top
 
 # ── Card Readers section ─────────────────────────────────────────────
-# The SETTINGS section header renders first, then CARD READERS. Both
-# are uppercase category titles, so matching is case-sensitive. If the
+# The card reader rows sit in the CARD READERS section, below SETTINGS. If the
 # store country doesn't support card readers, the CARD READERS header
 # + sub-items won't render (addCardReaderManuals is guarded by
 # CardReaderConfigForSupportedCountry). Our staging store is US-based

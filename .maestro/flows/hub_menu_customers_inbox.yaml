@@ -5,8 +5,8 @@
 # Verifies:
 #   - Customers section opens from the More Menu, the Customers
 #     screen renders with the "Search for customers" search hint
-#   - Inbox section opens from the More Menu, the Inbox screen
-#     renders (empty-state message OR an inbox note timestamp)
+#   - Inbox section opens from the More Menu and the Inbox screen
+#     lists a note (its timestamp); an empty Inbox fails
 appId: com.woocommerce.android
 name: "Hub Menu - Customers and Inbox"
 tags:

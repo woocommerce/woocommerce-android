@@ -9,7 +9,7 @@
 #   - Tapping "WC Admin" launches the authenticated webview for the
 #     WC Admin dashboard (More Menu no longer visible)
 #   - Dynamically discovers another visible Woo store, switches to it, proves
-#     its identity and Orders surface loaded, then switches back and repeats
+#     its identity and Products surface loaded, then switches back and repeats
 #     the same assertions for the original store
 #
 # Why we don't assert specific webview content: Maestro's text-match
