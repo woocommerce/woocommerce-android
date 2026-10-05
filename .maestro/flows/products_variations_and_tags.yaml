@@ -5,7 +5,7 @@
 # Exercises the real Variable-product path end-to-end:
 #
 #   Products list
-#     └─ tap Filters (btn_product_filter)
+#     └─ tap Filters (product_list_filters)
 #        └─ Filter list (filterList) — tap "Product type"
 #           └─ Filter options (filterOptionList) — tap "Variable"
 #              └─ tap "Show products" (filterOptionList_btnShowProducts)
@@ -28,9 +28,9 @@
 # Mutable tag persistence is verified against the run-owned product in
 # products_create.yaml.
 #
-# Key selectors (from the app's XML layouts):
-#   - btn_product_filter              — WCToggleOutlinedButton on the
-#                                       sort+filters card above the list
+# Key selectors (XML view ids and Compose test tags):
+#   - product_list_filters            — Filters button above the products
+#                                       list
 #   - filterList                      — RecyclerView on the Filter list
 #                                       screen (fragment_product_filter_list)
 #   - filterList_btnShowProducts      — "Show products" CTA
