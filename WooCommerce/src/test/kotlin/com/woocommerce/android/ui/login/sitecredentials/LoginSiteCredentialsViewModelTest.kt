@@ -82,6 +82,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         on { login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS) } doReturn Result.success(Unit)
         on { fetchSite(SITE_URL, USERNAME, PASSWORD) } doReturn Result.success(site)
         on { fetchSite(SITE_URL) } doReturn Result.success(site)
+        on { fetchSiteForBrowserLogin(SITE_URL) } doReturn Result.success(site)
         on { getSiteByLocalId(SITE_ID) } doReturn site
         on { checkIfUserIsEligible(site) } doReturn Result.success(true)
         on { checkIfUserIsEligible(persistedSite) } doReturn Result.success(true)
@@ -328,7 +329,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             assertThat(state?.authenticationError?.showWpAdminFallbackOption).isFalse()
             verify(repository).login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS)
             verify(repository, never()).login(eq(originalSiteUrl), any(), any(), any())
-            verify(repository, never()).fetchSite(SITE_URL)
+            verify(repository, never()).fetchSiteForBrowserLogin(SITE_URL)
             verify(repository, never()).fetchSite(SITE_URL, USERNAME, PASSWORD)
             verify(selectedSite, never()).set(any())
             assertThat(viewModel.event.value).isNull()
@@ -812,7 +813,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             }
 
             verify(repository, never()).saveAuthenticationEndpoints(any(), any())
-            verify(repository, times(2)).fetchSite(SITE_URL)
+            verify(repository, times(2)).fetchSiteForBrowserLogin(SITE_URL)
         }
 
     @Test
@@ -826,7 +827,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 hasWooCommerce = true
                 applicationPasswordsAuthorizeUrl = customAuthorizationUrl
             }
-            whenever(repository.fetchSite(SITE_URL)).thenReturn(Result.success(fetchedSite))
+            whenever(repository.fetchSiteForBrowserLogin(SITE_URL)).thenReturn(Result.success(fetchedSite))
             setup(
                 credentialsState().apply {
                     this[LOGIN_ENTRY_URL_STATE_KEY] = loginUrl
@@ -952,7 +953,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
                 .thenReturn(Result.failure(unexpectedResponseError()))
-            whenever(repository.fetchSite(SITE_URL))
+            whenever(repository.fetchSiteForBrowserLogin(SITE_URL))
                 .thenReturn(Result.failure(Exception("503")), Result.success(site))
             setup()
 
@@ -967,7 +968,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             }
 
             assertThat(viewModel.event.value).isInstanceOf(ShowApplicationPasswordTutorialScreen::class.java)
-            verify(repository, times(2)).fetchSite(SITE_URL)
+            verify(repository, times(2)).fetchSiteForBrowserLogin(SITE_URL)
         }
 
     @Test
@@ -975,7 +976,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
                 .thenReturn(Result.failure(unexpectedResponseError()))
-            whenever(repository.fetchSite(SITE_URL)).thenReturn(Result.success(siteWithUrl(SITE_URL)))
+            whenever(repository.fetchSiteForBrowserLogin(SITE_URL)).thenReturn(Result.success(siteWithUrl(SITE_URL)))
             setup()
 
             viewModel.viewState.observeForTesting {
@@ -1300,7 +1301,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
                 .thenReturn(Result.failure(cookieNonceError(Nonce.CookieNonceErrorType.INVALID_RESPONSE)))
-            whenever(repository.fetchSite(SITE_URL)).thenReturn(Result.failure(siteFetchError()), Result.success(site))
+            whenever(repository.fetchSiteForBrowserLogin(SITE_URL)).thenReturn(Result.failure(siteFetchError()), Result.success(site))
             setup()
 
             viewModel.viewState.observeForTesting {

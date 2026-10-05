@@ -587,7 +587,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private suspend fun fetchSiteForTutorial(detectedErrorMessage: UiString? = null): Boolean {
         loadingMessage.value = R.string.login_site_credentials_fetching_site
-        val result = wpApiSiteRepository.fetchSite(
+        val result = wpApiSiteRepository.fetchSiteForBrowserLogin(
             url = siteAddress,
             wasUrlNormalizedToHttps = wasSiteAddressNormalizedToHttps,
         )
