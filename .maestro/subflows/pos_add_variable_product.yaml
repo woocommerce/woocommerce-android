@@ -1,0 +1,52 @@
+# Searches the POS catalog for POS_PRODUCT_NAME, opens that Variable product's
+# variations, and adds the first variation to the cart.
+appId: com.woocommerce.android
+---
+- tapOn:
+    id: "woo_pos_search_input"
+    label: "Open product search"
+
+- extendedWaitUntil:
+    visible: ".*Search products and variations.*"
+    timeout: 10000
+
+- tapOn:
+    id: "woo_pos_search_input"
+    label: "Focus product search"
+- inputText: ${POS_PRODUCT_NAME}
+
+- extendedWaitUntil:
+    visible: "Variable Product .*"
+    timeout: 20000
+    label: "Search resolves a Variable product"
+
+# Dismiss the keyboard only if it is covering the first result (see
+# hide_keyboard.yaml). On this Compose search screen a blind hideKeyboard throws
+# "Couldn't hide the keyboard" when there is no soft keyboard to dismiss.
+- runFlow:
+    file: hide_keyboard.yaml
+    env:
+      KEYBOARD_TARGET_ID: "woo_pos_product_item"
+
+# The first result can be a simple product whose name matches the query, so open
+# the Variable product row and require its variations list.
+- tapOn:
+    text: "Variable Product .*"
+    label: "Open discovered Variable product variations"
+
+# Search results can list variations too, so wait for the results to give way to
+# the variations list before tapping one.
+- extendedWaitUntil:
+    notVisible: "Variable Product .*"
+    timeout: 10000
+    label: "Leave the search results"
+
+- extendedWaitUntil:
+    visible: "Variation .*"
+    timeout: 20000
+    label: "Wait for POS variations"
+
+- tapOn:
+    text: "Variation .*"
+    index: 0
+    label: "Add first variation to cart"

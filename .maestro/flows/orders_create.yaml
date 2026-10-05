@@ -10,13 +10,12 @@
 #   - Edit only the order-local customer copy and persist its marker
 #   - Add a customer-facing note
 #   - All sections display the added data
-#   - Tap "Create" to submit the order — lands on order detail
-#   - Tap "Collect Payment" → pick Cash → Mark Order as Complete to
-#     fully exercise the post-creation cash checkout path
+#   - Tap "Collect Payment", which creates the order, then pick Cash and
+#     Mark Order as Complete
+#   - Find the order by its run id in the order list and check its details
 #
-# The order IS committed to the staging store and completed via COD.
-# Staging orders use test data (SmokeTest customer, $10 gift wrap) so
-# accumulation across runs is acceptable.
+# The order is created on the lab store and completed with cash. Cleanup
+# deletes it by its run id.
 appId: com.woocommerce.android
 name: "Orders - Create a new order"
 tags:
