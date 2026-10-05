@@ -68,8 +68,8 @@ tags:
             - evalScript: ${output.orderSearchTerm = output.orderSearchText.replace(/[^0-9]/g, '')}
             - evalScript: ${output.orderRow = output.orderRow + 1}
       - assertTrue:
-          condition: ${output.orderSearchTerm != ''}
-          label: Order number text is not empty
+          condition: ${output.orderSearchTerm != '' && String(SUITE_RUN_ID).replace(/[^0-9]/g, '').indexOf(output.orderSearchTerm) == -1}
+          label: Picked an order number that the run id cannot match
 
       # Capture a second, different order number that must NOT match the search term.
       # Asserting it disappears from the results proves the search actually filtered
