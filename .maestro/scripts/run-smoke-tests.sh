@@ -355,14 +355,6 @@ map_store_env() {
   done
 }
 
-alias_env() {
-  local target="$1"
-  local source="$2"
-  if [[ -z "${!target:-}" && -n "${!source:-}" ]]; then
-    export "$target=${!source}"
-  fi
-}
-
 select_store_env() {
   local upper
   upper="$(printf '%s' "$STORE" | tr '[:lower:]' '[:upper:]')"
@@ -371,32 +363,14 @@ select_store_env() {
     MAESTRO_WOO_WPCOM_EMAIL \
     MAESTRO_WOO_WPCOM_PASSWORD \
     MAESTRO_WOO_WPCOM_USERNAME \
-    MAESTRO_WOO_STORE_URL \
-    MAESTRO_WOO_EMAIL \
-    MAESTRO_WOO_PASSWORD \
     MAESTRO_WOO_CONSUMER_KEY \
     MAESTRO_WOO_CONSUMER_SECRET
-  map_store_env \
-    MAESTRO_WOO_JETPACK_STORE_URL \
-    "MAESTRO_WOO_${upper}_JETPACK_STORE_URL" \
-    "MAESTRO_WOO_${upper}_STORE_URL"
-  map_store_env MAESTRO_WOO_WPCOM_EMAIL "MAESTRO_WOO_${upper}_WPCOM_EMAIL" "MAESTRO_WOO_${upper}_EMAIL"
-  map_store_env \
-    MAESTRO_WOO_WPCOM_PASSWORD \
-    "MAESTRO_WOO_${upper}_WPCOM_PASSWORD" \
-    "MAESTRO_WOO_${upper}_PASSWORD"
+  map_store_env MAESTRO_WOO_JETPACK_STORE_URL "MAESTRO_WOO_${upper}_JETPACK_STORE_URL"
+  map_store_env MAESTRO_WOO_WPCOM_EMAIL "MAESTRO_WOO_${upper}_WPCOM_EMAIL"
+  map_store_env MAESTRO_WOO_WPCOM_PASSWORD "MAESTRO_WOO_${upper}_WPCOM_PASSWORD"
   map_store_env MAESTRO_WOO_WPCOM_USERNAME "MAESTRO_WOO_${upper}_WPCOM_USERNAME"
-
-  alias_env MAESTRO_WOO_STORE_URL MAESTRO_WOO_JETPACK_STORE_URL
-  alias_env MAESTRO_WOO_EMAIL MAESTRO_WOO_WPCOM_EMAIL
-  alias_env MAESTRO_WOO_PASSWORD MAESTRO_WOO_WPCOM_PASSWORD
-
   map_store_env MAESTRO_WOO_CONSUMER_KEY "MAESTRO_WOO_${upper}_CONSUMER_KEY"
   map_store_env MAESTRO_WOO_CONSUMER_SECRET "MAESTRO_WOO_${upper}_CONSUMER_SECRET"
-
-  alias_env MAESTRO_WOO_NO_JETPACK_SITE_URL MAESTRO_WOO_JN_SITE_URL
-  alias_env MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_USERNAME MAESTRO_WOO_JN_USERNAME
-  alias_env MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD MAESTRO_WOO_JN_PASSWORD
 }
 select_store_env
 
@@ -647,9 +621,6 @@ scoped_env_name() {
       MAESTRO_WOO_WPCOM_USERNAME | MAESTRO_WOO_CONSUMER_KEY | MAESTRO_WOO_CONSUMER_SECRET)
       printf '%s' "MAESTRO_WOO_${upper}_${1#MAESTRO_WOO_}"
       ;;
-    MAESTRO_WOO_STORE_URL) printf '%s' "MAESTRO_WOO_${upper}_JETPACK_STORE_URL" ;;
-    MAESTRO_WOO_EMAIL) printf '%s' "MAESTRO_WOO_${upper}_WPCOM_EMAIL" ;;
-    MAESTRO_WOO_PASSWORD) printf '%s' "MAESTRO_WOO_${upper}_WPCOM_PASSWORD" ;;
     *) printf '%s' "$1" ;;
   esac
 }

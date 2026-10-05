@@ -84,9 +84,7 @@ def load_store_env(store: str) -> None:
     SELECTED_STORE = store
     prefix = f"MAESTRO_WOO_{store.upper()}_"
     mappings = {
-        "STORE_URL": ("JETPACK_STORE_URL", "STORE_URL"),
-        "EMAIL": ("WPCOM_EMAIL", "EMAIL"),
-        "PASSWORD": ("WPCOM_PASSWORD", "PASSWORD"),
+        "STORE_URL": ("JETPACK_STORE_URL",),
         "CONSUMER_KEY": ("CONSUMER_KEY",),
         "CONSUMER_SECRET": ("CONSUMER_SECRET",),
         "JETPACK_SITE_ADMIN_USERNAME": ("JETPACK_SITE_ADMIN_USERNAME",),
