@@ -20,6 +20,9 @@ class FailingWooClient:
     def __init__(self) -> None:
         self.create_count = 0
 
+    def request(self, method: str, path: str, **kwargs: object) -> dict:
+        return {}
+
     def create(self, path: str, payload: dict) -> dict:
         self.create_count += 1
         if self.create_count == 2:
@@ -38,6 +41,48 @@ class PartiallyFailingCleanupClient:
         self.delete_count += 1
         if self.delete_count == 2:
             raise seed_fixtures.SmokeSetupError("injected cleanup failure")
+
+
+class RunProductImagesClient:
+    """Returns a run-owned product with an uploaded image and an unrelated product."""
+
+    def __init__(self) -> None:
+        self.deleted: list[tuple[str, int, str]] = []
+
+    def list(self, path: str, **query: object) -> list[dict[str, object]]:
+        if path == "products":
+            return [
+                {
+                    "id": 40,
+                    "name": "Maestro media SUITE-20260805-abc123",
+                    "images": [
+                        {"id": 69, "date_created_gmt": "2026-08-01T09:00:00"},
+                        {"id": 70, "date_created_gmt": "2026-08-05T10:05:00"},
+                    ],
+                },
+                {"id": 41, "name": "Album", "images": [{"id": 71, "date_created_gmt": "2026-08-05T10:06:00"}]},
+            ]
+        return []
+
+    def delete(self, path: str, entity_id: int, prefix: str = seed_fixtures.API_PREFIX) -> None:
+        self.deleted.append((path, entity_id, prefix))
+
+
+class RejectedMediaDeletionClient(RunProductImagesClient):
+    def delete(self, path: str, entity_id: int, prefix: str = seed_fixtures.API_PREFIX) -> None:
+        raise seed_fixtures.SmokeSetupError("WordPress API DELETE media/70 failed: 500")
+
+
+class RejectedCredentialsClient:
+    def __init__(self) -> None:
+        self.created = 0
+
+    def request(self, method: str, path: str, **kwargs: object) -> dict:
+        raise seed_fixtures.SmokeSetupError("WooCommerce API GET users/me failed: 401")
+
+    def create(self, path: str, payload: dict) -> dict:
+        self.created += 1
+        return {"id": 1}
 
 
 class RunOwnedStragglerClient:
@@ -93,6 +138,44 @@ class SeedFixturesTests(unittest.TestCase):
             [{"id": 101, "label": "variable product tag", "type": "product_tag"}],
             saved["entities"],
         )
+
+    def test_cleanup_deletes_only_the_images_the_run_uploaded_to_its_products(self) -> None:
+        client = RunProductImagesClient()
+        manifest = {"run_id": "SUITE-20260805-abc123", "created_at": "2026-08-05T10:00:00+00:00"}
+
+        deleted = seed_fixtures.delete_run_media(client, manifest)
+
+        self.assertEqual(1, deleted)
+        self.assertEqual([("media", 70, seed_fixtures.MEDIA_PREFIX)], client.deleted)
+
+    def test_image_that_cannot_be_deleted_is_a_warning_not_a_cleanup_failure(self) -> None:
+        manifest = {"run_id": "SUITE-20260805-abc123", "created_at": "2026-08-05T10:00:00+00:00"}
+        output = io.StringIO()
+
+        with contextlib.redirect_stderr(output):
+            deleted = seed_fixtures.delete_run_media(RejectedMediaDeletionClient(), manifest)
+
+        self.assertEqual(0, deleted)
+        self.assertIn("warning: could not delete uploaded image 70", output.getvalue())
+
+    def test_seed_stops_before_creating_fixtures_when_wordpress_credentials_fail(self) -> None:
+        client = RejectedCredentialsClient()
+        with tempfile.TemporaryDirectory() as directory:
+            args = argparse.Namespace(
+                run_id="SUITE-20260805-abc123",
+                store="lab",
+                manifest=str(Path(directory) / "run-manifest.json"),
+                env_file=None,
+            )
+            original_client = seed_fixtures.WooClient
+            seed_fixtures.WooClient = lambda: client
+            try:
+                with self.assertRaisesRegex(seed_fixtures.SmokeSetupError, "users/me"):
+                    seed_fixtures.seed(args)
+            finally:
+                seed_fixtures.WooClient = original_client
+
+        self.assertEqual(0, client.created)
 
     def test_cleanup_journals_each_successful_deletion_before_continuing(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

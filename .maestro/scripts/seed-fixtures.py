@@ -25,6 +25,9 @@ CONSUMABLE_MULTIPLIER = 2
 RUN_ID_RE = re.compile(r"^SUITE-\d{8,14}-[A-Za-z0-9]+$")
 ORPHAN_AGE_HOURS = 48
 API_PREFIX = "/wp-json/wc/v3/"
+# Uploaded images live in WordPress core, which rejects the WooCommerce keys, so
+# media requests use the store admin's application password instead.
+MEDIA_PREFIX = "/wp-json/wp/v2/"
 
 
 class SmokeSetupError(RuntimeError):
@@ -61,6 +64,8 @@ SCOPED_SUFFIXES = {
     "MAESTRO_WOO_STORE_URL": "JETPACK_STORE_URL",
     "MAESTRO_WOO_CONSUMER_KEY": "CONSUMER_KEY",
     "MAESTRO_WOO_CONSUMER_SECRET": "CONSUMER_SECRET",
+    "MAESTRO_WOO_JETPACK_SITE_ADMIN_USERNAME": "JETPACK_SITE_ADMIN_USERNAME",
+    "MAESTRO_WOO_APPLICATION_PASSWORD": "APPLICATION_PASSWORD",
 }
 
 
@@ -84,6 +89,8 @@ def load_store_env(store: str) -> None:
         "PASSWORD": ("WPCOM_PASSWORD", "PASSWORD"),
         "CONSUMER_KEY": ("CONSUMER_KEY",),
         "CONSUMER_SECRET": ("CONSUMER_SECRET",),
+        "JETPACK_SITE_ADMIN_USERNAME": ("JETPACK_SITE_ADMIN_USERNAME",),
+        "APPLICATION_PASSWORD": ("APPLICATION_PASSWORD",),
     }
     for target, suffixes in mappings.items():
         for suffix in suffixes:
@@ -105,8 +112,9 @@ class WooClient:
         path: str,
         body: dict[str, Any] | None = None,
         query: dict[str, Any] | None = None,
+        prefix: str = API_PREFIX,
     ) -> Any:
-        url = self.site_url + API_PREFIX + path.lstrip("/")
+        url = self.site_url + prefix + path.lstrip("/")
         if query:
             url += "?" + urllib.parse.urlencode(query, doseq=True)
         data = None
@@ -117,7 +125,11 @@ class WooClient:
         if body is not None:
             data = json.dumps(body).encode("utf-8")
             headers["Content-Type"] = "application/json"
-        token = f"{self.consumer_key}:{self.consumer_secret}".encode("utf-8")
+        if prefix == MEDIA_PREFIX:
+            user = env_required("MAESTRO_WOO_JETPACK_SITE_ADMIN_USERNAME")
+            token = f"{user}:{env_required('MAESTRO_WOO_APPLICATION_PASSWORD')}".encode("utf-8")
+        else:
+            token = f"{self.consumer_key}:{self.consumer_secret}".encode("utf-8")
         headers["Authorization"] = "Basic " + base64.b64encode(token).decode("ascii")
         request = urllib.request.Request(url, data=data, headers=headers, method=method)
         try:
@@ -133,8 +145,8 @@ class WooClient:
     def create(self, path: str, payload: dict[str, Any]) -> dict[str, Any]:
         return self.request("POST", path, payload)
 
-    def delete(self, path: str, entity_id: int) -> None:
-        self.request("DELETE", f"{path}/{entity_id}", query={"force": "true"})
+    def delete(self, path: str, entity_id: int, prefix: str = API_PREFIX) -> None:
+        self.request("DELETE", f"{path}/{entity_id}", query={"force": "true"}, prefix=prefix)
 
     def list(self, path: str, **query: Any) -> list[dict[str, Any]]:
         query.setdefault("per_page", 100)
@@ -169,10 +181,46 @@ def suite_email(run_id: str) -> str:
     return f"suite-{safe}@example.invalid"
 
 
+def delete_run_media(client: WooClient, manifest: dict[str, Any]) -> int:
+    """Delete the images uploaded to this run's products, which deleting a product keeps.
+
+    An image that cannot be deleted is reported as a warning and does not fail cleanup.
+    """
+    run_id = str(manifest.get("run_id", "")).strip()
+    started = parse_wc_date(manifest.get("created_at"))
+    if not run_id or started is None:
+        return 0
+    try:
+        products = client.list("products", search=run_id, status="any")
+    except SmokeSetupError as exc:
+        print(f"warning: could not look up uploaded images: {exc}", file=sys.stderr)
+        return 0
+    deleted = 0
+    for product in products:
+        if run_id.lower() not in str(product.get("name", "")).lower():
+            continue
+        for image in product.get("images") or []:
+            # The media flow also attaches an image from the media library, which the
+            # run did not upload and must not delete.
+            uploaded = parse_wc_date(image.get("date_created_gmt"))
+            if uploaded is None or uploaded < started:
+                continue
+            try:
+                client.delete("media", int(image["id"]), prefix=MEDIA_PREFIX)
+            except SmokeSetupError as exc:
+                print(f"warning: could not delete uploaded image {image['id']}: {exc}", file=sys.stderr)
+            else:
+                deleted += 1
+    return deleted
+
+
 def seed(args: argparse.Namespace) -> None:
     run_id = strict_run_id(args.run_id)
     load_store_env(args.store)
     client = WooClient()
+    # Cleanup deletes uploaded images with these credentials, so stop before any flow
+    # runs when they do not work.
+    client.request("GET", "users/me", prefix=MEDIA_PREFIX)
     manifest_path = Path(args.manifest)
     if manifest_path.exists():
         manifest = read_json(manifest_path)
@@ -358,6 +406,8 @@ def cleanup(args: argparse.Namespace) -> None:
     load_store_env(manifest.get("store", args.store or "lab"))
     client = WooClient()
     errors: list[str] = []
+    # Read the images while the products that hold them still exist.
+    deleted_media = delete_run_media(client, manifest)
     original_count = len(manifest.get("entities", []))
     type_to_path = {
         "order": "orders",
@@ -416,7 +466,8 @@ def cleanup(args: argparse.Namespace) -> None:
     suffix = f" and {stragglers} entity created outside the manifest" if stragglers == 1 else (
         f" and {stragglers} entities created outside the manifest" if stragglers else ""
     )
-    print(f"Cleaned {original_count} manifest entities{suffix}")
+    media_note = f", plus {deleted_media} uploaded image(s)" if deleted_media else ""
+    print(f"Cleaned {original_count} manifest entities{suffix}{media_note}")
 
 
 def sweep(args: argparse.Namespace) -> None:

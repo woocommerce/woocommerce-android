@@ -71,7 +71,15 @@ def referenced_env(flows: list[Path], seed: bool) -> set[str]:
         if SUBFLOW_LOGIN_RE.search(text):
             refs.update({"WOO_JETPACK_STORE_URL", "WOO_WPCOM_EMAIL", "WOO_WPCOM_PASSWORD"})
     if seed:
-        refs.update({"WOO_STORE_URL", "WOO_CONSUMER_KEY", "WOO_CONSUMER_SECRET"})
+        refs.update(
+            {
+                "WOO_STORE_URL",
+                "WOO_CONSUMER_KEY",
+                "WOO_CONSUMER_SECRET",
+                "WOO_JETPACK_SITE_ADMIN_USERNAME",
+                "WOO_APPLICATION_PASSWORD",
+            }
+        )
     return refs
 
 
@@ -100,6 +108,8 @@ def candidates_for(ref: str, store: str) -> list[str]:
         "WOO_CONSUMER_SECRET": [
             f"MAESTRO_WOO_{upper}_CONSUMER_SECRET",
         ],
+        "WOO_JETPACK_SITE_ADMIN_USERNAME": [f"MAESTRO_WOO_{upper}_JETPACK_SITE_ADMIN_USERNAME"],
+        "WOO_APPLICATION_PASSWORD": [f"MAESTRO_WOO_{upper}_APPLICATION_PASSWORD"],
         "WOO_NO_JETPACK_SITE_URL": ["MAESTRO_WOO_NO_JETPACK_SITE_URL", "MAESTRO_WOO_JN_SITE_URL"],
         "WOO_NO_JETPACK_SITE_ADMIN_USERNAME": [
             "MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_USERNAME",

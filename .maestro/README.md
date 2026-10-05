@@ -194,6 +194,8 @@ The runner:
 - seeds deterministic fixtures through the WooCommerce REST API with `--seed`, which destructive flows require;
 - writes created entity IDs to `run-manifest.json` when seeding;
 - deletes those manifest IDs, and entities that carry the run ID, during cleanup;
+- deletes the images the flows upload to run-owned products, signing in with the lab admin
+  username and application password that `setup-jn-store.sh` writes;
 - performs a guarded stale-orphan sweep for `SUITE-<date>-<hash>` entities older than 48h when seeding;
 - retries each failed non-destructive flow once and records pass-on-retry as a passing flaky result;
 - preserves flaky status in HTML/JUnit reports and `--rerun-failed` selection without failing the runner;
