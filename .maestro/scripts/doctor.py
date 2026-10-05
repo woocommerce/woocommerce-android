@@ -110,15 +110,6 @@ def candidates_for(ref: str, store: str) -> list[str]:
         ],
         "WOO_JETPACK_SITE_ADMIN_USERNAME": [f"MAESTRO_WOO_{upper}_JETPACK_SITE_ADMIN_USERNAME"],
         "WOO_APPLICATION_PASSWORD": [f"MAESTRO_WOO_{upper}_APPLICATION_PASSWORD"],
-        "WOO_NO_JETPACK_SITE_URL": ["MAESTRO_WOO_NO_JETPACK_SITE_URL", "MAESTRO_WOO_JN_SITE_URL"],
-        "WOO_NO_JETPACK_SITE_ADMIN_USERNAME": [
-            "MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_USERNAME",
-            "MAESTRO_WOO_JN_USERNAME",
-        ],
-        "WOO_NO_JETPACK_SITE_ADMIN_PASSWORD": [
-            "MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD",
-            "MAESTRO_WOO_JN_PASSWORD",
-        ],
     }
     return mapped.get(ref, [f"MAESTRO_{ref}"])
 
