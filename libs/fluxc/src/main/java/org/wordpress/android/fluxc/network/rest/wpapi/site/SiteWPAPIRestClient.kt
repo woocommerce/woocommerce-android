@@ -52,12 +52,7 @@ class SiteWPAPIRestClient @Inject constructor(
             return SiteModel().apply { error = BaseNetworkError(INVALID_RESPONSE) }
         }
 
-        val result = wpapiGsonRequestBuilder.syncGetRequest(
-            restClient = this,
-            url = discoveredWpApiUrl,
-            clazz = RootWPAPIRestResponse::class.java,
-            params = mapOf("_fields" to FETCH_API_CALL_FIELDS)
-        )
+        val result = fetchRoot(discoveredWpApiUrl)
 
         return when (result) {
             is Success -> {
@@ -133,6 +128,13 @@ class SiteWPAPIRestClient @Inject constructor(
     }
 
     @SiteModel.HttpsConfigurationState
+    private suspend fun fetchRoot(wpApiUrl: String) = wpapiGsonRequestBuilder.syncGetRequest(
+        restClient = this,
+        url = wpApiUrl,
+        clazz = RootWPAPIRestResponse::class.java,
+        params = mapOf("_fields" to FETCH_API_CALL_FIELDS)
+    )
+
     private fun configurationState(serverUrl: HttpsUrlNormalizer.Result?, inputWasUpgraded: Boolean): Int {
         return when {
             serverUrl?.wasUpgraded == true -> SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS
