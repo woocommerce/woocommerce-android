@@ -13,7 +13,8 @@ interface WPAPINetwork {
         cacheTimeToLive: Int = BaseRequest.DEFAULT_CACHE_LIFETIME,
         forced: Boolean = false,
         requestTimeout: Int = BaseRequest.DEFAULT_REQUEST_TIMEOUT,
-        retries: Int = BaseRequest.DEFAULT_MAX_RETRIES
+        retries: Int = BaseRequest.DEFAULT_MAX_RETRIES,
+        readableBodyCheck: ((T) -> Boolean)? = null
     ): WPAPIResponse<T>
 
     suspend fun <T : Any> executePostGsonRequest(
