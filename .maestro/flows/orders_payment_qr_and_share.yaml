@@ -37,32 +37,8 @@ tags:
     text: "Add products"
     label: "Tap Add products"
 
-- extendedWaitUntil:
-    visible: ".*Search Products.*"
-    timeout: 15000
-
-- extendedWaitUntil:
-    visible:
-      id: "product_selector_product_item"
-    timeout: 15000
-    label: "Require a selectable product"
-
-- tapOn:
-    id: "product_selector_product_item"
-    index: 0
-    retryTapIfNoChange: true
-    label: "Select first available product"
-
 - runFlow:
-    when:
-      visible:
-        id: "product_selector_variation_item"
-    commands:
-      - tapOn:
-          id: "product_selector_variation_item"
-          index: 0
-          label: "Select first available variation"
-      - back
+    file: ../subflows/order_select_seeded_product.yaml
 
 - extendedWaitUntil:
     visible:

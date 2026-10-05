@@ -42,13 +42,8 @@ tags:
     text: "Add products"
     label: "Tap Add products"
 
-- extendedWaitUntil:
-    visible: ".*Search Products.*"
-    timeout: 15000
-
-- tapOn:
-    point: "50%,30%"
-    label: "Tap first product row"
+- runFlow:
+    file: ../subflows/order_select_seeded_product.yaml
 
 - extendedWaitUntil:
     visible: ".*Select \\d+ Product.*"
