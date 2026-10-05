@@ -90,7 +90,7 @@ tags:
     id: "product_list_title_.*"
     index: 0
 - assertTrue:
-    condition: ${!!maestro.copiedText.trim() && maestro.copiedText.trim() != output.firstProductAscending}
+    condition: ${!!maestro.copiedText && maestro.copiedText.trim() != '' && maestro.copiedText.trim() != output.firstProductAscending}
     label: Opposing product sorts return different first products
 
 - takeScreenshot: products_sorted
