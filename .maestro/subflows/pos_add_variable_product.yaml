@@ -34,6 +34,13 @@ appId: com.woocommerce.android
     text: "Variable Product .*"
     label: "Open discovered Variable product variations"
 
+# Search results can list variations too, so wait for the results to give way to
+# the variations list before tapping one.
+- extendedWaitUntil:
+    notVisible: "Variable Product .*"
+    timeout: 10000
+    label: "Leave the search results"
+
 - extendedWaitUntil:
     visible: "Variation .*"
     timeout: 20000
