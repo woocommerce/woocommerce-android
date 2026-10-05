@@ -477,6 +477,9 @@ def entity_label(entity_type: str, item: dict[str, Any]) -> str:
         )
     if entity_type == "order":
         billing = item.get("billing", {}) or {}
+        # Orders the flows create from the UI carry the run id only in a seeded
+        # product's name.
+        line_items = [str(line.get("name", "")) for line in item.get("line_items") or []]
         return " ".join(
             str(value)
             for value in (
@@ -484,6 +487,7 @@ def entity_label(entity_type: str, item: dict[str, Any]) -> str:
                 billing.get("first_name", ""),
                 billing.get("last_name", ""),
                 billing.get("email", ""),
+                *line_items,
             )
         )
     return str(item.get("name", ""))

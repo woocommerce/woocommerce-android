@@ -64,6 +64,17 @@ class RunOwnedStragglerClient:
 
 
 class SeedFixturesTests(unittest.TestCase):
+    def test_order_label_includes_line_item_names(self) -> None:
+        order = {
+            "customer_note": "",
+            "billing": {"first_name": "", "last_name": "", "email": ""},
+            "line_items": [{"name": "SUITE-20261005120000-abc123 Simple Product"}],
+        }
+
+        label = seed_fixtures.entity_label("order", order)
+
+        self.assertIn("SUITE-20261005120000-abc123", label)
+
     def test_missing_store_value_names_the_selected_store_variable(self) -> None:
         with unittest.mock.patch.dict(seed_fixtures.os.environ, {}, clear=True):
             seed_fixtures.load_store_env("lab")
