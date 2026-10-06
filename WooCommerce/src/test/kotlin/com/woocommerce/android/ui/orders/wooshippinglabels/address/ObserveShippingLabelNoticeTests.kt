@@ -19,15 +19,15 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ObserveShippingLabelNoticeTests : BaseUnitTest() {
-    private val addressValidationHelper: AddressValidationHelper = mock {
-        on { isPhoneValidForShippingLabel("1234567890") } doReturn true
-    }
+    private val addressValidationHelper: AddressValidationHelper = mock()
     private val coroutineScope: CoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
 
     private val sut = ObserveShippingLabelNotice(addressValidationHelper)
@@ -119,6 +119,8 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
     fun `when missing destination address was displayed but it is now verified, then display verified notice`() =
         runTest {
             val missingDestinationAddress = defaultAddresses.copy(shipTo = DestinationShippingAddress.EMPTY)
+            whenever(addressValidationHelper.isMissingDestinationAddress(DestinationShippingAddress.EMPTY.address))
+                .doReturn(true)
             val result = sut.invoke(
                 flowOf(listOf(missingDestinationAddress), listOf(defaultAddresses)),
                 customsFlow,
@@ -181,6 +183,42 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
 
         assertThat(result?.type).isEqualTo(NoticeType.MISSING_DESTINATION_ADDRESS)
     }
+
+    @Test
+    fun `given a domestic shipment with a blank recipient phone, when observing notices, then no notice is displayed`() =
+        runTest {
+            val addresses = defaultAddresses.copy(shipTo = defaultAddresses.shipTo.copy(address = Address.EMPTY))
+            whenever(addressValidationHelper.validatePhone(eq(""), any(), eq(false))).doReturn(null)
+
+            val result = sut.invoke(flowOf(listOf(addresses)), customsFlow, selectedIndexFlow, coroutineScope).first()
+
+            assertThat(result).isNull()
+        }
+
+    @Test
+    fun `given an international shipment with a blank recipient phone, when observing notices, then the missing destination notice is displayed`() =
+        runTest {
+            val addresses = defaultAddresses.copy(shipTo = defaultAddresses.shipTo.copy(address = Address.EMPTY))
+            whenever(addressValidationHelper.validatePhone(eq(""), any(), eq(true))).doReturn("required")
+            whenever(addressValidationHelper.isInternationalShipment(any(), any())).doReturn(true)
+
+            val result = sut.invoke(flowOf(listOf(addresses)), customsFlow, selectedIndexFlow, coroutineScope).first()
+
+            assertThat(result?.type).isEqualTo(NoticeType.MISSING_DESTINATION_ADDRESS)
+        }
+
+    @Test
+    fun `given an invalid recipient phone, when observing notices, then the missing destination notice is displayed`() =
+        runTest {
+            val addresses = defaultAddresses.copy(
+                shipTo = defaultAddresses.shipTo.copy(address = defaultAddresses.shipTo.address.copy(phone = "abc"))
+            )
+            whenever(addressValidationHelper.validatePhone(eq("abc"), any(), any())).doReturn("invalid")
+
+            val result = sut.invoke(flowOf(listOf(addresses)), customsFlow, selectedIndexFlow, coroutineScope).first()
+
+            assertThat(result?.type).isEqualTo(NoticeType.MISSING_DESTINATION_ADDRESS)
+        }
 
     @Test
     fun `testing both addresses and customs with issues flow`() = runTest {

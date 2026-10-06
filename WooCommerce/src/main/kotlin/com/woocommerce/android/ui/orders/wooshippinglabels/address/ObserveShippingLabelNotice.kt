@@ -63,7 +63,14 @@ class ObserveShippingLabelNotice @Inject constructor(private val addressValidati
 
         (
             addressValidationHelper.isMissingDestinationAddress(addresses.shipTo.address) ||
-                !addressValidationHelper.isPhoneValidForShippingLabel(addresses.shipTo.address.phone)
+                addressValidationHelper.validatePhone(
+                    value = addresses.shipTo.address.phone,
+                    countryCode = addresses.shipTo.address.country.code,
+                    isRequired = addressValidationHelper.isInternationalShipment(
+                        originCountryCode = addresses.shipFrom.country,
+                        destinationCountryCode = addresses.shipTo.address.country.code
+                    )
+                ) != null
             ) &&
             isDismissed[MISSING_DESTINATION_ADDRESS] == false -> {
             MISSING_DESTINATION_ADDRESS

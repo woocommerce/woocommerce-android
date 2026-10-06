@@ -288,7 +288,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     private val addressValidationHelper: AddressValidationHelper = mock {
         on { canFetchShippingRates(any()) } doReturn true
-        on { isPhoneValidForShippingLabel(any()) } doReturn true
         on { isMissingOriginAddress(any()) } doReturn false
     }
 
@@ -1100,6 +1099,87 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         assertThat(sut.snackbarData).matches {
             it?.message == R.string.woo_shipping_labels_purchase_origin_address_error
+        }
+        verifyNoInteractions(purchaseShippingLabel)
+    }
+
+    @Test
+    fun `given a domestic shipment with a blank recipient phone and a non-FedEx rate, when purchase is tapped, then the purchase starts`() =
+        testBlocking {
+            whenever(addressValidationHelper.validatePhone(eq(""), any(), eq(false))).doReturn(null)
+
+            createViewModel()
+
+            val selectedRate = defaultShippingRates.values.first().first()
+            val ratesState = sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last().let { viewState ->
+                (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+            }
+
+            ratesState.onSelectedShippingRateChanged(selectedRate)
+            advanceUntilIdle()
+
+            sut.onPurchaseShippingLabel()
+
+            assertThat(sut.snackbarData).isNull()
+            verify(purchaseShippingLabel).invoke(
+                any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull()
+            )
+        }
+
+    @Test
+    fun `given an international shipment with a blank recipient phone, when purchase is tapped, then show the phone error snackbar`() =
+        testBlocking {
+            whenever(addressValidationHelper.validatePhone(eq(""), any(), eq(true))).doReturn("required")
+            whenever(addressValidationHelper.isInternationalShipment(any(), any())).doReturn(true)
+
+            createViewModel()
+
+            val selectedRate = defaultShippingRates.values.first().first()
+            val ratesState = sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last().let { viewState ->
+                (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+            }
+
+            ratesState.onSelectedShippingRateChanged(selectedRate)
+            advanceUntilIdle()
+
+            sut.onPurchaseShippingLabel()
+
+            assertThat(sut.snackbarData).matches {
+                it?.message == R.string.woo_shipping_labels_purchase_phone_error
+            }
+            verifyNoInteractions(purchaseShippingLabel)
+        }
+
+    @Test
+    fun `given an invalid recipient phone, when purchase is tapped, then show the phone error snackbar`() = testBlocking {
+        whenever(
+            verifyDestinationAddress.invoke(orderId)
+        ) doReturn Result.success(DestinationShippingAddress(defaultShipToAddress.copy(phone = "12345"), true))
+        whenever(addressValidationHelper.validatePhone(eq("12345"), any(), any())).doReturn("invalid")
+
+        createViewModel()
+
+        val selectedRate = defaultShippingRates.values.first().first()
+        val ratesState = sut.viewState.runAndCaptureValues {
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+        }.last().let { viewState ->
+            (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        }
+
+        ratesState.onSelectedShippingRateChanged(selectedRate)
+        advanceUntilIdle()
+
+        sut.onPurchaseShippingLabel()
+
+        assertThat(sut.snackbarData).matches {
+            it?.message == R.string.woo_shipping_labels_purchase_phone_error
         }
         verifyNoInteractions(purchaseShippingLabel)
     }

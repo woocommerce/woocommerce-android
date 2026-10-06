@@ -906,10 +906,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onEditDestinationAddress(destinationAddress: DestinationShippingAddress) {
+        val originCountryCode = shippingAddresses.value.getOrNull(selectedShipmentIndex)?.shipFrom?.country.orEmpty()
         triggerEvent(
             NavigateToDestinationAddressEdit(
                 destinationAddress = destinationAddress,
-                orderId = navArgs.orderId
+                orderId = navArgs.orderId,
+                originCountryCode = originCountryCode
             )
         )
     }
@@ -1009,7 +1011,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             return
         }
 
-        if (!addressValidationHelper.isPhoneValidForShippingLabel(selectedAddress.shipTo.address.phone)) {
+        val shipTo = selectedAddress.shipTo.address
+        val isInternational =
+            addressValidationHelper.isInternationalShipment(selectedAddress.shipFrom.country, shipTo.country.code)
+        if (addressValidationHelper.validatePhone(shipTo.phone, shipTo.country.code, isInternational) != null) {
             showPurchasePhoneErrorSnackbar(selectedAddress.shipTo)
             return
         }
@@ -1362,7 +1367,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data class NavigateToOriginAddressEdit(val originAddress: OriginShippingAddress) : Event()
     data class NavigateToDestinationAddressEdit(
         val destinationAddress: DestinationShippingAddress,
-        val orderId: Long
+        val orderId: Long,
+        val originCountryCode: String
     ) : Event()
 
     data class NavigateToSplitShipment(val shipmentArgs: SplitShipmentArgs) : Event()

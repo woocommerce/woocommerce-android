@@ -95,7 +95,8 @@ class WooShippingLabelCreationFragment : BaseFragment() {
                         .actionWooShippingLabelCreationFragmentToWooShippingEditOriginAddressFragment(
                             flow = EditAddressFlow.EditDestinationAddress(
                                 address = event.destinationAddress,
-                                orderId = event.orderId
+                                orderId = event.orderId,
+                                originCountryCode = event.originCountryCode
                             )
                         ).let { findNavController().navigateSafely(it) }
 
