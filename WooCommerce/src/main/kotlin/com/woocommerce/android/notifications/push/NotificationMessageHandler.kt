@@ -120,7 +120,6 @@ class NotificationMessageHandler @Inject constructor(
                 return
             }
 
-            // Not PushNotificationRegistrationStatus: its WooCommerce version check uses the selected store.
             if (runBlocking { pushNotificationRepository.hasWooPushTokenForSite(notification.remoteSiteId) }) {
                 wooLog.d(NOTIFICATIONS, "Skipping WPCOM notification, already registered with Woo Core")
                 return
