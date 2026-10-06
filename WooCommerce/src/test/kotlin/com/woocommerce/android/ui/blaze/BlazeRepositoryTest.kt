@@ -355,6 +355,20 @@ class BlazeRepositoryTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given unpaid orders without debt, when fetching outstanding balance, then clear it`() = testBlocking {
+        // GIVEN
+        outstandingBalanceCache.update(OUTSTANDING_BALANCE)
+        val billingSummary = BlazeBillingSummary(debt = 0.0, paymentLinks = listOf(PAYMENT_LINK))
+        whenever(blazeCampaignsStore.fetchBlazeBillingSummary(any())).thenReturn(BlazeResult(billingSummary))
+
+        // WHEN
+        repository.fetchOutstandingBalance()
+
+        // THEN
+        assertThat(repository.outstandingBalance.value).isNull()
+    }
+
+    @Test
     fun `given an error, when fetching outstanding balance, then keep the last known one`() = testBlocking {
         // GIVEN
         outstandingBalanceCache.update(OUTSTANDING_BALANCE)

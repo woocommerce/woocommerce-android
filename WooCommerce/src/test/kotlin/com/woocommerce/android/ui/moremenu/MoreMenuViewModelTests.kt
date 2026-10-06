@@ -28,6 +28,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.AccountModel
@@ -455,6 +456,17 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             // THEN
             assertThat(event).isEqualTo(MoreMenuEvent.OpenBlazeCampaignListEvent)
         }
+
+    @Test
+    fun `given blaze is not enabled, when screen loads, then do not fetch outstanding balance`() = testBlocking {
+        // WHEN
+        setup {
+            whenever(isBlazeEnabled.invoke()).thenReturn(false)
+        }
+
+        // THEN
+        verify(blazeRepository, never()).fetchOutstandingBalance()
+    }
 
     @Test
     fun `when building state, then all optional buttons start with loading state`() = testBlocking {

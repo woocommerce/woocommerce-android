@@ -7,6 +7,7 @@ import com.woocommerce.android.extensions.NumberExtensionsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.ShowCampaignDetails
+import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.ShowOutstandingBalancePayment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
@@ -25,6 +26,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.blaze.BlazeBillingSummary
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignsModel
 import org.wordpress.android.fluxc.network.rest.wpcom.blaze.BlazeCampaignsError
@@ -36,8 +38,9 @@ import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore.BlazeCampaign
 @ExperimentalCoroutinesApi
 class BlazeCampaignListViewModelTest : BaseUnitTest() {
     private val blazeCampaignsStore: BlazeCampaignsStore = mock()
+    private val outstandingBalanceFlow = MutableStateFlow<BlazeBillingSummary?>(null)
     private val blazeRepository: BlazeRepository = mock {
-        on { outstandingBalance } doReturn MutableStateFlow(null)
+        on { outstandingBalance } doReturn outstandingBalanceFlow
     }
     private val selectedSite: SelectedSite = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
@@ -58,6 +61,7 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
         whenever(blazeCampaignsStore.observeBlazeCampaigns(selectedSite.get())).thenReturn(campaignsEntityFlow)
         whenever(blazeCampaignsStore.fetchBlazeCampaigns(any(), any(), any(), any(), eq(null)))
             .thenReturn(BlazeCampaignsResult(EMPTY_BLAZE_CAMPAIGN_MODEL))
+        whenever(currencyFormatter.formatAmountWithCurrency(any(), any())).thenReturn(FORMATTED_AMOUNT)
     }
 
     @Test
@@ -162,6 +166,23 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
             assertThat(event).isEqualTo(ShowCampaignDetails(CAMPAIGN_ID))
         }
 
+    @Test
+    fun `given outstanding balance, when pay is clicked on an unpaid order, then show its payment page`() =
+        testBlocking {
+            // GIVEN
+            outstandingBalanceFlow.value = OUTSTANDING_BALANCE
+            createViewModel()
+            val outstandingBalance = viewModel.state.captureValues().last().outstandingBalance
+
+            // WHEN
+            val event = viewModel.event.runAndCaptureValues {
+                requireNotNull(outstandingBalance).unpaidOrders[1].onPayClicked()
+            }.last()
+
+            // THEN
+            assertThat(event).isEqualTo(ShowOutstandingBalancePayment(SECOND_PAYMENT_URL))
+        }
+
     private fun createViewModel(isPostCampaignCreation: Boolean = false, campaignId: String? = null) {
         viewModel = BlazeCampaignListViewModel(
             savedStateHandle = BlazeCampaignListFragmentArgs(
@@ -190,6 +211,8 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
         const val TOTAL_BUDGET = 100.0
         const val SPENT_BUDGET = 0.0
         const val TARGET_URN = "urn:wpcom:post:199247490:9"
+        const val FORMATTED_AMOUNT = "$25.05"
+        const val SECOND_PAYMENT_URL = "https://example.com/pay/2"
 
         val BLAZE_CAMPAIGN_MODEL = BlazeCampaignModel(
             campaignId = CAMPAIGN_ID,
@@ -209,6 +232,13 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
             campaigns = listOf(BLAZE_CAMPAIGN_MODEL),
             skipped = 0,
             totalItems = 1,
+        )
+        val OUTSTANDING_BALANCE = BlazeBillingSummary(
+            debt = 60.05,
+            paymentLinks = listOf(
+                BlazeBillingSummary.PaymentLink(date = null, amount = 25.05, url = "https://example.com/pay/1"),
+                BlazeBillingSummary.PaymentLink(date = null, amount = 35.0, url = SECOND_PAYMENT_URL)
+            )
         )
         val BLAZE_CAMPAIGN_MODEL_1_OUT_OF_2_ITEMS = EMPTY_BLAZE_CAMPAIGN_MODEL
             .copy(
