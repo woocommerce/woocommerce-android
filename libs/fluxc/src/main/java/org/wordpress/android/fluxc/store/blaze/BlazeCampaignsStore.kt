@@ -313,6 +313,17 @@ class BlazeCampaignsStore @Inject constructor(
         }
     }
 
+    suspend fun fetchBlazeBillingSummary(
+        site: SiteModel
+    ) = coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetch blaze billing summary") {
+        creationRestClient.fetchBillingSummary(site).let { payload ->
+            when {
+                payload.isError -> BlazeResult(BlazeError(payload.error))
+                else -> BlazeResult(payload.data)
+            }
+        }
+    }
+
     suspend fun createCampaign(
         site: SiteModel,
         request: BlazeCampaignCreationRequest

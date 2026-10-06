@@ -5,6 +5,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
@@ -27,10 +28,12 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.blaze.BlazeBillingSummary
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.time.ZonedDateTime
@@ -85,7 +88,13 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
-    private val blazeCampaignsStore: BlazeCampaignsStore = mock()
+    private val blazeCampaignsStore: BlazeCampaignsStore = mock {
+        on { getBlazeCampaigns(any()) } doReturn emptyList()
+    }
+    private val outstandingBalanceFlow = MutableStateFlow<BlazeBillingSummary?>(null)
+    private val blazeRepository: BlazeRepository = mock {
+        on { outstandingBalance } doReturn outstandingBalanceFlow
+    }
 
     private lateinit var viewModel: MoreMenuViewModel
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
@@ -102,6 +111,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             planRepository = planRepository,
             resourceProvider = resourceProvider,
             blazeCampaignsStore = blazeCampaignsStore,
+            blazeRepository = blazeRepository,
             tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
             isBlazeEnabled = isBlazeEnabled,
             isGoogleForWooEnabled = isGoogleForWooEnabled,
@@ -430,6 +440,35 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     }
 
     @Test
+    fun `given no blaze campaigns and an outstanding balance, when user clicks on blaze, then show campaigns list`() =
+        testBlocking {
+            // GIVEN
+            outstandingBalanceFlow.value = OUTSTANDING_BALANCE
+            setup()
+            val state = viewModel.moreMenuViewState.captureValues().last()
+            val button = state.menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_blaze }
+
+            // WHEN
+            val event = viewModel.event.runAndCaptureValues {
+                button.onClick()
+            }.last()
+
+            // THEN
+            assertThat(event).isEqualTo(MoreMenuEvent.OpenBlazeCampaignListEvent)
+        }
+
+    @Test
+    fun `given blaze is not enabled, when screen loads, then do not fetch outstanding balance`() = testBlocking {
+        // WHEN
+        setup {
+            whenever(isBlazeEnabled.invoke()).thenReturn(false)
+        }
+
+        // THEN
+        verify(blazeRepository, never()).fetchOutstandingBalance()
+    }
+
+    @Test
     fun `when building state, then all optional buttons start with loading state`() = testBlocking {
         // GIVEN
         setup {
@@ -566,5 +605,14 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         assertThat(items.map { it.title }).doesNotContain(R.string.more_menu_button_ai_assistant)
         assertThat(items.map { it.description }).doesNotContain(R.string.more_menu_button_ai_assistant_description)
         assertThat(items.map { it.icon }).doesNotContain(R.drawable.ic_more_menu_ai_assistant)
+    }
+
+    companion object {
+        val OUTSTANDING_BALANCE = BlazeBillingSummary(
+            debt = 25.05,
+            paymentLinks = listOf(
+                BlazeBillingSummary.PaymentLink(date = null, amount = 25.05, url = "https://example.com/pay")
+            )
+        )
     }
 }

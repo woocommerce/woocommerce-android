@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.generated.endpoint.WPCOMV2
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.blaze.BlazeAdForecast
 import org.wordpress.android.fluxc.model.blaze.BlazeAdSuggestion
+import org.wordpress.android.fluxc.model.blaze.BlazeBillingSummary
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignCreationRequest
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignObjective
@@ -206,6 +207,19 @@ class BlazeCreationRestClient @Inject constructor(
         val response = wpComNetwork.executeGetGsonRequest(
             url = url,
             clazz = BlazePaymentMethodsResponse::class.java
+        )
+        return when (response) {
+            is WPComGsonRequestBuilder.Response.Success -> BlazePayload(response.data.toDomainModel())
+
+            is WPComGsonRequestBuilder.Response.Error -> BlazePayload(response.error)
+        }
+    }
+
+    suspend fun fetchBillingSummary(site: SiteModel): BlazePayload<BlazeBillingSummary> {
+        val url = WPCOMV2.sites.site(site.siteId).wordads.dsp.api.v1.user.billing_summary.url
+        val response = wpComNetwork.executeGetGsonRequest(
+            url = url,
+            clazz = BlazeBillingSummaryResponse::class.java
         )
         return when (response) {
             is WPComGsonRequestBuilder.Response.Success -> BlazePayload(response.data.toDomainModel())
