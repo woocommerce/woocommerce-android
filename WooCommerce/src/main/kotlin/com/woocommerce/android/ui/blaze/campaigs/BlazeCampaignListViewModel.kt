@@ -140,8 +140,8 @@ class BlazeCampaignListViewModel @Inject constructor(
         }
     )
 
-    private fun formatBlazeAmount(amount: Double) = currencyFormatter.formatCurrency(
-        amount = amount.toBigDecimal(),
+    private fun formatBlazeAmount(amount: Double) = currencyFormatter.formatAmountWithCurrency(
+        amount = amount,
         currencyCode = BlazeRepository.BLAZE_DEFAULT_CURRENCY_CODE
     )
 
