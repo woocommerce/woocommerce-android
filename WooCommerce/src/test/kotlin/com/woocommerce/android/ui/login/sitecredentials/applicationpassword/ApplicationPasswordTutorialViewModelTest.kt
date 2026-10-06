@@ -2,6 +2,10 @@ package com.woocommerce.android.ui.login.sitecredentials.applicationpassword
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialViewModel.RetryLogin
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker.Action
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -12,11 +16,15 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseKind
 import org.wordpress.android.fluxc.network.UserAgent
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ApplicationPasswordTutorialViewModelTest : BaseUnitTest() {
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
+    private val unexpectedResponseTracker: LoginUnexpectedResponseTracker = mock()
     private val userAgent: UserAgent = mock()
 
     private lateinit var viewModel: ApplicationPasswordTutorialViewModel
@@ -190,7 +198,8 @@ class ApplicationPasswordTutorialViewModelTest : BaseUnitTest() {
             viewModel.onWebViewDataAvailable(
                 verifiedLoginUrl = "$SITE_URL/another-login/",
                 applicationPasswordAuthorizationUrl = REWRITTEN_APPLICATION_PASSWORD_AUTHORIZATION_URL,
-                errorMessage = "another error"
+                errorMessage = "another error",
+                unexpectedResponse = null
             )
 
             // THEN
@@ -239,9 +248,54 @@ class ApplicationPasswordTutorialViewModelTest : BaseUnitTest() {
         assertThat(viewModel.currentState.authorizationRecoveryAttempted).isFalse()
     }
 
+    @Test
+    fun `given an unexpected response, when the screen opens, then show the alert`() = testBlocking {
+        setup()
+
+        // WHEN
+        givenWebViewData(unexpectedResponse = UNEXPECTED_RESPONSE_FAILURE)
+
+        // THEN
+        assertThat(viewModel.currentState.unexpectedResponse).isEqualTo(UNEXPECTED_RESPONSE_FAILURE)
+    }
+
+    @Test
+    fun `given the unexpected response alert, when dismissing it, then close it and stay`() = testBlocking {
+        setup()
+        givenWebViewData(unexpectedResponse = UNEXPECTED_RESPONSE_FAILURE)
+
+        // WHEN
+        val events = viewModel.event.runAndCaptureValues {
+            viewModel.onUnexpectedResponseDismissClick()
+        }
+
+        // THEN
+        assertThat(viewModel.currentState.unexpectedResponse).isNull()
+        assertThat(events).isEmpty()
+        verify(unexpectedResponseTracker).trackActionTapped(UNEXPECTED_RESPONSE_FAILURE, Action.DISMISS)
+    }
+
+    @Test
+    fun `given the unexpected response alert, when trying again, then go back to retry the login`() =
+        testBlocking {
+            setup()
+            givenWebViewData(unexpectedResponse = UNEXPECTED_RESPONSE_FAILURE)
+
+            // WHEN
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onUnexpectedResponseRetryClick()
+            }.last()
+
+            // THEN
+            assertThat(event).isEqualTo(RetryLogin(UNEXPECTED_RESPONSE_FAILURE))
+            assertThat(viewModel.currentState.unexpectedResponse).isNull()
+            verify(unexpectedResponseTracker).trackActionTapped(UNEXPECTED_RESPONSE_FAILURE, Action.RETRY)
+        }
+
     private fun setup(savedStateHandle: SavedStateHandle = SavedStateHandle()) {
         viewModel = ApplicationPasswordTutorialViewModel(
             analyticsTracker = analyticsTracker,
+            unexpectedResponseTracker = unexpectedResponseTracker,
             userAgent = userAgent,
             savedState = savedStateHandle
         )
@@ -249,12 +303,14 @@ class ApplicationPasswordTutorialViewModelTest : BaseUnitTest() {
 
     private fun givenWebViewData(
         verifiedLoginUrl: String? = VERIFIED_LOGIN_URL,
-        applicationPasswordAuthorizationUrl: String = APPLICATION_PASSWORD_AUTHORIZATION_URL
+        applicationPasswordAuthorizationUrl: String = APPLICATION_PASSWORD_AUTHORIZATION_URL,
+        unexpectedResponse: LoginUnexpectedResponseFailure? = null
     ) {
         viewModel.onWebViewDataAvailable(
             verifiedLoginUrl = verifiedLoginUrl,
             applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
-            errorMessage = ERROR_MESSAGE
+            errorMessage = ERROR_MESSAGE,
+            unexpectedResponse = unexpectedResponse
         )
     }
 
@@ -274,5 +330,16 @@ class ApplicationPasswordTutorialViewModelTest : BaseUnitTest() {
                 "?app_name=woo_android&success_url=woocommerce://login"
         const val SUCCESS_URL = "woocommerce://login?user_login=merchant&password=application-password"
         const val ERROR_MESSAGE = "Native authentication failed"
+        val UNEXPECTED_RESPONSE_FAILURE = LoginUnexpectedResponseFailure(
+            flow = LoginUnexpectedResponseFailure.Flow.SITE_CREDENTIALS,
+            step = LoginUnexpectedResponseFailure.Step.LOGIN_PAGE,
+            response = UnexpectedStoreResponse(
+                kind = UnexpectedStoreResponseKind.UNEXPECTED_CONTENT,
+                statusCode = 202,
+                contentType = "text/html",
+                requestType = "GET /wp-login.php",
+                excerpt = null
+            )
+        )
     }
 }
