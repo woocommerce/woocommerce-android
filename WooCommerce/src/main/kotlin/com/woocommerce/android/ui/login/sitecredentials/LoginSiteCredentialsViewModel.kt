@@ -24,6 +24,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -799,6 +800,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     data class ShowApplicationPasswordTutorialScreen(
         val verifiedLoginUrl: String?,
         val applicationPasswordAuthorizationUrl: String,
-        val errorMessage: String
+        val errorMessage: String,
+        val unexpectedResponse: LoginUnexpectedResponseFailure? = null
     ) : MultiLiveEvent.Event()
 }

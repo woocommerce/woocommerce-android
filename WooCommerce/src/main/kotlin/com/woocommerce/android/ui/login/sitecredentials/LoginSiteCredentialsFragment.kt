@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsView
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowNonWooErrorScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowResetPasswordScreen
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
@@ -96,7 +97,8 @@ class LoginSiteCredentialsFragment : Fragment() {
                     passwordTutorialListener?.onApplicationPasswordHelpRequired(
                         verifiedLoginUrl = it.verifiedLoginUrl,
                         applicationPasswordAuthorizationUrl = it.applicationPasswordAuthorizationUrl,
-                        errorMessage = it.errorMessage
+                        errorMessage = it.errorMessage,
+                        unexpectedResponse = it.unexpectedResponse
                     )
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(it.message)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -134,7 +136,8 @@ class LoginSiteCredentialsFragment : Fragment() {
         fun onApplicationPasswordHelpRequired(
             verifiedLoginUrl: String?,
             applicationPasswordAuthorizationUrl: String,
-            errorMessage: String
+            errorMessage: String,
+            unexpectedResponse: LoginUnexpectedResponseFailure?
         )
     }
 }
