@@ -4,10 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
+import com.google.android.gms.common.api.CommonStatusCodes;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -28,6 +32,9 @@ import dagger.android.support.AndroidSupportInjection;
 public class LoginGoogleFragment extends GoogleFragment {
     private static final String ARG_SIGNUP_FROM_LOGIN_ENABLED = "ARG_SIGNUP_FROM_LOGIN_ENABLED";
     private static final int REQUEST_LOGIN = 1001;
+    private static final String FAILURE_SOURCE_RESULT_OK_ERROR = "result_ok_error";
+    private static final String FAILURE_SOURCE_RESULT_CANCELED = "result_canceled";
+    private static final String FAILURE_SOURCE_RESULT_UNKNOWN = "result_unknown";
     private boolean mLoginRequested = false;
     private boolean mIsSignupFromLoginEnabled;
 
@@ -106,7 +113,7 @@ public class LoginGoogleFragment extends GoogleFragment {
                         }
                     } else {
                         AppLog.d(T.MAIN, "GOOGLE LOGIN: Google has returned a sign in result - error");
-                        mAnalyticsListener.trackSocialButtonFailure();
+                        trackSocialButtonFailure(FAILURE_SOURCE_RESULT_OK_ERROR, loginResult);
                         switch (loginResult.getStatus().getStatusCode()) {
                             // Internal error.
                             case GoogleSignInStatusCodes.INTERNAL_ERROR:
@@ -152,17 +159,49 @@ public class LoginGoogleFragment extends GoogleFragment {
                     }
                 } else if (result == RESULT_CANCELED) {
                     AppLog.d(T.MAIN, "GOOGLE LOGIN: Google has returned a sign in result - canceled");
-                    mAnalyticsListener.trackSocialButtonFailure();
+                    trackSocialButtonFailure(FAILURE_SOURCE_RESULT_CANCELED, getSignInResult(data));
                     AppLog.e(T.NUX, "Google Login Failed: result was CANCELED.");
                     finishFlow();
                 } else {
                     AppLog.d(T.MAIN, "GOOGLE LOGIN: Google has returned a sign in result - unknown");
-                    mAnalyticsListener.trackSocialButtonFailure();
+                    trackSocialButtonFailure(FAILURE_SOURCE_RESULT_UNKNOWN, getSignInResult(data));
                     AppLog.e(T.NUX, "Google Login Failed: result was not OK or CANCELED.");
                     showError(getString(R.string.login_error_generic));
                 }
 
                 break;
+        }
+    }
+
+    @Nullable
+    private GoogleSignInResult getSignInResult(@Nullable Intent data) {
+        return data != null ? Auth.GoogleSignInApi.getSignInResultFromIntent(data) : null;
+    }
+
+    private void trackSocialButtonFailure(@NonNull String source, @Nullable GoogleSignInResult signInResult) {
+        if (signInResult == null) {
+            mAnalyticsListener.trackSocialButtonFailure(source, null, null, null);
+            return;
+        }
+        int statusCode = signInResult.getStatus().getStatusCode();
+        String statusName = getStatusName(statusCode);
+        String statusMessage = signInResult.getStatus().getStatusMessage();
+        AppLog.e(T.NUX, "Google Login Failed: " + source + " - " + statusCode + " " + statusName
+                        + " - " + statusMessage);
+        mAnalyticsListener.trackSocialButtonFailure(source, statusCode, statusName, statusMessage);
+    }
+
+    @NonNull
+    private String getStatusName(int statusCode) {
+        switch (statusCode) {
+            case GoogleSignInStatusCodes.SIGN_IN_FAILED:
+                return "SIGN_IN_FAILED";
+            case GoogleSignInStatusCodes.SIGN_IN_CANCELLED:
+                return "SIGN_IN_CANCELLED";
+            case GoogleSignInStatusCodes.SIGN_IN_CURRENTLY_IN_PROGRESS:
+                return "SIGN_IN_CURRENTLY_IN_PROGRESS";
+            default:
+                return CommonStatusCodes.getStatusCodeString(statusCode);
         }
     }
 

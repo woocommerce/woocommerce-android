@@ -22,3 +22,7 @@ Icon(
     contentDescription = null,
 )
 ```
+
+For all three weights, import Figma's `Share Nodes` icon as `WooIcons.<style>.Share` and
+`woo_ds_ic_<style>_share_24dp`. The iOS-style upward-arrow `Share` icon is intentionally excluded.
+Preserve this mapping on future icon imports so `Share` continues to use the Android glyph.

@@ -471,9 +471,12 @@ open class SiteStore @Inject constructor(
             when (site.origin) {
                 SiteModel.ORIGIN_WPCOM_REST -> updateSite(siteRestClient.fetchSite(site))
                 SiteModel.ORIGIN_WPAPI -> updateSite(siteWPAPIRestClient.fetchWPAPISite(site))
-                else -> {
-                    reportXmlrpcTry()
-                    OnSiteChanged(SiteError(SiteErrorType.GENERIC_ERROR))
+                else -> updateSite(siteWPAPIRestClient.fetchWPAPISite(site)).also { result ->
+                    if (result.isError) {
+                        reportSiteMigrationFailed(site.origin, result.error)
+                    } else {
+                        reportSiteMigrated(site.origin)
+                    }
                 }
             }
         }
@@ -721,11 +724,20 @@ open class SiteStore @Inject constructor(
         }
     }
 
-    private fun reportXmlrpcTry() {
+    // Sentry groups these reports by stack trace, not message, so each outcome has its own function and issue
+    private fun reportSiteMigrated(origin: Int) {
         crashLogger.get().sendReport(
             null,
-            emptyMap(),
-            "Requested SiteStore XMLRPC connection. This should not happen."
+            mapOf("origin" to origin.toString()),
+            "Migrated SiteStore site with origin $origin to WPAPI."
+        )
+    }
+
+    private fun reportSiteMigrationFailed(origin: Int, error: SiteError) {
+        crashLogger.get().sendReport(
+            null,
+            mapOf("origin" to origin.toString(), "error" to error.type.name),
+            "Failed to migrate SiteStore site with origin $origin to WPAPI: ${error.type}."
         )
     }
 }

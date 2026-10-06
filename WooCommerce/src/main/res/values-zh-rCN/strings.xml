@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-08 09:54:23+0000
+Translation-Revision-Date: 2026-09-22 11:56:10+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_reason_unsupported_country_generic">您商店所在的国家/地区暂不支持该 POS 系统。 请检查您的商店地址设置或联系支持人员寻求帮助。</string>
+    <string name="woopos_eligibility_reason_unsupported_country">%1$s 暂不支持该 POS 系统。 请检查您的商店地址设置或联系支持人员寻求帮助。</string>
+    <string name="woo_push_notifications_introduction_error_offline_mode_body">由于您的商店处于离线模式，因此无法设置推送通知。 如果您仍然需要帮助，请联系支持人员。</string>
+    <string name="order_refunds_refunded_items">已退款商品</string>
+    <string name="login_not_wordpress_site_title">不是 WordPress 站点</string>
+    <string name="https_configuration_warning_dismiss">忽略 HTTPS 安全通知</string>
+    <string name="https_configuration_warning_message">您的商店支持 HTTPS，但其地址配置为使用 HTTP。 将其更新为 HTTPS，以保护您的商店并避免连接问题。</string>
+    <string name="https_configuration_warning_title">通过 HTTPS 保护您的商店</string>
     <string name="age_verification_open_google_play">打开 Google Play</string>
     <string name="age_verification_required_message">在 WooCommerce 检查您是否可以使用该应用程序之前，Google Play 需要您先验证年龄。请在 Google Play 中完成验证，然后返回此处重试。</string>
     <string name="age_verification_required_title">请验证您的年龄以继续</string>
@@ -924,8 +932,12 @@ Language: zh_CN
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">英国</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">美国</string>
     <string name="woopos_eligibility_screen_unable_to_load">无法加载</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">POS 系统暂不支持您的商店所使用的货币。 请检查您的商店货币设置或联系支持人员寻求帮助。</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS 系统暂不支持您的商店所使用的货币。 在 %1$s，它目前仅支持 %2$s。 请检查您的商店货币设置或联系支持人员寻求帮助。</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">必须启用销售点才能继续。 请在您的 WordPress 管理后台中前往“WooCommerce 设置 &gt; 高级 &gt; 功能”，以启用 POS 功能，然后重试。</string>
     <string name="woopos_eligibility_reason_check_connection">请检查您的互联网连接并尝试重新启动应用程序。如果问题仍然存在，请联系支持人员。</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">您的 WooCommerce 版本不受支持。 POS 系统需要 WooCommerce %1$s 或更高版本。 请将 WooCommerce 更新到最新版本。</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">请确保已在您的 WordPress 管理后台中安装并启用 WooCommerce 插件。 如果问题仍然存在，请联系支持人员寻求帮助。</string>
     <string name="orderfilters_sales_channel_filter">销售渠道</string>
     <string name="barcode_ean13_content_description">条形码 EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">特殊处理</string>
@@ -2791,7 +2803,7 @@ Language: zh_CN
     <string name="coupon_details_menu_share">共享优惠券</string>
     <string name="coupon_details_menu_copy">复制优惠券代码</string>
     <string name="inbox_note_survey_actioned">感谢您的反馈！</string>
-    <string name="card_reader_connect_permission_rationale_hint">读卡器付款需要访问确切位置的权限</string>
+    <string name="card_reader_connect_permission_rationale_hint">使用读卡器付款需要位置权限</string>
     <string name="card_reader_connect_permission_rationale_header">需要位置访问权限</string>
     <string name="simple_payments_share_payment_dialog_title">结账 - %s</string>
     <string name="simple_payments_share_payment_link">分享付款链接</string>
@@ -3299,7 +3311,7 @@ Language: zh_CN
     <string name="card_reader_connect_open_permission_settings">打开设置</string>
     <string name="card_reader_connect_bluetooth_disabled_header">蓝牙已禁用</string>
     <string name="card_reader_connect_location_provider_disabled_header">位置已禁用</string>
-    <string name="card_reader_connect_missing_permissions_header">缺少必需的确切位置权限</string>
+    <string name="card_reader_connect_missing_permissions_header">缺少所需的位置权限</string>
     <string name="card_reader_connect_connecting_header">正在连接阅读器</string>
     <string name="card_reader_connect_to_reader">连接阅读器</string>
     <string name="card_reader_connect_reader_found_header">是否要连接阅读器 %s？</string>
