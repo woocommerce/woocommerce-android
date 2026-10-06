@@ -423,7 +423,10 @@ private fun LabelCreationScreenWithBottomSheet(
                 }
             }
 
-            val actionSnackbarMessage = snackbarData?.let { stringResource(it.message) }
+            @Suppress("SpreadOperator")
+            val actionSnackbarMessage = snackbarData?.let {
+                stringResource(it.message, *it.messageParameters.toTypedArray())
+            }
             val actionSnackbarActionLabel = snackbarData?.let { stringResource(it.actionLabel) }
 
             LaunchedEffect(snackbarData) {

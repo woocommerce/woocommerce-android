@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.HazmatState
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToDestinationAddressEdit
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToFedExTermsOfService
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToHazmatFormEdit
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToOriginAddressEdit
@@ -1183,6 +1184,54 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         }
         verifyNoInteractions(purchaseShippingLabel)
     }
+
+    @Test
+    fun `given a domestic shipment with a blank recipient phone and a FedEx rate, when purchase is tapped, then show the FedEx phone snackbar`() =
+        testBlocking {
+            val fedExRate = defaultShippingRates.getValue(defaultCarrier).first().copy(
+                title = "FedEx Ground Economy",
+                options = mapOf(
+                    ShippingRateOption.DEFAULT to defaultShippableItemUI.copy(
+                        rate = defaultShippingRate.copy(
+                            carrierId = "fedex",
+                            carrier = WooShippingCarrier.FEDEX
+                        )
+                    )
+                )
+            )
+            whenever(getShippingRates(any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull()))
+                .thenReturn(
+                    Result.success(
+                        mapOf(CarrierUI(WooShippingCarrier.FEDEX, "FedEx") to listOf(fedExRate))
+                    )
+                )
+            whenever(addressValidationHelper.validatePhone(eq(""), any(), eq(true))).doReturn("required")
+
+            createViewModel()
+
+            val ratesState = sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last().let { viewState ->
+                (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+            }
+
+            ratesState.onSelectedShippingRateChanged(fedExRate)
+            advanceUntilIdle()
+
+            sut.onPurchaseShippingLabel()
+
+            assertThat(sut.snackbarData?.message)
+                .isEqualTo(R.string.woo_shipping_labels_purchase_phone_required_by_service)
+            assertThat(sut.snackbarData?.messageParameters).isEqualTo(listOf("FedEx Ground Economy"))
+            verifyNoInteractions(purchaseShippingLabel)
+
+            val events = sut.event.captureValues()
+            sut.snackbarData?.action?.invoke()
+
+            val event = events.last() as NavigateToDestinationAddressEdit
+            assertThat(event.originCountryCode).isEqualTo(defaultOriginAddresses.first().country)
+        }
 
     @Test
     fun `when edit origin snackbar action is tapped, then dismiss snackbar and navigate to edit origin`() = testBlocking {

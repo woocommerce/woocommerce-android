@@ -53,6 +53,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIMode
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.toAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
@@ -1014,8 +1015,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val shipTo = selectedAddress.shipTo.address
         val isInternational =
             addressValidationHelper.isInternationalShipment(selectedAddress.shipFrom.country, shipTo.country.code)
-        if (addressValidationHelper.validatePhone(shipTo.phone, shipTo.country.code, isInternational) != null) {
-            showPurchasePhoneErrorSnackbar(selectedAddress.shipTo)
+        val isPhoneRequired = isInternational || shippingRate.defaultRate.rate.carrier == WooShippingCarrier.FEDEX
+        if (addressValidationHelper.validatePhone(shipTo.phone, shipTo.country.code, isPhoneRequired) != null) {
+            val isMissingForFedEx = !isInternational && shipTo.phone.isBlank()
+            showPurchasePhoneErrorSnackbar(selectedAddress.shipTo, shippingRate.title.takeIf { isMissingForFedEx })
             return
         }
 
@@ -1071,9 +1074,17 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
-    private fun showPurchasePhoneErrorSnackbar(destinationAddress: DestinationShippingAddress) {
+    private fun showPurchasePhoneErrorSnackbar(
+        destinationAddress: DestinationShippingAddress,
+        serviceRequiringPhone: String? = null
+    ) {
         snackbarData = ShippingLabelsSnackbarData(
-            message = R.string.woo_shipping_labels_purchase_phone_error,
+            message = if (serviceRequiringPhone != null) {
+                R.string.woo_shipping_labels_purchase_phone_required_by_service
+            } else {
+                R.string.woo_shipping_labels_purchase_phone_error
+            },
+            messageParameters = listOfNotNull(serviceRequiringPhone),
             actionLabel = R.string.edit,
         ) {
             snackbarData = null
