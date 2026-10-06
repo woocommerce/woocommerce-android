@@ -345,11 +345,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             Pair(order, shipments[selectedIndex].label?.destinationAddress)
         }.collectLatest { (order, labelDestination) ->
             val orderShippingEmail = order.shippingAddress.email.ifBlank { order.billingAddress.email }
+            val orderShippingPhone = order.shippingAddress.phone.ifBlank { order.billingAddress.phone }
 
             if (labelDestination == null) {
                 if (destinationAddress.value == DestinationShippingAddress.EMPTY) {
                     val defaultDestination = DestinationShippingAddress(
-                        address = order.shippingAddress.copy(email = orderShippingEmail),
+                        address = order.shippingAddress.copy(email = orderShippingEmail, phone = orderShippingPhone),
                         isVerified = false
                     )
                     destinationAddress.value = defaultDestination

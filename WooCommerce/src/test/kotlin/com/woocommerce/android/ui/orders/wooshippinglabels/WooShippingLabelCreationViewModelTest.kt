@@ -449,6 +449,48 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given a blank shipping phone and a billing phone, when the address can't be verified, then use the billing phone`() =
+        testBlocking {
+            val billingPhone = "555-555-5555"
+            val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+                shippingLines = defaultShippingLines,
+                customer = Order.Customer(
+                    billingAddress = defaultShipToAddress.copy(phone = billingPhone),
+                    shippingAddress = defaultShipToAddress.copy(phone = "")
+                )
+            )
+            whenever(orderDetailRepository.getOrderById(any())) doReturn order
+            whenever(verifyDestinationAddress.invoke(orderId)) doReturn Result.failure(Exception())
+
+            createViewModel()
+            advanceUntilIdle()
+
+            val dataState = sut.viewState.value as DataState
+            assertThat(dataState.shippingAddresses.first().shipTo.address.phone).isEqualTo(billingPhone)
+        }
+
+    @Test
+    fun `given a shipping phone and a billing phone, when the address can't be verified, then keep the shipping phone`() =
+        testBlocking {
+            val shippingPhone = "333-333-3333"
+            val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+                shippingLines = defaultShippingLines,
+                customer = Order.Customer(
+                    billingAddress = defaultShipToAddress.copy(phone = "555-555-5555"),
+                    shippingAddress = defaultShipToAddress.copy(phone = shippingPhone)
+                )
+            )
+            whenever(orderDetailRepository.getOrderById(any())) doReturn order
+            whenever(verifyDestinationAddress.invoke(orderId)) doReturn Result.failure(Exception())
+
+            createViewModel()
+            advanceUntilIdle()
+
+            val dataState = sut.viewState.value as DataState
+            assertThat(dataState.shippingAddresses.first().shipTo.address.phone).isEqualTo(shippingPhone)
+        }
+
+    @Test
     fun `when shipping rates succeed then display the shipping rates`() = testBlocking {
         whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
         whenever(
