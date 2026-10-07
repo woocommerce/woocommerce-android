@@ -108,7 +108,7 @@ class SitePickerFragment :
 
     override fun onResume() {
         super.onResume()
-        viewModel.restoreEpilogueFlow()
+        viewModel.restoreEpilogueTracking()
     }
 
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
