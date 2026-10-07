@@ -60,7 +60,6 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     private val navArgs: SitePickerSiteDiscoveryFragmentArgs by savedStateHandle.navArgs()
 
     init {
-        // The picker also opens from the store switcher, which is not a login journey.
         if (navArgs.openedFromLogin) {
             unifiedLoginTracker.track(
                 flow = UnifiedLoginTracker.Flow.SITE_DISCOVERY,
