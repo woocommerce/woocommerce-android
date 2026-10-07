@@ -8,5 +8,7 @@
   build: {
     pipeline: 'woocommerce-android', pipeline_file: 'release-builds.yml',
     boolean_options: { include_wear_app: 'INCLUDE_WEAR_APP' }
-  }
+  },
+  preparation: { freeze_completion: :prepare_code_freeze },
+  check_toolkit_updates: true
 }
