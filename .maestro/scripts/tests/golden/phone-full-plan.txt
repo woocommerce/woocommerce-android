@@ -11,7 +11,6 @@ Selected flows:
   - .maestro/flows/login_not_wp_site.yaml
   - .maestro/flows/login_wrong_credentials.yaml
   - .maestro/flows/login_help.yaml
-  - .maestro/flows/login_not_woo_store.yaml
   - .maestro/flows/login_wrong_account.yaml
   - .maestro/flows/login_no_jetpack.yaml
   - .maestro/flows/login_google.yaml
@@ -37,5 +36,6 @@ Selected flows:
   - .maestro/flows/hub_menu_coupons.yaml
   - .maestro/flows/hub_menu_customers_inbox.yaml
   - .maestro/flows/blaze_campaign.yaml
+  - .maestro/flows/login_not_woo_store.yaml (shared store)
   - .maestro/flows/hub_menu_admin_and_store.yaml (shared store)
   - .maestro/flows/google_for_woo.yaml (shared store)

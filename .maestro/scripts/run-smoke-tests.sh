@@ -604,14 +604,6 @@ for flow in ${SHARED_FLOWS[@]+"${SHARED_FLOWS[@]}"}; do
   fi
 done
 
-is_optional_flow_env_ref() {
-  local flow="$1"
-  local ref="$2"
-  [[ "$(basename "$flow")" == "login_not_woo_store.yaml" ]] &&
-    [[ "$ref" == "MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL" ||
-      "$ref" == "MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD" ]]
-}
-
 # Store values come from the selected store's block, so errors name that block's variable.
 scoped_env_name() {
   local upper
@@ -631,7 +623,6 @@ validate_referenced_env() {
   for flow in "${ORDERED_FLOWS[@]}"; do
     while IFS= read -r ref; do
       [[ -z "$ref" ]] && continue
-      is_optional_flow_env_ref "$flow" "$ref" && continue
       var="$ref"
       if [[ -z "${!var:-}" ]]; then
         missing+=("$(scoped_env_name "$var")")
@@ -657,34 +648,6 @@ for store in "${RUN_STORES[@]}"; do
   validate_referenced_env
 done
 use_all_flows
-
-validate_optional_not_woo_wpcom_env() {
-  local flow selected="no"
-  for flow in "${ORDERED_FLOWS[@]}"; do
-    if [[ "$(basename "$flow")" == "login_not_woo_store.yaml" ]]; then
-      selected="yes"
-      break
-    fi
-  done
-  [[ "$selected" == "yes" ]] || return 0
-
-  local email="${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL:-}"
-  local password="${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD:-}"
-  local host
-  host="$(url_host "${MAESTRO_WOO_NOT_A_WOO_STORE_URL:-}")"
-  if [[ "$host" == "wordpress.com" || "$host" == *.wordpress.com ]]; then
-    if [[ -z "$email" || -z "$password" ]]; then
-      echo "WordPress.com-hosted not-Woo-store fixtures require both MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL and MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD." >&2
-      exit 1
-    fi
-    return 0
-  fi
-  if [[ -n "$email" && -z "$password" ]] || [[ -z "$email" && -n "$password" ]]; then
-    echo "Missing optional WP.com fallback pair: set both MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL and MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD, or leave both blank." >&2
-    exit 1
-  fi
-}
-validate_optional_not_woo_wpcom_env
 
 flow_is_selected() {
   local expected="$1"

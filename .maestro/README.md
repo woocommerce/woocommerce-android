@@ -19,8 +19,8 @@ selected flow against one store instead.
 
 The no-Jetpack login scenario uses its own `MAESTRO_WOO_NO_JETPACK_*` variables. Do not reuse those Jurassic Ninja
 site credentials as the `lab` store block when running the broader suite. The runner removes a trailing
-`/wp-admin` or `/wp-admin/` from this flow's site URL. WordPress.com-hosted not-Woo fixtures require the dedicated
-`MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL/PASSWORD` pair.
+`/wp-admin` or `/wp-admin/` from this flow's site URL. The not-Woo store login runs against the shared store and
+logs in to a WordPress.com-hosted site with that store's account.
 
 The runner refuses destructive flows against the shared store. Run them with `--store lab`.
 

@@ -62,12 +62,7 @@ def referenced_env(flows: list[Path], seed: bool) -> set[str]:
     refs: set[str] = set()
     for flow in flows:
         text = flow.read_text(errors="replace")
-        flow_refs = set(REF_RE.findall(text))
-        if flow.name == "login_not_woo_store.yaml":
-            flow_refs.difference_update(
-                {"WOO_NOT_A_WOO_STORE_WPCOM_EMAIL", "WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD"}
-            )
-        refs.update(flow_refs)
+        refs.update(REF_RE.findall(text))
         if SUBFLOW_LOGIN_RE.search(text):
             refs.update({"WOO_JETPACK_STORE_URL", "WOO_WPCOM_EMAIL", "WOO_WPCOM_PASSWORD"})
     if seed:
@@ -226,24 +221,6 @@ def main() -> int:
             checks.append(
                 Check("ok", f"all {len(refs)} referenced WOO_* env value(s) for the {store} store are available")
             )
-
-    if any(flow.name == "login_not_woo_store.yaml" for flow in flows):
-        wpcom_fallback = [
-            has_value(env, candidates_for("WOO_NOT_A_WOO_STORE_WPCOM_EMAIL", "lab")),
-            has_value(env, candidates_for("WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD", "lab")),
-        ]
-        not_woo_url = env.get("MAESTRO_WOO_NOT_A_WOO_STORE_URL", "")
-        not_woo_host = url_host(not_woo_url)
-        if not_woo_host == "wordpress.com" or not_woo_host.endswith(".wordpress.com"):
-            if not all(wpcom_fallback):
-                checks.append(
-                    Check(
-                        "fail",
-                        "WordPress.com-hosted not-Woo-store fixture requires WP.com email and password",
-                    )
-                )
-        elif any(wpcom_fallback) and not all(wpcom_fallback):
-            checks.append(Check("fail", "not-Woo-store WP.com fallback requires both email and password"))
 
     no_jetpack_url = next((env[name] for name in candidates_for("WOO_NO_JETPACK_SITE_URL", "lab") if env.get(name)), "")
     for store in stores:

@@ -3,23 +3,19 @@
 # P2 ref: Login > Not a Woo store (notawoostore.wordpress.com)
 #
 # Logs into a WordPress site that does NOT have WooCommerce installed.
-# Site-admin credentials are preferred, with WP.com credentials used when
-# the site routes through WordPress.com authentication instead.
+# Site-admin credentials are preferred, with the shared store's WP.com account
+# used when the site routes through WordPress.com authentication instead.
 #
 # Required env vars:
 #   MAESTRO_WOO_NOT_A_WOO_STORE_URL
 #   MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME
 #   MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD
-#
-# WP.com env vars (set both or neither). Required when the fixture is hosted
-# on wordpress.com; optional for self-hosted sites that expose site credentials:
-#   MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL
-#   MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD
 appId: com.woocommerce.android
 name: "Login - Not a WooCommerce store error"
 tags:
   - smoke_core
   - login
+  - store_shared
 ---
 - launchApp:
     clearState: true
@@ -80,7 +76,7 @@ tags:
     commands:
       - tapOn:
           id: "input"
-      - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL}
+      - inputText: ${MAESTRO_WOO_WPCOM_EMAIL}
       - runFlow:
           file: ../subflows/hide_keyboard.yaml
           env:
@@ -102,7 +98,7 @@ tags:
                 id: "input"
                 childOf:
                   id: "login_password_row"
-            - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD}
+            - inputText: ${MAESTRO_WOO_WPCOM_PASSWORD}
             - runFlow:
                 file: ../subflows/hide_keyboard.yaml
                 env:
@@ -115,7 +111,7 @@ tags:
                 timeout: 30000
       # WP.com can refuse the email login, before or after the password, and open
       # the magic link screen. Its fallback button opens the WP.com username and
-      # password screen, which also takes the email.
+      # password screen.
       - runFlow:
           when:
             visible:
@@ -127,12 +123,12 @@ tags:
                 id: "input"
                 childOf:
                   id: "login_username_row"
-            - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL}
+            - inputText: ${MAESTRO_WOO_WPCOM_USERNAME}
             - tapOn:
                 id: "input"
                 childOf:
                   id: "login_password_row"
-            - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD}
+            - inputText: ${MAESTRO_WOO_WPCOM_PASSWORD}
             - runFlow:
                 file: ../subflows/hide_keyboard.yaml
                 env:
