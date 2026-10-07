@@ -7,8 +7,8 @@ This module owns design-system icon drawables for store UI components.
 - Figma source: `Woo Mobile Design System` (`50XIH5MmOf4xUYEkM6fAm6`), node `920:6067` (`Icons`)
 - Resource naming: `woo_ds_ic_<style>_<name>_24dp`
 - Current style buckets: `light`, `regular`, `solid`
-- Current import scope: source-backed 24dp icons from the Figma `Icons` node: `106` light,
-  `106` regular, and `106` solid drawables
+- Current import scope: source-backed 24dp icons from the Figma `Icons` node: `108` light,
+  `108` regular, and `108` solid drawables
 - Duplicate Figma group names that render identically are imported once under the unsuffixed name.
 
 Use these drawables from later component branches instead of copying app-module icons into
@@ -22,3 +22,7 @@ Icon(
     contentDescription = null,
 )
 ```
+
+For all three weights, import Figma's `Share Nodes` icon as `WooIcons.<style>.Share` and
+`woo_ds_ic_<style>_share_24dp`. The iOS-style upward-arrow `Share` icon is intentionally excluded.
+Preserve this mapping on future icon imports so `Share` continues to use the Android glyph.

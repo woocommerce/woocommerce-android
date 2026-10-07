@@ -5,14 +5,16 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.inOrder
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
-import org.wordpress.android.fluxc.logging.FakeCrashLogging
+import org.wordpress.android.fluxc.logging.FluxCCrashLogger
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
 import org.wordpress.android.fluxc.model.asDomainModel
@@ -52,6 +54,7 @@ class SiteStoreTest {
     private val plansSuccessResponse: Response.Success<PlansResponse> = mock()
     private val domainsErrorResponse: Response.Error<DomainsResponse> = mock()
     private val plansErrorResponse: Response.Error<PlansResponse> = mock()
+    private val crashLogger: FluxCCrashLogger = mock()
     private lateinit var siteStore: SiteStore
 
     private val siteStorePersistence: SiteStorePersistence = mock {
@@ -68,7 +71,7 @@ class SiteStoreTest {
             siteStorePersistence,
             domainsDao,
             initCoroutineEngine()
-        ) { FakeCrashLogging }
+        ) { crashLogger }
     }
 
     @Test
@@ -95,11 +98,30 @@ class SiteStoreTest {
     }
 
     @Test
-    fun `fetchSite for site without a REST origin returns error`() = test {
+    fun `given XMLRPC site, when fetchSite, then store it from WPAPI endpoint and report the migration`() = test {
         val site = SiteModel()
-        site.setIsWPCom(false)
+        site.origin = SiteModel.ORIGIN_XMLRPC
+        val updatedSite = SiteModel()
+        whenever(siteWPAPIClient.fetchWPAPISite(site)).thenReturn(updatedSite)
+
+        assertSiteFetched(updatedSite, site)
+        verify(crashLogger).sendReport(isNull(), eq(mapOf("origin" to SiteModel.ORIGIN_XMLRPC.toString())), any())
+    }
+
+    @Test
+    fun `given XMLRPC site and failing WPAPI refresh, when fetchSite, then return error and report the failure`() = test {
+        val site = SiteModel()
+        site.origin = SiteModel.ORIGIN_XMLRPC
+        val errorSite = SiteModel()
+        errorSite.error = BaseNetworkError(NETWORK_ERROR)
+        whenever(siteWPAPIClient.fetchWPAPISite(site)).thenReturn(errorSite)
 
         assertSiteFetchError(site)
+        verify(crashLogger).sendReport(
+            isNull(),
+            eq(mapOf("origin" to SiteModel.ORIGIN_XMLRPC.toString(), "error" to GENERIC_ERROR.name)),
+            any()
+        )
     }
 
     private suspend fun assertSiteFetchError(site: SiteModel) {

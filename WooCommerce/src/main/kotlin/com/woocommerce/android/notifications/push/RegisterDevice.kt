@@ -76,6 +76,16 @@ class RegisterDevice @Inject constructor(
         }
     }
 
+    suspend fun cancelInProgressRegistration() {
+        if (activeJob != null) {
+            WooLog.d(WooLog.T.NOTIFICATIONS, "Cancelling in-progress push registration")
+            activeJob?.cancel()
+        }
+
+        // Queued runs aren't cancelled, so wait for them and the cancelled run to finish.
+        orchestrationMutex.withLock {}
+    }
+
     @Suppress("TooGenericExceptionCaught")
     private suspend fun register(trigger: Trigger) {
         val token = appPrefsWrapper.getFCMToken()
@@ -84,7 +94,7 @@ class RegisterDevice @Inject constructor(
             return
         }
 
-        val shouldForce = trigger == Trigger.TOKEN_REFRESH
+        val shouldForce = trigger == Trigger.TOKEN_REFRESH || trigger == Trigger.TROUBLESHOOTING
 
         // For WPCom, site switching doesn't affect registration
         val shouldEvaluateWpCom = trigger != Trigger.SITE_SWITCH &&
@@ -110,29 +120,22 @@ class RegisterDevice @Inject constructor(
         }
 
         if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
-            val sites = when (trigger) {
-                Trigger.LOGIN_SUCCESS,
-                Trigger.TOKEN_REFRESH -> getWooVisibleSites()
-
-                Trigger.APP_FOREGROUND,
-                Trigger.SITE_SWITCH -> listOfNotNull(selectedSite.getIfExists())
-            }
+            val sites = getSitesForTrigger(trigger)
             supervisorScope {
                 sites.map { site ->
                     async {
                         val shouldRegisterSite = shouldForce ||
-                            pushNotificationRepository.shouldRegisterWooPushForSite(token, site.siteId)
+                            pushNotificationRepository.shouldRegisterWooPush(token, site)
 
                         if (shouldRegisterSite) {
-                            pushNotificationRepository.clearWooPushRegistrationForStaleToken(site.siteId, token)
+                            pushNotificationRepository.clearWooPushRegistrationForStaleToken(site, token)
                             WooLog.d(
                                 WooLog.T.NOTIFICATIONS,
                                 "Registering Woo push for site ${site.siteId} for $trigger"
                             )
                             pushNotificationRepository.registerPushTokenInWooCoreSystem(
                                 token = token,
-                                selectedSite = site,
-                                allowWpComFallback = false
+                                selectedSite = site
                             )
                         }
                     }
@@ -142,6 +145,16 @@ class RegisterDevice @Inject constructor(
             migrateWooPushRegistrationsToWpCom(trigger, token)
         }
     }
+
+    private suspend fun getSitesForTrigger(trigger: Trigger) =
+        when (trigger) {
+            Trigger.LOGIN_SUCCESS,
+            Trigger.TOKEN_REFRESH,
+            Trigger.APP_FOREGROUND -> getWooVisibleSites()
+
+            Trigger.SITE_SWITCH,
+            Trigger.TROUBLESHOOTING -> listOfNotNull(selectedSite.getIfExists())
+        }
 
     private suspend fun migrateWooPushRegistrationsToWpCom(trigger: Trigger, token: String) {
         if (trigger == Trigger.SITE_SWITCH) return
@@ -188,6 +201,7 @@ class RegisterDevice @Inject constructor(
         LOGIN_SUCCESS,
         APP_FOREGROUND,
         SITE_SWITCH,
-        TOKEN_REFRESH
+        TOKEN_REFRESH,
+        TROUBLESHOOTING
     }
 }

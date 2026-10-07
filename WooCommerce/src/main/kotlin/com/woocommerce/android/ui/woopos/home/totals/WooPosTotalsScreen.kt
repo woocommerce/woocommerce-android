@@ -642,6 +642,16 @@ private fun TotalsGrid(totals: Totals.Visible) {
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
+        totals.orderCustomAmountsText?.let {
+            TotalsGridRow(
+                textOne = stringResource(R.string.woopos_payment_custom_amounts_label),
+                textTwo = it,
+                colorOne = WooPosTheme.colors.onSurfaceVariantHighest,
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+        }
+
         totals.orderDiscountText?.let {
             TotalsGridRow(
                 textOne = stringResource(R.string.woopos_payment_discount_label),
@@ -824,6 +834,7 @@ fun WooPosTotalsScreenPreview(modifier: Modifier = Modifier) {
                     orderTotalText = "$462.00",
                     orderTaxText = "$42.00",
                     orderDiscountText = "$20.00",
+                    orderCustomAmountsText = "$12.50",
                 ),
                 readerStatus = WooPosTotalsViewState.ReaderStatus.ReadyForPayment(
                     title = "Ready for payment",
@@ -847,6 +858,7 @@ fun WooPosTotalsScreenPhoneBackPreview(modifier: Modifier = Modifier) {
                     orderTotalText = "$462.00",
                     orderTaxText = "$42.00",
                     orderDiscountText = "$20.00",
+                    orderCustomAmountsText = null,
                 ),
                 readerStatus = WooPosTotalsViewState.ReaderStatus.ReadyForPayment(
                     title = "Ready for payment",
@@ -871,6 +883,7 @@ fun WooPosTotalsScreenPreviewReaderNotConnected(modifier: Modifier = Modifier) {
                     orderTotalText = "$462.00",
                     orderTaxText = "$42.00",
                     orderDiscountText = "$20.00",
+                    orderCustomAmountsText = null,
                 ),
                 readerStatus = WooPosTotalsViewState.ReaderStatus.Disconnected(
                     title = "Reader not connected",
@@ -895,6 +908,7 @@ fun WooPosTotalsScreenPreviewWithTapToPayPromoted() {
                     orderTotalText = "$462.00",
                     orderTaxText = "$42.00",
                     orderDiscountText = "$20.00",
+                    orderCustomAmountsText = null,
                 ),
                 readerStatus = WooPosTotalsViewState.ReaderStatus.Disconnected(
                     title = "Reader not connected",
@@ -920,6 +934,7 @@ fun WooPosTotalsScreenPreviewWithCashPaymentAvailable() {
                     orderTotalText = "$462.00",
                     orderTaxText = "$42.00",
                     orderDiscountText = null,
+                    orderCustomAmountsText = null,
                 ),
                 readerStatus = WooPosTotalsViewState.ReaderStatus.Disconnected(
                     title = "Reader not connected",
@@ -944,6 +959,7 @@ fun WooPosTotalsScreenPreviewNoCardPaymentSupported() {
                     orderTotalText = "$12.00",
                     orderTaxText = "$1.50",
                     orderDiscountText = null,
+                    orderCustomAmountsText = null,
                 ),
                 readerStatus = WooPosTotalsViewState.ReaderStatus.Unavailable,
                 isCardPaymentEnabledForCountry = false,
@@ -965,6 +981,7 @@ fun WooPosTotalsScreenPreviewForFreeOrders() {
                     orderTotalText = "$462.00",
                     orderTaxText = "$42.00",
                     orderDiscountText = "$20.00",
+                    orderCustomAmountsText = null,
                 ),
                 readerStatus = WooPosTotalsViewState.ReaderStatus.Unavailable,
             ),

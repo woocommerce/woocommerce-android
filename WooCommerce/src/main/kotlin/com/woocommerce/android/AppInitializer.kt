@@ -48,6 +48,7 @@ import com.woocommerce.android.ui.common.RefreshWPSettings
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.InvoluntaryLogoutReason
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.prefs.CrashReportingSettingSync
@@ -76,6 +77,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
@@ -206,12 +208,22 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             selectedSite.getIfExists()?.let { site ->
                 appCoroutineScope.launch {
                     wooCommerceStore.fetchWooCommerceSite(site).model?.let {
+                        val current = selectedSite.getOrNull()
                         if (!it.hasWooCommerce && it.connectionType == ApplicationPasswords) {
                             // The previously selected site doesn't have Woo anymore, take the user to the login screen
                             WooLog.w(T.LOGIN, "Selected site no longer has WooCommerce")
 
+                            analyticsTracker.track(
+                                AnalyticsEvent.ACCOUNT_INVOLUNTARY_LOGOUT,
+                                mapOf(
+                                    AnalyticsTracker.KEY_REASON to
+                                        InvoluntaryLogoutReason.WOOCOMMERCE_NOT_AVAILABLE.trackingValue
+                                )
+                            )
                             selectedSite.reset()
                             restartMainActivity()
+                        } else if (current?.id == it.id && current != it) {
+                            selectedSite.set(it)
                         }
                         if (it.connectionType != ApplicationPasswords && it.isApplicationPasswordsSupported) {
                             analyticsTracker.track(AnalyticsEvent.JETPACK_SITE_ELIGIBLE_FOR_APP_PASSWORD_SUPPORT)
@@ -394,8 +406,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     private fun monitorApplicationPasswordsStatus() {
-        suspend fun logUserOut() {
-            accountRepository.get().logout()
+        suspend fun logUserOut(reason: InvoluntaryLogoutReason) {
+            accountRepository.get().logoutInvoluntarily(reason)
             restartMainActivity()
         }
 
@@ -405,7 +417,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 .onEach {
                     if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
                         WooLog.w(T.LOGIN, "Application Passwords support has been disabled in the current site")
-                        logUserOut()
+                        logUserOut(InvoluntaryLogoutReason.APPLICATION_PASSWORDS_DISABLED)
                     }
                 }.launchIn(this)
 
@@ -415,7 +427,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 .onEach {
                     if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
                         WooLog.w(T.LOGIN, "Use is unauthorized to generate a new application password")
-                        logUserOut()
+                        logUserOut(InvoluntaryLogoutReason.APPLICATION_PASSWORD_UNAUTHORIZED)
                     }
                 }.launchIn(this)
         }
@@ -519,6 +531,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     fun observeSiteChangesForCatalogSync() {
         appCoroutineScope.launch {
             selectedSite.observe()
+                .distinctUntilChanged { old, new -> old?.id == new?.id }
                 .drop(1) // invoke only on site change not on app initialization
                 .collect { selectedSite ->
                     if (selectedSite != null) {

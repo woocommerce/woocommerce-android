@@ -17,6 +17,13 @@ Use the approved repo shorthand when writing docs:
 Do not expand the shorthand into raw Figma URLs in public repo docs. When using Figma tools, strip
 the `-fi` suffix and pass only the file key.
 
+## Android Icon Mapping
+
+For `light`, `regular`, and `solid` share icons, inspect and import Figma's `Share Nodes` asset under
+the Android name `Share`: `WooIcons.<style>.Share` and `woo_ds_ic_<style>_share_24dp`.
+The iOS-style upward-arrow `Share` asset is intentionally excluded. Preserve this mapping during
+future imports instead of importing assets solely by matching their Figma names.
+
 ## Discovery Flow
 
 Use live Figma discovery as the source of page and node IDs. Do not depend on local work notes as the

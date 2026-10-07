@@ -167,8 +167,21 @@ class LoginAnalyticsTracker(
         unifiedLoginTracker.trackClick(Click.LOGIN_WITH_GOOGLE)
     }
 
-    override fun trackSocialButtonFailure() {
-        AnalyticsTracker.track(AnalyticsEvent.LOGIN_SOCIAL_BUTTON_FAILURE)
+    override fun trackSocialButtonFailure(
+        source: String,
+        statusCode: Int?,
+        statusName: String?,
+        statusMessage: String?
+    ) {
+        AnalyticsTracker.track(
+            AnalyticsEvent.LOGIN_SOCIAL_BUTTON_FAILURE,
+            mapOf(
+                AnalyticsTracker.KEY_ERROR_CONTEXT to source,
+                AnalyticsTracker.KEY_ERROR_CODE to statusCode?.toString(),
+                AnalyticsTracker.KEY_ERROR_TYPE to (statusName ?: VALUE_NO_SIGN_IN_RESULT),
+                AnalyticsTracker.KEY_ERROR_DESC to statusMessage
+            ).filterValues { it != null }
+        )
     }
 
     override fun trackSocialConnectFailure() {
@@ -193,17 +206,16 @@ class LoginAnalyticsTracker(
 
     override fun trackUrlFormViewed() {
         AnalyticsTracker.track(AnalyticsEvent.LOGIN_URL_FORM_VIEWED)
-        val flow = if (unifiedLoginTracker.getFlow() == Flow.LOGIN_QR) Flow.LOGIN_QR else Flow.LOGIN_SITE_ADDRESS
-        unifiedLoginTracker.track(flow, Step.START)
+        unifiedLoginTracker.track(Flow.LOGIN_SITE_ADDRESS, Step.START)
     }
 
     override fun trackUrlHelpScreenViewed() {
         AnalyticsTracker.track(AnalyticsEvent.LOGIN_URL_HELP_SCREEN_VIEWED)
     }
 
-    override fun trackUsernamePasswordFormViewed() {
+    override fun trackUsernamePasswordFormViewed(isWpcom: Boolean) {
         AnalyticsTracker.track(AnalyticsEvent.LOGIN_USERNAME_PASSWORD_FORM_VIEWED)
-        unifiedLoginTracker.track(Flow.LOGIN_STORE_CREDS, Step.USERNAME_PASSWORD)
+        unifiedLoginTracker.track(usernamePasswordFlow(isWpcom), Step.USERNAME_PASSWORD)
     }
 
     override fun trackWpComBackgroundServiceUpdate(properties: Map<String, *>) {
@@ -325,8 +337,8 @@ class LoginAnalyticsTracker(
         unifiedLoginTracker.setStep(Step.MAGIC_LINK_REQUESTED)
     }
 
-    override fun usernamePasswordScreenResumed() {
-        unifiedLoginTracker.setStep(Step.USERNAME_PASSWORD)
+    override fun usernamePasswordScreenResumed(isWpcom: Boolean) {
+        unifiedLoginTracker.setFlowAndStep(usernamePasswordFlow(isWpcom), Step.USERNAME_PASSWORD)
     }
 
     override fun trackLogin2faNeeded() {
@@ -343,5 +355,12 @@ class LoginAnalyticsTracker(
 
     override fun trackUseSecurityKeyClicked() {
         AnalyticsTracker.track(AnalyticsEvent.LOGIN_USE_SECURITY_KEY_CLICKED)
+    }
+
+    private fun usernamePasswordFlow(isWpcom: Boolean) =
+        if (isWpcom) Flow.WORDPRESS_COM else Flow.LOGIN_STORE_CREDS
+
+    private companion object {
+        const val VALUE_NO_SIGN_IN_RESULT = "no_sign_in_result"
     }
 }

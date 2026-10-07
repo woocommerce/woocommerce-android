@@ -58,8 +58,8 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
 
         return when (response) {
             is WPAPIResponse.Success<ApplicationPasswordCreationResponse> -> {
-                response.data?.let {
-                    ApplicationPasswordCreationPayload(it.password, it.uuid)
+                response.data?.password?.let {
+                    ApplicationPasswordCreationPayload(it, response.data.uuid)
                 } ?: ApplicationPasswordCreationPayload(
                     BaseNetworkError(
                         GenericErrorType.UNKNOWN,

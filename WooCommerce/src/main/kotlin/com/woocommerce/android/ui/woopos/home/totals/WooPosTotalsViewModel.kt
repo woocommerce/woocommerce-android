@@ -1158,6 +1158,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private suspend fun buildWooPosTotalsViewState(order: Order): WooPosTotalsViewState.Checkout {
         val discountAmount = order.discountTotal
         val subtotalAmount = order.productsTotal
+        val customAmountsTotal = order.feesTotal
         val taxAmount = order.totalTax
         val totalAmount = order.total
         val cardEnabled = resolveCardPaymentEnabledForCountry()
@@ -1180,6 +1181,11 @@ class WooPosTotalsViewModel @Inject constructor(
                     null
                 },
                 orderSubtotalText = priceFormat(subtotalAmount),
+                orderCustomAmountsText = if (customAmountsTotal > BigDecimal.ZERO) {
+                    priceFormat(customAmountsTotal)
+                } else {
+                    null
+                },
                 orderTaxText = priceFormat(taxAmount),
                 orderTotalText = priceFormat(totalAmount),
             ),

@@ -47,7 +47,7 @@ import com.woocommerce.android.ui.compose.designsystem.foundation.WooColors
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowLeft
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
-import com.woocommerce.android.ui.compose.designsystem.icons.Ellipsis
+import com.woocommerce.android.ui.compose.designsystem.icons.EllipsisVertical
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 
 /** Visual size of a [WooTopAppBar]. */
@@ -368,7 +368,7 @@ interface WooTopAppBarActionsScope : RowScope {
         enabled: Boolean = true,
     )
 
-    /** Standard ellipsis trigger anchoring a [WooOverflowMenu]. */
+    /** Standard vertical ellipsis trigger anchoring a [WooOverflowMenu]. */
     @Composable
     fun OverflowAction(
         contentDescription: String,
@@ -425,7 +425,7 @@ private class WooTopAppBarActionsScopeImpl(
         WooOverflowMenu(
             trigger = { onClick ->
                 IconAction(
-                    imageVector = WooIcons.Regular.Ellipsis,
+                    imageVector = WooIcons.Regular.EllipsisVertical,
                     contentDescription = contentDescription,
                     onClick = onClick,
                     modifier = modifier,
@@ -545,6 +545,10 @@ private fun WooTopAppBarSmallPreview() {
                     contentDescription = "Open",
                     onClick = {},
                 )
+                OverflowAction(contentDescription = "More options") { dismiss ->
+                    WooOverflowMenuItem(text = "Share", onClick = dismiss)
+                    WooOverflowMenuItem(text = "Delete", onClick = dismiss, isDestructive = true)
+                }
             },
         )
     }
@@ -567,6 +571,10 @@ private fun WooTopAppBarMediumPreview() {
                     contentDescription = "Open",
                     onClick = {},
                 )
+                OverflowAction(contentDescription = "More options") { dismiss ->
+                    WooOverflowMenuItem(text = "Share", onClick = dismiss)
+                    WooOverflowMenuItem(text = "Delete", onClick = dismiss, isDestructive = true)
+                }
             },
         )
     }

@@ -79,6 +79,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineStart.LAZY
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -108,6 +109,7 @@ class OrderDetailViewModel @Inject constructor(
     private val paymentsFlowTracker: PaymentsFlowTracker,
     private val tracker: OrderDetailTracker,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
+    private val getShippingLabelSupport: GetShippingLabelSupport,
     private val shippingLabelRepository: WooShippingLabelRepository,
     private val eligibilityDataStore: WooShippingEligibilityDataStore,
     private val getWooShippingShipments: GetShipments,
@@ -123,6 +125,7 @@ class OrderDetailViewModel @Inject constructor(
     getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue,
 ) : ScopedViewModel(savedState) {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
+    private val shippingPluginSupport = async(start = LAZY) { getShippingLabelSupport() }
 
     val performanceObserver: LifecycleObserver = orderDetailsTransactionLauncher
 
@@ -220,9 +223,6 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private var pluginsInformation: Map<String, WooPlugin> = HashMap()
-
-    private val isRevampWooShippingEnabled: Boolean
-        get() = shippingLabelOnboardingRepository.shippingPluginSupport.isWooShippingSupported()
 
     init {
         launch {
@@ -522,7 +522,7 @@ class OrderDetailViewModel @Inject constructor(
                 RefundShippingLabel(
                     remoteOrderId = awaitOrder().id,
                     shippingLabelId = shippingLabelId,
-                    isRevampWooShippingEnabled = isRevampWooShippingEnabled
+                    isRevampWooShippingEnabled = isRevampWooShippingEnabled()
                 )
             )
         }
@@ -542,7 +542,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onViewShippingLabelClicked(shippingLabel: ShippingLabelModel) {
         launch {
-            if (isRevampWooShippingEnabled) {
+            if (isRevampWooShippingEnabled()) {
                 triggerEvent(
                     StartWooShippingLabelCreationFlow(
                         orderId = awaitOrder().id,
@@ -727,7 +727,7 @@ class OrderDetailViewModel @Inject constructor(
     fun onCreateShippingLabelButtonTapped(shipmentId: Int? = null) {
         tracker.trackShippingLabelTapped()
         launch {
-            if (isRevampWooShippingEnabled) {
+            if (isRevampWooShippingEnabled()) {
                 triggerEvent(StartWooShippingLabelCreationFlow(awaitOrder().id, shipmentId))
             } else {
                 triggerEvent(StartShippingLabelCreationFlow(awaitOrder().id))
@@ -846,9 +846,10 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchSLCreationEligibilityAsync() = async {
-        if (isRevampWooShippingEnabled) {
+        val support = shippingPluginSupport.await()
+        if (support.isWooShippingSupported()) {
             shippingLabelRepository.fetchShippingEligibility(selectedSite.get(), navArgs.orderId)
-        } else if (shippingLabelOnboardingRepository.shippingPluginSupport.isSupported()) {
+        } else if (support.isWooTaxLegacySupported()) {
             orderDetailRepository.fetchSLCreationEligibility(navArgs.orderId)
         }
         orderDetailsTransactionLauncher.onPackageCreationEligibleFetched()
@@ -883,15 +884,15 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchShipmentsAsync() = async {
-        if (isRevampWooShippingEnabled) {
+        if (isRevampWooShippingEnabled()) {
             shippingLabelRepository.fetchConfig(selectedSite.get(), navArgs.orderId)
         }
         orderDetailsTransactionLauncher.onShipmentsFetchingCompleted()
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
-        if (shippingLabelOnboardingRepository.shippingPluginSupport.isWooTaxLegacySupported()) {
-            orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId, isRevampWooShippingEnabled)
+        if (shippingPluginSupport.await().isWooTaxLegacySupported()) {
+            orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId, isRevampWooShippingEnabled())
         }
         orderDetailsTransactionLauncher.onShippingLabelFetchingCompleted()
     }
@@ -910,7 +911,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private suspend fun loadWooShippingShipments(): ListInfo<ShipmentUIModel> {
-        if (!isRevampWooShippingEnabled ||
+        if (!isRevampWooShippingEnabled() ||
             eligibilityDataStore.observeEligibility(navArgs.orderId).first() != true
         ) {
             return ListInfo(isVisible = false)
@@ -920,7 +921,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private suspend fun loadOrderShippingLabels(): ListInfo<ShippingLabelModel> {
-        if (isRevampWooShippingEnabled) return ListInfo(isVisible = false)
+        if (isRevampWooShippingEnabled()) return ListInfo(isVisible = false)
         orderDetailRepository.getOrderShippingLabels(navArgs.orderId)
             .map { it.toShippingLabelModel() }
             .fillProducts(awaitOrder().items)
@@ -936,6 +937,9 @@ class OrderDetailViewModel @Inject constructor(
         val orderRefunds = loadOrderRefunds()
         val orderProducts = loadOrderProducts(orderRefunds)
 
+        if (wooShippingShipments.isVisible && _wooShippingShipments.value.isNullOrEmpty()) {
+            tracker.trackOrderEligibleForShippingLabelCreation(awaitOrder().status.value, true)
+        }
         _wooShippingShipments.value = wooShippingShipments.let { if (it.isVisible) it.list else emptyList() }
 
         _shippingLabels.value = shippingLabels.let { if (it.isVisible) it.list else emptyList() }
@@ -964,7 +968,7 @@ class OrderDetailViewModel @Inject constructor(
         ) {
             // we check against the viewstate to avoid sending the event multiple times
             // if the eligibility was cached, and we had the same value after re-fetching it
-            tracker.trackOrderEligibleForShippingLabelCreation(awaitOrder().status.value, isRevampWooShippingEnabled)
+            tracker.trackOrderEligibleForShippingLabelCreation(awaitOrder().status.value, isRevampWooShippingEnabled())
         }
 
         viewState = viewState.copy(
@@ -980,8 +984,8 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private suspend fun isOrderEligibleForLegacySLCreation() =
-        !isRevampWooShippingEnabled &&
-            shippingLabelOnboardingRepository.shippingPluginSupport.isSupported() &&
+        !isRevampWooShippingEnabled() &&
+            shippingPluginSupport.await().isSupported() &&
             orderDetailRepository.isOrderEligibleForSLCreation(awaitOrder().id)
 
     private suspend fun shouldShowThankYouNoteButton() =
@@ -1078,6 +1082,8 @@ class OrderDetailViewModel @Inject constructor(
             isOrderDetailSkeletonShown = false
         )
     }
+
+    private suspend fun isRevampWooShippingEnabled() = shippingPluginSupport.await().isWooShippingSupported()
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
     data class TrashOrder(val orderId: Long) : MultiLiveEvent.Event()

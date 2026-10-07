@@ -166,11 +166,10 @@ class WooSitesVisibilityViewModel @Inject constructor(
             .filter { it.siteId in newlyVisibleSiteIds && it.siteId !in wooPushRegisteredSiteIds }
             .map { site ->
                 async {
-                    if (pushNotificationRepository.shouldRegisterWooPushForSite(token, site.siteId)) {
+                    if (pushNotificationRepository.shouldRegisterWooPush(token, site)) {
                         pushNotificationRepository.registerPushTokenInWooCoreSystem(
                             token = token,
-                            selectedSite = site,
-                            allowWpComFallback = false
+                            selectedSite = site
                         ).recoverCatching { error ->
                             // `rest_no_route` means the site doesn't have the wc-push-notifications
                             // endpoint — it will continue to use WPCom notifications instead.

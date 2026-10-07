@@ -3,7 +3,10 @@ package com.woocommerce.android.performance
 import okhttp3.Request
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class WooRequestFormatterTest {
     private val sut = WooRequestFormatter
 

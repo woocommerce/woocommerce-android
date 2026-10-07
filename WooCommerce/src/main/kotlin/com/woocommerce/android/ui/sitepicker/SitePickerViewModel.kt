@@ -58,6 +58,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
+@Suppress("LargeClass")
 @HiltViewModel
 class SitePickerViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -103,6 +104,11 @@ class SitePickerViewModel @Inject constructor(
     val sites: LiveData<List<SitesListItem>> = _sites
 
     private var loadedWooSites: List<SiteModel> = emptyList()
+
+    // onSitesLoaded runs on both the cache and the API pass, and each re-enters
+    // processLoginSiteAddress; this keeps that to one event per site. Cleared when the merchant
+    // leaves the screen — back to the list, or into the installer — so a second showing counts.
+    private var lastNoWooSiteReported: Long? = null
 
     private val selectedSiteId: MutableLiveData<Int> = savedState.getLiveData("selected-site-id")
 
@@ -246,14 +252,7 @@ class SitePickerViewModel @Inject constructor(
 
         if (_sites.value == null) {
             // Track events only on the first call
-            trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SITE_LIST)
-            analyticsTrackerWrapper.track(
-                AnalyticsEvent.SITE_PICKER_STORES_SHOWN,
-                mapOf(
-                    AnalyticsTracker.KEY_NUMBER_OF_STORES to wooSites.size,
-                    AnalyticsTracker.KEY_NUMBER_OF_NON_WOO_SITES to nonWooSites.size
-                )
-            )
+            trackSiteListShown(wooSites, nonWooSites, staysOnList = loginSiteAddress == null)
         }
         val shouldSelectFirstSite = shouldSelectFirstSite(wooSites.size, isApiResponse)
         val selectedSiteId = selectedSiteId.value ?: wooSites.firstOrNull()?.id?.takeIf { shouldSelectFirstSite }
@@ -376,14 +375,6 @@ class SitePickerViewModel @Inject constructor(
      */
     private fun showAccountMismatchScreen(url: String) = launch {
         sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = true, isPrimaryBtnVisible = false)
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
-            mapOf(
-                AnalyticsTracker.KEY_URL to url,
-                AnalyticsTracker.KEY_HAS_CONNECTED_STORES to sitePickerViewState.hasConnectedStores
-            )
-        )
-        trackLoginEvent(currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT)
         repository.fetchSiteInfo(url).fold(
             onSuccess = {
                 val primaryButton = when {
@@ -392,6 +383,16 @@ class SitePickerViewModel @Inject constructor(
                 }
                 if (event.value !is NavigateToAccountMismatchScreen) {
                     // The check is to avoid triggering the navigation multiple times
+                    trackLoginEvent(
+                        currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT,
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_URL to url,
+                            // Woo stores only, and non-null before sites load: onSitesLoaded
+                            // returns early here when the account has none at all.
+                            AnalyticsTracker.KEY_HAS_CONNECTED_STORES to
+                                loadedWooSites.isNotEmpty().toString()
+                        )
+                    )
                     triggerEvent(
                         NavigateToAccountMismatchScreen(
                             primaryButton = primaryButton,
@@ -413,6 +414,7 @@ class SitePickerViewModel @Inject constructor(
     }
 
     private fun loadWooNotFoundView(site: SiteModel) {
+        // Tracks this screen outside a login journey, which the login-only step below does not.
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE,
             mapOf(
@@ -420,7 +422,7 @@ class SitePickerViewModel @Inject constructor(
                 AnalyticsTracker.KEY_HAS_CONNECTED_STORES to sitePickerViewState.hasConnectedStores
             )
         )
-        trackLoginEvent(currentStep = UnifiedLoginTracker.Step.NOT_WOO_STORE)
+        trackNotWooStore(site)
         // Make sure installation is enabled only for selfhosted and atomic sites
         // TODO remove this when we handle non-atomic sites
         val isWooInstallationEnabled = site.isJetpackConnected
@@ -437,6 +439,7 @@ class SitePickerViewModel @Inject constructor(
     }
 
     private fun loadSimpleWPComView(site: SiteModel) {
+        trackNotWooStore(site)
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true,
@@ -445,6 +448,33 @@ class SitePickerViewModel @Inject constructor(
             noStoresSubText = null,
             isNoStoresBtnVisible = false,
             currentSitePickerState = SitePickerState.SimpleWPComState
+        )
+    }
+
+    private fun trackSiteListShown(wooSites: List<SiteModel>, nonWooSites: List<SiteModel>, staysOnList: Boolean) {
+        // A typed address routes elsewhere, so a list the merchant never saw is not reported.
+        // Emitted before SITE_LIST so the tracker's current step ends on the screen the merchant
+        // is looking at, since that is what later clicks on it are attributed to.
+        if (staysOnList && wooSites.isEmpty()) trackLoginEvent(currentStep = UnifiedLoginTracker.Step.NO_WOO_STORES)
+        trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SITE_LIST)
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_PICKER_STORES_SHOWN,
+            mapOf(
+                AnalyticsTracker.KEY_NUMBER_OF_STORES to wooSites.size,
+                AnalyticsTracker.KEY_NUMBER_OF_NON_WOO_SITES to nonWooSites.size
+            )
+        )
+    }
+
+    private fun trackNotWooStore(site: SiteModel) {
+        if (lastNoWooSiteReported == site.siteId) return
+        lastNoWooSiteReported = site.siteId
+        trackLoginEvent(
+            currentStep = UnifiedLoginTracker.Step.NOT_WOO_STORE,
+            properties = mapOf(
+                AnalyticsTracker.KEY_URL to UrlUtils.removeScheme(site.url),
+                AnalyticsTracker.KEY_HAS_CONNECTED_STORES to loadedWooSites.isNotEmpty().toString()
+            )
         )
     }
 
@@ -483,6 +513,7 @@ class SitePickerViewModel @Inject constructor(
     fun onViewConnectedStoresButtonClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
         trackLoginEvent(clickEvent = UnifiedLoginTracker.Click.VIEW_CONNECTED_STORES)
+        lastNoWooSiteReported = null
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = false,
             isPrimaryBtnVisible = sites.value!!.any { it is WooSiteUiModel },
@@ -647,6 +678,7 @@ class SitePickerViewModel @Inject constructor(
     )
 
     fun onInstallWooClicked() {
+        lastNoWooSiteReported = null
         loginSiteAddress?.let {
             triggerEvent(
                 NavigateToAuthenticatedWebView(
@@ -731,13 +763,16 @@ class SitePickerViewModel @Inject constructor(
     private fun trackLoginEvent(
         currentFlow: UnifiedLoginTracker.Flow? = null,
         currentStep: UnifiedLoginTracker.Step? = null,
-        clickEvent: UnifiedLoginTracker.Click? = null
+        clickEvent: UnifiedLoginTracker.Click? = null,
+        properties: Map<String, String> = emptyMap()
     ) {
         if (navArgs.openedFromLogin) {
-            if (currentFlow != null && currentStep != null) {
-                unifiedLoginTracker.track(currentFlow, currentStep)
-            } else if (currentStep != null) {
-                unifiedLoginTracker.track(step = currentStep)
+            if (currentStep != null) {
+                if (currentFlow != null) {
+                    unifiedLoginTracker.track(currentFlow, currentStep, properties)
+                } else {
+                    unifiedLoginTracker.track(step = currentStep, properties = properties)
+                }
             }
             if (clickEvent != null) {
                 unifiedLoginTracker.trackClick(clickEvent)

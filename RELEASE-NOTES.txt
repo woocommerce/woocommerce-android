@@ -2,8 +2,19 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.9
+-----
+- [*] The Blaze campaign list now shows an outstanding balance notice with a Pay button for each unpaid order [https://github.com/woocommerce/woocommerce-android/pull/16612]
+
 25.8
 -----
+- [*] Fixed an issue where changes made to a store outside the app, like renaming it, needed a second app restart to show up [https://github.com/woocommerce/woocommerce-android/pull/16637]
+- [Internal] The login_social_button_failure event now includes the Google Sign-In failure reason [https://github.com/woocommerce/woocommerce-android/pull/16593]
+- [*] Fixed a crash when a store's site doesn't send back the password for a new application password [https://github.com/woocommerce/woocommerce-android/pull/16628]
+- [*] The Payments payout summary no longer disappears for 24 hours after a manual payout [https://github.com/woocommerce/woocommerce-android/pull/16629]
+- [*] The app now periodically refreshes push notification registrations for visible stores, so notifications keep working [https://github.com/woocommerce/woocommerce-android/pull/16625]
+- [**] Fixed push notifications that could stay off for the next store logged in on the same device [https://github.com/woocommerce/woocommerce-android/pull/16620]
+- [*] POS: custom amount form keeps its button above the keyboard, shows custom amounts in checkout and order totals, and formats amounts correctly [https://github.com/woocommerce/woocommerce-android/pull/16598]
 - [*] The app no longer signs you out when a single store endpoint returns an authorization error [https://github.com/woocommerce/woocommerce-android/pull/16571]
 - [Internal] Push notification analytics now attribute store and plan properties to the notification's origin site instead of the currently selected store [https://github.com/woocommerce/woocommerce-android/pull/16575]
 - [*] Background order sync now fetches 25 orders at a time instead of 60, so large stores no longer time out and retry [https://github.com/woocommerce/woocommerce-android/pull/16597]
@@ -11,12 +22,15 @@
 - [*] Fixed the add product button staying on screen after clearing the product search term [https://github.com/woocommerce/woocommerce-android/pull/16451]
 - [Internal] Card Reader Mode on the phone now tracks when it rejects a Remote Tap to Pay payment from the tablet [https://github.com/woocommerce/woocommerce-android/pull/16584]
 - [Internal][WEAR] Currency amounts on the phone and the watch are formatted without a blocking read of the store settings [https://github.com/woocommerce/woocommerce-android/pull/16606]
+- [Internal] [WEAR] Wear stack traces in Sentry now carry source context: the source bundle uploads to the `woocommerce-wear` project rather than the phone app's [https://github.com/woocommerce/woocommerce-android/pull/16427]
 
 - [*] Card Reader Mode on the phone now explains what it is for before it starts [https://github.com/woocommerce/woocommerce-android/pull/16579]
 - [*] The variations list now shows an error with a retry option when a page of variations fails to load, instead of silently skipping it [https://github.com/woocommerce/woocommerce-android/pull/16580]
 - [*] POS no longer flips between portrait and landscape on tablets whose screen is just above the tablet size threshold [https://github.com/woocommerce/woocommerce-android/pull/16574]
 - [*] Logging in with the www form of a store address no longer shows "not connected to this account" for a store the account owns [https://github.com/woocommerce/woocommerce-android/pull/16567]
+- [Internal] Track when the app signs the merchant out on its own (invalid token, application password failures) [https://github.com/woocommerce/woocommerce-android/pull/16594]
 - [*] POS: Cart items discounted by a coupon or another source are now marked "Discount applied" at checkout [https://github.com/woocommerce/woocommerce-android/pull/16570]
+- [*] Custom fields no longer show REST API addresses as links that open an authorization error [https://github.com/woocommerce/woocommerce-android/pull/16607]
 
 25.7
 -----
