@@ -645,11 +645,6 @@ class SitePickerViewModel @Inject constructor(
         }
     }
 
-    /**
-     * The list is only skipped on the prediction that a lone store is continued into. When that
-     * continuation fails the merchant is left looking at the list after all, and this is the only
-     * chance to report it — the other reporting point is on a screen they never reached.
-     */
     private suspend fun continueIntoSelectedSite(selectedSiteModel: SiteModel) {
         var reachedTheDashboard = false
         val siteVerificationResult = repository.verifySiteWooAPIVersion(selectedSiteModel)
@@ -685,6 +680,7 @@ class SitePickerViewModel @Inject constructor(
                 _isWooUpgradeDialogVisible.value = true
             }
         }
+        // The merchant stays on the list, so report it in case an auto-login skipped it.
         if (!reachedTheDashboard) trackSiteListShown()
     }
 
