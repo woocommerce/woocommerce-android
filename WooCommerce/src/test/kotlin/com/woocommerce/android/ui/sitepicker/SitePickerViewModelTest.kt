@@ -1180,7 +1180,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
             // WHEN
             whenViewModelIsCreated()
-            viewModel.event.captureValues()
 
             // THEN the auto-login was attempted and never reached the dashboard
             verify(repository, times(1)).verifySiteWooAPIVersion(any())
