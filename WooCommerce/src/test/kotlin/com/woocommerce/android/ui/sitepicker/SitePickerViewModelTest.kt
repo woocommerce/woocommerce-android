@@ -1161,6 +1161,90 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given the mismatch screen was shown, when the picker is in front again, then site_list is reported`() =
+        testBlocking {
+            // GIVEN a typed address that routed to the mismatch screen, so the list behind it was
+            // never reported
+            givenThatUserLoggedInFromEnteringSiteAddress(null)
+            givenSiteInfoFetchSucceeds()
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+            verify(unifiedLoginTracker, never()).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SITE_LIST),
+                properties = any()
+            )
+
+            // WHEN the merchant backs out and the list is on screen again
+            viewModel.reportListIfShown()
+
+            // THEN the screen they are looking at is reported, once
+            verify(unifiedLoginTracker, times(1)).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SITE_LIST),
+                properties = any()
+            )
+        }
+
+    @Test
+    fun `given the list was already reported, when the picker is in front again, then it is not reported twice`() =
+        testBlocking {
+            // GIVEN a picker that already reported the list it is showing
+            givenTheScreenIsFromLogin(true)
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            // WHEN the merchant comes back from site discovery
+            viewModel.reportListIfShown()
+
+            // THEN the visit still counts once
+            verify(unifiedLoginTracker, times(1)).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SITE_LIST),
+                properties = any()
+            )
+        }
+
+    @Test
+    fun `given the account owns no sites, when the picker is in front, then no list is reported`() =
+        testBlocking {
+            // GIVEN the empty state rather than a list
+            givenTheScreenIsFromLogin(true)
+            whenSitesAreFetched(returnsEmpty = true)
+            whenViewModelIsCreated()
+
+            // WHEN
+            viewModel.reportListIfShown()
+
+            // THEN there is no list on screen to report
+            verify(unifiedLoginTracker, never()).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SITE_LIST),
+                properties = any()
+            )
+        }
+
+    @Test
+    fun `given the sites fetch failed, when the picker is in front, then no list is reported`() =
+        testBlocking {
+            // GIVEN nothing cached and a fetch that errors, so the picker is left with no list
+            // even though its state still says the list is what it shows
+            givenTheScreenIsFromLogin(true)
+            whenSitesAreFetched(returnsError = true)
+            whenViewModelIsCreated()
+
+            // WHEN
+            viewModel.reportListIfShown()
+
+            // THEN there is nothing on screen to report
+            verify(unifiedLoginTracker, never()).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SITE_LIST),
+                properties = any()
+            )
+        }
+
+    @Test
     fun `given a single woo store, when the auto-login fails, then site_list is reported after all`() =
         testBlocking {
             // GIVEN one store, whose verification times out, leaving the merchant looking at the

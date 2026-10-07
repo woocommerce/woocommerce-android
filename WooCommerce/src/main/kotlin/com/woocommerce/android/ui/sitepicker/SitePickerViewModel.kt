@@ -512,6 +512,18 @@ class SitePickerViewModel @Inject constructor(
         trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SITE_LIST)
     }
 
+    /**
+     * Leaving the list and coming back to it — from site discovery, from the mismatch screen —
+     * puts it on screen again, which is the one thing the step describes. Reported here rather
+     * than predicted on load, so every route back counts the same, and only once per visit.
+     */
+    fun reportListIfShown() {
+        val listIsOnScreen = _sites.value != null &&
+            sitePickerViewState.currentSitePickerState == SitePickerState.StoreListState &&
+            !sitePickerViewState.isSkeletonViewVisible
+        if (listIsOnScreen) trackSiteListShown()
+    }
+
     private fun trackNotWooStore(site: SiteModel) {
         if (lastNoWooSiteReported == site.siteId) return
         lastNoWooSiteReported = site.siteId
