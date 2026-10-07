@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType
 import com.woocommerce.android.util.captureValues
@@ -55,6 +56,18 @@ class SimplePaymentsViewModelTests : BaseUnitTest() {
 
     private fun initViewModel() {
         viewModel = SimplePaymentsViewModel(savedState, simplePaymentsRepository, networkStatus, mock())
+    }
+
+    @Test
+    fun `given order duration recording started, when view model is created, then recording is reset`() {
+        // GIVEN
+        OrderDurationRecorder.startRecording()
+
+        // WHEN
+        initViewModel()
+
+        // THEN
+        assertThat(OrderDurationRecorder.millisecondsSinceOrderAddNew().isFailure).isTrue()
     }
 
     @Test

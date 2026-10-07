@@ -164,7 +164,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given phone is not eligible, when screen shown, then card reader mode row is absent`() {
+    fun `given phone is not eligible, when screen shown, then card reader mode row is absent`() = testBlocking {
         whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(CountryNotSupported)
 
         initViewModel()
@@ -176,7 +176,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given supported country, when screen shown, then manual card reader row is present`() {
+    fun `given supported country, when screen shown, then manual card reader row is present`() = testBlocking {
         val supportedCountry: CardReaderConfig = CardReaderConfigForUSA
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US")).thenReturn(supportedCountry)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
@@ -191,7 +191,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given unsupported country, when screen shown, then manual card reader row is not present`() {
+    fun `given unsupported country, when screen shown, then manual card reader row is not present`() = testBlocking {
         val unSupportedCountry: CardReaderConfig = CardReaderConfigForUnsupportedCountry
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("BR")).thenReturn(unSupportedCountry)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("BR")
@@ -241,7 +241,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when user clicks on purchase card reader, then app opens authenticated webview`() {
+    fun `when user clicks on purchase card reader, then app opens authenticated webview`() = testBlocking {
         whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
         whenever(paymentMenuUtmProvider.getUrlWithUtmParams(any())).thenReturn(
             "${WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
@@ -274,7 +274,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when user clicks on purchase card reader, then app opens external webview with in-person-payments link`() {
+    fun `when user clicks on purchase card reader, then app opens external webview with in-person-payments link`() = testBlocking {
         val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
         whenever(paymentMenuUtmProvider.getUrlWithUtmParams(any())).thenReturn(
             "$WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY$storeCountryCode"
@@ -321,7 +321,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when user clicks on manuals row, then app navigates to manuals screen`() {
+    fun `when user clicks on manuals row, then app navigates to manuals screen`() = testBlocking {
         val supportedCountry: CardReaderConfig = CardReaderConfigForUSA
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US")).thenReturn(supportedCountry)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
@@ -339,7 +339,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when user clicks on manuals row, then click on manuals tracked`() {
+    fun `when user clicks on manuals row, then click on manuals tracked`() = testBlocking {
         val supportedCountry: CardReaderConfig = CardReaderConfigForUSA
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US")).thenReturn(supportedCountry)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
@@ -1638,7 +1638,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     // endregion
 
     @Test
-    fun `given tpp available, when tap to pay clicked, then navigate to tap to pay summary screen event emitted`() {
+    fun `given tpp available, when tap to pay clicked, then navigate to tap to pay summary screen event emitted`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
@@ -1654,7 +1654,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given tpp available, when tap to pay clicked, then tap is tracked`() {
+    fun `given tpp available, when tap to pay clicked, then tap is tracked`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
@@ -1703,7 +1703,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given hub flow with ttp, when view model initiated, then navigate to ttp emitted`() {
+    fun `given hub flow with ttp, when view model initiated, then navigate to ttp emitted`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
@@ -1716,7 +1716,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given hub flow with ttp when ttp is not available, when view model initiated, then handled by ttp availability handler`() {
+    fun `given hub flow with ttp when ttp is not available, when view model initiated, then handled by ttp availability handler`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(tapToPayAvailabilityStatus()).thenReturn(SystemVersionNotSupported)
@@ -1953,7 +1953,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given TTP supported country, when user clicks on about ttp, then track proper event`() {
+    fun `given TTP supported country, when user clicks on about ttp, then track proper event`() = testBlocking {
         val supportedCountry: CardReaderConfig = CardReaderConfigForCanada
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("CA")).thenReturn(supportedCountry)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("CA")
@@ -1967,7 +1967,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given TTP supported country, when user clicks on about ttp, then trigger proper event`() {
+    fun `given TTP supported country, when user clicks on about ttp, then trigger proper event`() = testBlocking {
         val supportedCountry: CardReaderConfigForSupportedCountry = CardReaderConfigForCanada
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("CA")).thenReturn(supportedCountry)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("CA")
