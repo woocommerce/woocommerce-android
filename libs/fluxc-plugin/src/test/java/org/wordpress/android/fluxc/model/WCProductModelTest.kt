@@ -43,6 +43,49 @@ class WCProductModelTest {
     }
 
     @Test
+    fun `given attribute json with flags and position, when parsed, then they are kept`() {
+        // GIVEN
+        val attribute = JsonObject().apply {
+            addProperty("id", 0)
+            addProperty("name", "Material")
+            addProperty("variation", false)
+            addProperty("visible", false)
+            addProperty("position", 2)
+            add("options", JsonArray().apply { add("Cotton") })
+        }
+        val sut = WCProductModel().copy(attributes = JsonArray().apply { add(attribute) }.toString())
+
+        // WHEN
+        val result = sut.getAttributeList().single()
+
+        // THEN
+        assertThat(result.variation).isFalse()
+        assertThat(result.visible).isFalse()
+        assertThat(result.position).isEqualTo(2)
+    }
+
+    @Test
+    fun `given an attribute, when converted to json, then flags and position are included`() {
+        // GIVEN
+        val attribute = WCProductModel.ProductAttribute(
+            id = 0L,
+            name = "Material",
+            variation = false,
+            visible = false,
+            options = listOf("Cotton"),
+            position = 2
+        )
+
+        // WHEN
+        val json = attribute.toJson()
+
+        // THEN
+        assertThat(json.get("variation").asBoolean).isFalse()
+        assertThat(json.get("visible").asBoolean).isFalse()
+        assertThat(json.get("position").asInt).isEqualTo(2)
+    }
+
+    @Test
     fun `isConfigurable should return false when bundledItems is malformed JSON`() {
         val sut = WCProductModel().copy(
             type = CoreProductType.BUNDLE.value,

@@ -11,6 +11,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductType
 import org.wordpress.android.fluxc.network.utils.getBoolean
+import org.wordpress.android.fluxc.network.utils.getInt
 import org.wordpress.android.fluxc.network.utils.getLong
 import org.wordpress.android.fluxc.network.utils.getString
 import org.wordpress.android.util.AppLog
@@ -154,7 +155,8 @@ data class WCProductModel(
         val name: String,
         val variation: Boolean,
         val visible: Boolean,
-        options: List<String>
+        options: List<String>,
+        val position: Int = 0
     ) {
         val options: MutableList<String> = options.toMutableList()
 
@@ -163,7 +165,8 @@ data class WCProductModel(
                     name == other.name &&
                     variation == other.variation &&
                     visible == other.visible &&
-                    options == other.options
+                    options == other.options &&
+                    position == other.position
         }
 
         fun toJson(): JsonObject {
@@ -178,6 +181,7 @@ data class WCProductModel(
                 json.addProperty("visible", visible)
                 json.addProperty("variation", variation)
                 json.add("options", jsonOptions)
+                json.addProperty("position", position)
             }
         }
     }
@@ -286,7 +290,8 @@ data class WCProductModel(
                         name = json.getString("name") ?: "",
                         variation = json.getBoolean("variation", true),
                         visible = json.getBoolean("visible", true),
-                        options = getAttributeOptions(json.getAsJsonArray("options"))
+                        options = getAttributeOptions(json.getAsJsonArray("options")),
+                        position = json.getInt("position")
                     )
                 }.toList()
         }.fold(
