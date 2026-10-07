@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import org.apache.commons.text.StringEscapeUtils
+import java.util.Locale
 
 object UnexpectedStoreResponseExcerpt {
     fun from(body: String): String? {
@@ -12,7 +13,7 @@ object UnexpectedStoreResponseExcerpt {
     }
 
     private fun pageText(body: String): String {
-        val visibleBody = body.replace(HIDDEN_REGION_PATTERN, " ")
+        val visibleBody = body.replace(HIDDEN_REGION_PATTERN, " ").withoutHiddenElements()
         val title = TITLE_PATTERN.find(visibleBody)?.groupValues?.get(1)?.visibleText()?.cleaned().orEmpty()
         val text = visibleBody.replace(HEAD_PATTERN, " ").visibleText().substringBeforeJson().cleaned()
         return when {
@@ -46,6 +47,57 @@ object UnexpectedStoreResponseExcerpt {
         } else {
             text
         }
+    }
+
+    /**
+     * Drops the elements a page marks as hidden, with everything inside them. One that is never closed drops the rest
+     * of the page. Elements hidden by a stylesheet or a script can't be told apart here.
+     */
+    private fun String.withoutHiddenElements(): String {
+        val result = StringBuilder()
+        var index = 0
+        while (index < length) {
+            val tag = nextTag(index)
+            if (tag == null || !tag.isHiddenStart) {
+                val end = tag?.end ?: length
+                result.append(this, index, end)
+                index = end
+            } else {
+                result.append(this, index, tag.start).append(' ')
+                index = if (tag.isEmpty) tag.end else elementEnd(tag) ?: length
+            }
+        }
+        return result.toString()
+    }
+
+    private fun String.nextTag(from: Int): Tag? {
+        val start = TAG_NAME_PATTERN.find(this, from) ?: return null
+        val end = tagEnd(start.range.last + 1) ?: return null
+        return Tag(
+            name = start.groupValues[2].lowercase(Locale.ROOT),
+            isClosing = start.groupValues[1].isNotEmpty(),
+            attributes = substring(start.range.last + 1, end - 1),
+            start = start.range.first,
+            end = end
+        )
+    }
+
+    private fun String.elementEnd(element: Tag): Int? {
+        var depth = 1
+        var index = element.end
+        while (depth > 0) {
+            val tag = nextTag(index) ?: return null
+            if (tag.name == element.name && !tag.isEmpty) depth += if (tag.isClosing) -1 else 1
+            index = tag.end
+        }
+        return index
+    }
+
+    private class Tag(val name: String, val isClosing: Boolean, attributes: String, val start: Int, val end: Int) {
+        val isEmpty = name in VOID_ELEMENTS || attributes.trimEnd().endsWith('/')
+        val isHiddenStart = !isClosing &&
+            (HIDDEN_ATTRIBUTE_PATTERN.containsMatchIn(attributes.replace(QUOTED_VALUE_PATTERN, "")) ||
+                HIDDEN_STYLE_PATTERN.containsMatchIn(attributes))
     }
 
     /**
@@ -114,6 +166,16 @@ object UnexpectedStoreResponseExcerpt {
         options = setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)
     )
     private val TAG_OPEN_PATTERN = Regex("""<[A-Za-z/!?]""")
+    private val TAG_NAME_PATTERN = Regex("""<(/?)([A-Za-z][A-Za-z0-9-]*)""")
+    private val QUOTED_VALUE_PATTERN = Regex(""""[^"]*"|'[^']*'""")
+    private val HIDDEN_ATTRIBUTE_PATTERN = Regex("""(?:^|\s)hidden(?=[\s=/]|$)""", RegexOption.IGNORE_CASE)
+    private val HIDDEN_STYLE_PATTERN = Regex(
+        pattern = """(?:^|\s)style\s*=\s*(?:"[^"]*|'[^']*)(?:display\s*:\s*none|visibility\s*:\s*hidden)""",
+        option = RegexOption.IGNORE_CASE
+    )
+    private val VOID_ELEMENTS = setOf(
+        "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"
+    )
     private val WHITESPACE_PATTERN = Regex("""\s+""")
     private val EMAIL_PATTERN = Regex("""[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}""")
     private val IPV4_PATTERN = Regex("""\b(?:\d{1,3}\.){3}\d{1,3}\b""")

@@ -94,6 +94,53 @@ class UnexpectedStoreResponseExcerptTest {
     }
 
     @Test
+    fun `given an element with the hidden attribute, when the excerpt is built, then its text is left out`() {
+        val body = "<p>Blocked</p><div hidden>private-secret</div>"
+
+        val excerpt = UnexpectedStoreResponseExcerpt.from(body)
+
+        assertThat(excerpt).isEqualTo("Blocked")
+    }
+
+    @Test
+    fun `given elements hidden with an inline style, when the excerpt is built, then their text is left out`() {
+        val body = "<p>Blocked</p><div style=\"color: red; display: none\">secret-a</div>" +
+            "<span style='visibility:hidden'>secret-b</span>"
+
+        val excerpt = UnexpectedStoreResponseExcerpt.from(body)
+
+        assertThat(excerpt).isEqualTo("Blocked")
+    }
+
+    @Test
+    fun `given a hidden element with the same elements inside, when the excerpt is built, then all of it is left out`() {
+        val body = "<div hidden><div>secret-a</div><div>secret-b</div>secret-c</div><p>Shown</p>"
+
+        val excerpt = UnexpectedStoreResponseExcerpt.from(body)
+
+        assertThat(excerpt).isEqualTo("Shown")
+    }
+
+    @Test
+    fun `given a hidden element that is never closed, when the excerpt is built, then the rest of the page is left out`() {
+        val body = "<p>Blocked</p><div hidden><p>private-secret</p>"
+
+        val excerpt = UnexpectedStoreResponseExcerpt.from(body)
+
+        assertThat(excerpt).isEqualTo("Blocked")
+    }
+
+    @Test
+    fun `given elements that only mention hidden, when the excerpt is built, then their text is kept`() {
+        val body = "<p aria-hidden=\"true\">Shown</p><p data-state=\"hidden\">Also shown</p>" +
+            "<input type=\"hidden\" name=\"_wpnonce\" value=\"abc123\"><p>End</p>"
+
+        val excerpt = UnexpectedStoreResponseExcerpt.from(body)
+
+        assertThat(excerpt).isEqualTo("Shown Also shown End")
+    }
+
+    @Test
     fun `given plugin output before the JSON, when the excerpt is built, then the JSON is left out`() {
         val body = "Debug: /wc/v3/orders\n[{\"id\":727,\"billing\":{\"first_name\":\"Jane\",\"last_name\":\"Doe\"}}]"
 
