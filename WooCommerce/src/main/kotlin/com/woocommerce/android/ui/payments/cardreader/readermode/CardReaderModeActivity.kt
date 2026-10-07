@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.payments.cardreader.readermode
 
+import android.content.Intent
+import android.nfc.NfcAdapter
 import android.os.Bundle
+import android.provider.Settings
 import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -63,6 +66,7 @@ class CardReaderModeActivity : AppCompatActivity() {
                             WooPermissionUtils.requestLocalNetworkPermission(localNetworkPermissionLauncher)
                         CardReaderModeEvent.OpenAppSettings ->
                             WooPermissionUtils.showAppSettings(this@CardReaderModeActivity, openInNewStack = false)
+                        CardReaderModeEvent.OpenNfcSettings -> startActivity(Intent(Settings.ACTION_NFC_SETTINGS))
                     }
                 }
             }
@@ -78,6 +82,7 @@ class CardReaderModeActivity : AppCompatActivity() {
         when {
             !WooPermissionUtils.hasCardReaderLocationPermission(this) -> viewModel.onLocationPermissionMissing()
             !WooPermissionUtils.hasLocalNetworkPermission(this) -> viewModel.onLocalNetworkPermissionMissing()
+            NfcAdapter.getDefaultAdapter(this)?.isEnabled == false -> viewModel.onNfcDisabled()
             else -> viewModel.onPermissionsGranted()
         }
     }

@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLoca
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocalNetworkPermissionExplainer
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionDenied
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionExplainer
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayNfcDisabled
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayViewState
@@ -71,6 +72,7 @@ class CardReaderModeViewModel @Inject constructor(
             is RemoteTapToPayLocationPermissionDenied,
             is RemoteTapToPayLocalNetworkPermissionExplainer,
             is RemoteTapToPayLocalNetworkPermissionDenied,
+            is RemoteTapToPayNfcDisabled,
             is RemoteTapToPayReadyToPair,
             is RemoteTapToPayWaitingForPayment,
             is RemoteTapToPayError -> requestPermissionCheck()
@@ -123,6 +125,13 @@ class CardReaderModeViewModel @Inject constructor(
         if (sessionStarted) return
         _viewState.value = RemoteTapToPayLocalNetworkPermissionDenied(
             onPrimaryActionClicked = { _events.trySend(CardReaderModeEvent.OpenAppSettings) },
+        )
+    }
+
+    fun onNfcDisabled() {
+        if (sessionStarted) return
+        _viewState.value = RemoteTapToPayNfcDisabled(
+            onPrimaryActionClicked = { _events.trySend(CardReaderModeEvent.OpenNfcSettings) },
         )
     }
 
