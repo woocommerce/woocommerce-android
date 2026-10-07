@@ -4,7 +4,6 @@ import com.google.gson.JsonParser
 import com.google.gson.Strictness
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsManager
 import java.io.IOException
 import java.io.StringReader
 import java.util.Locale
@@ -14,7 +13,7 @@ object UnexpectedStoreResponseClassifier {
         val trimmedBody = body.trim()
         val isRateLimited = statusCode == TOO_MANY_REQUESTS
         return when {
-            statusCode in SERVER_ERROR_STATUS_CODES && !trimmedBody.isApplicationPasswordsDisabledError() ->
+            statusCode in SERVER_ERROR_STATUS_CODES && !trimmedBody.isHandledWordPressError() ->
                 UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE
             trimmedBody.isEmpty() && !isRateLimited -> null
             trimmedBody.isJson() -> null
@@ -35,11 +34,15 @@ object UnexpectedStoreResponseClassifier {
     }
 
     /**
-     * WordPress sends these with a 501 when app passwords are turned off. The app already shows a screen for them.
+     * A WordPress REST error with its own code, like a failed refund or app passwords being turned off, is handled
+     * where the request is made. WordPress's critical error and a request stopped with wp_die still count.
      */
-    private fun String.isApplicationPasswordsDisabledError(): Boolean = startsWith("{") &&
-        runCatching { JsonParser.parseString(this).asJsonObject.get("code")?.asString }.getOrNull() in
-        APPLICATION_PASSWORDS_DISABLED_ERROR_CODES
+    private fun String.isHandledWordPressError(): Boolean {
+        val error = takeIf { it.startsWith("{") }
+            ?.let { runCatching { JsonParser.parseString(it).asJsonObject }.getOrNull() }
+        val code = error?.get("code")?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }?.asString
+        return code != null && error?.has("message") == true && code !in UNEXPECTED_WORDPRESS_ERROR_CODES
+    }
 
     private fun isHtml(contentType: String?, body: String): Boolean {
         val mediaType = contentType?.substringBefore(';')?.trim()?.lowercase(Locale.ROOT)
@@ -50,8 +53,5 @@ object UnexpectedStoreResponseClassifier {
     private val SUCCESS_STATUS_CODES = 200..299
     private val SERVER_ERROR_STATUS_CODES = 500..599
     private val HTML_MEDIA_TYPES = setOf("text/html", "application/xhtml+xml")
-    private val APPLICATION_PASSWORDS_DISABLED_ERROR_CODES = setOf(
-        ApplicationPasswordsManager.APPLICATION_PASSWORDS_DISABLED_ERROR_CODE,
-        ApplicationPasswordsManager.APPLICATION_PASSWORDS_DISABLED_USER_ERROR_CODE
-    )
+    private val UNEXPECTED_WORDPRESS_ERROR_CODES = setOf("internal_server_error", "wp_die")
 }
