@@ -652,39 +652,37 @@ class SitePickerViewModel @Inject constructor(
      */
     private suspend fun continueIntoSelectedSite(selectedSiteModel: SiteModel) {
         var reachedTheDashboard = false
-        run {
-            val siteVerificationResult = repository.verifySiteWooAPIVersion(selectedSiteModel)
-            val siteVerificationModel = siteVerificationResult.model
-            when {
-                siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, selectedSiteModel)
-                siteVerificationModel?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
-                    experimentTracker.log(ExperimentTracker.SITE_VERIFICATION_SUCCESSFUL_EVENT)
-                    trackAppPasswordsSupport(siteVerificationModel.siteModel)
-                    userEligibilityFetcher.fetchUserInfo(siteVerificationModel.siteModel).fold(
-                        onSuccess = {
-                            selectedSite.set(siteVerificationModel.siteModel)
-                            trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SUCCESS)
-                            appPrefsWrapper.removeLoginSiteAddress()
-                            val registerDeviceTrigger = if (navArgs.openedFromLogin) {
-                                RegisterDevice.Trigger.LOGIN_SUCCESS
-                            } else {
-                                RegisterDevice.Trigger.SITE_SWITCH
-                            }
-                            registerDevice.kickoff(registerDeviceTrigger)
-
-                            sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
-                            reachedTheDashboard = true
-                            triggerEvent(SitePickerEvent.NavigateToMainActivityEvent)
-                        },
-                        onFailure = {
-                            triggerEvent(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
+        val siteVerificationResult = repository.verifySiteWooAPIVersion(selectedSiteModel)
+        val siteVerificationModel = siteVerificationResult.model
+        when {
+            siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, selectedSiteModel)
+            siteVerificationModel?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
+                experimentTracker.log(ExperimentTracker.SITE_VERIFICATION_SUCCESSFUL_EVENT)
+                trackAppPasswordsSupport(siteVerificationModel.siteModel)
+                userEligibilityFetcher.fetchUserInfo(siteVerificationModel.siteModel).fold(
+                    onSuccess = {
+                        selectedSite.set(siteVerificationModel.siteModel)
+                        trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SUCCESS)
+                        appPrefsWrapper.removeLoginSiteAddress()
+                        val registerDeviceTrigger = if (navArgs.openedFromLogin) {
+                            RegisterDevice.Trigger.LOGIN_SUCCESS
+                        } else {
+                            RegisterDevice.Trigger.SITE_SWITCH
                         }
-                    )
-                }
+                        registerDevice.kickoff(registerDeviceTrigger)
 
-                else -> {
-                    _isWooUpgradeDialogVisible.value = true
-                }
+                        sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
+                        reachedTheDashboard = true
+                        triggerEvent(SitePickerEvent.NavigateToMainActivityEvent)
+                    },
+                    onFailure = {
+                        triggerEvent(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
+                    }
+                )
+            }
+
+            else -> {
+                _isWooUpgradeDialogVisible.value = true
             }
         }
         if (!reachedTheDashboard) trackSiteListShown()
