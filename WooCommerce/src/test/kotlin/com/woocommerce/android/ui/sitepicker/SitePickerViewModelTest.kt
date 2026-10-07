@@ -1145,7 +1145,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the merchant came back from site discovery, when sites load, then the epilogue flow is restored`() =
+    fun `given site discovery is in front, when sites load, then the flow is left alone`() =
         testBlocking {
             // GIVEN the picker is showing during login
             givenTheScreenIsFromLogin(true)
@@ -1153,11 +1153,12 @@ class SitePickerViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             clearInvocations(unifiedLoginTracker)
 
-            // WHEN site discovery hands an address back
+            // WHEN a sites response arrives, which can land while discovery is still on screen
             viewModel.onSiteAddressReceived(SitePickerTestUtils.loginSiteAddress)
 
-            // THEN the steps that follow are not attributed to the site_discovery flow
-            verify(unifiedLoginTracker, atLeastOnce()).setFlow(UnifiedLoginTracker.Flow.EPILOGUE.value)
+            // THEN the flow discovery set survives, so its own steps stay attributed to it. The
+            // picker reasserts its flow when it is actually in front again, on resume.
+            verify(unifiedLoginTracker, never()).setFlow(anyOrNull())
         }
 
     @Test

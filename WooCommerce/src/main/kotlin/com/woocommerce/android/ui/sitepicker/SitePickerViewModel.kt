@@ -238,7 +238,6 @@ class SitePickerViewModel @Inject constructor(
     }
 
     private suspend fun onSitesLoaded(sites: List<SiteModel>, isApiResponse: Boolean) {
-        restoreEpilogueFlow()
         if (sites.isEmpty()) {
             when {
                 loginSiteAddress != null -> showAccountMismatchScreen(loginSiteAddress!!)
