@@ -1166,7 +1166,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
             // GIVEN one store, whose verification times out, leaving the merchant looking at the
             // list the auto-login was predicted to skip
             givenTheScreenIsFromLogin(calledFromLogin = true)
-            givenThatSiteVerificationIsCompleted()
             whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
                 WooResult(
                     WooError(
