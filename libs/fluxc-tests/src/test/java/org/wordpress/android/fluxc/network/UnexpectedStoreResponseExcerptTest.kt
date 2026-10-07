@@ -76,6 +76,24 @@ class UnexpectedStoreResponseExcerptTest {
     }
 
     @Test
+    fun `given an angle bracket inside an attribute value, when the excerpt is built, then the whole tag is left out`() {
+        val body = "<p>Log in</p><input type=\"hidden\" title=\"a > b\" name=\"_wpnonce\" value=\"abc123\">"
+
+        val excerpt = UnexpectedStoreResponseExcerpt.from(body)
+
+        assertThat(excerpt).isEqualTo("Log in")
+    }
+
+    @Test
+    fun `given a tag that is never closed, when the excerpt is built, then the rest of the page is left out`() {
+        val body = "<p>Blocked</p><input value=\"abc123"
+
+        val excerpt = UnexpectedStoreResponseExcerpt.from(body)
+
+        assertThat(excerpt).isEqualTo("Blocked")
+    }
+
+    @Test
     fun `given plugin output before the JSON, when the excerpt is built, then the JSON is left out`() {
         val body = "Debug: /wc/v3/orders\n[{\"id\":727,\"billing\":{\"first_name\":\"Jane\",\"last_name\":\"Doe\"}}]"
 
