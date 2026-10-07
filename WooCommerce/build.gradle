@@ -466,10 +466,10 @@ dependencies {
     }
 
     // ViewModel and LiveData
-    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.androidx.fragment.main)
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     implementation(libs.androidx.lifecycle.process)
-    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.common)
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.core)
