@@ -9,7 +9,9 @@ gem 'rubocop', '~> 1.91'
 
 ### Fastlane Plugins
 
-gem 'fastlane-plugin-wpmreleasetoolkit', '~> 15.1'
+# Local workflow pilot: replace sibling paths with released versions before CI adoption.
+gem 'a8c-release-workflows', '0.1.0.pre.1', path: '../a8c-release-workflows'
+gem 'fastlane-plugin-wpmreleasetoolkit', '~> 15.1', path: '../release-toolkit'
 # gem 'fastlane-plugin-wpmreleasetoolkit', path: '../../release-toolkit'
 # gem 'fastlane-plugin-wpmreleasetoolkit', git: 'https://github.com/wordpress-mobile/release-toolkit', branch: ''
 
