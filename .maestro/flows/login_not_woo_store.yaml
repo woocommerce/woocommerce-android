@@ -88,23 +88,58 @@ tags:
       - tapOn:
           id: "login_continue_button"
           retryTapIfNoChange: true
-      # The e-mail field also has the id "input", so wait for the password row.
       - extendedWaitUntil:
           visible:
-            id: "login_password_row"
+            id: "login_password_row|login_magic_link_fallback_button"
           timeout: 30000
-      - tapOn:
-          id: "input"
-          childOf:
-            id: "login_password_row"
-      - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD}
+      # The e-mail field also has the id "input", so scope it to the password row.
       - runFlow:
-          file: ../subflows/hide_keyboard.yaml
-          env:
-            KEYBOARD_TARGET_ID: "bottom_button"
-      - tapOn:
-          id: "bottom_button"
-          retryTapIfNoChange: true
+          when:
+            visible:
+              id: "login_password_row"
+          commands:
+            - tapOn:
+                id: "input"
+                childOf:
+                  id: "login_password_row"
+            - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD}
+            - runFlow:
+                file: ../subflows/hide_keyboard.yaml
+                env:
+                  KEYBOARD_TARGET_ID: "bottom_button"
+            - tapOn:
+                id: "bottom_button"
+                retryTapIfNoChange: true
+            - extendedWaitUntil:
+                visible: ".*not a WooCommerce site.*|.*does not support plugin installation.*|Use username and password instead"
+                timeout: 30000
+      # WP.com can refuse the email login, before or after the password, and open
+      # the magic link screen. Its fallback button opens the WP.com username and
+      # password screen, which also takes the email.
+      - runFlow:
+          when:
+            visible:
+              id: "login_magic_link_fallback_button"
+          commands:
+            - tapOn:
+                id: "login_magic_link_fallback_button"
+            - tapOn:
+                id: "input"
+                childOf:
+                  id: "login_username_row"
+            - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL}
+            - tapOn:
+                id: "input"
+                childOf:
+                  id: "login_password_row"
+            - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD}
+            - runFlow:
+                file: ../subflows/hide_keyboard.yaml
+                env:
+                  KEYBOARD_TARGET_ID: "bottom_button"
+            - tapOn:
+                id: "bottom_button"
+                retryTapIfNoChange: true
 
 # Verify the configured WordPress site is rejected specifically because it
 # does not have WooCommerce. A WordPress.com site on a plan without plugins gets
