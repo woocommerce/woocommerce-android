@@ -47,6 +47,28 @@ class UnexpectedStoreResponseClassifierTest {
     }
 
     @Test
+    fun `given a WordPress error with its own code and a 500 status, when classified, then it is not unexpected`() {
+        val kind = classify(
+            statusCode = 500,
+            contentType = JSON,
+            body = """{"code":"woocommerce_rest_cannot_create_order_refund","message":"Refund failed."}"""
+        )
+
+        assertThat(kind).isNull()
+    }
+
+    @Test
+    fun `given JSON with a numeric code and a 503 status, when classified, then it has an unacceptable status code`() {
+        val kind = classify(
+            statusCode = 503,
+            contentType = JSON,
+            body = """{"code":503,"message":"Service Unavailable"}"""
+        )
+
+        assertThat(kind).isEqualTo(UNACCEPTABLE_STATUS_CODE)
+    }
+
+    @Test
     fun `given a cut-off JSON object with a 200 status, when classified, then it has unexpected content`() {
         val kind = classify(statusCode = 200, contentType = JSON, body = """{"name":"Store""")
 
