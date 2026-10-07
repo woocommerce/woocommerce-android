@@ -329,7 +329,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         on { invoke(orderId) } doReturn Result.success(DestinationShippingAddress(defaultShipToAddress, true))
     }
     private val observeShippingLabelNotice: ObserveShippingLabelNotice = mock {
-        on { invoke(any(), any(), any(), any()) } doReturn flowOf(null)
+        on { invoke(any(), any(), any(), any(), any()) } doReturn flowOf(null)
     }
     private val customsValidator: WooShippingCustomsValidator = mock()
     private val fetchShippingLabelFile: FetchShippingLabelFile = mock()
@@ -1469,7 +1469,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             error = true,
         )
 
-        whenever(observeShippingLabelNotice(any(), any(), any(), any())) doReturn flowOf(notice)
+        whenever(observeShippingLabelNotice(any(), any(), any(), any(), any())) doReturn flowOf(notice)
 
         createViewModel()
 
@@ -1482,7 +1482,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     @Test
     fun `when there are no notices then do not display the notices`() = testBlocking {
         val notice = null
-        whenever(observeShippingLabelNotice(any(), any(), any(), any())) doReturn flowOf(notice)
+        whenever(observeShippingLabelNotice(any(), any(), any(), any(), any())) doReturn flowOf(notice)
 
         createViewModel()
 

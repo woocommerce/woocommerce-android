@@ -233,6 +233,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 observeShippingLabelNotice(
                     shippingAddresses,
                     customsStatesFlow.filter { it.isNotEmpty() },
+                    selectedRatesFlow,
                     uiState.map { it.selectedIndex }.distinctUntilChanged(),
                     viewModelScope
                 )
@@ -253,6 +254,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                                     }
 
                                     NoticeType.MISSING_DESTINATION_ADDRESS,
+                                    NoticeType.RECIPIENT_PHONE_REQUIRED_BY_SERVICE,
                                     NoticeType.UNVERIFIED_DESTINATION_ADDRESS -> {
                                         shippingAddresses.value.getOrNull(selectedShipmentIndex)
                                             ?.shipTo?.let { shipTo ->

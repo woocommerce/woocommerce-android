@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 
 data class NoticeBannerUiState(
     @StringRes val message: Int,
+    val messageParameters: List<Any> = emptyList(),
     val type: NoticeType,
     val autoDismiss: Boolean = false,
     val error: Boolean,
@@ -15,6 +16,7 @@ enum class NoticeType {
     MISSING_ORIGIN_ADDRESS,
     UNVERIFIED_ORIGIN_ADDRESS,
     MISSING_DESTINATION_ADDRESS,
+    RECIPIENT_PHONE_REQUIRED_BY_SERVICE,
     UNVERIFIED_DESTINATION_ADDRESS,
     VERIFIED_ORIGIN_ADDRESS,
     VERIFIED_DESTINATION_ADDRESS,

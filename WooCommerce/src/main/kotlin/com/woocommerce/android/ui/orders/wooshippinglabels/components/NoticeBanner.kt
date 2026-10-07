@@ -79,6 +79,12 @@ fun NoticeBanner(noticeBannerUiState: NoticeBannerUiState?, modifier: Modifier =
                 }
                 .padding(vertical = 8.dp, horizontal = 16.dp),
         ) {
+            @Suppress("SpreadOperator")
+            val message = stringResource(
+                noticeBannerUiState.message,
+                *noticeBannerUiState.messageParameters.toTypedArray()
+            )
+
             Icon(
                 imageVector = icon,
                 tint = colorResource(color),
@@ -86,7 +92,7 @@ fun NoticeBanner(noticeBannerUiState: NoticeBannerUiState?, modifier: Modifier =
             )
             Spacer(Modifier.size(dimensionResource(R.dimen.minor_100)))
             Text(
-                text = stringResource(noticeBannerUiState.message),
+                text = message,
                 style = MaterialTheme.typography.bodyMedium,
                 color = colorResource(color),
                 modifier = Modifier.weight(1f)
