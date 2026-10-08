@@ -352,19 +352,14 @@ class NonceRestClient @Inject constructor(
         url: HttpUrl,
         isExpectedPage: (String) -> Boolean = { false }
     ): UnexpectedStoreResponse? {
-        val networkResponse = error.volleyError?.networkResponse ?: return null
-        val body = networkResponse.data?.decodeToString().orEmpty()
-        return if (isBasicAuthError(networkResponse) || body.hasLoginError() || isExpectedPage(body)) {
-            null
-        } else {
-            UnexpectedStoreResponse.of(
-                UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE,
-                networkResponse,
-                method,
-                url.toString()
-            )
-        }
+        val body = error.volleyError?.networkResponse?.data?.decodeToString().orEmpty()
+        return if (body.hasLoginError() || isExpectedPage(body)) null else unacceptableStatus(method, url)
     }
+
+    private fun Error<String>.unacceptableStatus(method: Int, url: HttpUrl): UnexpectedStoreResponse? =
+        error.volleyError?.networkResponse?.takeUnless { isBasicAuthError(it) }?.let {
+            UnexpectedStoreResponse.of(UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE, it, method, url.toString())
+        }
 
     private fun Error<String>.unexpectedRedirect(method: Int, url: HttpUrl): UnexpectedStoreResponse? =
         error.volleyError?.networkResponse?.let {
