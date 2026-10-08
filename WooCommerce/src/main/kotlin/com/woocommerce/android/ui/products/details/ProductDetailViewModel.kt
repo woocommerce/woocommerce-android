@@ -91,6 +91,8 @@ import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -170,7 +172,8 @@ class ProductDetailViewModel @Inject constructor(
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
     private val determineProductPasswordApi: DetermineProductPasswordApi,
     private val customFieldsRepository: CustomFieldsRepository,
-    private val canAutoAuthenticateInWebView: CanAutoAuthenticateInWebView
+    private val canAutoAuthenticateInWebView: CanAutoAuthenticateInWebView,
+    private val featureFlagRepository: FeatureFlagRepository
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -313,8 +316,16 @@ class ProductDetailViewModel @Inject constructor(
     val productDetailBottomSheetList: LiveData<List<ProductDetailBottomSheetUiItem>> = _productDetailBottomSheetList
 
     private val productDetailBottomSheetBuilder by lazy {
-        ProductDetailBottomSheetBuilder(resources, variationRepository, customFieldsRepository)
+        ProductDetailBottomSheetBuilder(
+            resources = resources,
+            variationRepository = variationRepository,
+            customFieldsRepository = customFieldsRepository,
+            isNonVariationAttributesEnabled = { isNonVariationAttributesEnabled }
+        )
     }
+
+    val isNonVariationAttributesEnabled: Boolean
+        get() = featureFlagRepository.isEnabled(FeatureFlag.NON_VARIATION_PRODUCT_ATTRIBUTES)
 
     private val _hasChanges = storedProductAggregate
         .combine(draftChanges) { storedProductAggregate, productAggregateDraft ->
@@ -1669,8 +1680,12 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * Loads the attributes assigned to the draft product, used by the attribute list fragment
      */
-    fun loadProductDraftAttributes() {
-        _attributeList.value = productDraftVariationAttributes
+    fun loadProductDraftAttributes(isVariationCreation: Boolean) {
+        _attributeList.value = if (isNonVariationAttributesEnabled && !isVariationCreation) {
+            productDraftAttributes
+        } else {
+            productDraftVariationAttributes
+        }
     }
 
     /**
@@ -1679,6 +1694,44 @@ class ProductDetailViewModel @Inject constructor(
     fun getProductDraftAttributeTerms(attributeId: Long, attributeName: String): List<String> {
         return getDraftAttribute(attributeId, attributeName)?.terms ?: emptyList()
     }
+
+    /**
+     * Returns the draft attribute matching the passed id and name, or null if the product doesn't have it yet
+     */
+    fun getProductDraftAttribute(attributeId: Long, attributeName: String): ProductAttribute? =
+        getDraftAttribute(attributeId, attributeName)
+
+    val isDraftVariableProduct: Boolean
+        get() = viewState.productDraft?.productType?.isVariableProduct() == true
+
+    val draftHasVariations: Boolean
+        get() = (viewState.productDraft?.numVariations ?: 0) > 0
+
+    fun onAttributeVisibleToggled(attributeId: Long, attributeName: String, isVisible: Boolean) {
+        updateDraftAttribute(attributeId, attributeName) { it.copy(isVisible = isVisible) }
+    }
+
+    fun onAttributeUsedForVariationsToggled(attributeId: Long, attributeName: String, isVariation: Boolean) {
+        updateDraftAttribute(attributeId, attributeName) { it.copy(isVariation = isVariation) }
+    }
+
+    private fun updateDraftAttribute(
+        attributeId: Long,
+        attributeName: String,
+        transform: (ProductAttribute) -> ProductAttribute
+    ) {
+        val attribute = getDraftAttribute(attributeId, attributeName) ?: return
+        updateProductDraft(
+            attributes = productDraftAttributes.map { if (it == attribute) transform(it) else it }
+        )
+    }
+
+    /**
+     * A new attribute is used for variations on variable products and in the variation wizard. With the
+     * non-variation attributes feature off, every new attribute is used for variations, as before.
+     */
+    private fun isNewAttributeUsedForVariations(isVariationCreation: Boolean) =
+        !isNonVariationAttributesEnabled || isVariationCreation || isDraftVariableProduct
 
     /**
      * Swaps two terms for a draft attribute
@@ -1769,7 +1822,12 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * Adds a new term to a the product draft attributes
      */
-    fun addAttributeTermToDraft(attributeId: Long, attributeName: String, termName: String) {
+    fun addAttributeTermToDraft(
+        attributeId: Long,
+        attributeName: String,
+        termName: String,
+        isVariationCreation: Boolean = false
+    ) {
         val thisAttribute = getDraftAttribute(attributeId, attributeName)
         if (thisAttribute == null) {
             updateProductDraft(
@@ -1777,6 +1835,8 @@ class ProductDetailViewModel @Inject constructor(
                     id = attributeId,
                     name = attributeName,
                     terms = listOf(termName),
+                    isVisible = ProductAttribute.DEFAULT_VISIBLE,
+                    isVariation = isNewAttributeUsedForVariations(isVariationCreation),
                     position = nextDraftAttributePosition()
                 )
             )
@@ -1818,6 +1878,9 @@ class ProductDetailViewModel @Inject constructor(
      * Saves any attribute changes to the backend
      */
     fun saveAttributeChanges() {
+        // a product that isn't on the site yet sends its attributes when it's created
+        if (!isProductStoredAtSite) return
+
         if (hasAttributeChanges() && checkConnection()) {
             launch {
                 viewState.productDraft?.attributes?.let { attributes ->
@@ -1838,7 +1901,9 @@ class ProductDetailViewModel @Inject constructor(
      * User clicked an attribute in the attribute list fragment or the add attribute fragment
      */
     fun onAttributeListItemClick(attributeId: Long, attributeName: String, isVariationCreation: Boolean) {
-        enableAttributeForVariations(attributeId, attributeName)
+        if (isVariationCreation || !isNonVariationAttributesEnabled) {
+            enableAttributeForVariations(attributeId, attributeName)
+        }
         triggerEvent(
             ProductNavigationTarget.AddProductAttributeTerms(
                 attributeId,
@@ -1923,7 +1988,7 @@ class ProductDetailViewModel @Inject constructor(
                 name = attributeName,
                 terms = emptyList(),
                 isVisible = ProductAttribute.DEFAULT_VISIBLE,
-                isVariation = ProductAttribute.DEFAULT_IS_VARIATION,
+                isVariation = isNewAttributeUsedForVariations(isVariationCreation),
                 position = nextDraftAttributePosition()
             )
         )

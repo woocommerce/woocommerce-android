@@ -26,13 +26,64 @@ class ProductDetailBottomSheetBuilderTest : BaseUnitTest() {
         on { hasDisplayableCustomFields(any()) } doReturn false
     }
 
+    private var isNonVariationAttributesEnabled = false
+
     @Before
     fun setUp() {
         sut = ProductDetailBottomSheetBuilder(
             resources = resourceProvider,
             variationRepository = variationRepository,
-            customFieldsRepository = customFieldsRepository
+            customFieldsRepository = customFieldsRepository,
+            isNonVariationAttributesEnabled = { isNonVariationAttributesEnabled }
         )
+    }
+
+    @Test
+    fun `given the feature is on and a product has no attributes, when building the list, then show the attributes item`() =
+        testBlocking {
+            // GIVEN
+            isNonVariationAttributesEnabled = true
+            val product = ProductTestUtils.generateProduct(productId = 1L).copy(attributes = emptyList())
+
+            // WHEN
+            val result = sut.buildBottomSheetList(ProductAggregate(product))
+
+            // THEN
+            val attributesItem = result.single {
+                it.type == ProductDetailBottomSheetBuilder.ProductDetailBottomSheetType.PRODUCT_ATTRIBUTES
+            }
+            assertThat(attributesItem.clickEvent).isEqualTo(ProductNavigationTarget.AddProductAttribute())
+        }
+
+    @Test
+    fun `given the feature is on and the product has attributes, when building the list, then hide the attributes item`() = testBlocking {
+        // GIVEN
+        isNonVariationAttributesEnabled = true
+        val product = ProductTestUtils.generateProduct(productId = 1L)
+
+        // WHEN
+        val result = sut.buildBottomSheetList(ProductAggregate(product))
+
+        // THEN
+        assertThat(product.attributes).isNotEmpty
+        assertThat(result).noneMatch {
+            it.type == ProductDetailBottomSheetBuilder.ProductDetailBottomSheetType.PRODUCT_ATTRIBUTES
+        }
+    }
+
+    @Test
+    fun `given the feature is off, when building the list, then hide the attributes item`() = testBlocking {
+        // GIVEN
+        isNonVariationAttributesEnabled = false
+        val product = ProductTestUtils.generateProduct(productId = 1L).copy(attributes = emptyList())
+
+        // WHEN
+        val result = sut.buildBottomSheetList(ProductAggregate(product))
+
+        // THEN
+        assertThat(result).noneMatch {
+            it.type == ProductDetailBottomSheetBuilder.ProductDetailBottomSheetType.PRODUCT_ATTRIBUTES
+        }
     }
 
     @Test

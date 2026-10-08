@@ -34,6 +34,18 @@
             android:ellipsize="end"
             android:maxLines="2"
             tools:text="Blue, Green" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/attributeLabels"
+            style="@style/Woo.ListItem.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/minor_50"
+            android:textAppearance="@style/TextAppearance.Woo.Caption"
+            android:textColor="@color/color_on_surface_medium"
+            android:visibility="gone"
+            tools:text="Used for variations · Hidden"
+            tools:visibility="visible" />
     </LinearLayout>
 
     <View

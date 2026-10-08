@@ -20,6 +20,7 @@ import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.parcelable
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.products.BaseProductFragment
@@ -142,6 +143,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         setupObservers()
         setupResultHandlers()
         getAttributeTerms()
+        updateAttributeSettings()
 
         if (savedInstanceState?.getBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING) == true) {
             confirmRemoveAttribute()
@@ -378,6 +380,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             if (viewModel.renameAttributeInDraft(0L, oldAttributeName = attributeName, newAttributeName = it)) {
                 renamedAttributeName = it
                 requireView().findViewById<Toolbar>(R.id.toolbar)?.title = attributeName
+                updateAttributeSettings()
             }
         }
     }
@@ -420,6 +423,54 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         binding.assignedTermList.isVisible = !assignedTermsAdapter.isEmpty()
         binding.textExistingOption.isVisible = !globalTermsAdapter.isEmpty()
         moveNextMenuItem?.isVisible = !assignedTermsAdapter.isEmpty() && navArgs.isVariationCreation
+        updateAttributeSettings()
+    }
+
+    /**
+     * Shows the "Visible on product page" and "Used for variations" switches. They stay disabled until the
+     * attribute has an option, because the attribute isn't added to the product before that.
+     */
+    private fun updateAttributeSettings() {
+        val isEnabled = viewModel.isNonVariationAttributesEnabled
+        binding.attributeSettingsContainer.isVisible = isEnabled
+        if (!isEnabled) return
+
+        val attribute = viewModel.getProductDraftAttribute(navArgs.attributeId, attributeName)
+        with(binding.visibleSwitch) {
+            setOnCheckedChangeListener(null)
+            this.isEnabled = attribute != null
+            isChecked = attribute?.isVisible ?: ProductAttribute.DEFAULT_VISIBLE
+            setOnCheckedChangeListener { _, isChecked ->
+                viewModel.onAttributeVisibleToggled(navArgs.attributeId, attributeName, isChecked)
+            }
+        }
+        with(binding.usedForVariationsSwitch) {
+            isVisible = viewModel.isDraftVariableProduct && !navArgs.isVariationCreation
+            setOnCheckedChangeListener(null)
+            this.isEnabled = attribute != null
+            isChecked = attribute?.isVariation ?: viewModel.isDraftVariableProduct
+            setOnCheckedChangeListener { _, isChecked -> onUsedForVariationsChanged(isChecked) }
+        }
+    }
+
+    private fun onUsedForVariationsChanged(isChecked: Boolean) {
+        if (isChecked || !viewModel.draftHasVariations) {
+            viewModel.onAttributeUsedForVariationsToggled(navArgs.attributeId, attributeName, isChecked)
+            return
+        }
+
+        WooDialog.showDialog(
+            requireActivity(),
+            titleId = R.string.product_attribute_stop_using_for_variations_title,
+            messageId = R.string.product_attribute_stop_using_for_variations_message,
+            positiveButtonId = R.string.product_attribute_stop_using_for_variations_confirm,
+            posBtnAction = { _, _ ->
+                viewModel.onAttributeUsedForVariationsToggled(navArgs.attributeId, attributeName, false)
+            },
+            negativeButtonId = R.string.cancel,
+            // reset the switch to the draft value, so cancelling turns it back on
+            onDismiss = { if (_binding != null) updateAttributeSettings() }
+        )
     }
 
     /**
@@ -434,7 +485,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             globalTermsAdapter.removeTerm(termName)
         }
 
-        viewModel.addAttributeTermToDraft(navArgs.attributeId, attributeName, termName)
+        viewModel.addAttributeTermToDraft(navArgs.attributeId, attributeName, termName, navArgs.isVariationCreation)
         checkViews()
     }
 
