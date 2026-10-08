@@ -228,7 +228,12 @@ class CardReaderPaymentController(
             fetchOrder()?.let { order ->
                 cardReaderTrackingInfoKeeper.setCurrency(order.currency)
 
-                if (!paymentCollectibilityChecker.isCollectable(order, allowCancelledStatus)) {
+                val collectable = paymentCollectibilityChecker.isCollectable(
+                    order,
+                    allowCancelledStatus,
+                    checkSubscription = false,
+                )
+                if (!collectable) {
                     exitWithSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled)
                     return@launch
                 }
@@ -258,7 +263,10 @@ class CardReaderPaymentController(
             }
             fetchOrder()?.let { order ->
                 if (!interacRefundableChecker.isRefundable(order)) {
-                    exitWithSnackbar(R.string.card_reader_interac_refund_order_refunded_refund_cancelled)
+                    // Covers every non-refundable reason (subscription order, unsupported status/
+                    // currency, or a subscription lookup that couldn't be resolved) without wrongly
+                    // claiming the order was already refunded.
+                    exitWithSnackbar(R.string.card_reader_interac_refund_not_available)
                     return@launch
                 }
                 launch {
