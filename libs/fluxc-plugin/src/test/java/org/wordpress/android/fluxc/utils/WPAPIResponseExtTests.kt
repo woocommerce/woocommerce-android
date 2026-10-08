@@ -4,8 +4,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseKind
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
@@ -82,5 +85,41 @@ class WPAPIResponseExtTests {
 
         assertThat(result.isError).isTrue
         assertThat(result.error.type).isEqualTo(WooErrorType.REST_INVALID_SIGNATURE)
+    }
+
+    @Test
+    fun `given a WP API error with unexpected response details, when converting, then keep the details`() {
+        val error = WPAPINetworkError(
+            BaseNetworkError(BaseRequest.GenericErrorType.PARSE_ERROR).apply {
+                unexpectedStoreResponse = UNEXPECTED_RESPONSE
+            }
+        )
+
+        val wooError = error.toWooError()
+
+        assertThat(wooError.unexpectedStoreResponse).isEqualTo(UNEXPECTED_RESPONSE)
+    }
+
+    @Test
+    fun `given a WPCom error with unexpected response details, when converting, then keep the details`() {
+        val error = WPComGsonNetworkError(
+            BaseNetworkError(BaseRequest.GenericErrorType.UNKNOWN).apply {
+                unexpectedStoreResponse = UNEXPECTED_RESPONSE
+            }
+        )
+
+        val wooError = error.toWooError()
+
+        assertThat(wooError.unexpectedStoreResponse).isEqualTo(UNEXPECTED_RESPONSE)
+    }
+
+    private companion object {
+        val UNEXPECTED_RESPONSE = UnexpectedStoreResponse(
+            kind = UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE,
+            statusCode = 500,
+            contentType = "text/html",
+            requestType = "GET /",
+            excerpt = "WordPress › Error | There has been a critical error on this website."
+        )
     }
 }
