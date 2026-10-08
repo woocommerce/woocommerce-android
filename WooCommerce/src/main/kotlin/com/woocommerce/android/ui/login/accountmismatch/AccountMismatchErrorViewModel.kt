@@ -55,7 +55,13 @@ class AccountMismatchErrorViewModel @Inject constructor(
                 displayName = it.displayName.orEmpty()
             )
         },
-        message = resourceProvider.getString(R.string.login_jetpack_not_connected, siteUrl),
+        message = when (navArgs.primaryButton) {
+            AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE ->
+                resourceProvider.getString(R.string.login_wpcom_account_mismatch, siteUrl)
+            AccountMismatchPrimaryButton.CONNECT_JETPACK,
+            AccountMismatchPrimaryButton.NONE ->
+                resourceProvider.getString(R.string.login_jetpack_not_connected, siteUrl)
+        },
         primaryButtonText = when (navArgs.primaryButton) {
             AccountMismatchPrimaryButton.CONNECT_JETPACK -> R.string.login_account_mismatch_connect_jetpack
             AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE -> R.string.login_account_mismatch_connect_wpcom
