@@ -520,7 +520,8 @@ class SitePickerViewModel @Inject constructor(
     fun reportListIfShown() {
         val listIsOnScreen = _sites.value != null &&
             sitePickerViewState.currentSitePickerState == SitePickerState.StoreListState &&
-            !sitePickerViewState.isSkeletonViewVisible
+            !sitePickerViewState.isSkeletonViewVisible &&
+            !sitePickerViewState.isProgressDiaLogVisible
         if (listIsOnScreen) trackSiteListShown()
     }
 

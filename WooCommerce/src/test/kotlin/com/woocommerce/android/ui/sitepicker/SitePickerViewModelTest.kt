@@ -1225,6 +1225,30 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given an auto-login is verifying, when the app comes back, then no list is reported`() =
+        testBlocking {
+            // GIVEN a typed address whose auto-login is still verifying, so the progress dialog is
+            // covering the list and the merchant is on their way to the dashboard
+            val wooSite = defaultExpectedSiteList[1]
+            givenThatUserLoggedInFromEnteringSiteAddress(wooSite)
+            whenSitesAreFetched()
+            val verification = CompletableDeferred<WooResult<WCApiVersionResponse>>()
+            whenever(repository.verifySiteWooAPIVersion(any())).doSuspendableAnswer { verification.await() }
+            whenViewModelIsCreated()
+            advanceUntilIdle()
+
+            // WHEN the app is backgrounded and brought back while that is still in flight
+            viewModel.reportListIfShown()
+
+            // THEN nothing is reported for a list they never saw
+            verify(unifiedLoginTracker, never()).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SITE_LIST),
+                properties = any()
+            )
+        }
+
+    @Test
     fun `given the sites fetch failed, when the picker is in front, then no list is reported`() =
         testBlocking {
             // GIVEN nothing cached and a fetch that errors, so the picker is left with no list
