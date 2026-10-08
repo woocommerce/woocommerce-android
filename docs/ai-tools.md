@@ -46,7 +46,7 @@ Skills live in `.agents/skills/` (`.claude/skills/` is a symlink). Agents load t
 
 | Name | What it does | When to use | Example | Owner | Availability |
 |---|---|---|---|---|---|
-| [`agent-login`](../.agents/skills/verify-on-device/references/agent-auto-login.md) (auto-login) | Logs a debug build in to a test store from a local profile, without typing credentials | Any manual or agent test that needs a logged-in app | `tools/agent-login/agent-login.sh --flavor dev` | Woo Mobile | Repo. Needs a profile in `~/.config/woocommerce-android/auto-login/profiles/` |
+| [`agent-login`](../.agents/skills/verify-on-device/references/agent-auto-login.md) (auto-login) | Logs a debug build in to a test store from a local profile, without typing credentials | Any manual or agent test that needs a logged-in app | `tools/agent-login/agent-login.sh --flavor dev --serial emulator-5554` | Woo Mobile | Repo. `installWasabiDebug` installs the `dev` flavor. Needs a profile in `~/.config/woocommerce-android/auto-login/profiles/` |
 | [ApiFaker ADB commands](api-faker-adb.md) | Fakes API responses in a debug build through `adb` broadcasts | Testing error states and edge cases without a real backend | `adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android.apifaker.SET_STATUS --ez enabled true` | Woo Mobile | Repo (debug builds) |
 | POS direct launch | Opens POS directly, skipping the store app navigation | Checking POS on a tablet or emulator | `adb shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.woopos.root.WooPosActivity` | Woo Mobile | Repo (debug builds) |
 
