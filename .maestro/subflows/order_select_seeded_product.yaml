@@ -1,0 +1,24 @@
+# Picks the simple product the seed created for this run in the order product
+# selector. Its name carries the run id, so cleanup finds the order it ends up in.
+appId: com.woocommerce.android
+---
+- extendedWaitUntil:
+    visible: ".*Search Products.*"
+    timeout: 15000
+- tapOn:
+    text: ".*Search Products.*"
+    label: "Open product search"
+- inputText: ${MAESTRO_FIXTURE_SIMPLE_PRODUCT}
+- extendedWaitUntil:
+    visible:
+      text: ".*${MAESTRO_FIXTURE_SIMPLE_PRODUCT}.*"
+      childOf:
+        id: "product_selector_product_item"
+    timeout: 20000
+    label: "Wait for the seeded product in the results"
+- tapOn:
+    text: ".*${MAESTRO_FIXTURE_SIMPLE_PRODUCT}.*"
+    childOf:
+      id: "product_selector_product_item"
+    retryTapIfNoChange: true
+    label: "Select the seeded product"

@@ -1,0 +1,159 @@
+from __future__ import annotations
+
+import unittest
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+
+
+class MaestroFlowContractTests(unittest.TestCase):
+    def test_given_login_credentials_when_referenced_then_they_keep_the_maestro_prefix(self) -> None:
+        login_files = [
+            *sorted((REPO_ROOT / ".maestro" / "flows").glob("login_*.yaml")),
+            REPO_ROOT / ".maestro" / "subflows" / "login.yaml",
+            REPO_ROOT / ".maestro" / "subflows" / "ensure_configured_woo_store.yaml",
+        ]
+
+        referenced_credentials = []
+        for path in login_files:
+            text = path.read_text(encoding="utf-8")
+            with self.subTest(path=path):
+                self.assertNotIn("${WOO_", text)
+                self.assertNotIn("String(WOO_", text)
+            referenced_credentials.extend(
+                token for token in text.split() if "MAESTRO_WOO_" in token
+            )
+
+        self.assertTrue(referenced_credentials)
+
+        runner = (
+            REPO_ROOT / ".maestro" / "scripts" / "run-smoke-tests.sh"
+        ).read_text(encoding="utf-8")
+        self.assertIn('if [[ ${#FLOW_ENV_REFS[@]} -gt 0 ]]; then', runner)
+
+    def test_given_login_flows_when_opening_site_address_then_they_share_qr_aware_entry(self) -> None:
+        helper_path = REPO_ROOT / ".maestro" / "subflows" / "open_site_address_login.yaml"
+        helper = helper_path.read_text(encoding="utf-8")
+        strings = ET.parse(
+            REPO_ROOT / "WooCommerce" / "src" / "main" / "res" / "values" / "strings.xml"
+        ).getroot()
+        fallback = strings.find("string[@name='login_qr_prologue_fallback_link']")
+
+        self.assertIsNotNone(fallback)
+        self.assertIsNotNone(fallback.text)
+        self.assertIn("? ", fallback.text)
+        self.assertIn(fallback.text.split("? ", maxsplit=1)[1], helper)
+        self.assertIn('id: "input"', helper)
+        self.assertLess(
+            helper.index('visible: "^Log In$|'),
+            helper.index('id: "button_login_store"'),
+        )
+
+        direct_login_flows = [
+            "login_google.yaml",
+            "login_help.yaml",
+            "login_no_jetpack.yaml",
+            "login_not_woo_store.yaml",
+            "login_not_wp_site.yaml",
+            "login_wrong_account.yaml",
+            "login_wrong_credentials.yaml",
+        ]
+        for flow_name in direct_login_flows:
+            with self.subTest(flow=flow_name):
+                flow = (REPO_ROOT / ".maestro" / "flows" / flow_name).read_text(encoding="utf-8")
+                self.assertIn("../subflows/open_site_address_login.yaml", flow)
+
+        reusable_login = (
+            REPO_ROOT / ".maestro" / "subflows" / "login.yaml"
+        ).read_text(encoding="utf-8")
+        self.assertIn("file: open_site_address_login.yaml", reusable_login)
+
+    def test_fresh_login_flows_share_the_carousel_dismissal(self) -> None:
+        helper = (
+            REPO_ROOT / ".maestro" / "subflows" / "dismiss_login_carousel.yaml"
+        ).read_text(encoding="utf-8")
+        readiness_selector = 'visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"'
+
+        self.assertIn("appId: com.woocommerce.android", helper)
+        self.assertIn(readiness_selector, helper)
+        self.assertIn('- tapOn: "Skip"', helper)
+
+        direct_login_flows = [
+            "login_google.yaml",
+            "login_help.yaml",
+            "login_no_jetpack.yaml",
+            "login_not_woo_store.yaml",
+            "login_not_wp_site.yaml",
+            "login_wrong_account.yaml",
+            "login_wrong_credentials.yaml",
+        ]
+        for flow_name in direct_login_flows:
+            with self.subTest(flow=flow_name):
+                flow = (REPO_ROOT / ".maestro" / "flows" / flow_name).read_text(encoding="utf-8")
+                self.assertIn("../subflows/dismiss_login_carousel.yaml", flow)
+                self.assertNotIn(readiness_selector, flow)
+                self.assertNotIn('- tapOn: "Skip"', flow)
+
+        reusable_login = (
+            REPO_ROOT / ".maestro" / "subflows" / "login.yaml"
+        ).read_text(encoding="utf-8")
+        self.assertIn("file: dismiss_login_carousel.yaml", reusable_login)
+        self.assertNotIn(readiness_selector, reusable_login)
+        self.assertNotIn('- tapOn: "Skip"', reusable_login)
+
+    def test_all_login_flows_are_required_core_coverage(self) -> None:
+        login_flows = sorted((REPO_ROOT / ".maestro" / "flows").glob("login_*.yaml"))
+
+        self.assertTrue(login_flows)
+        for path in login_flows:
+            with self.subTest(path=path):
+                source = path.read_text(encoding="utf-8")
+                self.assertIn("  - smoke_core\n", source)
+                # Google sign-in only accepts the Play-signed build, which the runner never installs.
+                if path.name != "login_google.yaml":
+                    self.assertNotIn("  - flaky_quarantine\n", source)
+
+    def test_not_woo_store_requires_the_rejection_and_another_account_action(self) -> None:
+        flow = (
+            REPO_ROOT / ".maestro" / "flows" / "login_not_woo_store.yaml"
+        ).read_text(encoding="utf-8")
+        strings = (REPO_ROOT / ".maestro" / "strings.env").read_text(encoding="utf-8")
+
+        error_message = flow.index(
+            'visible: ".*not a WooCommerce site.*|.*does not support plugin installation.*"'
+        )
+        another_account = flow.index("text: ${STRING_LOGIN_TRY_ANOTHER_ACCOUNT}")
+        self.assertLess(error_message, another_account)
+        self.assertIn("STRING_LOGIN_TRY_ANOTHER_ACCOUNT='Log in with another account'", strings)
+
+    def test_shared_store_flows_are_never_destructive(self) -> None:
+        for path in sorted((REPO_ROOT / ".maestro" / "flows").glob("*.yaml")):
+            header = path.read_text(encoding="utf-8").split("\n---", 1)[0]
+            if "  - store_shared" in header:
+                with self.subTest(path=path):
+                    self.assertNotIn("  - destructive", header)
+
+    def test_all_flows_use_the_production_app_id(self) -> None:
+        yaml_files = [
+            REPO_ROOT / ".maestro" / "config.yaml",
+            *sorted((REPO_ROOT / ".maestro" / "flows").glob("*.yaml")),
+            *sorted((REPO_ROOT / ".maestro" / "subflows").glob("*.yaml")),
+        ]
+
+        for path in yaml_files:
+            with self.subTest(path=path):
+                source = path.read_text(encoding="utf-8")
+                self.assertIn("appId: com.woocommerce.android", source)
+                self.assertNotIn("com.woocommerce.android.dev", source)
+
+        quick_actions = (
+            REPO_ROOT / ".maestro" / "flows" / "android_quick_actions.yaml"
+        ).read_text(encoding="utf-8")
+        self.assertIn('text: "^Woo$"', quick_actions)
+        self.assertNotIn("Woo \\(Dev\\)", quick_actions)
+
+
+if __name__ == "__main__":
+    unittest.main()
