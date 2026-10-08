@@ -173,7 +173,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
             return
         }
 
-        when (val result = checkWCPluginSupport(forceRefresh = true)) {
+        when (val result = checkWCPluginSupport(selectedSite.get(), forceRefresh = true)) {
             CheckWooPluginPushNotificationsSupport.Result.Compatible -> {
                 markCurrentStepAsCompleted()
                 advanceToNextStep()

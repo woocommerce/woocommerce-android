@@ -38,7 +38,7 @@ class NotificationMessageHandler @Inject constructor(
     private val analyticsTracker: NotificationAnalyticsTracker,
     private val notificationsParser: NotificationsParser,
     private val accountStore: AccountStore,
-    private val registrationStatus: PushNotificationRegistrationStatus,
+    private val pushNotificationRepository: PushNotificationRepository,
     private val wooLog: WooLog,
     private val dispatcher: Dispatcher,
     private val resourceProvider: ResourceProvider,
@@ -120,8 +120,7 @@ class NotificationMessageHandler @Inject constructor(
                 return
             }
 
-            val registrationStatusResult = runBlocking { registrationStatus(notification.remoteSiteId) }
-            if (registrationStatusResult.isWooRegistered) {
+            if (runBlocking { pushNotificationRepository.hasWooPushTokenForSite(notification.remoteSiteId) }) {
                 wooLog.d(NOTIFICATIONS, "Skipping WPCOM notification, already registered with Woo Core")
                 return
             }

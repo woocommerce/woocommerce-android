@@ -31,7 +31,7 @@ class ShouldShowEnablePushNotificationsUi @Inject constructor(
                 if (site == null || site.connectionType == SiteConnectionType.Jetpack) {
                     flowOf(false)
                 } else {
-                    pushNotificationRegistrationStatus.observe(site.siteId).map { registrationStatus ->
+                    pushNotificationRegistrationStatus.observe(site).map { registrationStatus ->
                         !registrationStatus.isWooRegistered
                     }
                 }

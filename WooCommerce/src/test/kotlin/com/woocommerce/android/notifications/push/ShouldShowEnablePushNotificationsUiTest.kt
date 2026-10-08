@@ -77,11 +77,10 @@ class ShouldShowEnablePushNotificationsUiTest : BaseUnitTest() {
             whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
                 .thenReturn(true)
             val appPasswordsSite: SiteModel = mock {
-                on { siteId } doReturn TEST_SITE_ID
                 on { origin } doReturn 0 // != ORIGIN_WPCOM_REST(1) → ApplicationPasswords
             }
             whenever(selectedSite.observe()).thenReturn(flowOf(appPasswordsSite))
-            whenever(pushNotificationRegistrationStatus.observe(TEST_SITE_ID))
+            whenever(pushNotificationRegistrationStatus.observe(appPasswordsSite))
                 .thenReturn(flowOf(PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY))
 
             val result = sut().first()
@@ -95,19 +94,14 @@ class ShouldShowEnablePushNotificationsUiTest : BaseUnitTest() {
             whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
                 .thenReturn(true)
             val appPasswordsSite: SiteModel = mock {
-                on { siteId } doReturn TEST_SITE_ID
                 on { origin } doReturn 0 // != ORIGIN_WPCOM_REST(1) → ApplicationPasswords
             }
             whenever(selectedSite.observe()).thenReturn(flowOf(appPasswordsSite))
-            whenever(pushNotificationRegistrationStatus.observe(TEST_SITE_ID))
+            whenever(pushNotificationRegistrationStatus.observe(appPasswordsSite))
                 .thenReturn(flowOf(PushNotificationRegistrationStatus.Status.UNREGISTERED))
 
             val result = sut().first()
 
             assertThat(result).isTrue()
         }
-
-    companion object {
-        private const val TEST_SITE_ID = 123L
-    }
 }

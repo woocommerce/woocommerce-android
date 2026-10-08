@@ -24,7 +24,7 @@ class SupportsReviewsReadStatus @Inject constructor(
     suspend operator fun invoke(): Boolean {
         val site = selectedSite.getIfExists() ?: return false
         if (site.connectionType != SiteConnectionType.Jetpack) return false
-        val status = pushNotificationRegistrationStatus(site.siteId)
+        val status = pushNotificationRegistrationStatus(site)
         return !status.isWooRegistered
     }
 }

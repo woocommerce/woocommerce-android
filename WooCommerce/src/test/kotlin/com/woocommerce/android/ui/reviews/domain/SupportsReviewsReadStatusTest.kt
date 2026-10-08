@@ -41,7 +41,7 @@ class SupportsReviewsReadStatusTest : BaseUnitTest() {
     fun `given Jetpack site and REGISTERED_WPCOM_ONLY push status, when invoked, then returns true`() = testBlocking {
         val jetpackSite = jetpackSite()
         whenever(selectedSite.getIfExists()).thenReturn(jetpackSite)
-        whenever(pushNotificationRegistrationStatus(TEST_SITE_ID)).thenReturn(Status.REGISTERED_WPCOM_ONLY)
+        whenever(pushNotificationRegistrationStatus(jetpackSite)).thenReturn(Status.REGISTERED_WPCOM_ONLY)
 
         val result = sut()
 
@@ -52,7 +52,7 @@ class SupportsReviewsReadStatusTest : BaseUnitTest() {
     fun `given Jetpack site and UNREGISTERED push status, when invoked, then returns true`() = testBlocking {
         val jetpackSite = jetpackSite()
         whenever(selectedSite.getIfExists()).thenReturn(jetpackSite)
-        whenever(pushNotificationRegistrationStatus(TEST_SITE_ID)).thenReturn(Status.UNREGISTERED)
+        whenever(pushNotificationRegistrationStatus(jetpackSite)).thenReturn(Status.UNREGISTERED)
 
         val result = sut()
 
@@ -63,7 +63,7 @@ class SupportsReviewsReadStatusTest : BaseUnitTest() {
     fun `given Jetpack site and REGISTERED_WOO_ONLY push status, when invoked, then returns false`() = testBlocking {
         val jetpackSite = jetpackSite()
         whenever(selectedSite.getIfExists()).thenReturn(jetpackSite)
-        whenever(pushNotificationRegistrationStatus(TEST_SITE_ID)).thenReturn(Status.REGISTERED_WOO_ONLY)
+        whenever(pushNotificationRegistrationStatus(jetpackSite)).thenReturn(Status.REGISTERED_WOO_ONLY)
 
         val result = sut()
 
@@ -74,7 +74,7 @@ class SupportsReviewsReadStatusTest : BaseUnitTest() {
     fun `given Jetpack site and REGISTERED_BOTH push status, when invoked, then returns false`() = testBlocking {
         val jetpackSite = jetpackSite()
         whenever(selectedSite.getIfExists()).thenReturn(jetpackSite)
-        whenever(pushNotificationRegistrationStatus(TEST_SITE_ID)).thenReturn(Status.REGISTERED_BOTH)
+        whenever(pushNotificationRegistrationStatus(jetpackSite)).thenReturn(Status.REGISTERED_BOTH)
 
         val result = sut()
 
@@ -108,12 +108,7 @@ class SupportsReviewsReadStatusTest : BaseUnitTest() {
     }
 
     private fun jetpackSite(): SiteModel = mock {
-        on { siteId } doReturn TEST_SITE_ID
         on { origin } doReturn SiteModel.ORIGIN_WPCOM_REST
         on { isJetpackConnected } doReturn true
-    }
-
-    companion object {
-        private const val TEST_SITE_ID = 123L
     }
 }
