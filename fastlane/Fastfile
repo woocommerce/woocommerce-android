@@ -77,10 +77,8 @@ APP_PACKAGE_NAME = 'com.woocommerce.android'
 GOOGLE_FIREBASE_SECRETS_PATH = File.join(PROJECT_ROOT_FOLDER, '.configure-files', 'firebase.secrets.json')
 
 # Instantiate versioning classes
-VERSION_CALCULATOR = Fastlane::Wpmreleasetoolkit::Versioning::MarketingVersionCalculator.new
 VERSION_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::RCNotationVersionFormatter.new
 BUILD_CODE_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::SimpleBuildCodeFormatter.new
-BUILD_CODE_CALCULATOR = Fastlane::Wpmreleasetoolkit::Versioning::SimpleBuildCodeCalculator.new
 VERSION_FILE = Fastlane::Wpmreleasetoolkit::Versioning::AndroidVersionFile.new(version_properties_path: VERSION_PROPERTIES_PATH)
 
 ########################################################################
@@ -352,43 +350,7 @@ platform :android do
   # @example Running the lane
   #          bundle exec fastlane publish_release skip_confirm:true include_wear_app:true
   #
-  lane :publish_release do |skip_confirm: false, include_wear_app: false|
-    ensure_git_status_clean
-    ensure_git_branch_is_release_branch!
-
-    version_number = release_version_current
-
-    current_branch = "release/#{version_number}"
-    next_release_branch = "release/#{release_version_next}"
-
-    UI.important <<~PROMPT
-      Publish the #{version_number} release. This will:
-      - Publish the existing draft `#{version_number}` release on GitHub
-      - Which will also have GitHub create the associated git tag, pointing to the tip of the branch
-      - If the release branch for the next version `#{next_release_branch}` already exists, backmerge `#{current_branch}` into it
-      - If needed, backmerge `#{current_branch}` back into `#{DEFAULT_BRANCH}`
-      - Delete the `#{current_branch}` branch
-    PROMPT
-    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
-
-    UI.important "Publishing release #{version_number} on GitHub"
-
-    apps = [MOBILE_APP]
-    apps << WEAR_APP if include_wear_app
-    apps.each do |app|
-      publish_github_release(
-        repository: GITHUB_REPO,
-        name: app == WEAR_APP ? "#{version_number}w" : version_number
-      )
-    end
-
-    create_backmerge_pr
-
-    # At this point, an intermediate branch has been created by creating a backmerge PR to a hotfix or the next version release branch.
-    # This allows us to safely delete the `release/*` branch.
-    # Note that if a hotfix or new release branches haven't been created, the backmerge PR won't be created as well.
-    delete_remote_git_branch!(current_branch)
-  end
+  import A8c::ReleaseWorkflows.lanes_path(:publication)
 
   lane :check_translation_progress_all do
     check_translation_progress_strings
@@ -1352,14 +1314,6 @@ platform :android do
   # Version Methods
   #####################################################################################
 
-  def commit_version_bump
-    git_commit(
-      path: VERSION_PROPERTIES_PATH,
-      message: 'Bump version number',
-      allow_nothing_to_commit: false
-    )
-  end
-
   # Returns the current version name from `version.properties` without needing formatting or calculations
   def version_name_current
     VERSION_FILE.read_version_name
@@ -1374,30 +1328,6 @@ platform :android do
     VERSION_FORMATTER.release_version(current_version)
   end
 
-  #  Returns the next release version of the app in the format `1.2` or `1.2.3` if it is a hotfix
-  #
-  def release_version_next
-    # Read the current release version from `version.properties` and parse it into an AppVersion object
-    current_version = VERSION_FORMATTER.parse(VERSION_FILE.read_version_name)
-    # Calculate the next release version
-    release_version_next = VERSION_CALCULATOR.next_release_version(version: current_version)
-    # Return the formatted release version
-    VERSION_FORMATTER.release_version(release_version_next)
-  end
-
-  # Returns the next beta version in the format `1.2-rc-2` (increments the build number)
-  #
-  def beta_version_next(version_name: nil)
-    # Use provided version or read the current version from version.properties
-    version_name ||= VERSION_FILE.read_version_name
-    # Parse the version string (e.g., "1.2-rc-1") into an AppVersion object
-    current_version = VERSION_FORMATTER.parse(version_name)
-    # Increment the build number to get the next beta version
-    next_beta_version = VERSION_CALCULATOR.next_build_number(version: current_version)
-    # Format as beta version (e.g., "1.2-rc-2")
-    VERSION_FORMATTER.beta_version(next_beta_version)
-  end
-
   # Returns the current build code of the app
   #
   def build_code_current
@@ -1406,60 +1336,15 @@ platform :android do
     # Return the formatted build code
     BUILD_CODE_FORMATTER.build_code(build_code: build_code_current)
   end
-
-  # Returns the next build code of the app
-  #
-  def build_code_next
-    # Read the current build code from `version.properties` into to a BuildCode object
-    build_code_current = VERSION_FILE.read_version_code
-    # Calculate the next build code
-    build_code_next = BUILD_CODE_CALCULATOR.next_build_code(build_code: build_code_current)
-    # Return the formatted build code
-    BUILD_CODE_FORMATTER.build_code(build_code: build_code_next)
-  end
 end
 
 # -----------------------------------------------------------------------------------
 # Release Management Utils
 # -----------------------------------------------------------------------------------
-def create_backmerge_pr
-  @release_workflows.backmerge(fastlane: self)
-end
 
 def ensure_git_branch_is_release_branch!
   # Verify that the current branch is a release branch. Notice that `ensure_git_branch` expects a RegEx parameter
   ensure_git_branch(branch: '^release/')
-end
-
-def ensure_branch_does_not_exist!(branch_name)
-  return unless Fastlane::Helper::GitHelper.branch_exists_on_remote?(branch_name: branch_name)
-
-  error_message = "The branch `#{branch_name}` already exists. Please check first if there is an existing Pull Request that needs to be merged or closed first, " \
-                  'or delete the branch to then run again the release task.'
-
-  buildkite_annotate(style: 'error', context: 'error-checking-branch', message: error_message) if is_ci
-
-  UI.user_error!(error_message)
-end
-
-# Delete a branch remotely, after having removed any GitHub branch protection
-#
-def delete_remote_git_branch!(branch_name)
-  remove_branch_protection(repository: GITHUB_REPO, branch: branch_name)
-
-  Git.open(Dir.pwd).push('origin', branch_name, delete: true)
-end
-
-def report_milestone_error(error_title:)
-  error_message = <<-MESSAGE
-    #{error_title}
-    - If this is not the first time you are running the release task (e.g. retrying because it failed on first attempt), the milestone might have already been closed and this error is expected.
-    - Otherwise if this is the first you are running the release task for this version, please investigate the error.
-  MESSAGE
-
-  UI.error(error_message)
-
-  buildkite_annotate(style: 'warning', context: 'error-with-milestone', message: error_message) if is_ci
 end
 
 # Adds an install link for prototype build via PR comment

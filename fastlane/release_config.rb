@@ -10,6 +10,7 @@
     pipeline: 'woocommerce-android', pipeline_file: 'release-builds.yml',
     boolean_options: { include_wear_app: 'INCLUDE_WEAR_APP' }
   },
+  publication: { branch_protection: :remove, optional_targets: { wear: { suffix: 'w', option: :include_wear_app } } },
   preparation: {
     freeze_after_version: :prepare_freeze_notes,
     freeze_completion: :prepare_code_freeze, finalization_before_version: :prepare_final_configuration
