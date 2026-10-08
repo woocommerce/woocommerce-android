@@ -4,6 +4,7 @@
 
 25.9
 -----
+- [*] Editing a product attribute's terms or name no longer moves it to the end of the list or changes the settings of other attributes [https://github.com/woocommerce/woocommerce-android/pull/16671]
 
 
 25.8
