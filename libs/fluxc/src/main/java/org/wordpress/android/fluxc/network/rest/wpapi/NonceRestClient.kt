@@ -405,7 +405,8 @@ class NonceRestClient @Inject constructor(
                     unexpectedStoreResponse = when {
                         statusCode?.isRedirect() == true -> response.unexpectedRedirect(Method.GET, nonceUrl)
                         statusCode.isMissingPage() -> null
-                        else -> response.unexpectedStatus(Method.GET, nonceUrl) { it.isValidNonce() }
+                        // The credentials were already accepted, so the body can't explain a rejected nonce request.
+                        else -> response.unacceptableStatus(Method.GET, nonceUrl)
                     }
                 )
             }

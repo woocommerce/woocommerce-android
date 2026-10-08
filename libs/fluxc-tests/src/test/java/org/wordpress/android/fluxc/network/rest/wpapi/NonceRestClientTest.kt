@@ -820,11 +820,21 @@ class NonceRestClientTest {
             subject.requestNonce(MANUAL_ADMIN_ENDPOINTS, USERNAME, PASSWORD)
         )
         assertNull(dashboard.unexpectedStoreResponse, "dashboard")
+    }
 
+    @Test
+    fun `given a nonce or a login error with an error status, when requesting the nonce, then keep the status details`() = test {
+        givenLoginForm(DEFAULT_LOGIN_URL)
         givenCredentialRedirect(DEFAULT_LOGIN_URL, DEFAULT_NONCE_URL, DEFAULT_NONCE_URL)
-        givenGet(DEFAULT_NONCE_URL, error(500, EXPECTED_NONCE))
-        val nonce = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
-        assertNull(nonce.unexpectedStoreResponse, "nonce")
+
+        listOf(EXPECTED_NONCE, LOGIN_ERROR).forEach { body ->
+            givenGet(DEFAULT_NONCE_URL, error(500, body))
+
+            val failure = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+
+            assertEquals(UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE, failure.unexpectedStoreResponse?.kind)
+            assertEquals(500, failure.unexpectedStoreResponse?.statusCode)
+        }
     }
 
     @Test
