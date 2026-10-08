@@ -44,7 +44,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
 import androidx.annotation.NonNull;
 
 public class Authenticator {
@@ -238,7 +237,6 @@ public class Authenticator {
                 mParams.put("wpcom_resend_otp", "true");
             }
             mParams.put("wpcom_supports_2fa", "true");
-            mParams.put(WITH_AUTH_TYPES, "true");
         }
     }
 
