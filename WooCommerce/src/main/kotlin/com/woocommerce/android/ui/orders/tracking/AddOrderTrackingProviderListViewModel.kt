@@ -9,7 +9,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_SHIPMENT_TRACKING_
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_SHIPMENT_TRACKING_CUSTOM_PROVIDER_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.OrderShipmentProvider
-import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.OrderShipmentProvidersRepository.OrderShipmentProvidersFetchResult.CarriersFetched
 import com.woocommerce.android.ui.orders.tracking.OrderShipmentProvidersRepository.OrderShipmentProvidersFetchResult.NoCarriersFound
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -28,7 +27,6 @@ import javax.inject.Inject
 class AddOrderTrackingProviderListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val shipmentProvidersRepository: OrderShipmentProvidersRepository,
-    private val orderDetailRepository: OrderDetailRepository,
     private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState) {
     private val navArgs: AddOrderTrackingProviderListFragmentArgs by savedState.navArgs()
@@ -49,7 +47,7 @@ class AddOrderTrackingProviderListViewModel @Inject constructor(
         get() = navArgs.selectedProvider
 
     val countryCode: String?
-        get() = orderDetailRepository.getStoreCountryCode()
+        get() = navArgs.storeCountryCode
 
     init {
         observeCachedProviders()

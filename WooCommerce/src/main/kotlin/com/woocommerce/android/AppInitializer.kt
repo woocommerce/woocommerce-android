@@ -59,6 +59,7 @@ import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationEdgeToEdgeEnabler
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.PackageUtils
@@ -128,6 +129,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var wooCommerceStore: WooCommerceStore // Required to ensure the WooCommerceStore is initialized
 
     @Inject lateinit var selectedSite: SelectedSite
+
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     @Inject lateinit var networkStatus: NetworkStatus
 
@@ -280,6 +283,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         appCoroutineScope.launch {
             siteObserver.observeAndUpdateSelectedSiteData()
         }
+        appCoroutineScope.launch { currencyFormatter.observeSiteSettings() }
         appCoroutineScope.launch { blazeCampaignsObserver.observeAndScheduleNotifications() }
 
         monitorApplicationPasswordsStatus()

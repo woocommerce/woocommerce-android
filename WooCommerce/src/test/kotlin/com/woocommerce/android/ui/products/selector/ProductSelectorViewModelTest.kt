@@ -115,7 +115,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     private val hasUnsupportedBundledProducts: HasUnsupportedBundledProducts = mock()
 
     @Before
-    fun setup() {
+    fun setup() = testBlocking {
         val site: SiteModel = SiteModel().apply { id = 1 }
         whenever(selectedSite.get()).thenReturn(site)
         val settings = WCSettingsTestUtils.generateSettings(site.localId())

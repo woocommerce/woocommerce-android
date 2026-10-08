@@ -37,7 +37,7 @@ interface PaymentsFlowTrackerEventProvider {
     val CARD_READER_CONNECTION_SUCCESS: IAnalyticsEvent
     val CARD_PRESENT_COLLECT_PAYMENT_FAILED: IAnalyticsEvent
     val CARD_PRESENT_COLLECT_PAYMENT_SUCCESS: IAnalyticsEvent
-    fun paymentSuccessEvent(order: Order): IAnalyticsEvent = CARD_PRESENT_COLLECT_PAYMENT_SUCCESS
+    suspend fun paymentSuccessEvent(order: Order): IAnalyticsEvent = CARD_PRESENT_COLLECT_PAYMENT_SUCCESS
     val CARD_PRESENT_COLLECT_INTERAC_PAYMENT_SUCCESS: IAnalyticsEvent
     val CARD_PRESENT_COLLECT_INTERAC_PAYMENT_FAILED: IAnalyticsEvent
     val RECEIPT_PRINT_TAPPED: IAnalyticsEvent

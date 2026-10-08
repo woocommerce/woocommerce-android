@@ -19,6 +19,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -41,7 +42,7 @@ class CouponDetailsViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     private val navArgs by savedState.navArgs<CouponDetailsFragmentArgs>()
-    private val currencyCode by lazy {
+    private val currencyCode = async {
         wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     }
 
@@ -77,6 +78,7 @@ class CouponDetailsViewModel @Inject constructor(
         return coupon
             .filterNotNull()
             .map { coupon ->
+                val currencyCode = currencyCode.await()
                 CouponSummaryUi(
                     code = coupon.code,
                     isEditable = coupon.type?.let { it !is Coupon.Type.Custom } ?: false,
@@ -110,7 +112,7 @@ class CouponDetailsViewModel @Inject constructor(
             .fold(
                 onSuccess = {
                     val performanceUi = CouponPerformanceUi(
-                        formattedAmount = couponUtils.formatCurrency(it.amount, currencyCode),
+                        formattedAmount = couponUtils.formatCurrency(it.amount, currencyCode.await()),
                         ordersCount = it.ordersCount
                     )
                     emit(CouponPerformanceState.Success(performanceUi))
@@ -126,7 +128,7 @@ class CouponDetailsViewModel @Inject constructor(
                 // Shortcut for displaying 0 without loading
                 CouponPerformanceState.Success(
                     data = CouponPerformanceUi(
-                        formattedAmount = couponUtils.formatCurrency(BigDecimal.ZERO, currencyCode),
+                        formattedAmount = couponUtils.formatCurrency(BigDecimal.ZERO, currencyCode.await()),
                         ordersCount = 0
                     )
                 )
@@ -182,21 +184,23 @@ class CouponDetailsViewModel @Inject constructor(
     }
 
     fun onShareButtonClick() {
-        coupon.value?.let { coupon ->
-            couponUtils.formatSharingMessage(
-                coupon = coupon,
-                currencyCode = currencyCode
-            )
-        }?.let {
-            triggerEvent(ShareCodeEvent(it))
-        } ?: run {
-            triggerEvent(ShowSnackbar(R.string.coupon_details_share_formatting_failure))
-        }
+        launch {
+            coupon.value?.let { coupon ->
+                couponUtils.formatSharingMessage(
+                    coupon = coupon,
+                    currencyCode = currencyCode.await()
+                )
+            }?.let {
+                triggerEvent(ShareCodeEvent(it))
+            } ?: run {
+                triggerEvent(ShowSnackbar(R.string.coupon_details_share_formatting_failure))
+            }
 
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.COUPON_DETAILS,
-            mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_SHARED)
-        )
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.COUPON_DETAILS,
+                mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_SHARED)
+            )
+        }
     }
 
     fun onEditButtonClick() {

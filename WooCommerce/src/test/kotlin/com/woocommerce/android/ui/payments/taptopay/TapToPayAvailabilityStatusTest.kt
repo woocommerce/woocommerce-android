@@ -7,6 +7,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.util.DeviceFeatures
 import com.woocommerce.android.util.SystemVersionUtilsWrapper
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -45,7 +46,7 @@ class TapToPayAvailabilityStatusTest {
     )
 
     @Test
-    fun `given device has no NFC, when invoking, then nfc disabled returned`() {
+    fun `given device has no NFC, when invoking, then nfc disabled returned`() = runTest {
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(false)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
@@ -56,7 +57,7 @@ class TapToPayAvailabilityStatusTest {
     }
 
     @Test
-    fun `given device has no Google Play Services, when invoking, then GPS not available`() {
+    fun `given device has no Google Play Services, when invoking, then GPS not available`() = runTest {
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(false)
         whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
@@ -67,7 +68,7 @@ class TapToPayAvailabilityStatusTest {
     }
 
     @Test
-    fun `given device has os less than Android 10, when invoking, then system is not supported returned`() {
+    fun `given device has os less than Android 10, when invoking, then system is not supported returned`() = runTest {
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(false)
@@ -78,7 +79,7 @@ class TapToPayAvailabilityStatusTest {
     }
 
     @Test
-    fun `given country other than US, when invoking, then country is not supported returned`() {
+    fun `given country other than US, when invoking, then country is not supported returned`() = runTest {
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
@@ -90,7 +91,7 @@ class TapToPayAvailabilityStatusTest {
     }
 
     @Test
-    fun `given device satisfies all the requirements, when invoking, then tpp available returned`() {
+    fun `given device satisfies all the requirements, when invoking, then tpp available returned`() = runTest {
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
@@ -101,7 +102,7 @@ class TapToPayAvailabilityStatusTest {
     }
 
     @Test
-    fun `given Stripe reports device unsupported, when invoking, then device not supported returned`() {
+    fun `given Stripe reports device unsupported, when invoking, then device not supported returned`() = runTest {
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
@@ -113,7 +114,7 @@ class TapToPayAvailabilityStatusTest {
     }
 
     @Test
-    fun `given Stripe support check unknown, when invoking, then tpp available returned`() {
+    fun `given Stripe support check unknown, when invoking, then tpp available returned`() = runTest {
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)

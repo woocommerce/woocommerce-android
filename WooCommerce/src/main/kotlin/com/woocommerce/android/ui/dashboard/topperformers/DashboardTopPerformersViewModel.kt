@@ -251,9 +251,9 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
             ErrorType.Generic
         }
 
-    private fun List<TopPerformerProduct>.toTopPerformersUiList() = map { it.toTopPerformersUiModel() }
+    private suspend fun List<TopPerformerProduct>.toTopPerformersUiList() = map { it.toTopPerformersUiModel() }
 
-    private fun TopPerformerProduct.toTopPerformersUiModel() =
+    private suspend fun TopPerformerProduct.toTopPerformersUiModel() =
         TopPerformerProductUiModel(
             productId = productId,
             name = StringEscapeUtils.unescapeHtml4(name),
@@ -266,7 +266,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
             onClick = ::onTopPerformerTapped
         )
 
-    private fun getTotalSpendFormatted(totalSpend: BigDecimal, currency: String) =
+    private suspend fun getTotalSpendFormatted(totalSpend: BigDecimal, currency: String) =
         currencyFormatter.formatCurrency(
             totalSpend,
             wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: currency
