@@ -66,7 +66,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
                         return@map ViewState.NotConnected
                     }
 
-                    when (checkWCPluginSupport(forceRefresh = true)) {
+                    when (checkWCPluginSupport(site, forceRefresh = true)) {
                         CheckWooPluginPushNotificationsSupport.Result.Compatible -> ViewState.Connected
                         is CheckWooPluginPushNotificationsSupport.Result.UpdateRequired -> ViewState.UpdateRequired
                         CheckWooPluginPushNotificationsSupport.Result.Error -> ViewState.GenericError

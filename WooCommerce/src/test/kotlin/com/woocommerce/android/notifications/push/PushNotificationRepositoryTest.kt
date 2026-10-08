@@ -72,7 +72,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         on { data } doReturn flowOf(preferences)
     }
     private val checkWooPluginPushNotificationsSupport: CheckWooPluginPushNotificationsSupport = mock {
-        on { invoke(forceRefresh = false) } doReturn CheckWooPluginPushNotificationsSupport.Result.Compatible
+        on { invoke(any(), eq(false)) } doReturn CheckWooPluginPushNotificationsSupport.Result.Compatible
     }
 
     private lateinit var sut: PushNotificationRepository
@@ -758,7 +758,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
             whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
 
-            val result = sut.isWooPushTokenRegisteredForSite(SITE_ID)
+            val result = sut.isWooPushTokenRegisteredForSite(siteModel)
 
             assertThat(result).isTrue()
         }
@@ -769,7 +769,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
             whenever(preferences[tokenKey]).thenReturn(null)
 
-            val result = sut.isWooPushTokenRegisteredForSite(SITE_ID)
+            val result = sut.isWooPushTokenRegisteredForSite(siteModel)
 
             assertThat(result).isFalse()
         }
@@ -781,7 +781,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
             whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
 
-            val result = sut.isWooPushTokenRegisteredForSite(SITE_ID)
+            val result = sut.isWooPushTokenRegisteredForSite(siteModel)
 
             assertThat(result).isFalse()
         }
@@ -794,9 +794,21 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
             setupPluginCompatibility(isCompatible = false)
 
-            val result = sut.isWooPushTokenRegisteredForSite(SITE_ID)
+            val result = sut.isWooPushTokenRegisteredForSite(siteModel)
 
             assertThat(result).isFalse()
+        }
+
+    @Test
+    fun `given token stored, when isWooPushTokenRegisteredForSite called, then checks plugin support of that site`() =
+        testBlocking {
+            whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
+            whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
+
+            sut.isWooPushTokenRegisteredForSite(siteModel)
+
+            verify(checkWooPluginPushNotificationsSupport).invoke(siteModel, forceRefresh = false)
         }
 
     @Test
@@ -806,9 +818,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
             whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
             doReturn(CheckWooPluginPushNotificationsSupport.Result.Error)
-                .whenever(checkWooPluginPushNotificationsSupport).invoke(forceRefresh = false)
+                .whenever(checkWooPluginPushNotificationsSupport).invoke(eq(siteModel), eq(false))
 
-            val result = sut.isWooPushTokenRegisteredForSite(SITE_ID)
+            val result = sut.isWooPushTokenRegisteredForSite(siteModel)
 
             assertThat(result).isTrue()
         }
@@ -820,7 +832,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
             whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
 
-            val result = sut.observeWooPushTokenRegisteredForSite(SITE_ID).first()
+            val result = sut.observeWooPushTokenRegisteredForSite(siteModel).first()
 
             assertThat(result).isTrue()
         }
@@ -833,7 +845,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
             setupPluginCompatibility(isCompatible = false)
 
-            val result = sut.observeWooPushTokenRegisteredForSite(SITE_ID).first()
+            val result = sut.observeWooPushTokenRegisteredForSite(siteModel).first()
 
             assertThat(result).isFalse()
         }
@@ -845,9 +857,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
             whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
             doReturn(CheckWooPluginPushNotificationsSupport.Result.Error)
-                .whenever(checkWooPluginPushNotificationsSupport).invoke(forceRefresh = false)
+                .whenever(checkWooPluginPushNotificationsSupport).invoke(eq(siteModel), eq(false))
 
-            val result = sut.observeWooPushTokenRegisteredForSite(SITE_ID).first()
+            val result = sut.observeWooPushTokenRegisteredForSite(siteModel).first()
 
             assertThat(result).isTrue()
         }
@@ -950,7 +962,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                     .isEqualTo(NOW_MILLIS + 4.hours.inWholeMilliseconds)
                 assertThat(stored.value[stringPreferencesKey("push_token_$SITE_ID")]).isEqualTo(RETURNED_TOKEN)
                 assertThat(sut.shouldRegisterWooPush("token", siteModel)).isTrue()
-                assertThat(sut.isWooPushTokenRegisteredForSite(SITE_ID)).isTrue()
+                assertThat(sut.isWooPushTokenRegisteredForSite(siteModel)).isTrue()
             }
         }
 
@@ -1262,7 +1274,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         } else {
             CheckWooPluginPushNotificationsSupport.Result.UpdateRequired(currentVersion = "9.0.0")
         }
-        doReturn(result).whenever(checkWooPluginPushNotificationsSupport).invoke(forceRefresh = false)
+        doReturn(result).whenever(checkWooPluginPushNotificationsSupport).invoke(eq(siteModel), eq(false))
     }
 
     private companion object {

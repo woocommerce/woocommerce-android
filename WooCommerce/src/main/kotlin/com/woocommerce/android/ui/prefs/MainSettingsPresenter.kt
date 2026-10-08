@@ -114,7 +114,7 @@ class MainSettingsPresenter @Inject constructor(
     }
 
     private suspend fun isSelectedSitePushNotificationsSelfDriven(): Boolean {
-        return selectedSite.getIfExists()?.siteId?.let {
+        return selectedSite.getIfExists()?.let {
             pushNotificationRepository.isWooPushTokenRegisteredForSite(it)
         } == true
     }

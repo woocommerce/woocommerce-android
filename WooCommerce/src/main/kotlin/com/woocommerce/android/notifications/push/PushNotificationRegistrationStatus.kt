@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.utils.PreferenceUtils
 import javax.inject.Inject
@@ -13,15 +14,15 @@ class PushNotificationRegistrationStatus @Inject constructor(
     private val prefsWrapper: PreferenceUtils.PreferenceUtilsWrapper,
     private val pushNotificationRepository: PushNotificationRepository
 ) {
-    suspend operator fun invoke(siteId: Long?): Status = observe(siteId).first()
+    suspend operator fun invoke(site: SiteModel?): Status = observe(site).first()
 
-    fun observe(siteId: Long?): Flow<Status> {
+    fun observe(site: SiteModel?): Flow<Status> {
         val wpComPushServerIdFlow = flowOf(
             prefsWrapper.getFluxCPreferences().getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null)
         )
 
-        val isWooRegisteredFlow = if (siteId != null) {
-            pushNotificationRepository.observeWooPushTokenRegisteredForSite(siteId)
+        val isWooRegisteredFlow = if (site != null) {
+            pushNotificationRepository.observeWooPushTokenRegisteredForSite(site)
         } else {
             flowOf(false)
         }

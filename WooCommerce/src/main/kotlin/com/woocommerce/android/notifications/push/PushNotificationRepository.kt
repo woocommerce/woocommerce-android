@@ -263,8 +263,8 @@ class PushNotificationRepository @Inject constructor(
         }
     }
 
-    suspend fun isWooPushTokenRegisteredForSite(siteId: Long): Boolean =
-        observeWooPushTokenRegisteredForSite(siteId).first()
+    suspend fun isWooPushTokenRegisteredForSite(site: SiteModel): Boolean =
+        observeWooPushTokenRegisteredForSite(site).first()
 
     suspend fun shouldRegisterWooPush(currentToken: String, site: SiteModel): Boolean {
         val preferences = pushNotificationsDataStore.data.first()
@@ -283,10 +283,10 @@ class PushNotificationRepository @Inject constructor(
             .getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null)
             .isNotNullOrEmpty()
 
-    fun observeWooPushTokenRegisteredForSite(siteId: Long): Flow<Boolean> {
+    fun observeWooPushTokenRegisteredForSite(site: SiteModel): Flow<Boolean> {
         return pushNotificationsDataStore.data.map { preferences ->
-            val isTokenStored = preferences.getPushRegistration(siteId)?.tokenId.isNotNullOrEmpty()
-            val supportResult = checkWooPluginPushNotificationsSupport(forceRefresh = false)
+            val isTokenStored = preferences.getPushRegistration(site.siteId)?.tokenId.isNotNullOrEmpty()
+            val supportResult = checkWooPluginPushNotificationsSupport(site, forceRefresh = false)
             // Treat errors as "compatible" to avoid hiding entry points during temporary failures
             val isPluginCompatible = when (supportResult) {
                 is CheckWooPluginPushNotificationsSupport.Result.UpdateRequired -> false

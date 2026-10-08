@@ -210,7 +210,7 @@ class MobileStatusProvider @Inject constructor(
     }
 
     private suspend fun storeNotificationsSection(selectedSite: SiteModel) = listOf(
-        entry("Push registration", pushNotificationRegistrationStatus(selectedSite.siteId).name)
+        entry("Push registration", pushNotificationRegistrationStatus(selectedSite).name)
     ) + alertSettings(selectedSite)
 
     private suspend fun alertSettings(selectedSite: SiteModel): List<String> {

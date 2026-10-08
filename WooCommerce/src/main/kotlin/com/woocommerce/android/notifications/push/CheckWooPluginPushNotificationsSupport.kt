@@ -3,6 +3,7 @@ package com.woocommerce.android.notifications.push
 import com.woocommerce.android.extensions.isVersionAtLeast
 import com.woocommerce.android.util.FetchActiveWCPluginVersion
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
+import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
 
 class CheckWooPluginPushNotificationsSupport @Inject constructor(
@@ -13,11 +14,11 @@ class CheckWooPluginPushNotificationsSupport @Inject constructor(
         const val PUSH_NOTIFICATIONS_MIN_WC_VERSION = "10.9.2"
     }
 
-    suspend operator fun invoke(forceRefresh: Boolean): Result {
+    suspend operator fun invoke(site: SiteModel, forceRefresh: Boolean): Result {
         val wcVersion = if (forceRefresh) {
-            fetchActiveWCPluginVersion()
+            fetchActiveWCPluginVersion(site)
         } else {
-            getWooCorePluginCachedVersion()
+            getWooCorePluginCachedVersion(site)
         } ?: return Result.Error
 
         return if (wcVersion.isVersionAtLeast(PUSH_NOTIFICATIONS_MIN_WC_VERSION)) {
