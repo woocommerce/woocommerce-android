@@ -344,7 +344,7 @@ class AnalyticsTracker private constructor(
         const val KEY_HAS_MULTIPLE_FEE_LINES = "has_multiple_fee_lines"
 
         const val JITM_ID = "jitm_id"
-        const val JITM_FEATURE_CLASS = "feature_class"
+        const val JITM_GROUP = "jitm_group"
 
         const val KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS = "milliseconds_since_order_add_new"
         const val KEY_TIME_ELAPSED_SINCE_CARD_COLLECT_PAYMENT_IN_MILLIS = "milliseconds_since_card_collect_payment_flow"

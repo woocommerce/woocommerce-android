@@ -1,12 +1,15 @@
 package com.woocommerce.android.ui.jitm
 
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_FEATURE_CLASS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_GROUP
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_ID
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CODE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import javax.inject.Inject
 
@@ -53,46 +56,46 @@ class JitmTracker @Inject constructor(
         )
     }
 
-    fun trackJitmDisplayed(source: String, jitmId: String, featureClass: String) {
+    fun trackJitmDisplayed(source: String, jitmId: String, jitmGroup: String) {
         track(
             stat = AnalyticsEvent.JITM_DISPLAYED,
             properties = mapOf(
                 KEY_SOURCE to source,
                 JITM_ID to jitmId,
-                JITM_FEATURE_CLASS to featureClass
+                JITM_GROUP to jitmGroup
             )
         )
     }
 
-    fun trackJitmCtaTapped(source: String, jitmId: String, featureClass: String) {
+    fun trackJitmCtaTapped(source: String, jitmId: String, jitmGroup: String) {
         track(
             stat = AnalyticsEvent.JITM_CTA_TAPPED,
             properties = mapOf(
                 KEY_SOURCE to source,
                 JITM_ID to jitmId,
-                JITM_FEATURE_CLASS to featureClass
+                JITM_GROUP to jitmGroup
             )
         )
     }
 
-    fun trackJitmDismissTapped(source: String, jitmId: String, featureClass: String) {
+    fun trackJitmDismissTapped(source: String, jitmId: String, jitmGroup: String) {
         track(
             stat = AnalyticsEvent.JITM_DISMISS_TAPPED,
             properties = mapOf(
                 KEY_SOURCE to source,
                 JITM_ID to jitmId,
-                JITM_FEATURE_CLASS to featureClass
+                JITM_GROUP to jitmGroup
             )
         )
     }
 
-    fun trackJitmDismissSuccess(source: String, jitmId: String, featureClass: String) {
+    fun trackJitmDismissSuccess(source: String, jitmId: String, jitmGroup: String) {
         track(
             stat = AnalyticsEvent.JITM_DISMISS_SUCCESS,
             properties = mapOf(
                 KEY_SOURCE to source,
                 JITM_ID to jitmId,
-                JITM_FEATURE_CLASS to featureClass
+                JITM_GROUP to jitmGroup
             )
         )
     }
@@ -100,19 +103,18 @@ class JitmTracker @Inject constructor(
     fun trackJitmDismissFailure(
         source: String,
         jitmId: String,
-        featureClass: String,
-        errorType: WooErrorType?,
-        errorDescription: String?
+        jitmGroup: String,
+        error: WooError?
     ) {
-        track(
-            stat = AnalyticsEvent.JITM_DISMISS_FAILURE,
-            properties = mapOf(
-                KEY_SOURCE to source,
-                JITM_ID to jitmId,
-                JITM_FEATURE_CLASS to featureClass,
-            ),
-            errorType = errorType?.name ?: WooErrorType.GENERIC_ERROR.name,
-            errorDescription = errorDescription
-        )
+        val errorCode = error?.apiErrorCode?.takeIf { it.isNotBlank() }
+            ?: (error?.type ?: WooErrorType.GENERIC_ERROR).name
+        val properties = buildMap {
+            put(KEY_SOURCE, source)
+            put(JITM_ID, jitmId)
+            put(JITM_GROUP, jitmGroup)
+            put(KEY_ERROR_CODE, errorCode)
+            error?.message?.takeIf { it.isNotBlank() }?.let { put(KEY_ERROR_DESC, it) }
+        }
+        track(stat = AnalyticsEvent.JITM_DISMISS_FAILURE, properties = properties)
     }
 }
