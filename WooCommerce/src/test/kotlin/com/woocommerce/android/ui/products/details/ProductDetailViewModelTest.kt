@@ -1297,6 +1297,27 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         Assertions.assertThat(viewModel.attributeList.value).containsExactly(VARIATION_GLOBAL_ATTRIBUTE)
     }
 
+    @Test
+    fun `given saved attribute changes, when a change is reverted, then the revert is saved too`() = testBlocking {
+        // GIVEN
+        givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
+        whenever(productRepository.updateProductAttributes(any(), any())).thenReturn(true)
+        viewModel.start()
+        viewModel.onAttributeVisibleToggled(0L, "Material", isVisible = true)
+        viewModel.saveAttributeChanges()
+
+        // WHEN
+        viewModel.onAttributeVisibleToggled(0L, "Material", isVisible = false)
+        viewModel.saveAttributeChanges()
+
+        // THEN
+        verify(productRepository).updateProductAttributes(
+            PRODUCT_REMOTE_ID,
+            listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(isVisible = true))
+        )
+        verify(productRepository).updateProductAttributes(PRODUCT_REMOTE_ID, listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
+    }
+
     private fun givenNonVariationAttributesEnabled(isEnabled: Boolean) {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.NON_VARIATION_PRODUCT_ATTRIBUTES)).thenReturn(isEnabled)
     }

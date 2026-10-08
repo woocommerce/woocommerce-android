@@ -1891,6 +1891,8 @@ class ProductDetailViewModel @Inject constructor(
                         trackWithProductId(AnalyticsEvent.PRODUCT_ATTRIBUTE_UPDATE_FAILED)
                     } else {
                         trackWithProductId(AnalyticsEvent.PRODUCT_ATTRIBUTE_UPDATE_SUCCESS)
+                        // the site now has these attributes, so later changes are compared against them
+                        storedProductAggregate.update { it?.copy(product = it.product.copy(attributes = attributes)) }
                     }
                 }
             }

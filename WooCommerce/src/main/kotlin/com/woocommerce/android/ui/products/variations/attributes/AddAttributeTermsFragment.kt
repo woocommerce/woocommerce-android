@@ -427,8 +427,8 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     /**
-     * Shows the "Visible on product page" and "Used for variations" switches. They stay disabled until the
-     * attribute has an option, because the attribute isn't added to the product before that.
+     * Shows the "Visible on product page" and "Used for variations" switches. They stay disabled while the
+     * attribute isn't in the product draft. A global attribute is only added with its first option.
      */
     private fun updateAttributeSettings() {
         val isEnabled = viewModel.isNonVariationAttributesEnabled
