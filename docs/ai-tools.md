@@ -40,7 +40,7 @@ Skills live in `.agents/skills/` (`.claude/skills/` is a symlink). Agents load t
 | Name | What it does | When to use | Example | Owner | Availability |
 |---|---|---|---|---|---|
 | [`debugger`](../.claude/agents/debugger.md) | Diagnoses build, test and runtime failures | A build or test fails and the cause is unclear | "Use the debugger agent on this test failure" | Woo Mobile | Repo (Claude Code) |
-| [`test-writer`](../.claude/agents/test-writer.md) | Writes unit tests for the store app | Tests outside `ui/woopos/`. For POS use `pos-tests` | "Use the test-writer agent for OrderListViewModel" | Woo Mobile | Repo (Claude Code) |
+| [`test-writer`](../.claude/agents/test-writer.md) | Writes unit tests following `docs/store-testing.md` or `docs/pos-testing.md` | Writing tests for a class, store app or POS | "Use the test-writer agent for OrderListViewModel" | Woo Mobile | Repo (Claude Code) |
 
 ## Testing helpers
 
