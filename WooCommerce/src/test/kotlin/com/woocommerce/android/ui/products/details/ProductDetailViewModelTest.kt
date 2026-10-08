@@ -81,6 +81,22 @@ import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 @ExperimentalCoroutinesApi
 class ProductDetailViewModelTest : BaseUnitTest() {
     companion object {
+        private val DISPLAY_ONLY_LOCAL_ATTRIBUTE = ProductAttribute(
+            id = 0L,
+            name = "Material",
+            terms = listOf("Cotton", "Wool"),
+            isVisible = false,
+            isVariation = false,
+            position = 0
+        )
+        private val VARIATION_GLOBAL_ATTRIBUTE = ProductAttribute(
+            id = 2L,
+            name = "Color",
+            terms = listOf("Red", "Blue"),
+            isVisible = true,
+            isVariation = true,
+            position = 1
+        )
         private const val PRODUCT_REMOTE_ID = 1L
         private const val OFFLINE_PRODUCT_REMOTE_ID = 2L
         private const val DUPLICATED_PRODUCT_REMOTE_ID = 3L
@@ -963,6 +979,141 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             Assertions.assertThat(draft.first { it.name == "Size" }.terms).containsExactly("S", "M")
             Assertions.assertThat(draft.first { it.name == "Color" }.terms).containsExactly("Blue")
         }
+
+    @Test
+    fun `given two local attributes, when the second is clicked, then only the second is enabled for variations`() =
+        testBlocking {
+            // GIVEN
+            givenStoredProductAttributes(
+                listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE, DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(name = "Size", position = 1))
+            )
+            viewModel.start()
+
+            // WHEN
+            viewModel.onAttributeListItemClick(0L, "Size", isVariationCreation = true)
+
+            // THEN
+            val draft = viewModel.productDraftAttributes
+            Assertions.assertThat(draft.first { it.name == "Material" }.isVariation).isFalse()
+            Assertions.assertThat(draft.first { it.name == "Size" }.isVariation).isTrue()
+        }
+
+    @Test
+    fun `given a display-only attribute, when a term is added, then its flags, position and order are kept`() =
+        testBlocking {
+            // GIVEN
+            givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE, VARIATION_GLOBAL_ATTRIBUTE))
+            viewModel.start()
+
+            // WHEN
+            viewModel.addAttributeTermToDraft(0L, "Material", "Linen")
+
+            // THEN
+            Assertions.assertThat(viewModel.productDraftAttributes).containsExactly(
+                DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(terms = listOf("Cotton", "Wool", "Linen")),
+                VARIATION_GLOBAL_ATTRIBUTE
+            )
+        }
+
+    @Test
+    fun `given a display-only attribute, when a term is removed, then its flags, position and order are kept`() =
+        testBlocking {
+            // GIVEN
+            givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE, VARIATION_GLOBAL_ATTRIBUTE))
+            viewModel.start()
+
+            // WHEN
+            viewModel.removeAttributeTermFromDraft(0L, "Material", "Wool")
+
+            // THEN
+            Assertions.assertThat(viewModel.productDraftAttributes).containsExactly(
+                DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(terms = listOf("Cotton")),
+                VARIATION_GLOBAL_ATTRIBUTE
+            )
+        }
+
+    @Test
+    fun `given a display-only attribute, when it is renamed, then its flags, position and order are kept`() =
+        testBlocking {
+            // GIVEN
+            givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE, VARIATION_GLOBAL_ATTRIBUTE))
+            viewModel.start()
+
+            // WHEN
+            viewModel.renameAttributeInDraft(0L, "Material", "Fabric")
+
+            // THEN
+            Assertions.assertThat(viewModel.productDraftAttributes).containsExactly(
+                DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(name = "Fabric"),
+                VARIATION_GLOBAL_ATTRIBUTE
+            )
+        }
+
+    @Test
+    fun `given existing attributes, when a new term is added to a new attribute, then it is placed last`() =
+        testBlocking {
+            // GIVEN
+            givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE, VARIATION_GLOBAL_ATTRIBUTE))
+            viewModel.start()
+
+            // WHEN
+            viewModel.addAttributeTermToDraft(3L, "Size", "S")
+
+            // THEN
+            val newAttribute = viewModel.productDraftAttributes.last()
+            Assertions.assertThat(newAttribute.name).isEqualTo("Size")
+            Assertions.assertThat(newAttribute.position).isEqualTo(VARIATION_GLOBAL_ATTRIBUTE.position + 1)
+        }
+
+    @Test
+    fun `given existing attributes, when a local attribute is added, then it is placed last`() = testBlocking {
+        // GIVEN
+        givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE, VARIATION_GLOBAL_ATTRIBUTE))
+        viewModel.start()
+
+        // WHEN
+        viewModel.addLocalAttribute("Size", isVariationCreation = false)
+
+        // THEN
+        Assertions.assertThat(viewModel.productDraftAttributes.last().position)
+            .isEqualTo(VARIATION_GLOBAL_ATTRIBUTE.position + 1)
+    }
+
+    @Test
+    fun `given an attribute, when only its variation flag changes, then attribute changes are detected`() =
+        testBlocking {
+            // GIVEN
+            givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
+            viewModel.start()
+
+            // WHEN
+            viewModel.updateProductDraft(attributes = listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(isVariation = true)))
+
+            // THEN
+            Assertions.assertThat(viewModel.hasAttributeChanges()).isTrue()
+        }
+
+    @Test
+    fun `given an attribute, when only its visible flag changes, then attribute changes are detected`() =
+        testBlocking {
+            // GIVEN
+            givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
+            viewModel.start()
+
+            // WHEN
+            viewModel.updateProductDraft(attributes = listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(isVisible = true)))
+
+            // THEN
+            Assertions.assertThat(viewModel.hasAttributeChanges()).isTrue()
+        }
+
+    private suspend fun givenStoredProductAttributes(attributes: List<ProductAttribute>) {
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        val storedProductAggregate = productAggregate.copy(
+            product = productAggregate.product.copy(attributes = attributes)
+        )
+        doReturn(storedProductAggregate).whenever(productRepository).getProductAggregate(any())
+    }
 
     /**
      * Protection for a race condition bug in Variations.

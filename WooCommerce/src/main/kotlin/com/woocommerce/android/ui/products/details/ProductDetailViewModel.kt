@@ -1720,6 +1720,9 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
+    private fun nextDraftAttributePosition(): Int =
+        productDraftAttributes.maxOfOrNull { it.position + 1 } ?: 0
+
     fun removeAttributeFromDraft(attributeId: Long, attributeName: String) {
         val draftAttributes = productDraftAttributes
 
@@ -1754,25 +1757,9 @@ class ProductDetailViewModel @Inject constructor(
             return false
         }
 
-        // create a new attribute with the same properties as the old one except for the name
-        val newAttribute = ProductAttribute(
-            id = attributeId,
-            name = newAttributeName,
-            terms = oldAttribute.terms,
-            isVisible = oldAttribute.isVisible,
-            isVariation = oldAttribute.isVariation
-        )
-
-        ArrayList<ProductAttribute>().also { updatedAttributes ->
-            // create a list of draft attributes without the old one
-            updatedAttributes.addAll(
-                productDraftAttributes.filterNot { attribute ->
-                    attribute.id == attributeId && attribute.name == oldAttributeName
-                }
-            )
-
-            // add the renamed attribute to the list and update the draft attributes
-            updatedAttributes.add(newAttribute)
+        productDraftAttributes.map { attribute ->
+            if (attribute == oldAttribute) attribute.copy(name = newAttributeName) else attribute
+        }.also { updatedAttributes ->
             updateProductDraft(attributes = updatedAttributes)
         }
 
@@ -1783,52 +1770,26 @@ class ProductDetailViewModel @Inject constructor(
      * Adds a new term to a the product draft attributes
      */
     fun addAttributeTermToDraft(attributeId: Long, attributeName: String, termName: String) {
-        val updatedTerms = ArrayList<String>()
-        var isVisible = ProductAttribute.DEFAULT_VISIBLE
-        var isVariation = ProductAttribute.DEFAULT_IS_VARIATION
-
-        // find this attribute in the draft attributes
-        getDraftAttribute(attributeId, attributeName)?.let { thisAttribute ->
-            // make sure this term doesn't already exist in this attribute
-            thisAttribute.terms.forEach {
-                if (it.equals(termName, ignoreCase = true)) {
-                    triggerEvent(ShowSnackbar(R.string.product_term_name_already_exists))
-                    return
-                }
-            }
-
-            // add its terms to our updated term list
-            updatedTerms.addAll(thisAttribute.terms)
-            isVisible = thisAttribute.isVisible
-            isVariation = thisAttribute.isVariation
-        }
-
-        // add the passed term to our updated term list
-        updatedTerms.add(termName)
-
-        // get the current draft attributes
-        val draftAttributes = productDraftAttributes
-
-        // create an updated list without this attribute, then add a new one with the updated terms
-        ArrayList<ProductAttribute>().also { updatedAttributes ->
-            updatedAttributes.addAll(
-                draftAttributes.filterNot { attribute ->
-                    attribute.id == attributeId && attribute.name == attributeName
-                }
-            )
-
-            updatedAttributes.add(
-                ProductAttribute(
+        val thisAttribute = getDraftAttribute(attributeId, attributeName)
+        if (thisAttribute == null) {
+            updateProductDraft(
+                attributes = productDraftAttributes + ProductAttribute(
                     id = attributeId,
                     name = attributeName,
-                    terms = updatedTerms,
-                    isVisible = isVisible,
-                    isVariation = isVariation
+                    terms = listOf(termName),
+                    position = nextDraftAttributePosition()
                 )
             )
-
-            updateProductDraft(attributes = updatedAttributes)
+            return
         }
+
+        // make sure this term doesn't already exist in this attribute
+        if (thisAttribute.terms.any { it.equals(termName, ignoreCase = true) }) {
+            triggerEvent(ShowSnackbar(R.string.product_term_name_already_exists))
+            return
+        }
+
+        updateTermsForAttribute(attributeId, attributeName, thisAttribute.terms + termName)
     }
 
     /**
@@ -1842,37 +1803,14 @@ class ProductDetailViewModel @Inject constructor(
             return
         }
 
-        // created an updated list of terms without the passed one
-        val updatedTerms = ArrayList<String>().also { terms ->
-            terms.addAll(thisAttribute.terms.filterNot { it.equals(termName, ignoreCase = true) })
+        val updatedTerms = thisAttribute.terms.filterNot { it.equals(termName, ignoreCase = true) }
+
+        // remove the attribute if it has no terms left
+        if (updatedTerms.isEmpty()) {
+            updateProductDraft(attributes = productDraftAttributes - thisAttribute)
+        } else {
+            updateTermsForAttribute(attributeId, attributeName, updatedTerms)
         }
-
-        // get the current draft attributes
-        val draftAttributes = productDraftAttributes
-
-        // create an updated list without this attribute...
-        val updatedAttributes = ArrayList<ProductAttribute>().also {
-            it.addAll(
-                draftAttributes.filterNot { attribute ->
-                    attribute.id == attributeId && attribute.name == attributeName
-                }
-            )
-        }.also {
-            // ...then add this attribute back with the updated list of terms unless there are none
-            if (updatedTerms.isNotEmpty()) {
-                it.add(
-                    ProductAttribute(
-                        id = attributeId,
-                        name = attributeName,
-                        terms = updatedTerms,
-                        isVisible = thisAttribute.isVisible,
-                        isVariation = thisAttribute.isVariation
-                    )
-                )
-            }
-        }
-
-        updateProductDraft(attributes = updatedAttributes)
         trackWithProductId(AnalyticsEvent.PRODUCT_ATTRIBUTE_OPTIONS_ROW_TAPPED)
     }
 
@@ -1900,7 +1838,7 @@ class ProductDetailViewModel @Inject constructor(
      * User clicked an attribute in the attribute list fragment or the add attribute fragment
      */
     fun onAttributeListItemClick(attributeId: Long, attributeName: String, isVariationCreation: Boolean) {
-        enableLocalAttributeForVariations(attributeId)
+        enableAttributeForVariations(attributeId, attributeName)
         triggerEvent(
             ProductNavigationTarget.AddProductAttributeTerms(
                 attributeId,
@@ -1985,7 +1923,8 @@ class ProductDetailViewModel @Inject constructor(
                 name = attributeName,
                 terms = emptyList(),
                 isVisible = ProductAttribute.DEFAULT_VISIBLE,
-                isVariation = ProductAttribute.DEFAULT_IS_VARIATION
+                isVariation = ProductAttribute.DEFAULT_IS_VARIATION,
+                position = nextDraftAttributePosition()
             )
         )
 
@@ -2005,19 +1944,18 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     /**
-     * Converts a given Local Attribute to a Variation enabled one
+     * Converts a given attribute to a Variation enabled one
      */
-    private fun enableLocalAttributeForVariations(attributeId: Long) =
-        viewState.productDraft?.attributes?.let { attributes ->
-            attributes.indexOfFirst { it.id == attributeId }
-                .takeIf { it >= 0 }
-                ?.let {
-                    attributes.toMutableList().apply {
-                        set(it, get(it).copy(isVariation = true))
-                        updateProductDraft(attributes = this)
-                    }
-                }
-        }
+    private fun enableAttributeForVariations(attributeId: Long, attributeName: String) {
+        val attribute = getDraftAttribute(attributeId, attributeName)
+        if (attribute == null || attribute.isVariation) return
+
+        updateProductDraft(
+            attributes = productDraftAttributes.map {
+                if (it == attribute) it.copy(isVariation = true) else it
+            }
+        )
+    }
 
     /**
      * Updates the product to the backend only if network is connected.

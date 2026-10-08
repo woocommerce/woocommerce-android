@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.products.variations.picker
 
 import androidx.lifecycle.Observer
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAttribute
+import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.variations.picker.VariationPickerViewModel.VariationListItem
 import com.woocommerce.android.ui.products.variations.picker.VariationPickerViewModel.VariationPickerResult
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
@@ -12,12 +14,14 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceTimeBy
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class VariationPickerViewModelTest : BaseUnitTest() {
@@ -115,4 +119,35 @@ class VariationPickerViewModelTest : BaseUnitTest() {
         )
         verify(observer).onChanged(expectedEvent)
     }
+
+    @Test
+    fun `given parent product with a non-variation attribute, when variations load, then it is not selectable`() =
+        testBlocking {
+            // GIVEN
+            val parentProduct = ProductTestUtils.generateProduct(productId = navArgs.productId).copy(
+                attributes = listOf(
+                    ProductAttribute(id = 1L, name = "Color", terms = listOf("Red", "Blue"), isVariation = true),
+                    ProductAttribute(id = 0L, name = "Material", terms = listOf("Cotton"), isVariation = false)
+                )
+            )
+            val variation = ProductTestUtils.generateProductVariation(
+                productId = navArgs.productId,
+                variationId = 34L
+            )
+            whenever(variationListHandler.getVariationsFlow(any())).thenReturn(flowOf(listOf(variation)))
+            whenever(variationRepository.getProduct(any())).thenReturn(parentProduct)
+            viewModel = VariationPickerViewModel(
+                navArgs.toSavedStateHandle(),
+                variationListHandler,
+                variationRepository
+            )
+
+            // WHEN
+            var viewState: VariationPickerViewModel.ViewState? = null
+            viewModel.viewSate.observeForever { viewState = it }
+            advanceTimeBy(100)
+
+            // THEN
+            assertThat(viewState?.variations?.single()?.attributes?.map { it.name }).containsExactly("Color")
+        }
 }
