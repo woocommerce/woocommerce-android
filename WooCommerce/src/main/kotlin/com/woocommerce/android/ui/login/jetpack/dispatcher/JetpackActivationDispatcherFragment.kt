@@ -5,6 +5,7 @@ import androidx.annotation.IdRes
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavGraph
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
@@ -22,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
  */
 @AndroidEntryPoint
 class JetpackActivationDispatcherFragment : BaseFragment() {
+    private val navArgs: JetpackActivationDispatcherFragmentArgs by navArgs()
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
@@ -54,6 +56,7 @@ class JetpackActivationDispatcherFragment : BaseFragment() {
         findNavController().navigate(
             JetpackActivationDispatcherFragmentDirections
                 .actionJetpackActivationDispatcherFragmentToJetpackActivationStartFragment(
+                    openedFromLogin = navArgs.openedFromLogin,
                     siteUrl = event.siteUrl,
                     jetpackStatus = event.jetpackStatus
                 )

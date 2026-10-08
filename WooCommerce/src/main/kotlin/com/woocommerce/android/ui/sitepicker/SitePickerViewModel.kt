@@ -110,6 +110,9 @@ class SitePickerViewModel @Inject constructor(
     // leaves the screen — back to the list, or into the installer — so a second showing counts.
     private var lastNoWooSiteReported: Long? = null
 
+    // What this screen last reported, so it can re-assert it once it is in front again.
+    private var lastReportedStep: UnifiedLoginTracker.Step? = null
+
     private val selectedSiteId: MutableLiveData<Int> = savedState.getLiveData("selected-site-id")
 
     private val _isWooUpgradeDialogVisible: MutableState<Boolean> by lazy { mutableStateOf(false) }
@@ -282,6 +285,19 @@ class SitePickerViewModel @Inject constructor(
                 onSiteSelected(it)
                 onContinueButtonClick(isAutoLogin = true)
             }
+        }
+    }
+
+    /**
+     * Site discovery and the Jetpack screens set their own flow and step, and can leave either by
+     * handing an address back or by the merchant backing out. The picker re-asserts what it last
+     * reported whenever it is in front again, so a later click is attributed to the screen the
+     * merchant is actually looking at rather than to the one they left.
+     */
+    fun restoreEpilogueTracking() {
+        if (navArgs.openedFromLogin) {
+            unifiedLoginTracker.setFlow(UnifiedLoginTracker.Flow.EPILOGUE.value)
+            lastReportedStep?.let { unifiedLoginTracker.setStep(it) }
         }
     }
 
@@ -768,6 +784,7 @@ class SitePickerViewModel @Inject constructor(
     ) {
         if (navArgs.openedFromLogin) {
             if (currentStep != null) {
+                lastReportedStep = currentStep
                 if (currentFlow != null) {
                     unifiedLoginTracker.track(currentFlow, currentStep, properties)
                 } else {

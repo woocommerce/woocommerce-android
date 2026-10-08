@@ -106,6 +106,11 @@ class SitePickerFragment :
         handleResults()
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.restoreEpilogueTracking()
+    }
+
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_site_picker, menu)
     }
@@ -361,7 +366,11 @@ class SitePickerFragment :
 
     private fun navigateToAddStoreScreen() {
         findNavController()
-            .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToSitePickerSiteDiscoveryFragment())
+            .navigateSafely(
+                SitePickerFragmentDirections.actionSitePickerFragmentToSitePickerSiteDiscoveryFragment(
+                    openedFromLogin = navArgs.openedFromLogin
+                )
+            )
     }
 
     private fun navigateToNeedHelpFindingEmailScreen() {
@@ -384,7 +393,8 @@ class SitePickerFragment :
         findNavController().navigateSafely(
             SitePickerFragmentDirections.actionSitePickerFragmentToAccountMismatchErrorFragment(
                 siteUrl = event.siteUrl,
-                primaryButton = event.primaryButton
+                primaryButton = event.primaryButton,
+                openedFromLogin = navArgs.openedFromLogin
             )
         )
     }

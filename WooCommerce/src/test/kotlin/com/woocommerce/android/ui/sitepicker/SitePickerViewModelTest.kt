@@ -54,6 +54,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.atMost
+import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
@@ -1141,6 +1142,72 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 step = eq(UnifiedLoginTracker.Step.NOT_WOO_STORE),
                 properties = anyOrNull()
             )
+        }
+
+    @Test
+    fun `given site discovery is in front, when sites load, then the flow is left alone`() =
+        testBlocking {
+            // GIVEN the picker is showing during login
+            givenTheScreenIsFromLogin(true)
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+            clearInvocations(unifiedLoginTracker)
+
+            // WHEN a sites response arrives, which can land while discovery is still on screen
+            viewModel.onSiteAddressReceived(SitePickerTestUtils.loginSiteAddress)
+
+            // THEN the flow discovery set survives, so its own steps stay attributed to it. The
+            // picker reasserts its flow when it is actually in front again, on resume.
+            verify(unifiedLoginTracker, never()).setFlow(anyOrNull())
+        }
+
+    @Test
+    fun `given the picker reported the store list, when it is in front again, then that step is restored`() =
+        testBlocking {
+            // GIVEN the picker reported the list it is showing
+            givenTheScreenIsFromLogin(true)
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+            clearInvocations(unifiedLoginTracker)
+
+            // WHEN the merchant comes back from a screen that set its own step
+            viewModel.restoreEpilogueTracking()
+
+            // THEN a later click is attributed to the screen in front of them
+            verify(unifiedLoginTracker).setFlow(UnifiedLoginTracker.Flow.EPILOGUE.value)
+            verify(unifiedLoginTracker).setStep(UnifiedLoginTracker.Step.SITE_LIST)
+        }
+
+    @Test
+    fun `given the account owns no sites, when the picker is in front again, then the empty step is restored`() =
+        testBlocking {
+            // GIVEN the picker reported its empty state rather than a list, which is also a screen
+            // site discovery can be opened from
+            givenTheScreenIsFromLogin(true)
+            whenSitesAreFetched(returnsEmpty = true)
+            whenViewModelIsCreated()
+            clearInvocations(unifiedLoginTracker)
+
+            // WHEN the merchant backs out of site discovery
+            viewModel.restoreEpilogueTracking()
+
+            // THEN the step they are returned to is the empty state, not the list
+            verify(unifiedLoginTracker).setStep(UnifiedLoginTracker.Step.NO_WOO_STORES)
+            verify(unifiedLoginTracker, never()).setStep(UnifiedLoginTracker.Step.SITE_LIST)
+        }
+
+    @Test
+    fun `given the picker was not opened from login, when sites load, then the flow is left alone`() =
+        testBlocking {
+            // GIVEN the merchant is connecting another store from the app
+            givenTheScreenIsFromLogin(false)
+            whenSitesAreFetched()
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN nothing outside a login journey touches the shared tracker's flow
+            verify(unifiedLoginTracker, never()).setFlow(anyOrNull())
         }
 
     @Test
