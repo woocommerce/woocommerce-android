@@ -121,10 +121,14 @@ class OrderFilterOptionsViewModel @Inject constructor(
                 ShowCustomDateRangePicker(selectedCustomDateRange.first, selectedCustomDateRange.second)
             )
         }
+        selectDateRangeOption(dateRangeOptionClicked)
+    }
+
+    private fun selectDateRangeOption(dateRangeOption: OrderFilterOptionUiModel) {
         _viewState = _viewState.copy(
             filterOptions = _viewState.filterOptions.clearAllFilterSelections()
         )
-        updateSelectedFilterValues(dateRangeOptionClicked)
+        updateSelectedFilterValues(dateRangeOption)
     }
 
     private fun updateSalesChannelSelectedFilters(salesChannelClicked: OrderFilterOptionUiModel) {
