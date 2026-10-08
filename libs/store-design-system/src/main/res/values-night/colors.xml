@@ -34,7 +34,7 @@
     <color name="woo_ds_color_status_warning_container">#FFDDEE</color>
 
     <color name="woo_ds_color_icon_container_sandstone">@color/woo_ds_color_surface_container_highest</color>
-    <color name="woo_ds_color_icon_container_on_sandstone">@color/woo_ds_color_surface_on_variant_highest</color>
+    <color name="woo_ds_color_icon_container_on_sandstone">@color/woo_ds_color_surface_on_variant</color>
 
     <color name="woo_ds_color_overlay_overlay20">#33101517</color>
     <color name="woo_ds_color_overlay_overlay50">#802C3338</color>
