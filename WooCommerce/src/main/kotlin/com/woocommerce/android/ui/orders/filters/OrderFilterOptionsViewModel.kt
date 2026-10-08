@@ -120,8 +120,9 @@ class OrderFilterOptionsViewModel @Inject constructor(
             triggerEvent(
                 ShowCustomDateRangePicker(selectedCustomDateRange.first, selectedCustomDateRange.second)
             )
+        } else {
+            selectDateRangeOption(dateRangeOptionClicked)
         }
-        selectDateRangeOption(dateRangeOptionClicked)
     }
 
     private fun selectDateRangeOption(dateRangeOption: OrderFilterOptionUiModel) {
@@ -188,16 +189,9 @@ class OrderFilterOptionsViewModel @Inject constructor(
             endDay.toDateAtStartOfDay().time,
             dateUtils
         )
-        _viewState = _viewState.copy(
-            filterOptions = _viewState.filterOptions
-                .map {
-                    if (it.isSelected && DateRange.fromValue(it.key) == DateRange.CUSTOM_RANGE) {
-                        it.copy(displayValue = dateRangeDisplayValue)
-                    } else {
-                        it
-                    }
-                }
-        )
+        _viewState.filterOptions
+            .firstOrNull { DateRange.fromValue(it.key) == DateRange.CUSTOM_RANGE }
+            ?.let { selectDateRangeOption(it.copy(displayValue = dateRangeDisplayValue)) }
     }
 
     @Parcelize
