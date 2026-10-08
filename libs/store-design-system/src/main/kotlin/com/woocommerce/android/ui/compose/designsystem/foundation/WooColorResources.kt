@@ -132,6 +132,10 @@ private fun Context.loadWooColorsFromResources(): WooColors {
             neutralContainer = color(R.color.woo_ds_color_status_neutral_container),
             onNeutralContainer = color(R.color.woo_ds_color_status_on_neutral_container),
         ),
+        iconContainer = WooIconContainerToneColors(
+            sandstone = color(R.color.woo_ds_color_icon_container_sandstone),
+            onSandstone = color(R.color.woo_ds_color_icon_container_on_sandstone),
+        ),
         overlay = WooOverlayColors(
             overlay20 = color(R.color.woo_ds_color_overlay_overlay20),
             overlay50 = color(R.color.woo_ds_color_overlay_overlay50),

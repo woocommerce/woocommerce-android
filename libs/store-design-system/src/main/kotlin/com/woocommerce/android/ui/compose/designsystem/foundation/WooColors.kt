@@ -17,6 +17,7 @@ data class WooColors(
     val outline: Color,
     val outlineVariant: Color,
     val status: WooStatusColors,
+    val iconContainer: WooIconContainerToneColors,
     val overlay: WooOverlayColors,
     val alert: WooAlertColors,
     val palette: WooPaletteColors,
@@ -72,6 +73,12 @@ data class WooStatusColors(
     val onInfoContainer: Color,
     val neutralContainer: Color,
     val onNeutralContainer: Color,
+)
+
+@Immutable
+data class WooIconContainerToneColors(
+    val sandstone: Color,
+    val onSandstone: Color,
 )
 
 @Immutable
