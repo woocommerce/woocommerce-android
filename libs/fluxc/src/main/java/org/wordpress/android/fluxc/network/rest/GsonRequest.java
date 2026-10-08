@@ -42,6 +42,13 @@ public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>>
 
     public interface ResponseListener<T> {
         void onResponse(T response, List<Header> headers);
+
+        /**
+         * Receives the HTTP status code too. Implement it when the status matters.
+         */
+        default void onResponse(@Nullable T response, @NonNull List<Header> headers, @Nullable Integer statusCode) {
+            onResponse(response, headers);
+        }
     }
 
     protected GsonRequest(int method, Map<String, String> params, Map<String, Object> body, String url, Class<T> clazz,
@@ -106,7 +113,7 @@ public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>>
     @Override
     protected void deliverResponse(@NonNull ResponseWithHeaders<T> response) {
         if (mListener != null) {
-            mListener.onResponse(response.getData(), response.getHeaders());
+            mListener.onResponse(response.getData(), response.getHeaders(), response.getStatusCode());
         } else {
             mListenerWithoutHeaders.onResponse(response.getData());
         }
@@ -151,7 +158,8 @@ public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>>
                 parsedData = mGson.fromJson(json, mClass);
             }
 
-            return Response.success(new ResponseWithHeaders<>(parsedData, mapHeaders(response)),
+            return Response.success(
+                    new ResponseWithHeaders<>(parsedData, mapHeaders(response), response.statusCode),
                     createCacheEntry(response));
         } catch (UnsupportedEncodingException | JsonSyntaxException e) {
             logRequestPath();

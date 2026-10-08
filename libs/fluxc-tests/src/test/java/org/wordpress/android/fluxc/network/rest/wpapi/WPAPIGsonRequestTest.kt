@@ -35,12 +35,13 @@ class WPAPIGsonRequestTest {
     }
 
     @Test
-    fun `given a 2xx JSON response, when it is parsed, then it succeeds`() {
+    fun `given a 2xx JSON response, when it is parsed, then it succeeds with the status code`() {
         val request = buildRequest(url = "$SITE/wp-json/wp/v2/users/me") {}
 
         val result = request.parseNetworkResponse(networkResponse(200, JSON, """{"id":1}"""))
 
         assertThat(result.isSuccess).isTrue
+        assertThat(result.result?.statusCode).isEqualTo(200)
     }
 
     @Test

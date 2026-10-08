@@ -13,6 +13,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
+import org.wordpress.android.fluxc.network.rest.wpapi.wpApiSuccessListener
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.network.toVolleyMethod
 import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
@@ -67,7 +68,7 @@ class ApplicationPasswordsNetwork @Inject constructor(
                 body,
                 clazz,
                 /* listener = */
-                { responseData, headers -> continuation.resume(WPAPIResponse.Success(responseData, headers)) },
+                wpApiSuccessListener { continuation.resume(it) },
                 /* errorListener = */
                 { continuation.resume(WPAPIResponse.Error(it)) }
             )
