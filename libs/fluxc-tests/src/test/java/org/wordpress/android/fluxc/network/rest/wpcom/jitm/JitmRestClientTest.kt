@@ -8,8 +8,11 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.generated.endpoint.JPAPI
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMContent
@@ -194,6 +197,42 @@ class JitmRestClientTest {
 
             assertThat(actualResponse.isError).isTrue
             assertThat(actualResponse.result).isNull()
+        }
+    }
+
+    @Test
+    fun `given not found error response, when dismiss jitm, then error with details is returned`() {
+        runBlocking {
+            val site = SiteModel().apply { siteId = 1234 }
+            val notFoundError = WPAPINetworkError(
+                baseError = BaseNetworkError(GenericErrorType.NOT_FOUND, "No route was found"),
+                errorCode = "rest_no_route"
+            )
+            whenever(
+                wooNetwork.executePostGsonRequest(
+                    site = site,
+                    path = JPAPI.jitm.pathV4,
+                    body = mapOf(
+                        "id" to "",
+                        "feature_class" to ""
+                    ),
+                    clazz = Any::class.java,
+                )
+            ).thenReturn(
+                WPAPIResponse.Error(notFoundError)
+            )
+
+            val actualResponse = jitmRestClient.dismissJitmMessage(
+                site,
+                "",
+                ""
+            )
+
+            assertThat(actualResponse.isError).isTrue
+            assertThat(actualResponse.result).isNull()
+            assertThat(actualResponse.error.type).isEqualTo(WooErrorType.API_NOT_FOUND)
+            assertThat(actualResponse.error.apiErrorCode).isEqualTo("rest_no_route")
+            assertThat(actualResponse.error.message).isEqualTo("No route was found")
         }
     }
 }
