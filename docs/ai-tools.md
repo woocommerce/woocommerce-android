@@ -3,7 +3,7 @@
 Every AI tool, command and skill used for WooCommerce Android development and testing.
 Adds or changes a tool or command? Update this file in the same PR.
 
-**Availability:** `Repo` works after cloning. `MCP` needs the server to start (Node.js, plus a device or emulator for `mobile-mcp`). `External` must be installed separately and needs a login. Agents: before using an `MCP` or `External` tool, check that it is available and logged in. If it is not, tell the user what is missing and use the fallback listed, instead of failing silently.
+**Availability:** `Repo` works after cloning. `MCP` needs the server to start (Node.js, plus a device or emulator for `mobile-mcp`, an Automattic login for `context-a8c`). Agents: before using an `MCP` tool, check that it is available and logged in. If it is not, tell the user what is missing and use the fallback listed, instead of failing silently.
 
 ## Development skills
 
@@ -57,13 +57,7 @@ Configured in [`.mcp.json`](../.mcp.json).
 | Name | What it does | When to use | Example | Owner | Availability |
 |---|---|---|---|---|---|
 | `mobile-mcp` | Taps, swipes, screenshots and reads the screen of a device or emulator | Driving the app in an agent test | Used by `verify-on-device` | mobile-next (third party) | MCP. Fallback: `adb` |
-| `context-a8c` | Reads Linear, Slack, P2 and GitHub context | Reading the Linear issue or a Slack thread behind a change | "Read WOOMOB-4291" | Automattic | MCP + External. Needs an Automattic login and proxy. Fallback: ask the user to paste the content |
-
-## External plugins
-
-| Name | What it does | When to use | Example | Owner | Availability |
-|---|---|---|---|---|---|
-| `context-a8c` | Skills for Linear, Slack, P2s and Automattic-wide search | Same as the MCP server, as skills | `/plugin install context-a8c@automattic-claude-code-plugins` | Automattic | External. The marketplace is on Automattic GitHub Enterprise. Needs an Automattic login |
+| `context-a8c` | Reads Linear, Slack, P2 and GitHub context | Reading the Linear issue or a Slack thread behind a change | "Read WOOMOB-4291" | Automattic | MCP. Needs an Automattic login and proxy. Optional plugin with the same access as skills: `/plugin install context-a8c@automattic-claude-code-plugins`. Fallback: ask the user to paste the content |
 
 ## CI automation
 
