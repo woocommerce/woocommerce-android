@@ -12,6 +12,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.EndpointType
@@ -29,6 +30,7 @@ import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
@@ -80,6 +82,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     }
     private val analytics: AnalyticsTrackerWrapper = mock()
     private val loginAnalytics: LoginAnalyticsListener = mock()
+    private val unifiedLoginTracker: UnifiedLoginTracker = mock()
     private val appPrefs: AppPrefsWrapper = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(R.string.error_generic) } doReturn "error"
@@ -87,6 +90,41 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private lateinit var savedState: SavedStateHandle
     private lateinit var viewModel: LoginSiteCredentialsViewModel
 
+
+    @Test
+    fun `given an eligible user, when the store credentials login completes, then success is reported`() =
+        testBlocking {
+            // GIVEN a login that reaches the merchant's store without the picker
+            setup()
+
+            // WHEN
+            viewModel.viewState.observeForTesting { enterCredentialsAndContinue() }
+
+            // THEN the step the picker reports on every other route comes from here instead
+            verify(unifiedLoginTracker, times(1)).track(
+                flow = eq(UnifiedLoginTracker.Flow.LOGIN_STORE_CREDS),
+                step = eq(UnifiedLoginTracker.Step.SUCCESS),
+                properties = any()
+            )
+        }
+
+    @Test
+    fun `given an ineligible user, when the store credentials login completes, then success is not reported`() =
+        testBlocking {
+            // GIVEN a user whose role cannot manage the store, handled by the eligibility screen
+            whenever(repository.checkIfUserIsEligible(site)).thenReturn(Result.success(false))
+            setup()
+
+            // WHEN
+            viewModel.viewState.observeForTesting { enterCredentialsAndContinue() }
+
+            // THEN they have not finished logging in to anything
+            verify(unifiedLoginTracker, never()).track(
+                flow = anyOrNull(),
+                step = eq(UnifiedLoginTracker.Step.SUCCESS),
+                properties = any()
+            )
+        }
     @Test
     fun `given default native authentication succeeds, when submitting, then keep the existing login flow`() =
         testBlocking {
@@ -854,6 +892,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             repository,
             selectedSite,
             loginAnalytics,
+            unifiedLoginTracker,
             notifier,
             analytics,
             appPrefs,
