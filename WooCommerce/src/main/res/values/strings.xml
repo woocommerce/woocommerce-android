@@ -94,6 +94,12 @@
     <string name="product_attribute_error_renaming">Error while renaming your attribute</string>
     <string name="product_attributes_error_saving">Error while saving your attributes</string>
     <string name="product_attribute_remove">Remove this attribute?</string>
+    <string name="product_attribute_visible_on_product_page">Visible on product page</string>
+    <string name="product_attribute_used_for_variations">Used for variations</string>
+    <string name="product_attribute_hidden">Hidden</string>
+    <string name="product_attribute_stop_using_for_variations_title">Stop using for variations?</string>
+    <string name="product_attribute_stop_using_for_variations_message">Existing variations will no longer match on this attribute.</string>
+    <string name="product_attribute_stop_using_for_variations_confirm">Stop using</string>
     <string name="product_attribute_no_options_warning">This attribute has no options and will be removed. Do you want to continue?</string>
     <string name="product_bulk_update_regular_price">Update regular price</string>
     <string name="product_bulk_update_price_updated">Price updated!</string>
@@ -2255,6 +2261,7 @@
     <string name="bottom_sheet_shipping_desc">Add weight and dimensions</string>
     <string name="bottom_sheet_categories_desc">Organise your products into related groups</string>
     <string name="bottom_sheet_tags_desc">Make your products easier to find with tags</string>
+    <string name="bottom_sheet_attributes_desc">Add details like material or size to the product page</string>
     <string name="bottom_sheet_short_description_desc">A brief excerpt about your product</string>
     <string name="bottom_sheet_linked_products_desc">Increase sales with upsells and cross-sells</string>
 

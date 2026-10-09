@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.AttributeItemBinding
 import com.woocommerce.android.model.ProductAttribute
+import java.util.Objects
 
 abstract class AttributeBaseAdapter<T : AttributeBaseAdapter.AttributeBaseViewHolder>(
     private val onItemClick: (attributeId: Long, attributeName: String) -> Unit
@@ -24,7 +25,8 @@ abstract class AttributeBaseAdapter<T : AttributeBaseAdapter.AttributeBaseViewHo
         }
     }
 
-    override fun getItemId(position: Int) = attributeList[position].id
+    // local attributes all have id 0, so the name is needed to tell them apart
+    override fun getItemId(position: Int) = attributeList[position].let { Objects.hash(it.id, it.name).toLong() }
 
     override fun getItemCount() = attributeList.size
 
@@ -33,7 +35,8 @@ abstract class AttributeBaseAdapter<T : AttributeBaseAdapter.AttributeBaseViewHo
         val newList: List<ProductAttribute>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldList[oldItemPosition].id == newList[newItemPosition].id
+            oldList[oldItemPosition].id == newList[newItemPosition].id &&
+                oldList[oldItemPosition].name == newList[newItemPosition].name
 
         override fun getOldListSize(): Int = oldList.size
 

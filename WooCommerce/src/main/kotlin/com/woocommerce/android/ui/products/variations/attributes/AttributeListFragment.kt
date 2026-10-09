@@ -39,7 +39,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     private val binding get() = _binding!!
 
     private val isGeneratingVariation
-        get() = navArgs.isVariationCreation and viewModel.productDraftAttributes.isNotEmpty()
+        get() = navArgs.isVariationCreation and viewModel.productDraftVariationAttributes.isNotEmpty()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -126,7 +126,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
             showAttributes(it)
         }
 
-        viewModel.loadProductDraftAttributes()
+        viewModel.loadProductDraftAttributes(navArgs.isVariationCreation)
     }
 
     override fun onDestroyView() {
@@ -142,7 +142,9 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     private fun showAttributes(attributes: List<ProductAttribute>) {
         val adapter: AttributeListAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = AttributeListAdapter { attributeId, attributeName ->
+            adapter = AttributeListAdapter(
+                showAttributeLabels = viewModel.isNonVariationAttributesEnabled && !navArgs.isVariationCreation
+            ) { attributeId, attributeName ->
                 viewModel.onAttributeListItemClick(attributeId, attributeName, navArgs.isVariationCreation)
             }
             binding.attributeList.adapter = adapter

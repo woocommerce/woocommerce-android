@@ -199,6 +199,7 @@ class ProductDetailCardBuilder(
                 productAggregate.product.addons(),
                 productAggregate.product.quantityRules(),
                 productAggregate.shipping(),
+                productAggregate.product.attributes(),
                 productAggregate.product.categories(),
                 productAggregate.product.tags(),
                 productAggregate.product.shortDescription(),
@@ -219,6 +220,7 @@ class ProductDetailCardBuilder(
                 productAggregate.product.inventory(GROUPED),
                 productAggregate.product.addons(),
                 productAggregate.product.quantityRules(),
+                productAggregate.product.attributes(),
                 productAggregate.product.categories(),
                 productAggregate.product.tags(),
                 productAggregate.product.shortDescription(),
@@ -239,6 +241,7 @@ class ProductDetailCardBuilder(
                 productAggregate.product.inventory(EXTERNAL),
                 productAggregate.product.addons(),
                 productAggregate.product.quantityRules(),
+                productAggregate.product.attributes(),
                 productAggregate.product.categories(),
                 productAggregate.product.tags(),
                 productAggregate.product.shortDescription(),
@@ -255,7 +258,7 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 productAggregate.product.warning(),
                 productAggregate.product.variations(),
-                productAggregate.product.variationAttributes(),
+                productAggregate.product.variableProductAttributes(),
                 if (viewModel.isProductUnderCreation) null else productAggregate.product.productReviews(),
                 productAggregate.product.inventory(VARIABLE),
                 productAggregate.product.addons(),
@@ -283,6 +286,7 @@ class ProductDetailCardBuilder(
                 productAggregate.product.addons(),
                 productAggregate.product.quantityRules(),
                 productAggregate.shipping(),
+                productAggregate.product.attributes(),
                 productAggregate.product.categories(),
                 productAggregate.product.tags(),
                 productAggregate.product.shortDescription(),
@@ -300,7 +304,7 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 productAggregate.product.warning(),
                 productAggregate.product.variations(),
-                productAggregate.product.variationAttributes(),
+                productAggregate.product.variableProductAttributes(),
                 if (viewModel.isProductUnderCreation) null else productAggregate.product.productReviews(),
                 productAggregate.product.inventory(VARIABLE),
                 productAggregate.product.addons(),
@@ -326,6 +330,7 @@ class ProductDetailCardBuilder(
                 productAggregate.product.inventory(SIMPLE),
                 productAggregate.product.addons(),
                 productAggregate.product.quantityRules(),
+                productAggregate.product.attributes(),
                 productAggregate.product.categories(),
                 productAggregate.product.tags(),
                 productAggregate.product.shortDescription(),
@@ -346,6 +351,7 @@ class ProductDetailCardBuilder(
                 productAggregate.product.inventory(SIMPLE),
                 productAggregate.product.addons(),
                 productAggregate.product.quantityRules(),
+                productAggregate.product.attributes(),
                 productAggregate.product.categories(),
                 productAggregate.product.tags(),
                 productAggregate.product.shortDescription(),
@@ -367,6 +373,7 @@ class ProductDetailCardBuilder(
                 if (viewModel.isProductUnderCreation) null else productAggregate.product.productReviews(),
                 productAggregate.product.addons(),
                 productAggregate.product.quantityRules(),
+                productAggregate.product.attributes(),
                 productAggregate.product.categories(),
                 productAggregate.product.tags(),
                 productAggregate.product.shortDescription(),
@@ -840,6 +847,24 @@ class ProductDetailCardBuilder(
                 viewModel.onAddFirstVariationClicked()
             }
         )
+
+    private fun Product.variableProductAttributes() =
+        if (viewModel.isNonVariationAttributesEnabled) attributes() else variationAttributes()
+
+    private fun Product.attributes(): ProductProperty? {
+        if (!viewModel.isNonVariationAttributesEnabled || attributes.isEmpty()) return null
+
+        return PropertyGroup(
+            title = string.product_attributes,
+            properties = attributes.associate { it.name to it.terms.joinToString() },
+            icon = DesignSystemR.drawable.woo_ds_ic_regular_screwdriver_wrench_24dp
+        ) {
+            viewModel.onEditProductCardClicked(
+                ViewProductAttributes,
+                PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED
+            )
+        }
+    }
 
     private fun Product.variationAttributes() =
         takeIf { this.variationEnabledAttributes.isNotEmpty() }?.let {

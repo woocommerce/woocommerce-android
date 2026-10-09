@@ -41,4 +41,8 @@ enum class FeatureFlag(
     SMARTER_NOTIFICATIONS("smarter_notifications", localValue = PackageUtils.isDebugBuild()),
     QR_LOGIN("woo_qr_code_login"),
     FILTER_HISTORY("woo_filter_history", localValue = PackageUtils.isDebugBuild()),
+    NON_VARIATION_PRODUCT_ATTRIBUTES(
+        "woo_non_variation_product_attributes",
+        localValue = PackageUtils.isDebugBuild()
+    ),
 }
