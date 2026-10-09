@@ -51,6 +51,11 @@ class WPComLogin2FAViewModel @Inject constructor(
     private val isSecurityKeySupported = "webauthn" in navArgs.supportedAuthTypes
     private val isSecurityKeyPrimary = isSecurityKeySupported &&
         listOf("authenticator", "sms", "email").none { it in navArgs.supportedAuthTypes }
+    private val currentWebauthnNonce = savedStateHandle.getStateFlow(
+        scope = viewModelScope,
+        initialValue = navArgs.webauthnNonce,
+        key = "current-webauthn-nonce"
+    )
     private val isSmsSupported = navArgs.supportedAuthTypes.isEmpty() || "sms" in navArgs.supportedAuthTypes
     private val initialInstructions = when {
         isSecurityKeyPrimary -> R.string.notification_security_key_needed
@@ -195,16 +200,17 @@ class WPComLogin2FAViewModel @Inject constructor(
     }
 
     fun onSecurityKeyClick() = launch {
-        if (navArgs.webauthnNonce.isBlank()) {
+        if (currentWebauthnNonce.value.isBlank()) {
             triggerEvent(ShowSnackbar(R.string.error_generic))
             return@launch
         }
         loadingMessage.value = R.string.logging_in
         wpComLoginRepository.startSecurityKeyChallenge(
             userId = navArgs.userId,
-            webauthnNonce = navArgs.webauthnNonce
+            webauthnNonce = currentWebauthnNonce.value
         ).fold(
             onSuccess = { challengeData ->
+                currentWebauthnNonce.value = challengeData.twoStepNonce
                 loadingMessage.value = 0
                 triggerEvent(
                     StartPasskeyAuthentication(

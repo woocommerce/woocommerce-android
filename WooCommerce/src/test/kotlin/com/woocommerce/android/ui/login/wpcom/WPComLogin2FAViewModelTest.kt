@@ -147,6 +147,31 @@ class WPComLogin2FAViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given replacement nonce, when passkey is cancelled and retried, then use the replacement`() = testBlocking {
+        whenever(wpComLoginRepository.startSecurityKeyChallenge(USER_ID, "n0")).thenReturn(
+            Result.success(WPComLoginRepository.SecurityKeyChallengeData(USER_ID, "n1", "challenge-1"))
+        )
+        whenever(wpComLoginRepository.startSecurityKeyChallenge(USER_ID, "n1")).thenReturn(
+            Result.success(WPComLoginRepository.SecurityKeyChallengeData(USER_ID, "n2", "challenge-2"))
+        )
+        setup(
+            supportedAuthTypes = arrayOf("webauthn"),
+            webauthnNonce = "n0",
+            userId = USER_ID
+        )
+
+        viewModel.onSecurityKeyClick()
+        runCurrent()
+
+        viewModel.onPasskeyError()
+        viewModel.onSecurityKeyClick()
+        runCurrent()
+
+        verify(wpComLoginRepository).startSecurityKeyChallenge(USER_ID, "n0")
+        verify(wpComLoginRepository).startSecurityKeyChallenge(USER_ID, "n1")
+    }
+
+    @Test
     fun `when SMS request is in progress, then only SMS action shows loading`() = testBlocking {
         val requestResult = CompletableDeferred<Result<SMSRequestResult>>()
         whenever(wpComLoginRepository.requestTwoStepSMS(EMAIL, PASSWORD)).doSuspendableAnswer {
@@ -205,14 +230,16 @@ class WPComLogin2FAViewModelTest : BaseUnitTest() {
 
     private fun setup(
         supportedAuthTypes: Array<String> = emptyArray(),
-        restoredState: Map<String, Any> = emptyMap()
+        restoredState: Map<String, Any> = emptyMap(),
+        webauthnNonce: String = "",
+        userId: String = ""
     ) {
         val savedStateHandle = WPComLogin2FAFragmentArgs(
             jetpackStatus = JETPACK_STATUS,
             emailOrUsername = EMAIL,
             password = PASSWORD,
-            userId = "",
-            webauthnNonce = "",
+            userId = userId,
+            webauthnNonce = webauthnNonce,
             supportedAuthTypes = supportedAuthTypes
         ).toSavedStateHandle()
         restoredState.forEach { (key, value) -> savedStateHandle[key] = value }
@@ -231,6 +258,7 @@ class WPComLogin2FAViewModelTest : BaseUnitTest() {
     private companion object {
         const val EMAIL = "user@example.com"
         const val PASSWORD = "password123"
+        const val USER_ID = "user-1"
         val JETPACK_STATUS = JetpackStatus(
             isJetpackInstalled = true,
             jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
