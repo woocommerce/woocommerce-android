@@ -39,7 +39,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     private val binding get() = _binding!!
 
     private val isGeneratingVariation
-        get() = navArgs.isVariationCreation and viewModel.productDraftAttributes.isNotEmpty()
+        get() = navArgs.isVariationCreation and viewModel.productDraftVariationAttributes.isNotEmpty()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
