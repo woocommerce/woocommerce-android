@@ -135,6 +135,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     var snackbarData by mutableStateOf<ShippingLabelsSnackbarData?>(null)
 
+    fun onSnackbarFinished(data: ShippingLabelsSnackbarData) {
+        if (snackbarData === data) snackbarData = null
+    }
+
     private val emptyOrder = Order.getEmptyOrder(Date(), Date())
     private val order = MutableStateFlow(emptyOrder)
     private val destinationAddress = MutableStateFlow(DestinationShippingAddress.EMPTY)
@@ -1072,7 +1076,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             message = R.string.woo_shipping_labels_purchase_origin_address_error,
             actionLabel = R.string.edit,
         ) {
-            snackbarData = null
             onEditOriginAddress(originAddress)
         }
     }
@@ -1090,7 +1093,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             messageParameters = listOfNotNull(serviceRequiringPhone),
             actionLabel = R.string.edit,
         ) {
-            snackbarData = null
             onEditDestinationAddress(destinationAddress)
         }
     }
@@ -1140,7 +1142,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     message = R.string.woo_shipping_labels_purchase_error,
                     actionLabel = R.string.retry,
                 ) {
-                    snackbarData = null
                     onPurchaseShippingLabel()
                 }
             }
@@ -1242,9 +1243,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             .run { this as? Declared }
             ?.hazmatCategory
 
-        // Disables the current Snackbar before navigation
-        // to avoid presentation conflict with the Hazmat selection result
-        snackbarData = null
         triggerEvent(NavigateToHazmatFormEdit(selectedCategory))
     }
 
@@ -1270,7 +1268,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             message = snackbarMessage,
             actionLabel = R.string.undo,
             hasIcon = true,
-            dismissAction = { snackbarData = null }
         ) {
             hazmatStatesFlow.value = previousStates
         }

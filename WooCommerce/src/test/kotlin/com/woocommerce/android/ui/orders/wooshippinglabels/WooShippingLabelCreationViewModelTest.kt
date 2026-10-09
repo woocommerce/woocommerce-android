@@ -1147,6 +1147,32 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given a snackbar is shown, when it finishes, then it is cleared`() = testBlocking {
+        createViewModel()
+        sut.onHazmatCategorySelected(ShippingLabelHazmatCategory.CLASS_1)
+
+        val snackbarData = checkNotNull(sut.snackbarData)
+        sut.onSnackbarFinished(snackbarData)
+
+        assertThat(sut.snackbarData).isNull()
+    }
+
+    @Test
+    fun `given a newer snackbar replaced an older one, when the older one finishes, then the newer one is kept`() =
+        testBlocking {
+            createViewModel()
+            sut.onHazmatCategorySelected(ShippingLabelHazmatCategory.CLASS_1)
+            val olderSnackbarData = checkNotNull(sut.snackbarData)
+
+            sut.onHazmatCategorySelected(ShippingLabelHazmatCategory.CLASS_3)
+            val newerSnackbarData = checkNotNull(sut.snackbarData)
+
+            sut.onSnackbarFinished(olderSnackbarData)
+
+            assertThat(sut.snackbarData).isSameAs(newerSnackbarData)
+        }
+
+    @Test
     fun `given a domestic shipment with a blank recipient phone and a non-FedEx rate, when purchase is tapped, then the purchase starts`() =
         testBlocking {
             whenever(addressValidationHelper.validatePhone(eq(""), any(), eq(false))).doReturn(null)
@@ -1276,7 +1302,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when edit origin snackbar action is tapped, then dismiss snackbar and navigate to edit origin`() = testBlocking {
+    fun `when edit origin snackbar action is tapped, then navigate to edit origin`() = testBlocking {
         whenever(addressValidationHelper.isMissingOriginAddress(any())) doReturn true
 
         createViewModel()
@@ -1299,7 +1325,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         sut.snackbarData?.action?.invoke()
 
-        assertThat(sut.snackbarData).isNull()
         assertThat(events.last()).isEqualTo(NavigateToOriginAddressEdit(defaultOriginAddresses.first()))
     }
 

@@ -121,6 +121,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onEditDestinationAddress = viewModel::onEditDestinationAddress,
                 destinationStatus = viewState.destinationStatus,
                 snackbarData = viewModel.snackbarData,
+                onSnackbarFinished = viewModel::onSnackbarFinished,
                 onSplitShipment = viewModel::onSplitShipmentButtonTapped,
                 onHazmatNoticeClick = viewModel::onHazmatNoticeClick,
                 onLabelPaperSizeOptionSelected = viewModel::onLabelPaperSizeOptionSelected,
@@ -170,6 +171,7 @@ fun WooShippingLabelCreationScreen(
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
     snackbarData: ShippingLabelsSnackbarData? = null,
+    onSnackbarFinished: (ShippingLabelsSnackbarData) -> Unit = {},
     onSplitShipment: () -> Unit = {},
     onHazmatNoticeClick: () -> Unit = {},
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
@@ -215,6 +217,7 @@ fun WooShippingLabelCreationScreen(
             onEditDestinationAddress = onEditDestinationAddress,
             destinationStatus = destinationStatus,
             snackbarData = snackbarData,
+            onSnackbarFinished = onSnackbarFinished,
             onSplitShipment = onSplitShipment,
             onHazmatNoticeClick = onHazmatNoticeClick,
             onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
@@ -273,6 +276,7 @@ private fun LabelCreationScreenWithBottomSheet(
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
     snackbarData: ShippingLabelsSnackbarData? = null,
+    onSnackbarFinished: (ShippingLabelsSnackbarData) -> Unit = {},
     onSplitShipment: () -> Unit = {},
     onHazmatNoticeClick: () -> Unit = {},
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
@@ -431,17 +435,21 @@ private fun LabelCreationScreenWithBottomSheet(
 
             LaunchedEffect(snackbarData) {
                 snackbarData?.let {
-                    val result = snackbarHostState.showSnackbar(
-                        visuals = ShippingLabelsSnackbarVisuals(
-                            message = actionSnackbarMessage.orEmpty(),
-                            actionLabel = actionSnackbarActionLabel,
-                            duration = snackbarData.duration,
-                            hasSuccessCheckmark = it.hasIcon
+                    try {
+                        val result = snackbarHostState.showSnackbar(
+                            visuals = ShippingLabelsSnackbarVisuals(
+                                message = actionSnackbarMessage.orEmpty(),
+                                actionLabel = actionSnackbarActionLabel,
+                                duration = snackbarData.duration,
+                                hasSuccessCheckmark = it.hasIcon
+                            )
                         )
-                    )
-                    when (result) {
-                        SnackbarResult.ActionPerformed -> snackbarData.action()
-                        SnackbarResult.Dismissed -> snackbarData.dismissAction()
+                        when (result) {
+                            SnackbarResult.ActionPerformed -> snackbarData.action()
+                            SnackbarResult.Dismissed -> snackbarData.dismissAction()
+                        }
+                    } finally {
+                        onSnackbarFinished(it)
                     }
                 } ?: snackbarHostState.currentSnackbarData?.dismiss()
             }
