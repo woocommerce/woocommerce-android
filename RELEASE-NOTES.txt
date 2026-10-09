@@ -5,6 +5,7 @@
 25.9
 -----
 - [*] The Blaze campaign list now shows an outstanding balance notice with a Pay button for each unpaid order [https://github.com/woocommerce/woocommerce-android/pull/16612]
+- [*] WordPress.com two-step login now shows instructions for your verification method and only offers a text message code when your account supports it [https://github.com/woocommerce/woocommerce-android/pull/16683]
 
 25.8
 -----
