@@ -75,7 +75,7 @@ internal class TerminalWrapper {
 
     suspend fun connectToReader(
         reader: Reader,
-        configuration: ConnectionConfiguration.BluetoothConnectionConfiguration
+        configuration: ConnectionConfiguration
     ): Reader = Terminal.getInstance().connectReader(reader, configuration)
 
     suspend fun connectToMobile(

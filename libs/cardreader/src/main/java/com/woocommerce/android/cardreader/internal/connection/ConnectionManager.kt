@@ -7,6 +7,7 @@ import android.os.Build
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.BluetoothConnectionConfiguration
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.TapToPayConnectionConfiguration
+import com.stripe.stripeterminal.external.models.ConnectionConfiguration.UsbConnectionConfiguration
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.TapUseCase
@@ -235,7 +236,10 @@ internal class ConnectionManager(
     ): Reader {
         return terminal.connectToReader(
             cardReader.cardReader,
-            BluetoothConnectionConfiguration(locationId, true, bluetoothReaderListener)
+            when (cardReader.cardReader.usbDevice != null) {
+                true -> UsbConnectionConfiguration(locationId, true, bluetoothReaderListener)
+                false -> BluetoothConnectionConfiguration(locationId, true, bluetoothReaderListener)
+            }
         )
     }
 
