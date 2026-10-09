@@ -24,6 +24,8 @@
     <string name="enter_verification_code">Enter a verification code to continue.</string>
     <string name="enter_verification_code_sms">We sent a text message to the phone number ending in %s. Please enter the verification code in the SMS.</string>
     <string name="enter_verification_code_sms_generic">We sent a text message. Enter the verification code from the message.</string>
+    <string name="enter_verification_code_authenticator">Enter the verification code from your authenticator app.</string>
+    <string name="enter_verification_code_email">Check your email for a verification code from WordPress.com, then enter it to continue.</string>
     <string name="login_text_otp">Resend code via text message</string>
     <string name="login_text_security_key">Use a security key</string>
     <string name="login_text_otp_another">Resend code via text message</string>
