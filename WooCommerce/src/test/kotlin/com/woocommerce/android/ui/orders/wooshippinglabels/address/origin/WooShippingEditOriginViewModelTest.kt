@@ -234,7 +234,7 @@ class WooShippingEditOriginViewModelTest : WooShippingEditAddressViewModelTest()
     fun `when phone is empty phone then error is NOT null`() = testBlocking {
         val address = Address.EMPTY.copy(phone = "")
         whenever(addressValidator.validateAtLeastOneOf(eq(""), eq(""))).doReturn("error")
-        whenever(addressValidator.validatePhoneNumber("")).doReturn("error")
+        whenever(addressValidator.validatePhone(eq(""), any(), eq(true))).doReturn("error")
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(address)
             createViewModel(savedState)

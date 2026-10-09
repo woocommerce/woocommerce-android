@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
+import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressValidationState
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.EditAddressFlow
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.EditAddressViewState
@@ -34,7 +35,7 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
     ): SavedStateHandle {
         val destination = DestinationShippingAddress(address, isVerified)
         return WooShippingEditAddressFragmentArgs(
-            EditAddressFlow.EditDestinationAddress(destination, 1L)
+            EditAddressFlow.EditDestinationAddress(destination, 1L, originCountryCode = "US")
         ).toSavedStateHandle()
     }
 
@@ -221,44 +222,37 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
     }
 
     @Test
-    fun `when phone is empty phone then error is null for US`() = testBlocking {
-        val address = Address.EMPTY.copy(phone = "", country = AmbiguousLocation.Raw("US").asLocation())
-        whenever(getAllCountries.invoke()).doReturn(Result.success(countries))
-        whenever(addressValidator.validateAtLeastOneOf(eq(""), eq(""))).doReturn("error")
-        whenever(addressValidator.validateFieldRequired("")).doReturn("error")
-        Snapshot.withMutableSnapshot {
-            val savedState = createSavedStateHandle(address)
-            createViewModel(savedState)
+    fun `given a domestic destination, when the phone is blank, then the phone is optional and the form is valid`() =
+        testBlocking {
+            whenever(addressValidator.validatePhone(eq(""), any(), eq(false))).doReturn(null)
+            initViewModelWithPhone(phone = "", countryCode = "US")
+
+            advanceUntilIdle()
+
+            val result = sut.viewState.value
+
+            assertThat(result).isInstanceOf(EditAddressViewState::class.java)
+
+            assertThat(result.editableAddress.phone.isRequired).isFalse()
+            assertThat(result.editableAddress.phone.error).isNull()
+            assertThat(result.addressStatus).isNotEqualTo(AddressStatus.MissingInfo)
         }
-
-        advanceUntilIdle()
-
-        val result = sut.viewState.value
-
-        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
-
-        assertThat(result.editableAddress.phone.error).isNull()
-    }
 
     @Test
-    fun `when phone is empty phone then error is not null`() = testBlocking {
-        val address = Address.EMPTY.copy(phone = "", country = AmbiguousLocation.Raw("CA").asLocation())
-        whenever(getAllCountries.invoke()).doReturn(Result.success(countries))
-        whenever(addressValidator.validateAtLeastOneOf(eq(""), eq(""))).doReturn("error")
-        whenever(addressValidator.validatePhoneNumber("")).doReturn("error")
-        Snapshot.withMutableSnapshot {
-            val savedState = createSavedStateHandle(address)
-            createViewModel(savedState)
+    fun `given a domestic destination with a blank phone, when the country changes to an international one, then the phone becomes required`() =
+        testBlocking {
+            whenever(addressValidator.validatePhone(eq(""), any(), eq(true))).doReturn("error")
+            whenever(addressValidator.isInternationalShipment("US", "AR")).doReturn(true)
+            initViewModelWithPhone(phone = "", countryCode = "US")
+
+            advanceUntilIdle()
+
+            sut.onCountryChanged("AR")
+            advanceUntilIdle()
+
+            assertThat(sut.viewState.value.editableAddress.phone.isRequired).isTrue()
+            assertThat(sut.viewState.value.addressStatus).isEqualTo(AddressStatus.MissingInfo)
         }
-
-        advanceUntilIdle()
-
-        val result = sut.viewState.value
-
-        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
-
-        assertThat(result.editableAddress.phone.error).isNotNull()
-    }
 
     @Test
     fun `when email is empty then address error is not null`() = testBlocking {

@@ -50,50 +50,44 @@ class AddressValidationHelperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when value is empty validateUSCustomsPhone should return error`() {
-        val result = sut.validateUSCustomsPhone("")
-        assertThat(result).isEqualTo(fieldRequiredError)
-    }
-
-    @Test
-    fun `when value is blank validateUSCustomsPhone should return error`() {
-        val result = sut.validateUSCustomsPhone(" ")
-        assertThat(result).isEqualTo(fieldRequiredError)
-    }
-
-    @Test
-    fun `when value is not a number validateUSCustomsPhone should return error`() {
-        val result = sut.validateUSCustomsPhone("phone")
-        assertThat(result).isEqualTo(invalidPhoneError)
-    }
-
-    @Test
-    fun `when value is not a valid US phone number validateUSCustomsPhone should return error`() {
-        val result = sut.validateUSCustomsPhone("123456789")
-        assertThat(result).isEqualTo(invalidPhoneError)
-    }
-
-    @Test
-    fun `when value is a valid US phone number, then validateUSCustomsPhone should return null`() {
-        val result = sut.validateUSCustomsPhone("12345678910")
+    fun `given an optional phone, when it is whitespace only, then validatePhone returns null`() {
+        val result = sut.validatePhone("  ", "US", false)
         assertThat(result).isNull()
     }
 
     @Test
-    fun `when value is empty or blank, then validatePhoneNumber should return error`() {
-        val result = sut.validatePhoneNumber("")
+    fun `given a required phone, when it is whitespace only, then validatePhone returns the required error`() {
+        val result = sut.validatePhone("  ", "US", true)
         assertThat(result).isEqualTo(fieldRequiredError)
     }
 
     @Test
-    fun `when value does not contain any digits, then validatePhoneNumber should return error`() {
-        val result = sut.validatePhoneNumber("abc")
+    fun `given any country, when the phone has no digits, then validatePhone returns the invalid error`() {
+        val result = sut.validatePhone("abc", "CA", false)
         assertThat(result).isEqualTo(invalidPhoneError)
     }
 
     @Test
-    fun `when value contains at least one digit, then validatePhoneNumber should return null`() {
-        val result = sut.validatePhoneNumber("123")
+    fun `given a US phone, when it has 10 digits, then validatePhone returns null`() {
+        val result = sut.validatePhone("555-123-4567", "US", true)
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `given a US phone, when it has 11 digits starting with 1, then validatePhone returns null`() {
+        val result = sut.validatePhone("+1 555 123 4567", "US", true)
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `given a US phone, when it has 10 digits starting with 1, then validatePhone returns the invalid error`() {
+        val result = sut.validatePhone("1555123456", "US", true)
+        assertThat(result).isEqualTo(invalidPhoneError)
+    }
+
+    @Test
+    fun `given a non-US phone, when it has a digit, then validatePhone returns null`() {
+        val result = sut.validatePhone("123", "CA", true)
         assertThat(result).isNull()
     }
 
@@ -110,63 +104,21 @@ class AddressValidationHelperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when phone is empty, then isPhoneValidForShippingLabel returns false`() {
-        val result = sut.isPhoneValidForShippingLabel("")
-        assertThat(result).isFalse()
-    }
-
-    @Test
-    fun `when phone is blank, then isPhoneValidForShippingLabel returns false`() {
-        val result = sut.isPhoneValidForShippingLabel("   ")
-        assertThat(result).isFalse()
-    }
-
-    @Test
-    fun `when phone has no digits, then isPhoneValidForShippingLabel returns false`() {
-        val result = sut.isPhoneValidForShippingLabel("abc-def")
-        assertThat(result).isFalse()
-    }
-
-    @Test
-    fun `when phone has at least one digit, then isPhoneValidForShippingLabel returns true`() {
-        val result = sut.isPhoneValidForShippingLabel("123-456-7890")
+    fun `given different origin and destination countries, when checking the shipment, then it is international`() {
+        val result = sut.isInternationalShipment("US", "CA")
         assertThat(result).isTrue()
     }
 
     @Test
-    fun `when phone has minimal digit, then isPhoneValidForShippingLabel returns true`() {
-        val result = sut.isPhoneValidForShippingLabel("1")
-        assertThat(result).isTrue()
+    fun `given the same country in a different letter case, when checking the shipment, then it is not international`() {
+        val result = sut.isInternationalShipment("US", "us")
+        assertThat(result).isFalse()
     }
 
     @Test
-    fun `when phone is empty, then validatePhoneNumber returns required error`() {
-        val result = sut.validatePhoneNumber("")
-        assertThat(result).isEqualTo(fieldRequiredError)
-    }
-
-    @Test
-    fun `when phone is blank, then validatePhoneNumber returns required error`() {
-        val result = sut.validatePhoneNumber("   ")
-        assertThat(result).isEqualTo(fieldRequiredError)
-    }
-
-    @Test
-    fun `when phone has no digits, then validatePhoneNumber returns invalid error`() {
-        val result = sut.validatePhoneNumber("abc-def")
-        assertThat(result).isEqualTo(invalidPhoneError)
-    }
-
-    @Test
-    fun `when phone has at least one digit, then validatePhoneNumber returns null`() {
-        val result = sut.validatePhoneNumber("123-456-7890")
-        assertThat(result).isNull()
-    }
-
-    @Test
-    fun `when phone has mixed characters with digit, then validatePhoneNumber returns null`() {
-        val result = sut.validatePhoneNumber("+1 (555) 123-4567")
-        assertThat(result).isNull()
+    fun `given an unknown origin country, when checking the shipment, then it is not international`() {
+        val result = sut.isInternationalShipment("", "CA")
+        assertThat(result).isFalse()
     }
 
     @Test
