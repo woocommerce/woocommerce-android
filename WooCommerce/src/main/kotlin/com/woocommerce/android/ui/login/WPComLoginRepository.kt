@@ -83,7 +83,7 @@ class WPComLoginRepository @Inject constructor(
                     event.error?.type == NEEDS_2FA -> LoginResult.TwoFactorRequired(
                         userId = "",
                         webauthnNonce = "",
-                        supportedAuthTypes = emptyList()
+                        supportedAuthTypes = event.error.supportedAuthTypes
                     )
                     else -> {
                         WooLog.w(

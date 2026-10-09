@@ -2701,6 +2701,9 @@
     <string name="enter_verification_code">Enter a verification code to continue.</string>
     <string name="enter_verification_code_sms">We sent a text message to the phone number ending in %s. Please enter the verification code in the SMS.</string>
     <string name="enter_verification_code_sms_generic">We sent a text message. Enter the verification code from the message.</string>
+    <string name="enter_verification_code_authenticator">Enter the verification code from your authenticator app.</string>
+    <string name="enter_verification_code_email">Check your email for a verification code from WordPress.com, then enter it to continue.</string>
+    <string name="enter_verification_code_backup">Enter a backup code to continue.</string>
     <string name="login_use_wpcom_username_instead">Use username and password instead</string>
 
     <string name="requesting_otp">Requesting a verification code via SMS.</string>
@@ -3833,6 +3836,7 @@
     <string name="ai_feedback_form_positive_button">Positive feedback</string>
     <string name="ai_feedback_form_negative_button">Negative feedback</string>
     <string name="login_text_security_key">Use a security key</string>
+    <string name="login_text_backup_code">Use a backup code instead</string>
     <string name="login_error_security_key">There was some trouble with the Security key login</string>
     <string name="notification_security_key_needed">Please provide your security key to continue.</string>
 
