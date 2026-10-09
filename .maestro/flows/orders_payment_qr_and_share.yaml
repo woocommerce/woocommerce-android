@@ -11,7 +11,6 @@ appId: com.woocommerce.android
 name: "Orders - Payment QR and share link"
 tags:
   - smoke_extended
-  - flaky_quarantine
   - orders
   - destructive
   - system_surface

@@ -43,7 +43,6 @@ appId: com.woocommerce.android
 name: "Products - Create and publish a full product"
 tags:
   - smoke_extended
-  - flaky_quarantine
   - products
   - destructive
 ---

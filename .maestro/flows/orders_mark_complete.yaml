@@ -16,7 +16,6 @@ appId: com.woocommerce.android
 name: "Orders - Mark order complete"
 tags:
   - smoke_extended
-  - flaky_quarantine
   - orders
   - destructive
 ---

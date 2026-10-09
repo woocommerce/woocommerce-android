@@ -19,7 +19,6 @@ appId: com.woocommerce.android
 name: "POS - Cash payment flow"
 tags:
   - pos_tablet
-  - flaky_quarantine
   - destructive
 ---
 # Reuse the logged-in session — login flows run first and leave the

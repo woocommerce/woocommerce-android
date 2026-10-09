@@ -46,7 +46,6 @@ appId: com.woocommerce.android
 name: "Products - Variations via Variable filter"
 tags:
   - smoke_extended
-  - flaky_quarantine
   - products
 ---
 # Reuse the logged-in session.

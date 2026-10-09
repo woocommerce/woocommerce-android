@@ -21,7 +21,6 @@ appId: com.woocommerce.android
 name: "Hub Menu - WC Admin, View Store, Change store"
 tags:
   - smoke_extended
-  - flaky_quarantine
   - hub_menu
   - store_shared
 ---
