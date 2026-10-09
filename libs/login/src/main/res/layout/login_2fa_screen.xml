@@ -15,6 +15,21 @@
         android:layout_marginBottom="@dimen/margin_extra_large"
         android:text="@string/enter_verification_code" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/login_security_key_primary_button"
+        style="@style/Widget.LoginFlow.Button.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/login_text_security_key" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/login_backup_code_button"
+        style="@style/Widget.LoginFlow.Button.Secondary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_large"
+        android:text="@string/login_text_backup_code" />
+
     <org.wordpress.android.login.widgets.WPLoginInputRow
         android:id="@+id/login_2fa_row"
         android:layout_width="match_parent"
