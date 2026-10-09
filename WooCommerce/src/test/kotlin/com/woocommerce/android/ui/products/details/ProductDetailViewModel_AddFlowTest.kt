@@ -52,6 +52,7 @@ import org.junit.Test
 import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
@@ -278,6 +279,29 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         Assertions.assertThat(hasChanges).isFalse()
         Assertions.assertThat(productData?.productDraft).isEqualTo(product)
     }
+
+    @Test
+    fun `given a product not on the site yet, when attribute changes are saved, then they are sent when the product is added`() =
+        testBlocking {
+            // GIVEN
+            doReturn(ProductAggregate(product)).whenever(productRepository).getProductAggregate(any())
+            doReturn(Pair(true, 1L)).whenever(productRepository).addProduct(any<ProductAggregate>())
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+            viewModel.start()
+            viewModel.addLocalAttribute("Material", isVariationCreation = false)
+            viewModel.addAttributeTermToDraft(0L, "Material", "Cotton")
+
+            // WHEN
+            viewModel.saveAttributeChanges()
+            viewModel.onPublishButtonClicked()
+
+            // THEN
+            verify(productRepository, never()).updateProductAttributes(any(), any())
+            val addedProduct = argumentCaptor<ProductAggregate>()
+            verify(productRepository).addProduct(addedProduct.capture())
+            Assertions.assertThat(addedProduct.firstValue.product.attributes.single().name).isEqualTo("Material")
+            Assertions.assertThat(addedProduct.firstValue.product.attributes.single().terms).containsExactly("Cotton")
+        }
 
     @Test
     fun `Display error message on add product failed`() = testBlocking {

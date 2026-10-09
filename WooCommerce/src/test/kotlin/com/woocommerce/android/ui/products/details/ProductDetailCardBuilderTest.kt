@@ -192,6 +192,43 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given the feature is off, when a variable product has display-only and variation attributes, then only variation attributes are listed`() =
+        testBlocking {
+            // GIVEN
+            whenever(viewModel.isNonVariationAttributesEnabled).thenReturn(false)
+            productStub = ProductTestUtils.generateProduct(isVariable = true)
+                .copy(attributes = listOf(DISPLAY_ONLY_ATTRIBUTE, VARIATION_ATTRIBUTE))
+
+            // WHEN
+            val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
+
+            // THEN
+            Assertions.assertThat(cards.propertyGroupWithTitle(R.string.variable_product_attributes)?.properties)
+                .containsOnlyKeys("Color")
+            Assertions.assertThat(cards.propertyGroupWithTitle(R.string.product_attributes)).isNull()
+        }
+
+    @Test
+    fun `given the feature is on, when a variable product has attributes, then one Attributes row lists all terms`() =
+        testBlocking {
+            // GIVEN
+            whenever(viewModel.isNonVariationAttributesEnabled).thenReturn(true)
+            productStub = ProductTestUtils.generateProduct(isVariable = true)
+                .copy(attributes = listOf(DISPLAY_ONLY_ATTRIBUTE, VARIATION_ATTRIBUTE))
+
+            // WHEN
+            val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
+
+            // THEN
+            val attributesRow = cards.propertyGroupWithTitle(R.string.product_attributes)
+            Assertions.assertThat(attributesRow?.properties).containsExactly(
+                Assertions.entry("Material", "Cotton, Wool"),
+                Assertions.entry("Color", "Red, Blue")
+            )
+            Assertions.assertThat(cards.propertyGroupWithTitle(R.string.variable_product_attributes)).isNull()
+        }
+
+    @Test
     fun `given the feature is on, when building cards for each product type with attributes, then each shows an Attributes row`() =
         testBlocking {
             // GIVEN
@@ -604,6 +641,13 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             terms = listOf("Cotton", "Wool"),
             isVisible = true,
             isVariation = false
+        )
+        val VARIATION_ATTRIBUTE = ProductAttribute(
+            id = 2L,
+            name = "Color",
+            terms = listOf("Red", "Blue"),
+            isVisible = true,
+            isVariation = true
         )
     }
 }

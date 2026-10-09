@@ -1318,6 +1318,116 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         verify(productRepository).updateProductAttributes(PRODUCT_REMOTE_ID, listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
     }
 
+    @Test
+    fun `given the attribute save fails, when the changes are saved again, then they are sent again`() = testBlocking {
+        // GIVEN
+        givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
+        whenever(productRepository.updateProductAttributes(any(), any())).thenReturn(false)
+        var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is MultiLiveEvent.Event.ShowSnackbar) snackbar = it
+        }
+        viewModel.start()
+        viewModel.onAttributeVisibleToggled(0L, "Material", isVisible = true)
+        viewModel.saveAttributeChanges()
+
+        // WHEN
+        viewModel.saveAttributeChanges()
+
+        // THEN
+        Assertions.assertThat(snackbar)
+            .isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.product_attributes_error_saving))
+        Assertions.assertThat(viewModel.hasAttributeChanges()).isTrue()
+        verify(productRepository, times(2)).updateProductAttributes(
+            PRODUCT_REMOTE_ID,
+            listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(isVisible = true))
+        )
+    }
+
+    @Test
+    fun `given only attribute changes, when they are saved, then the product has no unsaved changes`() = testBlocking {
+        // GIVEN
+        givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
+        whenever(productRepository.updateProductAttributes(any(), any())).thenReturn(true)
+        var hasChanges: Boolean? = null
+        viewModel.hasChanges.observeForever { hasChanges = it }
+        viewModel.start()
+        viewModel.onAttributeVisibleToggled(0L, "Material", isVisible = true)
+        Assertions.assertThat(hasChanges).isTrue()
+
+        // WHEN
+        viewModel.saveAttributeChanges()
+
+        // THEN
+        Assertions.assertThat(hasChanges).isFalse()
+    }
+
+    @Test
+    fun `given an unsaved description change, when attribute changes are saved, then the product still has unsaved changes`() =
+        testBlocking {
+            // GIVEN
+            givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
+            whenever(productRepository.updateProductAttributes(any(), any())).thenReturn(true)
+            var hasChanges: Boolean? = null
+            viewModel.hasChanges.observeForever { hasChanges = it }
+            viewModel.start()
+            viewModel.updateProductDraft(description = "Updated product description")
+            viewModel.onAttributeVisibleToggled(0L, "Material", isVisible = true)
+
+            // WHEN
+            viewModel.saveAttributeChanges()
+
+            // THEN
+            Assertions.assertThat(hasChanges).isTrue()
+            Assertions.assertThat(viewModel.hasAttributeChanges()).isFalse()
+        }
+
+    @Test
+    fun `given the feature is off, when an attribute is tapped outside the variation wizard, then it is used for variations`() =
+        testBlocking {
+            // GIVEN
+            givenNonVariationAttributesEnabled(false)
+            givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
+            viewModel.start()
+
+            // WHEN
+            viewModel.onAttributeListItemClick(0L, "Material", isVariationCreation = false)
+
+            // THEN
+            Assertions.assertThat(viewModel.productDraftAttributes.single().isVariation).isTrue()
+        }
+
+    @Test
+    fun `given the feature is on and a variable subscription product, when a local attribute is added, then it is used for variations`() =
+        testBlocking {
+            // GIVEN
+            givenNonVariationAttributesEnabled(true)
+            givenStoredProductAttributes(emptyList(), type = ProductType.VARIABLE_SUBSCRIPTION)
+            viewModel.start()
+
+            // WHEN
+            viewModel.addLocalAttribute("Material", isVariationCreation = false)
+
+            // THEN
+            Assertions.assertThat(viewModel.productDraftAttributes.single().isVariation).isTrue()
+        }
+
+    @Test
+    fun `given two local attributes, when the visible switch is toggled on the second, then only the second changes`() =
+        testBlocking {
+            // GIVEN
+            val size = DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(name = "Size", position = 1)
+            givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE, size))
+            viewModel.start()
+
+            // WHEN
+            viewModel.onAttributeVisibleToggled(0L, "Size", isVisible = true)
+
+            // THEN
+            Assertions.assertThat(viewModel.productDraftAttributes)
+                .containsExactly(DISPLAY_ONLY_LOCAL_ATTRIBUTE, size.copy(isVisible = true))
+        }
+
     private fun givenNonVariationAttributesEnabled(isEnabled: Boolean) {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.NON_VARIATION_PRODUCT_ATTRIBUTES)).thenReturn(isEnabled)
     }
