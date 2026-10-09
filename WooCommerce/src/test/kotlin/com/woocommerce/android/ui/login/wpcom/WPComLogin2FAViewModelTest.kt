@@ -36,6 +36,45 @@ class WPComLogin2FAViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: WPComLogin2FAViewModel
 
     @Test
+    fun `given authenticator and SMS, when initialized, then show authenticator instructions and SMS`() = testBlocking {
+        setup(supportedAuthTypes = arrayOf("backup", "authenticator", "sms"))
+
+        val viewState = viewModel.viewState.captureValues().last()
+
+        assertThat(viewState.instructions).isEqualTo(R.string.enter_verification_code_authenticator)
+        assertThat(viewState.isSmsSupported).isTrue()
+    }
+
+    @Test
+    fun `given SMS is supported, when initialized, then show SMS instructions`() = testBlocking {
+        setup(supportedAuthTypes = arrayOf("backup", "sms"))
+
+        val viewState = viewModel.viewState.captureValues().last()
+
+        assertThat(viewState.instructions).isEqualTo(R.string.enter_verification_code_sms_generic)
+    }
+
+    @Test
+    fun `given email is supported, when initialized, then show email instructions and hide SMS`() = testBlocking {
+        setup(supportedAuthTypes = arrayOf("email"))
+
+        val viewState = viewModel.viewState.captureValues().last()
+
+        assertThat(viewState.instructions).isEqualTo(R.string.enter_verification_code_email)
+        assertThat(viewState.isSmsSupported).isFalse()
+    }
+
+    @Test
+    fun `given no supported methods, when initialized, then show generic instructions and SMS`() = testBlocking {
+        setup()
+
+        val viewState = viewModel.viewState.captureValues().last()
+
+        assertThat(viewState.instructions).isEqualTo(R.string.enter_verification_code)
+        assertThat(viewState.isSmsSupported).isTrue()
+    }
+
+    @Test
     fun `when SMS request is in progress, then only SMS action shows loading`() = testBlocking {
         val requestResult = CompletableDeferred<Result<SMSRequestResult>>()
         whenever(wpComLoginRepository.requestTwoStepSMS(EMAIL, PASSWORD)).doSuspendableAnswer {
@@ -72,6 +111,7 @@ class WPComLogin2FAViewModelTest : BaseUnitTest() {
 
         assertThat(states.last().hasRequestedSms).isTrue()
         assertThat(states.last().isRequestingSms).isFalse()
+        assertThat(states.last().instructions).isEqualTo(R.string.enter_verification_code_sms_generic)
         assertThat(events.last()).isEqualTo(ShowSnackbar(R.string.requesting_sms_otp_success))
     }
 
@@ -91,14 +131,14 @@ class WPComLogin2FAViewModelTest : BaseUnitTest() {
         assertThat(events.last()).isEqualTo(ShowSnackbar(R.string.requesting_sms_otp_failure))
     }
 
-    private fun setup() {
+    private fun setup(supportedAuthTypes: Array<String> = emptyArray()) {
         val savedStateHandle = WPComLogin2FAFragmentArgs(
             jetpackStatus = JETPACK_STATUS,
             emailOrUsername = EMAIL,
             password = PASSWORD,
             userId = "",
             webauthnNonce = "",
-            supportedAuthTypes = emptyArray()
+            supportedAuthTypes = supportedAuthTypes
         ).toSavedStateHandle()
 
         viewModel = WPComLogin2FAViewModel(

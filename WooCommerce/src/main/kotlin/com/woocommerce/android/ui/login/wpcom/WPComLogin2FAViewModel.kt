@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.wpcom
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -48,7 +49,14 @@ class WPComLogin2FAViewModel @Inject constructor(
 
     private val navArgs: WPComLogin2FAFragmentArgs by savedStateHandle.navArgs()
 
-    private val isSecurityKeySupported = navArgs.supportedAuthTypes.contains("webauthn")
+    private val isSecurityKeySupported = "webauthn" in navArgs.supportedAuthTypes
+    private val isSmsSupported = navArgs.supportedAuthTypes.isEmpty() || "sms" in navArgs.supportedAuthTypes
+    private val initialInstructions = when {
+        "authenticator" in navArgs.supportedAuthTypes -> R.string.enter_verification_code_authenticator
+        "sms" in navArgs.supportedAuthTypes -> R.string.enter_verification_code_sms_generic
+        "email" in navArgs.supportedAuthTypes -> R.string.enter_verification_code_email
+        else -> R.string.enter_verification_code
+    }
 
     private val otp = savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = "", key = "otp")
     private val loadingMessage =
@@ -79,6 +87,12 @@ class WPComLogin2FAViewModel @Inject constructor(
             password = password,
             otp = otp,
             isSecurityKeySupported = isSecurityKeySupported,
+            isSmsSupported = isSmsSupported,
+            instructions = if (smsRequestState.hasRequestedSms) {
+                R.string.enter_verification_code_sms_generic
+            } else {
+                initialInstructions
+            },
             errorMessage = errorMessage.takeIf { it != 0 },
             loadingMessage = loadingMessage.takeIf { it != 0 },
             hasRequestedSms = smsRequestState.hasRequestedSms,
@@ -232,6 +246,8 @@ class WPComLogin2FAViewModel @Inject constructor(
         val password: String,
         val otp: String,
         val isSecurityKeySupported: Boolean = false,
+        val isSmsSupported: Boolean = true,
+        @StringRes val instructions: Int = R.string.enter_verification_code,
         val errorMessage: Int? = null,
         val loadingMessage: Int? = null,
         val hasRequestedSms: Boolean = false,

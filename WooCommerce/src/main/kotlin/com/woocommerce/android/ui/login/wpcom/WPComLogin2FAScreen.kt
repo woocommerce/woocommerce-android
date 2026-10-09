@@ -99,15 +99,7 @@ fun WPComLogin2FAScreen(
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = stringResource(
-                        id = if (viewState.hasRequestedSms) {
-                            R.string.enter_verification_code_sms_generic
-                        } else {
-                            R.string.enter_verification_code
-                        }
-                    )
-                )
+                Text(text = stringResource(id = viewState.instructions))
                 Spacer(modifier = Modifier.height(8.dp))
                 WCOutlinedTextField(
                     value = viewState.otp,
@@ -128,33 +120,35 @@ fun WPComLogin2FAScreen(
                     singleLine = true
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                WCOutlinedButton(
-                    onClick = onSmsButtonClick,
-                    text = stringResource(
-                        id = if (viewState.hasRequestedSms) {
-                            R.string.login_text_otp_another
+                if (viewState.isSmsSupported) {
+                    WCOutlinedButton(
+                        onClick = onSmsButtonClick,
+                        text = stringResource(
+                            id = if (viewState.hasRequestedSms) {
+                                R.string.login_text_otp_another
+                            } else {
+                                R.string.login_text_otp
+                            }
+                        ),
+                        modifier = Modifier.fillMaxWidth(),
+                        leadingIcon = {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_comment),
+                                contentDescription = null
+                            )
+                        },
+                        enabled = viewState.canUseAlternateMethods,
+                        loading = viewState.isRequestingSms,
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.primary
+                        ),
+                        border = if (viewState.canUseAlternateMethods) {
+                            BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                         } else {
-                            R.string.login_text_otp
+                            ButtonDefaults.outlinedButtonBorder(enabled = false)
                         }
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                    leadingIcon = {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_comment),
-                            contentDescription = null
-                        )
-                    },
-                    enabled = viewState.canUseAlternateMethods,
-                    loading = viewState.isRequestingSms,
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.primary
-                    ),
-                    border = if (viewState.canUseAlternateMethods) {
-                        BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-                    } else {
-                        ButtonDefaults.outlinedButtonBorder(enabled = false)
-                    }
-                )
+                    )
+                }
                 if (viewState.isSecurityKeySupported) {
                     WCTextButton(
                         onClick = onSecurityKeyClick,
