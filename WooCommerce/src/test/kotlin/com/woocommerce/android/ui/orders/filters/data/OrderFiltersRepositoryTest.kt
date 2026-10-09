@@ -12,6 +12,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.model.SiteModel
 import java.time.Instant
@@ -30,6 +31,9 @@ class OrderFiltersRepositoryTest {
             storedDays = Pair(it.getArgument(1), it.getArgument(2))
         }
         on { getOrderFilterCustomDateRangeDays(any()) } doAnswer { storedDays }
+        on { getOrderFilters(any(), any()) } doReturn ""
+        on { getOrderFilters(any(), eq(OrderListFilterCategory.DATE_RANGE.name)) } doReturn
+            DateRange.CUSTOM_RANGE.filterKey
     }
     private val selectedSite: SelectedSite = mock {
         on { getIfExists() } doReturn SiteModel().apply { id = 1 }
@@ -66,6 +70,25 @@ class OrderFiltersRepositoryTest {
 
         assertThat(range.first.toLocalDate("America/Los_Angeles")).isEqualTo(LocalDate.of(2026, 8, 1))
         assertThat(range.second.toLocalDate("America/Los_Angeles")).isEqualTo(LocalDate.of(2026, 8, 5))
+    }
+
+    @Test
+    fun `given custom range is selected without a saved range, when reading the date selection, then it is empty`() {
+        val selection = sut.getCurrentFilterSelection(OrderListFilterCategory.DATE_RANGE)
+
+        assertThat(selection).isEmpty()
+    }
+
+    @Test
+    fun `given custom range is selected with a saved range, when reading the date selection, then it is returned`() {
+        sut.setCustomDateRange(
+            startDay = LocalDate.of(2026, 8, 1).toEpochDay(),
+            endDay = LocalDate.of(2026, 8, 5).toEpochDay()
+        )
+
+        val selection = sut.getCurrentFilterSelection(OrderListFilterCategory.DATE_RANGE)
+
+        assertThat(selection).containsExactly(DateRange.CUSTOM_RANGE.filterKey)
     }
 
     private fun Long.toLocalDate(zoneId: String): LocalDate =
