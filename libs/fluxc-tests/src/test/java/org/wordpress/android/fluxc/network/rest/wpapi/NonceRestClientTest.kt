@@ -28,6 +28,7 @@ import java.util.Date
 import javax.net.ssl.SSLHandshakeException
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import org.wordpress.android.fluxc.network.rest.Header as ResponseHeader
 
@@ -734,6 +735,22 @@ class NonceRestClientTest {
         assertEquals(Nonce.CookieNonceErrorType.INVALID_NONCE, failure.type)
         assertEquals(UnexpectedStoreResponseKind.UNEXPECTED_CONTENT, failure.unexpectedStoreResponse?.kind)
         assertEquals("GET /store/wp-admin/admin-ajax.php", failure.unexpectedStoreResponse?.requestType)
+        assertNotNull(failure.unexpectedStoreResponse?.excerpt)
+    }
+
+    @Test
+    fun `given plain text from the nonce request, when requesting the nonce, then keep no excerpt`() = test {
+        givenLoginForm(DEFAULT_LOGIN_URL)
+        givenCredentialRedirect(DEFAULT_LOGIN_URL, DEFAULT_NONCE_URL, DEFAULT_NONCE_URL)
+
+        listOf(error(500, EXPECTED_NONCE), WPAPIResponse.Success("-1", emptyList())).forEach { response ->
+            givenGet(DEFAULT_NONCE_URL, response)
+
+            val failure = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))
+
+            assertNotNull(failure.unexpectedStoreResponse)
+            assertNull(failure.unexpectedStoreResponse?.excerpt)
+        }
     }
 
     @Test

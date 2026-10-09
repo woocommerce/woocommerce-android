@@ -361,6 +361,12 @@ class NonceRestClient @Inject constructor(
             UnexpectedStoreResponse.of(UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE, it, method, url.toString())
         }
 
+    /**
+     * A nonce response can hold the nonce itself, so only a web page or a JSON error keeps its excerpt.
+     */
+    private fun UnexpectedStoreResponse.withoutPlainTextExcerpt(body: String?): UnexpectedStoreResponse =
+        if (body.orEmpty().trimStart().firstOrNull() in PAGE_OR_JSON_STARTS) this else copy(excerpt = null)
+
     private fun Error<String>.unexpectedRedirect(method: Int, url: HttpUrl): UnexpectedStoreResponse? =
         error.volleyError?.networkResponse?.let {
             UnexpectedStoreResponse.of(UnexpectedStoreResponseKind.UNEXPECTED_CONTENT, it, method, url.toString())
@@ -388,6 +394,7 @@ class NonceRestClient @Inject constructor(
                     username = username,
                     type = CookieNonceErrorType.INVALID_NONCE,
                     unexpectedStoreResponse = response.unexpectedContent(Method.GET, nonceUrl)
+                        .withoutPlainTextExcerpt(response.data)
                 )
             }
 
@@ -407,7 +414,7 @@ class NonceRestClient @Inject constructor(
                         statusCode.isMissingPage() -> null
                         // The credentials were already accepted, so the body can't explain a rejected nonce request.
                         else -> response.unacceptableStatus(Method.GET, nonceUrl)
-                    }
+                    }?.withoutPlainTextExcerpt(response.error.volleyError?.networkResponse?.data?.decodeToString())
                 )
             }
         }
@@ -571,6 +578,7 @@ class NonceRestClient @Inject constructor(
         )
         private val WHITESPACE_PATTERN = Regex("\\s+")
         private val NONCE_PATTERN = Regex("[0-9a-zA-Z]{2,}")
+        private val PAGE_OR_JSON_STARTS = setOf('<', '{')
         private const val ID_ATTRIBUTE = "id"
         private const val NAME_ATTRIBUTE = "name"
         private const val TYPE_ATTRIBUTE = "type"
