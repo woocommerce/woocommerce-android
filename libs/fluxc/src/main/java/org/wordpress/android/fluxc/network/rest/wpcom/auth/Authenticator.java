@@ -384,6 +384,26 @@ public class Authenticator {
         return null;
     }
 
+    public static List<String> volleyErrorToSupportedAuthTypes(VolleyError error) {
+        List<String> supportedAuthTypes = new ArrayList<>();
+        if (error != null && error.networkResponse != null && error.networkResponse.data != null) {
+            try {
+                JSONArray types = new JSONObject(new String(error.networkResponse.data))
+                        .optJSONArray(TwoFactorResponse.TWO_STEP_SUPPORTED_AUTH_TYPES);
+                if (types != null) {
+                    for (int i = 0; i < types.length(); i++) {
+                        Object type = types.opt(i);
+                        if (type instanceof String) {
+                            supportedAuthTypes.add((String) type);
+                        }
+                    }
+                }
+            } catch (JSONException ignored) {
+            }
+        }
+        return supportedAuthTypes;
+    }
+
     public static AuthenticationErrorType jsonErrorToAuthenticationError(JSONObject jsonObject) {
         AuthenticationErrorType error = AuthenticationErrorType.GENERIC_ERROR;
         if (jsonObject != null) {
