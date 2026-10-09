@@ -123,7 +123,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     private fun updateNextMenuItem() {
         val hasPendingName = !binding.attributeEditText.text.isNullOrBlank()
         nextMenuItem?.isEnabled = hasPendingName ||
-            (navArgs.isVariationCreation && viewModel.productDraftAttributes.isNotEmpty())
+            (navArgs.isVariationCreation && viewModel.productDraftVariationAttributes.isNotEmpty())
     }
 
     private fun initializeViews(savedInstanceState: Bundle?) {
