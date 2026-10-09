@@ -248,8 +248,14 @@ tags:
       id: "orderDetail_container"
     timeout: 20000
 
+# The Refunded line only appears once the order detail refreshes after the
+# refund, usually a few seconds later, so scrolling straight away can pass it.
+- extendedWaitUntil:
+    visible: "Refunded: .*"
+    timeout: 10000
+
 - scrollUntilVisible:
-    element: ".*Refunded.*"
+    element: "Refunded: .*"
     direction: DOWN
     timeout: 15000
     label: "Scroll to Refunded line in payment totals"
