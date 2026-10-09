@@ -191,7 +191,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
 
     @Override
     protected void setupLabel(@NonNull TextView label) {
-        label.setText(mSentSmsCode ? getSmsInstructions() : getString(R.string.enter_verification_code));
+        label.setText(mSentSmsCode ? getSmsInstructions() : getInitialInstructions());
         mLabel = label;
     }
 
@@ -599,6 +599,20 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
                 : getString(R.string.enter_verification_code_sms, mPhoneNumber);
     }
 
+    private CharSequence getInitialInstructions() {
+        if (mIsSocialLogin) {
+            return getString(R.string.enter_verification_code);
+        } else if (mSupportedAuthTypes.contains(SupportedAuthTypes.AUTHENTICATOR)) {
+            return getString(R.string.enter_verification_code_authenticator);
+        } else if (mSupportedAuthTypes.contains(SupportedAuthTypes.SMS)) {
+            return getSmsInstructions();
+        } else if (mSupportedAuthTypes.contains(SupportedAuthTypes.EMAIL)) {
+            return getString(R.string.enter_verification_code_email);
+        } else {
+            return getString(R.string.enter_verification_code);
+        }
+    }
+
     private void doAuthWithSecurityKeyAction() {
         mAnalyticsListener.trackUseSecurityKeyClicked();
         if (!NetworkUtils.checkConnection(getActivity())) {
@@ -679,6 +693,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         AUTHENTICATOR,
         PUSH,
         SMS,
+        EMAIL,
         UNKNOWN;
 
         static SupportedAuthTypes fromString(String value) {
@@ -693,6 +708,8 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
                     return PUSH;
                 case "sms":
                     return SMS;
+                case "email":
+                    return EMAIL;
                 default:
                     return UNKNOWN;
             }

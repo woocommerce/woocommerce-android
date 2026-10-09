@@ -34,6 +34,7 @@ import org.wordpress.android.util.AutoForeground;
 import org.wordpress.android.util.AutoForegroundNotification;
 import org.wordpress.android.util.ToastUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -81,19 +82,27 @@ public class LoginWpcomService extends AutoForeground<LoginState> {
     public static class LoginState implements AutoForeground.ServiceState {
         private final LoginStep mStep;
         @Nullable private final String mFailureMessage;
+        @NonNull private final List<String> mSupportedAuthTypes;
 
         LoginState(@NonNull LoginStep step) {
-            this(step, null);
+            this(step, null, Collections.emptyList());
         }
 
-        private LoginState(@NonNull LoginStep step, @Nullable String failureMessage) {
+        private LoginState(@NonNull LoginStep step, @Nullable String failureMessage,
+                           @NonNull List<String> supportedAuthTypes) {
             this.mStep = step;
             this.mFailureMessage = failureMessage;
+            this.mSupportedAuthTypes = supportedAuthTypes;
         }
 
         @NonNull
         static LoginState failure(@Nullable String failureMessage) {
-            return new LoginState(LoginStep.FAILURE, failureMessage);
+            return new LoginState(LoginStep.FAILURE, failureMessage, Collections.emptyList());
+        }
+
+        @NonNull
+        static LoginState needs2fa(@NonNull List<String> supportedAuthTypes) {
+            return new LoginState(LoginStep.FAILURE_2FA, null, supportedAuthTypes);
         }
 
         public LoginStep getStep() {
@@ -103,6 +112,11 @@ public class LoginWpcomService extends AutoForeground<LoginState> {
         @Nullable
         public String getFailureMessage() {
             return mFailureMessage;
+        }
+
+        @NonNull
+        public List<String> getSupportedAuthTypes() {
+            return mSupportedAuthTypes;
         }
 
         @Override
@@ -327,7 +341,8 @@ public class LoginWpcomService extends AutoForeground<LoginState> {
         return START_REDELIVER_INTENT;
     }
 
-    private void handleAuthError(AuthenticationErrorType error, String errorMessage) {
+    private void handleAuthError(AuthenticationErrorType error, String errorMessage,
+                                 List<String> supportedAuthTypes) {
         if (error != AuthenticationErrorType.NEEDS_2FA) {
             mAnalyticsListener.trackLoginFailed(error.getClass().getSimpleName(),
                     error.toString(), errorMessage);
@@ -350,7 +365,7 @@ public class LoginWpcomService extends AutoForeground<LoginState> {
                 if (mIsSocialLogin) {
                     setState(LoginStep.FAILURE_SOCIAL_2FA);
                 } else {
-                    setState(LoginStep.FAILURE_2FA);
+                    setState(LoginState.needs2fa(supportedAuthTypes));
                 }
                 break;
             case EMAIL_LOGIN_NOT_ALLOWED:
@@ -396,7 +411,7 @@ public class LoginWpcomService extends AutoForeground<LoginState> {
     public void onAuthenticationChanged(OnAuthenticationChanged event) {
         if (event.isError()) {
             AppLog.e(T.API, "onAuthenticationChanged has error: " + event.error.type + " - " + event.error.message);
-            handleAuthError(event.error.type, event.error.message);
+            handleAuthError(event.error.type, event.error.message, event.error.supportedAuthTypes);
             return;
         }
 
