@@ -18,8 +18,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -36,6 +40,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 
@@ -48,7 +53,8 @@ fun WPComLogin2FAScreen(viewModel: WPComLogin2FAViewModel) {
             onSmsButtonClick = viewModel::onSmsButtonClick,
             onContinueClick = viewModel::onContinueClick,
             onOTPChanged = viewModel::onOTPChanged,
-            onSecurityKeyClick = viewModel::onSecurityKeyClick
+            onSecurityKeyClick = viewModel::onSecurityKeyClick,
+            onBackupCodeClick = viewModel::onBackupCodeClick
         )
     }
 }
@@ -60,9 +66,11 @@ fun WPComLogin2FAScreen(
     onSmsButtonClick: () -> Unit = {},
     onContinueClick: () -> Unit = {},
     onOTPChanged: (String) -> Unit = {},
-    onSecurityKeyClick: () -> Unit = {}
+    onSecurityKeyClick: () -> Unit = {},
+    onBackupCodeClick: () -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    val focusRequester = remember { FocusRequester() }
     val titleRes = if (viewState.isJetpackInstalled) {
         R.string.login_jetpack_connect
     } else {
@@ -101,60 +109,93 @@ fun WPComLogin2FAScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(text = stringResource(id = viewState.instructions))
                 Spacer(modifier = Modifier.height(8.dp))
-                WCOutlinedTextField(
-                    value = viewState.otp,
-                    onValueChange = onOTPChanged,
-                    label = stringResource(id = R.string.verification_code),
-                    isError = viewState.errorMessage != null,
-                    helperText = viewState.errorMessage?.let { stringResource(id = it) },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            keyboardController?.hide()
-                            onContinueClick()
-                        }
-                    ),
-                    singleLine = true
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                if (viewState.isSmsSupported) {
-                    WCOutlinedButton(
-                        onClick = onSmsButtonClick,
-                        text = stringResource(
-                            id = if (viewState.hasRequestedSms) {
-                                R.string.login_text_otp_another
-                            } else {
-                                R.string.login_text_otp
-                            }
-                        ),
-                        modifier = Modifier.fillMaxWidth(),
-                        leadingIcon = {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(R.drawable.ic_comment),
-                                contentDescription = null
-                            )
-                        },
-                        enabled = viewState.canUseAlternateMethods,
-                        loading = viewState.isRequestingSms,
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = MaterialTheme.colorScheme.primary
-                        ),
-                        border = if (viewState.canUseAlternateMethods) {
-                            BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-                        } else {
-                            ButtonDefaults.outlinedButtonBorder(enabled = false)
-                        }
-                    )
-                }
-                if (viewState.isSecurityKeySupported) {
-                    WCTextButton(
+                if (viewState.isSecurityKeyMode) {
+                    WCColoredButton(
                         onClick = onSecurityKeyClick,
-                        enabled = viewState.canUseAlternateMethods
+                        enabled = viewState.canUseAlternateMethods,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(text = stringResource(id = R.string.login_text_security_key))
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    if (viewState.showBackupCodeButton) {
+                        WCOutlinedButton(
+                            onClick = onBackupCodeClick,
+                            text = stringResource(id = R.string.login_text_backup_code),
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = viewState.canUseAlternateMethods,
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = MaterialTheme.colorScheme.primary
+                            ),
+                            border = if (viewState.canUseAlternateMethods) {
+                                BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                            } else {
+                                ButtonDefaults.outlinedButtonBorder(enabled = false)
+                            }
+                        )
+                    }
+                } else {
+                    LaunchedEffect(viewState.isBackupCodeRequested) {
+                        if (viewState.isBackupCodeRequested) {
+                            focusRequester.requestFocus()
+                        }
+                    }
+                    WCOutlinedTextField(
+                        value = viewState.otp,
+                        onValueChange = onOTPChanged,
+                        label = stringResource(id = R.string.verification_code),
+                        isError = viewState.errorMessage != null,
+                        helperText = viewState.errorMessage?.let { stringResource(id = it) },
+                        textFieldModifier = Modifier.focusRequester(focusRequester),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                keyboardController?.hide()
+                                onContinueClick()
+                            }
+                        ),
+                        singleLine = true
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    if (viewState.isSmsSupported) {
+                        WCOutlinedButton(
+                            onClick = onSmsButtonClick,
+                            text = stringResource(
+                                id = if (viewState.hasRequestedSms) {
+                                    R.string.login_text_otp_another
+                                } else {
+                                    R.string.login_text_otp
+                                }
+                            ),
+                            modifier = Modifier.fillMaxWidth(),
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_comment),
+                                    contentDescription = null
+                                )
+                            },
+                            enabled = viewState.canUseAlternateMethods,
+                            loading = viewState.isRequestingSms,
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = MaterialTheme.colorScheme.primary
+                            ),
+                            border = if (viewState.canUseAlternateMethods) {
+                                BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                            } else {
+                                ButtonDefaults.outlinedButtonBorder(enabled = false)
+                            }
+                        )
+                    }
+                    if (viewState.isSecurityKeySupported) {
+                        WCTextButton(
+                            onClick = onSecurityKeyClick,
+                            enabled = viewState.canUseAlternateMethods
+                        ) {
+                            Text(text = stringResource(id = R.string.login_text_security_key))
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -162,17 +203,19 @@ fun WPComLogin2FAScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            WCColoredButton(
-                onClick = {
-                    keyboardController?.hide()
-                    onContinueClick()
-                },
-                enabled = viewState.enableSubmit,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Text(text = stringResource(id = titleRes))
+            if (!viewState.isSecurityKeyMode) {
+                WCColoredButton(
+                    onClick = {
+                        keyboardController?.hide()
+                        onContinueClick()
+                    },
+                    enabled = viewState.enableSubmit,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Text(text = stringResource(id = titleRes))
+                }
             }
         }
     }
@@ -192,6 +235,24 @@ private fun JetpackModePreview() {
                 emailOrUsername = "test@email.com",
                 password = "",
                 otp = "123456"
+            )
+        )
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun SecurityKeyModePreview() {
+    LegacyWooThemeWithBackground {
+        WPComLogin2FAScreen(
+            viewState = WPComLogin2FAViewModel.ViewState(
+                isJetpackInstalled = false,
+                emailOrUsername = "test@email.com",
+                password = "",
+                otp = "",
+                isSecurityKeyMode = true,
+                showBackupCodeButton = true,
+                instructions = R.string.notification_security_key_needed
             )
         )
     }
