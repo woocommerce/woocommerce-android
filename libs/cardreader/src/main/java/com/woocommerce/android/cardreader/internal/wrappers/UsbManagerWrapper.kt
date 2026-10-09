@@ -1,6 +1,7 @@
 package com.woocommerce.android.cardreader.internal.wrappers
 
 import android.app.Application
+import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import com.stripe.stripeterminal.R
 import org.xmlpull.v1.XmlPullParser
@@ -9,9 +10,9 @@ internal class UsbManagerWrapper(private val application: Application) {
     private val stripeCardReaderUsbIds: Set<CardReaderUsbId> by lazy { readStripeCardReaderUsbIds() }
 
     fun isCardReaderAttached(): Boolean {
-        val usbManager = application.getSystemService(UsbManager::class.java)
+        val usbManager = application.getSystemService(UsbManager::class.java) ?: return false
         return usbManager.deviceList.values.any { device ->
-            CardReaderUsbId(device.vendorId, device.productId) in stripeCardReaderUsbIds
+            stripeCardReaderUsbIds.any { it.matches(device) }
         }
     }
 
@@ -24,14 +25,17 @@ internal class UsbManagerWrapper(private val application: Application) {
                 .filter { it == XmlPullParser.START_TAG && parser.name == USB_DEVICE_TAG }
                 .map {
                     CardReaderUsbId(
-                        vendorId = checkNotNull(parser.getAttributeValue(null, VENDOR_ID_ATTRIBUTE)).toInt(),
-                        productId = checkNotNull(parser.getAttributeValue(null, PRODUCT_ID_ATTRIBUTE)).toInt(),
+                        vendorId = Integer.decode(checkNotNull(parser.getAttributeValue(null, VENDOR_ID_ATTRIBUTE))),
+                        productId = parser.getAttributeValue(null, PRODUCT_ID_ATTRIBUTE)?.let(Integer::decode),
                     )
                 }
                 .toSet()
         }
 
-    private data class CardReaderUsbId(val vendorId: Int, val productId: Int)
+    private data class CardReaderUsbId(val vendorId: Int, val productId: Int?) {
+        fun matches(device: UsbDevice): Boolean =
+            device.vendorId == vendorId && (productId == null || device.productId == productId)
+    }
 
     private companion object {
         const val USB_DEVICE_TAG = "usb-device"
