@@ -17,6 +17,7 @@ import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.AdminBaseVerification
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.Available
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceLoginStep
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.FailedRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.Unknown
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Error
@@ -75,7 +76,9 @@ class NonceRestClient @Inject constructor(
 
         val preflight = when (val result = preflightLogin(validated, username)) {
             is LoginPreflight.Success -> result
-            is LoginPreflight.Failure -> return cache(siteIdentity, result.nonce)
+            is LoginPreflight.Failure -> {
+                return cache(siteIdentity, result.nonce.atStep(CookieNonceLoginStep.LOGIN_PAGE))
+            }
         }
         val transaction = LoginTransaction(
             endpoints = validated,
@@ -155,7 +158,7 @@ class NonceRestClient @Inject constructor(
                 "redirect_to" to transaction.nonceUrl.toString()
             )
         )) {
-            is Success -> loginBodyFailure(response, transaction)
+            is Success -> loginBodyFailure(response, transaction).atStep(CookieNonceLoginStep.CREDENTIALS_SUBMISSION)
             is Error -> handleCredentialError(response, transaction)
         }
     }
@@ -173,7 +176,7 @@ class NonceRestClient @Inject constructor(
                 type = getLoginErrorType(networkResponse),
                 response = response,
                 unexpectedStoreResponse = response.unexpectedStatus(Method.POST, transaction.loginUrl)
-            )
+            ).atStep(CookieNonceLoginStep.CREDENTIALS_SUBMISSION)
         }
 
         val redirectUrl = networkResponse.location()
@@ -184,22 +187,25 @@ class NonceRestClient @Inject constructor(
             redirectUrl == transaction.nonceUrl -> verifyAdminDashboardAndRequestNonce(transaction)
             transaction.endpoints.isNonceEndpoint(redirectUrl) -> {
                 failed(transaction.username, CookieNonceErrorType.CUSTOM_ADMIN_URL, response)
+                    .atStep(CookieNonceLoginStep.CREDENTIALS_SUBMISSION)
             }
             else -> failed(
                 username = transaction.username,
                 type = CookieNonceErrorType.INVALID_NONCE,
                 response = response,
                 unexpectedStoreResponse = response.unexpectedRedirect(Method.POST, transaction.loginUrl)
-            )
+            ).atStep(CookieNonceLoginStep.CREDENTIALS_SUBMISSION)
         }
     }
 
     private suspend fun verifyAdminDashboardAndRequestNonce(transaction: LoginTransaction): Nonce {
         if (transaction.endpoints.adminBaseVerification == AdminBaseVerification.AUTHENTICATED_DASHBOARD) {
             val dashboardUrl = transaction.endpoints.adminBaseUrlFor(transaction.loginUrl)
-            verifyAdminDashboard(transaction.endpoints, dashboardUrl, transaction.username)?.let { return it }
+            verifyAdminDashboard(transaction.endpoints, dashboardUrl, transaction.username)?.let {
+                return it.atStep(CookieNonceLoginStep.DASHBOARD_VERIFICATION)
+            }
         }
-        return requestNonce(transaction.nonceUrl, transaction.username)
+        return requestNonce(transaction.nonceUrl, transaction.username).atStep(CookieNonceLoginStep.NONCE_RETRIEVAL)
     }
 
     @Suppress("ReturnCount")
@@ -429,6 +435,8 @@ class NonceRestClient @Inject constructor(
     private fun <T : Nonce> cache(siteIdentity: String, nonce: T): T = nonce.also {
         nonceMap[siteIdentity.nonceCacheIdentity()] = it
     }
+
+    private fun Nonce.atStep(step: CookieNonceLoginStep): Nonce = if (this is FailedRequest) copy(step = step) else this
 
     private fun Nonce.withVerifiedLoginEntry(): Nonce = when (this) {
         is Available -> this

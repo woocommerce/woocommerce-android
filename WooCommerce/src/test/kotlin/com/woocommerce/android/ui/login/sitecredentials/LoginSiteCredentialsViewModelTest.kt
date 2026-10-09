@@ -17,6 +17,10 @@ import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.EndpointType
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.LoggedIn
+import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowApplicationPasswordsUnavailableScreen
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker.Action
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -42,6 +46,8 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseKind
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
@@ -87,6 +93,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock {
         on { getString(R.string.error_generic) } doReturn "error"
     }
+    private val unexpectedResponseTracker: LoginUnexpectedResponseTracker = mock()
     private lateinit var savedState: SavedStateHandle
     private lateinit var viewModel: LoginSiteCredentialsViewModel
 
@@ -876,6 +883,156 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             verify(repository).checkIfUserIsEligible(site)
         }
 
+    @Test
+    fun `given cookie login gets an unexpected response, when submitting, then open the browser login with the alert`() =
+        testBlocking {
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
+                .thenReturn(Result.failure(unexpectedResponseError()))
+            setup()
+
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+            }
+
+            val event = viewModel.event.value as ShowApplicationPasswordTutorialScreen
+            assertThat(event.unexpectedResponse).isEqualTo(LOGIN_PAGE_FAILURE)
+            assertThat(viewModel.viewState.value?.unexpectedResponse).isNull()
+            verify(unexpectedResponseTracker).trackErrorShown(LOGIN_PAGE_FAILURE)
+        }
+
+    @Test
+    fun `given the site has no app passwords, when cookie login gets an unexpected response, then skip the alert`() =
+        testBlocking {
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
+                .thenReturn(Result.failure(unexpectedResponseError()))
+            whenever(repository.fetchSite(SITE_URL)).thenReturn(Result.success(siteWithUrl(SITE_URL)))
+            setup()
+
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+            }
+
+            assertThat(viewModel.event.value).isInstanceOf(ShowApplicationPasswordsUnavailableScreen::class.java)
+            assertThat(viewModel.viewState.value?.unexpectedResponse).isNull()
+            verify(unexpectedResponseTracker, never()).trackErrorShown(any())
+        }
+
+    @Test
+    fun `given the alert on the browser login, when trying again successfully, then log in and track it`() =
+        testBlocking {
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
+                .thenReturn(Result.failure(unexpectedResponseError()), Result.success(Unit))
+            setup()
+
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+                viewModel.onApplicationPasswordTutorialRetryRequested(LOGIN_PAGE_FAILURE)
+                advanceUntilIdle()
+            }
+
+            assertThat(viewModel.event.value).isEqualTo(LoggedIn(0))
+            verify(unexpectedResponseTracker).trackRetryResult(LOGIN_PAGE_FAILURE, isSuccess = true)
+        }
+
+    @Test
+    fun `given the login page alert, when trying again gets past the login page but fails later, then track a success`() =
+        testBlocking {
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS)).thenReturn(
+                Result.failure(unexpectedResponseError()),
+                Result.failure(
+                    cookieNonceError(Nonce.CookieNonceErrorType.INVALID_CREDENTIALS)
+                        .copy(step = Nonce.CookieNonceLoginStep.CREDENTIALS_SUBMISSION)
+                )
+            )
+            setup()
+
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+                viewModel.onApplicationPasswordTutorialRetryRequested(LOGIN_PAGE_FAILURE)
+                advanceUntilIdle()
+            }
+
+            verify(unexpectedResponseTracker).trackRetryResult(LOGIN_PAGE_FAILURE, isSuccess = true)
+        }
+
+    @Test
+    fun `given the alert on the browser login, when trying again fails, then open it again and track it`() =
+        testBlocking {
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
+                .thenReturn(Result.failure(unexpectedResponseError()))
+            setup()
+
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+                viewModel.onApplicationPasswordTutorialRetryRequested(LOGIN_PAGE_FAILURE)
+                advanceUntilIdle()
+            }
+
+            val event = viewModel.event.value as ShowApplicationPasswordTutorialScreen
+            assertThat(event.unexpectedResponse).isEqualTo(LOGIN_PAGE_FAILURE)
+            verify(repository, times(2)).login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS)
+            verify(unexpectedResponseTracker, times(2)).trackErrorShown(LOGIN_PAGE_FAILURE)
+            verify(unexpectedResponseTracker).trackRetryResult(LOGIN_PAGE_FAILURE, isSuccess = false)
+        }
+
+    @Test
+    fun `given the alert over the login address recovery, when dismissing it, then keep the recovery`() =
+        testBlocking {
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
+                .thenReturn(Result.failure(cookieNonceError(Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL)))
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, LOGIN_ENDPOINTS)).thenReturn(
+                Result.failure(unexpectedResponseError(step = Nonce.CookieNonceLoginStep.CREDENTIALS_SUBMISSION))
+            )
+            setup()
+
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+                viewModel.onEndpointUrlChanged(LOGIN_URL)
+                viewModel.onContinueClick()
+                advanceUntilIdle()
+                viewModel.onUnexpectedResponseDismissClick()
+                advanceUntilIdle()
+            }
+
+            val failure = LOGIN_PAGE_FAILURE.copy(step = LoginUnexpectedResponseFailure.Step.CREDENTIALS_SUBMISSION)
+            assertThat(viewModel.viewState.value?.unexpectedResponse).isNull()
+            assertThat(viewModel.viewState.value?.endpointRecovery?.type).isEqualTo(EndpointType.LOGIN)
+            verify(unexpectedResponseTracker).trackActionTapped(failure, Action.DISMISS)
+            verify(repository).login(SITE_URL, USERNAME, PASSWORD, LOGIN_ENDPOINTS)
+        }
+
+    @Test
+    fun `given custom login recovery gets an unexpected response, when trying again, then reuse the address`() =
+        testBlocking {
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
+                .thenReturn(Result.failure(cookieNonceError(Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL)))
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, LOGIN_ENDPOINTS)).thenReturn(
+                Result.failure(unexpectedResponseError(step = Nonce.CookieNonceLoginStep.CREDENTIALS_SUBMISSION))
+            )
+            setup()
+
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+                viewModel.onEndpointUrlChanged(LOGIN_URL)
+                viewModel.onContinueClick()
+                advanceUntilIdle()
+                viewModel.onUnexpectedResponseRetryClick()
+                advanceUntilIdle()
+            }
+
+            verify(repository, times(2)).login(SITE_URL, USERNAME, PASSWORD, LOGIN_ENDPOINTS)
+            verify(unexpectedResponseTracker, times(2)).trackErrorShown(
+                LOGIN_PAGE_FAILURE.copy(step = LoginUnexpectedResponseFailure.Step.CREDENTIALS_SUBMISSION)
+            )
+        }
+
     private suspend fun setup(
         restoredState: SavedStateHandle? = null,
         siteAddress: String = SITE_URL
@@ -900,7 +1057,8 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             object : ApplicationPasswordsConfiguration {
                 override val applicationName = "woo_android"
                 override suspend fun isEnabledForJetpackAccess() = true
-            }
+            },
+            unexpectedResponseTracker
         )
     }
 
@@ -970,6 +1128,13 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         networkErrorType = networkErrorType
     )
 
+    private fun unexpectedResponseError(
+        step: Nonce.CookieNonceLoginStep = Nonce.CookieNonceLoginStep.LOGIN_PAGE
+    ) = cookieNonceError(Nonce.CookieNonceErrorType.INVALID_RESPONSE).copy(
+        unexpectedStoreResponse = UNEXPECTED_RESPONSE,
+        step = step
+    )
+
     private companion object {
         const val SITE_ID = 7
         const val SITE_URL = "https://site.example"
@@ -996,5 +1161,17 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             CookieNonceAuthenticationEndpoints.AdminBaseVerification.AUTHENTICATED_DASHBOARD
         )
         val PROVEN_ENDPOINTS = CookieNonceAuthenticationEndpoints(SITE_URL, LOGIN_URL, ADMIN_URL)
+        val UNEXPECTED_RESPONSE = UnexpectedStoreResponse(
+            kind = UnexpectedStoreResponseKind.UNEXPECTED_CONTENT,
+            statusCode = 202,
+            contentType = "text/html",
+            requestType = "GET /wp-login.php",
+            excerpt = null
+        )
+        val LOGIN_PAGE_FAILURE = LoginUnexpectedResponseFailure(
+            flow = LoginUnexpectedResponseFailure.Flow.SITE_CREDENTIALS,
+            step = LoginUnexpectedResponseFailure.Step.LOGIN_PAGE,
+            response = UNEXPECTED_RESPONSE
+        )
     }
 }

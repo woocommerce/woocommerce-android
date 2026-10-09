@@ -66,6 +66,7 @@ import com.woocommerce.android.ui.login.qrlogin.QrLoginPrologueFragment
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerFragment
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.util.ActivityUtils
@@ -1021,13 +1022,15 @@ class LoginActivity :
     override fun onApplicationPasswordHelpRequired(
         verifiedLoginUrl: String?,
         applicationPasswordAuthorizationUrl: String,
-        errorMessage: String
+        errorMessage: String,
+        unexpectedResponse: LoginUnexpectedResponseFailure?
     ) {
         changeFragment(
             fragment = ApplicationPasswordTutorialFragment.newInstance(
                 verifiedLoginUrl = verifiedLoginUrl,
                 applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
-                errorMessage = errorMessage
+                errorMessage = errorMessage,
+                unexpectedResponse = unexpectedResponse
             ),
             shouldAddToBackStack = true,
             tag = ApplicationPasswordTutorialFragment.TAG

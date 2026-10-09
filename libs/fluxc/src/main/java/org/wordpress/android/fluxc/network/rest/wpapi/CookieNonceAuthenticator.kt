@@ -47,7 +47,8 @@ class CookieNonceAuthenticator @Inject constructor(
                         message = nonce.errorMessage,
                         networkError = nonce.networkError,
                         loginEntryVerified = nonce.loginEntryVerified,
-                        unexpectedStoreResponse = nonce.unexpectedStoreResponse
+                        unexpectedStoreResponse = nonce.unexpectedStoreResponse,
+                        step = nonce.step
                     )
                 }
 
@@ -192,6 +193,7 @@ class CookieNonceAuthenticator @Inject constructor(
             val networkError: BaseNetworkError? = null,
             val loginEntryVerified: Boolean = false,
             val unexpectedStoreResponse: UnexpectedStoreResponse? = null,
+            val step: Nonce.CookieNonceLoginStep? = null,
         ) : CookieNonceAuthenticationResult
     }
 

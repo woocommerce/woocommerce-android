@@ -16,6 +16,7 @@ sealed interface Nonce {
         val errorMessage: String? = null,
         val loginEntryVerified: Boolean = false,
         val unexpectedStoreResponse: UnexpectedStoreResponse? = null,
+        val step: CookieNonceLoginStep? = null,
     ) : Nonce
 
     data class Unknown(
@@ -32,5 +33,12 @@ sealed interface Nonce {
         BASIC_AUTH_REQUIRED,
         GENERIC_ERROR,
         UNKNOWN
+    }
+
+    enum class CookieNonceLoginStep {
+        LOGIN_PAGE,
+        CREDENTIALS_SUBMISSION,
+        DASHBOARD_VERIFICATION,
+        NONCE_RETRIEVAL
     }
 }

@@ -236,7 +236,8 @@ class WPApiSiteRepository @Inject constructor(
             networkStatusCode = networkStatusCode,
             loginEntryVerified = loginEntryVerified,
             networkErrorType = networkError?.type,
-            unexpectedStoreResponse = unexpectedStoreResponse
+            unexpectedStoreResponse = unexpectedStoreResponse,
+            step = step
         )
     }
 
@@ -270,7 +271,8 @@ class WPApiSiteRepository @Inject constructor(
         val networkStatusCode: Int?,
         val loginEntryVerified: Boolean = false,
         val networkErrorType: GenericErrorType? = null,
-        val unexpectedStoreResponse: UnexpectedStoreResponse? = null
+        val unexpectedStoreResponse: UnexpectedStoreResponse? = null,
+        val step: Nonce.CookieNonceLoginStep? = null
     ) : Exception((errorMessage as? UiStringText)?.text)
 
     companion object {

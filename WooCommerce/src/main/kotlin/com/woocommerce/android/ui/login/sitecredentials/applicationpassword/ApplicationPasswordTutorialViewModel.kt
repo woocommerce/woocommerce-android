@@ -6,6 +6,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker.Action
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -21,6 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ApplicationPasswordTutorialViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val unexpectedResponseTracker: LoginUnexpectedResponseTracker,
     val userAgent: UserAgent,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -38,6 +42,19 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
     fun onContactSupportClicked() {
         analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_EXPLANATION_CONTACT_SUPPORT_TAPPED)
         triggerEvent(OnContactSupport)
+    }
+
+    fun onUnexpectedResponseRetryClick() {
+        val failure = _viewState.value.unexpectedResponse ?: return
+        unexpectedResponseTracker.trackActionTapped(failure, Action.RETRY)
+        _viewState.update { it.copy(unexpectedResponse = null) }
+        triggerEvent(RetryLogin(failure))
+    }
+
+    fun onUnexpectedResponseDismissClick() {
+        val failure = _viewState.value.unexpectedResponse ?: return
+        unexpectedResponseTracker.trackActionTapped(failure, Action.DISMISS)
+        _viewState.update { it.copy(unexpectedResponse = null) }
     }
 
     fun onWebPageLoaded(url: String) {
@@ -72,7 +89,8 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
     fun onWebViewDataAvailable(
         verifiedLoginUrl: String?,
         applicationPasswordAuthorizationUrl: String,
-        errorMessage: String?
+        errorMessage: String?,
+        unexpectedResponse: LoginUnexpectedResponseFailure?
     ) {
         _viewState.update { state ->
             if (state.webViewUrl != null) {
@@ -84,7 +102,8 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
                         applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl
                     ),
                     applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
-                    errorMessage = errorMessage
+                    errorMessage = errorMessage,
+                    unexpectedResponse = unexpectedResponse
                 )
             }
         }
@@ -145,6 +164,7 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
 
     object OnContactSupport : Event()
     object ShowExitConfirmationDialog : Event()
+    data class RetryLogin(val failure: LoginUnexpectedResponseFailure) : Event()
 
     @Parcelize
     data class ViewState(
@@ -153,6 +173,7 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
         val applicationPasswordAuthorizationUrl: String? = null,
         val authorizationRecoveryAttempted: Boolean = false,
         val errorMessage: String? = null,
+        val unexpectedResponse: LoginUnexpectedResponseFailure? = null
     ) : Parcelable
 
     companion object {

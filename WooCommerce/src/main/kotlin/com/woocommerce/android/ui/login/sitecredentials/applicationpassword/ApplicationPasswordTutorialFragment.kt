@@ -12,13 +12,16 @@ import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialViewModel.OnContactSupport
+import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialViewModel.RetryLogin
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialViewModel.ShowExitConfirmationDialog
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -36,6 +39,9 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
         requireArguments()
             .getString(ERROR_MESSAGE_KEY, "")
             .takeIf { it.isNotEmpty() }
+    }
+    private val unexpectedResponse: LoginUnexpectedResponseFailure? by lazy {
+        requireArguments().parcelable(UNEXPECTED_RESPONSE_KEY)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -56,6 +62,7 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
                 is OnContactSupport -> openSupportRequestScreen()
                 is ExitWithResult<*> -> exitWithResult(it.data as String)
                 is ShowExitConfirmationDialog -> showConfirmationDialog()
+                is RetryLogin -> exitToRetryLogin(it.failure)
             }
         }
     }
@@ -65,7 +72,8 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
         viewModel.onWebViewDataAvailable(
             verifiedLoginUrl = verifiedLoginUrl,
             applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
-            errorMessage = errorMessage
+            errorMessage = errorMessage,
+            unexpectedResponse = unexpectedResponse
         )
     }
 
@@ -91,6 +99,14 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
         parentFragmentManager.popBackStack()
     }
 
+    private fun exitToRetryLogin(failure: LoginUnexpectedResponseFailure) {
+        setFragmentResult(
+            requestKey = RETRY_LOGIN_RESULT,
+            result = Bundle().apply { putParcelable(RETRY_LOGIN_RESULT_FAILURE_KEY, failure) }
+        )
+        parentFragmentManager.popBackStack()
+    }
+
     private fun openSupportRequestScreen() {
         SupportRequestFormActivity.createIntent(
             context = requireContext(),
@@ -105,17 +121,22 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
         private const val VERIFIED_LOGIN_URL_KEY = "verified_login_url"
         private const val APPLICATION_PASSWORD_AUTHORIZATION_URL_KEY = "application_password_authorization_url"
         const val ERROR_MESSAGE_KEY = "error_message"
+        private const val UNEXPECTED_RESPONSE_KEY = "unexpected_response"
         const val WEB_NAVIGATION_RESULT = "web_navigation_result"
+        const val RETRY_LOGIN_RESULT = "retry_login_result"
+        const val RETRY_LOGIN_RESULT_FAILURE_KEY = "failure"
         fun newInstance(
             verifiedLoginUrl: String?,
             applicationPasswordAuthorizationUrl: String,
-            errorMessage: String
+            errorMessage: String,
+            unexpectedResponse: LoginUnexpectedResponseFailure?
         ) =
             ApplicationPasswordTutorialFragment().apply {
                 arguments = Bundle().apply {
                     putString(VERIFIED_LOGIN_URL_KEY, verifiedLoginUrl)
                     putString(APPLICATION_PASSWORD_AUTHORIZATION_URL_KEY, applicationPasswordAuthorizationUrl)
                     putString(ERROR_MESSAGE_KEY, errorMessage)
+                    putParcelable(UNEXPECTED_RESPONSE_KEY, unexpectedResponse)
                 }
             }
     }
