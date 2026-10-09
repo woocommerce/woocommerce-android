@@ -252,6 +252,7 @@ tags:
 - extendedWaitUntil:
     visible: "Refunded: .*"
     timeout: 10000
+    optional: true
 
 - scrollUntilVisible:
     element: "Refunded: .*"
