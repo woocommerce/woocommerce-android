@@ -26,7 +26,6 @@ appId: com.woocommerce.android
 name: "Orders - Issue refund"
 tags:
   - smoke_extended
-  - flaky_quarantine
   - orders
   - destructive
 ---

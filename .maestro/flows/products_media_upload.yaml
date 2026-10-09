@@ -52,7 +52,6 @@ appId: com.woocommerce.android
 name: "Products - Media upload via WP media library and device media"
 tags:
   - smoke_extended
-  - flaky_quarantine
   - products
   - destructive
 ---

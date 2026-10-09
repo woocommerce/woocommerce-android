@@ -13,7 +13,6 @@ appId: com.woocommerce.android
 name: "Dashboard - Customize all cards"
 tags:
   - smoke_extended
-  - flaky_quarantine
   - dashboard
 ---
 - runFlow:

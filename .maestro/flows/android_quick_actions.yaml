@@ -12,7 +12,6 @@ appId: com.woocommerce.android
 name: "Android system - App shortcuts"
 tags:
   - android_system
-  - flaky_quarantine
 ---
 - runFlow:
     file: ../subflows/ensure_logged_in.yaml
