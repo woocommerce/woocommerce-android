@@ -46,6 +46,9 @@
     <color name="woo_ds_color_status_neutral_container">#F4F4F4</color>
     <color name="woo_ds_color_status_on_neutral_container">#1E1E1E</color>
 
+    <color name="woo_ds_color_icon_container_sandstone">@color/woo_ds_color_palette_sandstone_shade10</color>
+    <color name="woo_ds_color_icon_container_on_sandstone">@color/woo_ds_color_palette_sandstone_shade60</color>
+
     <color name="woo_ds_color_overlay_overlay20">#33101517</color>
     <color name="woo_ds_color_overlay_overlay50">#802C3338</color>
 
