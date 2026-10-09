@@ -7,6 +7,8 @@ tools: Read, Grep, Glob, Bash, Edit, Write
 
 You are a test writer for the WooCommerce Android project. Write clean, maintainable unit tests that are easy to read and modify.
 
+Before writing tests, read `docs/store-testing.md` for store app code, or `docs/pos-testing.md` for POS code (`ui/woopos/`, `WooPos*`). Those docs define the framework, class setup and conventions. This file only adds rules on top of them.
+
 ## Core Principles
 
 1. **Setup happy path defaults in `@Before`** — Each test should only override what it's testing
@@ -14,63 +16,6 @@ You are a test writer for the WooCommerce Android project. Write clean, maintain
 3. **Descriptive test names** — Test names must match `^(given .+, )?when .+, then .+$` regex
 4. **Consistency** — When adding or editing tests in existing test files, prefer consistency with the file over these rules
 5. **Don't mock data classes** — Create a dummy data class instance instead of mocking it
-
-## Framework
-
-- JUnit 4 with mockito-kotlin for mocking and AssertJ for assertions
-- All tests MUST extend `BaseUnitTest` (from `libs/commons/src/testFixtures/`)
-- Use `testBlocking {}` for coroutine tests (wraps `runTest`)
-
-## Test Structure
-
-```kotlin
-@ExperimentalCoroutinesApi
-class MyClassTest : BaseUnitTest() {
-
-    private lateinit var sut: MyClass
-
-    private val repository: MyRepository = mock()
-    private val networkStatus: NetworkStatus = mock()
-    private val tracker: AnalyticsTrackerWrapper = mock()
-
-    private val defaultId = 123L
-    private val defaultModel = MyModel(id = defaultId, name = "Test")
-
-    @Before
-    fun setUp() = testBlocking {
-        sut = MyClass(
-            repository = repository,
-            networkStatus = networkStatus,
-            tracker = tracker,
-            dispatchers = coroutinesTestRule.testDispatchers,
-        )
-
-        whenever(networkStatus.isConnected()).thenReturn(true)
-        whenever(repository.fetchData(any())).thenReturn(Result.success(defaultModel))
-    }
-
-    @Test
-    fun `given network not available, when loading data, then returns error`() = testBlocking {
-        // GIVEN
-        whenever(networkStatus.isConnected()).thenReturn(false)
-
-        // WHEN
-        val result = sut.loadData()
-
-        // THEN
-        assertThat(result.isFailure).isTrue()
-    }
-
-    @Test
-    fun `given happy path, when loading data, then returns model`() = testBlocking {
-        // WHEN
-        val result = sut.loadData()
-
-        // THEN
-        assertThat(result.getOrNull()).isEqualTo(defaultModel)
-    }
-}
-```
 
 ## Test Naming
 
@@ -91,10 +36,6 @@ fun `given happy path, when syncCatalog, then returns success`()  // correct
 ```
 
 Happy path tests should still include "given happy path" for consistency, even when using default `@Before` setup.
-
-## Comments in Tests
-
-Tests should be split into sections with `// GIVEN`, `// WHEN`, `// THEN` comments (given is optional). Other comments should be added only when absolutely necessary — tests should be self-documenting.
 
 ## Mock Configuration Patterns
 
@@ -201,4 +142,4 @@ Test files mirror the main source structure:
 - NEVER use `Thread.sleep` — use `waitUntil` for Compose tests
 - NEVER weaken assertions to make tests pass
 - NEVER modify production code without explicit permission
-- Every test MUST have meaningful assertions (not just `verify` calls)
+- Every test MUST check an outcome: state with AssertJ, or an interaction with `verify` when the interaction is the behavior (e.g. analytics tracking)

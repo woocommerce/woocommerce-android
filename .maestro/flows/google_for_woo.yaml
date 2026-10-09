@@ -21,7 +21,6 @@ appId: com.woocommerce.android
 name: "Google for Woo - Campaign creation webview"
 tags:
   - smoke_extended
-  - flaky_quarantine
   - hub_menu
   - store_shared
 ---
