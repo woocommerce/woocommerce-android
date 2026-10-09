@@ -234,10 +234,12 @@ public class Authenticator {
             mParams.put(GRANT_TYPE_PARAM_NAME, PASSWORD_GRANT_TYPE);
             mParams.put(GET_BEARER_TOKEN, "true");
             mParams.put("wpcom_otp", twoStepCode);
-            if (shouldSendTwoStepSMS && TextUtils.isEmpty(twoStepCode)) {
-                mParams.put("wpcom_resend_otp", "true");
+            if (TextUtils.isEmpty(twoStepCode)) {
+                mParams.put("wpcom_supports_2fa", "true");
+                if (shouldSendTwoStepSMS) {
+                    mParams.put("wpcom_resend_otp", "true");
+                }
             }
-            mParams.put("wpcom_supports_2fa", "true");
             mParams.put(WITH_AUTH_TYPES, "true");
         }
     }
