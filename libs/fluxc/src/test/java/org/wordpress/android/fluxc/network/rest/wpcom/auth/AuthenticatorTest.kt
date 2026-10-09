@@ -5,6 +5,7 @@ import com.android.volley.VolleyError
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.mock
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -37,5 +38,41 @@ class AuthenticatorTest {
         val error = VolleyError(NetworkResponse(400, "not json".toByteArray(), emptyMap(), false))
 
         assertThat(Authenticator.volleyErrorToSupportedAuthTypes(error)).isEmpty()
+    }
+
+    @Test
+    fun `given code submission, when building request, then omit wpcom supports 2fa`() {
+        val request = Authenticator.TwoFactorRequest(
+            "client-id",
+            "client-secret",
+            "user@example.com",
+            "password",
+            "123456",
+            false,
+            mock(),
+            mock()
+        )
+
+        assertThat(String(request.body))
+            .contains("wpcom_otp=123456")
+            .doesNotContain("wpcom_supports_2fa")
+    }
+
+    @Test
+    fun `given SMS resend, when building request, then include support and resend params`() {
+        val request = Authenticator.TwoFactorRequest(
+            "client-id",
+            "client-secret",
+            "user@example.com",
+            "password",
+            "",
+            true,
+            mock(),
+            mock()
+        )
+
+        assertThat(String(request.body))
+            .contains("wpcom_supports_2fa=true")
+            .contains("wpcom_resend_otp=true")
     }
 }
