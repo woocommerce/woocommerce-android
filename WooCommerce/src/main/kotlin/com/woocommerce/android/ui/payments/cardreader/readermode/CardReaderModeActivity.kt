@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.cardreader.readermode
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.os.Bundle
@@ -13,6 +14,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -66,10 +68,19 @@ class CardReaderModeActivity : AppCompatActivity() {
                             WooPermissionUtils.requestLocalNetworkPermission(localNetworkPermissionLauncher)
                         CardReaderModeEvent.OpenAppSettings ->
                             WooPermissionUtils.showAppSettings(this@CardReaderModeActivity, openInNewStack = false)
-                        CardReaderModeEvent.OpenNfcSettings -> startActivity(Intent(Settings.ACTION_NFC_SETTINGS))
+                        CardReaderModeEvent.OpenNfcSettings -> openNfcSettings()
                     }
                 }
             }
+        }
+    }
+
+    private fun openNfcSettings() {
+        try {
+            startActivity(Intent(Settings.ACTION_NFC_SETTINGS))
+        } catch (e: ActivityNotFoundException) {
+            WooLog.e(WooLog.T.CARD_READER, "NFC settings activity not found.")
+            startActivity(Intent(Settings.ACTION_SETTINGS))
         }
     }
 
