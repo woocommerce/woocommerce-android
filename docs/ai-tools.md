@@ -1,39 +1,13 @@
 # AI Dev and Testing Tools
 
 Every AI tool, command and skill used for WooCommerce Android development and testing.
-Adds or changes a tool or command? Update this file in the same PR.
+Adds or changes an agent, MCP server, testing helper or CI workflow? Update this file in the same PR.
 
 **Availability:** `Repo` works after cloning. `MCP` needs the server to start (Node.js, plus a device or emulator for `mobile-mcp`, an Automattic login for `context-a8c`). Agents: before using an `MCP` tool, check that it is available and logged in. If it is not, tell the user what is missing and use the fallback listed, instead of failing silently.
 
-## Development skills
+## Skills
 
-Skills live in `.agents/skills/` (`.claude/skills/` is a symlink). Agents load them on their own when the task matches.
-
-| Name | What it does | When to use | Example | Owner | Availability |
-|---|---|---|---|---|---|
-| [`store-compose`](../.agents/skills/store-compose/SKILL.md) | Compose UI patterns for the store app | Compose UI outside `ui/woopos/` | "Add a Compose screen for order notes" | Woo Mobile | Repo |
-| [`store-viewmodel`](../.agents/skills/store-viewmodel/SKILL.md) | `ScopedViewModel` patterns, events, navArgs | ViewModels outside `ui/woopos/` | "Add a loading state to the product list ViewModel" | Woo Mobile | Repo |
-| [`store-analytics`](../.agents/skills/store-analytics/SKILL.md) | `AnalyticsEvent` tracking patterns | Tracking in the store app | "Track taps on the new button" | Woo Mobile | Repo |
-| [`store-tests`](../.agents/skills/store-tests/SKILL.md) | Unit test patterns for the store app | Tests outside `ui/woopos/` | "Write tests for this ViewModel" | Woo Mobile | Repo |
-| [`pos`](../.agents/skills/pos/SKILL.md) | POS architecture and design system | Any code in `ui/woopos/` | "Add a button to the POS cart" | Woo Mobile | Repo |
-| [`pos-analytics`](../.agents/skills/pos-analytics/SKILL.md) | `WooPosAnalyticsEvent` tracking patterns | Tracking in POS | "Track POS checkout errors" | Woo Mobile | Repo |
-| [`pos-tests`](../.agents/skills/pos-tests/SKILL.md) | Unit test patterns for POS | Tests in `ui/woopos/` | "Write tests for the POS totals ViewModel" | Woo Mobile | Repo |
-
-## Review and PR skills
-
-| Name | What it does | When to use | Example | Owner | Availability |
-|---|---|---|---|---|---|
-| [`review`](../.agents/skills/review/SKILL.md) | Reviews the branch diff against project rules | Before opening a PR | `/review` | Woo Mobile | Repo |
-| [`pr`](../.agents/skills/pr/SKILL.md) | Creates a PR from the repo template | Opening a PR | "Create a PR" | Woo Mobile | Repo |
-| [`pr-feedback`](../.agents/skills/pr-feedback/SKILL.md) | Evaluates review comments, fixes them after approval, replies | Addressing review comments | `/pr-feedback 16664` | Woo Mobile | Repo |
-
-## Verification skills
-
-| Name | What it does | When to use | Example | Owner | Availability |
-|---|---|---|---|---|---|
-| [`verify-on-device`](../.agents/skills/verify-on-device/SKILL.md) | Builds, installs, logs in and checks the app on an emulator or device | Checking a change in the running app | `/verify-on-device the new order filter` | Woo Mobile | Repo. Uses `mobile-mcp` or the Android CLI for agents, falls back to `adb` |
-| [`ui-review`](../.agents/skills/ui-review/SKILL.md) | Renders screenshots of Compose previews touched by the diff and checks variations | Visual check of Compose changes without a device | `/ui-review` | Woo Mobile | Repo |
-| [`woo-ai-smoke`](../.agents/skills/woo-ai-smoke/SKILL.md) | Runs the headless AI Assistant smoke suite | Changes to the AI Assistant | `/woo-ai-smoke` | Woo Mobile | Repo. Live mode needs a test store in `~/.woo-ai-smoke/store.env` |
+Skills live in `.agents/skills/` (`.claude/skills/` is a symlink). Agents discover them on their own and load one when the task matches. Each `SKILL.md` describes what the skill does and when to use it, so they are not listed here.
 
 ## Agents
 
