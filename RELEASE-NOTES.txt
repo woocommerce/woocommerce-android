@@ -4,6 +4,7 @@
 
 25.9
 -----
+- [*] Card readers WisePad 3, M2 and Chipper 2X can now connect over USB [https://github.com/woocommerce/woocommerce-android/pull/16680]
 - [*] The Blaze campaign list now shows an outstanding balance notice with a Pay button for each unpaid order [https://github.com/woocommerce/woocommerce-android/pull/16612]
 
 25.8

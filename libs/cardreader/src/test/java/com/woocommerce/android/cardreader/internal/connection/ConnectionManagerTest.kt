@@ -3,6 +3,8 @@ package com.woocommerce.android.cardreader.internal.connection
 import android.Manifest
 import android.app.Application
 import android.content.pm.PackageManager
+import android.hardware.usb.UsbDevice
+import com.stripe.stripeterminal.external.models.ConnectionConfiguration
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.TerminalErrorCode
@@ -323,6 +325,30 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
             connectionManager.startConnectionToReader(cardReader, "location_id")
 
             verify(terminalListenerImpl).updateReaderStatus(CardReaderStatus.Connecting)
+        }
+
+    @Test
+    fun `given reader found by usb, when connectToReader, then usb connection configuration used`() =
+        testBlocking {
+            // GIVEN
+            val attachedUsbDevice: UsbDevice = mock()
+            val reader: Reader = mock {
+                on { deviceType }.thenReturn(DeviceType.WISEPAD_3)
+                on { usbDevice }.thenReturn(attachedUsbDevice)
+            }
+            val cardReader: CardReaderImpl = mock {
+                on { cardReader }.thenReturn(reader)
+            }
+            whenever(terminalWrapper.connectToReader(any(), any())).thenReturn(reader)
+
+            // WHEN
+            connectionManager.startConnectionToReader(cardReader, "location_id")
+
+            // THEN
+            val configCaptor = argumentCaptor<ConnectionConfiguration>()
+            verify(terminalWrapper).connectToReader(any(), configCaptor.capture())
+            assertThat(configCaptor.firstValue)
+                .isInstanceOf(ConnectionConfiguration.UsbConnectionConfiguration::class.java)
         }
 
     @Test
