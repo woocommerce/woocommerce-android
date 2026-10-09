@@ -739,11 +739,17 @@ class NonceRestClientTest {
     }
 
     @Test
-    fun `given plain text from the nonce request, when requesting the nonce, then keep no excerpt`() = test {
+    fun `given a nonce response that isn't a page or JSON, when requesting the nonce, then keep no excerpt`() = test {
         givenLoginForm(DEFAULT_LOGIN_URL)
         givenCredentialRedirect(DEFAULT_LOGIN_URL, DEFAULT_NONCE_URL, DEFAULT_NONCE_URL)
+        val warningBeforeNonce = "<br />\n<b>Warning</b>: Undefined variable in /srv/wp-content/plugins/x.php " +
+            "on line 3<br />\n$EXPECTED_NONCE"
 
-        listOf(error(500, EXPECTED_NONCE), WPAPIResponse.Success("-1", emptyList())).forEach { response ->
+        listOf(
+            error(500, EXPECTED_NONCE),
+            WPAPIResponse.Success("-1", emptyList()),
+            WPAPIResponse.Success(warningBeforeNonce, emptyList())
+        ).forEach { response ->
             givenGet(DEFAULT_NONCE_URL, response)
 
             val failure = assertIs<Nonce.FailedRequest>(subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD))

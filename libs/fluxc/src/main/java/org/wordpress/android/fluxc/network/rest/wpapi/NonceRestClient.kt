@@ -362,10 +362,14 @@ class NonceRestClient @Inject constructor(
         }
 
     /**
-     * A nonce response can hold the nonce itself, so only a web page or a JSON error keeps its excerpt.
+     * A nonce response can hold the nonce itself, so only a web page or a JSON error keeps its excerpt. A PHP warning
+     * printed before the nonce starts with a tag too, so a page needs a document tag.
      */
-    private fun UnexpectedStoreResponse.withoutPlainTextExcerpt(body: String?): UnexpectedStoreResponse =
-        if (body.orEmpty().trimStart().firstOrNull() in PAGE_OR_JSON_STARTS) this else copy(excerpt = null)
+    private fun UnexpectedStoreResponse.withoutPlainTextExcerpt(body: String?): UnexpectedStoreResponse {
+        val text = body.orEmpty().trimStart()
+        val isPage = text.startsWith('<') && DOCUMENT_TAG_PATTERN.containsMatchIn(text)
+        return if (isPage || text.startsWith('{')) this else copy(excerpt = null)
+    }
 
     private fun Error<String>.unexpectedRedirect(method: Int, url: HttpUrl): UnexpectedStoreResponse? =
         error.volleyError?.networkResponse?.let {
@@ -578,7 +582,7 @@ class NonceRestClient @Inject constructor(
         )
         private val WHITESPACE_PATTERN = Regex("\\s+")
         private val NONCE_PATTERN = Regex("[0-9a-zA-Z]{2,}")
-        private val PAGE_OR_JSON_STARTS = setOf('<', '{')
+        private val DOCUMENT_TAG_PATTERN = Regex("""<(!doctype|html|head|body|title)\b""", RegexOption.IGNORE_CASE)
         private const val ID_ATTRIBUTE = "id"
         private const val NAME_ATTRIBUTE = "name"
         private const val TYPE_ATTRIBUTE = "type"
