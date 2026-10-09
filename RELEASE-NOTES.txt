@@ -5,6 +5,7 @@
 25.9
 -----
 - [*] Editing a product attribute's terms or name no longer moves it to the end of the list or changes the settings of other attributes [https://github.com/woocommerce/woocommerce-android/pull/16671]
+- [*] Undoing a product attribute change in the same session is now saved, and the product form no longer asks to save again after only its attributes were saved [https://github.com/woocommerce/woocommerce-android/pull/16678]
 
 
 25.8
