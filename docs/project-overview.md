@@ -48,23 +48,7 @@ The `secrets.properties` file is used to store sensitive information that should
 
 ### Using detekt
 
-The woocommerce-android project uses [detekt][detekt] for Kotlin linting and code style check.
-
-You can run detekt using `./gradlew detektAll`.
-
-You can also view errors and warnings in realtime with the Detekt plugin.
-
-You can install the detekt plugin in Android Studio here:
-
-`Android Studio > Preferences... > Plugins > detekt`
-
-Once installed, you can configure the plugin here:
-
-`Android Studio > Preferences... > Tools > Detekt`
-
-From there, add and enable the custom configuration file, located at [config/detekt/detekt.yml](https://github.com/wordpress-mobile/WordPress-Android/blob/develop/config/detekt/detekt.yml).
-
-If you want to use the **AutoCorrect** feature of the plugin, make sure that the option `Enable formatting (ktlint) rules` is enabled in the above settings, then you will be able to reformat any file according to detekt's rules using the refactor menu `AutoCorrect by Detekt Rules`
+See [Detekt in Coding Style](coding-style.md#detekt).
 
 ### Google Configuration
 
@@ -81,6 +65,5 @@ that can't be shared publicly. More documentation and guides can be found on the
 [wp-api]: https://developer.wordpress.org/rest-api/
 [oauth]: https://oauth.net
 [google-ident]: https://cloud.google.com/identity-platform/docs/
-[detekt]: https://detekt.github.io/detekt/
 [jetpack]: https://wordpress.org/plugins/jetpack/
 [setup]: ../README.md#-setup-instructions
