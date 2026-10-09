@@ -26,8 +26,10 @@
     <string name="enter_verification_code_sms_generic">We sent a text message. Enter the verification code from the message.</string>
     <string name="enter_verification_code_authenticator">Enter the verification code from your authenticator app.</string>
     <string name="enter_verification_code_email">Check your email for a verification code from WordPress.com, then enter it to continue.</string>
+    <string name="enter_verification_code_backup">Enter a backup code to continue.</string>
     <string name="login_text_otp">Resend code via text message</string>
     <string name="login_text_security_key">Use a security key</string>
+    <string name="login_text_backup_code">Use a backup code instead</string>
     <string name="login_text_otp_another">Resend code via text message</string>
     <string name="requesting_otp">Requesting a verification code via SMS.</string>
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>

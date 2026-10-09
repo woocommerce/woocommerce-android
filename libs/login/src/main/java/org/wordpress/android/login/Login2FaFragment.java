@@ -47,6 +47,7 @@ import org.wordpress.android.login.widgets.WPLoginInputRow;
 import org.wordpress.android.login.widgets.WPLoginInputRow.OnEditorCommitListener;
 import org.wordpress.android.util.AppLog;
 import org.wordpress.android.util.AppLog.T;
+import org.wordpress.android.util.EditTextUtils;
 import org.wordpress.android.util.NetworkUtils;
 import org.wordpress.android.util.ToastUtils;
 
@@ -65,6 +66,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
     private static final String KEY_NONCE_BACKUP = "KEY_NONCE_BACKUP";
     private static final String KEY_NONCE_SMS = "KEY_NONCE_SMS";
     private static final String KEY_OLD_SITES_IDS = "KEY_OLD_SITES_IDS";
+    private static final String KEY_BACKUP_CODE_REQUESTED = "KEY_BACKUP_CODE_REQUESTED";
     private static final String KEY_SMS_NUMBER = "KEY_SMS_NUMBER";
     private static final String KEY_SMS_SENT = "KEY_SMS_SENT";
 
@@ -100,6 +102,8 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
     ArrayList<Integer> mOldSitesIDs;
 
     private Button mOtpButton;
+    @Nullable private Button mBackupCodeButton;
+    @Nullable private Button mSecurityKeyPrimaryButton;
     private Button mSecurityKeyButton;
     private String mEmailAddress;
     private String mIdToken;
@@ -116,6 +120,8 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
     private TextView mLabel;
     private boolean mIsSocialLogin;
     private boolean mIsSocialLoginConnect;
+    private boolean mIsSecurityKeyPrimary;
+    private boolean mBackupCodeRequested;
     private boolean mSentSmsCode;
     private List<SupportedAuthTypes> mSupportedAuthTypes;
 
@@ -226,6 +232,16 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         mSecurityKeyButton = rootView.findViewById(R.id.login_security_key_button);
         mSecurityKeyButton.setVisibility(isSecurityKeyEnabled ? View.VISIBLE : View.GONE);
         mSecurityKeyButton.setOnClickListener(view -> doAuthWithSecurityKeyAction());
+
+        mSecurityKeyPrimaryButton = rootView.findViewById(R.id.login_security_key_primary_button);
+        mSecurityKeyPrimaryButton.setOnClickListener(view -> doAuthWithSecurityKeyAction());
+
+        mBackupCodeButton = rootView.findViewById(R.id.login_backup_code_button);
+        mBackupCodeButton.setOnClickListener(view -> {
+            mBackupCodeRequested = true;
+            updateSecurityKeyPrimaryViews();
+            EditTextUtils.showSoftInput(m2FaInput.getEditText());
+        });
     }
 
     @Override
@@ -235,6 +251,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
                 next();
             }
         });
+        updateSecurityKeyPrimaryViews();
     }
 
     @Override
@@ -244,7 +261,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
 
     @Override
     protected EditText getEditTextToFocusOnStart() {
-        return m2FaInput.getEditText();
+        return isSecurityKeyMode() ? null : m2FaInput.getEditText();
     }
 
     @Override
@@ -277,6 +294,11 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         mWebauthnNonce = getArguments().getString(ARG_WEBAUTHN_NONCE);
         mSupportedAuthTypes = handleSupportedAuthTypesParameter(
                 getArguments().getStringArrayList(ARG_2FA_SUPPORTED_AUTH_TYPES));
+        mIsSecurityKeyPrimary = !mIsSocialLogin
+                && mSupportedAuthTypes.contains(SupportedAuthTypes.WEBAUTHN)
+                && !mSupportedAuthTypes.contains(SupportedAuthTypes.AUTHENTICATOR)
+                && !mSupportedAuthTypes.contains(SupportedAuthTypes.SMS)
+                && !mSupportedAuthTypes.contains(SupportedAuthTypes.EMAIL);
 
         if (savedInstanceState != null) {
             // Overwrite argument nonce values with saved state values on device rotation.
@@ -287,6 +309,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
             mType = savedInstanceState.getString(KEY_2FA_TYPE);
             mPhoneNumber = savedInstanceState.getString(KEY_SMS_NUMBER);
             mSentSmsCode = savedInstanceState.getBoolean(KEY_SMS_SENT);
+            mBackupCodeRequested = savedInstanceState.getBoolean(KEY_BACKUP_CODE_REQUESTED);
         }
     }
 
@@ -315,6 +338,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         outState.putString(KEY_2FA_TYPE, mType);
         outState.putString(KEY_SMS_NUMBER, mPhoneNumber);
         outState.putBoolean(KEY_SMS_SENT, mSentSmsCode);
+        outState.putBoolean(KEY_BACKUP_CODE_REQUESTED, mBackupCodeRequested);
     }
 
     @Override
@@ -322,7 +346,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         super.onResume();
 
         // Insert authentication code if copied to clipboard
-        if (TextUtils.isEmpty(m2FaInput.getEditText().getText())) {
+        if (!mIsSecurityKeyPrimary && TextUtils.isEmpty(m2FaInput.getEditText().getText())) {
             m2FaInput.setText(getAuthCodeFromClipboard());
         }
 
@@ -429,14 +453,26 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
     }
 
     private void updateContinueButtonEnabledStatus() {
+        Button bottomButton = getBottomButton();
+        if (bottomButton == null || m2FaInput == null) {
+            return;
+        }
         String currentVerificationCode = m2FaInput.getEditText().getText().toString();
-        getBottomButton().setEnabled(!currentVerificationCode.trim().isEmpty());
+        bottomButton.setEnabled(!isInProgress() && !currentVerificationCode.trim().isEmpty());
     }
 
     @Override
     protected void endProgress() {
         super.endProgress();
         mInProgressMessageId = DEFAULT_PROGRESS_MESSAGE_ID;
+        updateActionButtonsEnabled();
+        updateContinueButtonEnabledStatus();
+    }
+
+    @Override
+    protected void startProgress() {
+        super.startProgress();
+        updateActionButtonsEnabled();
     }
 
     private void handleAuthError(AuthenticationErrorType error, String errorMessage) {
@@ -602,6 +638,10 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
     private CharSequence getInitialInstructions() {
         if (mIsSocialLogin) {
             return getString(R.string.enter_verification_code);
+        } else if (mIsSecurityKeyPrimary) {
+            return getString(mBackupCodeRequested
+                    ? R.string.enter_verification_code_backup
+                    : R.string.notification_security_key_needed);
         } else if (mSupportedAuthTypes.contains(SupportedAuthTypes.AUTHENTICATOR)) {
             return getString(R.string.enter_verification_code_authenticator);
         } else if (mSupportedAuthTypes.contains(SupportedAuthTypes.SMS)) {
@@ -610,6 +650,52 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
             return getString(R.string.enter_verification_code_email);
         } else {
             return getString(R.string.enter_verification_code);
+        }
+    }
+
+    private boolean isSecurityKeyMode() {
+        return mIsSecurityKeyPrimary && !mBackupCodeRequested;
+    }
+
+    private void updateSecurityKeyPrimaryViews() {
+        boolean securityKeyMode = isSecurityKeyMode();
+        if (mSecurityKeyPrimaryButton != null) {
+            mSecurityKeyPrimaryButton.setVisibility(securityKeyMode ? View.VISIBLE : View.GONE);
+        }
+        if (mBackupCodeButton != null) {
+            boolean showBackupCodeButton = securityKeyMode
+                    && mSupportedAuthTypes.contains(SupportedAuthTypes.BACKUP);
+            mBackupCodeButton.setVisibility(showBackupCodeButton ? View.VISIBLE : View.GONE);
+        }
+        if (m2FaInput != null) {
+            m2FaInput.setVisibility(securityKeyMode ? View.GONE : View.VISIBLE);
+        }
+        if (mSecurityKeyButton != null) {
+            boolean showSecurityKeyButton = !securityKeyMode
+                    && mSupportedAuthTypes.contains(SupportedAuthTypes.WEBAUTHN);
+            mSecurityKeyButton.setVisibility(showSecurityKeyButton ? View.VISIBLE : View.GONE);
+        }
+        Button bottomButton = getBottomButton();
+        if (bottomButton != null) {
+            bottomButton.setVisibility(securityKeyMode ? View.GONE : View.VISIBLE);
+        }
+        if (mLabel != null) {
+            mLabel.setText(mSentSmsCode ? getSmsInstructions() : getInitialInstructions());
+        }
+        updateActionButtonsEnabled();
+        updateContinueButtonEnabledStatus();
+    }
+
+    private void updateActionButtonsEnabled() {
+        boolean enabled = !isInProgress();
+        if (mSecurityKeyPrimaryButton != null) {
+            mSecurityKeyPrimaryButton.setEnabled(enabled);
+        }
+        if (mBackupCodeButton != null) {
+            mBackupCodeButton.setEnabled(enabled);
+        }
+        if (mSecurityKeyButton != null) {
+            mSecurityKeyButton.setEnabled(enabled);
         }
     }
 
