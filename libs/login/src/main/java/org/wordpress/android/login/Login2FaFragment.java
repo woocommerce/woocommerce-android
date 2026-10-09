@@ -23,6 +23,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.credentials.exceptions.GetCredentialCancellationException;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -65,6 +66,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
     private static final String KEY_NONCE_AUTHENTICATOR = "KEY_NONCE_AUTHENTICATOR";
     private static final String KEY_NONCE_BACKUP = "KEY_NONCE_BACKUP";
     private static final String KEY_NONCE_SMS = "KEY_NONCE_SMS";
+    private static final String KEY_NONCE_WEBAUTHN = "KEY_NONCE_WEBAUTHN";
     private static final String KEY_OLD_SITES_IDS = "KEY_OLD_SITES_IDS";
     private static final String KEY_BACKUP_CODE_REQUESTED = "KEY_BACKUP_CODE_REQUESTED";
     private static final String KEY_SMS_NUMBER = "KEY_SMS_NUMBER";
@@ -305,6 +307,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
             mNonceAuthenticator = savedInstanceState.getString(KEY_NONCE_AUTHENTICATOR);
             mNonceBackup = savedInstanceState.getString(KEY_NONCE_BACKUP);
             mNonceSms = savedInstanceState.getString(KEY_NONCE_SMS);
+            mWebauthnNonce = savedInstanceState.getString(KEY_NONCE_WEBAUTHN);
             // Restore set two-factor authentication type value on device rotation.
             mType = savedInstanceState.getString(KEY_2FA_TYPE);
             mPhoneNumber = savedInstanceState.getString(KEY_SMS_NUMBER);
@@ -335,6 +338,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         outState.putString(KEY_NONCE_AUTHENTICATOR, mNonceAuthenticator);
         outState.putString(KEY_NONCE_BACKUP, mNonceBackup);
         outState.putString(KEY_NONCE_SMS, mNonceSms);
+        outState.putString(KEY_NONCE_WEBAUTHN, mWebauthnNonce);
         outState.putString(KEY_2FA_TYPE, mType);
         outState.putString(KEY_SMS_NUMBER, mPhoneNumber);
         outState.putBoolean(KEY_SMS_SENT, mSentSmsCode);
@@ -721,9 +725,11 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
             return;
         }
 
+        String webauthnNonce = event.getWebauthnNonce();
+        mWebauthnNonce = webauthnNonce;
         PasskeyRequestData passkeyRequestData = new PasskeyRequestData(
                 event.mUserId,
-                event.getWebauthnNonce(),
+                webauthnNonce,
                 event.mJsonResponse.toString()
         );
 
@@ -735,8 +741,13 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
                     return null;
                 },
                 error -> {
-                    String errorMessage = getString(R.string.login_error_security_key);
-                    handleWebauthnError(AuthenticationErrorType.WEBAUTHN_FAILED, errorMessage);
+                    if (error instanceof GetCredentialCancellationException && !mIsSocialLogin) {
+                        mAnalyticsListener.trackLoginSecurityKeyFailure();
+                        endProgress();
+                    } else {
+                        String errorMessage = getString(R.string.login_error_security_key);
+                        handleWebauthnError(AuthenticationErrorType.WEBAUTHN_FAILED, errorMessage);
+                    }
                     return null;
                 }
         );
