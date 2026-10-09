@@ -11,6 +11,7 @@
 - [*] On tablets, an open order editor no longer closes and loses its text when the app is restored [https://github.com/woocommerce/woocommerce-android/pull/16731]
 - [*] Customer lists now explain when WooCommerce Analytics is unavailable and offer a way to turn it on or retry loading customers [https://github.com/woocommerce/woocommerce-android/pull/16707]
 - [Internal] Shipping labels and the label eligibility check are no longer read from the database on the main thread [https://github.com/woocommerce/woocommerce-android/pull/16720]
+- [*] WordPress.com two-step login now shows instructions for your verification method and only offers a text message code when your account supports it [https://github.com/woocommerce/woocommerce-android/pull/16683]
 
 25.9
 -----
