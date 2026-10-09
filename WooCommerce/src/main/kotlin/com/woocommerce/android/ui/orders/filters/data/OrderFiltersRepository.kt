@@ -5,6 +5,7 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.toDateAtStartOfDay
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CUSTOMER
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.PRODUCT
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -74,8 +75,17 @@ class OrderFiltersRepository @Inject constructor(
                 .split(",")
                 .filter { it.isNotBlank() }
         } ?: emptyList()
-        return preferenceFilters + getProductFilter(filterCategory) + getCustomerFilter(filterCategory)
+        return preferenceFilters.withoutUnsavedCustomRange(filterCategory) +
+            getProductFilter(filterCategory) +
+            getCustomerFilter(filterCategory)
     }
+
+    private fun List<String>.withoutUnsavedCustomRange(filterCategory: OrderListFilterCategory) =
+        if (filterCategory == DATE_RANGE && getCustomDateRangeDays() == Pair(0L, 0L)) {
+            filterNot { it == DateRange.CUSTOM_RANGE.filterKey }
+        } else {
+            this
+        }
 
     private fun getProductFilter(filterCategory: OrderListFilterCategory) =
         if (filterCategory == PRODUCT) listOfNotNull(productFilter?.toString()) else emptyList()
