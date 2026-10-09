@@ -22,7 +22,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INCORRECT_USERNAME_OR_PASSWORD
@@ -50,8 +49,11 @@ class WPComLogin2FAViewModel @Inject constructor(
     private val navArgs: WPComLogin2FAFragmentArgs by savedStateHandle.navArgs()
 
     private val isSecurityKeySupported = "webauthn" in navArgs.supportedAuthTypes
+    private val isSecurityKeyPrimary = isSecurityKeySupported &&
+        listOf("authenticator", "sms", "email").none { it in navArgs.supportedAuthTypes }
     private val isSmsSupported = navArgs.supportedAuthTypes.isEmpty() || "sms" in navArgs.supportedAuthTypes
     private val initialInstructions = when {
+        isSecurityKeyPrimary -> R.string.notification_security_key_needed
         "authenticator" in navArgs.supportedAuthTypes -> R.string.enter_verification_code_authenticator
         "sms" in navArgs.supportedAuthTypes -> R.string.enter_verification_code_sms_generic
         "email" in navArgs.supportedAuthTypes -> R.string.enter_verification_code_email
@@ -68,6 +70,12 @@ class WPComLogin2FAViewModel @Inject constructor(
     private val hasRequestedSms =
         savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = false, key = "has-requested-sms")
 
+    private val isBackupCodeRequested = savedStateHandle.getStateFlow(
+        scope = viewModelScope,
+        initialValue = false,
+        key = "is-backup-code-requested"
+    )
+
     private val isRequestingSms = MutableStateFlow(false)
 
     private val smsRequestState = combine(hasRequestedSms, isRequestingSms) { hasRequestedSms, isRequestingSms ->
@@ -75,23 +83,27 @@ class WPComLogin2FAViewModel @Inject constructor(
     }
 
     val viewState = combine(
-        flowOf(Pair(navArgs.emailOrUsername, navArgs.password)),
         otp,
         errorMessage,
         loadingMessage,
-        smsRequestState
-    ) { (emailOrUsername, password), otp, errorMessage, loadingMessage, smsRequestState ->
+        smsRequestState,
+        isBackupCodeRequested
+    ) { otp, errorMessage, loadingMessage, smsRequestState, isBackupCodeRequested ->
+        val isSecurityKeyMode = isSecurityKeyPrimary && !isBackupCodeRequested
         ViewState(
             isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
-            emailOrUsername = emailOrUsername,
-            password = password,
+            emailOrUsername = navArgs.emailOrUsername,
+            password = navArgs.password,
             otp = otp,
             isSecurityKeySupported = isSecurityKeySupported,
             isSmsSupported = isSmsSupported,
-            instructions = if (smsRequestState.hasRequestedSms) {
-                R.string.enter_verification_code_sms_generic
-            } else {
-                initialInstructions
+            isSecurityKeyMode = isSecurityKeyMode,
+            showBackupCodeButton = isSecurityKeyMode && "backup" in navArgs.supportedAuthTypes,
+            isBackupCodeRequested = isBackupCodeRequested,
+            instructions = when {
+                smsRequestState.hasRequestedSms -> R.string.enter_verification_code_sms_generic
+                isBackupCodeRequested -> R.string.enter_verification_code_backup
+                else -> initialInstructions
             },
             errorMessage = errorMessage.takeIf { it != 0 },
             loadingMessage = loadingMessage.takeIf { it != 0 },
@@ -140,6 +152,8 @@ class WPComLogin2FAViewModel @Inject constructor(
     }
 
     fun onContinueClick() = launch {
+        if (otp.value.isBlank()) return@launch
+
         analyticsTrackerWrapper.track(
             JETPACK_SETUP_LOGIN_FLOW,
             mapOf(
@@ -207,6 +221,10 @@ class WPComLogin2FAViewModel @Inject constructor(
         )
     }
 
+    fun onBackupCodeClick() {
+        isBackupCodeRequested.value = true
+    }
+
     fun onPasskeyResult(userId: String, twoStepNonce: String, clientData: String) = launch {
         loadingMessage.value = R.string.logging_in
         wpComLoginRepository.finishSecurityKeyChallenge(
@@ -247,6 +265,9 @@ class WPComLogin2FAViewModel @Inject constructor(
         val otp: String,
         val isSecurityKeySupported: Boolean = false,
         val isSmsSupported: Boolean = true,
+        val isSecurityKeyMode: Boolean = false,
+        val showBackupCodeButton: Boolean = false,
+        val isBackupCodeRequested: Boolean = false,
         @StringRes val instructions: Int = R.string.enter_verification_code,
         val errorMessage: Int? = null,
         val loadingMessage: Int? = null,
