@@ -175,7 +175,7 @@ def main() -> int:
     parser.add_argument("--env-file", type=Path, default=DEFAULT_ENV_FILE)
     parser.add_argument("--seed", action="store_true")
     args = parser.parse_args()
-    if args.profile in SEEDING_PROFILES and args.include_tags is None and args.exclude_tags is None:
+    if args.profile in SEEDING_PROFILES:
         args.seed = True
 
     profile = PROFILES[args.profile]
