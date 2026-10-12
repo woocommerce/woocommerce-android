@@ -35,7 +35,10 @@ object WooDialog {
 
         val builder = MaterialAlertDialogBuilder(activity)
             .setCancelable(cancellable)
-            .setOnDismissListener { onCleared() }
+            .setOnDismissListener {
+                onCleared()
+                onDismiss?.invoke()
+            }
             .apply {
                 titleId?.let { setTitle(it) }
             }
@@ -50,9 +53,6 @@ object WooDialog {
             }
             .apply {
                 neutralButtonId?.let { setNeutralButton(it, neutBtAction) }
-            }
-            .apply {
-                onDismiss?.let { setOnDismissListener { it() } }
             }
 
         dialogRef = WeakReference(builder.show())
