@@ -168,7 +168,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         // The subscription lookup is a separate step so we can tell a genuine subscription order
         // (silently hide the card reader rows) apart from a lookup failure (hide them and surface an
         // error so the merchant knows the check couldn't complete).
-        if (!cardPaymentCollectibilityChecker.isCollectable(order, checkSubscription = false)) return false
+        if (!cardPaymentCollectibilityChecker.isCollectable(order)) return false
         return when (orderSubscriptionChecker.getSubscriptionStatus(order)) {
             OrderSubscriptionChecker.SubscriptionStatus.NONE -> true
             OrderSubscriptionChecker.SubscriptionStatus.PRESENT -> false

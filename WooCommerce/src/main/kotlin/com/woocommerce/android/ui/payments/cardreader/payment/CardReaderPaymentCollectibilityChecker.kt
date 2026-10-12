@@ -10,25 +10,19 @@ import com.woocommerce.android.model.Order.Status.Failed
 import com.woocommerce.android.model.Order.Status.OnHold
 import com.woocommerce.android.model.Order.Status.Pending
 import com.woocommerce.android.model.Order.Status.Processing
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import java.math.BigDecimal
 import javax.inject.Inject
 
 class CardReaderPaymentCollectibilityChecker @Inject constructor(
     private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker,
-    private val orderSubscriptionChecker: OrderSubscriptionChecker,
+    private val orderDetailRepository: OrderDetailRepository,
 ) {
     /**
-     * [checkSubscription] runs the (possibly networked) order-subscription check. It's on by default
-     * for the payment method selection screen, where a loading/error state can be shown. The
-     * controller's final gate and POS pass `false`: POS orders can't be subscriptions, and the
-     * selection screen already blocks subscription orders before the controller is reached — so
-     * re-running it there only adds latency and risks failing closed on a flaky network.
+     * Runs local checks only. Plan-based subscriptions need a network lookup, which the payment
+     * method selection screen does separately via [OrderSubscriptionChecker].
      */
-    suspend fun isCollectable(
-        order: Order,
-        allowCancelledStatus: Boolean = false,
-        checkSubscription: Boolean = true,
-    ): Boolean {
+    suspend fun isCollectable(order: Order, allowCancelledStatus: Boolean = false): Boolean {
         return with(order) {
             cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(currency) &&
                 isStatusCollectable(allowCancelledStatus) &&
@@ -36,7 +30,7 @@ class CardReaderPaymentCollectibilityChecker @Inject constructor(
                 order.total.compareTo(BigDecimal.ZERO) == 1 &&
                 BigDecimal.ZERO.compareTo(order.refundTotal) == 0 &&
                 isPaymentMethodCollectable() &&
-                (!checkSubscription || orderSubscriptionChecker.isOrderFreeOfSubscriptions(order))
+                !orderDetailRepository.hasLegacySubscriptionProducts(order.getProductIds())
         }
     }
 

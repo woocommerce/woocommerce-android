@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.payments.cardreader
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCurrencySupportedChecker
-import com.woocommerce.android.ui.payments.cardreader.payment.OrderSubscriptionChecker
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -13,8 +13,6 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import java.util.Date
@@ -22,10 +20,10 @@ import java.util.Date
 @ExperimentalCoroutinesApi
 class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker = mock()
-    private val orderSubscriptionChecker: OrderSubscriptionChecker = mock()
+    private val orderDetailRepository: OrderDetailRepository = mock()
     private val checker: CardReaderPaymentCollectibilityChecker = CardReaderPaymentCollectibilityChecker(
         cardReaderPaymentCurrencySupportedChecker = cardReaderPaymentCurrencySupportedChecker,
-        orderSubscriptionChecker = orderSubscriptionChecker,
+        orderDetailRepository = orderDetailRepository,
     )
 
     private val generatedOrder = OrderTestUtils.generateTestOrder()
@@ -34,7 +32,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     fun setUp() {
         testBlocking {
             whenever(cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(any())).thenReturn(true)
-            whenever(orderSubscriptionChecker.isOrderFreeOfSubscriptions(any())).thenReturn(true)
+            whenever(orderDetailRepository.hasLegacySubscriptionProducts(any())).thenReturn(false)
         }
     }
 
@@ -147,10 +145,10 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order is free of subscriptions, then is collectable`() =
+    fun `when order has no legacy subscription products, then is collectable`() =
         testBlocking {
             val order = getOrder()
-            doReturn(true).whenever(orderSubscriptionChecker).isOrderFreeOfSubscriptions(order)
+            doReturn(false).whenever(orderDetailRepository).hasLegacySubscriptionProducts(any())
 
             val isCollectable = checker.isCollectable(order)
 
@@ -158,25 +156,14 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order contains a subscription, then hide collect button`() =
+    fun `when order has legacy subscription products, then hide collect button`() =
         testBlocking {
             val order = getOrder()
-            doReturn(false).whenever(orderSubscriptionChecker).isOrderFreeOfSubscriptions(order)
+            doReturn(true).whenever(orderDetailRepository).hasLegacySubscriptionProducts(any())
 
             val isCollectable = checker.isCollectable(order)
 
             assertThat(isCollectable).isFalse()
-        }
-
-    @Test
-    fun `given subscription check disabled, when checking collectability, then subscription is not looked up`() =
-        testBlocking {
-            val order = getOrder()
-
-            val isCollectable = checker.isCollectable(order, checkSubscription = false)
-
-            assertThat(isCollectable).isTrue()
-            verify(orderSubscriptionChecker, never()).isOrderFreeOfSubscriptions(any())
         }
 
     @Test
