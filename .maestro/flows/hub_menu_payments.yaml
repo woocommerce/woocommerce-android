@@ -1,5 +1,5 @@
 # Smoke Test: Hub Menu - Payments
-# p2: hub.payments
+# p2: hub.payments.pay-in-person, hub.payments.order-card-reader, hub.payments.manuals
 # P2 ref: Hub menu > Payments (Enable/Disable Pay in Person, Order Card
 #         Reader, Manage Card Reader, card-reader help/docs, etc.)
 #
