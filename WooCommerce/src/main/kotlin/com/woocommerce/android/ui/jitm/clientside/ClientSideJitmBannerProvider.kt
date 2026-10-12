@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.jitm.clientside
 
 import com.woocommerce.android.ui.jitm.JitmBannerMessageProvider
 import dagger.Reusable
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import javax.inject.Inject
 
@@ -18,11 +19,15 @@ class ClientSideJitmBannerProvider @Inject constructor(
         }
     }
 
-    override suspend fun dismissMessage(messagePath: String, jitmId: String, featureClass: String): Boolean {
+    override suspend fun dismissMessage(
+        messagePath: String,
+        jitmId: String,
+        featureClass: String
+    ): WooResult<Boolean> {
         if (posBanner.bannerId == jitmId) {
             posBanner.onDismiss()
         }
-        return true
+        return WooResult(true)
     }
 
     override fun onCtaClicked(messagePath: String, jitmId: String) {

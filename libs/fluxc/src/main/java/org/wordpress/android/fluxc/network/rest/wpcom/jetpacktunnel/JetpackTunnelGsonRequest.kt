@@ -4,10 +4,13 @@ import android.net.Uri
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseLogger
 import org.wordpress.android.fluxc.network.rest.GsonRequest
 import org.wordpress.android.fluxc.network.rest.Header
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComErrorListener
+import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import java.lang.reflect.Type
 
 /**
@@ -270,9 +273,35 @@ object JetpackTunnelGsonRequest {
         errorListener: WPComErrorListener
     ): WPComErrorListener {
         return WPComErrorListener { error ->
-            JetpackTunnelRawBodyErrorLogger.logIfPresent(method, wpApiEndpoint, error)
+            val unexpectedStoreResponse = error.toUnexpectedStoreResponse(method, wpApiEndpoint)
+            error.unexpectedStoreResponse = unexpectedStoreResponse
+            if (unexpectedStoreResponse != null) {
+                UnexpectedStoreResponseLogger.log(unexpectedStoreResponse)
+            } else {
+                JetpackTunnelRawBodyErrorLogger.logIfPresent(method, wpApiEndpoint, error)
+            }
             errorListener.onErrorResponse(error)
         }
+    }
+
+    /**
+     * The tunnel wraps a store response that isn't JSON in `data.raw_body`, with the store's status in `data.status`.
+     * The store's content type isn't forwarded.
+     */
+    private fun WPComGsonNetworkError.toUnexpectedStoreResponse(
+        method: String,
+        wpApiEndpoint: String
+    ): UnexpectedStoreResponse? {
+        val rawBody = errorData?.optString(RAW_BODY_KEY)?.takeIf { it.isNotBlank() } ?: return null
+        val statusCode = errorData?.optInt(STATUS_KEY)?.takeIf { it > 0 }
+            ?: volleyError?.networkResponse?.statusCode
+            ?: return null
+        return UnexpectedStoreResponse.from(
+            statusCode = statusCode,
+            contentType = null,
+            body = rawBody,
+            requestType = "$method ${wpApiEndpoint.substringBefore('?').substringBefore('&')}"
+        )
     }
 
     private fun getTunnelApiUrl(siteId: Long): String = WPCOMREST.jetpack_blogs.site(siteId).rest_api.urlV1_1
@@ -317,4 +346,7 @@ object JetpackTunnelGsonRequest {
      */
     private fun Map<String, String>.toTunnelQuery(): String =
         entries.joinToString(separator = "") { "&${Uri.encode(it.key)}=${Uri.encode(it.value)}" }
+
+    private const val RAW_BODY_KEY = "raw_body"
+    private const val STATUS_KEY = "status"
 }

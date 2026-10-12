@@ -190,5 +190,6 @@ Detailed patterns and conventions are in the `docs/` folder and loaded on-demand
 - `docs/pos-testing.md` — Unit testing (POS)
 - `docs/pull-request-guidelines.md` — PR conventions
 - `docs/coding-style.md` — Kotlin coding style and detekt
+- `docs/ai-tools.md` — every AI skill, agent, MCP server and testing helper (e.g. auto-login), with availability. Check it before testing on a device. When you add or change an agent, MCP server, testing helper or CI workflow, update it in the same change
 
 @CONVENTION.md

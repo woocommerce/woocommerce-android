@@ -59,6 +59,7 @@ local.properties
 
 # Backup Files
 *.bak
+__pycache__/
 
 # Android Studio Navigation editor temp files
 .navigation/
@@ -132,3 +133,11 @@ google-upload-credentials.json
 
 .grepai/
 docs/superpowers
+
+# Maestro smoke-test local files and artifacts.
+.env.local
+.maestro/output/
+.maestro/tmp/
+.maestro/report.xml
+.maestro/*.maestro-screenshots/
+*.maestro-screenshots/

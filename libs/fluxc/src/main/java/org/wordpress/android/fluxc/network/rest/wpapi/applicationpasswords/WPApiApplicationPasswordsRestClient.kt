@@ -17,6 +17,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
+import org.wordpress.android.fluxc.network.rest.wpapi.wpApiSuccessListener
 import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import org.wordpress.android.util.AppLog
@@ -253,7 +254,7 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
                 emptyMap(),
                 T::class.java,
                 /* listener = */
-                { responseData, headers -> continuation.resume(WPAPIResponse.Success(responseData, headers)) },
+                wpApiSuccessListener { continuation.resume(it) },
                 /* errorListener = */
                 { continuation.resume(WPAPIResponse.Error(it)) }
             )

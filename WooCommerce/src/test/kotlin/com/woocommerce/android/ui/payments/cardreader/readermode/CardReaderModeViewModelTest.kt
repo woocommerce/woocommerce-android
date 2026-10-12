@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLoca
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocalNetworkPermissionExplainer
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionDenied
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionExplainer
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayNfcDisabled
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
@@ -218,6 +219,19 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewState.value).isInstanceOf(RemoteTapToPayLocalNetworkPermissionDenied::class.java)
             verify(session, never()).start(any(), any(), any(), any())
         }
+
+    @Test
+    fun `given nfc disabled, when open settings clicked, then nfc settings event is emitted`() = testBlocking {
+        // GIVEN
+        viewModel.onNfcDisabled()
+
+        // WHEN
+        (viewModel.viewState.value as RemoteTapToPayNfcDisabled).onPrimaryActionClicked()
+
+        // THEN
+        assertThat(viewModel.events.first()).isEqualTo(CardReaderModeEvent.OpenNfcSettings)
+        verify(session, never()).start(any(), any(), any(), any())
+    }
 
     @Test
     fun `given starting session state, when emitted, then starting view state is shown`() = testBlocking {

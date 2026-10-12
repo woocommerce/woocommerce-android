@@ -36,31 +36,20 @@ class AddressValidationHelper @Inject constructor(
         return errorResId?.let { resourceProvider.getString(it) }
     }
 
-    fun validateUSCustomsPhone(value: String): String? {
-        return when {
-            value.isBlank() -> resourceProvider.getString(R.string.woo_shipping_field_required_error)
-            value.replace(Regex("^1|[^\\d]"), "").length != US_PHONE_NUMBER_LENGTH -> {
-                resourceProvider.getString(R.string.shipping_label_destination_address_phone_invalid)
-            }
-
+    fun validatePhone(value: String, countryCode: String, isRequired: Boolean): String? {
+        val digits = value.filter { it.isDigit() }
+        val usPhoneLength = if (digits.startsWith('1')) US_PHONE_NUMBER_LENGTH + 1 else US_PHONE_NUMBER_LENGTH
+        val errorResId = when {
+            value.isBlank() -> if (isRequired) R.string.woo_shipping_field_required_error else null
+            digits.isEmpty() || (countryCode == US_COUNTRY_CODE && digits.length != usPhoneLength) ->
+                R.string.shipping_label_destination_address_phone_invalid
             else -> null
         }
+        return errorResId?.let { resourceProvider.getString(it) }
     }
 
-    fun validatePhoneNumber(value: String): String? {
-        return when {
-            value.isBlank() -> resourceProvider.getString(R.string.woo_shipping_field_required_error)
-            value.contains(Regex("\\d")).not() -> {
-                resourceProvider.getString(R.string.shipping_label_destination_address_phone_invalid)
-            }
-
-            else -> null
-        }
-    }
-
-    fun isPhoneValidForShippingLabel(phone: String): Boolean {
-        return phone.isNotBlank() && phone.contains(Regex("\\d"))
-    }
+    fun isInternationalShipment(originCountryCode: String, destinationCountryCode: String) =
+        originCountryCode.isNotBlank() && !originCountryCode.equals(destinationCountryCode, ignoreCase = true)
 
     fun isMissingOriginAddress(address: OriginShippingAddress) = with(address) {
         (address1.isNullOrBlank() && address2.isNullOrBlank()) || city.isNullOrBlank() || postcode.isBlank() ||
@@ -80,5 +69,6 @@ class AddressValidationHelper @Inject constructor(
 
     companion object {
         private const val US_PHONE_NUMBER_LENGTH = 10
+        private const val US_COUNTRY_CODE = "US"
     }
 }

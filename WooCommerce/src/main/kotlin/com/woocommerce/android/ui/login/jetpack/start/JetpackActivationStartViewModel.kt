@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.support.help.HelpOrigin.JETPACK_INSTALLATION
+import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -24,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class JetpackActivationStartViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val unifiedLoginTracker: UnifiedLoginTracker
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val CONNECTION_DISMISSED_KEY = "connection-dismissed"
@@ -48,6 +50,7 @@ class JetpackActivationStartViewModel @Inject constructor(
     }.asLiveData()
 
     init {
+        // Tracks this screen outside a login journey, which the login-only step below does not.
         analyticsTrackerWrapper.track(
             stat = if (navArgs.jetpackStatus.isJetpackInstalled) {
                 AnalyticsEvent.LOGIN_JETPACK_CONNECTION_ERROR_SHOWN
@@ -55,6 +58,18 @@ class JetpackActivationStartViewModel @Inject constructor(
                 AnalyticsEvent.LOGIN_JETPACK_REQUIRED_SCREEN_VIEWED
             }
         )
+        if (navArgs.openedFromLogin) {
+            unifiedLoginTracker.track(
+                flow = unifiedLoginTracker.getFlow() ?: UnifiedLoginTracker.Flow.EPILOGUE,
+                step = if (navArgs.jetpackStatus.isJetpackInstalled) {
+                    UnifiedLoginTracker.Step.JETPACK_NOT_CONNECTED
+                } else {
+                    UnifiedLoginTracker.Step.JETPACK_NOT_INSTALLED
+                },
+                // The tracker appends the selected store, not the site being connected.
+                properties = mapOf(AnalyticsTracker.KEY_URL to UrlUtils.removeScheme(navArgs.siteUrl))
+            )
+        }
     }
 
     fun onHelpButtonClick() {

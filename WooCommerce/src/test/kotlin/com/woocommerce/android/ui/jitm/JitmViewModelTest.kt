@@ -14,10 +14,15 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMContent
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMCta
@@ -683,7 +688,7 @@ class JitmViewModelTest : BaseUnitTest() {
             )
             whenever(
                 bannerMessageRepository.dismissMessage(any(), any(), any())
-            ).thenReturn(true)
+            ).thenReturn(WooResult(true))
 
             whenViewModelIsCreated()
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
@@ -711,7 +716,7 @@ class JitmViewModelTest : BaseUnitTest() {
             )
             whenever(
                 bannerMessageRepository.dismissMessage(any(), any(), any())
-            ).thenReturn(true)
+            ).thenReturn(WooResult(true))
 
             whenViewModelIsCreated()
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
@@ -725,34 +730,7 @@ class JitmViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given jitm dismissed, when dismiss failure, then dismiss failure event is tracked`() {
-        testBlocking {
-            whenever(
-                bannerMessageRepository.getMessagesForPath(any())
-            ).thenReturn(
-                listOf(
-                    provideJitmApiResponse()
-                )
-            )
-            whenever(
-                bannerMessageRepository.dismissMessage(any(), any(), any())
-            ).thenReturn(false)
-
-            whenViewModelIsCreated()
-            (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
-
-            verify(jitmTracker).trackJitmDismissFailure(
-                anyString(),
-                anyString(),
-                anyString(),
-                eq(null),
-                eq(null)
-            )
-        }
-    }
-
-    @Test
-    fun `given jitm dismissed, when dismiss failure, then dismiss failure event is tracked with correct properties`() {
+    fun `given jitm dismissed, when dismiss returns false without error, then dismiss failure is tracked without error`() {
         testBlocking {
             whenever(
                 bannerMessageRepository.getMessagesForPath(any())
@@ -766,7 +744,7 @@ class JitmViewModelTest : BaseUnitTest() {
             )
             whenever(
                 bannerMessageRepository.dismissMessage(any(), eq("12345"), eq("woomobile_ipp"))
-            ).thenReturn(false)
+            ).thenReturn(WooResult(false))
 
             whenViewModelIsCreated()
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
@@ -775,9 +753,44 @@ class JitmViewModelTest : BaseUnitTest() {
                 UTM_SOURCE,
                 "12345",
                 "woomobile_ipp",
-                null,
                 null
             )
+        }
+    }
+
+    @Test
+    fun `given jitm dismissed, when dismiss fails with error, then dismiss failure is tracked with that error`() {
+        testBlocking {
+            val error = WooError(
+                type = WooErrorType.API_ERROR,
+                original = GenericErrorType.SERVER_ERROR,
+                message = "Internal server error",
+                apiErrorCode = "rest_internal_error"
+            )
+            whenever(
+                bannerMessageRepository.getMessagesForPath(any())
+            ).thenReturn(
+                listOf(
+                    provideJitmApiResponse(
+                        id = "12345",
+                        featureClass = "woomobile_ipp"
+                    )
+                )
+            )
+            whenever(
+                bannerMessageRepository.dismissMessage(any(), eq("12345"), eq("woomobile_ipp"))
+            ).thenReturn(WooResult(error))
+
+            whenViewModelIsCreated()
+            (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
+
+            verify(jitmTracker).trackJitmDismissFailure(
+                UTM_SOURCE,
+                "12345",
+                "woomobile_ipp",
+                error
+            )
+            verify(jitmTracker, never()).trackJitmDismissSuccess(any(), any(), any())
         }
     }
 
