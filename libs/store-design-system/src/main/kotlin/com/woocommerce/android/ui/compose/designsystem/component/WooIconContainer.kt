@@ -105,7 +105,7 @@ private fun WooIconContainerTone.toIconContainerColors(): WooIconContainerColors
     return when (this) {
         WooIconContainerTone.Purple -> WooIconContainerColors(palette.wooPurple.shade0, colors.primary)
         WooIconContainerTone.Sandstone -> {
-            WooIconContainerColors(palette.sandstone.shade10, palette.sandstone.shade60)
+            WooIconContainerColors(colors.iconContainer.sandstone, colors.iconContainer.onSandstone)
         }
         WooIconContainerTone.Blue -> WooIconContainerColors(palette.wooBlue.shade20, palette.wooBlue.shade60)
         WooIconContainerTone.Green -> WooIconContainerColors(palette.wooGreen.shade20, palette.wooGreen.shade60)
