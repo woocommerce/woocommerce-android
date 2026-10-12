@@ -135,10 +135,14 @@ class WooShippingEditAddressViewModel @Inject constructor(
     }
 
     private val phoneValidatedFlow = snapshotFlow { phone }
-        .combine(country) { phoneValue, countryValue -> Pair(phoneValue, countryValue) }
+        .combine(country) { phoneValue, countryValue ->
+            Pair(phoneValue.copy(isRequired = isPhoneRequired(countryValue.code)), countryValue)
+        }
         .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { (inputValue, countryValue) ->
-            val validatedPhone = if (inputValue.isRequired && inputValue.error == null) {
-                inputValue.copy(error = validatePhoneByCountry(inputValue.value, countryValue))
+            val validatedPhone = if (inputValue.error == null) {
+                inputValue.copy(
+                    error = addressValidator.validatePhone(inputValue.value, countryValue.code, inputValue.isRequired)
+                )
             } else {
                 inputValue
             }
@@ -187,7 +191,7 @@ class WooShippingEditAddressViewModel @Inject constructor(
             addressValidator.validateFieldRequired(city.value) == null &&
             addressValidator.validateFieldRequired(postalCode.value) == null &&
             (!email.isRequired || addressValidator.validateEmail(email.value) == null) &&
-            (!phone.isRequired || validatePhoneByCountry(phone.value, country) == null)
+            addressValidator.validatePhone(phone.value, country.code, isPhoneRequired(country.code)) == null
     }
 
     val viewState: MutableStateFlow<EditAddressViewState> = MutableStateFlow(
@@ -366,12 +370,11 @@ class WooShippingEditAddressViewModel @Inject constructor(
         }.collectLatest { viewState.value = it }
     }
 
-    private fun validatePhoneByCountry(value: String, country: Location): String? =
-        if (country.code == US_COUNTRY_CODE) {
-            addressValidator.validateUSCustomsPhone(value)
-        } else {
-            addressValidator.validatePhoneNumber(value)
-        }
+    private fun isPhoneRequired(countryCode: String) = when (val currentFlow = navArgs.flow) {
+        is EditAddressFlow.EditOriginAddress -> true
+        is EditAddressFlow.EditDestinationAddress ->
+            addressValidator.isInternationalShipment(currentFlow.originCountryCode, countryCode)
+    }
 
     private fun getErrorState(
         countriesState: LocationState,
@@ -726,12 +729,15 @@ class WooShippingEditAddressViewModel @Inject constructor(
 
     companion object {
         private const val DELAY_TIME_MILLIS = 500L
-        private const val US_COUNTRY_CODE = "US"
     }
 }
 
 @Parcelize
 sealed class EditAddressFlow : Parcelable {
     data class EditOriginAddress(val address: OriginShippingAddress) : EditAddressFlow()
-    data class EditDestinationAddress(val address: DestinationShippingAddress, val orderId: Long) : EditAddressFlow()
+    data class EditDestinationAddress(
+        val address: DestinationShippingAddress,
+        val orderId: Long,
+        val originCountryCode: String
+    ) : EditAddressFlow()
 }
