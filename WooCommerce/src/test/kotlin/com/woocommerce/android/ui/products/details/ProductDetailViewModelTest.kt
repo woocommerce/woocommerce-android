@@ -1107,6 +1107,91 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             Assertions.assertThat(viewModel.hasAttributeChanges()).isTrue()
         }
 
+    @Test
+    fun `given saved attribute changes, when a change is reverted, then the revert is saved too`() = testBlocking {
+        // GIVEN
+        givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
+        whenever(productRepository.updateProductAttributes(any(), any())).thenReturn(true)
+        viewModel.start()
+        viewModel.updateProductDraft(attributes = listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(isVisible = true)))
+        viewModel.saveAttributeChanges()
+
+        // WHEN
+        viewModel.updateProductDraft(attributes = listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
+        viewModel.saveAttributeChanges()
+
+        // THEN
+        verify(productRepository).updateProductAttributes(
+            PRODUCT_REMOTE_ID,
+            listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(isVisible = true))
+        )
+        verify(productRepository).updateProductAttributes(PRODUCT_REMOTE_ID, listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
+    }
+
+    @Test
+    fun `given the attribute save fails, when the changes are saved again, then they are sent again`() = testBlocking {
+        // GIVEN
+        givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
+        whenever(productRepository.updateProductAttributes(any(), any())).thenReturn(false)
+        var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is MultiLiveEvent.Event.ShowSnackbar) snackbar = it
+        }
+        viewModel.start()
+        viewModel.updateProductDraft(attributes = listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(isVisible = true)))
+        viewModel.saveAttributeChanges()
+
+        // WHEN
+        viewModel.saveAttributeChanges()
+
+        // THEN
+        Assertions.assertThat(snackbar)
+            .isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.product_attributes_error_saving))
+        Assertions.assertThat(viewModel.hasAttributeChanges()).isTrue()
+        verify(productRepository, times(2)).updateProductAttributes(
+            PRODUCT_REMOTE_ID,
+            listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(isVisible = true))
+        )
+    }
+
+    @Test
+    fun `given only attribute changes, when they are saved, then the product has no unsaved changes`() = testBlocking {
+        // GIVEN
+        givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
+        whenever(productRepository.updateProductAttributes(any(), any())).thenReturn(true)
+        var hasChanges: Boolean? = null
+        viewModel.hasChanges.observeForever { hasChanges = it }
+        viewModel.start()
+        viewModel.updateProductDraft(attributes = listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(isVisible = true)))
+        Assertions.assertThat(hasChanges).isTrue()
+
+        // WHEN
+        viewModel.saveAttributeChanges()
+
+        // THEN
+        Assertions.assertThat(hasChanges).isFalse()
+    }
+
+    @Test
+    fun `given an unsaved description change, when attribute changes are saved, then the product still has unsaved changes`() =
+        testBlocking {
+            // GIVEN
+            givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
+            whenever(productRepository.updateProductAttributes(any(), any())).thenReturn(true)
+            var hasChanges: Boolean? = null
+            viewModel.hasChanges.observeForever { hasChanges = it }
+            viewModel.start()
+            viewModel.updateProductDraft(description = "Updated product description")
+            viewModel.updateProductDraft(attributes = listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(isVisible = true)))
+
+            // WHEN
+            viewModel.saveAttributeChanges()
+
+            // THEN
+            Assertions.assertThat(hasChanges).isTrue()
+            Assertions.assertThat(viewModel.hasAttributeChanges()).isFalse()
+        }
+
     private suspend fun givenStoredProductAttributes(attributes: List<ProductAttribute>) {
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
         val storedProductAggregate = productAggregate.copy(
