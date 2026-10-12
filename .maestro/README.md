@@ -104,9 +104,8 @@ account with two-factor authentication disabled**. The OAuth password grant cann
 a 2FA challenge non-interactively. Use test accounts only.
 
 The store ships with the WooCommerce sample products, and the script adds 25 completed
-orders, one customer and a `maestro10` coupon. Pass `--no-jetpack-site` with a second
-Jurassic Ninja site created without Jetpack to fill in `MAESTRO_WOO_NO_JETPACK_*` as well.
-The other negative-login fixtures are filled in by hand.
+orders, one customer and a `maestro10` coupon. The negative-login fixtures are filled in
+by hand.
 
 Jurassic Ninja sites expire after 7 days of inactivity. Re-run the script or the skill
 against a new site when that happens; the WordPress.com account already in `.env.local`
