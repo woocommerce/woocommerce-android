@@ -999,11 +999,12 @@ class ProductRestClient @Inject constructor(
         filterOptions: Map<WCProductStore.VariationFilterOption, String>? = null,
         orderCurrency: String? = null,
         posProductsOnly: Boolean = false,
+        sorting: WCProductStore.VariationSorting = WCProductStore.VariationSorting.MENU_ORDER,
         context: String = "view",
     ): WooPayload<List<WCProductVariationModel>> {
         val params = mutableMapOf(
             "per_page" to pageSize.toString(),
-            "orderby" to "menu_order",
+            "orderby" to sorting.orderBy,
             "order" to "asc",
             "offset" to offset.toString(),
             "context" to context
