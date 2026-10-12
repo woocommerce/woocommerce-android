@@ -113,11 +113,6 @@ def has_value(env: dict[str, str], names: list[str]) -> bool:
     return any(bool(env.get(name, "")) for name in names)
 
 
-def url_host(value: str) -> str:
-    value = value.removeprefix("http://").removeprefix("https://")
-    return value.split("/", 1)[0].split(":", 1)[0].lower()
-
-
 def command_check(name: str) -> Check:
     path = shutil.which(name)
     if path:
@@ -222,12 +217,6 @@ def main() -> int:
             checks.append(
                 Check("ok", f"all {len(refs)} referenced WOO_* env value(s) for the {store} store are available")
             )
-
-    no_jetpack_url = next((env[name] for name in candidates_for("WOO_NO_JETPACK_SITE_URL", "lab") if env.get(name)), "")
-    for store in stores:
-        jetpack_url = next((env[name] for name in candidates_for("WOO_JETPACK_STORE_URL", store) if env.get(name)), "")
-        if jetpack_url and no_jetpack_url and url_host(jetpack_url) == url_host(no_jetpack_url):
-            checks.append(Check("fail", f"the {store} Jetpack store URL matches the no-Jetpack site URL"))
 
     if any("destructive" in flow_tags(flow) and flow_store(flow, args.store) == "shared" for flow in flows):
         checks.append(Check("fail", "destructive flows are refused on the shared store"))

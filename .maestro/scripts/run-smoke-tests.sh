@@ -434,7 +434,7 @@ flow_uses_wpcom_credentials() {
   for flow in "${ORDERED_FLOWS[@]}"; do
     name="$(basename "$flow")"
     case "$name" in
-      login_help.yaml|login_no_jetpack.yaml|login_not_wp_site.yaml)
+      login_help.yaml|login_not_wp_site.yaml)
         continue
         ;;
     esac
@@ -443,30 +443,6 @@ flow_uses_wpcom_credentials() {
     fi
   done
   return 1
-}
-
-validate_login_store_env() {
-  flow_uses_wpcom_credentials || return 0
-
-  local selected_host no_jetpack_host upper
-  upper="$(printf '%s' "$STORE" | tr '[:lower:]' '[:upper:]')"
-  selected_host="$(url_host "${MAESTRO_WOO_JETPACK_STORE_URL:-}")"
-  no_jetpack_host="$(url_host "${MAESTRO_WOO_NO_JETPACK_SITE_URL:-}")"
-
-  if [[ -n "$selected_host" && -n "$no_jetpack_host" && "$selected_host" == "$no_jetpack_host" ]]; then
-    cat >&2 <<EOF
-Setup error: selected --store $STORE points the Jetpack store at the same host as the no-Jetpack site.
-
-The selected flow set includes WP.com/Jetpack login flows. Set the $STORE store
-block to a Jetpack-connected WooCommerce store with MAESTRO_WOO_${upper}_JETPACK_STORE_URL,
-MAESTRO_WOO_${upper}_WPCOM_EMAIL, and MAESTRO_WOO_${upper}_WPCOM_PASSWORD.
-Keep MAESTRO_WOO_NO_JETPACK_* only for login_no_jetpack.yaml.
-
-To run only the no-Jetpack flow:
-  .maestro/scripts/run-smoke-tests.sh --no-seed .maestro/flows/login_no_jetpack.yaml
-EOF
-    exit 1
-  fi
 }
 
 read_failed_flow_names() {
@@ -699,39 +675,9 @@ validate_referenced_env() {
 }
 for store in "${RUN_STORES[@]}"; do
   use_store_group "$store"
-  validate_login_store_env
   validate_referenced_env
 done
 use_all_flows
-
-flow_is_selected() {
-  local expected="$1"
-  local flow
-  for flow in "${ORDERED_FLOWS[@]}"; do
-    [[ "$(basename "$flow")" == "$expected" ]] && return 0
-  done
-  return 1
-}
-
-site_url_without_wp_admin() {
-  local value="$1"
-  local candidate="${value%%\#*}"
-  candidate="${candidate%%\?*}"
-  case "$candidate" in
-    */wp-admin/) printf '%s/' "${candidate%/wp-admin/}" ;;
-    */wp-admin) printf '%s/' "${candidate%/wp-admin}" ;;
-    *) printf '%s' "$value" ;;
-  esac
-}
-
-prepare_login_flow_env() {
-  if flow_is_selected "login_no_jetpack.yaml"; then
-    export MAESTRO_WOO_NO_JETPACK_SITE_URL="$(
-      site_url_without_wp_admin "$MAESTRO_WOO_NO_JETPACK_SITE_URL"
-    )"
-  fi
-}
-prepare_login_flow_env
 
 RECORDER_PID=""
 CLEANUP_DONE="no"

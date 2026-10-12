@@ -17,10 +17,8 @@ first. Before each store's flows, the runner clears the app data if the app was 
 in this run or an earlier one, so the next flow logs in with this store's account. `--store lab|shared` runs every
 selected flow against one store instead.
 
-The no-Jetpack login scenario uses its own `MAESTRO_WOO_NO_JETPACK_*` variables. Do not reuse those Jurassic Ninja
-site credentials as the `lab` store block when running the broader suite. The runner removes a trailing
-`/wp-admin` or `/wp-admin/` from this flow's site URL. The not-Woo store login runs against the shared store and
-logs in to a WordPress.com-hosted site with that store's account.
+The not-Woo store login runs against the shared store and logs in to a WordPress.com-hosted site with that store's
+account.
 
 The runner refuses destructive flows against the shared store. Run them with `--store lab`.
 
