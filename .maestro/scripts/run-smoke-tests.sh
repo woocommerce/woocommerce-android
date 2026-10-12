@@ -1330,7 +1330,7 @@ for repeat_index in $(seq 1 "$REPEAT"); do
       flow_device="$POS_DEVICE_SERIAL"
     fi
     if [[ "$flow_device" != "$DEVICE_SERIAL" ]]; then
-      echo "--- Switching to $flow_device for the POS flows"
+      echo "--- Switching to $flow_device"
       DEVICE_SERIAL="$flow_device"
       MAESTRO_DEVICE_ARGS=(--device "$DEVICE_SERIAL")
       # The app on this device may be signed in to any store, so check it again.
