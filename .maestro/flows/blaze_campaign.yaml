@@ -21,7 +21,6 @@ appId: com.woocommerce.android
 name: "Blaze - Campaign creation"
 tags:
   - smoke_extended
-  - flaky_quarantine
   - hub_menu
 ---
 - runFlow:

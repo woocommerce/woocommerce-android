@@ -13,7 +13,6 @@ appId: com.woocommerce.android
 name: "Orders - Barcode scanner opens"
 tags:
   - smoke_extended
-  - flaky_quarantine
   - orders
   - system_surface
 ---

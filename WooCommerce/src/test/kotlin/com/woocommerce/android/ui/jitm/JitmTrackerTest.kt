@@ -7,8 +7,10 @@ import com.woocommerce.android.analytics.AnalyticsEvent.JITM_DISMISS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_FETCH_FAILURE
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_FETCH_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_FEATURE_CLASS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_GROUP
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_ID
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CODE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
@@ -21,6 +23,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 
 @ExperimentalCoroutinesApi
@@ -119,7 +123,7 @@ class JitmTrackerTest : BaseUnitTest() {
             jitmTracker.trackJitmDisplayed(
                 UTM_SOURCE,
                 "12345",
-                "test_feature_class"
+                "test_jitm_group"
             )
 
             verify(trackerWrapper).track(
@@ -127,7 +131,7 @@ class JitmTrackerTest : BaseUnitTest() {
                 mapOf(
                     KEY_SOURCE to UTM_SOURCE,
                     JITM_ID to "12345",
-                    JITM_FEATURE_CLASS to "test_feature_class"
+                    JITM_GROUP to "test_jitm_group"
                 ),
             )
         }
@@ -155,7 +159,7 @@ class JitmTrackerTest : BaseUnitTest() {
             jitmTracker.trackJitmCtaTapped(
                 UTM_SOURCE,
                 "12345",
-                "test_feature_class"
+                "test_jitm_group"
             )
 
             verify(trackerWrapper).track(
@@ -163,7 +167,7 @@ class JitmTrackerTest : BaseUnitTest() {
                 mapOf(
                     KEY_SOURCE to UTM_SOURCE,
                     JITM_ID to "12345",
-                    JITM_FEATURE_CLASS to "test_feature_class"
+                    JITM_GROUP to "test_jitm_group"
                 ),
             )
         }
@@ -191,7 +195,7 @@ class JitmTrackerTest : BaseUnitTest() {
             jitmTracker.trackJitmDismissTapped(
                 UTM_SOURCE,
                 "12345",
-                "test_feature_class"
+                "test_jitm_group"
             )
 
             verify(trackerWrapper).track(
@@ -199,7 +203,7 @@ class JitmTrackerTest : BaseUnitTest() {
                 mapOf(
                     KEY_SOURCE to UTM_SOURCE,
                     JITM_ID to "12345",
-                    JITM_FEATURE_CLASS to "test_feature_class"
+                    JITM_GROUP to "test_jitm_group"
                 )
             )
         }
@@ -227,7 +231,7 @@ class JitmTrackerTest : BaseUnitTest() {
             jitmTracker.trackJitmDismissSuccess(
                 UTM_SOURCE,
                 "12345",
-                "test_feature_class"
+                "test_jitm_group"
             )
 
             verify(trackerWrapper).track(
@@ -235,42 +239,25 @@ class JitmTrackerTest : BaseUnitTest() {
                 mapOf(
                     KEY_SOURCE to UTM_SOURCE,
                     JITM_ID to "12345",
-                    JITM_FEATURE_CLASS to "test_feature_class"
+                    JITM_GROUP to "test_jitm_group"
                 )
             )
         }
     }
 
     @Test
-    fun `when track jitm dismiss failure invoked, then JITM_DISMISS_FAILURE tracked`() {
+    fun `given error with api error code, when track jitm dismiss failure invoked, then api error code is tracked`() {
         testBlocking {
             jitmTracker.trackJitmDismissFailure(
                 UTM_SOURCE,
                 "12345",
-                "",
-                WooErrorType.GENERIC_ERROR,
-                "test error"
-            )
-
-            verify(trackerWrapper).track(
-                eq(JITM_DISMISS_FAILURE),
-                any(),
-                any(),
-                any(),
-                any(),
-            )
-        }
-    }
-
-    @Test
-    fun `when track jitm dismiss failure invoked, then JITM_DISMISS_FAILURE tracked with correct properties`() {
-        testBlocking {
-            jitmTracker.trackJitmDismissFailure(
-                UTM_SOURCE,
-                "12345",
-                "test_feature_class",
-                WooErrorType.GENERIC_ERROR,
-                "test error"
+                "test_jitm_group",
+                WooError(
+                    type = WooErrorType.API_ERROR,
+                    original = GenericErrorType.SERVER_ERROR,
+                    message = "test error",
+                    apiErrorCode = "rest_invalid_signature"
+                )
             )
 
             verify(trackerWrapper).track(
@@ -278,11 +265,113 @@ class JitmTrackerTest : BaseUnitTest() {
                 mapOf(
                     KEY_SOURCE to UTM_SOURCE,
                     JITM_ID to "12345",
-                    JITM_FEATURE_CLASS to "test_feature_class",
-                ),
-                errorContext = "JitmTracker",
-                errorType = WooErrorType.GENERIC_ERROR.name,
-                errorDescription = "test error",
+                    JITM_GROUP to "test_jitm_group",
+                    KEY_ERROR_CODE to "rest_invalid_signature",
+                    KEY_ERROR_DESC to "test error",
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given error without api error code, when track jitm dismiss failure invoked, then error type is tracked`() {
+        testBlocking {
+            jitmTracker.trackJitmDismissFailure(
+                UTM_SOURCE,
+                "12345",
+                "test_jitm_group",
+                WooError(
+                    type = WooErrorType.TIMEOUT,
+                    original = GenericErrorType.TIMEOUT,
+                    message = "timeout"
+                )
+            )
+
+            verify(trackerWrapper).track(
+                JITM_DISMISS_FAILURE,
+                mapOf(
+                    KEY_SOURCE to UTM_SOURCE,
+                    JITM_ID to "12345",
+                    JITM_GROUP to "test_jitm_group",
+                    KEY_ERROR_CODE to WooErrorType.TIMEOUT.name,
+                    KEY_ERROR_DESC to "timeout",
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given error with empty api error code and message, when track jitm dismiss failure invoked, then only error type is tracked`() {
+        testBlocking {
+            jitmTracker.trackJitmDismissFailure(
+                UTM_SOURCE,
+                "12345",
+                "test_jitm_group",
+                WooError(
+                    type = WooErrorType.NO_CONNECTION,
+                    original = GenericErrorType.NO_CONNECTION,
+                    message = "",
+                    apiErrorCode = ""
+                )
+            )
+
+            verify(trackerWrapper).track(
+                JITM_DISMISS_FAILURE,
+                mapOf(
+                    KEY_SOURCE to UTM_SOURCE,
+                    JITM_ID to "12345",
+                    JITM_GROUP to "test_jitm_group",
+                    KEY_ERROR_CODE to WooErrorType.NO_CONNECTION.name,
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given no error, when track jitm dismiss failure invoked, then generic error code is tracked`() {
+        testBlocking {
+            jitmTracker.trackJitmDismissFailure(
+                UTM_SOURCE,
+                "12345",
+                "test_jitm_group",
+                null
+            )
+
+            verify(trackerWrapper).track(
+                JITM_DISMISS_FAILURE,
+                mapOf(
+                    KEY_SOURCE to UTM_SOURCE,
+                    JITM_ID to "12345",
+                    JITM_GROUP to "test_jitm_group",
+                    KEY_ERROR_CODE to WooErrorType.GENERIC_ERROR.name,
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given error with api error code and blank message, when track jitm dismiss failure invoked, then only error code is tracked`() {
+        testBlocking {
+            jitmTracker.trackJitmDismissFailure(
+                UTM_SOURCE,
+                "12345",
+                "test_jitm_group",
+                WooError(
+                    type = WooErrorType.API_ERROR,
+                    original = GenericErrorType.SERVER_ERROR,
+                    message = " ",
+                    apiErrorCode = "rest_invalid_signature"
+                )
+            )
+
+            verify(trackerWrapper).track(
+                JITM_DISMISS_FAILURE,
+                mapOf(
+                    KEY_SOURCE to UTM_SOURCE,
+                    JITM_ID to "12345",
+                    JITM_GROUP to "test_jitm_group",
+                    KEY_ERROR_CODE to "rest_invalid_signature",
+                )
             )
         }
     }

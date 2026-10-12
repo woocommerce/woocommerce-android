@@ -77,6 +77,15 @@ data class RemoteTapToPayLocalNetworkPermissionDenied(
     primaryActionLabel = R.string.card_reader_mode_local_network_permission_open_settings,
 )
 
+data class RemoteTapToPayNfcDisabled(
+    override val onPrimaryActionClicked: (() -> Unit),
+) : RemoteTapToPayViewState(
+    headerLabel = R.string.card_reader_mode_nfc_disabled_header,
+    paymentStateLabel = UiStringRes(R.string.card_reader_mode_nfc_disabled_subtitle),
+    illustration = R.drawable.img_card_reader_tpp_connecting,
+    primaryActionLabel = R.string.card_reader_mode_nfc_disabled_open_settings,
+)
+
 data class RemoteTapToPayReadyToPair(
     val deviceName: String,
     val fingerprintSuffix: String,

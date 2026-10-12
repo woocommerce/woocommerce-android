@@ -15,7 +15,6 @@ appId: com.woocommerce.android
 name: "Hub Menu - Coupons"
 tags:
   - smoke_extended
-  - flaky_quarantine
   - hub_menu
   - destructive
 ---
