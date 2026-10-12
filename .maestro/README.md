@@ -173,13 +173,13 @@ Profiles are copy/paste-safe presets:
   for the app shortcuts flow.
 - `pos`: the POS flows only, quarantine excluded, on the tablet passed with `--device`.
 
-`full` and `pos` seed their fixtures without `--seed`, because they include destructive flows. Pass `--no-seed` to turn
-that off. A selection that mixes phone and POS flows needs `--pos-device`.
+`full` and `pos` seed their fixtures without `--seed`, because they include destructive flows. A selection that mixes
+phone and POS flows needs `--pos-device`. A selection of only POS flows runs on `--pos-device` when it is given.
 
 Use `--plan` with a profile or tag selection to print the exact store, repeat count, filters, and ordered flow list.
 Planning is side-effect-free: it does not load credentials, create output directories, or call Maestro/ADB.
-Without `--exclude-tags`, `flaky_quarantine` stays excluded unless the profile includes it,
-`--include-quarantine` is passed, or `--include-tags` names it. An explicit `--exclude-tags` list
+Without `--exclude-tags`, `flaky_quarantine` stays excluded unless `--include-quarantine` is passed
+or `--include-tags` names it. An explicit `--exclude-tags` list
 replaces that default, so add `flaky_quarantine` to it to keep quarantined flows out. A zero-flow
 selection is an error in both the runner and doctor.
 
@@ -190,7 +190,8 @@ The runner:
 
 - targets the production package (`com.woocommerce.android`) and rejects dev or debuggable APKs;
 - downloads and installs the latest stable GitHub release when no production app or candidate APK is installed;
-- selects one connected device automatically, or prompts when several are attached;
+- selects one connected device automatically, or prompts when several are attached, and runs the POS flows on
+  `--pos-device`;
 - captures and restores animation settings;
 - turns off the device's autofill service during the run, so password save sheets cannot cover the app, and restores
   it afterwards;
