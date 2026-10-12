@@ -7,7 +7,7 @@ set -euo pipefail
 #   - lab store, or the shared store for flows tagged store_shared
 #   - smoke_core only by default
 #   - flaky_quarantine excluded unless explicitly requested
-#   - no REST fixture seed unless --seed is passed
+#   - no REST fixture seed unless --seed is passed or the profile seeds
 #   - animation settings captured and restored
 #   - autofill service turned off and restored
 #   - one retry per failed non-destructive flow, recorded as flaky
@@ -36,12 +36,15 @@ STORE="lab"
 STORE_OVERRIDE=""
 APK_PATH=""
 DEVICE_SELECTOR=""
+POS_DEVICE_SELECTOR=""
 TARGET=""
 PROFILE=""
 RERUN_FAILED_FILE=""
 OPEN_REPORT="auto"
 RECORD="yes"
 SEED="no"
+SEED_EXPLICIT="no"
+PROFILE_SEEDS="no"
 CLEANUP="yes"
 SWEEP_DRY_RUN="no"
 OUTPUT_ROOT=""
@@ -70,7 +73,8 @@ Defaults:
 Usage:
   .maestro/scripts/run-smoke-tests.sh
   .maestro/scripts/run-smoke-tests.sh --profile core
-  .maestro/scripts/run-smoke-tests.sh --profile phone-full --seed --device emulator-5554
+  .maestro/scripts/run-smoke-tests.sh --profile full --device emulator-5554 --pos-device emulator-5556
+  .maestro/scripts/run-smoke-tests.sh --profile pos --device emulator-5556
   .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --include-quarantine --seed --store lab
   .maestro/scripts/run-smoke-tests.sh --store shared --include-tags smoke_core
   .maestro/scripts/run-smoke-tests.sh --device emulator-5554 --apk path/to/app.apk
@@ -79,9 +83,11 @@ Usage:
   .maestro/scripts/run-smoke-tests.sh .maestro/flows/orders_list_and_search.yaml
 
 Options:
-  --profile name              Preset: core, phone-full, pos-tablet, android-system.
+  --profile name              Preset: core, full, pos. full and pos skip flaky_quarantine and seed fixtures.
   --store lab|shared          Run every selected flow against this store. Default: each flow's own store.
   --device serial|avd-name    Device serial or emulator AVD name.
+  --pos-device serial|avd-name
+                              Tablet for the POS flows when the selection also has phone flows.
   --apk path                  Validate and install a production release APK before running.
   --repeat N                  Run the selected flow set N times.
   -t, --tag tag               Alias for --include-tags.
@@ -128,6 +134,7 @@ apply_profile() {
     case "$key" in
       include) add_csv_tags INCLUDE_TAGS "$value" ;;
       exclude) add_csv_tags EXCLUDE_TAGS "$value" ;;
+      seed) PROFILE_SEEDS="$value" ;;
     esac
   done <<< "$profile_output"
   INCLUDE_TAGS_EXPLICIT="yes"
@@ -151,6 +158,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --device)
       DEVICE_SELECTOR="${2:?--device requires a serial or AVD name}"
+      shift 2
+      ;;
+    --pos-device)
+      POS_DEVICE_SELECTOR="${2:?--pos-device requires a serial or AVD name}"
       shift 2
       ;;
     --store)
@@ -198,10 +209,12 @@ while [[ $# -gt 0 ]]; do
       ;;
     --no-seed)
       SEED="no"
+      SEED_EXPLICIT="yes"
       shift
       ;;
     --seed)
       SEED="yes"
+      SEED_EXPLICIT="yes"
       shift
       ;;
     --no-cleanup)
@@ -238,6 +251,9 @@ done
 if [[ -n "$RERUN_FAILED_FILE" && -n "$TARGET" ]]; then
   echo "--rerun-failed cannot be combined with a positional flow target." >&2
   exit 2
+fi
+if [[ "$PROFILE_SEEDS" == "yes" && "$SEED_EXPLICIT" == "no" ]]; then
+  SEED="yes"
 fi
 if [[ "$STORE" != "lab" && "$STORE" != "shared" ]]; then
   echo "--store must be lab or shared" >&2
@@ -549,19 +565,41 @@ flow_store() {
   fi
 }
 
-# Lab flows run first, then the flows that need the shared store.
+# POS flows need a tablet. When the selection also has phone flows, they run last
+# on --pos-device, in the same run, so the two never share the lab store at once.
+POS_FLOW_COUNT=0
+for flow in "${ORDERED_FLOWS[@]}"; do
+  if flow_has_any_tag "$flow" pos_tablet; then
+    POS_FLOW_COUNT=$((POS_FLOW_COUNT + 1))
+  fi
+done
+USES_POS_DEVICE="no"
+if [[ "$POS_FLOW_COUNT" -gt 0 && "$POS_FLOW_COUNT" -lt ${#ORDERED_FLOWS[@]} ]]; then
+  if [[ -z "$POS_DEVICE_SELECTOR" ]]; then
+    echo "The selection has POS flows, which need a tablet. Pass --pos-device with a tablet serial or AVD name." >&2
+    exit 2
+  fi
+  USES_POS_DEVICE="yes"
+fi
+
+# Lab flows run first, then the flows that need the shared store, then the POS flows.
 LAB_FLOWS=()
 SHARED_FLOWS=()
+POS_FLOWS=()
 for flow in "${ORDERED_FLOWS[@]}"; do
-  if [[ "$(flow_store "$flow")" == "shared" ]]; then
+  if [[ "$USES_POS_DEVICE" == "yes" ]] && flow_has_any_tag "$flow" pos_tablet; then
+    POS_FLOWS+=("$flow")
+  elif [[ "$(flow_store "$flow")" == "shared" ]]; then
     SHARED_FLOWS+=("$flow")
   else
     LAB_FLOWS+=("$flow")
   fi
 done
-ORDERED_FLOWS=(${LAB_FLOWS[@]+"${LAB_FLOWS[@]}"} ${SHARED_FLOWS[@]+"${SHARED_FLOWS[@]}"})
+ORDERED_FLOWS=(
+  ${LAB_FLOWS[@]+"${LAB_FLOWS[@]}"} ${SHARED_FLOWS[@]+"${SHARED_FLOWS[@]}"} ${POS_FLOWS[@]+"${POS_FLOWS[@]}"}
+)
 RUN_STORES=()
-[[ ${#LAB_FLOWS[@]} -gt 0 ]] && RUN_STORES+=(lab)
+[[ $((${#LAB_FLOWS[@]} + ${#POS_FLOWS[@]})) -gt 0 ]] && RUN_STORES+=(lab)
 [[ ${#SHARED_FLOWS[@]} -gt 0 ]] && RUN_STORES+=(shared)
 
 use_store_group() {
@@ -569,13 +607,15 @@ use_store_group() {
   if [[ "$STORE" == "shared" ]]; then
     ORDERED_FLOWS=("${SHARED_FLOWS[@]}")
   else
-    ORDERED_FLOWS=("${LAB_FLOWS[@]}")
+    ORDERED_FLOWS=(${LAB_FLOWS[@]+"${LAB_FLOWS[@]}"} ${POS_FLOWS[@]+"${POS_FLOWS[@]}"})
   fi
   select_store_env
 }
 
 use_all_flows() {
-  ORDERED_FLOWS=(${LAB_FLOWS[@]+"${LAB_FLOWS[@]}"} ${SHARED_FLOWS[@]+"${SHARED_FLOWS[@]}"})
+  ORDERED_FLOWS=(
+    ${LAB_FLOWS[@]+"${LAB_FLOWS[@]}"} ${SHARED_FLOWS[@]+"${SHARED_FLOWS[@]}"} ${POS_FLOWS[@]+"${POS_FLOWS[@]}"}
+  )
 }
 
 SUITE_HAS_DESTRUCTIVE="no"
@@ -678,7 +718,6 @@ prepare_login_flow_env() {
 }
 prepare_login_flow_env
 
-SETTINGS_CAPTURED="no"
 RECORDER_PID=""
 CLEANUP_DONE="no"
 CLEANUP_STATUS="NOT_REQUESTED"
@@ -741,57 +780,64 @@ resolve_device() {
   printf '%s' "${DEVICE_SERIALS[$((selected - 1))]}"
 }
 
-DEVICE_SERIAL="$(resolve_device "$DEVICE_SELECTOR")"
+PHONE_SERIAL="$(resolve_device "$DEVICE_SELECTOR")"
+RUN_DEVICES=("$PHONE_SERIAL")
+POS_DEVICE_SERIAL=""
+if [[ "$USES_POS_DEVICE" == "yes" ]]; then
+  POS_DEVICE_SERIAL="$(resolve_device "$POS_DEVICE_SELECTOR")"
+  if [[ "$POS_DEVICE_SERIAL" == "$PHONE_SERIAL" ]]; then
+    echo "--pos-device must be a different device than --device." >&2
+    exit 2
+  fi
+  RUN_DEVICES+=("$POS_DEVICE_SERIAL")
+fi
+DEVICE_SERIAL="$PHONE_SERIAL"
 MAESTRO_DEVICE_ARGS=(--device "$DEVICE_SERIAL")
-echo "Device: $DEVICE_SERIAL"
+echo "Device: $PHONE_SERIAL"
+[[ -n "$POS_DEVICE_SERIAL" ]] && echo "POS device: $POS_DEVICE_SERIAL"
 echo "--- Checking device language"
-python3 "$CHECK_DEVICE_LOCALE_SCRIPT" --device "$DEVICE_SERIAL"
+for serial in "${RUN_DEVICES[@]}"; do
+  python3 "$CHECK_DEVICE_LOCALE_SCRIPT" --device "$serial"
+done
 
 ANIMATION_KEYS=(window_animation_scale transition_animation_scale animator_duration_scale)
+# One entry per device and key, in RUN_DEVICES order.
 ORIGINAL_ANIMATION_VALUES=()
+# Google Password Manager's save sheet covers the app after a password is typed.
+ORIGINAL_AUTOFILL_SERVICES=()
+PREPARED_DEVICES=0
 
-capture_animation_settings() {
-  local key value
-  ORIGINAL_ANIMATION_VALUES=()
+prepare_device_settings() {
+  local serial="$1" key value
   for key in "${ANIMATION_KEYS[@]}"; do
-    value="$(adb -s "$DEVICE_SERIAL" shell settings get global "$key" 2>/dev/null | tr -d '\r' || true)"
+    value="$(adb -s "$serial" shell settings get global "$key" 2>/dev/null | tr -d '\r' || true)"
     ORIGINAL_ANIMATION_VALUES+=("${value:-1}")
-    adb -s "$DEVICE_SERIAL" shell settings put global "$key" 0 >/dev/null
+    adb -s "$serial" shell settings put global "$key" 0 >/dev/null
   done
-  SETTINGS_CAPTURED="yes"
+  value="$(adb -s "$serial" shell settings get secure autofill_service 2>/dev/null | tr -d '\r' || true)"
+  ORIGINAL_AUTOFILL_SERVICES+=("$value")
+  adb -s "$serial" shell settings put secure autofill_service null >/dev/null
+  PREPARED_DEVICES=$((PREPARED_DEVICES + 1))
 }
 
-restore_animation_settings() {
-  [[ "$SETTINGS_CAPTURED" == "yes" ]] || return 0
-  local index key value
-  index=0
-  for key in "${ANIMATION_KEYS[@]}"; do
-    value="${ORIGINAL_ANIMATION_VALUES[$index]:-1}"
-    adb -s "$DEVICE_SERIAL" shell settings put global "$key" "$value" >/dev/null 2>&1 || true
+restore_device_settings() {
+  local index=0 serial key value autofill offset
+  while [[ "$index" -lt "$PREPARED_DEVICES" ]]; do
+    serial="${RUN_DEVICES[$index]}"
+    offset=$((index * ${#ANIMATION_KEYS[@]}))
+    for key in "${ANIMATION_KEYS[@]}"; do
+      value="${ORIGINAL_ANIMATION_VALUES[$offset]:-1}"
+      adb -s "$serial" shell settings put global "$key" "$value" >/dev/null 2>&1 || true
+      offset=$((offset + 1))
+    done
+    autofill="${ORIGINAL_AUTOFILL_SERVICES[$index]:-}"
+    if [[ -z "$autofill" || "$autofill" == "null" ]]; then
+      adb -s "$serial" shell settings delete secure autofill_service >/dev/null 2>&1 || true
+    else
+      adb -s "$serial" shell settings put secure autofill_service "$autofill" >/dev/null 2>&1 || true
+    fi
     index=$((index + 1))
   done
-}
-
-# Google Password Manager's save sheet covers the app after a password is typed.
-ORIGINAL_AUTOFILL_SERVICE=""
-AUTOFILL_CAPTURED="no"
-
-disable_autofill_service() {
-  ORIGINAL_AUTOFILL_SERVICE="$(
-    adb -s "$DEVICE_SERIAL" shell settings get secure autofill_service 2>/dev/null | tr -d '\r' || true
-  )"
-  adb -s "$DEVICE_SERIAL" shell settings put secure autofill_service null >/dev/null
-  AUTOFILL_CAPTURED="yes"
-}
-
-restore_autofill_service() {
-  [[ "$AUTOFILL_CAPTURED" == "yes" ]] || return 0
-  if [[ -z "$ORIGINAL_AUTOFILL_SERVICE" || "$ORIGINAL_AUTOFILL_SERVICE" == "null" ]]; then
-    adb -s "$DEVICE_SERIAL" shell settings delete secure autofill_service >/dev/null 2>&1 || true
-  else
-    adb -s "$DEVICE_SERIAL" shell settings put secure autofill_service "$ORIGINAL_AUTOFILL_SERVICE" \
-      >/dev/null 2>&1 || true
-  fi
 }
 
 prepare_device_media_fixture() {
@@ -827,18 +873,19 @@ collapse_system_ui() {
 }
 
 cleanup_on_exit() {
-  local exit_code=$?
+  local exit_code=$? serial
   # Attempts record from a command substitution, so the recorder's PID never
-  # reaches this shell; stop it on the device and drop unpulled recordings.
-  stop_screenrecord
-  adb -s "$DEVICE_SERIAL" shell "rm -f /sdcard/maestro_*.mp4" >/dev/null 2>&1 || true
+  # reaches this shell; stop it on each device and drop unpulled recordings.
+  for serial in "${RUN_DEVICES[@]}"; do
+    adb -s "$serial" shell "pkill -INT screenrecord 2>/dev/null || true" >/dev/null 2>&1 || true
+    adb -s "$serial" shell "rm -f /sdcard/maestro_*.mp4" >/dev/null 2>&1 || true
+  done
   if [[ "$CLEANUP_DONE" != "yes" && "$CLEANUP" == "yes" && "$SEED" == "yes" && -f "$MANIFEST_FILE" ]]; then
     if ! "$SEED_SCRIPT" cleanup --manifest "$MANIFEST_FILE" --store lab; then
       exit_code=1
     fi
   fi
-  restore_animation_settings
-  restore_autofill_service
+  restore_device_settings
   exit "$exit_code"
 }
 trap cleanup_on_exit EXIT
@@ -846,15 +893,15 @@ trap cleanup_on_exit EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
-capture_animation_settings
-disable_autofill_service
-
 echo "--- Ensuring production release app"
-release_app_args=(--device "$DEVICE_SERIAL")
-if [[ -n "$APK_PATH" ]]; then
-  release_app_args+=(--apk "$APK_PATH")
-fi
-python3 "$ENSURE_RELEASE_APP_SCRIPT" "${release_app_args[@]}"
+for serial in "${RUN_DEVICES[@]}"; do
+  prepare_device_settings "$serial"
+  release_app_args=(--device "$serial")
+  if [[ -n "$APK_PATH" ]]; then
+    release_app_args+=(--apk "$APK_PATH")
+  fi
+  python3 "$ENSURE_RELEASE_APP_SCRIPT" "${release_app_args[@]}"
+done
 
 prepare_device_media_fixture
 
@@ -1073,6 +1120,9 @@ common_run_args() {
   if [[ -n "$DEVICE_SELECTOR" ]]; then
     printf '%s\0%s\0' --device "$DEVICE_SELECTOR"
   fi
+  if [[ -n "$POS_DEVICE_SELECTOR" ]]; then
+    printf '%s\0%s\0' --pos-device "$POS_DEVICE_SELECTOR"
+  fi
   if [[ -n "$APK_PATH" ]]; then
     printf '%s\0%s\0' --apk "$APK_PATH"
   fi
@@ -1122,7 +1172,10 @@ build_doctor_command() {
     args+=(--store "$STORE_OVERRIDE")
   fi
   # The doctor only accepts adb serials, not AVD names.
-  args+=(--device "$DEVICE_SERIAL")
+  args+=(--device "$PHONE_SERIAL")
+  if [[ -n "$POS_DEVICE_SERIAL" ]]; then
+    args+=(--pos-device "$POS_DEVICE_SERIAL")
+  fi
   if [[ "$SEED" == "yes" ]]; then
     args+=(--seed)
   fi
@@ -1260,6 +1313,17 @@ forget_store() {
 run_index=0
 for repeat_index in $(seq 1 "$REPEAT"); do
   for flow in "${ORDERED_FLOWS[@]}"; do
+    flow_device="$PHONE_SERIAL"
+    if [[ "$USES_POS_DEVICE" == "yes" ]] && flow_has_any_tag "$flow" pos_tablet; then
+      flow_device="$POS_DEVICE_SERIAL"
+    fi
+    if [[ "$flow_device" != "$DEVICE_SERIAL" ]]; then
+      echo "--- Switching to $flow_device for the POS flows"
+      DEVICE_SERIAL="$flow_device"
+      MAESTRO_DEVICE_ARGS=(--device "$DEVICE_SERIAL")
+      # The app on this device may be signed in to any store, so check it again.
+      ACTIVE_STORE=""
+    fi
     if [[ "$(flow_store "$flow")" != "$ACTIVE_STORE" ]]; then
       switch_store "$(flow_store "$flow")"
     fi
@@ -1410,7 +1474,7 @@ pre { background: #f6f8fa; border: 1px solid #d8dee4; border-radius: 6px; paddin
 </head>
 <body>
 <h1>WooCommerce Android Maestro smoke report</h1>
-<p><strong>Run:</strong> <code>$SUITE_RUN_ID</code> | <strong>Store:</strong> $RUN_STORES_LABEL | <strong>Device:</strong> <code>$DEVICE_SERIAL</code> | <strong>Duration:</strong> ${SUITE_DURATION}s</p>
+<p><strong>Run:</strong> <code>$SUITE_RUN_ID</code> | <strong>Store:</strong> $RUN_STORES_LABEL | <strong>Device:</strong> <code>$PHONE_SERIAL</code>${POS_DEVICE_SERIAL:+ | <strong>POS device:</strong> <code>$POS_DEVICE_SERIAL</code>} | <strong>Duration:</strong> ${SUITE_DURATION}s</p>
 <p><strong>Result:</strong> $PASSED passed ($FLAKY flaky), $FAILED failed out of $TOTAL_RUNS flow executions. <strong>Cleanup:</strong> $CLEANUP_STATUS.</p>
 <section class="commands">
   <div class="command-card">

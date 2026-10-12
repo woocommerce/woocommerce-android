@@ -48,10 +48,10 @@ class SmokeCliContractTest(unittest.TestCase):
         doctor_source = DOCTOR.read_text(encoding="utf-8")
 
         self.assertLess(
-            runner_source.index('python3 "$CHECK_DEVICE_LOCALE_SCRIPT" --device "$DEVICE_SERIAL"'),
+            runner_source.index('python3 "$CHECK_DEVICE_LOCALE_SCRIPT" --device "$serial"'),
             runner_source.index('echo "--- Ensuring production release app"'),
         )
-        self.assertIn("ensure_english_device_locale(selected_device)", doctor_source)
+        self.assertIn("ensure_english_device_locale(device)", doctor_source)
 
     def test_cleanup_finishes_before_reports_and_participates_in_exit_status(self) -> None:
         source = RUNNER.read_text(encoding="utf-8")
@@ -210,6 +210,7 @@ class SmokeCliContractTest(unittest.TestCase):
         screenshot_names: tuple[str, ...] = (),
         device_store_host: str = "",
         failing_flows: tuple[str, ...] = (),
+        attached_devices: tuple[str, ...] = ("emulator-5554",),
     ) -> tuple[subprocess.CompletedProcess[str], str, Path]:
         temporary_directory = tempfile.TemporaryDirectory()
         self.addCleanup(temporary_directory.cleanup)
@@ -279,8 +280,9 @@ class SmokeCliContractTest(unittest.TestCase):
             f"  printf 'ADB:%s\\n' \"$*\" >> '{maestro_args}'\n"
             "fi\n"
             "if [ \"${1:-}\" = devices ]; then\n"
-            "  printf 'List of devices attached\\nemulator-5554\\tdevice\\n'\n"
-            "elif printf '%s\\n' \"$*\" | grep -q 'settings get secure autofill_service'; then\n"
+            "  printf 'List of devices attached\\n'\n"
+            + "".join(f"  printf '%s\\tdevice\\n' '{serial}'\n" for serial in attached_devices)
+            + "elif printf '%s\\n' \"$*\" | grep -q 'settings get secure autofill_service'; then\n"
             f"  printf '%s\\n' '{GOOGLE_AUTOFILL_SERVICE}'\n"
             "elif printf '%s\\n' \"$*\" | grep -q 'shell cmd locale get-device-locale'; then\n"
             f"  printf '%s\\n' '{device_locale}'\n"
@@ -353,10 +355,15 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assert_golden(result, "core-plan.txt")
         self.assertFalse(output_root.exists())
 
-    def test_phone_full_plan_includes_quarantined_phone_flows(self) -> None:
-        result, _ = self.run_runner("--plan", "--profile", "phone-full")
+    def test_full_plan_skips_quarantine_and_runs_pos_flows_last(self) -> None:
+        result, _ = self.run_runner("--plan", "--profile", "full")
 
-        self.assert_golden(result, "phone-full-plan.txt")
+        self.assert_golden(result, "full-plan.txt")
+
+    def test_pos_plan_skips_quarantine(self) -> None:
+        result, _ = self.run_runner("--plan", "--profile", "pos")
+
+        self.assert_golden(result, "pos-plan.txt")
 
     def test_extended_plan_requires_explicit_quarantine_opt_in(self) -> None:
         result, _ = self.run_runner(
@@ -411,11 +418,11 @@ class SmokeCliContractTest(unittest.TestCase):
     def test_doctor_reports_destructive_selections_the_runner_refuses(self) -> None:
         cases = [
             (
-                ["--profile", "phone-full"],
+                ["--include-tags", "destructive"],
                 "[FAIL] destructive flows are selected, so the run needs --seed",
             ),
             (
-                ["--profile", "phone-full", "--seed", "--store", "shared"],
+                ["--profile", "full", "--store", "shared"],
                 "[FAIL] destructive flows are refused on the shared store",
             ),
         ]
@@ -681,6 +688,51 @@ class SmokeCliContractTest(unittest.TestCase):
             ],
             events,
         )
+
+    def test_a_selection_with_phone_and_pos_flows_needs_a_pos_device(self) -> None:
+        result, adb_marker = self.run_with_fake_device_tools("--profile", "full")
+
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("The selection has POS flows, which need a tablet. Pass --pos-device", result.stderr)
+        self.assertFalse(adb_marker.exists())
+
+    def test_pos_flows_run_last_on_the_pos_device(self) -> None:
+        temporary_directory = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary_directory.cleanup)
+        report = Path(temporary_directory.name) / "report.xml"
+        report.write_text(
+            '<testsuites><testsuite name="previous run">'
+            '<testcase name="pos_search_and_coupons"><failure message="failed" /></testcase>'
+            '<testcase name="hub_menu_settings"><failure message="failed" /></testcase>'
+            "</testsuite></testsuites>",
+            encoding="utf-8",
+        )
+
+        result, args, _ = self.run_with_recorded_maestro_args(
+            "--device",
+            "emulator-5554",
+            "--pos-device",
+            "emulator-5556",
+            "--rerun-failed",
+            str(report),
+            env_overrides={
+                "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
+                "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
+                "MAESTRO_WOO_LAB_WPCOM_PASSWORD": "lab-password",
+            },
+            attached_devices=("emulator-5554", "emulator-5556"),
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        runs = [line for line in args.splitlines() if line.startswith("ARGS:")]
+        self.assertEqual(2, len(runs))
+        self.assertIn("--device emulator-5554", runs[0])
+        self.assertTrue(runs[0].endswith("hub_menu_settings.yaml"))
+        self.assertIn("--device emulator-5556", runs[1])
+        self.assertTrue(runs[1].endswith("pos_search_and_coupons.yaml"))
+        for serial in ("emulator-5554", "emulator-5556"):
+            self.assertIn(f"ADB:-s {serial} shell settings put secure autofill_service null", args)
+            self.assertIn(f"ADB:-s {serial} shell settings put secure autofill_service {GOOGLE_AUTOFILL_SERVICE}", args)
 
     def test_app_data_is_kept_when_the_app_is_already_on_the_flow_store(self) -> None:
         result, args, _ = self.run_with_recorded_maestro_args(

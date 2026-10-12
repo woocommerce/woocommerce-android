@@ -61,7 +61,7 @@ Validate the file before running flows, especially after pasting passwords:
 Run the pre-flight doctor when setting up a machine or changing credentials:
 
 ```bash
-.maestro/scripts/doctor.sh --profile phone-full --device emulator-5554
+.maestro/scripts/doctor.sh --profile full --device emulator-5554 --pos-device emulator-5556
 ```
 
 The doctor requires the non-debuggable production package (`com.woocommerce.android`). If it is missing from the
@@ -151,27 +151,30 @@ Common variants:
 
 ```bash
 .maestro/scripts/run-smoke-tests.sh --profile core
-.maestro/scripts/run-smoke-tests.sh --plan --profile phone-full
-.maestro/scripts/run-smoke-tests.sh --profile phone-full --seed --device emulator-5554
-.maestro/scripts/run-smoke-tests.sh --profile pos-tablet --seed --device Pixel_Tablet_API_35
-.maestro/scripts/run-smoke-tests.sh --profile android-system --device Pixel_8_API_35
-.maestro/scripts/doctor.sh --profile phone-full --seed
+.maestro/scripts/run-smoke-tests.sh --plan --profile full
+.maestro/scripts/run-smoke-tests.sh --profile full --device emulator-5554 --pos-device Pixel_Tablet_API_35
+.maestro/scripts/run-smoke-tests.sh --profile pos --device Pixel_Tablet_API_35
+.maestro/scripts/doctor.sh --profile full --device emulator-5554 --pos-device emulator-5556
 .maestro/scripts/run-smoke-tests.sh --device emulator-5554
 .maestro/scripts/run-smoke-tests.sh --apk /path/to/WooCommerce-production-release.apk
 .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --include-quarantine --seed
 .maestro/scripts/run-smoke-tests.sh --include-tags flaky_quarantine --seed .maestro/flows/orders_create.yaml
 .maestro/scripts/run-smoke-tests.sh --store shared --include-tags smoke_core
 .maestro/scripts/run-smoke-tests.sh --repeat 3 --store lab --include-tags smoke_core
-.maestro/scripts/run-smoke-tests.sh --profile phone-full --seed --rerun-failed ~/woocommerce-maestro-output/20260708141815/report.xml
+.maestro/scripts/run-smoke-tests.sh --profile full --device emulator-5554 --pos-device emulator-5556 --rerun-failed ~/woocommerce-maestro-output/20260708141815/report.xml
 ```
 
 Profiles are copy/paste-safe presets:
 
 - `core`: all login flows except `login_google`, plus the other `smoke_core` paths, with quarantine and Android system surfaces excluded.
-- `phone-full`: `smoke_core,smoke_extended`, tablet POS and Android system surfaces excluded. This includes quarantined phone flows.
-- `pos-tablet`: `pos_tablet`, quarantine included.
-- `android-system`: `android_system`, quarantine included. Requires an English Pixel Launcher AVD with the
-  production app discoverable as `Woo` in the app drawer.
+- `full`: every flow except the quarantined ones, for release smoke testing. The phone flows run on `--device`, then the
+  POS flows run on the tablet passed with `--pos-device`, in the same run, so they never share the lab store at once.
+  The phone needs to be an English Pixel Launcher AVD with the production app discoverable as `Woo` in the app drawer,
+  for the app shortcuts flow.
+- `pos`: the POS flows only, quarantine excluded, on the tablet passed with `--device`.
+
+`full` and `pos` seed their fixtures without `--seed`, because they include destructive flows. Pass `--no-seed` to turn
+that off. A selection that mixes phone and POS flows needs `--pos-device`.
 
 Use `--plan` with a profile or tag selection to print the exact store, repeat count, filters, and ordered flow list.
 Planning is side-effect-free: it does not load credentials, create output directories, or call Maestro/ADB.

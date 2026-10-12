@@ -62,14 +62,15 @@ Never commit `.env.local`. Never ask the user to paste secret values into chat. 
 Once steps 1–4 all pass, print the command the user should run:
 
 ```
-source .maestro/scripts/configure-toolchain.sh && .maestro/scripts/run-smoke-tests.sh --profile phone-full --seed --device <serial>
+source .maestro/scripts/configure-toolchain.sh && .maestro/scripts/run-smoke-tests.sh --profile full --device <phone serial> --pos-device <tablet serial>
 ```
 
 Tell the user:
 
 - Without `--profile`, the runner runs `smoke_core` only and excludes `flaky_quarantine`.
+- `full` runs every flow except the quarantined ones: the phone flows on `--device`, then the POS flows on the tablet passed with `--pos-device`.
 - Each flow runs against the store it needs: `store_shared` flows on the shared store, the rest on the lab store. `--store lab|shared` forces one store for every flow, and the runner refuses destructive flows on the shared store.
-- Destructive flows need `--seed`. It seeds their fixtures, and cleanup deletes what the run created when it exits.
+- Destructive flows need seeded fixtures. `full` and `pos` seed them without `--seed`, and cleanup deletes what the run created when it exits.
 - It captures and restores device animation settings.
 - Screen recordings are kept only for failed lab-store flows; shared-store credential paths use screenshots only.
 - Artifacts (recordings, logs, HTML + JUnit report) are written OUTSIDE the repo, under `$HOME/woocommerce-maestro-output/<timestamp>/` by default. Override with `--output-dir <path>` or the `WOO_MAESTRO_OUTPUT_DIR` env var.

@@ -14,7 +14,7 @@ from pathlib import Path
 
 from device_locale import DeviceLocaleError, ensure_english_device_locale
 from ensure_release_app import ReleaseAppError, ensure_release_app
-from smoke_plan import PROFILES, flow_store, flow_tags, selected_flows
+from smoke_plan import PROFILES, SEEDING_PROFILES, flow_store, flow_tags, needs_pos_device, selected_flows
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -171,9 +171,12 @@ def main() -> int:
     parser.add_argument("--exclude-tags")
     parser.add_argument("--include-quarantine", action="store_true")
     parser.add_argument("--device", help="Expected adb serial. AVD-name matching is handled by the runner.")
+    parser.add_argument("--pos-device", help="Tablet adb serial for the POS flows when the selection also has phone flows.")
     parser.add_argument("--env-file", type=Path, default=DEFAULT_ENV_FILE)
     parser.add_argument("--seed", action="store_true")
     args = parser.parse_args()
+    if args.profile in SEEDING_PROFILES and args.include_tags is None and args.exclude_tags is None:
+        args.seed = True
 
     profile = PROFILES[args.profile]
     include_tags = parse_csv(args.include_tags)
@@ -232,34 +235,46 @@ def main() -> int:
         checks.append(Check("fail", "destructive flows are refused on the shared store"))
 
     devices = adb_devices()
-    selected_device: str | None = None
+    run_devices: list[str] = []
     if args.device:
         if args.device in devices:
-            selected_device = args.device
+            run_devices.append(args.device)
             checks.append(Check("ok", f"requested adb device {args.device} is connected"))
         else:
             checks.append(Check("fail", f"requested adb device {args.device} is not connected"))
     elif len(devices) == 1:
-        selected_device = devices[0]
-        checks.append(Check("ok", f"adb device {selected_device} is connected"))
+        run_devices.append(devices[0])
+        checks.append(Check("ok", f"adb device {devices[0]} is connected"))
     elif len(devices) > 1:
         checks.append(Check("fail", "multiple adb devices are connected; pass --device to select one"))
     else:
         checks.append(Check("fail", "no adb devices are connected"))
 
-    if selected_device:
+    if needs_pos_device(flows):
+        if not args.pos_device:
+            checks.append(Check("fail", "the selection has POS flows, which need a tablet; pass --pos-device"))
+        elif args.pos_device == args.device:
+            checks.append(Check("fail", "--pos-device must be a different device than --device"))
+        elif args.pos_device in devices:
+            run_devices.append(args.pos_device)
+            checks.append(Check("ok", f"requested POS device {args.pos_device} is connected"))
+        else:
+            checks.append(Check("fail", f"requested POS device {args.pos_device} is not connected"))
+
+    for device in run_devices:
         try:
-            locale = ensure_english_device_locale(selected_device)
+            locale = ensure_english_device_locale(device)
             checks.append(Check("ok", locale.message))
         except DeviceLocaleError as error:
             checks.append(Check("fail", str(error)))
 
-    if selected_device and not any(check.status == "fail" for check in checks):
-        try:
-            release = ensure_release_app(selected_device)
-            checks.append(Check("ok", release.message))
-        except ReleaseAppError as error:
-            checks.append(Check("fail", str(error)))
+    if run_devices and not any(check.status == "fail" for check in checks):
+        for device in run_devices:
+            try:
+                release = ensure_release_app(device)
+                checks.append(Check("ok", release.message))
+            except ReleaseAppError as error:
+                checks.append(Check("fail", str(error)))
     else:
         checks.append(Check("warn", "production release app check skipped because another pre-flight check failed"))
 
