@@ -66,7 +66,6 @@ internal class CardReaderManagerImpl(
     override val connectionTokenProvider: CompositeConnectionTokenProvider = tokenProvider
 
     override fun initialize(
-        updateFrequency: CardReaderManager.SimulatorUpdateFrequency,
         useInterac: Boolean,
         useEftpos: Boolean,
         isDebug: Boolean
@@ -78,18 +77,17 @@ internal class CardReaderManagerImpl(
 
             initStripeTerminal(logLevel)
 
-            terminal.setupSimulator(updateFrequency, useInterac, useEftpos)
+            terminal.setupSimulator(useInterac, useEftpos)
         } else {
             logWrapper.w(TAG, "CardReaderManager is already initialized")
         }
     }
 
     override fun reinitializeSimulatedTerminal(
-        updateFrequency: CardReaderManager.SimulatorUpdateFrequency,
         useInterac: Boolean,
         useEftpos: Boolean,
     ) {
-        terminal.setupSimulator(updateFrequency, useInterac, useEftpos)
+        terminal.setupSimulator(useInterac, useEftpos)
     }
 
     override fun discoverReaders(

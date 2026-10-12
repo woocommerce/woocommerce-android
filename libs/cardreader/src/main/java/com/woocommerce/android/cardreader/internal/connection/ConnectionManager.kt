@@ -9,9 +9,11 @@ import com.stripe.stripeterminal.external.models.ConnectionConfiguration.Bluetoo
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.TapToPayConnectionConfiguration
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Reader
+import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate.UpdateComponent
 import com.stripe.stripeterminal.external.models.TapUseCase
 import com.stripe.stripeterminal.external.models.TerminalErrorCode
 import com.stripe.stripeterminal.external.models.TerminalException
+import com.stripe.stripeterminal.external.models.TestReaderUpdate
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReader
@@ -46,6 +48,7 @@ internal class ConnectionManager(
     private val terminalListenerImpl: TerminalListenerImpl,
     private val application: Application,
     private val logWrapper: LogWrapper,
+    private val simulatedReaderUpdateFrequency: () -> CardReaderManager.SimulatorUpdateFrequency,
 ) {
     val softwareUpdateStatus = bluetoothReaderListener.updateStatusEvents
     val softwareUpdateAvailability = bluetoothReaderListener.updateAvailabilityEvents
@@ -239,7 +242,10 @@ internal class ConnectionManager(
                 locationId = locationId,
                 autoReconnectOnUnexpectedDisconnect = true,
                 bluetoothReaderListener = bluetoothReaderListener,
-                testReaderUpdate = terminal.simulatedReaderUpdate.takeIf { cardReader.cardReader.isSimulated },
+                testReaderUpdate = when (cardReader.cardReader.isSimulated) {
+                    true -> simulatedReaderUpdateFrequency().toTestReaderUpdate()
+                    false -> null
+                },
             )
         )
     }
@@ -257,6 +263,19 @@ internal class ConnectionManager(
             )
         )
     }
+
+    private fun CardReaderManager.SimulatorUpdateFrequency.toTestReaderUpdate(): TestReaderUpdate? =
+        when (this) {
+            CardReaderManager.SimulatorUpdateFrequency.NEVER -> null
+            CardReaderManager.SimulatorUpdateFrequency.ALWAYS ->
+                TestReaderUpdate.required(setOf(UpdateComponent.FIRMWARE))
+            CardReaderManager.SimulatorUpdateFrequency.LOW_BATTERY_ERROR -> TestReaderUpdate.lowBattery()
+            CardReaderManager.SimulatorUpdateFrequency.LOW_BATTERY_SUCCEED_CONNECT ->
+                TestReaderUpdate.lowBatterySucceedConnect()
+            CardReaderManager.SimulatorUpdateFrequency.RANDOM -> TestReaderUpdate.random()
+            CardReaderManager.SimulatorUpdateFrequency.OPTIONAL_UPDATE_AVAILABLE ->
+                TestReaderUpdate.available(setOf(UpdateComponent.FIRMWARE))
+        }
 
     private fun TerminalErrorCode.toErrorCode(): CardReaderStatus.NotConnected.ErrorCode =
         when (this) {

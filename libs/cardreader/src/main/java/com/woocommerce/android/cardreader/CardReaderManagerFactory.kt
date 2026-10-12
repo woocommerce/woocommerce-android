@@ -31,7 +31,8 @@ object CardReaderManagerFactory {
     fun createCardReaderManager(
         application: Application,
         cardReaderStore: CardReaderStore,
-        logWrapper: LogWrapper
+        logWrapper: LogWrapper,
+        simulatedReaderUpdateFrequency: () -> CardReaderManager.SimulatorUpdateFrequency,
     ): CardReaderManager {
         val terminal = TerminalWrapper()
         val terminalListener = TerminalListenerImpl(logWrapper)
@@ -84,6 +85,7 @@ object CardReaderManagerFactory {
                 terminalListener,
                 application,
                 logWrapper,
+                simulatedReaderUpdateFrequency,
             ),
             SoftwareUpdateManager(
                 terminal,

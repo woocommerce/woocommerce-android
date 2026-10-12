@@ -144,7 +144,6 @@ class WooPosBuiltInReaderConnector @Inject constructor(
         withContext(Dispatchers.Main.immediate) {
             if (!cardReaderManager.initialized) {
                 cardReaderManager.initialize(
-                    updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
                     useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
                     useEftpos = developerOptionsRepository.isEftposPaymentEnabled(),
                     isDebug = BuildConfig.DEBUG,

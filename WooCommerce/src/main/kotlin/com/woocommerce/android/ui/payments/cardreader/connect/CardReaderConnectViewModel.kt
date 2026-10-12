@@ -245,7 +245,6 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onReadyToStartScanning() {
         if (!cardReaderManager.initialized) {
             cardReaderManager.initialize(
-                updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
                 useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
                 useEftpos = developerOptionsRepository.isEftposPaymentEnabled(),
                 isDebug = BuildConfig.DEBUG,

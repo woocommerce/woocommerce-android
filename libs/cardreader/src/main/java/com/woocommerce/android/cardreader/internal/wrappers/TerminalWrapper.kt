@@ -17,7 +17,6 @@ import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
 import com.stripe.stripeterminal.external.models.ProcessRefundParameters
 import com.stripe.stripeterminal.external.models.Reader
-import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate.UpdateComponent
 import com.stripe.stripeterminal.external.models.ReaderSupportResult
 import com.stripe.stripeterminal.external.models.Refund
 import com.stripe.stripeterminal.external.models.SimulatedCard
@@ -26,7 +25,6 @@ import com.stripe.stripeterminal.external.models.SimulatorConfiguration
 import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration
 import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration.Color
 import com.stripe.stripeterminal.external.models.TerminalException
-import com.stripe.stripeterminal.external.models.TestReaderUpdate
 import com.stripe.stripeterminal.ktx.cancelPaymentIntent
 import com.stripe.stripeterminal.ktx.collectPaymentMethod
 import com.stripe.stripeterminal.ktx.confirmPaymentIntent
@@ -49,9 +47,6 @@ import kotlin.coroutines.resumeWithException
  * Injectable wrapper for Stripe's Terminal object.
  */
 internal class TerminalWrapper {
-    var simulatedReaderUpdate: TestReaderUpdate? = null
-        private set
-
     fun isInitialized() = Terminal.isInitialized()
     fun getLifecycleObserver() = TerminalApplicationDelegateWrapper()
     fun initTerminal(
@@ -146,11 +141,9 @@ internal class TerminalWrapper {
     fun getConnectedReader(): CardReader? = Terminal.getInstance().connectedReader?.let { CardReaderImpl(it) }
 
     fun setupSimulator(
-        updateFrequency: CardReaderManager.SimulatorUpdateFrequency,
         useInterac: Boolean,
         useEftpos: Boolean,
     ) {
-        simulatedReaderUpdate = mapFrequencyOptions(updateFrequency)
         Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(
             simulatedCard = SimulatedCard(
                 when {
@@ -160,20 +153,6 @@ internal class TerminalWrapper {
                 }
             )
         )
-    }
-
-    private fun mapFrequencyOptions(updateFrequency: CardReaderManager.SimulatorUpdateFrequency): TestReaderUpdate? {
-        return when (updateFrequency) {
-            CardReaderManager.SimulatorUpdateFrequency.NEVER -> null
-            CardReaderManager.SimulatorUpdateFrequency.ALWAYS ->
-                TestReaderUpdate.required(setOf(UpdateComponent.FIRMWARE))
-            CardReaderManager.SimulatorUpdateFrequency.LOW_BATTERY_ERROR -> TestReaderUpdate.lowBattery()
-            CardReaderManager.SimulatorUpdateFrequency.LOW_BATTERY_SUCCEED_CONNECT ->
-                TestReaderUpdate.lowBatterySucceedConnect()
-            CardReaderManager.SimulatorUpdateFrequency.RANDOM -> TestReaderUpdate.random()
-            CardReaderManager.SimulatorUpdateFrequency.OPTIONAL_UPDATE_AVAILABLE ->
-                TestReaderUpdate.available(setOf(UpdateComponent.FIRMWARE))
-        }
     }
 
     fun supportsReadersOfType(
