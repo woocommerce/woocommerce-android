@@ -44,7 +44,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun PosPromoCarouselDialog(
@@ -225,7 +225,7 @@ private fun PageIndicator(
 )
 @Composable
 private fun PosPromoPage1Preview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PosPromoCarouselContent(
             state = PosPromoState(currentPage = 0),
             onDismiss = {},
@@ -239,7 +239,7 @@ private fun PosPromoPage1Preview() {
 @Preview(name = "Page 2 - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun PosPromoPage2Preview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PosPromoCarouselContent(
             state = PosPromoState(currentPage = 1),
             onDismiss = {},
@@ -253,7 +253,7 @@ private fun PosPromoPage2Preview() {
 @Preview(name = "Page 3 - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun PosPromoPage3Preview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PosPromoCarouselContent(
             state = PosPromoState(currentPage = 2),
             onDismiss = {},
@@ -267,7 +267,7 @@ private fun PosPromoPage3Preview() {
 @Preview(name = "Page 4 - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun PosPromoPage4Preview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PosPromoCarouselContent(
             state = PosPromoState(currentPage = 3),
             onDismiss = {},
@@ -281,7 +281,7 @@ private fun PosPromoPage4Preview() {
 @Preview(name = "Page 5 - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun PosPromoPage5Preview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PosPromoCarouselContent(
             state = PosPromoState(currentPage = 4),
             onDismiss = {},

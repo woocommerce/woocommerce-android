@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.tooling.preview.Preview
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,7 +86,7 @@ fun <T> WCExposedDropDown(
 @Preview
 @Composable
 private fun WCExposedDropDownPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WCExposedDropDown(
             items = setOf("Item 1", "Item 2", "Item 3"),
             onSelected = { /* Handle selection */ },

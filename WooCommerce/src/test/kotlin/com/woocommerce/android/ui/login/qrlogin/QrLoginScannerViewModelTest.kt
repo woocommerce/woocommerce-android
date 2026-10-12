@@ -119,7 +119,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             assertThat(events.last()).isEqualTo(Dispatch.LoggedIn(localSiteId = 42))
             // SitePickerViewModel fires UNIFIED_LOGIN_STEP(SUCCESS) for every flow — the QR VM
             // must not emit its own success event on completion.
-            verify(unifiedLoginTracker, never()).track(any(), eq(Step.SUCCESS))
+            verify(unifiedLoginTracker, never()).track(any(), eq(Step.SUCCESS), any())
         }
 
     @Test

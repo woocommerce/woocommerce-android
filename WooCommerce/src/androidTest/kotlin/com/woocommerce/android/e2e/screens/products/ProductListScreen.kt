@@ -1,38 +1,46 @@
 package com.woocommerce.android.e2e.screens.products
 
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.UiObject2
 import com.woocommerce.android.R
-import com.woocommerce.android.e2e.helpers.WCMatchers.withRecyclerView
-import com.woocommerce.android.e2e.helpers.util.CustomMatchers
+import com.woocommerce.android.e2e.helpers.util.ComposeUiAutomator
 import com.woocommerce.android.e2e.helpers.util.ProductData
 import com.woocommerce.android.e2e.helpers.util.Screen
+import com.woocommerce.android.e2e.helpers.util.allText
+import com.woocommerce.android.e2e.helpers.util.composeTestTagWithNumericSuffix
 import com.woocommerce.android.e2e.screens.shared.FilterScreen
-import com.woocommerce.android.ui.products.ProductItemView
-import org.hamcrest.Matchers
-import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.instanceOf
+import com.woocommerce.android.ui.products.list.ProductListTestTags
 
-class ProductListScreen : Screen(R.id.productsRecycler) {
+class ProductListScreen(
+    private val composeTestRule: ComposeTestRule? = null,
+) : Screen(R.id.products_compose_container) {
+    private val composeUi = ComposeUiAutomator(composeTestRule)
 
     fun scrollToProduct(productTitle: String): ProductListScreen {
-        scrollToListItem(productTitle, R.id.productsRecycler)
-        return ProductListScreen()
+        composeUi.scrollTextIntoView(ProductListTestTags.LIST, productTitle)
+        composeUi.waitFor(By.text(productTitle), "Text '$productTitle'")
+        return this
     }
 
     fun selectProductByName(productName: String): SingleProductScreen {
-        selectListItem(productName, R.id.productsRecycler)
+        scrollToProduct(productName)
+        requireNotNull(composeUi.find(By.text(productName))) {
+            "Product row '$productName' was not found"
+        }.click()
         waitForElementToBeDisplayed(R.id.productDetail_root)
         return SingleProductScreen()
     }
 
     fun tapOnCreateProduct(): ProductListScreen {
-        clickOn(R.id.addProductButton)
+        composeUi.waitForTag(ProductListTestTags.ADD_ACTION).click()
         return this
     }
 
@@ -43,51 +51,47 @@ class ProductListScreen : Screen(R.id.productsRecycler) {
     }
 
     fun goBackToProductList(): ProductListScreen {
-        while (!isElementDisplayed(R.id.productsRecycler)) {
-            pressBack()
-        }
-
+        while (!isElementDisplayed(R.id.products_compose_container)) pressBack()
         return this
     }
 
     fun openSearchPane(): ProductListScreen {
-        if (!Screen.isElementFocused(androidx.appcompat.R.id.search_src_text)) {
-            clickOn(R.id.menu_search)
+        if (composeUi.find(SEARCH_FIELD_SELECTOR) == null) {
+            clickSearchTag(ProductListTestTags.SEARCH_ACTION)
         }
+        composeUi.waitForTag(ProductListTestTags.SEARCH_FIELD)
         return this
     }
 
     fun tapSearchAllProducts(): ProductListScreen {
-        selectItemWithTitleInTabLayout(R.string.product_search_all, R.id.productsSearchTabView)
+        clickSearchTag(ProductListTestTags.SEARCH_ALL)
         return this
     }
 
     fun tapSearchSKU(): ProductListScreen {
-        selectItemWithTitleInTabLayout(R.string.product_search_sku, R.id.productsSearchTabView)
+        clickSearchTag(ProductListTestTags.SEARCH_SKU)
         return this
     }
 
     fun enterSearchTerm(term: String): ProductListScreen {
-        typeTextInto(androidx.appcompat.R.id.search_src_text, term)
-        idleFor(1000) // allow for UI transitions
-        waitForAtLeastOneElementToBeDisplayed(R.id.productInfoContainer)
+        searchInput().text = term
+        waitForProductRows(minimumCount = 1)
         return this
     }
 
     fun enterAbsentSearchTerm(term: String): ProductListScreen {
-        typeTextInto(androidx.appcompat.R.id.search_src_text, term)
-        // If we don't expect for results, we wait for "no results" situation
-        waitForElementToBeDisplayed(R.id.empty_view_title)
+        searchInput().text = term
+        composeUi.waitForTag(ProductListTestTags.EMPTY)
         return this
     }
 
     fun tapFilters(): FilterScreen {
-        clickOn(R.id.btn_product_filter)
+        composeUi.waitForTag(ProductListTestTags.FILTERS).click()
         return FilterScreen()
     }
 
     fun tapSort(): ProductListScreen {
-        clickOn(R.id.btn_product_sorting)
+        composeUi.waitForTag(ProductListTestTags.SORT).click()
         return this
     }
 
@@ -97,108 +101,97 @@ class ProductListScreen : Screen(R.id.productsRecycler) {
     }
 
     fun assertProductIsAtPosition(productName: String, position: Int): ProductListScreen {
-        Espresso.onView(
-            withRecyclerView(R.id.productsRecycler).atPositionOnView(position, R.id.productName)
-        )
-            .check(matches(ViewMatchers.withText(productName)))
-
+        val rows = waitForProductRows(minimumCount = position + 1)
+        check(productName in rows[position].allText()) {
+            "Expected '$productName' at position $position, found ${rows[position].allText()}"
+        }
         return this
     }
 
     fun leaveOrClearSearchMode(): ProductListScreen {
-        // to support test on tablets - search bar is displayed on split screen
-        // clearing search bar so test can continue in a clean state
-        if (Screen.isElementDisplayed(R.id.productDetailsErrorImage)) {
-            clearSearchBar(androidx.appcompat.R.id.search_src_text)
-        } // to support test on phones
-        else if (Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)) {
-            // Double pressBack is needed because first one only removes the focus
-            // from search field, while the second one leaves the search mode.
-            pressBack()
-            pressBack()
-        }
+        leaveSearchMode()
         return this
     }
 
     fun leaveSearchMode(): ProductListScreen {
-        val isProductDetailsErrorDisplayed = Screen.isElementDisplayed(R.id.productDetailsErrorImage)
-        val isSearchTextBarDisplayed = Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)
-
-        if (isProductDetailsErrorDisplayed && isSearchTextBarDisplayed) {
-            clearSearchBar(androidx.appcompat.R.id.search_src_text)
-
-            // this is to click the back button on search bar to go back to products list
-            // using the content description matcher as there isn't an ID for the button
-            Espresso.onView(
-                allOf(
-                    Matchers.allOf(
-                        ViewMatchers.withContentDescription("Collapse"),
-                        ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
-                    )
-                )
-            ).perform(click())
-        } else if (isSearchTextBarDisplayed) {
-            // Double pressBack is needed because first one only removes the focus
-            // from search field, while the second one leaves the search mode.
-            pressBack()
-            pressBack()
+        if (composeUi.find(SEARCH_FIELD_SELECTOR) != null) {
+            val cancelText = getTranslatedString(R.string.cancel)
+            if (composeTestRule != null) {
+                composeTestRule.onNode(
+                    hasText(cancelText)
+                        .and(hasClickAction())
+                        .and(hasAnyAncestor(hasTestTag(ProductListTestTags.SEARCH_FIELD)))
+                ).performClick()
+            } else {
+                val cancelTextNode = composeUi.waitFor(By.text(cancelText), "search Cancel action")
+                requireNotNull(generateSequence(cancelTextNode) { it.parent }.firstOrNull { it.isClickable }) {
+                    "Clickable search Cancel action was not found"
+                }.click()
+            }
+            composeUi.waitUntil(
+                condition = { composeUi.find(SEARCH_FIELD_SELECTOR) == null },
+                failureMessage = {
+                    "Compose node with tag '${ProductListTestTags.SEARCH_FIELD}' did not disappear"
+                }
+            )
         }
+        composeUi.waitForTag(ProductListTestTags.SEARCH_ACTION)
         return this
     }
 
     fun assertProductCard(product: ProductData): ProductListScreen {
-        // Wait for the product card to appear first. This is sometimes
-        // flaky on Firebase because of low emulator performance.
-        waitForElementToBeDisplayed(
-            Espresso.onView(
-                Matchers.allOf(
-                    ViewMatchers.withId(R.id.productName),
-                    ViewMatchers.withText(product.name)
-                )
-            )
-        )
+        scrollToProduct(product.name)
+        val row = waitForProductRows(minimumCount = 1).firstOrNull { product.name in it.allText() }
+        checkNotNull(row) { "Product row '${product.name}' was not found" }
+        val rowText = row.allText().joinToString(" ")
+        val expectedSku = product.sku.takeIf(String::isNotEmpty)?.let { "SKU: $it" }
+        val stockStatus = product.stockStatus
 
-        // If a product has an SKU, value will be prefixed with "SKU :" on screen.
-        // If a product has no SKU, the field won't be shown at all.
-        val expectedSKU = if (product.sku.isEmpty()) "" else "SKU: ${product.sku}"
-
-        Espresso.onView(
-            Matchers.allOf(
-                ViewMatchers.withId(R.id.productInfoContainer),
-                ViewMatchers.withChild(
-                    Matchers.allOf(
-                        ViewMatchers.withId(R.id.productName),
-                        ViewMatchers.withText(product.name)
-                    )
-                ),
-                ViewMatchers.withChild(
-                    Matchers.allOf(
-                        ViewMatchers.withId(R.id.productStockAndStatus),
-                        ViewMatchers.withText(
-                            Matchers.containsString("${product.stockStatus}${product.variations} • ")
-                        ),
-                        ViewMatchers.withText(Matchers.containsString(product.priceDiscountedRaw))
-                    )
-                ),
-                ViewMatchers.withChild(
-                    Matchers.allOf(
-                        ViewMatchers.withId(R.id.productSku),
-                        ViewMatchers.withText(expectedSKU)
-                    )
-                )
-            )
-        )
-            .check(matches(ViewMatchers.isDisplayed()))
-
+        check(stockStatus == null || rowText.contains(stockStatus)) {
+            "Product row did not contain stock status '$stockStatus': $rowText"
+        }
+        check(rowText.contains(product.priceDiscountedRaw)) {
+            "Product row did not contain price '${product.priceDiscountedRaw}': $rowText"
+        }
+        check(expectedSku == null || rowText.contains(expectedSku)) {
+            "Product row did not contain '$expectedSku': $rowText"
+        }
         return this
     }
 
     fun assertProductsCount(count: Int): ProductListScreen {
-        Espresso.onView(
-            ViewMatchers.withId(R.id.productsRecycler)
+        if (count == 0) {
+            composeUi.waitForTag(ProductListTestTags.EMPTY)
+        }
+        composeUi.waitForCount(
+            selector = PRODUCT_ROW_SELECTOR,
+            expectedCount = count,
+            description = "product rows",
         )
-            .check(matches(CustomMatchers().withViewCount(instanceOf(ProductItemView::class.java), count)))
-
         return this
+    }
+
+    private fun searchInput(): UiObject2 = requireNotNull(
+        composeUi.waitForTag(ProductListTestTags.SEARCH_FIELD)
+            .findObject(By.clazz("android.widget.EditText"))
+    ) { "Editable search input was not found" }
+
+    private fun waitForProductRows(minimumCount: Int): List<UiObject2> = composeUi.waitForAtLeast(
+        selector = PRODUCT_ROW_SELECTOR,
+        minimumCount = minimumCount,
+        description = "product rows",
+    )
+
+    private fun clickSearchTag(tag: String) {
+        if (composeTestRule != null) {
+            composeTestRule.onNodeWithTag(tag).performClick()
+        } else {
+            composeUi.waitForTag(tag).click()
+        }
+    }
+
+    companion object {
+        private val SEARCH_FIELD_SELECTOR = By.res(ProductListTestTags.SEARCH_FIELD)
+        private val PRODUCT_ROW_SELECTOR = composeTestTagWithNumericSuffix(ProductListTestTags.PRODUCT_ROW_PREFIX)
     }
 }

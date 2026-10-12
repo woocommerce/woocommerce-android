@@ -13,7 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.compose.legacyComposeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -33,7 +33,7 @@ class AiProductPreviewFragment : BaseFragment() {
     private var undoSnackBar: Snackbar? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return composeView {
+        return legacyComposeView {
             AiProductPreviewScreen(viewModel)
         }
     }

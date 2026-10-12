@@ -22,7 +22,7 @@ import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.compose.legacyComposeView
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
@@ -53,7 +53,7 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        composeView {
+        legacyComposeView {
             AiSupportChatScreen(
                 viewModel = viewModel,
                 onContactSupportClicked = ::onContactSupportClicked

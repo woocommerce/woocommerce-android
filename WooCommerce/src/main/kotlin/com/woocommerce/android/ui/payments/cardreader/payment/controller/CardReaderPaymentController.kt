@@ -288,7 +288,7 @@ class CardReaderPaymentController(
         billingEmail: String,
         paymentData: PaymentData,
         amountLabel: String,
-        onPaymentSucceeded: () -> Unit = { tracker.trackPaymentSucceeded() },
+        onPaymentSucceeded: suspend () -> Unit = { tracker.trackPaymentSucceeded() },
     ) {
         paymentFlowJob = scope.launch {
             _paymentState.value = CardReaderPaymentState.LoadingData(::onCancelPaymentFlow)
@@ -355,13 +355,13 @@ class CardReaderPaymentController(
     }
 
     @Suppress("LongMethod")
-    private fun onPaymentStatusChanged(
+    private suspend fun onPaymentStatusChanged(
         orderId: Long,
         previousStatusKey: String?,
         billingEmail: String,
         paymentStatus: CardPaymentStatus,
         amountLabel: String,
-        onPaymentSucceeded: () -> Unit,
+        onPaymentSucceeded: suspend () -> Unit,
     ) {
         paymentDataForRetry = null
         when (paymentStatus) {
@@ -588,7 +588,7 @@ class CardReaderPaymentController(
         billingEmail: String,
         error: PaymentFailed,
         amountLabel: String,
-        onPaymentSucceeded: () -> Unit,
+        onPaymentSucceeded: suspend () -> Unit,
     ) {
         WooLog.e(WooLog.T.CARD_READER, error.errorMessage)
         cardReaderOnboardingChecker.invalidateCache()
@@ -872,13 +872,15 @@ class CardReaderPaymentController(
     }
 
     private fun onPurchaseCardReaderClicked() {
-        onCancelPaymentFlow()
-        val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
-        triggerEvent(
-            CardReaderPaymentEvent.PurchaseCardReaderTapped(
-                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode"
+        scope.launch {
+            val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
+            onCancelPaymentFlow()
+            triggerEvent(
+                CardReaderPaymentEvent.PurchaseCardReaderTapped(
+                    "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode"
+                )
             )
-        )
+        }
     }
 
     private fun onCancelPaymentFlow() {

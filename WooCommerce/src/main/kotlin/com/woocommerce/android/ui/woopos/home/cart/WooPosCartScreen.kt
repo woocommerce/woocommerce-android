@@ -485,6 +485,7 @@ private fun ClearCartButton(
 
     Box(modifier = modifier) {
         WooPosIconButton(
+            modifier = Modifier.testTag(WooPosTestTags.CLEAR_CART_BUTTON),
             icon = ImageVector.vectorResource(R.drawable.ic_delete_24dp),
             enabled = !dropdownExpanded,
             onClick = { dropdownExpanded = true },
@@ -533,11 +534,16 @@ private fun ProductItem(
     canRemoveItems: Boolean,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
-    val itemContentDescription = stringResource(
+    val baseContentDescription = stringResource(
         id = R.string.woopos_cart_item_product_content_description,
         item.name,
         item.price
     )
+    val itemContentDescription = if (item.discounted) {
+        "$baseContentDescription, ${stringResource(R.string.woopos_cart_item_discount_applied)}"
+    } else {
+        baseContentDescription
+    }
 
     WooPosCard(
         modifier = modifier
@@ -613,6 +619,18 @@ private fun ProductItem(
                         modifier = Modifier.clearAndSetSemantics { }
                     )
                 }
+
+                if (item.discounted) {
+                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+                    WooPosText(
+                        text = stringResource(R.string.woopos_cart_item_discount_applied),
+                        style = WooPosTypography.BodySmall,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        color = WooPosTheme.colors.success,
+                        modifier = Modifier.clearAndSetSemantics { }
+                    )
+                }
             }
 
             if (canRemoveItems) {
@@ -638,6 +656,7 @@ private fun CouponItem(
     WooPosCard(
         modifier = modifier
             .wrapContentHeight()
+            .testTag(WooPosTestTags.CART_COUPON_ITEM)
             .semantics { contentDescription = itemContentDescription },
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         elevation = WooPosElevation.Medium,

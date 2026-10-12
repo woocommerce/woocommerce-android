@@ -20,7 +20,6 @@ import com.woocommerce.android.datastore.DataStoreType.TOP_PERFORMER_PRODUCTS
 import com.woocommerce.android.datastore.DataStoreType.TRACKER
 import com.woocommerce.android.datastore.DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS
 import com.woocommerce.android.di.AppCoroutineScope
-import com.woocommerce.android.ui.dashboard.data.CustomDateRangeDayMigration
 import com.woocommerce.android.ui.dashboard.data.CustomDateRangeSerializer
 import com.woocommerce.android.ui.mystore.data.CustomDateRange
 import dagger.Module
@@ -103,7 +102,6 @@ class DataStoreModule {
             crashLogging.recordEvent("Corrupted data store. DataStore Type: ${DASHBOARD_STATS.name}")
             CustomDateRange.getDefaultInstance()
         },
-        migrations = listOf(CustomDateRangeDayMigration),
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO),
         serializer = CustomDateRangeSerializer
     )
@@ -123,7 +121,6 @@ class DataStoreModule {
             crashLogging.recordEvent("Corrupted data store. DataStore Type: ${TOP_PERFORMER_PRODUCTS.name}")
             CustomDateRange.getDefaultInstance()
         },
-        migrations = listOf(CustomDateRangeDayMigration),
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO),
         serializer = CustomDateRangeSerializer
     )
@@ -143,7 +140,6 @@ class DataStoreModule {
             crashLogging.recordEvent("Corrupted data store. DataStore Type: ${COUPONS.name}")
             CustomDateRange.getDefaultInstance()
         },
-        migrations = listOf(CustomDateRangeDayMigration),
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO),
         serializer = CustomDateRangeSerializer
     )

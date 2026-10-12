@@ -7,16 +7,25 @@ import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.UiDevice
 import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.NestedScrollViewExtension
 import com.woocommerce.android.e2e.helpers.util.OrderData
 import com.woocommerce.android.e2e.helpers.util.ProductData
 import com.woocommerce.android.e2e.helpers.util.Screen
+import com.woocommerce.android.ui.orders.list.OrderListTestTags
 import org.hamcrest.Matchers
 
 class SingleOrderScreen : Screen(R.id.orderDetail_container) {
+    private val device = UiDevice.getInstance(getInstrumentation())
+
     fun goBackToOrdersScreen(): OrderListScreen {
-        if (!isElementDisplayed(R.id.order_list_view_root) && isElementDisplayed(R.id.orderDetail_container)) {
+        if (
+            device.findObject(By.res(OrderListTestTags.SCREEN)) == null &&
+            isElementDisplayed(R.id.orderDetail_container)
+        ) {
             pressBack()
         }
 

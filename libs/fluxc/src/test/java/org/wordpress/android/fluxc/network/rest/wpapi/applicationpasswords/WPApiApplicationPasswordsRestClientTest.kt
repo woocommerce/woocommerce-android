@@ -7,6 +7,7 @@ import com.android.volley.VolleyError
 import com.google.gson.Gson
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import okhttp3.Credentials
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
@@ -42,6 +43,8 @@ class WPApiApplicationPasswordsRestClientTest {
         uuid = null
     )
 
+    private var lastRequest: WPAPIGsonRequest<Any>? = null
+
     private val noCookieRequestQueue: RequestQueue = mock()
     private val cookieNonceAuthenticator: CookieNonceAuthenticator = mock()
     private val restClient = WPApiApplicationPasswordsRestClient(
@@ -53,6 +56,35 @@ class WPApiApplicationPasswordsRestClientTest {
         dispatcher = mock<Dispatcher>(),
         userAgent = mock<UserAgent>()
     )
+
+    @Test
+    fun `given the creation response has no password, when creating a password, then return an error payload`() =
+        runTest {
+            // GIVEN the site answers 200 but omits the password field, so Gson leaves it null
+            givenCreationResponse("""{"uuid":"the-uuid","name":"woo-app"}""")
+
+            // WHEN
+            val payload = restClient.createApplicationPassword(testSite, "woo-app")
+
+            // THEN
+            assertTrue(payload.isError)
+            assertEquals("Password missing from response", payload.error.message)
+        }
+
+    @Test
+    fun `given the creation response has a password, when creating a password, then return it with its uuid`() =
+        runTest {
+            // GIVEN
+            givenCreationResponse("""{"uuid":"the-uuid","name":"woo-app","password":"the-password"}""")
+
+            // WHEN
+            val payload = restClient.createApplicationPassword(testSite, "woo-app")
+
+            // THEN
+            assertFalse(payload.isError)
+            assertEquals("the-password", payload.password)
+            assertEquals("the-uuid", payload.uuid)
+        }
 
     @Test
     fun `given the introspect response has no uuid, when deleting a password, then return an error payload`() =
@@ -205,6 +237,117 @@ class WPApiApplicationPasswordsRestClientTest {
             verify(noCookieRequestQueue, times(1)).add(any<WPAPIGsonRequest<Any>>())
         }
 
+    @Test
+    fun `given the site accepts the credentials, when checking their validity, then report them as valid`() =
+        runTest {
+            // GIVEN
+            givenSuccessResponse(
+                Gson().fromJson(
+                    """{"uuid":"the-uuid","name":"woo-app"}""",
+                    ApplicationPasswordsFetchResponse::class.java
+                )
+            )
+
+            // WHEN
+            val validity = restClient.checkApplicationPasswordValidity(testSite, credentialsWithoutUuid)
+
+            // THEN
+            assertEquals(ApplicationPasswordValidity.VALID, validity)
+        }
+
+    @Test
+    fun `given the site rejects the credentials with 401, when checking their validity, then report as invalid`() =
+        runTest {
+            // GIVEN
+            givenErrorResponse(VolleyError(NetworkResponse(401, byteArrayOf(), true, 0, emptyList())))
+
+            // WHEN
+            val validity = restClient.checkApplicationPasswordValidity(testSite, credentialsWithoutUuid)
+
+            // THEN
+            assertEquals(ApplicationPasswordValidity.INVALID, validity)
+        }
+
+    @Test
+    fun `given the site answers 403, when checking their validity, then report the result as unknown`() =
+        runTest {
+            // GIVEN a 403, which on this endpoint means we did authenticate but were denied for another
+            // reason, so it says nothing about the credentials being revoked
+            givenErrorResponse(VolleyError(NetworkResponse(403, byteArrayOf(), true, 0, emptyList())))
+
+            // WHEN
+            val validity = restClient.checkApplicationPasswordValidity(testSite, credentialsWithoutUuid)
+
+            // THEN
+            assertEquals(ApplicationPasswordValidity.UNKNOWN, validity)
+        }
+
+    @Test
+    fun `given the validity check itself fails, when checking validity, then report the result as unknown`() =
+        runTest {
+            // GIVEN the introspect endpoint is unavailable, which says nothing about the credentials
+            givenErrorResponse(VolleyError(NetworkResponse(404, byteArrayOf(), true, 0, emptyList())))
+
+            // WHEN
+            val validity = restClient.checkApplicationPasswordValidity(testSite, credentialsWithoutUuid)
+
+            // THEN
+            assertEquals(ApplicationPasswordValidity.UNKNOWN, validity)
+        }
+
+    @Test
+    fun `given the site is unreachable, when checking their validity, then report the result as unknown`() =
+        runTest {
+            // GIVEN a transport failure, so the error carries no NetworkResponse at all
+            givenErrorResponse(VolleyError())
+
+            // WHEN
+            val validity = restClient.checkApplicationPasswordValidity(testSite, credentialsWithoutUuid)
+
+            // THEN
+            assertEquals(ApplicationPasswordValidity.UNKNOWN, validity)
+        }
+
+    @Test
+    fun `given the site answers with an empty body, when checking their validity, then report them as valid`() =
+        runTest {
+            // GIVEN the credentials were accepted, even though nothing was parsed out of the response
+            givenSuccessResponse(null)
+
+            // WHEN
+            val validity = restClient.checkApplicationPasswordValidity(testSite, credentialsWithoutUuid)
+
+            // THEN the status code answers the question, not the body
+            assertEquals(ApplicationPasswordValidity.VALID, validity)
+        }
+
+    @Test
+    fun `when checking the credentials validity, then use basic auth against the introspect endpoint`() =
+        runTest {
+            // GIVEN
+            givenSuccessResponse(
+                Gson().fromJson(
+                    """{"uuid":"the-uuid","name":"woo-app"}""",
+                    ApplicationPasswordsFetchResponse::class.java
+                )
+            )
+
+            // WHEN
+            restClient.checkApplicationPasswordValidity(testSite, credentialsWithoutUuid)
+
+            // THEN
+            val request = checkNotNull(lastRequest)
+            assertEquals(
+                "https://test-site.com/wp-json/wp/v2/users/me/application-passwords/introspect/",
+                request.url
+            )
+            assertEquals(Request.Method.GET, request.method)
+            assertEquals(
+                Credentials.basic(credentialsWithoutUuid.userName, credentialsWithoutUuid.password),
+                request.headers["Authorization"]
+            )
+        }
+
     private fun givenSuccessResponse(response: Any?) = givenSuccessResponses(response)
 
     @Suppress("UNCHECKED_CAST")
@@ -212,11 +355,23 @@ class WPApiApplicationPasswordsRestClientTest {
         val remaining = responses.toMutableList()
         whenever(noCookieRequestQueue.add(any<WPAPIGsonRequest<Any>>())).thenAnswer { invocation ->
             val request = invocation.arguments.first() as WPAPIGsonRequest<Any>
+            lastRequest = request
             val deliverMethod = Request::class.java.getDeclaredMethod("deliverResponse", Any::class.java)
             deliverMethod.isAccessible = true
             deliverMethod.invoke(request, ResponseWithHeaders(remaining.removeAt(0), emptyList()))
             return@thenAnswer request
         }
+    }
+
+    private suspend fun givenCreationResponse(json: String) {
+        whenever(
+            cookieNonceAuthenticator.makeAuthenticatedWPAPIRequest<ApplicationPasswordCreationResponse>(
+                eq(testSite),
+                any()
+            )
+        ).thenReturn(
+            WPAPIResponse.Success(Gson().fromJson(json, ApplicationPasswordCreationResponse::class.java), emptyList())
+        )
     }
 
     private suspend fun givenCookieAuthReturns(response: WPAPIResponse<Array<ApplicationPasswordsFetchResponse>>) {
@@ -232,6 +387,7 @@ class WPApiApplicationPasswordsRestClientTest {
     private fun givenErrorResponse(error: VolleyError) {
         whenever(noCookieRequestQueue.add(any<WPAPIGsonRequest<Any>>())).thenAnswer { invocation ->
             val request = invocation.arguments.first() as WPAPIGsonRequest<Any>
+            lastRequest = request
             request.deliverError(error)
             return@thenAnswer request
         }

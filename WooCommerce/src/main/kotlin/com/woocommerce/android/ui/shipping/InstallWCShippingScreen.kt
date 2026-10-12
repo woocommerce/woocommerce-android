@@ -25,7 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState.InstallationState
 import kotlinx.coroutines.delay
@@ -115,7 +115,7 @@ private fun PreviewInstallWCShippingScreen() {
         }
     }
 
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         state?.let {
             InstallWCShippingScreen(viewState = it)
         }

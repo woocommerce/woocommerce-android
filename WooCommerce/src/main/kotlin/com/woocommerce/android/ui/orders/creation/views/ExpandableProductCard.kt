@@ -53,6 +53,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -71,7 +72,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Companion.MAX_PRODUCT_QUANTITY
 import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
@@ -110,6 +111,7 @@ fun ExpandableProductCard(
     }
     ConstraintLayout(
         modifier = Modifier
+            .testTag(ExpandableProductCardTestTags.PRODUCT_CARD)
             .fillMaxWidth()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -173,6 +175,7 @@ fun ExpandableProductCard(
         if (showsCollapsedDiscount) {
             Text(
                 modifier = Modifier
+                    .testTag(ExpandableProductCardTestTags.DISCOUNT_AMOUNT)
                     .constrainAs(discount) {
                         end.linkTo(chevron.start)
                         top.linkTo(stock.top)
@@ -423,6 +426,7 @@ fun ExtendedProductCardContent(
             }
             Text(
                 modifier = Modifier
+                    .testTag(ExpandableProductCardTestTags.DISCOUNT_AMOUNT)
                     .padding(horizontal = dimensionResource(id = R.dimen.minor_100))
                     .constrainAs(discountAmount) {
                         end.linkTo(parent.end)
@@ -695,7 +699,7 @@ fun AmountPickerPreview() {
             hasDiscount = item.discount > BigDecimal.ZERO
         )
     )
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AmountPicker(Modifier, {}, product)
     }
 }
@@ -730,7 +734,7 @@ fun ExpandableProductCardPreview() {
         )
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ExpandableProductCard(state, product, {}, {}, {}, {}, { _, _ -> })
     }
 }
@@ -763,7 +767,7 @@ fun ExpandableProductCardExpandedPreview() {
         )
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ExpandableProductCard(state, product, {}, {}, {}, {}, { _, _ -> }, isExpanded = true)
     }
 }
@@ -796,7 +800,7 @@ fun ExpandableProductCardUnsyncedPreview() {
         )
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ExpandableProductCard(state, product, {}, {}, {}, {}, { _, _ -> })
     }
 }
@@ -830,7 +834,7 @@ fun ExtendedProductCardContentPreview() {
         )
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ExtendedProductCardContent(state, product, {}, {}, {}) {}
     }
 }
@@ -865,7 +869,12 @@ fun ExtendedConfigurableProductCardContentPreview() {
         )
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ExtendedProductCardContent(state, product, {}, {}, {}) {}
     }
+}
+
+internal object ExpandableProductCardTestTags {
+    const val PRODUCT_CARD = "order_product_card"
+    const val DISCOUNT_AMOUNT = "order_product_discount_amount"
 }

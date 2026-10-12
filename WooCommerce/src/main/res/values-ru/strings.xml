@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-08 12:56:34+0000
+Translation-Revision-Date: 2026-09-25 09:58:44+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_reason_unsupported_country_generic">Система POS недоступна в стране вашего магазина. Проверьте настройки адреса магазина или обратитесь за помощью в службу поддержки.</string>
+    <string name="woopos_eligibility_reason_unsupported_country">Система POS недоступна в %1$s. Проверьте настройки адреса магазина или обратитесь за помощью в службу поддержки.</string>
+    <string name="woo_push_notifications_introduction_error_offline_mode_body">Невозможно настроить push-уведомления, так как ваш магазин находится в автономном режиме. Если вам всё ещё требуется помощь, обратитесь в службу поддержки.</string>
+    <string name="order_refunds_refunded_items">Возвращённые товары</string>
+    <string name="login_not_wordpress_site_title">Это не сайт WordPress</string>
+    <string name="https_configuration_warning_dismiss">Скрыть уведомление о безопасности HTTPS</string>
+    <string name="https_configuration_warning_message">Ваш магазин поддерживает HTTPS, но в настройках его адреса указан HTTP. Обновите адрес до HTTPS, чтобы защитить свой магазин и предотвратить проблемы с подключением.</string>
+    <string name="https_configuration_warning_title">Защитите свой магазин с помощью HTTPS</string>
     <string name="age_verification_open_google_play">Открыть Google Play</string>
     <string name="age_verification_required_message">Для проверки возможности использования приложения WooCommerce в Google Play требуется подтверждение возраста. Пройдите проверку в Google Play, затем вернитесь сюда и попробуйте снова.</string>
     <string name="age_verification_required_title">Чтобы продолжить, подтвердите ваш возраст</string>
@@ -924,8 +932,12 @@ Language: ru
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">Великобритания</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">Соединённые Штаты</string>
     <string name="woopos_eligibility_screen_unable_to_load">Не удалось загрузить</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">Система POS недоступна для валюты вашего магазина. Проверьте настройки валюты магазина или обратитесь за помощью в службу поддержки.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Система POS не поддерживает валюту вашего магазина. В %1$s в настоящее время поддерживается только %2$s. Проверьте настройки валюты магазина или обратитесь за помощью в службу поддержки.</string>
     <string name="woopos_eligibility_reason_check_connection">Проверьте подключение к Интернету и попробуйте перезапустить приложение. Если решить проблему не удалось, обратитесь в службу поддержки.</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">Для продолжения необходимо включить функцию Point of Sale (POS). Включите функцию POS в панели администратора WordPress в разделе «Настройки WooCommerce &gt; Расширенные &gt; Возможности» и повторите попытку.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Ваша версия WooCommerce не поддерживается. Для работы системы POS требуется WooCommerce версии %1$s или более поздней. Обновите WooCommerce до последней версии.</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Необходимо установить плагин WooCommerce и активировать его через учётную запись администратора WordPress. Если проблема не устранена, обратитесь за помощью в службу поддержки.</string>
     <string name="orderfilters_sales_channel_filter">Канал продаж</string>
     <string name="barcode_ean13_content_description">Штрихкод EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">Дополнительная обработка</string>
@@ -1744,6 +1756,7 @@ Language: ru
     <string name="blaze_campaign_edit_ad_change_image_button">Изменить изображение</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Применить</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s дн.</string>
+    <string name="blaze_campaign_budget_impressions_info">Раздел «Показы» отражает частоту, с которой ваша реклама появляется на экранах потенциальных клиентов.\n\n\n        Достичь этой цифры в точности будет невозможно из-за колебаний посещаемости и различного поведения пользователей, однако мы стремимся к тому, чтобы реальное число показов рекламы максимально приближалось к целевому показателю.\n\n\n        Учитывайте, что показы влияют лишь на видимость рекламы, а не на действия читателей.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Готово</string>
     <string name="blaze_campaign_budget_impressions_title">Показы</string>
     <string name="blaze_campaign_budget_update_button">Обновить</string>
@@ -1753,7 +1766,6 @@ Language: ru
     <string name="blaze_campaign_budget_toolbar_title">Настройте бюджет</string>
     <string name="blaze_campaign_preview_target_default_value">Все</string>
     <string name="blaze_campaign_preview_days_duration">%1$s дн. с %2$s</string>
-    <string name="blaze_campaign_budget_impressions_info">Раздел «Показы» отражает частоту, с которой ваша реклама появляется на экранах потенциальных клиентов.\n\n\n        Достичь этой цифры в точности будет невозможно из-за колебаний посещаемости и различного поведения пользователей, однако мы стремимся к тому, чтобы реальное число показов рекламы максимально приближалось к целевому показателю.\n\n\n        Учитывайте, что показы влияют лишь на видимость рекламы, а не на действия читателей.</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Дата начала</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Подтвердить сведения</string>
     <string name="blaze_campaign_preview_details_destination_url">Размещение рекламного объявления</string>
@@ -2066,8 +2078,8 @@ Language: ru
     <string name="store_onboarding_task_name_store_title">Назовите магазин</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Включите NFC</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Посылка, небольшое количество (требуется маркировка)</string>
-    <string name="shipping_label_hazmat_option_lighters">Посылка с зажигающим устройством (разрешённым к перевозке)</string>
     <string name="shipping_label_hazmat_option_limited_quantity">Наземное отправление, ограниченное количество: аэрозоли, дезинфицирующие спреи, аэрозольная краска, спреи для волос, пропан, бутан, чистящие средства и т. д. — Духи, лак для ногтей, жидкость для снятия лака для ногтей, растворители, антисептики для рук, медицинский спирт, продукты на основе этанола и т. д. — Другие поверхностные вещества в ограниченном количестве (косметика, бытовая химия, краски и т. д.)</string>
+    <string name="shipping_label_hazmat_option_lighters">Посылка с зажигающим устройством (разрешённым к перевозке)</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">Посылка с допустимым количеством (например, небольшой объём воспламеняющейся жидкости, коррозионно-активные, токсичные или экологически опасные вещества — требуется маркировка)</string>
     <string name="shipping_label_hazmat_option_id8000">Посылка с потребительскими товарами ID8000 — разрешённые для авиаперевозки потребительские товары ID8000 (невоспламеняющиеся аэрозоли, воспламеняющиеся горючие жидкости, токсичные вещества, опасные материалы)</string>
     <string name="shipping_label_hazmat_option_ground_only">Опасные материалы, разрешённые только для наземной перевозки (для товаров, которые не перечислены, но их можно перевозить только по земле)</string>
@@ -2691,8 +2703,8 @@ Language: ru
     <string name="coupon_conditions_products_edit_products_title">Изменить товары (%d)</string>
     <string name="coupon_conditions_products_all_products_title">Все товары</string>
     <string name="coupon_conditions_products_select_products_title">Выбрать товары</string>
-    <string name="coupon_restrictions_exclude_sale_items_hint">Включите это, если купон не следует применять к товарам на распродаже. Купоны на один товар применяются только в том случае, если товар не на распродаже. Купоны на одну покупку применяются только в том случае, если в корзине есть товары не по распродаже.</string>
     <string name="coupon_restrictions_exclude_sale_items">Исключить товары со скидками</string>
+    <string name="coupon_restrictions_exclude_sale_items_hint">Включите это, если купон не следует применять к товарам на распродаже. Купоны на один товар применяются только в том случае, если товар не на распродаже. Купоны на одну покупку применяются только в том случае, если в корзине есть товары не по распродаже.</string>
     <string name="coupon_restrictions_individual_use_hint">Включите это, если купон нельзя применять вместе с другими купонами.</string>
     <string name="product_selector_filter_button_title_zero">Фильтр</string>
     <string name="coupon_restrictions_individual_use">Только для индивидуального использования</string>
@@ -2791,11 +2803,11 @@ Language: ru
     <string name="coupon_details_menu_share">Поделиться купоном</string>
     <string name="coupon_details_menu_copy">Копировать код купона</string>
     <string name="inbox_note_survey_actioned">Спасибо за ваш отзыв!</string>
-    <string name="card_reader_connect_permission_rationale_hint">Для платежей через устройство чтения карт необходимо разрешение определять точное местоположение</string>
     <string name="card_reader_connect_permission_rationale_header">Требуется доступ к данным о местоположении</string>
     <string name="simple_payments_share_payment_dialog_title">Оформление заказа — %s</string>
     <string name="simple_payments_share_payment_link">Поделиться ссылкой на оплату</string>
     <string name="amount">Сумма</string>
+    <string name="card_reader_connect_permission_rationale_hint">Для платежей через устройство чтения карт требуется разрешение на доступ к геопозиции</string>
     <string name="coupon_list_view_coupon">Смотреть сводку по купонам</string>
     <string name="coupon_list_empty_heading">Купоны не найдены</string>
     <string name="coupon_list_item_label_everything">всё</string>
@@ -3305,7 +3317,7 @@ Language: ru
     <string name="orderdetail_products_recreate_shipping_label_menu">Создать новую транспортную этикетку</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth отключен</string>
     <string name="card_reader_connect_location_provider_disabled_header">Определение местоположения отключено</string>
-    <string name="card_reader_connect_missing_permissions_header">Отсутствует разрешение на определение точного местоположения</string>
+    <string name="card_reader_connect_missing_permissions_header">Отсутствует необходимое разрешение на доступ к геопозиции</string>
     <string name="variation_confirm_delete">Хотите удалить этот вариант?</string>
     <string name="product_delete_dialog_title">Удаление продукта</string>
     <string name="card_reader_payment_send_receipt">Отправить квитанцию</string>

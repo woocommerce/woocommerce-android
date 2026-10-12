@@ -10,6 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
@@ -18,11 +19,12 @@ import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSyste
 @Composable
 fun WooDivider(
     modifier: Modifier = Modifier,
+    color: Color = WooTheme.colors.tintLayers.onSurface.opacity16,
 ) {
     HorizontalDivider(
         modifier = modifier,
         thickness = WooTheme.stroke.extraThin,
-        color = WooTheme.colors.tintLayers.onSurface.opacity16,
+        color = color,
     )
 }
 

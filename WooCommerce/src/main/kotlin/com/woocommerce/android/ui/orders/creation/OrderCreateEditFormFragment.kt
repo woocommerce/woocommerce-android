@@ -55,8 +55,8 @@ import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.component.FeedbackDialog
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.compose.theme.WooTheme
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.selector.CouponSelectorFragment.Companion.KEY_COUPON_SELECTOR_RESULT
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -109,6 +109,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 private const val ANIMATION_DURATION = 200L
 
@@ -277,9 +278,12 @@ class OrderCreateEditFormFragment :
             mainToolbar.navigationIcon = null
             mainToolbar.title = getString(R.string.order_creation_tablet_mode_fragment_title)
             twoPaneModeToolbar.title = getTitle()
-            twoPaneModeToolbar.setNavigationIcon(R.drawable.ic_back_24dp)
+            twoPaneModeToolbar.setNavigationIcon(DesignSystemR.drawable.woo_ds_ic_regular_arrow_left_24dp)
         } else {
-            mainToolbar.navigationIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_back_24dp)
+            mainToolbar.navigationIcon = ContextCompat.getDrawable(
+                requireContext(),
+                DesignSystemR.drawable.woo_ds_ic_regular_arrow_left_24dp
+            )
             mainToolbar.title = getTitle()
         }
         mainToolbar.setNavigationOnClickListener { viewModel.onBackButtonClicked() }
@@ -458,7 +462,7 @@ class OrderCreateEditFormFragment :
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 viewModel.shippingLineSection.observeAsState().value?.let { shippingLineSection ->
-                    WooThemeWithBackground {
+                    LegacyWooThemeWithBackground {
                         ShippingLineFormSection(
                             shippingLineDetails = shippingLineSection.shippingLines,
                             isEnabled = shippingLineSection.isEnabled,
@@ -480,7 +484,7 @@ class OrderCreateEditFormFragment :
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 viewModel.couponLinesLiveData.observeAsState().value?.let { couponSection ->
-                    WooThemeWithBackground {
+                    LegacyWooThemeWithBackground {
                         CouponLineFormSection(
                             couponLineDetails = couponSection.couponLines,
                             isEnabled = couponSection.isEnabled,

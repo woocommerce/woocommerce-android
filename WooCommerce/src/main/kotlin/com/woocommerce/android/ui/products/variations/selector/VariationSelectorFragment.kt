@@ -12,7 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.edgeToEdgeForInLandscape
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.ScreenMode
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,7 +41,7 @@ class VariationSelectorFragment : DialogFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             edgeToEdgeForInLandscape()
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     VariationSelectorScreen(viewModel)
                 }
             }

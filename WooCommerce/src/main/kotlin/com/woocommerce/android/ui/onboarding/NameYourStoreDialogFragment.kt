@@ -37,7 +37,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.onboarding.NameYourStoreViewModel.NameYourStoreDialogState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,7 +57,7 @@ class NameYourStoreDialogFragment : DialogFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     viewModel.viewState.observeAsState().value?.let { state ->
                         val focusRequester = remember { FocusRequester() }
                         Column(modifier = Modifier.clip(RoundedCornerShape(35.dp))) {

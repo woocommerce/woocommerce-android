@@ -11,7 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.creation.coupon.list.OrderCreateCouponListFragmentDirections.Companion.actionOrderCreationCouponListFragmentToOrderCreationCouponEditFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -28,7 +28,7 @@ class OrderCreateCouponListFragment : BaseFragment() {
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            WooThemeWithBackground {
+            LegacyWooThemeWithBackground {
                 OrderCouponListScreen(
                     onNavigateBackClicked = viewModel::onNavigateBack,
                     onCouponClicked = viewModel::onCouponClicked,

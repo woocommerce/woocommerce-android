@@ -36,6 +36,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 private const val APPEARANCE_ANIMATION_DURATION_MS = 600L
 
@@ -68,7 +69,7 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
         binding.toolbar.title = resources.getString(R.string.payments_hub_title)
         binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
             requireActivity(),
-            R.drawable.ic_back_24dp
+            DesignSystemR.drawable.woo_ds_ic_regular_arrow_left_24dp
         )
         binding.toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()

@@ -10,7 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphSettingsDirections
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,7 +36,7 @@ class PluginsFragment : BaseFragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     PluginsScreen(viewModel)
                 }
             }

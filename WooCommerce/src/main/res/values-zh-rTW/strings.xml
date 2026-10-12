@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-09 09:55:13+0000
+Translation-Revision-Date: 2026-09-22 09:57:29+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_reason_unsupported_country_generic">POS 系統不支援商店的國家/地區。 請檢查商店的地址設定，或聯絡支援團隊尋求協助。</string>
+    <string name="woopos_eligibility_reason_unsupported_country">無法在%1$s使用 POS 系統。 請檢查商店的地址設定，或聯絡支援團隊尋求協助。</string>
+    <string name="woo_push_notifications_introduction_error_offline_mode_body">無法設定推播通知，因為你的商店正在離線模式。 如果你仍需要協助，請聯絡支援團隊。</string>
+    <string name="order_refunds_refunded_items">已退費的項目</string>
+    <string name="login_not_wordpress_site_title">並非 WordPress 網站</string>
+    <string name="https_configuration_warning_dismiss">關閉 HTTPS 安全性通知</string>
+    <string name="https_configuration_warning_message">你的商店支援 HTTPS，但其位址設定為使用 HTTP。 更新為 HTTPS 以保護商店並預防連線問題。</string>
+    <string name="https_configuration_warning_title">透過 HTTPS 保護你的商店</string>
     <string name="age_verification_open_google_play">開啟 Google Play</string>
     <string name="age_verification_required_message">在 WooCommerce 檢查你是否可以使用應用程式前，Google Play 需要先驗證你的年齡。請在 Google Play 完成驗證，然後返回此處再試一次。</string>
     <string name="age_verification_required_title">若要繼續，請驗證你的年齡</string>
@@ -924,8 +932,12 @@ Language: zh_TW
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">英國</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">美國</string>
     <string name="woopos_eligibility_screen_unable_to_load">無法載入</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">POS 系統不支援商店的幣別。 請檢查商店的幣別設定，或聯絡支援團隊尋求協助。</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS 系統不支援商店的幣別。 「%1$s」地區目前僅支援：%2$s。 請檢查商店的幣別設定，或聯絡支援團隊尋求協助。</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">必須啟用「銷售時點情報系統」才能繼續。 若要啟用 POS 功能，請依序前往「WooCommerce 設定」&gt;「進階」&gt;「功能」，然後從 WordPress 管理員啟用功能，然後再試一次。</string>
     <string name="woopos_eligibility_reason_check_connection">請檢查網際網路連線，並嘗試重新啟動應用程式。萬一問題持續發生，請聯絡支援團隊。</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">系統不支援你的 WooCommerce 版本。 POS 系統僅適用於 WooCommerce %1$s 以上版本。 請更新至最新版本的 WooCommerce。</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">請確認是否安裝 WooCommerce 外掛程式，然後從 WordPress 管理員啟用程式。 萬一還是遇到問題，請聯絡支援團隊尋求協助。</string>
     <string name="orderfilters_sales_channel_filter">銷售通路</string>
     <string name="barcode_ean13_content_description">條碼 EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">額外處理</string>
@@ -2791,7 +2803,7 @@ Language: zh_TW
     <string name="coupon_details_menu_share">分享優惠券</string>
     <string name="coupon_details_menu_copy">複製優惠券代碼</string>
     <string name="inbox_note_survey_actioned">感謝你的意見回饋！</string>
-    <string name="card_reader_connect_permission_rationale_hint">讀卡機付款需要準確定位的權限</string>
+    <string name="card_reader_connect_permission_rationale_hint">讀卡機付款需要定位的權限</string>
     <string name="card_reader_connect_permission_rationale_header">需要定位權限</string>
     <string name="simple_payments_share_payment_dialog_title">結帳 - %s</string>
     <string name="simple_payments_share_payment_link">分享付款連結</string>
@@ -3299,7 +3311,7 @@ Language: zh_TW
     <string name="card_reader_connect_open_permission_settings">開啟設定</string>
     <string name="card_reader_connect_bluetooth_disabled_header">已停用藍牙</string>
     <string name="card_reader_connect_location_provider_disabled_header">已停用定位</string>
-    <string name="card_reader_connect_missing_permissions_header">缺少所需的準確定位權限</string>
+    <string name="card_reader_connect_missing_permissions_header">缺少所需定位權限</string>
     <string name="card_reader_connect_connecting_header">正在連線至閱讀器</string>
     <string name="card_reader_connect_to_reader">連線至閱讀器</string>
     <string name="card_reader_connect_reader_found_header">你要連線至閱讀器 %s 嗎？</string>

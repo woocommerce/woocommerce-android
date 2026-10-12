@@ -21,6 +21,12 @@ import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositsOverviewEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositsSchedule
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsManualDepositEntity
+import org.wordpress.android.util.AppLog
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
+import java.util.Locale
 import javax.inject.Inject
 
 class WooPaymentsDepositsOverviewMapper @Inject constructor() {
@@ -53,7 +59,7 @@ class WooPaymentsDepositsOverviewMapper @Inject constructor() {
                     lastManualDeposits = it.lastManualDeposits?.map { manualDeposit ->
                         ManualDeposit(
                             currency = manualDeposit.currency,
-                            date = manualDeposit.date
+                            date = parseManualDepositDate(manualDeposit.date)
                         )
                     },
                     lastPaid = it.lastPaid?.map {
@@ -239,4 +245,20 @@ class WooPaymentsDepositsOverviewMapper @Inject constructor() {
             type = info.type,
             depositId = info.id
         )
+
+    // Unlike `last_paid` timestamps, the API returns manual deposit dates as UTC datetime strings
+    private fun parseManualDepositDate(date: String?): Long? {
+        if (date == null) return null
+        return try {
+            LocalDateTime.parse(date, MANUAL_DEPOSIT_DATE_FORMATTER).toInstant(ZoneOffset.UTC).toEpochMilli()
+        } catch (_: DateTimeParseException) {
+            AppLog.w(AppLog.T.API, "Unexpected manual deposit date format: $date")
+            null
+        }
+    }
+
+    private companion object {
+        val MANUAL_DEPOSIT_DATE_FORMATTER: DateTimeFormatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ROOT)
+    }
 }

@@ -5,6 +5,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
@@ -27,10 +28,12 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.blaze.BlazeBillingSummary
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.time.ZonedDateTime
@@ -85,7 +88,13 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
-    private val blazeCampaignsStore: BlazeCampaignsStore = mock()
+    private val blazeCampaignsStore: BlazeCampaignsStore = mock {
+        on { getBlazeCampaigns(any()) } doReturn emptyList()
+    }
+    private val outstandingBalanceFlow = MutableStateFlow<BlazeBillingSummary?>(null)
+    private val blazeRepository: BlazeRepository = mock {
+        on { outstandingBalance } doReturn outstandingBalanceFlow
+    }
 
     private lateinit var viewModel: MoreMenuViewModel
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
@@ -102,6 +111,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             planRepository = planRepository,
             resourceProvider = resourceProvider,
             blazeCampaignsStore = blazeCampaignsStore,
+            blazeRepository = blazeRepository,
             tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
             isBlazeEnabled = isBlazeEnabled,
             isGoogleForWooEnabled = isGoogleForWooEnabled,
@@ -357,7 +367,11 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         prefsChanges.emit(true)
 
         // THEN
-        assertThat(states.last().menuSections.flatMap { it.items }.first().badgeState).isNull()
+        assertThat(
+            states.last().menuSections.flatMap { it.items }.first {
+                it.title == R.string.more_menu_button_payments
+            }.badgeState
+        ).isNull()
     }
 
     @Test
@@ -426,6 +440,35 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     }
 
     @Test
+    fun `given no blaze campaigns and an outstanding balance, when user clicks on blaze, then show campaigns list`() =
+        testBlocking {
+            // GIVEN
+            outstandingBalanceFlow.value = OUTSTANDING_BALANCE
+            setup()
+            val state = viewModel.moreMenuViewState.captureValues().last()
+            val button = state.menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_blaze }
+
+            // WHEN
+            val event = viewModel.event.runAndCaptureValues {
+                button.onClick()
+            }.last()
+
+            // THEN
+            assertThat(event).isEqualTo(MoreMenuEvent.OpenBlazeCampaignListEvent)
+        }
+
+    @Test
+    fun `given blaze is not enabled, when screen loads, then do not fetch outstanding balance`() = testBlocking {
+        // WHEN
+        setup {
+            whenever(isBlazeEnabled.invoke()).thenReturn(false)
+        }
+
+        // THEN
+        verify(blazeRepository, never()).fetchOutstandingBalance()
+    }
+
+    @Test
     fun `when building state, then all optional buttons start with loading state`() = testBlocking {
         // GIVEN
         setup {
@@ -440,12 +483,95 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
         // THEN
         val items = states.first().menuSections.flatMap { it.items }
-        assertThat(items.first { it.title == R.string.more_menu_button_blaze }.state)
+        assertThat(items.first { it.title == R.string.more_menu_button_subscriptions }.state)
             .isEqualTo(MoreMenuItemButton.State.Loading)
         assertThat(items.first { it.title == R.string.more_menu_button_google }.state)
             .isEqualTo(MoreMenuItemButton.State.Loading)
+        assertThat(items.first { it.title == R.string.more_menu_button_blaze }.state)
+            .isEqualTo(MoreMenuItemButton.State.Loading)
         assertThat(items.first { it.title == R.string.more_menu_button_inbox }.state)
             .isEqualTo(MoreMenuItemButton.State.Loading)
+    }
+
+    @Test
+    fun `when building state, then sections and items use the original hierarchy and order`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(moreMenuRepository.isUpgradesEnabled()).thenReturn(true)
+        }
+
+        // WHEN
+        val state = viewModel.moreMenuViewState.captureValues().last()
+
+        // THEN
+        assertThat(state.menuSections.map { it.title }).containsExactly(
+            R.string.more_menu_settings_section_title,
+            R.string.more_menu_general_section_title,
+        )
+        assertThat(state.menuSections[0].items.map { it.title }).containsExactly(
+            R.string.more_menu_button_settings,
+            R.string.more_menu_button_subscriptions,
+        )
+        assertThat(state.menuSections[1].items.map { it.title }).containsExactly(
+            R.string.more_menu_button_payments,
+            R.string.more_menu_button_google,
+            R.string.more_menu_button_blaze,
+            R.string.more_menu_button_wс_admin,
+            R.string.more_menu_button_store,
+            R.string.more_menu_button_coupons,
+            R.string.more_menu_button_reviews,
+            R.string.more_menu_button_customers,
+            R.string.more_menu_button_inbox,
+        )
+    }
+
+    @Test
+    fun `given optional actions are unavailable, when state resolves, then hidden rows are removed in place`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(isBlazeEnabled.invoke()).thenReturn(false)
+                whenever(isGoogleForWooEnabled.invoke()).thenReturn(false)
+                whenever(moreMenuRepository.isUpgradesEnabled()).thenReturn(false)
+                whenever(moreMenuRepository.isInboxEnabled()).thenReturn(false)
+            }
+
+            // WHEN
+            val state = viewModel.moreMenuViewState.captureValues().last()
+
+            // THEN
+            assertThat(state.menuSections.map { it.title }).containsExactly(
+                R.string.more_menu_settings_section_title,
+                R.string.more_menu_general_section_title,
+            )
+            assertThat(state.menuSections[0].items.map { it.title }).containsExactly(
+                R.string.more_menu_button_settings,
+            )
+            assertThat(state.menuSections[1].items.map { it.title }).containsExactly(
+                R.string.more_menu_button_payments,
+                R.string.more_menu_button_wс_admin,
+                R.string.more_menu_button_store,
+                R.string.more_menu_button_coupons,
+                R.string.more_menu_button_reviews,
+                R.string.more_menu_button_customers,
+            )
+        }
+
+    @Test
+    fun `given a large unseen review count, when building state, then semantic count is not capped`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(1234))
+        }
+
+        // WHEN
+        val state = viewModel.moreMenuViewState.captureValues().last()
+
+        // THEN
+        val reviewBadge = state.menuSections.flatMap { it.items }
+            .first { it.title == R.string.more_menu_button_reviews }
+            .badgeState
+        assertThat(reviewBadge?.textState?.text).isEqualTo("1234")
     }
 
     @Test
@@ -479,5 +605,14 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         assertThat(items.map { it.title }).doesNotContain(R.string.more_menu_button_ai_assistant)
         assertThat(items.map { it.description }).doesNotContain(R.string.more_menu_button_ai_assistant_description)
         assertThat(items.map { it.icon }).doesNotContain(R.drawable.ic_more_menu_ai_assistant)
+    }
+
+    companion object {
+        val OUTSTANDING_BALANCE = BlazeBillingSummary(
+            debt = 25.05,
+            paymentLinks = listOf(
+                BlazeBillingSummary.PaymentLink(date = null, amount = 25.05, url = "https://example.com/pay")
+            )
+        )
     }
 }

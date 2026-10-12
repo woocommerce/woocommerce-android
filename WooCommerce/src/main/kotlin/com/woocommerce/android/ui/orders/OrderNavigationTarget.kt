@@ -47,7 +47,8 @@ sealed class OrderNavigationTarget : Event() {
 
     data class ViewShipmentTrackingProviders(
         val orderId: Long,
-        val selectedProvider: String
+        val selectedProvider: String,
+        val storeCountryCode: String?,
     ) : OrderNavigationTarget()
     object OpenTrackingBarcodeScanning : OrderNavigationTarget()
     data class PrintShippingLabel(val remoteOrderId: Long, val shippingLabelId: Long) : OrderNavigationTarget()

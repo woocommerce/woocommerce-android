@@ -58,6 +58,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
+@Suppress("LargeClass")
 @HiltViewModel
 class SitePickerViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -103,6 +104,21 @@ class SitePickerViewModel @Inject constructor(
     val sites: LiveData<List<SitesListItem>> = _sites
 
     private var loadedWooSites: List<SiteModel> = emptyList()
+
+    // onSitesLoaded runs on both the cache and the API pass, and each re-enters
+    // processLoginSiteAddress; this keeps that to one event per site. Cleared when the merchant
+    // leaves the screen — back to the list, or into the installer — so a second showing counts.
+    private var lastNoWooSiteReported: Long? = null
+
+    // What this screen last reported, so it can re-assert it once it is in front again.
+    private var lastReportedStep: UnifiedLoginTracker.Step? = null
+
+    // The step describes the list being on screen, not the sites finishing loading: a typed address
+    // or a lone store routes the merchant straight past it, and an error screen can hand them back
+    // to it. Raised wherever the list is first shown and never lowered, so a visit counts once.
+    private var siteListReported = false
+
+    private var isContinueInFlight = false
 
     private val selectedSiteId: MutableLiveData<Int> = savedState.getLiveData("selected-site-id")
 
@@ -244,17 +260,13 @@ class SitePickerViewModel @Inject constructor(
         val nonWooSites = sites.filter { !it.hasWooCommerce }
         loadedWooSites = wooSites
 
+        val staysOnList = staysOnList(wooSites)
+
         if (_sites.value == null) {
             // Track events only on the first call
-            trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SITE_LIST)
-            analyticsTrackerWrapper.track(
-                AnalyticsEvent.SITE_PICKER_STORES_SHOWN,
-                mapOf(
-                    AnalyticsTracker.KEY_NUMBER_OF_STORES to wooSites.size,
-                    AnalyticsTracker.KEY_NUMBER_OF_NON_WOO_SITES to nonWooSites.size
-                )
-            )
+            trackStoresShown(wooSites, nonWooSites, staysOnList)
         }
+        if (staysOnList) trackSiteListShown()
         val shouldSelectFirstSite = shouldSelectFirstSite(wooSites.size, isApiResponse)
         val selectedSiteId = selectedSiteId.value ?: wooSites.firstOrNull()?.id?.takeIf { shouldSelectFirstSite }
         val isSelectedSiteVisible = getWooVisibleSites().any { it.id == selectedSiteId }
@@ -278,13 +290,41 @@ class SitePickerViewModel @Inject constructor(
             processLoginSiteAddress(it)
             return
         }
-        if (navArgs.openedFromLogin && isApiResponse && wooSites.size == 1) {
+        if (autoLoginsIntoSingleStore(wooSites) && isApiResponse) {
             wooSites.singleOrNull()?.let {
                 onSiteSelected(it)
                 onContinueButtonClick(isAutoLogin = true)
             }
         }
     }
+
+    /**
+     * Site discovery and the Jetpack screens set their own flow and step, and can leave either by
+     * handing an address back or by the merchant backing out. The picker re-asserts what it last
+     * reported whenever it is in front again, so a later click is attributed to the screen the
+     * merchant is actually looking at rather than to the one they left.
+     */
+    fun restoreEpilogueTracking() {
+        if (navArgs.openedFromLogin) {
+            unifiedLoginTracker.setFlow(UnifiedLoginTracker.Flow.EPILOGUE.value)
+            lastReportedStep?.let { unifiedLoginTracker.setStep(it) }
+        }
+    }
+
+    /**
+     * Whether the list reaches the screen, rather than merely finishing loading. A typed address
+     * always routes off it — to the mismatch, the not-a-store or the dashboard screen — and a lone
+     * store is continued into without asking, so neither list was ever looked at.
+     */
+    private fun staysOnList(wooSites: List<SiteModel>) =
+        loginSiteAddress == null && !autoLoginsIntoSingleStore(wooSites)
+
+    /**
+     * Shares the condition with the auto-continue below it so the two cannot drift apart. The cache
+     * pass cannot see that the API pass is the one about to log in, so the count alone decides.
+     */
+    private fun autoLoginsIntoSingleStore(wooSites: List<SiteModel>) =
+        navArgs.openedFromLogin && wooSites.size == 1
 
     private fun shouldSelectFirstSite(wooSiteCount: Int, isApiResponse: Boolean) = when {
         !navArgs.openedFromLogin -> true
@@ -376,14 +416,6 @@ class SitePickerViewModel @Inject constructor(
      */
     private fun showAccountMismatchScreen(url: String) = launch {
         sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = true, isPrimaryBtnVisible = false)
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
-            mapOf(
-                AnalyticsTracker.KEY_URL to url,
-                AnalyticsTracker.KEY_HAS_CONNECTED_STORES to sitePickerViewState.hasConnectedStores
-            )
-        )
-        trackLoginEvent(currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT)
         repository.fetchSiteInfo(url).fold(
             onSuccess = {
                 val primaryButton = when {
@@ -392,6 +424,16 @@ class SitePickerViewModel @Inject constructor(
                 }
                 if (event.value !is NavigateToAccountMismatchScreen) {
                     // The check is to avoid triggering the navigation multiple times
+                    trackLoginEvent(
+                        currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT,
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_URL to url,
+                            // Woo stores only, and non-null before sites load: onSitesLoaded
+                            // returns early here when the account has none at all.
+                            AnalyticsTracker.KEY_HAS_CONNECTED_STORES to
+                                loadedWooSites.isNotEmpty().toString()
+                        )
+                    )
                     triggerEvent(
                         NavigateToAccountMismatchScreen(
                             primaryButton = primaryButton,
@@ -413,6 +455,7 @@ class SitePickerViewModel @Inject constructor(
     }
 
     private fun loadWooNotFoundView(site: SiteModel) {
+        // Tracks this screen outside a login journey, which the login-only step below does not.
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE,
             mapOf(
@@ -420,7 +463,7 @@ class SitePickerViewModel @Inject constructor(
                 AnalyticsTracker.KEY_HAS_CONNECTED_STORES to sitePickerViewState.hasConnectedStores
             )
         )
-        trackLoginEvent(currentStep = UnifiedLoginTracker.Step.NOT_WOO_STORE)
+        trackNotWooStore(site)
         // Make sure installation is enabled only for selfhosted and atomic sites
         // TODO remove this when we handle non-atomic sites
         val isWooInstallationEnabled = site.isJetpackConnected
@@ -437,6 +480,7 @@ class SitePickerViewModel @Inject constructor(
     }
 
     private fun loadSimpleWPComView(site: SiteModel) {
+        trackNotWooStore(site)
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true,
@@ -445,6 +489,51 @@ class SitePickerViewModel @Inject constructor(
             noStoresSubText = null,
             isNoStoresBtnVisible = false,
             currentSitePickerState = SitePickerState.SimpleWPComState
+        )
+    }
+
+    private fun trackStoresShown(wooSites: List<SiteModel>, nonWooSites: List<SiteModel>, staysOnList: Boolean) {
+        // An account with no store still lands on the list, shown as an empty state, so both steps
+        // describe the same screen. This one goes first so the tracker's current step ends on
+        // SITE_LIST, since that is what later clicks on the screen are attributed to.
+        if (staysOnList && wooSites.isEmpty()) trackLoginEvent(currentStep = UnifiedLoginTracker.Step.NO_WOO_STORES)
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_PICKER_STORES_SHOWN,
+            mapOf(
+                AnalyticsTracker.KEY_NUMBER_OF_STORES to wooSites.size,
+                AnalyticsTracker.KEY_NUMBER_OF_NON_WOO_SITES to nonWooSites.size
+            )
+        )
+    }
+
+    private fun trackSiteListShown() {
+        if (siteListReported) return
+        siteListReported = true
+        trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SITE_LIST)
+    }
+
+    /**
+     * Leaving the list and coming back to it — from site discovery, from the mismatch screen —
+     * puts it on screen again, which is the one thing the step describes. Reported here rather
+     * than predicted on load, so every route back counts the same, and only once per visit.
+     */
+    fun reportListIfShown() {
+        val listIsOnScreen = _sites.value != null &&
+            sitePickerViewState.currentSitePickerState == SitePickerState.StoreListState &&
+            !sitePickerViewState.isSkeletonViewVisible &&
+            !sitePickerViewState.isProgressDiaLogVisible
+        if (listIsOnScreen) trackSiteListShown()
+    }
+
+    private fun trackNotWooStore(site: SiteModel) {
+        if (lastNoWooSiteReported == site.siteId) return
+        lastNoWooSiteReported = site.siteId
+        trackLoginEvent(
+            currentStep = UnifiedLoginTracker.Step.NOT_WOO_STORE,
+            properties = mapOf(
+                AnalyticsTracker.KEY_URL to UrlUtils.removeScheme(site.url),
+                AnalyticsTracker.KEY_HAS_CONNECTED_STORES to loadedWooSites.isNotEmpty().toString()
+            )
         )
     }
 
@@ -483,6 +572,11 @@ class SitePickerViewModel @Inject constructor(
     fun onViewConnectedStoresButtonClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
         trackLoginEvent(clickEvent = UnifiedLoginTracker.Click.VIEW_CONNECTED_STORES)
+        lastNoWooSiteReported = null
+        // The list the typed address routed past is on screen now, so this is the point in the
+        // visit where it is first seen. Reported after the click, which still belongs to the
+        // screen the merchant is leaving.
+        trackSiteListShown()
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = false,
             isPrimaryBtnVisible = sites.value!!.any { it is WooSiteUiModel },
@@ -526,6 +620,9 @@ class SitePickerViewModel @Inject constructor(
     }
 
     fun onContinueButtonClick(isAutoLogin: Boolean = false) {
+        // Both the cache and the API pass auto-continue into a typed address, and the selected
+        // site is only set once verification returns, too late to tell the second apart.
+        if (isContinueInFlight) return
         val selectedSiteModel = getSelectedWooSite() ?: return
 
         // the current site is selected again so do nothing
@@ -551,42 +648,63 @@ class SitePickerViewModel @Inject constructor(
             )
         }
 
-        sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
+        setContinueInFlight(true)
         launch {
-            val siteVerificationResult = repository.verifySiteWooAPIVersion(selectedSiteModel)
-            val siteVerificationModel = siteVerificationResult.model
-            when {
-                siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, selectedSiteModel)
-                siteVerificationModel?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
-                    experimentTracker.log(ExperimentTracker.SITE_VERIFICATION_SUCCESSFUL_EVENT)
-                    trackAppPasswordsSupport(siteVerificationModel.siteModel)
-                    userEligibilityFetcher.fetchUserInfo(siteVerificationModel.siteModel).fold(
-                        onSuccess = {
-                            selectedSite.set(siteVerificationModel.siteModel)
-                            trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SUCCESS)
-                            appPrefsWrapper.removeLoginSiteAddress()
-                            val registerDeviceTrigger = if (navArgs.openedFromLogin) {
-                                RegisterDevice.Trigger.LOGIN_SUCCESS
-                            } else {
-                                RegisterDevice.Trigger.SITE_SWITCH
-                            }
-                            registerDevice.kickoff(registerDeviceTrigger)
-
-                            sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
-                            triggerEvent(SitePickerEvent.NavigateToMainActivityEvent)
-                        },
-                        onFailure = {
-                            triggerEvent(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
-                        }
-                    )
-                }
-
-                else -> {
-                    _isWooUpgradeDialogVisible.value = true
-                }
+            try {
+                continueIntoSelectedSite(selectedSiteModel)
+            } finally {
+                setContinueInFlight(false)
             }
-            sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
         }
+    }
+
+    private suspend fun continueIntoSelectedSite(selectedSiteModel: SiteModel) {
+        var reachedTheDashboard = false
+        val siteVerificationResult = repository.verifySiteWooAPIVersion(selectedSiteModel)
+        val siteVerificationModel = siteVerificationResult.model
+        when {
+            siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, selectedSiteModel)
+            siteVerificationModel?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
+                experimentTracker.log(ExperimentTracker.SITE_VERIFICATION_SUCCESSFUL_EVENT)
+                trackAppPasswordsSupport(siteVerificationModel.siteModel)
+                userEligibilityFetcher.fetchUserInfo(siteVerificationModel.siteModel).fold(
+                    onSuccess = {
+                        selectedSite.set(siteVerificationModel.siteModel)
+                        trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SUCCESS)
+                        appPrefsWrapper.removeLoginSiteAddress()
+                        val registerDeviceTrigger = if (navArgs.openedFromLogin) {
+                            RegisterDevice.Trigger.LOGIN_SUCCESS
+                        } else {
+                            RegisterDevice.Trigger.SITE_SWITCH
+                        }
+                        registerDevice.kickoff(registerDeviceTrigger)
+
+                        sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
+                        reachedTheDashboard = true
+                        triggerEvent(SitePickerEvent.NavigateToMainActivityEvent)
+                    },
+                    onFailure = {
+                        triggerEvent(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
+                    }
+                )
+            }
+
+            else -> {
+                _isWooUpgradeDialogVisible.value = true
+            }
+        }
+        // The merchant stays on the list, so report it in case an auto-login skipped it.
+        if (!reachedTheDashboard) trackSiteListShown()
+    }
+
+    /**
+     * The progress dialog and the in-flight guard describe the same thing, so they move together.
+     * Only the guard is kept out of saved state: a restored "true" would block the recreated login
+     * behind a dialog that nothing is left running to dismiss.
+     */
+    private fun setContinueInFlight(inFlight: Boolean) {
+        isContinueInFlight = inFlight
+        sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = inFlight)
     }
 
     private fun getSelectedWooSite(): SiteModel? {
@@ -647,6 +765,7 @@ class SitePickerViewModel @Inject constructor(
     )
 
     fun onInstallWooClicked() {
+        lastNoWooSiteReported = null
         loginSiteAddress?.let {
             triggerEvent(
                 NavigateToAuthenticatedWebView(
@@ -731,13 +850,17 @@ class SitePickerViewModel @Inject constructor(
     private fun trackLoginEvent(
         currentFlow: UnifiedLoginTracker.Flow? = null,
         currentStep: UnifiedLoginTracker.Step? = null,
-        clickEvent: UnifiedLoginTracker.Click? = null
+        clickEvent: UnifiedLoginTracker.Click? = null,
+        properties: Map<String, String> = emptyMap()
     ) {
         if (navArgs.openedFromLogin) {
-            if (currentFlow != null && currentStep != null) {
-                unifiedLoginTracker.track(currentFlow, currentStep)
-            } else if (currentStep != null) {
-                unifiedLoginTracker.track(step = currentStep)
+            if (currentStep != null) {
+                lastReportedStep = currentStep
+                if (currentFlow != null) {
+                    unifiedLoginTracker.track(currentFlow, currentStep, properties)
+                } else {
+                    unifiedLoginTracker.track(step = currentStep, properties = properties)
+                }
             }
             if (clickEvent != null) {
                 unifiedLoginTracker.trackClick(clickEvent)

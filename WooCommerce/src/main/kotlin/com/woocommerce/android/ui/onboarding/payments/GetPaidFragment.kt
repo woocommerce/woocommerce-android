@@ -11,7 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.onboarding.payments.GetPaidViewModel.ShowWooPaymentsSetupSuccess
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -36,7 +36,7 @@ class GetPaidFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     GetPaidScreen(viewModel, userAgent, authenticator)
                 }
             }

@@ -60,7 +60,7 @@ import com.woocommerce.android.ui.compose.component.FeedbackRequest
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.ProductPropertyCard
 import com.woocommerce.android.ui.products.ai.components.FullScreenImageViewer
@@ -102,10 +102,12 @@ private fun AiProductPreviewScreen(
     onSaveProductAsDraft: () -> Unit,
     onGenerateAgainClick: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onBackButtonClick,
+                showDivider = scrollState.canScrollBackward,
                 actions = {
                     when {
                         state is AiProductPreviewViewModel.State.Success &&
@@ -121,12 +123,11 @@ private fun AiProductPreviewScreen(
                         }
 
                         else -> {
-                            WCTextButton(
+                            TextAction(
+                                text = stringResource(id = R.string.product_detail_save_as_draft),
+                                onClick = onSaveProductAsDraft,
                                 enabled = state is AiProductPreviewViewModel.State.Success,
-                                onClick = onSaveProductAsDraft
-                            ) {
-                                Text(text = stringResource(id = R.string.product_detail_save_as_draft))
-                            }
+                            )
                         }
                     }
                 }
@@ -136,7 +137,7 @@ private fun AiProductPreviewScreen(
         Column(
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(paddingValues)
                 .padding(dimensionResource(id = R.dimen.major_100))
         ) {
@@ -591,7 +592,7 @@ private fun ErrorDialog(
 @Preview
 @PreviewLightDark
 private fun ProductPreviewLoadingPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AiProductPreviewScreen(
             state = AiProductPreviewViewModel.State.Loading,
             onNameChanged = {},
@@ -613,7 +614,7 @@ private fun ProductPreviewLoadingPreview() {
 @Preview
 @PreviewLightDark
 private fun ProductPreviewContentPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AiProductPreviewScreen(
             state = AiProductPreviewViewModel.State.Success(
                 selectedVariant = 0,

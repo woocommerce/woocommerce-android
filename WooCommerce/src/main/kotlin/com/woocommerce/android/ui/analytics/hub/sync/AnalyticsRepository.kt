@@ -347,7 +347,7 @@ class AnalyticsRepository @Inject constructor(
         ).mapCatching { it }
     }
 
-    private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
+    private suspend fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
 
     suspend fun fetchProductBundlesStats(rangeSelection: StatsTimeRangeSelection) = coroutineScope {
         val currentPeriod = rangeSelection.currentRange

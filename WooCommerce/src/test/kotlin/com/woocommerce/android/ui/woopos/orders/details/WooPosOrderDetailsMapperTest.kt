@@ -74,6 +74,7 @@ class WooPosOrderDetailsMapperTest {
         whenever(refundInfoBuilder.buildTotalsBreakdown(any(), any())).thenReturn(
             TotalsBreakdown(
                 products = "$10.00",
+                customAmounts = null,
                 discount = null,
                 discountCode = null,
                 taxes = "$0.00",

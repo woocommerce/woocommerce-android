@@ -3,7 +3,7 @@ package com.woocommerce.android.e2e.screens.moremenu
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeTestRule
-import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -11,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.screens.mystore.settings.SettingsScreen
 import com.woocommerce.android.e2e.screens.reviews.ReviewsListScreen
+import com.woocommerce.android.ui.moremenu.MoreMenuTestTags
 
 class MoreMenuScreen : Screen(R.id.more_menu_compose_view) {
     fun openReviewsListScreen(composeTestRule: ComposeTestRule): ReviewsListScreen {
@@ -31,7 +32,8 @@ class MoreMenuScreen : Screen(R.id.more_menu_compose_view) {
 
         while (currentAttempt < maxAttempts) {
             try {
-                composeTestRule.onNodeWithContentDescription(getTranslatedString(R.string.more_menu_button_settings))
+                composeTestRule.onNodeWithTag(MoreMenuTestTags.SETTINGS_ITEM)
+                    .performScrollTo()
                     .assertIsDisplayed()
                     .assertHasClickAction()
                 break // Exit loop if node is displayed and clickable
@@ -46,9 +48,11 @@ class MoreMenuScreen : Screen(R.id.more_menu_compose_view) {
             throw IllegalStateException("Failed to open settings due to: ${lastError.message}", lastError)
         }
 
-        composeTestRule.onNodeWithContentDescription(
-            getTranslatedString(R.string.more_menu_button_settings)
-        ).assertHasClickAction().performClick()
+        composeTestRule.onNodeWithTag(MoreMenuTestTags.SETTINGS_ITEM)
+            .performScrollTo()
+            .assertIsDisplayed()
+            .assertHasClickAction()
+            .performClick()
 
         return SettingsScreen()
     }

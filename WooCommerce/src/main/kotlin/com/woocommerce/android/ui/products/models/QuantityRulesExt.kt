@@ -1,10 +1,21 @@
 package com.woocommerce.android.ui.products.models
 
+import androidx.annotation.DrawableRes
 import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.ResourceProvider
 
 fun QuantityRules.getProductProperty(
     resources: ResourceProvider,
+    onClick: (() -> Unit)
+): ProductProperty? = getProductProperty(
+    resources = resources,
+    icon = R.drawable.ic_gridicons_product,
+    onClick = onClick
+)
+
+fun QuantityRules.getProductProperty(
+    resources: ResourceProvider,
+    @DrawableRes icon: Int,
     onClick: (() -> Unit)
 ): ProductProperty? {
     return when {
@@ -20,7 +31,7 @@ fun QuantityRules.getProductProperty(
 
             ProductProperty.PropertyGroup(
                 title = R.string.product_quantity_rules_title,
-                icon = R.drawable.ic_gridicons_product,
+                icon = icon,
                 properties = properties,
                 showTitle = true,
                 onClick = onClick
@@ -29,7 +40,7 @@ fun QuantityRules.getProductProperty(
             ProductProperty.ComplexProperty(
                 title = R.string.product_quantity_rules_title,
                 value = resources.getString(R.string.no_quantity_rules),
-                icon = R.drawable.ic_gridicons_product,
+                icon = icon,
                 onClick = onClick
             )
         }

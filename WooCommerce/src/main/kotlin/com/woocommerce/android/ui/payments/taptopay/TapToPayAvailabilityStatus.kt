@@ -18,7 +18,7 @@ class TapToPayAvailabilityStatus @Inject constructor(
     private val wooStore: WooCommerceStore,
     private val tapToPayDeviceSupportChecker: TapToPayDeviceSupportChecker,
 ) {
-    operator fun invoke() =
+    suspend operator fun invoke() =
         when {
             !systemVersionUtilsWrapper.isAtLeastR() -> Result.NotAvailable.SystemVersionNotSupported
             !deviceFeatures.isGooglePlayServicesAvailable() -> Result.NotAvailable.GooglePlayServicesNotAvailable
@@ -29,7 +29,7 @@ class TapToPayAvailabilityStatus @Inject constructor(
             else -> Result.Available
         }
 
-    private fun isTppSupportedInCountry(): Boolean {
+    private suspend fun isTppSupportedInCountry(): Boolean {
         val selectedSite = selectedSite.getIfExists() ?: return false
         val countryCode = wooStore.getStoreCountryCode(selectedSite)
         return when (val config = cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode)) {

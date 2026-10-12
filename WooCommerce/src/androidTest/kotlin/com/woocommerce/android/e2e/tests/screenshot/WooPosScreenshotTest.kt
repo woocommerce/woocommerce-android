@@ -8,7 +8,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
-import com.woocommerce.android.e2e.rules.RetryTestRule
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
 import com.woocommerce.android.e2e.screens.woopos.WooPosHomeScreen
@@ -43,9 +42,6 @@ class WooPosScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
 
     @get:Rule(order = 4)
     var activityRule = ActivityTestRule(LoginActivity::class.java)
-
-    @get:Rule(order = 5)
-    var retryTestRule = RetryTestRule()
 
     @Before
     fun setUp() {

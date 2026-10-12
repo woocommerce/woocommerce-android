@@ -29,7 +29,7 @@ data class WooPaymentsDeposit(
 
 data class WooPaymentsManualDeposit(
     val currency: String?,
-    val date: Long?
+    val date: String?
 )
 
 data class WooPaymentsCurrencyBalances(

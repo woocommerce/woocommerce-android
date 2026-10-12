@@ -39,7 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.InProgress
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.NotStarted
@@ -358,7 +358,7 @@ fun ResultIcon(
 @Preview
 @Composable
 fun TroubleshootConnectionScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         TroubleshootConnectionScreen(
             shouldDisplayContactSupportButton = false,
             shouldDisplayAiSupportChatButton = true,

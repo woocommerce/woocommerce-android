@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
 import com.woocommerce.android.ui.orders.wooshippinglabels.VerticalDivider
@@ -494,7 +494,7 @@ private fun OriginShippingAddress.getFormattedName(context: Context): String {
 @Preview
 @Composable
 private fun AddressSectionPortraitPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             AddressSectionPortrait(
                 shippingAddresses = WooShippingAddresses(
@@ -515,7 +515,7 @@ private fun AddressSectionPortraitPreview() {
 @Preview
 @Composable
 private fun AddressSectionPortraitMissingAddressPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             AddressSectionPortrait(
                 shippingAddresses = WooShippingAddresses(
@@ -536,7 +536,7 @@ private fun AddressSectionPortraitMissingAddressPreview() {
 @Preview(widthDp = 750, heightDp = 200)
 @Composable
 private fun AddressSectionLandscapePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             AddressSectionLandscape(
                 shippingAddresses = WooShippingAddresses(
@@ -557,7 +557,7 @@ private fun AddressSectionLandscapePreview() {
 @Preview(widthDp = 750, heightDp = 100)
 @Composable
 private fun AddressSectionLandscapeMissingAddressPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             AddressSectionLandscape(
                 shippingAddresses = WooShippingAddresses(

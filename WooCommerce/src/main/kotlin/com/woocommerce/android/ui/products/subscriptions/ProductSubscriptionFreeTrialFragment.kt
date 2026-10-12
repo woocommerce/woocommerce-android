@@ -44,7 +44,7 @@ import com.woocommerce.android.model.SubscriptionPeriod.Year
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCExposedDropDown
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -71,7 +71,7 @@ class ProductSubscriptionFreeTrialFragment : BaseFragment(), BackPressListener {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     trialViewModel.viewState.observeAsState().value?.let { state ->
                         SubscriptionFreeTrial(
                             length = state.length,

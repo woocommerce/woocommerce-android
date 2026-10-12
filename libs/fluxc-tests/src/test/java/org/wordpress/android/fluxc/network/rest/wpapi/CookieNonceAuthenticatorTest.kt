@@ -11,6 +11,8 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseKind
 import org.wordpress.android.fluxc.network.discovery.DiscoveryWPAPIRestClient
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.test
@@ -76,6 +78,21 @@ class CookieNonceAuthenticatorTest {
         assertEquals(0, restCalls)
         assertNonceFailureHasNoResponse(actual)
         verify(siteStore, never()).insertOrUpdateSite(site)
+    }
+
+    @Test
+    fun `given a page instead of the nonce, when making a protected request, then keep its details`() = test {
+        val site = site()
+        whenever(nonceClient.getNonce(SITE_URL, USERNAME)).thenReturn(null)
+        whenever(nonceClient.requestNonce(CookieNonceAuthenticationEndpoints.from(site), USERNAME, PASSWORD))
+            .thenReturn(nonceFailure().copy(unexpectedStoreResponse = UNEXPECTED_RESPONSE))
+
+        val actual = subject.makeAuthenticatedWPAPIRequest(site) {
+            WPAPIResponse.Success("unexpected", emptyList())
+        }
+
+        val error = assertIs<WPAPIResponse.Error<*>>(actual).error
+        assertEquals(UNEXPECTED_RESPONSE, error.unexpectedStoreResponse)
     }
 
     @Test
@@ -178,5 +195,12 @@ class CookieNonceAuthenticatorTest {
         const val NEW_NONCE = "newNonce"
         const val TIMEOUT_MESSAGE = "Request timed out"
         val ENDPOINTS = CookieNonceAuthenticationEndpoints(SITE_URL, LOGIN_URL, ADMIN_URL)
+        val UNEXPECTED_RESPONSE = UnexpectedStoreResponse(
+            kind = UnexpectedStoreResponseKind.UNEXPECTED_CONTENT,
+            statusCode = 200,
+            contentType = "text/html",
+            requestType = "GET /wp-admin/admin-ajax.php",
+            excerpt = "Access Denied"
+        )
     }
 }

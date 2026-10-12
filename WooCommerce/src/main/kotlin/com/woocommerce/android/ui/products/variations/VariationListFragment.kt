@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -47,6 +48,7 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Pro
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAddAttributeView
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowBulkUpdateAttrPicker
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowBulkUpdateLimitExceededWarning
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowFetchVariationsError
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationConfirmation
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError.LimitExceeded
@@ -85,6 +87,7 @@ class VariationListFragment :
     private val skeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
+    private var fetchErrorSnackbar: Snackbar? = null
 
     private val navArgs: VariationListFragmentArgs by navArgs()
 
@@ -101,6 +104,11 @@ class VariationListFragment :
 
         initializeViews(savedInstanceState)
         initializeViewModel()
+    }
+
+    override fun onStop() {
+        fetchErrorSnackbar?.dismiss()
+        super.onStop()
     }
 
     override fun onDestroyView() {
@@ -222,6 +230,7 @@ class VariationListFragment :
                 is ShowGenerateVariationConfirmation -> showGenerateVariationConfirmation(event.variationCandidates)
                 is ShowGenerateVariationsError -> handleGenerateVariationError(event)
                 is ShowVariationDialog -> showGenerateVariationBottomSheet()
+                is ShowFetchVariationsError -> showFetchVariationsError(event.loadMore)
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
                 is Exit -> activity?.onBackPressedDispatcher?.onBackPressed()
             }
@@ -343,6 +352,14 @@ class VariationListFragment :
         VariationListFragmentDirections
             .actionVariationListFragmentToVariationsBulkUpdateAttrPickerFragment(variationsToUpdate.toTypedArray())
             .run { findNavController().navigateSafely(this) }
+    }
+
+    private fun showFetchVariationsError(loadMore: Boolean) {
+        fetchErrorSnackbar?.dismiss()
+        fetchErrorSnackbar = uiMessageResolver.getRetrySnack(
+            stringResId = R.string.variation_list_fetch_error,
+            actionListener = { viewModel.onFetchVariationsRetryClicked(loadMore) }
+        ).also { it.show() }
     }
 
     override fun onRequestLoadMore() {

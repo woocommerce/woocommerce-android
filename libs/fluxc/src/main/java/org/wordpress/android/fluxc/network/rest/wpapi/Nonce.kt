@@ -1,5 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpapi
 
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
+
 sealed interface Nonce {
     val value: String?
         get() = null
@@ -13,6 +15,7 @@ sealed interface Nonce {
         val networkError: WPAPINetworkError? = null,
         val errorMessage: String? = null,
         val loginEntryVerified: Boolean = false,
+        val unexpectedStoreResponse: UnexpectedStoreResponse? = null,
     ) : Nonce
 
     data class Unknown(

@@ -12,6 +12,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.InvoluntaryLogoutReason
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -106,7 +107,7 @@ class MainPresenter @Inject constructor(
                         userLogoutMutex.withLock {
                             if (!isUserLoggingOut) {
                                 isUserLoggingOut = true
-                                accountRepository.logout()
+                                accountRepository.logoutInvoluntarily(InvoluntaryLogoutReason.INVALID_TOKEN)
                                 mainView?.restart()
                             }
                         }

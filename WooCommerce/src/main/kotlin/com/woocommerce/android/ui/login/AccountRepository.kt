@@ -7,10 +7,12 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.notifications.push.PushNotificationRepository
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -46,7 +48,9 @@ class AccountRepository @Inject constructor(
     private val siteVisibilityDataStore: VisibleWooSitesDataStore,
     private val dispatchers: CoroutineDispatchers,
     private val pushNotificationRepository: PushNotificationRepository,
-    @DataStoreQualifier(DataStoreType.WOO_POS) private val posDataStore: DataStore<Preferences>
+    private val registerDevice: RegisterDevice,
+    @DataStoreQualifier(DataStoreType.WOO_POS) private val posDataStore: DataStore<Preferences>,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) {
     fun getUserAccount(): AccountModel? = accountStore.account.takeIf { it.userId != 0L }
 
@@ -67,9 +71,10 @@ class AccountRepository @Inject constructor(
     suspend fun logout(): Boolean {
         if (!isUserLoggedIn()) return true
 
-        // Capture the site before the suspension point below, it may be reset while we are suspended.
+        // Capture the site before the suspension points below, it may be reset while we are suspended.
         val applicationPasswordSite = selectedSite.getOrNull()
 
+        registerDevice.cancelInProgressRegistration()
         pushNotificationRepository.unregisterDeviceFromPushNotifications()
 
         return if (accountStore.hasAccessToken()) {
@@ -77,6 +82,16 @@ class AccountRepository @Inject constructor(
         } else {
             logoutApplicationPasswordAccount(applicationPasswordSite)
         }
+    }
+
+    suspend fun logoutInvoluntarily(reason: InvoluntaryLogoutReason): Boolean {
+        if (!isUserLoggedIn()) return true
+
+        analyticsTracker.track(
+            AnalyticsEvent.ACCOUNT_INVOLUNTARY_LOGOUT,
+            mapOf(AnalyticsTracker.KEY_REASON to reason.trackingValue)
+        )
+        return logout()
     }
 
     suspend fun closeAccount(): CloseAccountResult {
@@ -179,4 +194,11 @@ class AccountRepository @Inject constructor(
         object Success : CloseAccountResult()
         data class Error(val hasActiveStores: Boolean) : CloseAccountResult()
     }
+}
+
+enum class InvoluntaryLogoutReason(val trackingValue: String) {
+    INVALID_TOKEN("invalid_token"),
+    APPLICATION_PASSWORDS_DISABLED("application_passwords_disabled"),
+    APPLICATION_PASSWORD_UNAUTHORIZED("application_password_unauthorized"),
+    WOOCOMMERCE_NOT_AVAILABLE("woocommerce_not_available")
 }

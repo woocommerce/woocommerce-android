@@ -42,7 +42,7 @@ import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.util.ChromeCustomTabUtils
 
 @Composable
@@ -393,7 +393,7 @@ private fun PaymentMethodInfo(
 @LightDarkThemePreviews
 @Composable
 private fun BlazeCampaignPaymentSummaryScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         BlazeCampaignPaymentSummaryScreen(
             state = BlazeCampaignPaymentSummaryViewModel.ViewState(
                 displayBudget = "100 USD",
@@ -428,7 +428,7 @@ private fun BlazeCampaignPaymentSummaryScreenPreview() {
 @LightDarkThemePreviews
 @Composable
 private fun BlazeCampaignCreationLoadingPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         CampaignCreationLoadingUi(modifier = Modifier.size(width = 360.dp, height = 640.dp))
     }
 }
@@ -436,7 +436,7 @@ private fun BlazeCampaignCreationLoadingPreview() {
 @LightDarkThemePreviews
 @Composable
 private fun BlazeCampaignCreationErrorPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         CampaignCreationErrorUi(
             errorMessage = R.string.error_generic,
             onRetryClick = {},

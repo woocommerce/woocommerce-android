@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.MenuItem
-import android.view.View
 import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.forEach
@@ -17,9 +16,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView.OnItemReselectedListener
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.WindowSizeClass
-import com.woocommerce.android.extensions.windowWidthSizeClass
 import java.lang.ref.WeakReference
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 class MainBottomNavigationView @JvmOverloads constructor(
     context: Context,
@@ -47,8 +45,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
         this.navController = navController
         this.listener = listener
 
-        setupLabelVisibilityMode()
-        addTopDivider()
         createBadges()
 
         assignNavigationListeners(true)
@@ -75,39 +71,20 @@ class MainBottomNavigationView @JvmOverloads constructor(
         )
     }
 
-    private fun setupLabelVisibilityMode() {
-        labelVisibilityMode = when (context.windowWidthSizeClass) {
-            WindowSizeClass.Compact -> LABEL_VISIBILITY_AUTO
-            WindowSizeClass.Medium,
-            WindowSizeClass.ExpandedAndBigger -> LABEL_VISIBILITY_LABELED
-        }
-    }
-
     private fun createBadges() {
+        val badgeBackgroundColor = ContextCompat.getColor(context, DesignSystemR.color.woo_ds_color_accent_red)
+        val badgeTextColor = ContextCompat.getColor(context, DesignSystemR.color.woo_ds_color_palette_white)
+
         ordersBadge = getOrCreateBadge(R.id.orders)
         ordersBadge.isVisible = false
-        ordersBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
+        ordersBadge.backgroundColor = badgeBackgroundColor
+        ordersBadge.badgeTextColor = badgeTextColor
         ordersBadge.maxCharacterCount = MAX_CHARACTERS_IN_BADGE // this includes the plus sign
 
         moreMenuBadge = getOrCreateBadge(R.id.moreMenu)
         moreMenuBadge.isVisible = false
-    }
-
-    /**
-     * When we changed the background to white, the top shadow provided by BottomNavigationView wasn't
-     * dark enough to provide enough separation between the bar and the content above it. For this
-     * reason we add a darker top divider here.
-     */
-    private fun addTopDivider() {
-        val divider = View(context)
-        val dividerColor = ContextCompat.getColor(context, R.color.divider_color)
-        divider.setBackgroundColor(dividerColor)
-
-        val dividerHeight = resources.getDimensionPixelSize(R.dimen.minor_10)
-        val dividerParams = LayoutParams(LayoutParams.MATCH_PARENT, dividerHeight)
-        divider.layoutParams = dividerParams
-
-        addView(divider)
+        moreMenuBadge.backgroundColor = badgeBackgroundColor
+        moreMenuBadge.badgeTextColor = badgeTextColor
     }
 
     /**
@@ -121,13 +98,11 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     fun showMoreMenuUnseenReviewsBadge(count: Int) {
-        moreMenuBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
         moreMenuBadge.number = count
         moreMenuBadge.isVisible = true
     }
 
     fun showMoreMenuNewFeatureBadge() {
-        moreMenuBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_secondary)
         moreMenuBadge.isVisible = true
     }
 

@@ -18,14 +18,14 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -34,23 +34,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
-import com.woocommerce.android.ui.compose.component.TopAppBarEdgeToEdge
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
+import com.woocommerce.android.ui.products.selector.components.ProductSelectorTestTags
 import com.woocommerce.android.ui.products.selector.components.SelectorListItem
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.LoadingState.LOADING
@@ -64,22 +62,10 @@ fun VariationSelectorScreen(viewModel: VariationSelectorViewModel) {
     BackHandler(onBack = viewModel::onBackPress)
     Scaffold(
         topBar = {
-            TopAppBarEdgeToEdge(
-                title = {
-                    Text(
-                        text = viewState.productName
-                    )
-                },
-                navigationIcon = {
-                    IconButton(viewModel::onBackPress) {
-                        Icon(
-                            ImageVector.vectorResource(R.drawable.ic_back_24dp),
-                            contentDescription = stringResource(id = string.back)
-                        )
-                    }
-                },
-                backgroundColor = colorResource(id = R.color.color_toolbar),
-                elevation = 0.dp,
+            Toolbar(
+                title = viewState.productName,
+                onNavigationButtonClick = viewModel::onBackPress,
+                windowInsets = WindowInsets.statusBars,
             )
         },
         content = {
@@ -186,6 +172,7 @@ private fun VariationList(
                     imageContentDescription = stringResource(string.product_image_content_description),
                     isCogwheelVisible = false,
                     enabled = true,
+                    testTag = ProductSelectorTestTags.VARIATION_ITEM,
                     onEditConfiguration = {}
                 ) {
                     onVariationClick(variation)
@@ -216,10 +203,11 @@ private fun VariationList(
 
 @Composable
 @Suppress("MagicNumber")
-fun VariationListSkeleton() {
+fun VariationListSkeleton(listState: LazyListState = rememberLazyListState()) {
     val numberOfInboxSkeletonRows = 10
     LazyColumn(
         Modifier.background(color = MaterialTheme.colors.surface),
+        state = listState,
         contentPadding = WindowInsets.navigationBars.asPaddingValues(),
     ) {
         repeat(numberOfInboxSkeletonRows) {

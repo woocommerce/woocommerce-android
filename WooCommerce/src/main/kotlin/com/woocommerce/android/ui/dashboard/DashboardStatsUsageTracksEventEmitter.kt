@@ -5,7 +5,9 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
@@ -64,6 +66,8 @@ class DashboardStatsUsageTracksEventEmitter @Inject constructor(
     init {
         // Reset if the user changed to a different site.
         selectedSite.observe()
+            .map { it?.id }
+            .distinctUntilChanged()
             .onEach { reset() }
             .launchIn(appCoroutineScope)
     }

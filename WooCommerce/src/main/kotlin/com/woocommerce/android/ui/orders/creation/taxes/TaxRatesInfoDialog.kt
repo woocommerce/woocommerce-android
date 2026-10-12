@@ -37,7 +37,7 @@ import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -188,7 +188,7 @@ private fun TaxLine(it: Pair<String, String>) {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun TaxRateInfoModalPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         val taxRates = listOf(Pair("Tax 1", "10%"), Pair("Tax 2", "20%"))
         TaxRateInfoDialog(
             TaxRatesInfoDialogViewState(

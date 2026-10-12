@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-08 15:58:25+0000
+Translation-Revision-Date: 2026-09-22 17:55:10+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_reason_unsupported_country_generic">Il sistema POS non è disponibile nel Paese in cui si trova il tuo negozio. Controlla le impostazioni dell\'indirizzo del negozio o contatta il supporto per ricevere assistenza.</string>
+    <string name="woopos_eligibility_reason_unsupported_country">Il sistema POS non è disponibile in %1$s. Controlla le impostazioni dell\'indirizzo del negozio o contatta il supporto per ricevere assistenza.</string>
+    <string name="woo_push_notifications_introduction_error_offline_mode_body">Le notifiche push non possono essere impostate perché il tuo negozio è in Modalità offline. Se hai ancora bisogno di assistenza, contatta il supporto.</string>
+    <string name="order_refunds_refunded_items">Rifornisci i prodotti</string>
+    <string name="login_not_wordpress_site_title">Non si tratta di un sito WordPress</string>
+    <string name="https_configuration_warning_dismiss">Ignora avviso di sicurezza HTTPS</string>
+    <string name="https_configuration_warning_message">Il tuo negozio supporta il protocollo HTTPS, ma il suo indirizzo è configurato per utilizzare HTTP.  Aggiornalo al protocollo HTTPS per proteggere il tuo negozio e prevenire problemi di connessione.</string>
+    <string name="https_configuration_warning_title">Proteggi il tuo negozio con HTTPS</string>
     <string name="age_verification_open_google_play">Apri Google Play</string>
     <string name="age_verification_required_message">Google Play richiede la verifica della tua età prima che WooCommerce possa verificare se puoi utilizzare l\'app. Completa la verifica su Google Play, poi torna qui e riprova.</string>
     <string name="age_verification_required_title">Verifica la tua età per continuare</string>
@@ -923,8 +931,12 @@ Language: it
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">Nel Regno Unito</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">Negli Stati Uniti</string>
     <string name="woopos_eligibility_screen_unable_to_load">Impossibile caricare</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">Il sistema POS non è disponibile per la valuta del tuo negozio. Controlla le impostazioni della valuta del negozio o contatta il supporto per ricevere assistenza.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Il sistema POS non è disponibile per la valuta del tuo negozio. %1$s, l\'unica valuta al momento supportata è %2$s. Controlla le impostazioni della valuta del negozio o contatta il supporto per ricevere assistenza.</string>
     <string name="woopos_eligibility_reason_check_connection">Controlla la connessione a Internet e prova a riavviare l\'app. Se il problema persiste, contatta il supporto.</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">Per procedere, il punto vendita deve essere abilitato. Abilita la funzionalità POS dalla pagina di amministrazione di WordPress in Impostazioni WooCommerce &gt; Avanzate &gt; Funzionalità e riprova.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">La tua versione di WooCommerce non è supportata. Il sistema POS richiede la versione %1$s di WooCommerce o successiva. Effettua l\'aggiornamento alla versione più recente di WooCommerce.</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Vai alla pagina di amministrazione di WordPress per verificare che il plugin WooCommerce sia installato e attivo. Se continui a riscontrare problemi, contatta il supporto per ricevere assistenza.</string>
     <string name="orderfilters_sales_channel_filter">Canale di vendita</string>
     <string name="barcode_ean13_content_description">Codice a barre EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">Gestione aggiuntiva</string>
@@ -2790,11 +2802,11 @@ Language: it
     <string name="coupon_details_menu_share">Condividi codice promozionale</string>
     <string name="coupon_details_menu_copy">Copia codice promozionale</string>
     <string name="inbox_note_survey_actioned">Grazie per il feedback!</string>
-    <string name="card_reader_connect_permission_rationale_hint">I pagamenti tramite il lettore di carte richiedono l\'autorizzazione della posizione precisa</string>
     <string name="card_reader_connect_permission_rationale_header">Accesso alla posizione richiesto</string>
     <string name="simple_payments_share_payment_dialog_title">Pagamento: %s</string>
     <string name="simple_payments_share_payment_link">Condividi il link di pagamento</string>
     <string name="amount">Importo</string>
+    <string name="card_reader_connect_permission_rationale_hint">I pagamenti tramite il lettore di carte richiedono l\'autorizzazione all\'accesso alla posizione</string>
     <string name="coupon_list_view_coupon">Visualizza riepilogo codice promozionale</string>
     <string name="coupon_list_empty_heading">Non è stato trovato alcun codice promozionale</string>
     <string name="coupon_list_item_label_everything">tutto</string>
@@ -3304,7 +3316,7 @@ Language: it
     <string name="orderdetail_products_recreate_shipping_label_menu">Crea nuova etichetta di spedizione</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Il Bluetooth è disabilitato</string>
     <string name="card_reader_connect_location_provider_disabled_header">La posizione è disabilitata</string>
-    <string name="card_reader_connect_missing_permissions_header">Autorizzazione della posizione richiesta mancante precisa</string>
+    <string name="card_reader_connect_missing_permissions_header">Autorizzazione della posizione richiesta mancante</string>
     <string name="variation_confirm_delete">Desideri eliminare questa variante?</string>
     <string name="product_delete_dialog_title">Eliminazione del prodotto</string>
     <string name="card_reader_payment_send_receipt">Invia ricevuta</string>

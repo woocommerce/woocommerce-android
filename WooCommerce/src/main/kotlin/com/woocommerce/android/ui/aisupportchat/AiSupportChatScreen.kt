@@ -68,7 +68,7 @@ import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.troubleshooting.FailureType
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreAnalyticsCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreNotificationsCheckUseCase
@@ -1033,7 +1033,7 @@ private fun InputBar(
 @LightDarkThemePreviews
 @Composable
 private fun AiSupportChatScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AiSupportChatScreen(
             viewState = AiSupportChatViewState(
                 input = "Orders are not loading",

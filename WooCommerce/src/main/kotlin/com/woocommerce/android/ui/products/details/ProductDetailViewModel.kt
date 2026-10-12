@@ -106,6 +106,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
@@ -354,8 +356,8 @@ class ProductDetailViewModel @Inject constructor(
             // Show sharing option only if the product isn't being created.
             val showShareOption = !isProductUnderCreation && selectedSite.get().isSitePublic
 
-            // Show "Share" as action with text only if "Save" or "Publish" is not currently shown as action with text.
-            val showShareOptionAsActionWithText =
+            // Show "Share" as an action only if "Save" or "Publish" is not currently shown as an action with text.
+            val showShareOptionAsAction =
                 showShareOption && !showSaveOptionAsActionWithText && !showPublishOption
 
             // Show "View Product" option only if the product is published or we can auto-authenticate the user
@@ -370,7 +372,7 @@ class ProductDetailViewModel @Inject constructor(
                 publishOption = showPublishOption,
                 viewProductOption = showViewProductOption,
                 shareOption = showShareOption,
-                showShareOptionAsActionWithText = showShareOptionAsActionWithText,
+                showShareOptionAsAction = showShareOptionAsAction,
                 duplicateOption = isProductStoredAtSite,
                 trashOption = !isProductUnderCreation && isTrashEnabled
             )
@@ -506,11 +508,7 @@ class ProductDetailViewModel @Inject constructor(
             } else {
                 when (val mode = navArgs.mode) {
                     is ProductDetailFragment.Mode.ShowProduct -> {
-                        productRepository.getProductAggregate(
-                            viewState.productDraft?.remoteId ?: mode.remoteProductId
-                        )?.let {
-                            storedProductAggregate.value = it
-                        }
+                        restoreStoredProduct(viewState.productDraft?.remoteId ?: mode.remoteProductId)
                     }
 
                     ProductDetailFragment.Mode.Loading -> {
@@ -524,9 +522,19 @@ class ProductDetailViewModel @Inject constructor(
                             )
                         )
 
-                    is ProductDetailFragment.Mode.AddNewProduct -> Unit
+                    is ProductDetailFragment.Mode.AddNewProduct -> {
+                        viewState.productDraft?.remoteId
+                            ?.takeIf { it != DEFAULT_ADD_NEW_PRODUCT_ID }
+                            ?.let { restoreStoredProduct(it) }
+                    }
                 }
             }
+        }
+    }
+
+    private suspend fun restoreStoredProduct(remoteProductId: Long) {
+        productRepository.getProductAggregate(remoteProductId)?.let {
+            storedProductAggregate.value = it
         }
     }
 
@@ -541,8 +549,8 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the Share menu button is clicked in Product detail screen
      */
     fun onShareButtonClicked() {
-        menuButtonsState.value?.showShareOptionAsActionWithText?.let { isShownAsActionWithText ->
-            val source = if (isShownAsActionWithText) {
+        menuButtonsState.value?.showShareOptionAsAction?.let { isShownAsAction ->
+            val source = if (isShownAsAction) {
                 AnalyticsTracker.VALUE_SHARE_BUTTON_SOURCE_PRODUCT_FORM
             } else {
                 AnalyticsTracker.VALUE_SHARE_BUTTON_SOURCE_MORE_MENU
@@ -628,7 +636,7 @@ class ProductDetailViewModel @Inject constructor(
      * Called when an existing image is selected in Product detail screen
      */
     fun onImageClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED)
+        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ProductNavigationTarget.ViewProductImageGallery(it.remoteId, it.images))
         }
@@ -638,7 +646,7 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the add image icon is clicked in Product detail screen
      */
     fun onAddImageButtonClicked() {
-        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED)
+        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ProductNavigationTarget.ViewProductImageGallery(it.remoteId, it.images, true))
         }
@@ -1501,8 +1509,14 @@ class ProductDetailViewModel @Inject constructor(
 
     fun refreshProduct() {
         launch {
-            val mode = navArgs.mode as ProductDetailFragment.Mode.ShowProduct
-            fetchProduct(viewState.productDraft?.remoteId ?: mode.remoteProductId)
+            val remoteProductId = when (val mode = navArgs.mode) {
+                is ProductDetailFragment.Mode.ShowProduct -> viewState.productDraft?.remoteId ?: mode.remoteProductId
+                ProductDetailFragment.Mode.AddNewProduct ->
+                    viewState.productDraft?.remoteId?.takeIf { it != DEFAULT_ADD_NEW_PRODUCT_ID }
+                ProductDetailFragment.Mode.Empty,
+                ProductDetailFragment.Mode.Loading -> null
+            }
+            remoteProductId?.let { fetchProduct(it) }
         }
     }
 
@@ -2069,7 +2083,6 @@ class ProductDetailViewModel @Inject constructor(
                 productDraft = null
             )
             loadRemoteProduct(newProductRemoteId)
-            triggerEvent(RefreshMenu)
         }
 
         return result
@@ -2178,32 +2191,36 @@ class ProductDetailViewModel @Inject constructor(
                 .map { getRemoteProductId() }
                 .filter { productId -> productId != DEFAULT_ADD_NEW_PRODUCT_ID || isAddNewProductFlow }
                 .collectLatest { productId ->
-                    mediaFileUploadHandler.observeCurrentUploads(productId)
-                        .map { list -> list.map { it.toUri() } }
-                        .onEach { viewState = viewState.copy(uploadingImageUris = it) }
-                        .launchIn(this)
+                    coroutineScope {
+                        mediaFileUploadHandler.observeCurrentUploads(productId)
+                            .map { list -> list.map { it.toUri() } }
+                            .onEach { viewState = viewState.copy(uploadingImageUris = it) }
+                            .launchIn(this)
 
-                    mediaFileUploadHandler.observeSuccessfulUploads(productId)
-                        .onEach { addProductImageToDraft(it.toAppModel()) }
-                        .launchIn(this)
+                        mediaFileUploadHandler.observeSuccessfulUploads(productId)
+                            .onEach { addProductImageToDraft(it.toAppModel()) }
+                            .launchIn(this)
 
-                    mediaFileUploadHandler.observeCurrentUploadErrors(productId)
-                        .onEach { errorList ->
-                            if (errorList.isEmpty()) {
-                                viewState = viewState.copy(hasUploadErrors = false)
-                                triggerEvent(HideImageUploadErrorSnackbar)
-                            } else {
-                                viewState = viewState.copy(hasUploadErrors = true)
-                                triggerEvent(
-                                    ShowUiStringSnackbar(
-                                        message = UiStringText(
-                                            resources.getMediaUploadErrorMessage(errorList.size)
-                                        ),
+                        mediaFileUploadHandler.observeCurrentUploadErrors(productId)
+                            .onEach { errorList ->
+                                if (errorList.isEmpty()) {
+                                    viewState = viewState.copy(hasUploadErrors = false)
+                                    triggerEvent(HideImageUploadErrorSnackbar)
+                                } else {
+                                    viewState = viewState.copy(hasUploadErrors = true)
+                                    triggerEvent(
+                                        ShowUiStringSnackbar(
+                                            message = UiStringText(
+                                                resources.getMediaUploadErrorMessage(errorList.size)
+                                            ),
+                                        )
                                     )
-                                )
+                                }
                             }
-                        }
-                        .launchIn(this)
+                            .launchIn(this)
+
+                        awaitCancellation()
+                    }
                 }
         }
     }
@@ -2762,8 +2779,6 @@ class ProductDetailViewModel @Inject constructor(
         object ExitProductSubscriptionExpiration : ProductExitEvent()
     }
 
-    object RefreshMenu : Event()
-
     object HideImageUploadErrorSnackbar : Event()
 
     object ShowLinkedProductPromoBanner : Event()
@@ -2898,7 +2913,7 @@ class ProductDetailViewModel @Inject constructor(
         val publishOption: Boolean,
         val viewProductOption: Boolean,
         val shareOption: Boolean,
-        val showShareOptionAsActionWithText: Boolean,
+        val showShareOptionAsAction: Boolean,
         val duplicateOption: Boolean,
         val trashOption: Boolean
     )

@@ -50,7 +50,7 @@ import androidx.compose.ui.text.style.TextDirection.Companion.ContentOrLtr
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 /**
  * An [OutlinedTextField] that displays an optional helper text below the field.
@@ -326,7 +326,7 @@ fun WCPasswordField(
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun WCOutlinedTextFieldPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             WCOutlinedTextField(value = "", label = "Label", onValueChange = {})
             WCOutlinedTextField(value = "Value", label = "Label", onValueChange = {})

@@ -22,6 +22,7 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     // -- Login
     SIGNED_IN(siteless = true),
     ACCOUNT_LOGOUT(siteless = true),
+    ACCOUNT_INVOLUNTARY_LOGOUT(siteless = true),
     LOGIN_ACCESSED(siteless = true),
     LOGIN_MAGIC_LINK_EXITED(siteless = true),
     LOGIN_MAGIC_LINK_FAILED(siteless = true),
@@ -124,7 +125,6 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     SITE_PICKER_CONTINUE_TAPPED,
     SITE_PICKER_HELP_BUTTON_TAPPED,
     SITE_PICKER_AUTO_LOGIN_SUBMITTED,
-    SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
     SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE,
     SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED,
     SITE_PICKER_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED,
@@ -566,6 +566,9 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     REMOTE_TTP_PHONE_SESSION_STARTED,
     REMOTE_TTP_PHONE_SESSION_ENDED,
     REMOTE_TTP_PHONE_SESSION_ERROR,
+    REMOTE_TTP_PHONE_PAYMENT_FAILED,
+    REMOTE_TTP_PHONE_INTRO_SHOWN,
+    REMOTE_TTP_PHONE_INTRO_DISMISSED,
 
     // -- POS Local Catalog Beta Toggle
     POS_LOCAL_CATALOG_BETA_FEATURES_SWITCH_TOGGLED,

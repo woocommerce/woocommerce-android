@@ -8,4 +8,9 @@
         android:title="Open"
         tools:ignore="HardcodedText"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/woo_ds_toolbar_test_overflow"
+        android:title="Settings"
+        tools:ignore="HardcodedText"
+        app:showAsAction="never" />
 </menu>

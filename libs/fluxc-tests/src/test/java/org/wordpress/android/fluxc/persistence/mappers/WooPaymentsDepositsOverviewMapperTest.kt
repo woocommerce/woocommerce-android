@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.persistence.mappers
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.Mockito.mockStatic
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.payments.woo.WooPaymentsDepositsOverviewComposedEntities
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.payments.woo.WooPaymentsAccountDepositSummary
@@ -20,6 +21,7 @@ import org.wordpress.android.fluxc.persistence.entity.WooPaymentsBalanceEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositsOverviewEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsManualDepositEntity
+import org.wordpress.android.util.AppLog
 import org.wordpress.android.fluxc.persistence.entity.SourceTypes as WooPaymentsSourceTypesEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositsSchedule as WooPaymentsDepositsScheduleEntity
 
@@ -50,7 +52,7 @@ class WooPaymentsDepositsOverviewMapperTest {
                 lastManualDeposits = listOf(
                     WooPaymentsManualDeposit(
                         currency = "currency",
-                        date = 1L
+                        date = "2026-09-28 12:05:11"
                     )
                 )
             ),
@@ -110,7 +112,7 @@ class WooPaymentsDepositsOverviewMapperTest {
 
         // THEN
         assertThat(result.deposit?.lastManualDeposits?.get(0)?.currency).isEqualTo("currency")
-        assertThat(result.deposit?.lastManualDeposits?.get(0)?.date).isEqualTo(1L)
+        assertThat(result.deposit?.lastManualDeposits?.get(0)?.date).isEqualTo(1790597111000L)
         assertThat(result.deposit?.lastPaid?.get(0)?.amount).isEqualTo(1L)
         assertThat(result.deposit?.lastPaid?.get(0)?.automatic).isEqualTo(true)
         assertThat(result.deposit?.lastPaid?.get(0)?.bankAccount).isEqualTo("bankAccount")
@@ -147,6 +149,36 @@ class WooPaymentsDepositsOverviewMapperTest {
         assertThat(result.account?.depositsSchedule?.monthlyAnchor).isEqualTo(10)
         assertThat(result.account?.depositsSchedule?.weeklyAnchor).isEqualTo("monday")
         assertThat(result.account?.depositsSchedule?.interval).isEqualTo("interval")
+    }
+
+    @Test
+    fun `given manual deposit with unexpected date format, when mapApiResponseToModel, then date is null and warning logged`() {
+        // GIVEN
+        val apiResponse = WooPaymentsDepositsOverviewApiResponse(
+            deposit = WooPaymentsCurrencyDeposits(
+                lastPaid = null,
+                lastManualDeposits = listOf(
+                    WooPaymentsManualDeposit(
+                        currency = "usd",
+                        date = "2026-09-28T12:05:11Z"
+                    )
+                )
+            ),
+            balance = null,
+            account = null
+        )
+
+        mockStatic(AppLog::class.java).use { appLog ->
+            // WHEN
+            val result = mapper.mapApiResponseToModel(apiResponse)
+
+            // THEN
+            assertThat(result.deposit?.lastManualDeposits?.single()?.currency).isEqualTo("usd")
+            assertThat(result.deposit?.lastManualDeposits?.single()?.date).isNull()
+            appLog.verify {
+                AppLog.w(AppLog.T.API, "Unexpected manual deposit date format: 2026-09-28T12:05:11Z")
+            }
+        }
     }
 
     @Suppress("LongMethod")

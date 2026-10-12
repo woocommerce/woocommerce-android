@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-07 19:55:17+0000
+Translation-Revision-Date: 2026-09-23 09:56:16+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_reason_unsupported_country_generic">نظام نقاط البيع (POS) غير متاح في بلد متجرك. يُرجى التحقق من إعدادات عنوان متجرك أو التواصل مع الدعم للحصول على المساعدة.</string>
+    <string name="woopos_eligibility_reason_unsupported_country">نظام نقاط البيع (POS) غير متاح في ⁦%1$s⁩. يُرجى التحقق من إعدادات عنوان متجرك أو التواصل مع الدعم للحصول على المساعدة.</string>
+    <string name="woo_push_notifications_introduction_error_offline_mode_body">لا يمكن إعداد التنبيهات الفورية لأن متجرك في \"وضع عدم الاتصال بالإنترنت\". إذا كنت لا تزال بحاجة إلى المساعدة، يُرجى التواصل مع الدعم.</string>
+    <string name="order_refunds_refunded_items">العناصر المُستردة</string>
+    <string name="login_not_wordpress_site_title">هذا ليس موقع ووردبريس</string>
+    <string name="https_configuration_warning_dismiss">إخفاء إشعار أمان HTTPS</string>
+    <string name="https_configuration_warning_message">يدعم متجرك HTTPS، لكن تمت تهيئة عنوانه لاستخدام HTTP. حدّثه إلى HTTPS لحماية متجرك، ومنع حدوث مشكلات في عملية الاتصال.</string>
+    <string name="https_configuration_warning_title">تأمين متجرك باستخدام HTTPS</string>
     <string name="age_verification_open_google_play">افتح Google Play</string>
     <string name="age_verification_required_message">يحتاج Google Play إلى التحقق من عمرك قبل أن يتمكن WooCommerce من التحقق مما إذا كان بإمكانك استخدام التطبيق. أتمِم التحقق في Google Play، ثم عُد إلى هنا وحاول مرة أخرى.</string>
     <string name="age_verification_required_title">التحقق من عمرك للاستمرار</string>
@@ -924,8 +932,12 @@ Language: ar
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">المملكة المتحدة</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">الولايات المتحدة</string>
     <string name="woopos_eligibility_screen_unable_to_load">يتعذر التحميل</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">نظام نقاط البيع (POS) غير متاح لعملة متجرك. يُرجى التحقق من إعدادات عملة متجرك أو التواصل مع الدعم للحصول على المساعدة.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">لا يتوافر نظام نقطة البيع لعملة متجرك. في ⁦%1$s⁩، لا يدعم حاليًا سوى ⁦%2$s⁩. يُرجى التحقق من إعدادات عملة متجرك أو التواصل مع الدعم للحصول على المساعدة.</string>
     <string name="woopos_eligibility_reason_check_connection">تحقق من اتصالك بالإنترنت وحاول إعادة تشغيل التطبيق. إذا استمرت المشكلة، فيرجى التواصل مع الدعم.</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">يجب تمكين نقطة البيع حتى تتمكن من المتابعة. يُرجى تمكين ميزة نظام نقطة البيع (POS) من خلال لوحة مشرف ووردبريس لديك ضمن إعدادات WooCommerce &gt; الإعدادات المتقدمة &gt; الميزات، ثم أعِد المحاولة.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">إصدارك من WooCommerce غير مدعوم. يتطلب نظام نقطة البيع الإصدار ⁦%1$s⁩ من WooCommerce أو إصدار أحدث. يُرجى التحديث إلى آخر إصدار من WooCommerce.</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">يُرجى التأكد من تثبيت إضافة WooCommerce وتفعيلها من خلال لوحة مشرف ووردبريس لديك. إذا استمرت المشكلة، يُرجى التواصل مع الدعم للحصول على المساعدة.</string>
     <string name="orderfilters_sales_channel_filter">قناة المبيعات</string>
     <string name="barcode_ean13_content_description">الرمز الشريطي EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">معالجة إضافية</string>
@@ -2791,11 +2803,11 @@ Language: ar
     <string name="coupon_details_menu_copy">نسخ رمز القسيمة</string>
     <string name="coupon_details_share_coupon_error">حدث خطأ في أثناء مشاركة رمز القسيمة.</string>
     <string name="inbox_note_survey_actioned">نشكرك على ملاحظاتك!</string>
-    <string name="card_reader_connect_permission_rationale_hint">تتطلب مدفوعات قارئ البطاقة صلاحية موقع دقيقة</string>
     <string name="card_reader_connect_permission_rationale_header">يلزم الوصول إلى الموقع</string>
     <string name="simple_payments_share_payment_dialog_title">إجراءات السداد - %s</string>
     <string name="simple_payments_share_payment_link">مشاركة رابط الدفع</string>
     <string name="amount">الكمية</string>
+    <string name="card_reader_connect_permission_rationale_hint">تتطلب عمليات الدفع عبر قارئ البطاقات الحصول على صلاحية الوصول إلى الموقع الجغرافي</string>
     <string name="coupon_list_view_coupon">عرض ملخص القسيمة</string>
     <string name="coupon_list_empty_heading">لم يتم العثور على قسائم</string>
     <string name="coupon_list_item_label_everything">كل شيء</string>
@@ -3305,7 +3317,7 @@ Language: ar
     <string name="orderdetail_products_recreate_shipping_label_menu">إنشاء ملصق شحن جديد</string>
     <string name="card_reader_connect_bluetooth_disabled_header">تم تعطيل البلوتوث</string>
     <string name="card_reader_connect_location_provider_disabled_header">تم تعطيل الموقع</string>
-    <string name="card_reader_connect_missing_permissions_header">صلاحية الموقع الدقيق المطلوبة مفقودة</string>
+    <string name="card_reader_connect_missing_permissions_header">صلاحية الوصول إلى الموقع الجغرافي المطلوبة مفقودة</string>
     <string name="variation_confirm_delete">هل ترغب في حذف هذه المجموعة المتنوعة؟</string>
     <string name="product_delete_dialog_title">حذف منتج</string>
     <string name="card_reader_payment_send_receipt">إرسال إيصال</string>

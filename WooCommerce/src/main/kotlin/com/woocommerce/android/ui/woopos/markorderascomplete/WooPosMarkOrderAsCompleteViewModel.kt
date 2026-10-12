@@ -142,7 +142,7 @@ class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
     }
 
     private suspend fun onMarkAsPaidSucceeded() {
-        val paymentProps = repository.getOrderById(orderId)?.let(paymentSuccessProperties::invoke).orEmpty()
+        val paymentProps = repository.getOrderById(orderId)?.let { paymentSuccessProperties(it) }.orEmpty()
         analyticsTracker.track(MarkAsPaidSuccess(paymentProps))
         childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.EXTERNAL))
         _navigationEvent.emit(WooPosNavigationEvent.GoBack)

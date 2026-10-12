@@ -21,7 +21,7 @@ import com.woocommerce.android.aiassistant.ui.AssistantRoute
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.compose.legacyComposeView
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.CurrencyFormatter
@@ -51,7 +51,7 @@ class AiAssistantHostFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return composeView {
+        return legacyComposeView {
             var showEarlyAccessNotice by remember {
                 mutableStateOf(true)
             }

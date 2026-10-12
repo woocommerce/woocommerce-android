@@ -35,6 +35,7 @@ internal fun WooCellContent(
     modifier: Modifier = Modifier,
     description: String? = null,
     enabled: Boolean = true,
+    descriptionColor: Color? = null,
 ) {
     val colors = WooTheme.colors
 
@@ -46,12 +47,18 @@ internal fun WooCellContent(
             text = title,
             color = if (enabled) colors.surface.onDefault else colors.surface.onVariantLowest,
             style = WooTheme.text.bodyLarge.emphasized,
+            modifier = Modifier.fillMaxWidth(),
         )
         if (description != null) {
             Text(
                 text = description,
-                color = if (enabled) colors.surface.onVariant else colors.surface.onVariantLowest,
+                color = wooCellDescriptionColor(
+                    enabled = enabled,
+                    descriptionColor = descriptionColor,
+                    colors = colors,
+                ),
                 style = WooTheme.text.bodyMedium.regular,
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }
@@ -77,6 +84,7 @@ fun WooCell(
     modifier: Modifier = Modifier,
     description: String? = null,
     enabled: Boolean = true,
+    descriptionColor: Color? = null,
     onClick: (() -> Unit)? = null,
     leadingContent: (@Composable () -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null,
@@ -95,6 +103,7 @@ fun WooCell(
         title = title,
         description = description,
         enabled = enabled,
+        descriptionColor = descriptionColor,
         modifier = rowModifier,
         leadingContent = leadingContent,
         trailingContent = trailingContent,
@@ -107,6 +116,7 @@ internal fun WooCellLayout(
     description: String?,
     enabled: Boolean,
     modifier: Modifier = Modifier,
+    descriptionColor: Color? = null,
     leadingContent: (@Composable () -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null,
 ) {
@@ -117,7 +127,7 @@ internal fun WooCellLayout(
             .fillMaxWidth()
             .heightIn(min = MIN_TOUCH_TARGET_SIZE)
             .background(style.containerColor)
-            .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding4),
+            .padding(WooTheme.padding.padding7),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (leadingContent != null) {
@@ -135,6 +145,7 @@ internal fun WooCellLayout(
             title = title,
             description = description,
             enabled = enabled,
+            descriptionColor = descriptionColor,
             modifier = Modifier.weight(1f),
         )
 
@@ -160,6 +171,16 @@ internal fun wooCellStyle(enabled: Boolean, colors: WooColors): WooCellStyle = W
     containerColor = colors.surface.bright,
     slotContentColor = if (enabled) colors.surface.onVariant else colors.surface.onVariantLowest,
 )
+
+internal fun wooCellDescriptionColor(
+    enabled: Boolean,
+    descriptionColor: Color?,
+    colors: WooColors,
+): Color = if (enabled) {
+    descriptionColor ?: colors.surface.onVariant
+} else {
+    colors.surface.onVariantLowest
+}
 
 @Suppress("UnusedPrivateMember")
 @PreviewLightDark

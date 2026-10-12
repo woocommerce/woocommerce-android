@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-08 09:54:36+0000
+Translation-Revision-Date: 2026-09-22 09:57:37+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_reason_unsupported_country_generic">회원님 스토어의 국가에서는 POS 시스템을 사용할 수 없습니다. 스토어 주소 설정을 확인하거나 도움이 필요하면 지원을 문의해 주세요.</string>
+    <string name="woopos_eligibility_reason_unsupported_country">%1$s에서는 POS 시스템을 사용할 수 없습니다. 스토어 주소 설정을 확인하거나 도움이 필요하면 지원을 문의해 주세요.</string>
+    <string name="woo_push_notifications_introduction_error_offline_mode_body">회원님 스토어가 오프라인 모드로 되어 있어서 푸시 알림을 설정할 수 없습니다. 도움말이 더 필요하면 지원을 문의해 주세요.</string>
+    <string name="order_refunds_refunded_items">환불된 아이템</string>
+    <string name="login_not_wordpress_site_title">워드프레스 사이트 아님</string>
+    <string name="https_configuration_warning_dismiss">HTTPS 보안 공지 무시</string>
+    <string name="https_configuration_warning_message">회원님 스토어에서는 HTTPS를 지원하는데 해당 주소는 HTTP를 사용하도록 구성되어 있습니다. 스토어를 보호하고 연결 문제를 방지하려면 HTTPS로 업데이트하세요.</string>
+    <string name="https_configuration_warning_title">HTTPS로 스토어 보안 유지</string>
     <string name="age_verification_open_google_play">Google Play 열기</string>
-    <string name="age_verification_required_message">앱을 사용할 수 있는지를 우커머스에서 확인할 수 있으려면 Google Play에서 연령 인증을 받아야 합니다.</string>
+    <string name="age_verification_required_message">앱을 사용할 수 있는지를 우커머스에서 확인할 수 있으려면 Google Play에서 연령 인증을 받아야 합니다. Google Play에서 인증을 완료한 후 다시 이곳으로 돌아와 시도해 주세요.</string>
     <string name="age_verification_required_title">연령 인증 후 계속</string>
     <string name="woopos_refund_review_remaining_items_button">나머지 아이템 검토</string>
     <string name="woopos_refund_error_store_not_updated">카드는 환불되었지만, 스토어는 업데이트되지 않았습니다. 스토어 관리자에서 이 환불을 기록하세요.</string>
@@ -924,8 +932,12 @@ Language: ko_KR
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">영국</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">미국</string>
     <string name="woopos_eligibility_screen_unable_to_load">로드할 수 없음</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">회원님 스토어의 통화에는 POS 시스템을 사용할 수 없습니다. 스토어 통화 설정을 확인하거나 도움이 필요하면 지원을 문의해 주세요.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">스토어의 통화에는 POS 시스템을 사용할 수 없습니다. %1$s에서는 현재 %2$s만 지원됩니다. 스토어 통화 설정을 확인하거나 도움이 필요하면 지원을 문의해 주세요.</string>
     <string name="woopos_eligibility_reason_check_connection">인터넷 연결을 확인하고 앱을 다시 시작해 보세요. 문제가 계속 발생하면 지원을 문의해 주세요.</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">진행하려면 POS를 활성화해야 합니다. 우커머스 설정 &gt; 고급 &gt; 기능의 워드프레스 관리자에서 POS 기능을 활성화하고 다시 시도하세요.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">회원님의 우커머스 버전은 지원되지 않습니다. POS 시스템에는 우커머스 버전 %1$s 이상이 필요합니다. 우커머스를 최신 버전으로 업데이트하세요.</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">워드프레스 관리자에서 우커머스 플러그인이 설치되고 활성화되었는지 확인하세요. 문제가 계속 발생하는 경우 도움이 필요하면 지원을 문의해 주세요.</string>
     <string name="orderfilters_sales_channel_filter">판매 채널</string>
     <string name="barcode_ean13_content_description">바코드 EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">추가 처리</string>
@@ -1744,11 +1756,11 @@ Language: ko_KR
     <string name="blaze_campaign_edit_ad_change_image_button">이미지 변경</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">적용</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s일</string>
-    <string name="blaze_campaign_budget_impressions_info">노출 수는 잠재적 고객에게 광고가 표시되는 빈도를 반영합니다.\n\n\n        온라인 트래픽과 사용자 행동의 유동성으로 인해 정확한 수는 보장할 수 없지만 광고의 실제 노출 수를 목표 수에 최대한 가깝게 일치시키는 것을 목표로 합니다.\n\n\n        노출 수는 독자의 행동이 아니라 가시성을 나타낸다는 점에 유의하세요.</string>
     <string name="blaze_campaign_budget_impressions_done_button">완료</string>
     <string name="blaze_campaign_budget_impressions_title">노출 수</string>
     <string name="blaze_campaign_budget_update_button">업데이트</string>
     <string name="blaze_campaign_budget_edit_duration_button">편집</string>
+    <string name="blaze_campaign_budget_impressions_info">노출 수는 잠재적 고객에게 광고가 표시되는 빈도를 반영합니다.\n\n\n        온라인 트래픽과 사용자 행동의 유동성으로 인해 정확한 수는 보장할 수 없지만 광고의 실제 노출 수를 목표 수에 최대한 가깝게 일치시키는 것을 목표로 합니다.\n\n\n        노출 수는 독자의 행동이 아니라 가시성을 나타낸다는 점에 유의하세요.</string>
     <string name="blaze_campaign_budget_reach_forecast">일일 예상 도달 인원</string>
     <string name="blaze_campaign_budget_days_duration">%1$s일 동안</string>
     <string name="blaze_campaign_budget_toolbar_title">예산 설정</string>
@@ -2066,8 +2078,8 @@ Language: ko_KR
     <string name="store_onboarding_task_name_store_title">스토어 이름 지정</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">NFC 활성화</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">소량 제공 패키지(표시 필수)</string>
-    <string name="shipping_label_hazmat_option_lighters">라이터 패키지 - 승인된 라이터</string>
     <string name="shipping_label_hazmat_option_limited_quantity">한정 수량 육상 패키지 - 에어로졸, 스프레이 소독제, 스프레이 페인트, 헤어스프레이, 프로판, 부탄, 세정제 등 - 향료, 매니큐어, 매니큐어 제거제, 용제, 손 소독제, 소독용 알코올, 에탄올 주성분 제품 등 - 기타 한정 수량 표면재(화장품, 세정제, 도료 등)</string>
+    <string name="shipping_label_hazmat_option_lighters">라이터 패키지 - 승인된 라이터</string>
     <string name="shipping_label_hazmat_option_id8000">ID8000 소비자 상품 패키지 - 항공 적격 ID8000 소비자 상품(비인화성 에어로졸, 인화성 가연성 액체, 독성 물질, 기타 위험물질)</string>
     <string name="shipping_label_hazmat_option_ground_only">육상 전용 위험물질(목록에 없지만 표면만 제한된 아이템의 경우)</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">예외 수량 제공 패키지(예: 소량의 인화성 액체, 부식성, 독성 또는 환경적으로 유해한 물질 - 표시 필수)</string>
@@ -2791,11 +2803,11 @@ Language: ko_KR
     <string name="coupon_details_menu_copy">쿠폰 코드 복사</string>
     <string name="coupon_details_share_coupon_some">프로모션 코드가 %2$s인 엄선된 상품에 %1$s 할인 적용</string>
     <string name="inbox_note_survey_actioned">피드백을 보내주셔서 감사합니다!</string>
-    <string name="card_reader_connect_permission_rationale_hint">카드 리더 결제에 정확한 위치 권한 필요</string>
     <string name="card_reader_connect_permission_rationale_header">위치 접근 권한 필요</string>
     <string name="simple_payments_share_payment_dialog_title">계산 - %s</string>
     <string name="simple_payments_share_payment_link">결제 링크 공유</string>
     <string name="amount">금액</string>
+    <string name="card_reader_connect_permission_rationale_hint">카드 리더 결제에 위치 권한 필요</string>
     <string name="coupon_list_view_coupon">쿠폰 요약 보기</string>
     <string name="coupon_list_empty_heading">쿠폰 없음</string>
     <string name="coupon_list_item_label_everything">모든 것</string>
@@ -3305,7 +3317,7 @@ Language: ko_KR
     <string name="orderdetail_products_recreate_shipping_label_menu">새 배송 레이블 만들기</string>
     <string name="card_reader_connect_bluetooth_disabled_header">블루투스가 비활성화되었음</string>
     <string name="card_reader_connect_location_provider_disabled_header">위치가 비활성화되었음</string>
-    <string name="card_reader_connect_missing_permissions_header">필수 정밀 위치 권한 없음</string>
+    <string name="card_reader_connect_missing_permissions_header">필수 위치 권한 없음</string>
     <string name="variation_confirm_delete">이 변경을 삭제하시겠어요?</string>
     <string name="product_delete_dialog_title">제품 삭제 중</string>
     <string name="card_reader_payment_send_receipt">영수증 발송</string>

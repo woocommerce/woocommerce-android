@@ -147,16 +147,19 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
                 getSheetBehavior().isFitToContents = false
                 dialog?.window?.setDimAmount(0F)
                 binding.collapsedStateHeader.visibility = GONE
+                binding.collapsedStateHeaderDivider.visibility = GONE
                 binding.fullscreenStateToolbar.visibility = VISIBLE
             }
             STATE_DRAGGING -> {
                 dialog?.window?.setDimAmount(DEFAULT_BG_DIM)
                 binding.collapsedStateHeader.visibility = VISIBLE
+                binding.collapsedStateHeaderDivider.visibility = VISIBLE
                 binding.fullscreenStateToolbar.visibility = GONE
             }
             STATE_COLLAPSED, STATE_HALF_EXPANDED -> {
                 dialog?.window?.setDimAmount(DEFAULT_BG_DIM)
                 binding.collapsedStateHeader.visibility = VISIBLE
+                binding.collapsedStateHeaderDivider.visibility = VISIBLE
                 binding.fullscreenStateToolbar.visibility = GONE
             }
         }

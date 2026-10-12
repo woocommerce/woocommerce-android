@@ -1,20 +1,22 @@
 package com.woocommerce.android.ui.products.details
 
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.StringRes
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -22,17 +24,12 @@ import com.google.android.material.transition.MaterialContainerTransform
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
-import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.FragmentProductDetailBinding
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.parcelable
-import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
@@ -43,7 +40,7 @@ import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.BottomNavigationPosition
@@ -53,15 +50,11 @@ import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductsCommunicationViewModel
-import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.ai.description.AIProductDescriptionBottomSheetFragment.Companion.KEY_AI_GENERATED_DESCRIPTION_RESULT
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.OpenProductDetails
-import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Error
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Loading
-import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.None
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductUpdated
-import com.woocommerce.android.ui.products.details.ProductDetailViewModel.RefreshMenu
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowAIProductDescriptionBottomSheet
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowBlazeCreationScreen
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowDuplicateProductError
@@ -69,7 +62,7 @@ import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowDu
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowLinkedProductPromoBanner
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.TrashProduct
 import com.woocommerce.android.ui.products.grouped.GroupedProductListType
-import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.list.ProductListFragment
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
@@ -81,54 +74,66 @@ import com.woocommerce.android.ui.products.typesbottomsheet.ProductTypesBottomSh
 import com.woocommerce.android.ui.products.typesbottomsheet.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.VariationListData
-import com.woocommerce.android.ui.promobanner.PromoBanner
-import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.UiHelpers.getTextOfUiString
-import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
-import com.woocommerce.android.widgets.SkeletonView
-import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductDetailFragment :
-    BaseProductFragment(R.layout.fragment_product_detail),
-    OnGalleryImageInteractionListener {
-    companion object {
-        private const val LIST_STATE_KEY = "list_state"
-    }
-
+    BaseProductFragment() {
     private var productName = ""
-        set(value) {
-            field = value
-            toolbarHelper.updateTitle(value)
-        }
-
-    private var productId: Long = ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID
 
     @Inject
     lateinit var blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
 
     @Inject
-    lateinit var toolbarHelper: ProductDetailsToolbarHelper
-
-    @Inject
     lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
 
-    private val skeletonView = SkeletonView()
-
     private var progressDialog: CustomProgressDialog? = null
-    private var layoutManager: LayoutManager? = null
     private var imageUploadErrorsSnackbar: Snackbar? = null
 
-    private var _binding: FragmentProductDetailBinding? = null
-    private val binding get() = _binding!!
+    private val productDetailUiMapper = ProductDetailUiMapper()
+    private val topAppBarPolicy = ProductDetailTopAppBarPolicy()
+    private var productDetailPageState by mutableStateOf(INITIAL_PAGE_STATE)
+    private var isUploadErrorVisible = false
+    private var currentProduct: Product? = null
+    private var currentCards = emptyList<ProductDetailCardUiModel>()
+    private var currentAuxiliaryState: ProductDetailViewModel.ProductDetailViewState.AuxiliaryState = Loading
+    private var areImagesAvailable = true
+    private var uploadingImageUris = emptyList<Uri>()
+    private var isAddMoreVisible = false
+    private var isLinkedProductPromoVisible = false
+    private var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
+    private var isWindowLargerThanCompact = false
+    private var isPartOfProductListFlow = false
+
+    private val pageCallbacks by lazy {
+        ProductDetailPageCallbacks(
+            topAppBar = ProductDetailTopAppBarCallbacks(
+                onNavigationClicked = ::onTopAppBarNavigationClicked,
+                onActionClicked = ::onTopAppBarActionClicked,
+            ),
+            image = ProductDetailImageCallbacks(
+                onImageClicked = viewModel::onImageClicked,
+                onAddImageClicked = viewModel::onAddImageButtonClicked,
+                onImagesUnavailableClicked = ::onImagesUnavailableClicked,
+            ),
+            content = ProductDetailContentCallbacks(
+                onLinkedProductPromoClicked = ::onLinkedProductPromoClicked,
+                onLinkedProductPromoDismissed = ::onLinkedProductPromoDismissed,
+                onAddMoreClicked = ::onAddMoreClicked,
+            ),
+            onUploadErrorClicked = viewModel::openUploadScreen,
+        )
+    }
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -156,6 +161,21 @@ class ProductDetailFragment :
         }
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View = composeView {
+        ProductDetailScreen(
+            state = productDetailPageState,
+            callbacks = pageCallbacks,
+        )
+    }.apply {
+        id = R.id.productDetail_root
+        isFocusableInTouchMode = true
+        ViewCompat.setTransitionName(this, getString(R.string.product_card_detail_transition_name))
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -165,16 +185,9 @@ class ProductDetailFragment :
         viewModel.setTrashActionPossible(isTrashEnabled)
 
         blazeCampaignCreationDispatcher.attachFragment(this, BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON)
-
-        _binding = FragmentProductDetailBinding.bind(view)
-
-        toolbarHelper.onViewCreated(this, viewModel, binding)
-
-        ViewCompat.setTransitionName(
-            binding.root,
-            getString(R.string.product_card_detail_transition_name)
-        )
-        initializeViews(savedInstanceState)
+        isWindowLargerThanCompact = IsWindowClassLargeThanCompact(requireActivity()).invoke()
+        isPartOfProductListFlow = isPartOfProductListFlow()
+        updateProductDetailPresentation()
         initializeViewModel()
         handleOnePaneToTwoPaneConversion()
     }
@@ -209,10 +222,8 @@ class ProductDetailFragment :
     }
 
     override fun onDestroyView() {
-        skeletonView.hide()
         imageUploadErrorsSnackbar?.dismiss()
         super.onDestroyView()
-        _binding = null
     }
 
     override fun onResume() {
@@ -228,21 +239,6 @@ class ProductDetailFragment :
     override fun onStop() {
         super.onStop()
         WooDialog.onCleared()
-    }
-
-    private fun initializeViews(savedInstanceState: Bundle?) {
-        val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
-        this.layoutManager = layoutManager
-
-        savedInstanceState?.parcelable<Parcelable>(LIST_STATE_KEY)?.let {
-            layoutManager.onRestoreInstanceState(it)
-        }
-        binding.cardsRecyclerView.layoutManager = layoutManager
-        binding.cardsRecyclerView.itemAnimator = null
-
-        binding.openUploadScreenButton.setOnClickListener {
-            viewModel.openUploadScreen()
-        }
     }
 
     private fun initializeViewModel() {
@@ -358,6 +354,10 @@ class ProductDetailFragment :
         viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProductDetails(it, new.areImagesAvailable) }
             new.auxiliaryState.takeIfNotEqualTo(old?.auxiliaryState) { showAuxiliaryState(it) }
+            new.areImagesAvailable.takeIfNotEqualTo(old?.areImagesAvailable) {
+                areImagesAvailable = it
+                updateProductDetailPresentation()
+            }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
                 if (it) {
                     showProgressDialog(R.string.product_save_dialog_title, R.string.product_update_dialog_message)
@@ -365,11 +365,14 @@ class ProductDetailFragment :
                     hideProgressDialog()
                 }
             }
-            new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
-                binding.imageGallery.setPlaceholderImageUris(it)
-            }
+            new.uploadingImageUris.orEmpty()
+                .takeIfNotEqualTo(uploadingImageUris) {
+                    uploadingImageUris = it
+                    updateProductDetailPresentation()
+                }
             new.showBottomSheetButton?.takeIfNotEqualTo(old?.showBottomSheetButton) { isVisible ->
-                binding.productDetailAddMoreContainer.isVisible = isVisible
+                isAddMoreVisible = isVisible
+                updateProductDetailPresentation()
             }
             new.isUploadingDownloadableFile?.takeIfNotEqualTo(old?.isUploadingDownloadableFile) {
                 if (it) {
@@ -382,12 +385,19 @@ class ProductDetailFragment :
                 }
             }
             new.hasUploadErrors?.takeIfNotEqualTo(old?.hasUploadErrors) { hasErrors ->
-                binding.openUploadScreenButton.visibility = if (hasErrors) View.VISIBLE else View.GONE
+                isUploadErrorVisible = hasErrors
+                updateProductDetailPresentation()
             }
         }
 
         viewModel.productDetailCards.observe(viewLifecycleOwner) {
-            showProductCards(it)
+            currentCards = productDetailUiMapper.map(it)
+            updateProductDetailPresentation()
+        }
+
+        viewModel.menuButtonsState.observe(viewLifecycleOwner) {
+            menuButtonsState = it
+            updateProductDetailPresentation()
         }
 
         viewModel.hasChanges.observe(viewLifecycleOwner) { hasChanges ->
@@ -409,7 +419,6 @@ class ProductDetailFragment :
             when (event) {
                 is Event.LaunchUrlInChromeTab -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is Event.LaunchUrlInAuthenticatedWebView -> authenticatedWebViewLauncher.showAuthenticatedWebView(event)
-                is RefreshMenu -> toolbarHelper.setupToolbar()
 
                 is TrashProduct -> {
                     if (findNavController().previousBackStackEntry != null) {
@@ -494,39 +503,11 @@ class ProductDetailFragment :
      *  Triggered when the view modal updates or creates an order that doesn't already have linked products
      */
     private fun showProductDetails(product: Product, isImageUploadAvailable: Boolean) {
-        binding.productErrorStateContainer.isVisible = false
-        binding.productDetailRoot.isVisible = true
-
+        currentProduct = product
+        areImagesAvailable = isImageUploadAvailable
+        isAddMoreVisible = true
         productName = updateProductNameFromDetails(product)
-        productId = product.remoteId
-
-        if (isImageUploadAvailable) {
-            if (product.images.isEmpty() && !viewModel.isUploadingImages()) {
-                binding.imageGallery.hide()
-                startAddImageContainer()
-            } else {
-                binding.addImageContainer.hide()
-                binding.imageGallery.show()
-                binding.imageGallery.showProductImages(product.images, this)
-            }
-            binding.imagesUnavailableNotice.hide()
-        } else {
-            binding.imageGallery.hide()
-            binding.addImageContainer.hide()
-            binding.imagesUnavailableNotice.show()
-            binding.imagesUnavailableNotice.setOnClickListener {
-                ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.WORDPRESS_PRIVACY_SETTINGS)
-            }
-        }
-
-        binding.productDetailAddMoreButton.setOnClickListener {
-            // TODO: add tracking events here
-            viewModel.onEditProductCardClicked(
-                ViewProductDetailBottomSheet(product.productType)
-            )
-        }
-
-        toolbarHelper.setupToolbar()
+        updateProductDetailPresentation()
     }
 
     private fun updateProductNameFromDetails(product: Product): String {
@@ -546,34 +527,94 @@ class ProductDetailFragment :
         imageUploadErrorsSnackbar?.show()
     }
 
-    private fun startAddImageContainer() {
-        binding.addImageContainer.show()
-        binding.addImageContainer.setOnClickListener {
-            AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
-            viewModel.onAddImageButtonClicked()
+    private val showBackOnLargeScreen: Boolean
+        get() = viewModel.startMode == Mode.AddNewProduct ||
+            (viewModel.startMode as? Mode.ShowProduct)?.afterGeneratedWithAi == true
+
+    private fun isPartOfProductListFlow(): Boolean = runCatching {
+        findNavController().getBackStackEntry(R.id.products)
+    }.isSuccess || parentFragment?.parentFragment is ProductListFragment
+
+    private fun onTopAppBarNavigationClicked() {
+        if (!viewModel.onBackButtonClickedProductDetail()) return
+
+        if (!findNavController().popBackStack(R.id.products, false)) {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+    }
+
+    private fun onTopAppBarActionClicked(action: ProductDetailTopAppBarAction) {
+        when (action) {
+            ProductDetailTopAppBarAction.SAVE -> {
+                ActivityUtils.hideKeyboard(requireActivity())
+                viewModel.onSaveButtonClicked()
+            }
+            ProductDetailTopAppBarAction.PUBLISH -> {
+                ActivityUtils.hideKeyboard(requireActivity())
+                viewModel.onPublishButtonClicked()
+            }
+            ProductDetailTopAppBarAction.SAVE_AS_DRAFT -> viewModel.onSaveAsDraftButtonClicked()
+            ProductDetailTopAppBarAction.SHARE -> viewModel.onShareButtonClicked()
+            ProductDetailTopAppBarAction.VIEW_PRODUCT -> viewModel.onViewProductOnStoreLinkClicked()
+            ProductDetailTopAppBarAction.SETTINGS -> viewModel.onSettingsButtonClicked()
+            ProductDetailTopAppBarAction.DUPLICATE -> viewModel.onDuplicateProduct()
+            ProductDetailTopAppBarAction.TRASH -> viewModel.onTrashButtonClicked()
+        }
+    }
+
+    private fun onImagesUnavailableClicked() {
+        ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.WORDPRESS_PRIVACY_SETTINGS)
+    }
+
+    private fun onLinkedProductPromoClicked() {
+        hideLinkedProductPromo()
+        viewModel.onLinkedProductPromoClicked()
+    }
+
+    private fun onLinkedProductPromoDismissed() {
+        hideLinkedProductPromo()
+        viewModel.onLinkedProductPromoDismissed()
+    }
+
+    private fun onAddMoreClicked() {
+        currentProduct?.let { product ->
+            viewModel.onEditProductCardClicked(ViewProductDetailBottomSheet(product.productType))
         }
     }
 
     private fun showAuxiliaryState(auxiliaryState: ProductDetailViewModel.ProductDetailViewState.AuxiliaryState) {
-        if (auxiliaryState == Loading) {
-            skeletonView.show(binding.appBarLayout, R.layout.skeleton_product_detail, delayed = true)
-        } else {
-            skeletonView.hide()
-            when (auxiliaryState) {
-                Loading, None -> {
-                    binding.productErrorStateContainer.isVisible = false
-                }
+        currentAuxiliaryState = auxiliaryState
+        updateProductDetailPresentation()
+    }
 
-                is Error -> {
-                    binding.productErrorStateContainer.isVisible = true
-                    binding.productDetailRoot.isVisible = false
-                    binding.productDetailAddMoreContainer.isVisible = false
-
-                    binding.productDetailsErrorImage.contentDescription = getString(auxiliaryState.message)
-                    binding.productDetailsErrorText.text = getString(auxiliaryState.message)
-                }
-            }
-        }
+    private fun updateProductDetailPresentation() {
+        val screen = productDetailUiMapper.mapScreenState(
+            auxiliaryState = currentAuxiliaryState,
+            hasProduct = currentProduct != null,
+            cards = currentCards,
+            showAddMore = isAddMoreVisible,
+            showLinkedProductPromo = isLinkedProductPromoVisible,
+        )
+        val image = productDetailUiMapper.mapImageState(
+            auxiliaryState = currentAuxiliaryState,
+            hasProduct = currentProduct != null,
+            areImagesAvailable = areImagesAvailable,
+            persistedImages = currentProduct?.images.orEmpty(),
+            uploadingImageUris = uploadingImageUris.map(Uri::toString),
+        )
+        val topAppBar = topAppBarPolicy.map(
+            menu = menuButtonsState,
+            isWindowLargerThanCompact = isWindowLargerThanCompact,
+            isPartOfProductListFlow = isPartOfProductListFlow,
+            showBackOnLargeScreen = showBackOnLargeScreen,
+        )
+        productDetailPageState = productDetailUiMapper.mapPageState(
+            title = productName,
+            topAppBar = topAppBar,
+            screen = screen,
+            image = image,
+            hasUploadErrors = isUploadErrorVisible,
+        )
     }
 
     private fun showProgressDialog(@StringRes title: Int, @StringRes message: Int) {
@@ -590,61 +631,18 @@ class ProductDetailFragment :
         progressDialog = null
     }
 
-    private fun showProductCards(cards: List<ProductPropertyCard>) {
-        val adapter: ProductPropertyCardsAdapter
-        if (binding.cardsRecyclerView.adapter == null) {
-            adapter = ProductPropertyCardsAdapter()
-            binding.cardsRecyclerView.adapter = adapter
-        } else {
-            adapter = binding.cardsRecyclerView.adapter as ProductPropertyCardsAdapter
-        }
-
-        val recyclerViewState = binding.cardsRecyclerView.layoutManager?.onSaveInstanceState()
-        adapter.update(cards)
-        binding.cardsRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
-    }
-
     private fun showLinkedProductPromoBanner() {
-        if (binding.promoComposableContainer.isVisible.not()) {
-            if (binding.promoComposable.hasComposition.not()) {
-                binding.promoComposable.setContent {
-                    WooThemeWithBackground {
-                        PromoBanner(
-                            bannerType = PromoBannerType.LINKED_PRODUCTS,
-                            onCtaClick = {
-                                WooAnimUtils.scaleOut(binding.promoComposableContainer)
-                                viewModel.onLinkedProductPromoClicked()
-                            },
-                            onDismissClick = {
-                                WooAnimUtils.scaleOut(binding.promoComposableContainer)
-                                viewModel.onLinkedProductPromoDismissed()
-                            }
-                        )
-                    }
-                }
-            }
-            WooAnimUtils.scaleIn(binding.promoComposableContainer, WooAnimUtils.Duration.MEDIUM)
-        }
+        isLinkedProductPromoVisible = true
+        updateProductDetailPresentation()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        layoutManager?.let {
-            outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
-        }
+    private fun hideLinkedProductPromo() {
+        isLinkedProductPromoVisible = false
+        updateProductDetailPresentation()
     }
 
     override fun onRequestAllowBackPress(): Boolean {
         return viewModel.onBackButtonClickedProductDetail()
-    }
-
-    override fun onGalleryImageClicked(image: Image) {
-        viewModel.onImageClicked()
-    }
-
-    override fun onGalleryAddImageClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
-        viewModel.onAddImageButtonClicked()
     }
 
     override fun getFragmentTitle(): String = productName
@@ -665,5 +663,20 @@ class ProductDetailFragment :
 
         @Parcelize
         data object AddNewProduct : Mode()
+    }
+
+    private companion object {
+        val INITIAL_PAGE_STATE = ProductDetailPageUiState(
+            title = "",
+            topAppBar = ProductDetailTopAppBarUiState(
+                navigation = null,
+                primaryAction = null,
+                shareAction = null,
+                overflowActions = emptyList(),
+            ),
+            screen = ProductDetailScreenState.Loading,
+            image = ProductDetailImageUiState.Loading,
+            showUploadError = false,
+        )
     }
 }

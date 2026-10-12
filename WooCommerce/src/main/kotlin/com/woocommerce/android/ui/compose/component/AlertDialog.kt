@@ -15,7 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 /**
  * An [androidx.compose.material.AlertDialog] that supports a third neutral button.
@@ -60,7 +60,7 @@ fun AlertDialog(
 @Preview
 @Composable
 private fun AlertDialogPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AlertDialog(
             onDismissRequest = {},
             title = {

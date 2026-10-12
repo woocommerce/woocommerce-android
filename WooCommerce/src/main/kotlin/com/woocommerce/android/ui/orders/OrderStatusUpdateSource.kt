@@ -8,7 +8,6 @@ sealed class OrderStatusUpdateSource(open val oldStatus: String, open val newSta
     @Parcelize
     data class SwipeToCompleteGesture(
         val orderId: Long,
-        val orderPosition: Int,
         override val oldStatus: String
     ) : OrderStatusUpdateSource(
         oldStatus = oldStatus,

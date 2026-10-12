@@ -39,7 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
 import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState
 import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState.Appending
@@ -298,7 +298,7 @@ private fun CouponListPreview() {
 @Preview
 @Composable
 private fun CouponListEmptyPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         EmptyCouponList()
     }
 }
@@ -306,7 +306,7 @@ private fun CouponListEmptyPreview() {
 @Preview
 @Composable
 private fun CouponListSkeletonPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         CouponListSkeleton()
     }
 }

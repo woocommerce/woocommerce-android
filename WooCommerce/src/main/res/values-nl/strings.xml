@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-09 09:56:48+0000
+Translation-Revision-Date: 2026-09-23 11:58:31+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_reason_unsupported_country_generic">Het POS-systeem is niet beschikbaar in het land van je winkel. Controleer de adres-instellingen van je winkel of neem contact op met de ondersteuning voor hulp.</string>
+    <string name="woopos_eligibility_reason_unsupported_country">Het POS-systeem is niet beschikbaar in %1$s. Controleer de adres-instellingen van je winkel of neem contact op met de ondersteuning voor hulp.</string>
+    <string name="woo_push_notifications_introduction_error_offline_mode_body">Pushberichten kunnen niet worden ingesteld omdat je winkel in de offline modus staat. Neem contact op met de ondersteuning als je nog hulp nodig hebt.</string>
+    <string name="order_refunds_refunded_items">Terugbetaalde artikelen</string>
+    <string name="login_not_wordpress_site_title">Geen WordPress-site.</string>
+    <string name="https_configuration_warning_dismiss">HTTPS-beveiligingsmelding negeren</string>
+    <string name="https_configuration_warning_message">Je winkel ondersteunt HTTPS, maar het adres is geconfigureerd om HTTP te gebruiken. Werk het bij naar HTTPS om je winkel te beschermen en verbindingsproblemen te voorkomen.</string>
+    <string name="https_configuration_warning_title">Beveilig je winkel met HTTPS</string>
     <string name="age_verification_open_google_play">Open Google Play</string>
     <string name="age_verification_required_message">Google Play moet je leeftijd verifiëren voordat WooCommerce kan controleren of je de app kan gebruiken. Voltooi de verificatie in Google Play, keer hier terug en probeer het opnieuw.</string>
     <string name="woopos_refund_review_remaining_items_button">Resterende items bekijken</string>
@@ -924,8 +932,12 @@ Language: nl
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">het Verenigd Koninkrijk</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">de Verenigde Staten</string>
     <string name="woopos_eligibility_screen_unable_to_load">Kan niet laden</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">Het POS-systeem is niet beschikbaar voor de valuta van je winkel. Controleer de valuta-instellingen van je winkel of neem contact op met de ondersteuning voor hulp.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Het POS-systeem is niet beschikbaar voor de valuta van je winkel. In %1$sondersteunt het momenteel alleen %2$s. Controleer de valuta-instellingen van je winkel of neem contact op met de ondersteuning voor hulp.</string>
     <string name="woopos_eligibility_reason_check_connection">Controleer je internetverbinding en probeer de app opnieuw te starten. Neem contact op met de ondersteuning als het probleem zich blijft voordoen.</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">Point of Sale moet ingeschakeld zijn om door te gaan. Schakel de POS-functie in vanuit je WordPress-beheer onder WooCommerce-instellingen &gt; Geavanceerd &gt; Functies en probeer het opnieuw.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Je WooCommerce-versie wordt niet ondersteund. Het POS-systeem vereist WooCommerce-versie %1$s of hoger. Werk WooCommerce bij naar de nieuwste versie.</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Zorg ervoor dat de WooCommerce-plugin is geïnstalleerd en geactiveerd vanuit je WordPress-beheer. Als er nog steeds een probleem is, neem dan contact op met ondersteuning voor hulp.</string>
     <string name="orderfilters_sales_channel_filter">Verkoopkanaal</string>
     <string name="barcode_ean13_content_description">Streepjescode EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">Extra verwerking</string>
@@ -2791,11 +2803,11 @@ Language: nl
     <string name="coupon_details_menu_share">Coupon delen</string>
     <string name="coupon_details_menu_copy">Couponcode kopiëren</string>
     <string name="inbox_note_survey_actioned">Bedankt voor je feedback!</string>
-    <string name="card_reader_connect_permission_rationale_hint">Kaartlezerbetalingen vereisen toestemming tot precieze locatie</string>
     <string name="card_reader_connect_permission_rationale_header">Toestemming tot locatie vereist</string>
     <string name="simple_payments_share_payment_dialog_title">Betalen - %s</string>
     <string name="simple_payments_share_payment_link">Betaallink delen</string>
     <string name="amount">Bedrag</string>
+    <string name="card_reader_connect_permission_rationale_hint">Kaartlezerbetalingen vereisen toestemming tot locatie</string>
     <string name="coupon_list_view_coupon">Couponoverzicht weergeven</string>
     <string name="coupon_list_empty_heading">Geen coupons gevonden</string>
     <string name="coupon_list_item_label_everything">alles</string>
@@ -3305,7 +3317,7 @@ Language: nl
     <string name="orderdetail_products_recreate_shipping_label_menu">Nieuw verzendlabel aanmaken</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth is uitgeschakeld</string>
     <string name="card_reader_connect_location_provider_disabled_header">Locatie is uitgeschakeld</string>
-    <string name="card_reader_connect_missing_permissions_header">Vereiste toestemming voor precieze locatie ontbreekt</string>
+    <string name="card_reader_connect_missing_permissions_header">Ontbrekende vereiste locatietoestemming</string>
     <string name="variation_confirm_delete">Wil je deze variatie verwijderen?</string>
     <string name="product_delete_dialog_title">Product verwijderen</string>
     <string name="card_reader_payment_send_receipt">Kwitantie verzenden</string>

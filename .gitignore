@@ -25,7 +25,10 @@ developer.properties
 
 # Crash Logging Configuration
 fabric.properties
-# Sentry
+
+# Legacy Sentry secrets file: no longer generated, but may linger in older checkouts
+#
+# See https://linear.app/a8c/issue/AINFRA-3221
 sentry.properties
 
 # Local configuration file (sdk path, etc)
@@ -56,6 +59,7 @@ local.properties
 
 # Backup Files
 *.bak
+__pycache__/
 
 # Android Studio Navigation editor temp files
 .navigation/
@@ -129,3 +133,11 @@ google-upload-credentials.json
 
 .grepai/
 docs/superpowers
+
+# Maestro smoke-test local files and artifacts.
+.env.local
+.maestro/output/
+.maestro/tmp/
+.maestro/report.xml
+.maestro/*.maestro-screenshots/
+*.maestro-screenshots/

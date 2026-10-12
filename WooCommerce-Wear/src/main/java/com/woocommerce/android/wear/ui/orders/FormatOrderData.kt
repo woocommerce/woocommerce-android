@@ -8,6 +8,7 @@ import com.woocommerce.commons.WearOrder
 import com.woocommerce.commons.WearOrderedProduct
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.settings.Settings
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Locale
 import javax.inject.Inject
@@ -18,19 +19,25 @@ class FormatOrderData @Inject constructor(
     private val dateUtils: DateUtils,
     private val locale: Locale,
 ) {
-    operator fun invoke(
+    suspend operator fun invoke(
         selectedSite: SiteModel,
         order: WearOrder,
         products: List<WearOrderedProduct>?
-    ) = order.toOrderItem(selectedSite, products)
+    ): OrderItem {
+        val siteSettings = wooCommerceStore.getSiteSettings(selectedSite)
+        return order.toOrderItem(siteSettings, products)
+    }
 
-    operator fun invoke(
+    suspend operator fun invoke(
         selectedSite: SiteModel,
         orders: List<WearOrder>
-    ) = orders.map { it.toOrderItem(selectedSite) }
+    ): List<OrderItem> {
+        val siteSettings = wooCommerceStore.getSiteSettings(selectedSite)
+        return orders.map { it.toOrderItem(siteSettings) }
+    }
 
     private fun WearOrder.toOrderItem(
-        selectedSite: SiteModel,
+        siteSettings: Settings?,
         products: List<WearOrderedProduct>? = null
     ): OrderItem {
         val formattedBillingName = takeUnless {
@@ -53,7 +60,7 @@ class FormatOrderData @Inject constructor(
                 amount = it.amount.toDoubleOrNull()?.toInt() ?: 0,
                 total = wooCommerceStore.formatCurrencyForDisplay(
                     amount = it.total.toDoubleOrNull() ?: 0.0,
-                    site = selectedSite,
+                    siteSettings = siteSettings,
                     currencyCode = null,
                     applyDecimalFormatting = true
                 ),
@@ -63,7 +70,7 @@ class FormatOrderData @Inject constructor(
 
         val formattedOrderTotals = wooCommerceStore.formatCurrencyForDisplay(
             amount = total.toDoubleOrNull() ?: 0.0,
-            site = selectedSite,
+            siteSettings = siteSettings,
             currencyCode = null,
             applyDecimalFormatting = true
         )

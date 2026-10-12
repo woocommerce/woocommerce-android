@@ -60,7 +60,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.preview.OrientationPreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressSectionLandscape
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressSectionPortrait
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
@@ -378,7 +378,7 @@ fun ShipmentDetailsSectionTitle(
 @Preview
 @Composable
 private fun ShipmentDetailsSectionTitlePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ShipmentDetailsSectionTitle(title = "Shipment Details")
     }
 }
@@ -668,7 +668,7 @@ fun VerticalDivider(
 @OrientationPreviews
 @Composable
 fun ShipmentDetailsExpandedPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Surface {
             ShipmentDetails(
                 bottomSheetState = rememberBottomSheetState(
@@ -702,7 +702,7 @@ fun ShipmentDetailsExpandedPreview() {
 @OrientationPreviews
 @Composable
 private fun ShipmentDetailsCollapsedPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Surface {
             ShipmentDetails(
                 bottomSheetState = rememberBottomSheetState(

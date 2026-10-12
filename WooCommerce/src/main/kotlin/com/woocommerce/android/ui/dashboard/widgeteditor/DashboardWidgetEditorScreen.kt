@@ -8,21 +8,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
@@ -32,35 +29,31 @@ import com.woocommerce.android.ui.analytics.hub.settings.LoadWidgetsConfiguratio
 import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.DragAndDropItemsList
 import com.woocommerce.android.ui.compose.component.DragAndDropSelectableItem
+import com.woocommerce.android.ui.compose.component.Toolbar
 
 @Composable
 fun DashboardWidgetEditorScreen(viewModel: DashboardWidgetEditorViewModel) {
     BackHandler(onBack = viewModel::onBackPressed)
     viewModel.viewState.observeAsState().value?.let { state ->
-        Scaffold(topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(id = R.string.my_store_edit_screen_widgets)) },
-                navigationIcon = {
-                    IconButton(viewModel::onBackPressed) {
-                        Icon(
-                            ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                            contentDescription = stringResource(id = R.string.back)
+        val listState = rememberLazyListState()
+        Scaffold(
+            modifier = Modifier.testTag(state.widgetStateTestTag),
+            topBar = {
+                Toolbar(
+                    title = stringResource(id = R.string.my_store_edit_screen_widgets),
+                    onNavigationButtonClick = viewModel::onBackPressed,
+                    navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                    showDivider = true,
+                    actions = {
+                        TextAction(
+                            text = stringResource(id = R.string.save),
+                            onClick = viewModel::onSaveClicked,
+                            enabled = state.isSaveButtonEnabled,
                         )
-                    }
-                },
-                backgroundColor = colorResource(id = R.color.color_toolbar),
-                actions = {
-                    TextButton(
-                        onClick = viewModel::onSaveClicked,
-                        enabled = state.isSaveButtonEnabled
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.save).uppercase()
-                        )
-                    }
-                },
-            )
-        }) { padding ->
+                    },
+                )
+            }
+        ) { padding ->
             when {
                 state.isLoading -> LoadWidgetsConfiguration()
                 else -> {
@@ -71,8 +64,10 @@ fun DashboardWidgetEditorScreen(viewModel: DashboardWidgetEditorViewModel) {
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(padding),
-                        isItemDraggable = { it.isAvailable }
+                        isItemDraggable = { it.isAvailable },
+                        listState = listState,
                     ) { item, dragDropState ->
+                        val itemIndex = state.orderedWidgetList.indexOf(item)
                         when (item.isAvailable) {
                             true -> {
                                 val selectedItems = state.orderedWidgetList.filter { it.isVisible }
@@ -83,12 +78,17 @@ fun DashboardWidgetEditorScreen(viewModel: DashboardWidgetEditorViewModel) {
                                     onSelectionChange = viewModel::onSelectionChange,
                                     itemKey = { it.type },
                                     itemFormatter = { stringResource(id = item.title) },
-                                    isEnabled = !item.isSelected || selectedItems.size > 1
+                                    isEnabled = !item.isSelected || selectedItems.size > 1,
+                                    rowModifier = Modifier.testTag(item.rowTestTag(itemIndex)),
+                                    dragHandleModifier = Modifier.testTag(item.dragHandleTestTag(itemIndex))
                                 )
                             }
 
                             false -> {
-                                UnavailableWidget(item)
+                                UnavailableWidget(
+                                    widget = item,
+                                    modifier = Modifier.testTag(item.rowTestTag(itemIndex))
+                                )
                             }
                         }
                     }
@@ -104,6 +104,27 @@ fun DashboardWidgetEditorScreen(viewModel: DashboardWidgetEditorViewModel) {
         }
     }
 }
+
+private val DashboardWidgetEditorViewModel.WidgetEditorState.widgetStateTestTag: String
+    get() = widgetList.joinToString(
+        prefix = "dashboard_widget_editor_state__",
+        separator = "__",
+        postfix = "__"
+    ) { widget -> "${widget.type.trackingIdentifier}_${widget.editorStateTag}" }
+
+private fun DashboardWidget.rowTestTag(index: Int) =
+    "dashboard_widget_editor_row_${index}_${type.trackingIdentifier}_$editorStateTag"
+
+private fun DashboardWidget.dragHandleTestTag(index: Int) =
+    "dashboard_widget_editor_drag_handle_${index}_${type.trackingIdentifier}"
+
+private val DashboardWidget.editorStateTag: String
+    get() = when {
+        status is DashboardWidget.Status.Hidden -> "hidden"
+        status is DashboardWidget.Status.Unavailable -> "unavailable"
+        isSelected -> "selected"
+        else -> "unselected"
+    }
 
 @Composable
 private fun UnavailableWidget(

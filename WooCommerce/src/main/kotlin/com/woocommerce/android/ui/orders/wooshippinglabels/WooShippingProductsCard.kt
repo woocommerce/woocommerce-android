@@ -50,7 +50,7 @@ import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.ui.compose.component.SelectionCheck
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.util.StringUtils
 
 @Composable
@@ -89,7 +89,7 @@ fun ShippingProductsCard(
 @Preview
 @Composable
 private fun ShippingProductsCardPreview(@PreviewParameter(IsExpandedProvider::class) isExpanded: Boolean) {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             ShippingProductsCard(
                 shippableItems = ShipmentUI(
@@ -181,7 +181,7 @@ private fun ShippingProductsCardHeaderPreview() {
     )
     val isExpanded = remember { mutableStateOf(false) }
 
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             ShippingProductsCardHeader(
                 shippableItems = shippableItems,
@@ -251,7 +251,7 @@ private fun ShippingProduct(
 @Preview
 @Composable
 internal fun ShippingProductPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             ShippingProduct(
                 title = "Title",
@@ -335,7 +335,7 @@ private fun ShippingProductDetails(
 @Preview
 @Composable
 internal fun ShippingProductDetailsPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ShippingProductDetails(
             title = "Title",
             description = "23 x 23 x 52 cm",
@@ -392,7 +392,7 @@ private fun QuantityBadge(
 @Preview
 @Composable
 internal fun QuantityBadgePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Column(modifier = Modifier.background(Color.DarkGray)) {
             QuantityBadge(quantity = 1f, modifier = Modifier.padding(dimensionResource(R.dimen.major_100)))
             QuantityBadge(quantity = 10f, modifier = Modifier.padding(dimensionResource(R.dimen.major_100)))
@@ -667,7 +667,7 @@ fun SelectableShippingProductDetails(
 @Preview
 @Composable
 fun SelectableShippingProductPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             SelectableShippingProduct(
                 title = "Title",
@@ -686,7 +686,7 @@ fun SelectableShippingProductPreview() {
 @Preview
 @Composable
 fun ExpandableSelectableShippingProductPreview(@PreviewParameter(IsExpandedProvider::class) isExpanded: Boolean) {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             ExpandableSelectableShippingProduct(
                 title = "Title",

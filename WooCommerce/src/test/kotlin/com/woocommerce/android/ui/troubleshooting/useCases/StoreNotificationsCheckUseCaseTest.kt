@@ -137,7 +137,7 @@ class StoreNotificationsCheckUseCaseTest : BaseUnitTest() {
             val result = sut.registerPushNotifications()
 
             assertThat(result.isSuccess).isTrue()
-            verify(registerDevice).invoke(RegisterDevice.Trigger.APP_FOREGROUND)
+            verify(registerDevice).invoke(RegisterDevice.Trigger.TROUBLESHOOTING)
         }
 
     private companion object {

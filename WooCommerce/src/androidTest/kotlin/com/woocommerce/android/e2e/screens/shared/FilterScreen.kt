@@ -34,7 +34,7 @@ class FilterScreen : Screen {
         return this
     }
 
-    fun showProducts(expectResults: Boolean): ProductListScreen {
+    fun showProducts(): ProductListScreen {
         val showProductButton = Espresso.onView(
             Matchers.allOf(
                 Matchers.anyOf(
@@ -47,30 +47,23 @@ class FilterScreen : Screen {
 
         clickOn(showProductButton)
 
-        if (expectResults) {
-            waitForAtLeastOneElementToBeDisplayed(R.id.productInfoContainer)
-        } else {
-            waitForElementToBeDisplayedWithoutFailure(R.id.empty_view_title)
-        }
-
         return ProductListScreen()
     }
 
     fun showOrders(expectResults: Boolean): OrderListScreen {
         clickOn(R.id.showOrdersButton)
 
-        if (expectResults) {
-            waitForElementToBeDisplayed(R.id.orderListHeader)
+        val orderListScreen = OrderListScreen()
+        return if (expectResults) {
+            orderListScreen.waitForOrders()
         } else {
-            waitForElementToBeDisplayedWithoutFailure(R.id.empty_view_title)
+            orderListScreen.waitForEmptyState()
         }
-
-        return OrderListScreen()
     }
 
     fun leaveFilterScreenToProducts(): ProductListScreen {
         if (isElementDisplayed(R.id.filterList) || isElementDisplayed(R.id.filterOptionList)) {
-            showProducts(false)
+            showProducts()
         }
 
         return ProductListScreen()

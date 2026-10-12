@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -195,8 +196,13 @@ private fun CustomerListItem(
         name = customer.name.render(),
         username = customer.username.render(),
         email = customer.email.render(),
+        modifier = Modifier.testTag(CustomerListTestTags.CUSTOMER_ITEM),
         onClick = { onCustomerSelected(customer.payload) },
     )
+}
+
+internal object CustomerListTestTags {
+    const val CUSTOMER_ITEM = "customer_list_item"
 }
 
 @Composable

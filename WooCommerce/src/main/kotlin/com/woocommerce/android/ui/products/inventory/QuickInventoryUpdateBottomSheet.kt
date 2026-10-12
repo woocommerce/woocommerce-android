@@ -46,7 +46,7 @@ import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ProductInfo
 
 @Composable
@@ -227,7 +227,7 @@ fun QuickInventoryUpdateBottomSheetPreview() {
         isStockManaged = true
     )
     val state = ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible(product)
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         QuickInventoryUpdateBottomSheet(state, {}, {}, {}, {}, {})
     }
 }
@@ -245,7 +245,7 @@ fun QuickInventoryUpdateBottomSheetStockNotManagedPreview() {
         isStockManaged = false
     )
     val state = ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible(product)
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         QuickInventoryUpdateBottomSheet(state, {}, {}, {}, {}, {})
     }
 }

@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.payments.cardreader.readermode
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.nfc.NfcAdapter
 import android.os.Bundle
+import android.provider.Settings
 import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -9,7 +13,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -46,7 +51,7 @@ class CardReaderModeActivity : AppCompatActivity() {
         window.addFlags(FLAG_KEEP_SCREEN_ON)
 
         setContent {
-            WooThemeWithBackground {
+            LegacyWooThemeWithBackground {
                 CardReaderModeScreen(viewModel = viewModel)
             }
         }
@@ -56,27 +61,39 @@ class CardReaderModeActivity : AppCompatActivity() {
                 viewModel.events.collect { event ->
                     when (event) {
                         CardReaderModeEvent.Exit -> finish()
+                        CardReaderModeEvent.CheckPermissions -> checkPermissionsAndStartSession()
                         CardReaderModeEvent.RequestLocationPermission ->
                             WooPermissionUtils.requestCardReaderLocationPermission(locationPermissionLauncher)
                         CardReaderModeEvent.RequestLocalNetworkPermission ->
                             WooPermissionUtils.requestLocalNetworkPermission(localNetworkPermissionLauncher)
                         CardReaderModeEvent.OpenAppSettings ->
                             WooPermissionUtils.showAppSettings(this@CardReaderModeActivity, openInNewStack = false)
+                        CardReaderModeEvent.OpenNfcSettings -> openNfcSettings()
                     }
                 }
             }
         }
     }
 
+    private fun openNfcSettings() {
+        try {
+            startActivity(Intent(Settings.ACTION_NFC_SETTINGS))
+        } catch (e: ActivityNotFoundException) {
+            WooLog.e(WooLog.T.CARD_READER, "NFC settings activity not found.")
+            startActivity(Intent(Settings.ACTION_SETTINGS))
+        }
+    }
+
     override fun onResume() {
         super.onResume()
-        checkPermissionsAndStartSession()
+        viewModel.onScreenResumed()
     }
 
     private fun checkPermissionsAndStartSession() {
         when {
             !WooPermissionUtils.hasCardReaderLocationPermission(this) -> viewModel.onLocationPermissionMissing()
             !WooPermissionUtils.hasLocalNetworkPermission(this) -> viewModel.onLocalNetworkPermissionMissing()
+            NfcAdapter.getDefaultAdapter(this)?.isEnabled == false -> viewModel.onNfcDisabled()
             else -> viewModel.onPermissionsGranted()
         }
     }

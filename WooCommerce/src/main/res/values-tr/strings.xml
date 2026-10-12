@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-08 12:56:34+0000
+Translation-Revision-Date: 2026-09-25 09:59:05+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_reason_unsupported_country_generic">POS sistemi, mağazanızın ülkesinde kullanılamıyor. Lütfen mağaza adresi ayarlarınızı kontrol edin veya yardım için destek birimine başvurun.</string>
+    <string name="woopos_eligibility_reason_unsupported_country">POS sistemi %1$s konumda kullanılamıyor. Lütfen mağaza adresi ayarlarınızı kontrol edin veya yardım için destek birimine başvurun.</string>
+    <string name="woo_push_notifications_introduction_error_offline_mode_body">Mağazanız Çevrimdışı Modda olduğundan anlık bildirimler ayarlanamıyor. Hâlâ yardıma ihtiyacınız olursa lütfen destek ekibiyle iletişime geçin.</string>
+    <string name="order_refunds_refunded_items">İade edilen öğeler</string>
+    <string name="login_not_wordpress_site_title">WordPress sitesi değil</string>
+    <string name="https_configuration_warning_dismiss">HTTPS güvenlik uyarısını gizle</string>
+    <string name="https_configuration_warning_message">Mağazanız HTTPS\'yi destekliyor ancak adresi HTTP kullanacak şekilde yapılandırılmış. Mağazanızı korumak ve bağlantı sorunlarını önlemek için HTTPS\'ye güncelleyin.</string>
+    <string name="https_configuration_warning_title">HTTPS ile mağazanızın güvenliğini sağlayın</string>
     <string name="age_verification_open_google_play">Google Play\'i aç</string>
     <string name="age_verification_required_message">WooCommerce uygulamayı kullanıp kullanamayacağınızı kontrol etmeden önce Google Play\'de yaşınızı doğrulamanız gerekir. Google Play\'de doğrulamayı tamamlayın, ardından buraya geri dönüp tekrar deneyin.</string>
     <string name="age_verification_required_title">Devam etmek için yaşınızı doğrulayın</string>
@@ -923,8 +931,12 @@ Language: tr
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">İngiltere</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">ABD</string>
     <string name="woopos_eligibility_screen_unable_to_load">Yüklenemedi</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">POS sistemi, mağazanızın para biriminde kullanılamıyor. Lütfen mağaza para birimi ayarlarınızı kontrol edin veya yardım için destek birimine başvurun.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS sistemi, mağazanızın para biriminde kullanılamıyor. Şurada yalnızca %2$s desteklenmektedir: %1$s. Lütfen mağaza para birimi ayarlarınızı kontrol edin veya yardım için destek birimine başvurun.</string>
     <string name="woopos_eligibility_reason_check_connection">İnternet bağlantınızı kontrol edip uygulamayı yeniden başlatmayı deneyin. Sorun devam ederse lütfen destek ekibine başvurun.</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">Devam etmek için Satış Noktası\'nın etkinleştirilmesi gerekir. Lütfen WooCommerce ayarları &gt; Gelişmiş &gt; Özellikler bölümündeki WordPress yöneticinizden POS özelliğini etkinleştirin ve yeniden deneyin.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">WooCommerce sürümünüz desteklenmiyor. POS sistemi için WooCommerce %1$s sürümü veya üzeri gerekiyor. Lütfen WooCommerce\'ün en son sürümüne güncelleyin.</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Lütfen WooCommerce eklentisinin kurulduğundan ve WordPress yöneticinizden etkinleştirildiğinden emin olun. Hâlâ bir sorun varsa lütfen yardım için destek birimine başvurun.</string>
     <string name="orderfilters_sales_channel_filter">Satış Kanalı</string>
     <string name="barcode_ean13_content_description">Barkod EAN13</string>
     <string name="woo_shipping_rate_option_carbon_neutral">Karbon nötr</string>
@@ -2790,11 +2802,11 @@ Language: tr
     <string name="coupon_details_menu_share">Kuponu Paylaş</string>
     <string name="coupon_details_menu_copy">Kupon Kodunu Kopyala</string>
     <string name="inbox_note_survey_actioned">Geri bildiriminiz için teşekkürler!</string>
-    <string name="card_reader_connect_permission_rationale_hint">Kart okuyucu ödemeleri kesin konum izni gerektirir</string>
     <string name="card_reader_connect_permission_rationale_header">Konum Erişimi Gerekli</string>
     <string name="simple_payments_share_payment_dialog_title">Ödeme - %s</string>
     <string name="simple_payments_share_payment_link">Ödeme bağlantısını paylaş</string>
     <string name="amount">Miktar</string>
+    <string name="card_reader_connect_permission_rationale_hint">Kart okuyucu ödemeleri konum izni gerektirir</string>
     <string name="coupon_list_view_coupon">Kupon özetini görüntüle</string>
     <string name="coupon_list_empty_heading">Kupon bulunamadı</string>
     <string name="coupon_list_item_label_everything">her şey</string>
@@ -3304,7 +3316,7 @@ Language: tr
     <string name="orderdetail_products_recreate_shipping_label_menu">Yeni gönderim etiketi oluştur</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth devre dışı</string>
     <string name="card_reader_connect_location_provider_disabled_header">Konum devre dışı</string>
-    <string name="card_reader_connect_missing_permissions_header">Tam konumla ilgili gereken izin eksik</string>
+    <string name="card_reader_connect_missing_permissions_header">Gerekli konum izni eksik</string>
     <string name="variation_confirm_delete">Bu Varyasyonu silmek istiyor musunuz?</string>
     <string name="product_delete_dialog_title">Ürün siliniyor</string>
     <string name="card_reader_payment_send_receipt">Makbuz gönder</string>

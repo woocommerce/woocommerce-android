@@ -23,9 +23,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_UPSELL_BANN
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CLIENT_SIDE_BANNER_HIDDEN
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
-import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END_DAY
-import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START_DAY
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
@@ -108,8 +106,6 @@ object AppPrefs {
         CARD_READER_PREFERRED_PLUGIN_VERSION,
         CARD_READER_STATEMENT_DESCRIPTOR,
         ORDER_FILTER_PREFIX,
-        ORDER_FILTER_CUSTOM_DATE_RANGE_START,
-        ORDER_FILTER_CUSTOM_DATE_RANGE_END,
         ORDER_FILTER_CUSTOM_DATE_RANGE_START_DAY,
         ORDER_FILTER_CUSTOM_DATE_RANGE_END_DAY,
         PRODUCT_SORTING_PREFIX,
@@ -188,6 +184,8 @@ object AppPrefs {
 
         // this phone's stable device id when it advertises itself as a Woo POS remote tap-to-pay reader
         WOO_POS_REMOTE_READER_DEVICE_UUID,
+
+        WOO_POS_REMOTE_READER_PAIRED_ONCE,
 
         // show card reader tutorial after a reader is connected
         SHOW_CARD_READER_CONNECTED_TUTORIAL,
@@ -698,6 +696,10 @@ object AppPrefs {
         get() = getString(UndeletablePrefKey.WOO_POS_REMOTE_READER_DEVICE_UUID, "")
         set(value) = setString(UndeletablePrefKey.WOO_POS_REMOTE_READER_DEVICE_UUID, value)
 
+    var wooPosRemoteReaderPairedOnce: Boolean
+        get() = getBoolean(UndeletablePrefKey.WOO_POS_REMOTE_READER_PAIRED_ONCE, false)
+        set(value) = setBoolean(UndeletablePrefKey.WOO_POS_REMOTE_READER_PAIRED_ONCE, value)
+
     fun getShowCardReaderConnectedTutorial() = getBoolean(UndeletablePrefKey.SHOW_CARD_READER_CONNECTED_TUTORIAL, true)
 
     fun setShowCardReaderConnectedTutorial(show: Boolean) =
@@ -1029,22 +1031,6 @@ object AppPrefs {
 
     private fun getOrderFilterKey(currentSiteId: Int, filterCategory: String) =
         PrefKeyString("$ORDER_FILTER_PREFIX:$currentSiteId:$filterCategory")
-
-    // Only used by the order filter date range migration. Delete in 25.9, see WOOMOB-3841.
-    fun getOrderFilterCustomDateRange(selectedSiteId: Int): Pair<Long, Long> {
-        val startDateMillis = getLong(
-            PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_START:$selectedSiteId")
-        )
-        val endDateMillis = getLong(
-            PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_END:$selectedSiteId")
-        )
-        return Pair(startDateMillis, endDateMillis)
-    }
-
-    fun removeOrderFilterCustomDateRange(selectedSiteId: Int) {
-        remove(PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_START:$selectedSiteId"))
-        remove(PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_END:$selectedSiteId"))
-    }
 
     fun getOrderFilterCustomDateRangeDays(selectedSiteId: Int): Pair<Long, Long> {
         val startDay = getLong(

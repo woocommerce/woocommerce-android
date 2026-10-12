@@ -49,7 +49,7 @@ import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import androidx.compose.material.LocalContentColor as LocalContentColorM2
 import androidx.compose.material.LocalTextStyle as LocalTextStyleM2
 import androidx.compose.material.Text as TextM2
@@ -428,7 +428,7 @@ private fun ButtonCircularProgressIndicator(modifier: Modifier = Modifier) {
 @LightDarkThemePreviews
 @Composable
 private fun ButtonsPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,

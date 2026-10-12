@@ -1,0 +1,711 @@
+package com.woocommerce.android
+
+import android.content.Context
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_PENDING
+import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
+import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
+
+@RunWith(RobolectricTestRunner::class)
+class AppPrefsTest {
+    @Before
+    fun setup() {
+        val context = RuntimeEnvironment.getApplication()
+        context.getSharedPreferences("${context.packageName}_deletable_preferences", Context.MODE_PRIVATE)
+            .edit().clear().commit()
+        AppPrefs.init(context)
+        AppPrefs.getPreferences().edit().clear().commit()
+    }
+
+    @Test
+    fun whenSetLastConnectedCardReaderIdThenIdStored() {
+        val readerId = "id"
+
+        AppPrefs.setLastConnectedCardReaderId(readerId)
+
+        assertThat(AppPrefs.getLastConnectedCardReaderId()).isEqualTo(readerId)
+    }
+
+    @Test
+    fun whenRemoveLastConnectedCardReaderIdThenIdIsNull() {
+        val readerId = "id"
+        AppPrefs.setLastConnectedCardReaderId(readerId)
+
+        AppPrefs.removeLastConnectedCardReaderId()
+
+        assertThat(AppPrefs.getLastConnectedCardReaderId()).isNull()
+    }
+
+    @Test
+    fun whenFCMTokenIsSetThenGetReturnsStoredValue() {
+        val token = "fcm_token"
+
+        AppPrefs.setFCMToken(token)
+
+        assertThat(AppPrefs.getFCMToken()).isEqualTo(token)
+    }
+
+    @Test
+    fun `when AI assistant early access notice is dismissed and site preferences are reset, then dismissal is cleared`() {
+        AppPrefs.isAiAssistantEarlyAccessNoticeDismissed = true
+
+        AppPrefs.resetSitePreferences()
+
+        assertThat(AppPrefs.isAiAssistantEarlyAccessNoticeDismissed).isFalse()
+    }
+
+    @Test
+    fun whenCardReaderOnboardingCompletedWithStripeExtThenCorrectOnboardingStatusIsStored() {
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_COMPLETED,
+                PluginType.STRIPE_EXTENSION_GATEWAY,
+                null,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderOnboardingStatus(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(CARD_READER_ONBOARDING_COMPLETED)
+    }
+
+    @Test
+    fun whenCardReaderOnboardingCompletedWithStripeExtThenCorrectPreferredPluginIsStored() {
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_COMPLETED,
+                PluginType.STRIPE_EXTENSION_GATEWAY,
+                null,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderPreferredPlugin(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(PluginType.STRIPE_EXTENSION_GATEWAY)
+    }
+
+    @Test
+    fun whenCardReaderOnboardingPendingRequirementWithStripeExtThenCorrectOnboardingStatusIsStored() {
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_PENDING,
+                PluginType.STRIPE_EXTENSION_GATEWAY,
+                null,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderOnboardingStatus(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(
+            CARD_READER_ONBOARDING_PENDING
+        )
+    }
+
+    @Test
+    fun whenCardReaderOnboardingPendingRequirementWithStripeExtThenCorrectPreferredPluginIsStored() {
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_PENDING,
+                PluginType.STRIPE_EXTENSION_GATEWAY,
+                null,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderPreferredPlugin(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(
+            PluginType.STRIPE_EXTENSION_GATEWAY
+        )
+    }
+
+    @Test
+    fun whenCardReaderOnboardingCompletedWithWCPayThenCorrectOnboardingStatusIsStored() {
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_COMPLETED,
+                PluginType.WOOCOMMERCE_PAYMENTS,
+                null,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderOnboardingStatus(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(CARD_READER_ONBOARDING_COMPLETED)
+    }
+
+    @Test
+    fun whenCardReaderOnboardingCompletedWithWCPayThenCorrectPreferredPluginIsStored() {
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_COMPLETED,
+                PluginType.WOOCOMMERCE_PAYMENTS,
+                null,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderPreferredPlugin(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(PluginType.WOOCOMMERCE_PAYMENTS)
+    }
+
+    @Test
+    fun whenCardReaderOnboardingPendingRequirementsWithWCPayThenCorrectOnboardingStatusIsStored() {
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_PENDING,
+                PluginType.WOOCOMMERCE_PAYMENTS,
+                null,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderOnboardingStatus(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(CARD_READER_ONBOARDING_PENDING)
+    }
+
+    @Test
+    fun whenCardReaderOnboardingPendingRequirementsWithWCPayThenCorrectPreferredPluginIsStored() {
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_PENDING,
+                PluginType.WOOCOMMERCE_PAYMENTS,
+                null,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderPreferredPlugin(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(PluginType.WOOCOMMERCE_PAYMENTS)
+    }
+
+    @Test
+    fun whenCardReaderOnboardingNotCompletedThenCorrectOnboardingStatusIsStored() {
+        assertThat(
+            AppPrefs.getCardReaderOnboardingStatus(
+                localSiteId = 1,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(CARD_READER_ONBOARDING_NOT_COMPLETED)
+    }
+
+    @Test
+    fun whenEmptyPreferredPluginSetThenNullReturned() {
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_NOT_COMPLETED,
+                null,
+                null,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderPreferredPlugin(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isNull()
+    }
+
+    @Test
+    fun givenCardReaderStateDescriptorSetWhenGettingDescriptorThenSameDescriptorReturned() {
+        val statementDescriptor = "descriptor"
+        AppPrefs.setCardReaderStatementDescriptor(
+            statementDescriptor = statementDescriptor,
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderStatementDescriptor(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(statementDescriptor)
+    }
+
+    @Test
+    fun givenCardReaderStatementDescriptorNotEmptyWhenSettingItToNullThenValueOverriddenWithNull() {
+        val statementDescriptor = "descriptor"
+        AppPrefs.setCardReaderStatementDescriptor(
+            statementDescriptor = statementDescriptor,
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+        )
+
+        AppPrefs.setCardReaderStatementDescriptor(
+            statementDescriptor = null,
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderStatementDescriptor(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(null)
+    }
+
+    @Test
+    fun givenSpecificSiteIdWhenProductSortingChoiceIsSetThenGetReturnsStoredValue() {
+        val siteIds = 1 to 2
+        val productSortingChoices = "TITLE_ASC" to "TITLE_DESC"
+
+        AppPrefs.setProductSortingChoice(siteIds.first, productSortingChoices.first)
+        AppPrefs.setProductSortingChoice(siteIds.second, productSortingChoices.second)
+
+        assertThat(AppPrefs.getProductSortingChoice(siteIds.first)).isEqualTo(productSortingChoices.first)
+        assertThat(AppPrefs.getProductSortingChoice(siteIds.second)).isEqualTo(productSortingChoices.second)
+    }
+
+    @Test
+    fun givenSetCardReaderOnboardingStatusAndPreferredPluginVersionGetReturnsVersion() {
+        val version = "4.0.0"
+        val plugin = PluginType.WOOCOMMERCE_PAYMENTS
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_NOT_COMPLETED,
+                plugin,
+                version,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderPreferredPluginVersion(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+                plugin,
+            )
+        ).isEqualTo(version)
+    }
+
+    @Test
+    fun givenSetCardReaderOnboardingStatusAndPreferredPluginVersionWithOnePluginGetWithAnotherReturnsNull() {
+        val version = "4.0.0"
+        val plugin = PluginType.WOOCOMMERCE_PAYMENTS
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_NOT_COMPLETED,
+                plugin,
+                version,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderPreferredPluginVersion(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+                PluginType.STRIPE_EXTENSION_GATEWAY,
+            )
+        ).isNull()
+    }
+
+    @Test
+    fun givenIsPluginExplicitlySelectedIsFalseThenReturnFalse() {
+        AppPrefs.setIsCardReaderPluginExplicitlySelectedFlag(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            isPluginExplicitlySelected = false
+        )
+
+        assertThat(
+            AppPrefs.isCardReaderPluginExplicitlySelected(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+            )
+        ).isFalse
+    }
+
+    @Test
+    fun givenIsPluginExplicitlySelectedIsTrueThenReturnTrue() {
+        AppPrefs.setIsCardReaderPluginExplicitlySelectedFlag(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            isPluginExplicitlySelected = true
+        )
+
+        assertThat(
+            AppPrefs.isCardReaderPluginExplicitlySelected(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+            )
+        ).isTrue
+    }
+
+    @Test
+    fun givenUpsellCardReaderBannerDismissedForeverThenReturnTrue() {
+        AppPrefs.setCardReaderUpsellBannerDismissedForever(
+            isDismissed = true,
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+        )
+
+        assertThat(
+            AppPrefs.isCardReaderUpsellBannerDismissedForever(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+            )
+        ).isTrue
+    }
+
+    @Test
+    fun givenUpsellCardReaderBannerNotDismissedForeverThenReturnFalse() {
+        AppPrefs.setCardReaderUpsellBannerDismissedForever(
+            isDismissed = false,
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+        )
+
+        assertThat(
+            AppPrefs.isCardReaderUpsellBannerDismissedForever(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+            )
+        ).isFalse
+    }
+
+    @Test
+    fun givenUpsellCardReaderBannerRemindMeLaterSetThenReturnTimeInMillis() {
+        val lastDismissedDialogTimeInMillis = 123456789L
+        AppPrefs.setCardReaderUpsellBannerRemindMeLater(
+            lastDialogDismissedInMillis = lastDismissedDialogTimeInMillis,
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderUpsellBannerLastDismissed(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+            )
+        ).isEqualTo(lastDismissedDialogTimeInMillis)
+    }
+
+    @Test
+    fun givenCashOnDeliveryDisabledStateSkippedThenReturnSkippedAsTrue() {
+        AppPrefs.setCashOnDeliveryDisabledStateSkipped(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            true
+        )
+
+        assertThat(
+            AppPrefs.isCashOnDeliveryDisabledStateSkipped(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+            )
+        ).isTrue
+    }
+
+    @Test
+    fun givenCashOnDeliveryDisabledStateNotSkippedThenReturnSkippedAsFalse() {
+        AppPrefs.setCashOnDeliveryDisabledStateSkipped(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            false
+        )
+
+        assertThat(
+            AppPrefs.isCashOnDeliveryDisabledStateSkipped(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+            )
+        ).isFalse
+    }
+
+    @Test
+    fun givenIppWasNotUsedWhenGetCardReaderLastSuccessfulPaymentThenTimeReturnedZero() {
+        assertThat(AppPrefs.getCardReaderLastSuccessfulPaymentTime()).isEqualTo(0L)
+    }
+
+    @Test
+    fun givenSetApplicationStoreSnapshotTrackedForSiteNotCalledThenGetterReturnsFalse() {
+        assertThat(
+            AppPrefs.isApplicationStoreSnapshotTrackedForSite(
+                0,
+                0L,
+                0L
+            )
+        ).isFalse
+    }
+
+    @Test
+    fun givenSetApplicationStoreSnapshotTrackedForSiteCalledThenGetterReturnsTrue() {
+        AppPrefs.setApplicationStoreSnapshotTrackedForSite(
+            0,
+            0L,
+            0L
+        )
+
+        assertThat(
+            AppPrefs.isApplicationStoreSnapshotTrackedForSite(
+                0,
+                0L,
+                0L
+            )
+        ).isTrue
+    }
+
+    @Test
+    fun givenSetPOSTabVisibilityForSiteCalledThenGetterReturnsTrue() {
+        // GIVEN
+        val siteId = 123
+
+        // WHEN
+        AppPrefs.setPOSTabVisibilityForSite(siteId)
+        val result = AppPrefs.isPOSTabVisibleForSite(siteId)
+
+        // THEN
+        assertThat(result).isTrue
+    }
+
+    @Test
+    fun givenPOSTabVisibilityNotSetThenGetterReturnsFalseByDefault() {
+        // GIVEN
+        val siteId = 456
+
+        // WHEN
+        val result = AppPrefs.isPOSTabVisibleForSite(siteId)
+
+        // THEN
+        assertThat(result).isFalse
+    }
+
+    @Test
+    fun `given POS tab visibility set, when cleared, then getter returns false`() {
+        // GIVEN
+        val siteId = 789
+        AppPrefs.setPOSTabVisibilityForSite(siteId)
+        assertThat(AppPrefs.isPOSTabVisibleForSite(siteId)).isTrue
+
+        // WHEN
+        AppPrefs.clearPOSTabVisibilityForSite(siteId)
+
+        // THEN
+        assertThat(AppPrefs.isPOSTabVisibleForSite(siteId)).isFalse
+    }
+
+    @Test
+    fun `given POS launchable not set, when checking POS launchable for site, then return false by default`() {
+        val siteId = 111
+
+        assertThat(AppPrefs.isPOSLaunchableForSite(siteId)).isFalse
+    }
+
+    @Test
+    fun `given POS launchable set for site, when checking POS launchable for site, then return true only for that site`() {
+        val siteA = 222
+        val siteB = 333
+
+        AppPrefs.setPOSLaunchableForSite(siteA)
+
+        assertThat(AppPrefs.isPOSLaunchableForSite(siteA)).isTrue
+        assertThat(AppPrefs.isPOSLaunchableForSite(siteB)).isFalse
+    }
+
+    @Test
+    fun `given POS launchable set for site, when cleared, then return false`() {
+        val siteId = 444
+        AppPrefs.setPOSLaunchableForSite(siteId)
+        assertThat(AppPrefs.isPOSLaunchableForSite(siteId)).isTrue
+
+        AppPrefs.clearPOSLaunchableForSite(siteId)
+
+        assertThat(AppPrefs.isPOSLaunchableForSite(siteId)).isFalse
+    }
+
+    @Test
+    fun `given POS survey notification for current user not set, when read, then return false by default`() {
+        assertThat(AppPrefs.isWooPosSurveyNotificationCurrentUserShown).isFalse
+    }
+
+    @Test
+    fun `given POS survey notification for current user shown, when read, then return true`() {
+        AppPrefs.isWooPosSurveyNotificationCurrentUserShown = true
+
+        assertThat(AppPrefs.isWooPosSurveyNotificationCurrentUserShown).isTrue
+    }
+
+    @Test
+    fun `given POS survey notification for current user set back to false, when read, then return false`() {
+        AppPrefs.isWooPosSurveyNotificationCurrentUserShown = true
+        AppPrefs.isWooPosSurveyNotificationCurrentUserShown = false
+
+        assertThat(AppPrefs.isWooPosSurveyNotificationCurrentUserShown).isFalse
+    }
+
+    @Test
+    fun `given POS survey notification for potential user not set, when read, then return false by default`() {
+        assertThat(AppPrefs.isWooPosSurveyNotificationPotentialUserShown).isFalse
+    }
+
+    @Test
+    fun `given POS survey notification for potential user shown, when read, then return true`() {
+        AppPrefs.isWooPosSurveyNotificationPotentialUserShown = true
+
+        assertThat(AppPrefs.isWooPosSurveyNotificationPotentialUserShown).isTrue
+    }
+
+    @Test
+    fun `given POS survey notification for potential user set back to false, when read, then return false`() {
+        AppPrefs.isWooPosSurveyNotificationPotentialUserShown = true
+        AppPrefs.isWooPosSurveyNotificationPotentialUserShown = false
+
+        assertThat(AppPrefs.isWooPosSurveyNotificationPotentialUserShown).isFalse
+    }
+
+    @Test
+    fun `given POS feature switch never stored, when read, then return null`() {
+        assertThat(
+            AppPrefs.getPOSFeatureSwitchEnabledForSite(localSiteId = 1, remoteSiteId = 2L, selfHostedSiteId = 0L)
+        ).isNull()
+    }
+
+    @Test
+    fun `given POS feature switch stored as false, when read, then return false rather than null`() {
+        AppPrefs.setPOSFeatureSwitchEnabledForSite(
+            localSiteId = 1,
+            remoteSiteId = 2L,
+            selfHostedSiteId = 0L,
+            enabled = false
+        )
+
+        assertThat(
+            AppPrefs.getPOSFeatureSwitchEnabledForSite(localSiteId = 1, remoteSiteId = 2L, selfHostedSiteId = 0L)
+        ).isFalse()
+    }
+
+    @Test
+    fun `given two self-hosted sites without remote ids, when POS feature switch is stored for both, then values do not collide`() {
+        AppPrefs.setPOSFeatureSwitchEnabledForSite(
+            localSiteId = 1,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 11L,
+            enabled = false
+        )
+        AppPrefs.setPOSFeatureSwitchEnabledForSite(
+            localSiteId = 2,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 22L,
+            enabled = true
+        )
+
+        assertThat(
+            AppPrefs.getPOSFeatureSwitchEnabledForSite(localSiteId = 1, remoteSiteId = 0L, selfHostedSiteId = 11L)
+        ).isFalse()
+        assertThat(
+            AppPrefs.getPOSFeatureSwitchEnabledForSite(localSiteId = 2, remoteSiteId = 0L, selfHostedSiteId = 22L)
+        ).isTrue()
+    }
+
+    @Test
+    fun `when user preferences are reset, then POS feature switch is cleared`() {
+        AppPrefs.setPOSFeatureSwitchEnabledForSite(
+            localSiteId = 1,
+            remoteSiteId = 2L,
+            selfHostedSiteId = 0L,
+            enabled = false
+        )
+
+        AppPrefs.resetUserPreferences()
+
+        assertThat(
+            AppPrefs.getPOSFeatureSwitchEnabledForSite(localSiteId = 1, remoteSiteId = 2L, selfHostedSiteId = 0L)
+        ).isNull()
+    }
+}

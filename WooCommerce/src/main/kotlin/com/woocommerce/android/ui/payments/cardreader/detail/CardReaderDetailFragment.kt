@@ -37,6 +37,7 @@ import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils.dpToPx
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 private const val HIT_AREA_EXPANSION_DP = 16
 
@@ -62,7 +63,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
         binding.toolbar.title = resources.getString(R.string.payments_hub_title)
         binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
             requireActivity(),
-            R.drawable.ic_back_24dp
+            DesignSystemR.drawable.woo_ds_ic_regular_arrow_left_24dp
         )
         binding.toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()

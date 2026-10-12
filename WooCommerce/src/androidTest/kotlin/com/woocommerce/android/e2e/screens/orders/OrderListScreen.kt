@@ -1,57 +1,55 @@
 package com.woocommerce.android.e2e.screens.orders
 
+import android.widget.EditText
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers
-import com.google.android.material.card.MaterialCardView
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.BySelector
+import androidx.test.uiautomator.UiObject2
 import com.woocommerce.android.R
-import com.woocommerce.android.e2e.helpers.util.CustomMatchers
+import com.woocommerce.android.e2e.helpers.util.ComposeUiAutomator
 import com.woocommerce.android.e2e.helpers.util.OrderData
 import com.woocommerce.android.e2e.helpers.util.Screen
+import com.woocommerce.android.e2e.helpers.util.allText
+import com.woocommerce.android.e2e.helpers.util.composeTestTagWithNumericSuffix
 import com.woocommerce.android.e2e.screens.shared.FilterScreen
-import org.hamcrest.CoreMatchers.containsString
-import org.hamcrest.Matchers
+import com.woocommerce.android.ui.orders.list.OrderListTestTags
 
-class OrderListScreen : Screen(R.id.ordersList) {
+class OrderListScreen : Screen(R.id.order_list_compose_container) {
+    private val composeUi = ComposeUiAutomator()
+
+    init {
+        composeUi.waitForTag(OrderListTestTags.SCREEN, "Orders screen")
+    }
+
     fun selectOrder(index: Int): SingleOrderScreen {
-        selectItemAtIndexInRecyclerView(index, R.id.ordersList, R.id.linearLayout)
+        waitForOrderRows(minimumCount = index + 1)[index].click()
         return SingleOrderScreen()
     }
 
     fun selectOrderById(orderId: Int): SingleOrderScreen {
-        val orderToOpen = Espresso.onView(
-            Matchers.allOf(
-                ViewMatchers.withId(R.id.orderNum),
-                ViewMatchers.withText("#$orderId")
-            )
-        )
-
-        waitForElementToBeDisplayed(orderToOpen)
-        orderToOpen.perform(ViewActions.click())
+        scrollToOrder(orderId)
+        composeUi.waitFor(By.res(OrderListTestTags.orderRow(orderId.toLong())), "order $orderId").click()
         return SingleOrderScreen()
     }
 
     fun openSearchPane(): OrderListScreen {
-        if (!Screen.isElementFocused(androidx.appcompat.R.id.search_src_text)) {
-            clickOn(R.id.menu_search)
+        if (composeUi.find(SEARCH_FIELD_SELECTOR) == null) {
+            composeUi.waitForTag(OrderListTestTags.SEARCH_ACTION, "Orders search action").click()
         }
+        searchTextField()
         return this
     }
 
     fun enterSearchTerm(term: String): OrderListScreen {
-        typeTextInto(androidx.appcompat.R.id.search_src_text, term)
-        // If we expect for results, we wait for the list header
-        waitForElementToBeDisplayed(R.id.orderListHeader)
+        replaceSearchTerm(term)
+        waitForOrderRows(minimumCount = 1)
         return this
     }
 
     fun enterAbsentSearchTerm(term: String): OrderListScreen {
-        typeTextInto(androidx.appcompat.R.id.search_src_text, term)
-        // We don't expect results, so we wait for "no results" situation
-        waitForElementToBeDisplayed(
-            Espresso.onView(ViewMatchers.withText(containsString("couldn't find")))
-        )
+        replaceSearchTerm(term)
+        composeUi.waitForTag(OrderListTestTags.EMPTY, "empty Orders state")
         return this
     }
 
@@ -59,100 +57,110 @@ class OrderListScreen : Screen(R.id.ordersList) {
         // to support test on tablets - search bar is displayed on split screen
         // clearing search bar so test can continue in a clean state
         if (Screen.isElementDisplayed(R.id.orderDetail_container)) {
-            clearSearchBar(androidx.appcompat.R.id.search_src_text)
+            searchTextField().clear()
             return this
         } // to support test on phones
-        else if (Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)) {
-            // Double pressBack is needed because first one only removes the focus
-            // from search field, while the second one leaves the search mode.
-            Espresso.pressBack()
-            Espresso.pressBack()
+        else if (composeUi.find(SEARCH_FIELD_SELECTOR) != null) {
+            closeSearchMode()
         }
         return this
     }
 
     fun tapFilters(): FilterScreen {
-        clickOn(R.id.btn_order_filter)
+        composeUi.waitForTag(OrderListTestTags.FILTERS, "Orders filters").click()
         return FilterScreen()
     }
 
     fun createFABTap(): UnifiedOrderScreen {
-        clickOn(R.id.createOrderButton)
+        composeUi.waitForTag(OrderListTestTags.CREATE_ORDER_FAB, "Create order button").click()
         return UnifiedOrderScreen()
     }
 
-    fun assertOrderCard(order: OrderData): OrderListScreen {
-        // Wait for the order card to appear first. This is sometimes
-        // flaky on Firebase because of low emulator performance.
-        waitForElementToBeDisplayed(
-            Espresso.onView(
-                Matchers.allOf(
-                    ViewMatchers.withId(R.id.orderNum),
-                    ViewMatchers.withText("#${order.id}")
-                )
-            )
-        )
+    fun waitForOrders(): OrderListScreen {
+        composeUi.waitForTag(OrderListTestTags.LIST, "Orders list")
+        waitForOrderRows(minimumCount = 1)
+        return this
+    }
 
-        // Using quite a complex matcher to make sure that all expected
-        // order details belong to the same order card.
-        Espresso.onView(
-            Matchers.allOf(
-                // We "start" with making sure that there's and order ID on screen
-                Matchers.allOf(
-                    ViewMatchers.withId(R.id.orderNum),
-                    ViewMatchers.withText("#${order.id}")
-                ),
-                // And that this ID has a sibling with expected Customer Name
-                ViewMatchers.hasSibling(
-                    Matchers.allOf(
-                        ViewMatchers.withId(R.id.orderName),
-                        ViewMatchers.withText(order.customerName)
-                    )
-                ),
-                // And that this ID has a sibling with expected price
-                ViewMatchers.hasSibling(
-                    Matchers.allOf(
-                        ViewMatchers.withId(R.id.orderTotal),
-                        ViewMatchers.withText(order.total)
-                    )
-                ),
-                // And that this ID has a sibling with a child containing expected status
-                ViewMatchers.hasSibling(
-                    Matchers.allOf(
-                        ViewMatchers.withId(R.id.orderTags),
-                        ViewMatchers.withChild(ViewMatchers.withText(order.status))
-                    )
-                ),
-                // And that all of them are children of Orders List
-                ViewMatchers.isDescendantOfA(ViewMatchers.withId(R.id.ordersList)),
-            )
-        )
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+    fun waitForEmptyState(): OrderListScreen {
+        composeUi.waitForTag(OrderListTestTags.EMPTY, "empty Orders state")
+        return this
+    }
+
+    fun assertOrderCard(order: OrderData): OrderListScreen {
+        scrollToOrder(order.id)
+        val row = composeUi.waitFor(By.res(OrderListTestTags.orderRow(order.id.toLong())), "order ${order.id}")
+        val rowText = row.allText().joinToString(" ")
+        check(rowText.contains("#${order.id}")) { "Order row did not contain '#${order.id}': $rowText" }
+        check(rowText.contains(order.customerName)) {
+            "Order row did not contain customer '${order.customerName}': $rowText"
+        }
+        check(rowText.contains(order.total)) { "Order row did not contain total '${order.total}': $rowText" }
+        check(rowText.contains(order.status)) { "Order row did not contain status '${order.status}': $rowText" }
 
         return this
     }
 
     fun assertOrdersCount(count: Int): OrderListScreen {
-        Espresso.onView(ViewMatchers.withId(R.id.ordersList))
-            .check(
-                ViewAssertions.matches(
-                    CustomMatchers()
-                        .withViewCount(Matchers.instanceOf(MaterialCardView::class.java), count)
-                )
-            )
+        composeUi.waitForCount(
+            selector = ORDER_ROW_SELECTOR,
+            expectedCount = count,
+            description = "order rows",
+        )
 
         return this
     }
 
     fun assertSearchResultsAbsent(term: String): OrderListScreen {
         val expectedString = "We're sorry, we couldn't find results for \"${term}\""
-        Espresso.onView(
-            Matchers.allOf(
-                ViewMatchers.withId(R.id.empty_view_title),
-                ViewMatchers.withText(containsString(expectedString))
-            )
-        )
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        composeUi.waitFor(By.textContains(expectedString), "empty search result for $term")
         return this
+    }
+
+    private fun replaceSearchTerm(term: String) {
+        searchTextField().setText(term)
+        Espresso.closeSoftKeyboard()
+    }
+
+    private fun searchTextField(): UiObject2 {
+        var result: UiObject2? = null
+        composeUi.waitUntil(
+            condition = {
+                result = findSearchTextField()
+                result != null
+            },
+            failureMessage = { "Orders search text field was not found" },
+        )
+        return requireNotNull(result) { "Orders search text field was not found" }
+    }
+
+    private fun findSearchTextField(): UiObject2? {
+        return composeUi.find(SEARCH_FIELD_SELECTOR)?.findObject(SEARCH_TEXT_FIELD_SELECTOR)
+    }
+
+    private fun closeSearchMode() {
+        val searchField = composeUi.waitFor(SEARCH_FIELD_SELECTOR, "Orders search field")
+        val cancelText = getInstrumentation().targetContext.getString(R.string.cancel)
+        val cancelAction = searchField.findObject(
+            By.clickable(true).hasDescendant(By.text(cancelText))
+        )
+        checkNotNull(cancelAction) { "Orders search cancel action was not found" }.click()
+        composeUi.waitForTag(OrderListTestTags.SEARCH_ACTION, "Orders search action")
+    }
+
+    private fun scrollToOrder(orderId: Int) {
+        composeUi.scrollTextIntoView(OrderListTestTags.LIST, "#$orderId")
+    }
+
+    private fun waitForOrderRows(minimumCount: Int): List<UiObject2> = composeUi.waitForAtLeast(
+        selector = ORDER_ROW_SELECTOR,
+        minimumCount = minimumCount,
+        description = "order rows",
+    )
+
+    private companion object {
+        val SEARCH_FIELD_SELECTOR: BySelector = By.res(OrderListTestTags.SEARCH_FIELD)
+        val SEARCH_TEXT_FIELD_SELECTOR: BySelector = By.clazz(EditText::class.java)
+        val ORDER_ROW_SELECTOR: BySelector = composeTestTagWithNumericSuffix(OrderListTestTags.ORDER_ROW_PREFIX)
     }
 }

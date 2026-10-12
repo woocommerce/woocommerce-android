@@ -7,7 +7,7 @@ import androidx.compose.runtime.remember
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.carriertos.CarrierTermsBottomSheetScaffold
 import com.woocommerce.android.ui.orders.wooshippinglabels.carriertos.CheckboxWithTitle
 
@@ -49,7 +49,7 @@ fun FedExTermsOfServiceBottomSheet(
 @LightDarkThemePreviews
 @Composable
 private fun FedExTermsOfServiceBottomSheetPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         FedExTermsOfServiceBottomSheet(
             viewState = FedExTermsOfServiceViewModel.ViewState(
                 isLoading = false,

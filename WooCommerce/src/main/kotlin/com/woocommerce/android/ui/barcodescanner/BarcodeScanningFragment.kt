@@ -12,7 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -45,7 +45,7 @@ class BarcodeScanningFragment : BaseFragment() {
     private fun observeCameraPermissionState(view: ComposeView) {
         viewModel.permissionState.observe(viewLifecycleOwner) { permissionState ->
             view.setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     BarcodeScannerScreen(
                         onNewFrame = viewModel::onNewFrame,
                         onBindingException = viewModel::onBindingException,

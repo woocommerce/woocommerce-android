@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells.Adaptive
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -46,11 +48,13 @@ fun ProductImagePickerScreen(
     onImageSelected: (Product.Image) -> Unit,
     onBackButtonTapped: () -> Unit
 ) {
+    val gridState = rememberLazyGridState()
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.blaze_campaign_product_photo_picker_title),
                 onNavigationButtonClick = onBackButtonTapped,
+                showDivider = viewState.productImages.isNotEmpty() && gridState.canScrollBackward,
             )
         },
         backgroundColor = MaterialTheme.colors.surface
@@ -61,6 +65,7 @@ fun ProductImagePickerScreen(
             else -> ProductImageGrid(
                 viewState = viewState,
                 onImageSelected = onImageSelected,
+                gridState = gridState,
                 modifier = Modifier.padding(paddingValues)
             )
         }
@@ -85,9 +90,11 @@ private fun ProductPhotosEmpty() {
 private fun ProductImageGrid(
     viewState: ProductImagePickerViewModel.ViewState,
     onImageSelected: (Product.Image) -> Unit,
+    gridState: LazyGridState,
     modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
+        state = gridState,
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp),

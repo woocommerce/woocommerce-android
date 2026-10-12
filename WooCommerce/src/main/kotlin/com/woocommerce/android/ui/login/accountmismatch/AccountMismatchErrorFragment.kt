@@ -9,13 +9,14 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment.Listener
@@ -39,6 +40,8 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
         const val JETPACK_CONNECTED_NOTICE = "jetpack-connected"
     }
 
+    private val navArgs: AccountMismatchErrorFragmentArgs by navArgs()
+
     private val viewModel: AccountMismatchErrorViewModel by viewModels()
 
     @Inject
@@ -52,7 +55,7 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     AccountMismatchErrorScreen(viewModel)
                 }
             }
@@ -122,6 +125,7 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
         findNavController().navigate(
             AccountMismatchErrorFragmentDirections
                 .actionAccountMismatchErrorFragmentToNavGraphJetpackActivation(
+                    openedFromLogin = navArgs.openedFromLogin,
                     siteUrl = event.siteUrl,
                     jetpackStatus = event.jetpackStatus
                 )

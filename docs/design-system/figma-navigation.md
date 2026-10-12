@@ -17,6 +17,13 @@ Use the approved repo shorthand when writing docs:
 Do not expand the shorthand into raw Figma URLs in public repo docs. When using Figma tools, strip
 the `-fi` suffix and pass only the file key.
 
+## Android Icon Mapping
+
+For `light`, `regular`, and `solid` share icons, inspect and import Figma's `Share Nodes` asset under
+the Android name `Share`: `WooIcons.<style>.Share` and `woo_ds_ic_<style>_share_24dp`.
+The iOS-style upward-arrow `Share` asset is intentionally excluded. Preserve this mapping during
+future imports instead of importing assets solely by matching their Figma names.
+
 ## Discovery Flow
 
 Use live Figma discovery as the source of page and node IDs. Do not depend on local work notes as the
@@ -121,15 +128,16 @@ Use Android API names to choose likely Figma search terms, then verify against l
 | `WooIconButton`, `WooOutlinedIconButton` | Material 3 / token adapters; inspect `navigation-button` only for the Figma outlined navigation treatment |
 | `WooIconContainer`, `WooIconContainerTone` | `Icon Container`, `icon-box` |
 | `WooNoticeBanner`, `WooNoticeBannerTone` | `Notice Banner`, `notice-banner` |
-| `WooPageHeader` | `Page Header`, `page-header` |
 | `WooRadioButton` | `Radio Button`, `radio-button`; canonical node `1208:7478` in current Figma evidence |
 | `WooSearchField` | `Search` |
+| `WooSegmentControl` | `Segment Control`; verify the component set's option-count and selected-position variants |
+| `WooModalBottomSheet`, `WooModalBottomSheetState` | `Sheets`; Figma defines the visual shell while Material owns Android modal behavior |
 | `WooSwitch` | Material 3 / token adapter; no canonical `Switch` component is currently found in Mobile Design System library search |
 | `WooSwitchSettingsRow` | Adapter composition over `Cell` / `Cell Content` plus `WooSwitch` |
 | `WooTabRow`, `WooTab` | `Tabs`, `tab-item` |
-| `WooTopAppBar`, `WooTopAppBarAction`, `WooDesignSystemToolbar` | `Navigation`, `Top Navigation Bar`, `navigation-button` |
+| `WooTopAppBar`, `WooTopAppBarActionsScope`, `WooDesignSystemToolbar` | `Navigation`, `Top Navigation Bar`, `navigation-button` |
 | Section header | `section-header` may appear in search, but its master lives in `Components Playground`, not on a promoted component page. Treat it as not public and ignore it for Android production API work for now |
-| Preview-only families | `Segment Control`, `Sheets`, `Tab Bar`, `Table` |
+| Preview-only families | `Tab Bar`, `Table` |
 
 `WooLinearProgressIndicator` and `WooCircularProgressIndicator` are thin Material 3 adapters. They
 are not currently treated as i1 Figma component pages.

@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun FirstProductCelebrationScreen(viewModel: FirstProductCelebrationViewModel) {
@@ -119,7 +119,7 @@ fun FirstProductCelebrationScreen(
 @Composable
 @Preview
 private fun FirstProductCelebrationScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         FirstProductCelebrationScreen()
     }
 }

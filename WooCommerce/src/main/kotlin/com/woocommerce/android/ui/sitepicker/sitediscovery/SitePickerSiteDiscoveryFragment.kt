@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.model.JetpackConnectionStatus
@@ -18,7 +19,7 @@ import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.CreateZendeskTicket
@@ -32,6 +33,7 @@ import org.wordpress.android.login.LoginMode
 
 @AndroidEntryPoint
 class SitePickerSiteDiscoveryFragment : BaseFragment() {
+    private val navArgs: SitePickerSiteDiscoveryFragmentArgs by navArgs()
     companion object {
         const val SITE_PICKER_SITE_ADDRESS_RESULT = "site-url"
     }
@@ -45,7 +47,7 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
         return ComposeView(requireActivity()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     SitePickerSiteDiscoveryScreen(viewModel)
                 }
             }
@@ -75,6 +77,7 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
         findNavController().navigate(
             SitePickerSiteDiscoveryFragmentDirections
                 .actionSitePickerSiteDiscoveryFragmentToJetpackActivation(
+                    openedFromLogin = navArgs.openedFromLogin,
                     siteUrl = event.siteAddress,
                     jetpackStatus = JetpackStatus(
                         isJetpackInstalled = event.isJetpackInstalled,

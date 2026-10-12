@@ -37,7 +37,7 @@ class ClientSidePosBanner @Inject constructor(
 
         if (dismissalStorage.isBannerHidden(bannerId, site)) return false
 
-        val countryCode = wooStore.getSiteSettingsAsync(site)?.countryCode
+        val countryCode = wooStore.getSiteSettings(site)?.countryCode
         if (countryCode !in ELIGIBLE_COUNTRIES) return false
 
         return true

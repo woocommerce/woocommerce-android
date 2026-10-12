@@ -20,6 +20,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
+import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -50,11 +51,11 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.color.MaterialColors
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.R.dimen
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -82,8 +83,8 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.InfoScreenFragment
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.compose.theme.WooTheme
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.StoreConnectionErrorDialog
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
@@ -246,9 +247,6 @@ class MainActivity :
     private lateinit var binding: ActivityMainBinding
     private lateinit var toolbar: Toolbar
 
-    // Drives the collapsing toolbar's elevation shadow from its own offset (see setupAppBarElevation).
-    private var appBarVerticalOffset = 0
-    private var appBarHasShadow = true
     private var httpsConfigurationWarningRequired = false
     private var httpsConfigurationWarningAllowedForDestination = false
 
@@ -345,16 +343,9 @@ class MainActivity :
                     toolbar.navigationIcon = appBarStatus.navigationIcon?.let {
                         ContextCompat.getDrawable(this@MainActivity, it)
                     }
-                    appBarHasShadow = appBarStatus.hasShadow
-                    updateAppBarElevation()
-                    binding.appBarDivider.isVisible = appBarStatus.hasDivider
                 }
 
-                AppBarStatus.Hidden -> {
-                    hideToolbar()
-                    appBarHasShadow = false
-                    updateAppBarElevation()
-                }
+                AppBarStatus.Hidden -> hideToolbar()
             }
             updateHttpsConfigurationWarningVisibility()
         }
@@ -389,6 +380,8 @@ class MainActivity :
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        // AppBarLayout installs a default elevation animator from its Material style.
+        binding.appBarLayout.stateListAnimator = null
 
         setupStoreConnectionErrorDialog()
         setupHttpsConfigurationWarning()
@@ -399,8 +392,6 @@ class MainActivity :
 
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
-
-        setupAppBarElevation()
 
         animatorHelper.toolbarHeight = binding.collapsingToolbar.layoutParams.height
 
@@ -617,28 +608,19 @@ class MainActivity :
         binding.appBarLayout.setExpanded(expand, animate)
     }
 
-    // The collapsing toolbar draws its elevation shadow only in the "lifted" state, which AppBarLayout derives
-    // from the scrolling child's canScrollVertically(). The dashboard's ComposeView doesn't report its internal
-    // scroll, so the shadow flickered off on layout changes. Instead we disable the automatic elevation animation
-    // and drive the shadow directly from the app bar's own vertical offset: a shadow is shown whenever the toolbar
-    // is collapsed (offset != 0) on any screen that opts into a shadow.
-    private fun setupAppBarElevation() {
-        binding.appBarLayout.isLiftOnScroll = false
-        binding.appBarLayout.stateListAnimator = null
-        binding.appBarLayout.addOnOffsetChangedListener(
-            AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
-                appBarVerticalOffset = verticalOffset
-                updateAppBarElevation()
-            }
-        )
+    /**
+     * The app bar keeps the status bar inset even when the toolbar is hidden, so screens that paint
+     * their own background to the top edge need it to match theirs. Callers must pair this with
+     * [resetAppBarBackgroundColor] since the app bar is shared with every other destination.
+     */
+    fun setAppBarBackgroundColor(@ColorRes colorRes: Int) {
+        binding.appBarLayout.setBackgroundColor(ContextCompat.getColor(this, colorRes))
     }
 
-    private fun updateAppBarElevation() {
-        binding.appBarLayout.elevation = if (appBarHasShadow && appBarVerticalOffset != 0) {
-            resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
-        } else {
-            0f
-        }
+    fun resetAppBarBackgroundColor() {
+        binding.appBarLayout.setBackgroundColor(
+            MaterialColors.getColor(binding.appBarLayout, R.attr.appBarBackgroundColor)
+        )
     }
 
     fun setSubtitle(subtitle: CharSequence) {
@@ -676,7 +658,7 @@ class MainActivity :
         binding.appBarLayout.addOnOffsetChangedListener(appBarOffsetListener)
         // The offset listener only fires on an offset *change*, so refresh the fade for the current state to
         // avoid a stale alpha (applySubtitleFade also guards a zero scroll range that would produce NaN).
-        applySubtitleFade(appBarVerticalOffset)
+        applySubtitleFade(binding.appBarLayout.top)
         // Check to ensure expand anim is not triggered twice for same subtitle value
         if (binding.toolbarSubtitle.text == subtitle && binding.toolbarSubtitle.isVisible) {
             // The subtitle is already shown (e.g. a stalled collapse was just cancelled on return), so the expand
@@ -1048,7 +1030,7 @@ class MainActivity :
                 binding.notificationsPermissionBar.apply {
                     setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                     setContent {
-                        WooThemeWithBackground {
+                        LegacyWooThemeWithBackground {
                             NotificationsPermissionCard()
                         }
                     }
@@ -1377,6 +1359,7 @@ class MainActivity :
 
     override fun showOrderDetail(
         orderId: Long,
+        allOrderIds: List<Long>,
         navHostFragment: NavHostFragment?,
         launchedFromNotification: Boolean,
         startPaymentsFlow: Boolean,
@@ -1389,12 +1372,12 @@ class MainActivity :
 
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(
             orderId,
-            longArrayOf(orderId)
+            allOrderIds.toLongArray()
         )
         navHostFragment?.navController?.let { navController ->
             val bundle = OrderDetailFragmentArgs(
                 orderId = orderId,
-                allOrderIds = longArrayOf(orderId),
+                allOrderIds = allOrderIds.toLongArray(),
                 startPaymentFlow = startPaymentsFlow
             ).toBundle()
             navController.navigate(

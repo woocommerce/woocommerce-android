@@ -37,8 +37,8 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.compose.theme.WooTheme
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 
 class WooPaymentsSetupCelebrationDialog : WCBottomSheetDialogFragment() {
@@ -127,7 +127,7 @@ private fun WooPaymentsSetupCelebrationScreen(
 @Preview(name = "mid screen", device = Devices.PIXEL_4)
 @Preview(name = "large screen", device = Devices.NEXUS_10)
 private fun WooPaymentsSetupCelebrationScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Box(
             contentAlignment = Alignment.BottomCenter,
             modifier = Modifier.fillMaxSize()

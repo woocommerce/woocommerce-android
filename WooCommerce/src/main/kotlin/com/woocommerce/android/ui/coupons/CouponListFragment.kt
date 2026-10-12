@@ -21,7 +21,7 @@ import com.woocommerce.android.databinding.FragmentCouponListBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.coupons.CouponListViewModel.NavigateToCouponDetailsEvent
 import com.woocommerce.android.ui.coupons.CouponListViewModel.NavigateToCouponTypePicker
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -57,7 +57,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     CouponListScreen(viewModel)
                 }
             }

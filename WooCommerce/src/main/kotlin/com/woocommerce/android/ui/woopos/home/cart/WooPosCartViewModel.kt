@@ -316,16 +316,23 @@ class WooPosCartViewModel @Inject constructor(
             updatedProducts = event.data.updatedProducts,
             updatedCoupons = event.data.updatedCoupons,
         )
-        val updatedBody = if (result.productsChanged || result.couponsChanged) {
-            body.copy(itemsInCart = result.updatedItems)
+        // Responses that arrive after the user already left checkout must not store
+        // order-derived verdicts, or they would resurface stale on the next checkout.
+        val isCheckout = _state.value.cartStatus == CHECKOUT
+        val acceptedItems = if (isCheckout) {
+            result.updatedItems
+        } else {
+            clearDiscountedFromProducts(result.updatedItems)
+        }
+        val discountsAccepted = isCheckout && result.discountsChanged
+        val updatedBody = if (result.productsChanged || result.couponsChanged || discountsAccepted) {
+            body.copy(itemsInCart = acceptedItems)
         } else {
             body
         }
         _state.value = _state.value.copy(
             body = updatedBody,
-            // Responses that arrive after the user already left checkout must not be stored,
-            // or they would resurface as a stale verdict on the next checkout.
-            isCustomAmountDiscountNotAppliedNoteVisible = _state.value.cartStatus == CHECKOUT &&
+            isCustomAmountDiscountNotAppliedNoteVisible = isCheckout &&
                 event.data.wholeCartCouponDiscountApplied,
         )
         if (result.productsChanged) {
@@ -405,7 +412,7 @@ class WooPosCartViewModel @Inject constructor(
             is WooPosCartState.Body.WithItems -> {
                 _state.value = currentState.copy(
                     cartStatus = newCartStatus,
-                    body = body.copy(itemsInCart = removeFormattedDiscountFromCoupons(body)),
+                    body = body.copy(itemsInCart = clearOrderResponseStateFromItems(body)),
                     isCustomAmountDiscountNotAppliedNoteVisible = false,
                 )
             }
@@ -712,16 +719,29 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
-    private fun removeFormattedDiscountFromCoupons(body: WooPosCartState.Body.WithItems) = body.itemsInCart
-        .map { item ->
-            when (item) {
-                is WooPosCartItemViewState.Coupon -> item.copy(validationState = CouponValidationState.Unknown)
-                is Product -> item
-                is WooPosCartItemViewState.CustomAmount -> item
-                is WooPosCartItemViewState.Error -> item
-                is WooPosCartItemViewState.Loading -> item
+    private fun clearOrderResponseStateFromItems(body: WooPosCartState.Body.WithItems) =
+        clearDiscountedFromProducts(
+            body.itemsInCart.map { item ->
+                when (item) {
+                    is WooPosCartItemViewState.Coupon -> item.copy(validationState = CouponValidationState.Unknown)
+                    is Product -> item
+                    is WooPosCartItemViewState.CustomAmount -> item
+                    is WooPosCartItemViewState.Error -> item
+                    is WooPosCartItemViewState.Loading -> item
+                }
             }
+        )
+
+    private fun clearDiscountedFromProducts(items: List<WooPosCartItemViewState>) = items.map { item ->
+        when (item) {
+            is Product.Simple -> item.copy(discounted = false)
+            is Product.Variation -> item.copy(discounted = false)
+            is WooPosCartItemViewState.Coupon -> item
+            is WooPosCartItemViewState.CustomAmount -> item
+            is WooPosCartItemViewState.Error -> item
+            is WooPosCartItemViewState.Loading -> item
         }
+    }
 
     private suspend fun WooPosProductModel.toCartListItem(itemNumber: Int): Product.Simple = Product.Simple(
         itemNumber = itemNumber,

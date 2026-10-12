@@ -19,7 +19,7 @@ import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 /**
  * This is a layout that supports laying out Dialog's buttons according to the material guidelines, meaning:
@@ -155,7 +155,7 @@ fun DialogButtonsRowLayout(
 @Preview(widthDp = 300)
 @Composable
 private fun DialogButtonsRowLayoutPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Column {
             listOf(null, "Neutral", "A very long neutral button").forEach { neutralButton ->
                 DialogButtonsRowLayout(

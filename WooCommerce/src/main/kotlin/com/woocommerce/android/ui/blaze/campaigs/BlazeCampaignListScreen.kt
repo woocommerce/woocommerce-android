@@ -48,10 +48,13 @@ import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.CampaignStatusUi.Active
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.BlazeCampaignListState
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.ClickableCampaign
+import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.OutstandingBalanceUi
+import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.UnpaidOrderUi
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import kotlinx.coroutines.launch
 
 @Composable
@@ -120,8 +123,14 @@ private fun CampaignList(
     ) {
         val listState = rememberLazyListState()
         LazyColumn(state = listState) {
+            state.outstandingBalance?.let { outstandingBalance ->
+                item {
+                    BlazeOutstandingBalanceNotice(outstandingBalance = outstandingBalance)
+                    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+                }
+            }
             items(state.campaigns) { campaign ->
-                BlazeCampaignItem(
+                LegacyBlazeCampaignItem(
                     campaign = campaign.campaignUi,
                     onCampaignClicked = campaign.onCampaignClicked,
                 )
@@ -212,7 +221,7 @@ private fun CampaignCelebrationSheet(onDismiss: () -> Unit, modifier: Modifier =
 @Preview(name = "large screen", device = Devices.NEXUS_10)
 @Composable
 fun BlazeCampaignListScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         BlazeCampaignListScreen(
             state = BlazeCampaignListState(
                 campaigns = listOf(
@@ -235,6 +244,29 @@ fun BlazeCampaignListScreenPreview() {
                 onAddNewCampaignClicked = {},
                 isLoading = false,
                 isCampaignCelebrationShown = false
+            ),
+            onEndOfTheListReached = {},
+            onCampaignCelebrationDismissed = {},
+        )
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun BlazeCampaignListScreenWithOutstandingBalancePreview() {
+    LegacyWooThemeWithBackground {
+        BlazeCampaignListScreen(
+            state = BlazeCampaignListState(
+                campaigns = emptyList(),
+                onAddNewCampaignClicked = {},
+                isLoading = false,
+                isCampaignCelebrationShown = false,
+                outstandingBalance = OutstandingBalanceUi(
+                    formattedDebt = "$25.05",
+                    unpaidOrders = listOf(
+                        UnpaidOrderUi(formattedDate = "Jun 19, 2025", formattedAmount = "$25.05", onPayClicked = {})
+                    )
+                )
             ),
             onEndOfTheListReached = {},
             onCampaignCelebrationDismissed = {},

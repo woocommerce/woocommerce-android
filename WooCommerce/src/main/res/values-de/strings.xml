@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-08 09:55:57+0000
+Translation-Revision-Date: 2026-09-21 14:58:46+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_reason_unsupported_country_generic">Das POS-System ist für das Land deines Shops nicht verfügbar. Bitte überprüfe die Adresseinstellungen deines Shops oder kontaktiere den Support, um Hilfe zu erhalten.</string>
+    <string name="woopos_eligibility_reason_unsupported_country">Das POS-System ist in %1$s nicht verfügbar. Bitte überprüfe die Adresseinstellungen deines Shops oder kontaktiere den Support, um Hilfe zu erhalten.</string>
+    <string name="woo_push_notifications_introduction_error_offline_mode_body">Push-Benachrichtigungen können nicht eingerichtet werden, da sich dein Shop im Offlinemodus befindet. Wenn du weiterhin Hilfe benötigst, wende dich bitte an den Support.</string>
+    <string name="order_refunds_refunded_items">Rückerstattete Produkte</string>
+    <string name="login_not_wordpress_site_title">Keine WordPress-Website</string>
+    <string name="https_configuration_warning_dismiss">HTTPS-Sicherheitshinweis verwerfen</string>
+    <string name="https_configuration_warning_message">Dein Shop unterstützt HTTPS, aber seine Adresse ist für die Verwendung von HTTP konfiguriert. Aktualisiere die Adresse auf HTTPS, um deinen Shop zu schützen und Verbindungsprobleme zu vermeiden.</string>
+    <string name="https_configuration_warning_title">Deinen Shop mit HTTPS absichern</string>
     <string name="age_verification_open_google_play">Google Play öffnen</string>
     <string name="age_verification_required_message">Bevor WooCommerce überprüfen kann, ob du die App verwenden darfst, musst du dein Alter bei Google Play bestätigen. Schließe die Verifizierung in Google Play ab, kehre dann hierher zurück und versuche es erneut.</string>
     <string name="age_verification_required_title">Bestätige dein Alter, um fortzufahren</string>
@@ -924,8 +932,12 @@ Language: de
     <string name="woopos_eligibility_screen_unable_to_load">Konnte nicht geladen werden</string>
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">Im Vereinigten Königreich</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">In den Vereinigten Staaten von Amerika</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">Das POS-System ist für die Währung deines Shops nicht verfügbar. Bitte überprüfe die Währungseinstellungen deines Shops oder kontaktiere den Support, um Hilfe zu erhalten.</string>
     <string name="woopos_eligibility_reason_check_connection">Überprüfe deine Internetverbindung und starte die App neu. Wenn das Problem weiterhin besteht, wende dich bitte an den Support.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Das POS-System ist für die Währung deines Shops nicht verfügbar. %1$s wird derzeit nur folgende Währung unterstützt: %2$s. Bitte überprüfe die Währungseinstellungen deines Shops oder kontaktiere den Support, um Hilfe zu erhalten.</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">„Verkaufsort (POS)“ muss aktiviert sein, damit du fortfahren kannst. Bitte aktiviere die POS-Funktion über deinen WordPress-Admin unter „WooCommerce-Einstellungen &gt; Erweitert &gt; Funktionen“ und versuche es anschließend erneut.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Deine WooCommerce-Version wird nicht unterstützt. Das POS-System erfordert WooCommerce Version %1$s oder höher. Aktualisiere bitte auf die neueste Version von WooCommerce.</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Stelle zunächst sicher, dass das WooCommerce-Plugin installiert ist und über deinen WordPress-Admin aktiviert wurde. Wenn das Problem weiterhin besteht, wende dich bitte an den Support.</string>
     <string name="orderfilters_sales_channel_filter">Vertriebskanal</string>
     <string name="barcode_ean13_content_description">Barcode EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">Zusätzliche Handhabung</string>
@@ -1744,7 +1756,6 @@ Language: de
     <string name="blaze_campaign_edit_ad_change_image_button">Bild ändern</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Übernehmen</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s Tage</string>
-    <string name="blaze_campaign_budget_impressions_info">Aufrufe geben die Häufigkeit an, mit der deine Werbung potenziellen Kunden angezeigt wird.\n\n\n        Auch wenn aufgrund von schwankendem Internet-Traffic und Nutzerverhalten keine genauen Zahlen garantiert werden können, versuchen wir, die tatsächlichen Aufrufe deiner Werbeanzeige so genau wie möglich mit deiner Zielzahl abzugleichen.\n\n\n        Denke daran, dass es bei Aufrufen um die Sichtbarkeit geht und nicht um vom Betrachter ausgeführte Aktionen.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Fertig</string>
     <string name="blaze_campaign_budget_impressions_title">Aufrufe</string>
     <string name="blaze_campaign_budget_update_button">Update</string>
@@ -1752,6 +1763,7 @@ Language: de
     <string name="blaze_campaign_budget_reach_forecast">Geschätzte Anzahl erreichter Personen pro Tag</string>
     <string name="blaze_campaign_budget_days_duration">für %1$s Tage</string>
     <string name="blaze_campaign_budget_toolbar_title">Dein Budget festlegen</string>
+    <string name="blaze_campaign_budget_impressions_info">Aufrufe geben die Häufigkeit an, mit der deine Werbung potenziellen Kunden angezeigt wird.\n\n\n        Auch wenn aufgrund von schwankendem Internet-Traffic und Nutzerverhalten keine genauen Zahlen garantiert werden können, versuchen wir, die tatsächlichen Aufrufe deiner Werbeanzeige so genau wie möglich mit deiner Zielzahl abzugleichen.\n\n\n        Denke daran, dass es bei Aufrufen um die Sichtbarkeit geht und nicht um vom Betrachter ausgeführte Aktionen.</string>
     <string name="blaze_campaign_preview_target_default_value">Alle</string>
     <string name="blaze_campaign_preview_days_duration">%1$s Tage seit %2$s</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Startdatum</string>
@@ -2791,11 +2803,11 @@ Language: de
     <string name="coupon_details_menu_copy">Gutscheincode kopieren</string>
     <string name="coupon_summary_template">%1$s Rabatt auf %2$s</string>
     <string name="inbox_note_survey_actioned">Vielen Dank für dein Feedback!</string>
-    <string name="card_reader_connect_permission_rationale_hint">Für Zahlungen mit Kartenleser sind genaue Standortberechtigungen erforderlich</string>
     <string name="card_reader_connect_permission_rationale_header">Standortzugriff erforderlich</string>
     <string name="simple_payments_share_payment_dialog_title">Bezahlen – %s</string>
     <string name="simple_payments_share_payment_link">Zahlungslink teilen</string>
     <string name="amount">Betrag</string>
+    <string name="card_reader_connect_permission_rationale_hint">Für Zahlungen mit Kartenleser sind Standortberechtigungen erforderlich</string>
     <string name="coupon_list_view_coupon">Gutscheinübersicht anzeigen</string>
     <string name="coupon_list_empty_heading">Keine Gutscheine gefunden</string>
     <string name="coupon_list_item_label_everything">alles</string>
@@ -3305,7 +3317,7 @@ Language: de
     <string name="orderdetail_products_recreate_shipping_label_menu">Neues Versandetikett erstellen</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth ist deaktiviert</string>
     <string name="card_reader_connect_location_provider_disabled_header">Standort ist deaktiviert</string>
-    <string name="card_reader_connect_missing_permissions_header">Erforderliche genaue Standortrechte fehlen</string>
+    <string name="card_reader_connect_missing_permissions_header">Erforderliche Standortberechtigungen fehlen</string>
     <string name="variation_confirm_delete">Möchtest du diese Variante wirklich löschen?</string>
     <string name="product_delete_dialog_title">Produkt wird gelöscht</string>
     <string name="card_reader_payment_send_receipt">Beleg senden</string>

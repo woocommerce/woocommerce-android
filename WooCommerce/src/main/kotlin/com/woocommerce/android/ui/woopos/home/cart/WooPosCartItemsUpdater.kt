@@ -28,6 +28,7 @@ class WooPosCartItemsUpdater @Inject constructor(
         val mutableCurrentBodyList = itemsInCart.toMutableList()
         var productsChanged = false
         var couponsChanged = false
+        var discountsChanged = false
 
         val availableProductsMap = createAvailableProductsMap(updatedProducts)
 
@@ -37,6 +38,7 @@ class WooPosCartItemsUpdater @Inject constructor(
                     val result = processProduct(item, availableProductsMap, updatedProducts)
                     mutableCurrentBodyList[index] = result.updatedItem
                     productsChanged = productsChanged || result.changed
+                    discountsChanged = discountsChanged || result.updatedItem.discounted != item.discounted
                 }
 
                 is WooPosCartItemViewState.Coupon -> {
@@ -54,6 +56,7 @@ class WooPosCartItemsUpdater @Inject constructor(
             updatedItems = mutableCurrentBodyList,
             productsChanged = productsChanged,
             couponsChanged = couponsChanged,
+            discountsChanged = discountsChanged,
         )
     }
 
@@ -222,6 +225,7 @@ class WooPosCartItemsUpdater @Inject constructor(
                     item.copy(
                         name = updatedProduct.name,
                         price = formatPrice(updatedProduct.subtotalPricePerItem()),
+                        discounted = updatedProduct.discounted,
                     )
                 } else {
                     item
@@ -232,7 +236,8 @@ class WooPosCartItemsUpdater @Inject constructor(
                 if (updatedProduct is WooPosOrderCreatedData.ProductInfo.Variation) {
                     item.copy(
                         name = updatedProduct.name,
-                        price = formatPrice(updatedProduct.subtotalPricePerItem())
+                        price = formatPrice(updatedProduct.subtotalPricePerItem()),
+                        discounted = updatedProduct.discounted,
                     )
                 } else {
                     item
@@ -245,8 +250,10 @@ class WooPosCartItemsUpdater @Inject constructor(
         item: WooPosCartItemViewState.Product
     ): WooPosCartItemViewState.Product {
         return when (item) {
-            is WooPosCartItemViewState.Product.Simple -> item.copy(productDoesNotExist = true)
-            is WooPosCartItemViewState.Product.Variation -> item.copy(productDoesNotExist = true)
+            is WooPosCartItemViewState.Product.Simple ->
+                item.copy(productDoesNotExist = true, discounted = false)
+            is WooPosCartItemViewState.Product.Variation ->
+                item.copy(productDoesNotExist = true, discounted = false)
         }
     }
 
@@ -257,6 +264,7 @@ class WooPosCartItemsUpdater @Inject constructor(
         val updatedItems: List<WooPosCartItemViewState>,
         val productsChanged: Boolean,
         val couponsChanged: Boolean,
+        val discountsChanged: Boolean = false,
     )
 
     private data class ProductProcessResult(

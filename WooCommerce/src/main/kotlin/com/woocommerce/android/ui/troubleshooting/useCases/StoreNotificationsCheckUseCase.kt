@@ -91,7 +91,7 @@ class StoreNotificationsCheckUseCase @Inject constructor(
                 error("The device does not have an FCM token.")
             }
 
-            registerDevice(RegisterDevice.Trigger.APP_FOREGROUND)
+            registerDevice(RegisterDevice.Trigger.TROUBLESHOOTING)
 
             val status = pushNotificationRegistrationStatus(selectedSite.get().siteId)
             check(status != PushNotificationRegistrationStatus.Status.UNREGISTERED) {

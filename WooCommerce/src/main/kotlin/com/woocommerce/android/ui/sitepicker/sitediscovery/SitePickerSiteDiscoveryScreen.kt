@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,7 +38,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.ViewState.AddressInputState
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.ViewState.ErrorState
 
@@ -45,11 +46,13 @@ import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscove
 @Composable
 fun SitePickerSiteDiscoveryScreen(viewModel: SitePickerSiteDiscoveryViewModel) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
+        val scrollState = rememberScrollState()
         Scaffold(topBar = {
             ToolbarWithHelpButton(
                 title = stringResource(id = R.string.login_site_picker_enter_site_address),
                 onNavigationButtonClick = viewModel::onBackButtonClick,
-                onHelpButtonClick = viewModel::onHelpButtonClick
+                onHelpButtonClick = viewModel::onHelpButtonClick,
+                showDivider = viewState is ErrorState && scrollState.canScrollBackward
             )
         }) { paddingValues ->
             val transition = updateTransition(viewState, label = "ViewStateTransition")
@@ -63,6 +66,7 @@ fun SitePickerSiteDiscoveryScreen(viewModel: SitePickerSiteDiscoveryViewModel) {
                     )
                     is ErrorState -> ErrorView(
                         targetState,
+                        scrollState,
                         Modifier.padding(paddingValues)
                     )
                 }
@@ -158,7 +162,7 @@ fun SiteAddressHelpDialog(
 }
 
 @Composable
-fun ErrorView(viewState: ErrorState, modifier: Modifier = Modifier) {
+fun ErrorView(viewState: ErrorState, scrollState: ScrollState, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxHeight()
@@ -168,7 +172,7 @@ fun ErrorView(viewState: ErrorState, modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .weight(1f)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(
                 space = dimensionResource(id = R.dimen.major_100),
                 alignment = Alignment.CenterVertically
@@ -193,7 +197,7 @@ fun ErrorView(viewState: ErrorState, modifier: Modifier = Modifier) {
 @Composable
 @Preview
 private fun AddressInputViewPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AddressInputView(
             state = AddressInputState(
                 siteAddress = "",

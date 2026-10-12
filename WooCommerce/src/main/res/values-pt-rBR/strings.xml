@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-08 21:54:44+0000
+Translation-Revision-Date: 2026-09-22 19:57:38+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_eligibility_reason_unsupported_country_generic">O sistema de PDV não está disponível para o país da sua loja. Verifique as configurações de endereço da sua loja ou entre em contato com o suporte para obter ajuda.</string>
+    <string name="woopos_eligibility_reason_unsupported_country">O sistema de PDV não está disponível em %1$s. Verifique as configurações de endereço da sua loja ou entre em contato com o suporte para obter ajuda.</string>
+    <string name="woo_push_notifications_introduction_error_offline_mode_body">As notificações por push não podem ser configuradas porque sua loja está no modo offline. Entre em contato com o suporte se precisar de ajuda.</string>
+    <string name="order_refunds_refunded_items">Itens reembolsados</string>
+    <string name="login_not_wordpress_site_title">Não é um site do WordPress</string>
+    <string name="https_configuration_warning_dismiss">Ignorar aviso de segurança HTTPS</string>
+    <string name="https_configuration_warning_message">Sua loja oferece suporte a HTTPS, mas seu endereço está configurado para usar HTTP. Atualize para HTTPS para proteger sua loja e evitar problemas de conexão.</string>
+    <string name="https_configuration_warning_title">Proteja sua loja com HTTPS</string>
     <string name="age_verification_open_google_play">Abrir Google Play</string>
     <string name="age_verification_required_message">O Google Play precisa que você confirme sua idade antes que o WooCommerce possa verificar se você pode usar o aplicativo. Conclua a verificação no Google Play, depois volte aqui e tente novamente.</string>
     <string name="age_verification_required_title">Verifique sua idade para continuar</string>
@@ -924,8 +932,12 @@ Language: pt_BR
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">Reino Unido</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">Estados Unidos</string>
     <string name="woopos_eligibility_screen_unable_to_load">Não foi possível carregar</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">O sistema de PDV não está disponível para a moeda da sua loja. Verifique as configurações de moeda da sua loja ou entre em contato com o suporte para obter ajuda.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">O sistema PDV não está disponível para a moeda da sua loja. No %1$s, ele só é compatível com %2$s. Verifique as configurações de moeda da sua loja ou entre em contato com o suporte para obter ajuda.</string>
     <string name="woopos_eligibility_reason_check_connection">Verifique sua conexão com a Internet e tente reiniciar o aplicativo. Se o problema persistir, entre em contato com o suporte.</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">O ponto de venda deve estar ativado para prosseguir. Ative a funcionalidade de PDV pela administração do WordPress em Configurações do WooCommerce &gt; Avançado &gt; Funcionalidades e tente novamente.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Sua versão do WooCommerce não é compatível. O sistema PDV requer o WooCommerce na versão %1$s ou posterior. Atualize o WooCommerce para a versão mais recente.</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Instale e ative o plugin do WooCommerce pela administração do WordPress. Se o problema persistir, entre em contato com o suporte para obter ajuda.</string>
     <string name="orderfilters_sales_channel_filter">Canal de vendas</string>
     <string name="barcode_ean13_content_description">Código de barras EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">Manuseio extra</string>
@@ -2791,11 +2803,11 @@ Language: pt_BR
     <string name="coupon_details_menu_share">Compartilhar cupom</string>
     <string name="coupon_details_menu_copy">Copiar código do cupom</string>
     <string name="inbox_note_survey_actioned">Obrigado pelo feedback.</string>
-    <string name="card_reader_connect_permission_rationale_hint">Os pagamentos por leitor de cartão exigem uma permissão de localização precisa</string>
     <string name="card_reader_connect_permission_rationale_header">Acesso ao local obrigatório</string>
     <string name="simple_payments_share_payment_dialog_title">Finalizar compra - %s</string>
     <string name="simple_payments_share_payment_link">Compartilhar link de pagamento</string>
     <string name="amount">Quantidade</string>
+    <string name="card_reader_connect_permission_rationale_hint">Os pagamentos por leitor de cartão exigem uma permissão de localização</string>
     <string name="coupon_list_view_coupon">Visualizar resumo do cupom</string>
     <string name="coupon_list_empty_heading">Nenhum cupom encontrado</string>
     <string name="coupon_list_item_label_everything">tudo</string>
@@ -3305,7 +3317,7 @@ Language: pt_BR
     <string name="orderdetail_products_recreate_shipping_label_menu">Criar nova etiqueta de envio</string>
     <string name="card_reader_connect_bluetooth_disabled_header">O Bluetooth está desativado</string>
     <string name="card_reader_connect_location_provider_disabled_header">A localização está desativada</string>
-    <string name="card_reader_connect_missing_permissions_header">Permissão precisa e obrigatória de localização ausente</string>
+    <string name="card_reader_connect_missing_permissions_header">Falta a permissão obrigatória para localização</string>
     <string name="variation_confirm_delete">Deseja excluir esta variação?</string>
     <string name="product_delete_dialog_title">Excluindo produto</string>
     <string name="card_reader_payment_send_receipt">Enviar recibo</string>

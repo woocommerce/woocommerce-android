@@ -40,7 +40,7 @@ import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.error.base.LoginBaseErrorDialogFragment.LoginErrorButton
 
 @Composable
@@ -54,6 +54,7 @@ fun LoginErrorScreen(
     primaryButton: LoginErrorButton?,
     secondaryButton: LoginErrorButton?
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
@@ -64,6 +65,7 @@ fun LoginErrorScreen(
                     ImageVector.vectorResource(R.drawable.ic_back_24dp)
                 },
                 onHelpButtonClick = onHelpButtonClick,
+                showDivider = scrollState.canScrollBackward,
                 modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)
             )
         },
@@ -81,7 +83,7 @@ fun LoginErrorScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
             ) {
                 val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
                 val illustrationModifier = if (isLandscape) {
@@ -176,7 +178,7 @@ private fun ButtonBar(
 @Preview("Portrait")
 @Preview("Landscape", widthDp = 700, heightDp = 400)
 private fun LoginErrorScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         LoginErrorScreen(
             title = stringResource(id = string.login_no_wpcom_account_found_title),
             text = stringResource(id = string.login_error_generic),

@@ -22,7 +22,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -46,7 +45,7 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.getText
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
 import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsViewModel.StepState
 import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsViewModel.StepType
@@ -78,19 +77,20 @@ private fun WooPushNotificationsConnectionStepsScreen(
     onUpdatePluginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         modifier = modifier,
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onCloseClick,
+                showDivider = scrollState.canScrollBackward,
                 actions = {
                     if (viewState.isError) {
-                        IconButton(onClick = onContactSupportClick) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_help_24dp),
-                                contentDescription = stringResource(id = R.string.help),
-                            )
-                        }
+                        IconAction(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_help_24dp),
+                            contentDescription = stringResource(id = R.string.help),
+                            onClick = onContactSupportClick,
+                        )
                     }
                 }
             )
@@ -108,7 +108,7 @@ private fun WooPushNotificationsConnectionStepsScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
             ) {
                 WordPressWooBadge()
 
@@ -303,7 +303,7 @@ private val StepState.statusText: String
 @Composable
 @Preview
 private fun WooPushNotificationsConnectionStepsPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooPushNotificationsConnectionStepsScreen(
             viewState = ViewState(
                 titleRes = R.string.woo_push_notifications_connection_steps_title_connect,
@@ -336,7 +336,7 @@ private fun WooPushNotificationsConnectionStepsPreview() {
 @Composable
 @Preview
 private fun WooPushNotificationsConnectionStepsPreviewError() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooPushNotificationsConnectionStepsScreen(
             viewState = ViewState(
                 titleRes = R.string.woo_push_notifications_connection_steps_title_connect,

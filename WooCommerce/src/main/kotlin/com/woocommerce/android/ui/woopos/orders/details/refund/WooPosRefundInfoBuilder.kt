@@ -88,6 +88,7 @@ class WooPosRefundInfoBuilder @Inject constructor(
 
         return WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(
             products = formatPrice(order.productsTotal, order.currency),
+            customAmounts = order.feesTotal.takeIf { !it.isZero() }?.let { formatPrice(it, order.currency) },
             discount = order.discountTotal.takeIf { !it.isZero() }
                 ?.let { "-${formatPrice(it, order.currency)}" },
             discountCode = discountCode,
