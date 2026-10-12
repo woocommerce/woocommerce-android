@@ -602,24 +602,32 @@ done
 ORDERED_FLOWS=(
   ${LAB_FLOWS[@]+"${LAB_FLOWS[@]}"} ${SHARED_FLOWS[@]+"${SHARED_FLOWS[@]}"} ${POS_FLOWS[@]+"${POS_FLOWS[@]}"}
 )
+ALL_FLOWS=("${ORDERED_FLOWS[@]}")
+# POS flows are grouped by device, so the store of each flow decides its store group.
+flows_on_store() {
+  local flow
+  for flow in "${ALL_FLOWS[@]}"; do
+    [[ "$(flow_store "$flow")" == "$1" ]] && printf '%s\n' "$flow"
+  done
+  return 0
+}
 RUN_STORES=()
-[[ $((${#LAB_FLOWS[@]} + ${#POS_FLOWS[@]})) -gt 0 ]] && RUN_STORES+=(lab)
-[[ ${#SHARED_FLOWS[@]} -gt 0 ]] && RUN_STORES+=(shared)
+for store in lab shared; do
+  [[ -n "$(flows_on_store "$store")" ]] && RUN_STORES+=("$store")
+done
 
 use_store_group() {
   STORE="$1"
-  if [[ "$STORE" == "shared" ]]; then
-    ORDERED_FLOWS=("${SHARED_FLOWS[@]}")
-  else
-    ORDERED_FLOWS=(${LAB_FLOWS[@]+"${LAB_FLOWS[@]}"} ${POS_FLOWS[@]+"${POS_FLOWS[@]}"})
-  fi
+  ORDERED_FLOWS=()
+  local flow
+  while IFS= read -r flow; do
+    [[ -n "$flow" ]] && ORDERED_FLOWS+=("$flow")
+  done <<< "$(flows_on_store "$STORE")"
   select_store_env
 }
 
 use_all_flows() {
-  ORDERED_FLOWS=(
-    ${LAB_FLOWS[@]+"${LAB_FLOWS[@]}"} ${SHARED_FLOWS[@]+"${SHARED_FLOWS[@]}"} ${POS_FLOWS[@]+"${POS_FLOWS[@]}"}
-  )
+  ORDERED_FLOWS=("${ALL_FLOWS[@]}")
 }
 
 SUITE_HAS_DESTRUCTIVE="no"
@@ -640,8 +648,8 @@ if [[ "$SUITE_HAS_DESTRUCTIVE" == "yes" && "$REPEAT" -gt 1 ]]; then
   echo "Destructive flows use up the fixtures of one seed, so run them once per run instead of with --repeat." >&2
   exit 1
 fi
-for flow in ${SHARED_FLOWS[@]+"${SHARED_FLOWS[@]}"}; do
-  if flow_has_any_tag "$flow" destructive; then
+for flow in "${ALL_FLOWS[@]}"; do
+  if [[ "$(flow_store "$flow")" == "shared" ]] && flow_has_any_tag "$flow" destructive; then
     echo "Refusing to run destructive flows against the shared store." >&2
     echo "Use --store lab for destructive iteration, or remove destructive flows from the selection." >&2
     exit 1

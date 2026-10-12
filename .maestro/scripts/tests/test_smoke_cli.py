@@ -517,6 +517,26 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertIn("Refusing to run destructive flows against the shared store.", result.stderr)
         self.assertFalse(adb_marker.exists())
 
+    def test_destructive_pos_flow_on_the_shared_store_is_refused_before_adb(self) -> None:
+        result, adb_marker = self.run_with_fake_device_tools(
+            "--store",
+            "shared",
+            "--seed",
+            "--pos-device",
+            "emulator-5556",
+            "--include-tags",
+            "android_system,pos_tablet",
+            env_overrides={
+                "MAESTRO_WOO_SHARED_JETPACK_STORE_URL": "https://inpersonpayments.wpcomstaging.com/",
+                "MAESTRO_WOO_SHARED_WPCOM_EMAIL": "shared@example.com",
+                "MAESTRO_WOO_SHARED_WPCOM_PASSWORD": "shared-password",
+            },
+        )
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Refusing to run destructive flows against the shared store.", result.stderr)
+        self.assertFalse(adb_marker.exists())
+
     def test_destructive_run_without_seed_is_refused_before_adb(self) -> None:
         result, adb_marker = self.run_with_fake_device_tools(".maestro/flows/orders_create.yaml")
 
