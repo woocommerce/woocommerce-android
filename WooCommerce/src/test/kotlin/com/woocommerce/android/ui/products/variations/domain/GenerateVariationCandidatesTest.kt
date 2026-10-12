@@ -21,7 +21,7 @@ import org.mockito.kotlin.mock
 class GenerateVariationCandidatesTest : BaseUnitTest() {
 
     private var mockedVariationRepository: VariationRepository = mock {
-        on { getAllVariations(any()) } doReturn emptyList()
+        on { getAllVariations(any()) } doReturn Result.success(emptyList())
     }
 
     private lateinit var sut: GenerateVariationCandidates
@@ -60,7 +60,7 @@ class GenerateVariationCandidatesTest : BaseUnitTest() {
         }
 
         // when
-        val result = sut.invoke(product)
+        val result = sut.invoke(product).getOrThrow()
 
         // then
         assertThat(result).containsExactlyInAnyOrderElementsOf(expectedVariationCandidates)
@@ -73,7 +73,7 @@ class GenerateVariationCandidatesTest : BaseUnitTest() {
             ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, isVirtual = false).copy(attributes = emptyList())
 
         // when
-        val result = sut.invoke(product)
+        val result = sut.invoke(product).getOrThrow()
 
         // then
         assertThat(result).isEmpty()
@@ -89,7 +89,7 @@ class GenerateVariationCandidatesTest : BaseUnitTest() {
             ).copy(attributes = ProductTestUtils.generateProductAttributeList())
 
         // when
-        val result = sut.invoke(product)
+        val result = sut.invoke(product).getOrThrow()
 
         // then
         assertThat(result).isEmpty()
@@ -119,7 +119,7 @@ class GenerateVariationCandidatesTest : BaseUnitTest() {
         }
 
         // when
-        val result = sut.invoke(product)
+        val result = sut.invoke(product).getOrThrow()
 
         // then
         assertThat(result).containsExactlyInAnyOrderElementsOf(expectedVariationCandidates)
@@ -153,12 +153,12 @@ class GenerateVariationCandidatesTest : BaseUnitTest() {
         }
 
         mockedVariationRepository = mock {
-            on { getAllVariations(product.remoteId) } doReturn existingVariations
+            on { getAllVariations(product.remoteId) } doReturn Result.success(existingVariations)
         }
         initializeSut()
 
         // when
-        val result = sut.invoke(product)
+        val result = sut.invoke(product).getOrThrow()
 
         // then
         assertThat(result).doesNotContainAnyElementsOf(existingVariations.map { it.attributes.toList() })
@@ -190,16 +190,38 @@ class GenerateVariationCandidatesTest : BaseUnitTest() {
         }
 
         mockedVariationRepository = mock {
-            on { getAllVariations(product.remoteId) } doReturn existingVariations
+            on { getAllVariations(product.remoteId) } doReturn Result.success(existingVariations)
         }
         initializeSut()
 
         // when
-        val result = sut.invoke(product)
+        val result = sut.invoke(product).getOrThrow()
 
         // then
         assertThat(result).isEmpty()
     }
+
+    @Test
+    fun `given fetching existing variations fails, when generating candidates, then failure is returned`() =
+        testBlocking {
+            // GIVEN
+            val product = ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, isVirtual = false).copy(
+                attributes = listOf(
+                    ProductAttribute(id = 1, name = "Size", terms = listOf("S", "M"), isVariation = true),
+                )
+            )
+            val error = Exception()
+            mockedVariationRepository = mock {
+                on { getAllVariations(product.remoteId) } doReturn Result.failure(error)
+            }
+            initializeSut()
+
+            // WHEN
+            val result = sut.invoke(product)
+
+            // THEN
+            assertThat(result.exceptionOrNull()).isEqualTo(error)
+        }
 
     private fun initializeSut() {
         sut = GenerateVariationCandidates(mockedVariationRepository)

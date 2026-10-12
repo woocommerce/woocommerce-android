@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationListFragmentArgs
 import com.woocommerce.android.ui.products.variations.VariationListViewModel
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowBulkUpdateAttrPicker
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowFetchVariationsError
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationConfirmation
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError
@@ -263,7 +264,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         createViewModel()
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever { event -> events.add(event) }
-        whenever(generateVariationCandidates(product)).thenReturn(variationCandidates)
+        whenever(generateVariationCandidates(product)).thenReturn(Result.success(variationCandidates))
 
         // when
         viewModel.start()
@@ -293,7 +294,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         createViewModel()
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever { event -> events.add(event) }
-        whenever(generateVariationCandidates(product)).thenReturn(variationCandidatesAboveLimit)
+        whenever(generateVariationCandidates(product)).thenReturn(Result.success(variationCandidatesAboveLimit))
 
         // when
         viewModel.start()
@@ -397,7 +398,7 @@ class VariationListViewModelTest : BaseUnitTest() {
             }
         doReturn(variations).whenever(variationRepository).getProductVariationList(productRemoteId)
         createViewModel()
-        whenever(generateVariationCandidates(product)).thenReturn(exceedVariationsLimit)
+        whenever(generateVariationCandidates(product)).thenReturn(Result.success(exceedVariationsLimit))
 
         // When AddAllVariations is Clicked
         viewModel.start()
@@ -421,7 +422,7 @@ class VariationListViewModelTest : BaseUnitTest() {
             }
         doReturn(variations).whenever(variationRepository).getProductVariationList(productRemoteId)
         createViewModel()
-        whenever(generateVariationCandidates(product)).thenReturn(reachVariationsLimit)
+        whenever(generateVariationCandidates(product)).thenReturn(Result.success(reachVariationsLimit))
 
         // When AddAllVariations is Clicked
         viewModel.start()
@@ -504,7 +505,7 @@ class VariationListViewModelTest : BaseUnitTest() {
     @Test
     fun `When user requested variation generation but there are no candidates, show error`() = testBlocking {
         // given
-        whenever(generateVariationCandidates(product)).thenReturn(emptyList())
+        whenever(generateVariationCandidates(product)).thenReturn(Result.success(emptyList()))
         createViewModel()
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever { event -> events.add(event) }
@@ -520,6 +521,80 @@ class VariationListViewModelTest : BaseUnitTest() {
                 assertThat(lastEvent).isEqualTo(ShowGenerateVariationsError.NoCandidates)
             }
     }
+
+    @Test
+    fun `given fetching existing variations fails, when generating variations, then network error is shown`() =
+        testBlocking {
+            // GIVEN
+            whenever(generateVariationCandidates(product)).thenReturn(Result.failure(Exception()))
+            createViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { event -> events.add(event) }
+            val dialogStates = mutableListOf<Boolean>()
+            viewModel.viewStateLiveData.observeForever { _, new ->
+                dialogStates.add(new.isBulkUpdateProgressDialogShown)
+            }
+            viewModel.start()
+
+            // WHEN
+            viewModel.onAddAllVariationsClicked()
+
+            // THEN
+            assertThat(events.last()).isEqualTo(ShowGenerateVariationsError.NetworkError)
+            assertThat(dialogStates).contains(true)
+            assertThat(dialogStates.last()).isFalse
+        }
+
+    @Test
+    fun `given all variations are fetched, when bulk update is clicked, then attribute picker is shown`() =
+        testBlocking {
+            // GIVEN
+            variationRepository.stub {
+                on { getAllVariations(productRemoteId) } doReturn Result.success(variations)
+            }
+            createViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { event -> events.add(event) }
+            val dialogStates = mutableListOf<Boolean>()
+            viewModel.viewStateLiveData.observeForever { _, new ->
+                dialogStates.add(new.isBulkUpdateProgressDialogShown)
+            }
+            viewModel.start()
+
+            // WHEN
+            viewModel.onBulkUpdateClicked()
+
+            // THEN
+            assertThat(events.last()).isEqualTo(ShowBulkUpdateAttrPicker(variations))
+            assertThat(dialogStates).contains(true)
+            assertThat(dialogStates.last()).isFalse
+        }
+
+    @Test
+    fun `given fetching all variations fails, when bulk update is clicked, then fetch error is shown`() =
+        testBlocking {
+            // GIVEN
+            variationRepository.stub {
+                on { getAllVariations(productRemoteId) } doReturn Result.failure(Exception())
+            }
+            createViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { event -> events.add(event) }
+            val dialogStates = mutableListOf<Boolean>()
+            viewModel.viewStateLiveData.observeForever { _, new ->
+                dialogStates.add(new.isBulkUpdateProgressDialogShown)
+            }
+            viewModel.start()
+
+            // WHEN
+            viewModel.onBulkUpdateClicked()
+
+            // THEN
+            assertThat(events.last()).isEqualTo(ShowSnackbar(string.variation_list_fetch_error))
+            assertThat(events).noneMatch { it is ShowBulkUpdateAttrPicker }
+            assertThat(dialogStates).contains(true)
+            assertThat(dialogStates.last()).isFalse
+        }
 
     private suspend fun givenFetchFails(cachedVariations: List<ProductVariation> = emptyList()) {
         variationRepository.stub {

@@ -130,9 +130,12 @@ class VariationListViewModel @Inject constructor(
         } else {
             viewState = viewState.copy(isBulkUpdateProgressDialogShown = true)
             viewModelScope.launch {
-                val variations = variationRepository.getAllVariations(remoteProductId)
+                val result = variationRepository.getAllVariations(remoteProductId)
                 withContext(dispatchers.main) {
-                    triggerEvent(ShowBulkUpdateAttrPicker(variations))
+                    result.fold(
+                        onSuccess = { triggerEvent(ShowBulkUpdateAttrPicker(it)) },
+                        onFailure = { triggerEvent(ShowSnackbar(string.variation_list_fetch_error)) }
+                    )
                     viewState = viewState.copy(isBulkUpdateProgressDialogShown = false)
                 }
             }
@@ -317,11 +320,16 @@ class VariationListViewModel @Inject constructor(
         launch {
             viewState = viewState.copy(isBulkUpdateProgressDialogShown = true)
 
-            val variationCandidates = viewState.parentProduct?.let {
+            val result = viewState.parentProduct?.let {
                 generateVariationCandidates.invoke(it)
-            }.orEmpty()
+            } ?: Result.success(emptyList())
 
             viewState = viewState.copy(isBulkUpdateProgressDialogShown = false)
+
+            val variationCandidates = result.getOrElse {
+                triggerEvent(ShowGenerateVariationsError.NetworkError)
+                return@launch
+            }
 
             when {
                 variationCandidates.isEmpty() -> {

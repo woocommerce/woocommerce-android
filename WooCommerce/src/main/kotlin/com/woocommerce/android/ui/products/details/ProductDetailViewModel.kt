@@ -691,11 +691,16 @@ class ProductDetailViewModel @Inject constructor(
         launch {
             attributeListViewState = attributeListViewState.copy(isFetchingVariations = true)
 
-            val variationCandidates = viewState.productDraft?.let {
+            val result = viewState.productDraft?.let {
                 generateVariationCandidates.invoke(it)
-            }.orEmpty()
+            } ?: Result.success(emptyList())
 
             attributeListViewState = attributeListViewState.copy(isFetchingVariations = false)
+
+            val variationCandidates = result.getOrElse {
+                triggerEvent(ShowGenerateVariationsError.NetworkError)
+                return@launch
+            }
 
             when {
                 variationCandidates.isEmpty() -> {
