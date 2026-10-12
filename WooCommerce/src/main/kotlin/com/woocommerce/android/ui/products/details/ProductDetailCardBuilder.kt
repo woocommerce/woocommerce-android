@@ -854,9 +854,13 @@ class ProductDetailCardBuilder(
     private fun Product.attributes(): ProductProperty? {
         if (!viewModel.isNonVariationAttributesEnabled || attributes.isEmpty()) return null
 
+        val noOptions = resources.getString(string.product_attribute_no_options)
         return PropertyGroup(
             title = string.product_attributes,
-            properties = attributes.associate { it.name to it.terms.joinToString() },
+            // a global and a local attribute can have the same name, so their options are listed together
+            properties = attributes.groupBy { it.name }.mapValues { (_, sameName) ->
+                sameName.flatMap { it.terms }.joinToString().ifEmpty { noOptions }
+            },
             icon = DesignSystemR.drawable.woo_ds_ic_regular_screwdriver_wrench_24dp
         ) {
             viewModel.onEditProductCardClicked(

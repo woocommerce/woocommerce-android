@@ -96,6 +96,7 @@
     <string name="product_attribute_remove">Remove this attribute?</string>
     <string name="product_attribute_used_for_variations">Used for variations</string>
     <string name="product_attribute_hidden">Hidden</string>
+    <string name="product_attribute_no_options">No options</string>
     <string name="product_attribute_no_options_warning">This attribute has no options and will be removed. Do you want to continue?</string>
     <string name="product_bulk_update_regular_price">Update regular price</string>
     <string name="product_bulk_update_price_updated">Price updated!</string>
