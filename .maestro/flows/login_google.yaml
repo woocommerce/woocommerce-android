@@ -31,7 +31,7 @@ name: "Login - Social login (Google)"
 tags:
   - smoke_core
   - login
-  - flaky_quarantine
+  - quarantine
 ---
 - launchApp:
     clearState: true

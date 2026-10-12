@@ -67,7 +67,7 @@ source .maestro/scripts/configure-toolchain.sh && .maestro/scripts/run-smoke-tes
 
 Tell the user:
 
-- Without `--profile`, the runner runs `smoke_core` only and excludes `flaky_quarantine`.
+- Without `--profile`, the runner runs `smoke_core` only and excludes `quarantine`.
 - `full` runs every flow except the quarantined ones: the phone flows on `--device`, then the POS flows on the tablet passed with `--pos-device`.
 - Each flow runs against the store it needs: `store_shared` flows on the shared store, the rest on the lab store. `--store lab|shared` forces one store for every flow, and the runner refuses destructive flows on the shared store.
 - Destructive flows need seeded fixtures. `full` and `pos` seed them without `--seed`, and cleanup deletes what the run created when it exits.

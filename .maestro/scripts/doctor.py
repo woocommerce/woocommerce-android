@@ -186,7 +186,7 @@ def main() -> int:
     if exclude_tags is None:
         exclude_tags = list(profile.exclude)
     if args.include_quarantine:
-        exclude_tags = [tag for tag in exclude_tags if tag != "flaky_quarantine"]
+        exclude_tags = [tag for tag in exclude_tags if tag != "quarantine"]
 
     checks: list[Check] = [
         command_check("bash"),

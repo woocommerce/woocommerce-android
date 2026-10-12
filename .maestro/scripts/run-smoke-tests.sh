@@ -6,7 +6,7 @@ set -euo pipefail
 # Defaults match the v2 smoke-test plan:
 #   - lab store, or the shared store for flows tagged store_shared
 #   - smoke_core only by default
-#   - flaky_quarantine excluded unless explicitly requested
+#   - quarantine excluded unless explicitly requested
 #   - no REST fixture seed unless --seed is passed or the profile seeds
 #   - animation settings captured and restored
 #   - autofill service turned off and restored
@@ -50,7 +50,7 @@ SWEEP_DRY_RUN="no"
 OUTPUT_ROOT=""
 REPEAT=1
 INCLUDE_TAGS=("smoke_core")
-EXCLUDE_TAGS=("flaky_quarantine")
+EXCLUDE_TAGS=("quarantine")
 INCLUDE_TAGS_EXPLICIT="no"
 EXCLUDE_TAGS_EXPLICIT="no"
 INCLUDE_QUARANTINE="no"
@@ -64,7 +64,7 @@ WooCommerce Android Maestro smoke-test runner.
 Defaults:
   - lab store, or the shared store for flows tagged store_shared
   - smoke_core only
-  - flaky_quarantine excluded unless explicitly requested
+  - quarantine excluded unless explicitly requested
   - no REST fixture seed unless --seed is passed
   - animation settings captured and restored
   - autofill service turned off and restored
@@ -83,7 +83,7 @@ Usage:
   .maestro/scripts/run-smoke-tests.sh .maestro/flows/orders_list_and_search.yaml
 
 Options:
-  --profile name              Preset: core, full, pos. full and pos skip flaky_quarantine and seed fixtures.
+  --profile name              Preset: core, full, pos. full and pos skip quarantine and seed fixtures.
   --store lab|shared          Run every selected flow against this store. Default: each flow's own store.
   --device serial|avd-name    Device serial or emulator AVD name.
   --pos-device serial|avd-name
@@ -92,8 +92,8 @@ Options:
   --repeat N                  Run the selected flow set N times.
   -t, --tag tag               Alias for --include-tags.
   --include-tags a,b          Include flows with any listed tag. Default: smoke_core.
-  --exclude-tags a,b          Exclude flows with any listed tag. Default: flaky_quarantine.
-  --include-quarantine        Remove flaky_quarantine from the active exclusions.
+  --exclude-tags a,b          Exclude flows with any listed tag. Default: quarantine.
+  --include-quarantine        Remove quarantine from the active exclusions.
   --rerun-failed report.xml   Rerun only testcases with failure/error in a previous JUnit report.
   --seed                      Run REST fixture seed/cleanup. Requires Woo REST API credentials.
   --no-seed                   Skip REST fixture seed/cleanup.
@@ -265,7 +265,7 @@ if ! [[ "$REPEAT" =~ ^[0-9]+$ ]] || [[ "$REPEAT" -lt 1 ]]; then
 fi
 if [[ "$INCLUDE_TAGS_EXPLICIT" == "yes" ]]; then
   for tag in ${INCLUDE_TAGS[@]+"${INCLUDE_TAGS[@]}"}; do
-    if [[ "$tag" == "flaky_quarantine" && "$EXCLUDE_TAGS_EXPLICIT" == "no" ]]; then
+    if [[ "$tag" == "quarantine" && "$EXCLUDE_TAGS_EXPLICIT" == "no" ]]; then
       EXCLUDE_TAGS=()
     fi
   done
@@ -273,7 +273,7 @@ fi
 if [[ "$INCLUDE_QUARANTINE" == "yes" ]]; then
   FILTERED_EXCLUDE_TAGS_CSV=""
   for tag in ${EXCLUDE_TAGS[@]+"${EXCLUDE_TAGS[@]}"}; do
-    if [[ "$tag" != "flaky_quarantine" ]]; then
+    if [[ "$tag" != "quarantine" ]]; then
       FILTERED_EXCLUDE_TAGS_CSV="${FILTERED_EXCLUDE_TAGS_CSV:+$FILTERED_EXCLUDE_TAGS_CSV,}$tag"
     fi
   done
@@ -1115,7 +1115,7 @@ selection_args() {
     printf '%s\0%s\0' --exclude-tags "$(join_csv "${EXCLUDE_TAGS[@]}")"
   else
     # The runner rejects an empty --exclude-tags, and without the option it skips
-    # flaky_quarantine.
+    # quarantine.
     printf '%s\0' --include-quarantine
   fi
 }

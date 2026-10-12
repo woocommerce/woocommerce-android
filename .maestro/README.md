@@ -158,7 +158,7 @@ Common variants:
 .maestro/scripts/run-smoke-tests.sh --device emulator-5554
 .maestro/scripts/run-smoke-tests.sh --apk /path/to/WooCommerce-production-release.apk
 .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --include-quarantine --seed
-.maestro/scripts/run-smoke-tests.sh --include-tags flaky_quarantine --seed .maestro/flows/orders_create.yaml
+.maestro/scripts/run-smoke-tests.sh --include-tags quarantine --seed .maestro/flows/orders_create.yaml
 .maestro/scripts/run-smoke-tests.sh --store shared --include-tags smoke_core
 .maestro/scripts/run-smoke-tests.sh --repeat 3 --store lab --include-tags smoke_core
 .maestro/scripts/run-smoke-tests.sh --profile full --device emulator-5554 --pos-device emulator-5556 --rerun-failed ~/woocommerce-maestro-output/20260708141815/report.xml
@@ -178,9 +178,9 @@ phone and POS flows needs `--pos-device`. A selection of only POS flows runs on 
 
 Use `--plan` with a profile or tag selection to print the exact store, repeat count, filters, and ordered flow list.
 Planning is side-effect-free: it does not load credentials, create output directories, or call Maestro/ADB.
-Without `--exclude-tags`, `flaky_quarantine` stays excluded unless `--include-quarantine` is passed
+Without `--exclude-tags`, `quarantine` stays excluded unless `--include-quarantine` is passed
 or `--include-tags` names it. An explicit `--exclude-tags` list
-replaces that default, so add `flaky_quarantine` to it to keep quarantined flows out. A zero-flow
+replaces that default, so add `quarantine` to it to keep quarantined flows out. A zero-flow
 selection is an error in both the runner and doctor.
 
 `--rerun-failed report.xml` reads failed/flaky JUnit test cases and runs only those flow files. It still honors
@@ -218,11 +218,11 @@ The runner:
 - `system_surface`: flow enters Android-owned UI; assertions stop at the documented handoff boundary.
 - `destructive`: mutates store data.
 - `store_shared`: runs against the shared store unless `--store` is passed; never combined with `destructive`.
-- `flaky_quarantine`: provisional or unstable flows, excluded unless the profile or `--include-quarantine` includes them.
+- `quarantine`: provisional or unstable flows, excluded unless the profile or `--include-quarantine` includes them.
 
-All login flows are required `smoke_core` coverage except `login_google`. It stays tagged `flaky_quarantine` because
+All login flows are required `smoke_core` coverage except `login_google`. It stays tagged `quarantine` because
 Google sign-in only accepts the Play-signed build, and the runner installs the GitHub release or a local build.
-Other provisional imported flows remain tagged `flaky_quarantine`.
+Other provisional imported flows remain tagged `quarantine`.
 
 ## Coverage
 

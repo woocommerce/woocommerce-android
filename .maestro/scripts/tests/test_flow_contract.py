@@ -113,7 +113,7 @@ class MaestroFlowContractTests(unittest.TestCase):
                 self.assertIn("  - smoke_core\n", source)
                 # Google sign-in only accepts the Play-signed build, which the runner never installs.
                 if path.name != "login_google.yaml":
-                    self.assertNotIn("  - flaky_quarantine\n", source)
+                    self.assertNotIn("  - quarantine\n", source)
 
     def test_not_woo_store_requires_the_rejection_and_another_account_action(self) -> None:
         flow = (

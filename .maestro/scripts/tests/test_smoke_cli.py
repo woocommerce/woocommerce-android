@@ -885,7 +885,7 @@ class SmokeCliContractTest(unittest.TestCase):
             (
                 ("--profile", "core", "--exclude-tags", "dashboard", ".maestro/flows/login_successful.yaml"),
                 ".maestro/scripts/run-smoke-tests.sh .maestro/flows/login_successful.yaml "
-                "--include-tags smoke_core --exclude-tags flaky_quarantine,android_system,dashboard --device emulator-5554",
+                "--include-tags smoke_core --exclude-tags quarantine,android_system,dashboard --device emulator-5554",
             ),
         ]
         for args, expected in cases:

@@ -23,12 +23,12 @@ class Profile:
 
 
 PROFILES = {
-    "core": Profile(("smoke_core",), ("flaky_quarantine", "android_system")),
+    "core": Profile(("smoke_core",), ("quarantine", "android_system")),
     "full": Profile(
         ("smoke_core", "smoke_extended", "android_system", "pos_tablet"),
-        ("flaky_quarantine",),
+        ("quarantine",),
     ),
-    "pos": Profile(("pos_tablet",), ("flaky_quarantine",)),
+    "pos": Profile(("pos_tablet",), ("quarantine",)),
 }
 
 # Profiles that seed fixtures without --seed, because they include destructive flows.
