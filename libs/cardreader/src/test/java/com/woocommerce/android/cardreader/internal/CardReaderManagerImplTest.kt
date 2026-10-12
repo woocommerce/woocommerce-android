@@ -4,6 +4,8 @@ import android.app.Application
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
 import com.stripe.stripeterminal.external.models.ReaderSupportResult
+import com.stripe.stripeterminal.external.models.TerminalErrorCode
+import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -106,7 +108,11 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     fun `given Stripe reports not supported, when isTapToPaySupportedOnDevice, then NotSupported returned`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
         whenever(terminalWrapper.supportsReadersOfType(any(), any()))
-            .thenReturn(ReaderSupportResult.NotSupported(RuntimeException("no TEE")))
+            .thenReturn(
+                ReaderSupportResult.NotSupported(
+                    TerminalException(TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_DEVICE, "no TEE")
+                )
+            )
 
         val result = cardReaderManager.isTapToPaySupportedOnDevice(false)
 
