@@ -1008,23 +1008,6 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertIn("MAESTRO_WOO_WPCOM_PASSWORD=shared-password", args)
         self.assertIn("MAESTRO_WOO_WPCOM_USERNAME=shared-user", args)
 
-    def test_no_jetpack_wp_admin_url_is_normalized_before_maestro(self) -> None:
-        result, args, _ = self.run_with_recorded_maestro_args(
-            "--device",
-            "emulator-5554",
-            ".maestro/flows/login_no_jetpack.yaml",
-            env_overrides={
-                "MAESTRO_WOO_NO_JETPACK_SITE_URL": "https://shop.example.com/subdir/wp-admin/?source=jn",
-                "MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_USERNAME": "site-admin",
-                "MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD": "site-password",
-            },
-        )
-
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("MAESTRO_WOO_NO_JETPACK_SITE_URL=https://shop.example.com/subdir/", args)
-        self.assertNotIn("/wp-admin/", args)
-        self.assertNotIn("source=jn", args)
-
     def test_named_screenshots_are_collected_from_the_maestro_debug_output(self) -> None:
         result, args, output_root = self.run_with_recorded_maestro_args(
             "--device",

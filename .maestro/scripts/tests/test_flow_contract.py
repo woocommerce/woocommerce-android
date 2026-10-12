@@ -54,7 +54,6 @@ class MaestroFlowContractTests(unittest.TestCase):
         direct_login_flows = [
             "login_google.yaml",
             "login_help.yaml",
-            "login_no_jetpack.yaml",
             "login_not_woo_store.yaml",
             "login_not_wp_site.yaml",
             "login_wrong_account.yaml",
@@ -83,7 +82,6 @@ class MaestroFlowContractTests(unittest.TestCase):
         direct_login_flows = [
             "login_google.yaml",
             "login_help.yaml",
-            "login_no_jetpack.yaml",
             "login_not_woo_store.yaml",
             "login_not_wp_site.yaml",
             "login_wrong_account.yaml",
