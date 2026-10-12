@@ -1695,7 +1695,7 @@ class ProductDetailViewModel @Inject constructor(
         return getDraftAttribute(attributeId, attributeName)?.terms ?: emptyList()
     }
 
-    private val isDraftVariableProduct: Boolean
+    val isDraftVariableProduct: Boolean
         get() = viewState.productDraft?.productType?.isVariableProduct() == true
 
     /**
