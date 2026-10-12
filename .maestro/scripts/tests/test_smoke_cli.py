@@ -734,6 +734,38 @@ class SmokeCliContractTest(unittest.TestCase):
             self.assertIn(f"ADB:-s {serial} shell settings put secure autofill_service null", args)
             self.assertIn(f"ADB:-s {serial} shell settings put secure autofill_service {GOOGLE_AUTOFILL_SERVICE}", args)
 
+    def test_a_rerun_of_only_pos_flows_runs_them_on_the_pos_device(self) -> None:
+        temporary_directory = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary_directory.cleanup)
+        report = Path(temporary_directory.name) / "report.xml"
+        report.write_text(
+            '<testsuites><testsuite name="previous run">'
+            '<testcase name="pos_search_and_coupons"><failure message="failed" /></testcase>'
+            "</testsuite></testsuites>",
+            encoding="utf-8",
+        )
+
+        result, args, _ = self.run_with_recorded_maestro_args(
+            "--device",
+            "emulator-5554",
+            "--pos-device",
+            "emulator-5556",
+            "--rerun-failed",
+            str(report),
+            env_overrides={
+                "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
+                "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
+                "MAESTRO_WOO_LAB_WPCOM_PASSWORD": "lab-password",
+            },
+            attached_devices=("emulator-5554", "emulator-5556"),
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        runs = [line for line in args.splitlines() if line.startswith("ARGS:")]
+        self.assertEqual(1, len(runs))
+        self.assertIn("--device emulator-5556", runs[0])
+        self.assertTrue(runs[0].endswith("pos_search_and_coupons.yaml"))
+
     def test_app_data_is_kept_when_the_app_is_already_on_the_flow_store(self) -> None:
         result, args, _ = self.run_with_recorded_maestro_args(
             "--device",

@@ -87,7 +87,7 @@ Options:
   --store lab|shared          Run every selected flow against this store. Default: each flow's own store.
   --device serial|avd-name    Device serial or emulator AVD name.
   --pos-device serial|avd-name
-                              Tablet for the POS flows when the selection also has phone flows.
+                              Tablet for the POS flows. Needed when the selection also has phone flows.
   --apk path                  Validate and install a production release APK before running.
   --repeat N                  Run the selected flow set N times.
   -t, --tag tag               Alias for --include-tags.
@@ -315,6 +315,9 @@ if [[ "$PLAN" == "yes" ]]; then
   fi
   if [[ "$SEED" == "yes" ]]; then
     plan_args+=(--seed)
+  fi
+  if [[ -n "$POS_DEVICE_SELECTOR" ]]; then
+    plan_args+=(--pos-device)
   fi
   exec python3 "$PLAN_SCRIPT" "${plan_args[@]}"
 fi
@@ -565,8 +568,9 @@ flow_store() {
   fi
 }
 
-# POS flows need a tablet. When the selection also has phone flows, they run last
-# on --pos-device, in the same run, so the two never share the lab store at once.
+# POS flows need a tablet. When the selection also has phone flows, or --pos-device is
+# given, they run last on --pos-device, in the same run, so the two never share the
+# lab store at once.
 POS_FLOW_COUNT=0
 for flow in "${ORDERED_FLOWS[@]}"; do
   if flow_has_any_tag "$flow" pos_tablet; then
@@ -574,7 +578,7 @@ for flow in "${ORDERED_FLOWS[@]}"; do
   fi
 done
 USES_POS_DEVICE="no"
-if [[ "$POS_FLOW_COUNT" -gt 0 && "$POS_FLOW_COUNT" -lt ${#ORDERED_FLOWS[@]} ]]; then
+if [[ "$POS_FLOW_COUNT" -gt 0 ]] && [[ "$POS_FLOW_COUNT" -lt ${#ORDERED_FLOWS[@]} || -n "$POS_DEVICE_SELECTOR" ]]; then
   if [[ -z "$POS_DEVICE_SELECTOR" ]]; then
     echo "The selection has POS flows, which need a tablet. Pass --pos-device with a tablet serial or AVD name." >&2
     exit 2

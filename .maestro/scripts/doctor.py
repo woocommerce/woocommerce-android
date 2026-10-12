@@ -171,7 +171,7 @@ def main() -> int:
     parser.add_argument("--exclude-tags")
     parser.add_argument("--include-quarantine", action="store_true")
     parser.add_argument("--device", help="Expected adb serial. AVD-name matching is handled by the runner.")
-    parser.add_argument("--pos-device", help="Tablet adb serial for the POS flows when the selection also has phone flows.")
+    parser.add_argument("--pos-device", help="Tablet adb serial for the POS flows.")
     parser.add_argument("--env-file", type=Path, default=DEFAULT_ENV_FILE)
     parser.add_argument("--seed", action="store_true")
     args = parser.parse_args()
@@ -250,7 +250,7 @@ def main() -> int:
     else:
         checks.append(Check("fail", "no adb devices are connected"))
 
-    if needs_pos_device(flows):
+    if needs_pos_device(flows, args.pos_device is not None):
         if not args.pos_device:
             checks.append(Check("fail", "the selection has POS flows, which need a tablet; pass --pos-device"))
         elif args.pos_device == args.device:
