@@ -1818,6 +1818,9 @@ class ProductDetailViewModel @Inject constructor(
      * Saves any attribute changes to the backend
      */
     fun saveAttributeChanges() {
+        // a product that isn't on the site yet sends its attributes when it's created
+        if (!isProductStoredAtSite) return
+
         if (hasAttributeChanges() && checkConnection()) {
             launch {
                 viewState.productDraft?.attributes?.let { attributes ->
