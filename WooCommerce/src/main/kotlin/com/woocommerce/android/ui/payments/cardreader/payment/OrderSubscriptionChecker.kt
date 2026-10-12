@@ -45,12 +45,11 @@ class OrderSubscriptionChecker @Inject constructor(
     suspend fun getSubscriptionStatus(order: Order): SubscriptionStatus {
         val productIds = order.getProductIds()
         val site = selectedSite.get()
-        // No products, or the plugin is inactive → the order can't be a subscription.
-        if (productIds.isEmpty() || wooCommerceStore.getActiveSitePlugin(site, WOO_SUBSCRIPTIONS) == null) {
-            return SubscriptionStatus.NONE
-        }
+        if (productIds.isEmpty()) return SubscriptionStatus.NONE
         // Legacy subscription product types are known subscriptions without a network call.
         if (orderDetailRepository.hasLegacySubscriptionProducts(productIds)) return SubscriptionStatus.PRESENT
+        // The plugin is inactive → the order can't have a plan-based subscription.
+        if (wooCommerceStore.getActiveSitePlugin(site, WOO_SUBSCRIPTIONS) == null) return SubscriptionStatus.NONE
 
         val key = CacheKey(site.id, order.id)
         cache[key]?.let { return it.toStatus() }

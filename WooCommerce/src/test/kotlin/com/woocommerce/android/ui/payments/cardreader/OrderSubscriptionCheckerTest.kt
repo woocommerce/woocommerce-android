@@ -91,6 +91,18 @@ class OrderSubscriptionCheckerTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given plugin inactive and legacy subscription product, when checking, then order has a subscription`() =
+        testBlocking {
+            lenient().doReturn(null).whenever(wooCommerceStore).getActiveSitePlugin(any(), eq(WOO_SUBSCRIPTIONS))
+            whenever(orderDetailRepository.hasLegacySubscriptionProducts(order.getProductIds())).thenReturn(true)
+
+            val result = checker.isOrderFreeOfSubscriptions(order)
+
+            assertThat(result).isFalse()
+            verify(subscriptionRepository, never()).fetchSubscriptionsByOrderId(any(), any())
+        }
+
+    @Test
     fun `given endpoint returns no subscriptions, when checking, then order has no subscription`() = testBlocking {
         whenever(subscriptionRepository.fetchSubscriptionsByOrderId(eq(order.id), any()))
             .thenReturn(WooResult(emptyList()))
