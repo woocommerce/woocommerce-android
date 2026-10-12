@@ -54,7 +54,8 @@ internal class PaymentErrorMapper {
             TerminalErrorCode.TAP_TO_PAY_DEVICE_TAMPERED,
             TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_ANDROID_VERSION -> DeviceIsNotSupported
             TerminalErrorCode.TAP_TO_PAY_LIBRARY_NOT_INCLUDED -> InvalidAppSetup
-            TerminalErrorCode.CANCELED -> Canceled
+            TerminalErrorCode.CANCELED,
+            TerminalErrorCode.CANCELED_BY_READER -> Canceled
             else -> Generic
         }
         return PaymentFailed(type, paymentData, exception.errorMessage)
