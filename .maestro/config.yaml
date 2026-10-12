@@ -2,7 +2,7 @@
 #
 # Execution order mirrors the Smoke Testing P2 category order:
 #   Login → Dashboard → Orders → Products → Hub Menu →
-#   Blaze → Google for Woo → POS
+#   Google for Woo → POS
 #
 # Within the Login group, login_successful runs last. The runners clear the
 # app after every login flow, so the next flow signs in again through
@@ -71,9 +71,6 @@ executionOrder:
     - flows/hub_menu_coupons.yaml
     - flows/hub_menu_customers_inbox.yaml
     - flows/hub_menu_admin_and_store.yaml
-
-    # ── Blaze ────────────────────────────────────────────────────────────
-    - flows/blaze_campaign.yaml
 
     # ── Google for Woo ──────────────────────────────────────────────────
     - flows/google_for_woo.yaml

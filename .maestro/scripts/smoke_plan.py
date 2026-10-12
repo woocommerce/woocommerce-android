@@ -64,7 +64,6 @@ P2_ORDERED_FLOW_NAMES = (
     "hub_menu_coupons.yaml",
     "hub_menu_customers_inbox.yaml",
     "hub_menu_admin_and_store.yaml",
-    "blaze_campaign.yaml",
     "google_for_woo.yaml",
     "pos_search_and_coupons.yaml",
     "pos_cash_payment.yaml",
