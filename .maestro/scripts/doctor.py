@@ -14,7 +14,7 @@ from pathlib import Path
 
 from device_locale import DeviceLocaleError, ensure_english_device_locale
 from ensure_release_app import ReleaseAppError, ensure_release_app
-from smoke_plan import PROFILES, SEEDING_PROFILES, flow_store, flow_tags, needs_pos_device, selected_flows
+from smoke_plan import POS_TAG, PROFILES, SEEDING_PROFILES, flow_store, flow_tags, needs_pos_device, selected_flows
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -234,6 +234,9 @@ def main() -> int:
     if any("destructive" in flow_tags(flow) and flow_store(flow, args.store) == "shared" for flow in flows):
         checks.append(Check("fail", "destructive flows are refused on the shared store"))
 
+    if flows and args.pos_device and all(POS_TAG in flow_tags(flow) for flow in flows):
+        args.device, args.pos_device = args.pos_device, None
+
     devices = adb_devices()
     run_devices: list[str] = []
     if args.device:
@@ -250,7 +253,7 @@ def main() -> int:
     else:
         checks.append(Check("fail", "no adb devices are connected"))
 
-    if needs_pos_device(flows, args.pos_device is not None):
+    if needs_pos_device(flows):
         if not args.pos_device:
             checks.append(Check("fail", "the selection has POS flows, which need a tablet; pass --pos-device"))
         elif args.pos_device == args.device:

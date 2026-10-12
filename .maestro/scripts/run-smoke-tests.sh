@@ -316,9 +316,6 @@ if [[ "$PLAN" == "yes" ]]; then
   if [[ "$SEED" == "yes" ]]; then
     plan_args+=(--seed)
   fi
-  if [[ -n "$POS_DEVICE_SELECTOR" ]]; then
-    plan_args+=(--pos-device)
-  fi
   exec python3 "$PLAN_SCRIPT" "${plan_args[@]}"
 fi
 
@@ -568,17 +565,21 @@ flow_store() {
   fi
 }
 
-# POS flows need a tablet. When the selection also has phone flows, or --pos-device is
-# given, they run last on --pos-device, in the same run, so the two never share the
-# lab store at once.
+# POS flows need a tablet. When the selection also has phone flows, they run last on
+# --pos-device, in the same run, so the two never share the lab store at once. A
+# selection of only POS flows runs on --pos-device alone when it is given.
 POS_FLOW_COUNT=0
 for flow in "${ORDERED_FLOWS[@]}"; do
   if flow_has_any_tag "$flow" pos_tablet; then
     POS_FLOW_COUNT=$((POS_FLOW_COUNT + 1))
   fi
 done
+if [[ "$POS_FLOW_COUNT" -eq ${#ORDERED_FLOWS[@]} && -n "$POS_DEVICE_SELECTOR" ]]; then
+  DEVICE_SELECTOR="$POS_DEVICE_SELECTOR"
+  POS_DEVICE_SELECTOR=""
+fi
 USES_POS_DEVICE="no"
-if [[ "$POS_FLOW_COUNT" -gt 0 ]] && [[ "$POS_FLOW_COUNT" -lt ${#ORDERED_FLOWS[@]} || -n "$POS_DEVICE_SELECTOR" ]]; then
+if [[ "$POS_FLOW_COUNT" -gt 0 && "$POS_FLOW_COUNT" -lt ${#ORDERED_FLOWS[@]} ]]; then
   if [[ -z "$POS_DEVICE_SELECTOR" ]]; then
     echo "The selection has POS flows, which need a tablet. Pass --pos-device with a tablet serial or AVD name." >&2
     exit 2

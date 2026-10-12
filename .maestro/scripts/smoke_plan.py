@@ -97,10 +97,10 @@ def flow_store(path: Path, store_override: str | None = None) -> str:
     return "shared" if SHARED_STORE_TAG in flow_tags(path) else "lab"
 
 
-def needs_pos_device(flows: tuple[Path, ...], pos_device_given: bool = False) -> bool:
-    """POS flows need a tablet. They run on --pos-device when the selection also has phone flows or it is given."""
+def needs_pos_device(flows: tuple[Path, ...]) -> bool:
+    """POS flows need a tablet, so a selection that also has phone flows runs them on a second device."""
     pos = [POS_TAG in flow_tags(flow) for flow in flows]
-    return any(pos) and (pos_device_given or not all(pos))
+    return any(pos) and not all(pos)
 
 
 def in_store_order(flows: tuple[Path, ...], store_override: str | None = None) -> tuple[Path, ...]:
@@ -158,7 +158,7 @@ def print_plan(args: argparse.Namespace) -> int:
     print(f"  flows:   {len(flows)}")
     print()
     print("Selected flows:")
-    pos_device = needs_pos_device(flows, args.pos_device)
+    pos_device = needs_pos_device(flows)
     for flow in flows:
         if pos_device and POS_TAG in flow_tags(flow):
             suffix = " (POS device)"
@@ -194,7 +194,6 @@ def main() -> int:
     plan_parser.add_argument("--include-tags", default="")
     plan_parser.add_argument("--exclude-tags", default="")
     plan_parser.add_argument("--seed", action="store_true")
-    plan_parser.add_argument("--pos-device", action="store_true")
 
     select_parser = subparsers.add_parser("select")
     select_parser.add_argument("--include-tags", default="")

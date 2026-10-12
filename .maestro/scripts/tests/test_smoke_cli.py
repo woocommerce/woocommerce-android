@@ -785,6 +785,7 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertEqual(1, len(runs))
         self.assertIn("--device emulator-5556", runs[0])
         self.assertTrue(runs[0].endswith("pos_search_and_coupons.yaml"))
+        self.assertNotIn("ADB:-s emulator-5554 shell settings put", args)
 
     def test_app_data_is_kept_when_the_app_is_already_on_the_flow_store(self) -> None:
         result, args, _ = self.run_with_recorded_maestro_args(
