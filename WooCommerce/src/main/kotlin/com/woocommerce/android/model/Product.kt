@@ -234,7 +234,7 @@ data class Product(
                 return true
             }
             updatedAttributes.forEach {
-                if (!this.attributes.containsAttribute(it)) {
+                if (!this.attributes.contains(it)) {
                     return true
                 }
             }
@@ -407,7 +407,8 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
                 name = it.name,
                 visible = it.isVisible,
                 options = it.terms.toMutableList(),
-                variation = it.isVariation
+                variation = it.isVariation,
+                position = it.position
             )
         }.forEach {
             if (it.options.isNotEmpty()) {
@@ -616,9 +617,3 @@ fun MediaModel.toAppModel(): Product.Image {
  */
 fun WCProductModel.toProductReviewProductModel() =
     ProductReviewProduct(this.remoteProductId, this.name, this.permalink)
-
-/**
- * Returns true if the passed attribute is in the current list of attributes
- */
-fun List<ProductAttribute>.containsAttribute(attribute: ProductAttribute): Boolean =
-    this.find { attribute.id == it.id && attribute.name == it.name && attribute.terms == it.terms } != null
