@@ -3,11 +3,13 @@ package com.woocommerce.android.ui.products.variations.attributes
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AttributeItemBinding
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListAdapter.AttributeViewHolder
 
 class AttributeListAdapter(
+    private val showAttributeLabels: Boolean = false,
     onItemClick: (attributeId: Long, attributeName: String) -> Unit
 ) : AttributeBaseAdapter<AttributeViewHolder>(onItemClick) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AttributeViewHolder {
@@ -30,6 +32,18 @@ class AttributeListAdapter(
             } else {
                 viewBinding.attributeTerms.isVisible = false
             }
+
+            val labels = if (showAttributeLabels) attributeLabels(attribute) else emptyList()
+            viewBinding.attributeLabels.isVisible = labels.isNotEmpty()
+            viewBinding.attributeLabels.text = labels.joinToString(separator = " · ")
+        }
+
+        private fun attributeLabels(attribute: ProductAttribute): List<String> {
+            val context = viewBinding.root.context
+            return listOfNotNull(
+                context.getString(R.string.product_attribute_used_for_variations).takeIf { attribute.isVariation },
+                context.getString(R.string.product_attribute_hidden).takeIf { !attribute.isVisible }
+            )
         }
     }
 }

@@ -8,6 +8,7 @@ import com.woocommerce.android.model.ProductAggregate
 import com.woocommerce.android.model.SubscriptionProductVariation
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.products.ProductNavigationTarget
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
@@ -27,7 +28,8 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 class ProductDetailBottomSheetBuilder(
     private val resources: ResourceProvider,
     private val variationRepository: VariationRepository,
-    private val customFieldsRepository: CustomFieldsRepository
+    private val customFieldsRepository: CustomFieldsRepository,
+    private val isNonVariationAttributesEnabled: () -> Boolean
 ) {
     enum class ProductDetailBottomSheetType(
         @StringRes val titleResource: Int,
@@ -39,7 +41,8 @@ class ProductDetailBottomSheetBuilder(
         SHORT_DESCRIPTION(string.product_short_description, string.bottom_sheet_short_description_desc),
         LINKED_PRODUCTS(string.product_detail_linked_products, string.bottom_sheet_linked_products_desc),
         PRODUCT_DOWNLOADS(string.product_downloadable_files, string.bottom_sheet_downloadable_files_desc),
-        CUSTOM_FIELDS(string.product_custom_fields, string.product_custom_fields_desc)
+        CUSTOM_FIELDS(string.product_custom_fields, string.product_custom_fields_desc),
+        PRODUCT_ATTRIBUTES(string.product_attributes, string.bottom_sheet_attributes_desc)
     }
 
     data class ProductDetailBottomSheetUiItem(
@@ -59,7 +62,8 @@ class ProductDetailBottomSheetBuilder(
                     productAggregate.product.getShortDescription(),
                     productAggregate.product.getLinkedProducts(),
                     productAggregate.product.getDownloadableFiles(),
-                    productAggregate.product.getCustomFields()
+                    productAggregate.product.getCustomFields(),
+                    productAggregate.product.getAttributes()
                 )
             }
 
@@ -69,7 +73,8 @@ class ProductDetailBottomSheetBuilder(
                     productAggregate.product.getTags(),
                     productAggregate.product.getShortDescription(),
                     productAggregate.product.getLinkedProducts(),
-                    productAggregate.product.getCustomFields()
+                    productAggregate.product.getCustomFields(),
+                    productAggregate.product.getAttributes()
                 )
             }
 
@@ -79,7 +84,8 @@ class ProductDetailBottomSheetBuilder(
                     productAggregate.product.getTags(),
                     productAggregate.product.getShortDescription(),
                     productAggregate.product.getLinkedProducts(),
-                    productAggregate.product.getCustomFields()
+                    productAggregate.product.getCustomFields(),
+                    productAggregate.product.getAttributes()
                 )
             }
 
@@ -90,7 +96,8 @@ class ProductDetailBottomSheetBuilder(
                     productAggregate.product.getTags(),
                     productAggregate.product.getShortDescription(),
                     productAggregate.product.getLinkedProducts(),
-                    productAggregate.product.getCustomFields()
+                    productAggregate.product.getCustomFields(),
+                    productAggregate.product.getAttributes()
                 )
             }
 
@@ -99,7 +106,8 @@ class ProductDetailBottomSheetBuilder(
                     productAggregate.product.getCategories(),
                     productAggregate.product.getTags(),
                     productAggregate.product.getShortDescription(),
-                    productAggregate.product.getCustomFields()
+                    productAggregate.product.getCustomFields(),
+                    productAggregate.product.getAttributes()
                 )
             }
         }
@@ -199,6 +207,16 @@ class ProductDetailBottomSheetBuilder(
         return ProductDetailBottomSheetUiItem(
             ProductDetailBottomSheetType.PRODUCT_DOWNLOADS,
             AddProductDownloadableFile
+        )
+    }
+
+    private fun Product.getAttributes(): ProductDetailBottomSheetUiItem? {
+        if (!isNonVariationAttributesEnabled() || attributes.isNotEmpty()) return null
+
+        return ProductDetailBottomSheetUiItem(
+            ProductDetailBottomSheetType.PRODUCT_ATTRIBUTES,
+            AddProductAttribute(),
+            AnalyticsEvent.PRODUCT_ATTRIBUTE_ADD_BUTTON_TAPPED
         )
     }
 

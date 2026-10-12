@@ -434,7 +434,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             globalTermsAdapter.removeTerm(termName)
         }
 
-        viewModel.addAttributeTermToDraft(navArgs.attributeId, attributeName, termName)
+        viewModel.addAttributeTermToDraft(navArgs.attributeId, attributeName, termName, navArgs.isVariationCreation)
         checkViews()
     }
 
