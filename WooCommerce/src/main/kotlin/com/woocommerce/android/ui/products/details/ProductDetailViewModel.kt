@@ -1695,8 +1695,36 @@ class ProductDetailViewModel @Inject constructor(
         return getDraftAttribute(attributeId, attributeName)?.terms ?: emptyList()
     }
 
-    private val isDraftVariableProduct: Boolean
+    /**
+     * Returns the draft attribute matching the passed id and name, or null if the product doesn't have it yet
+     */
+    fun getProductDraftAttribute(attributeId: Long, attributeName: String): ProductAttribute? =
+        getDraftAttribute(attributeId, attributeName)
+
+    val isDraftVariableProduct: Boolean
         get() = viewState.productDraft?.productType?.isVariableProduct() == true
+
+    val draftHasVariations: Boolean
+        get() = (viewState.productDraft?.numVariations ?: 0) > 0
+
+    fun onAttributeVisibleToggled(attributeId: Long, attributeName: String, isVisible: Boolean) {
+        updateDraftAttribute(attributeId, attributeName) { it.copy(isVisible = isVisible) }
+    }
+
+    fun onAttributeUsedForVariationsToggled(attributeId: Long, attributeName: String, isVariation: Boolean) {
+        updateDraftAttribute(attributeId, attributeName) { it.copy(isVariation = isVariation) }
+    }
+
+    private fun updateDraftAttribute(
+        attributeId: Long,
+        attributeName: String,
+        transform: (ProductAttribute) -> ProductAttribute
+    ) {
+        val attribute = getDraftAttribute(attributeId, attributeName) ?: return
+        updateProductDraft(
+            attributes = productDraftAttributes.map { if (it == attribute) transform(it) else it }
+        )
+    }
 
     /**
      * A new attribute is used for variations on variable products and in the variation wizard. With the

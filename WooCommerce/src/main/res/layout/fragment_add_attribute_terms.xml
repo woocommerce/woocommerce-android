@@ -21,6 +21,39 @@
         android:background="?attr/colorSurface"
         android:orientation="vertical">
 
+        <LinearLayout
+            android:id="@+id/attributeSettingsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/visibleSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/minor_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:text="@string/product_attribute_visible_on_product_page" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/usedForVariationsSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:text="@string/product_attribute_used_for_variations"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <View
+                style="@style/Woo.Divider"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/minor_100" />
+        </LinearLayout>
+
         <!-- Option EditText -->
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
             android:id="@+id/termEditText"
