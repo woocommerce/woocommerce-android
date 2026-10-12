@@ -21,7 +21,7 @@ class LintEnvTests(unittest.TestCase):
             example = root / "env.example"
             env.write_text(contents)
             example.write_text("MAESTRO_WOO_LAB_WPCOM_PASSWORD=\n")
-            errors, _, _ = LINT.lint(env, example, False)
+            errors, _, _ = LINT.lint(env, example)
         return errors
 
     def test_rejects_values_that_bash_changes_when_sourcing_the_file(self) -> None:

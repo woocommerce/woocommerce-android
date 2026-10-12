@@ -198,8 +198,6 @@ def main() -> int:
 
     if args.env_file.exists():
         lint_command = [str(LINT_ENV), "--file", str(args.env_file)]
-        if args.seed:
-            lint_command.append("--seed")
         lint = subprocess.run(lint_command, cwd=REPO_ROOT, capture_output=True, text=True)
         checks.append(Check("ok" if lint.returncode == 0 else "fail", f"{args.env_file} lint {'passed' if lint.returncode == 0 else 'failed'}"))
     else:

@@ -465,4 +465,4 @@ ok "wrote $ENV_OUT (mode 600)"
 printf '\n\033[32mDone.\033[0m Lab store ready: https://%s (blogID %s)\n' "$SITE" "$BLOG_ID"
 [ -z "$NO_JETPACK_SITE" ] || printf 'No-Jetpack site ready: https://%s\n' "$NO_JETPACK_SITE"
 printf 'Verify with:\n'
-printf '  .maestro/scripts/lint-env.py --seed\n'
+printf '  .maestro/scripts/lint-env.py\n'
