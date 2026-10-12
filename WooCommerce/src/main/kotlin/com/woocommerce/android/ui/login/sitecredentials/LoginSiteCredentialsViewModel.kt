@@ -21,6 +21,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -65,6 +66,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private val wpApiSiteRepository: WPApiSiteRepository,
     private val selectedSite: SelectedSite,
     private val loginAnalyticsListener: LoginAnalyticsListener,
+    private val unifiedLoginTracker: UnifiedLoginTracker,
     applicationPasswordsNotifier: ApplicationPasswordsNotifier,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val appPrefs: AppPrefsWrapper,
@@ -543,6 +545,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     // Track success only if the user is eligible, for the other cases, the user eligibility screen will
                     // handle the flow
                     loginAnalyticsListener.trackAnalyticsSignIn(false)
+                    // This route never reaches the store picker, so the step the picker reports on
+                    // every other login has to come from here — the merchant has a store either way.
+                    unifiedLoginTracker.track(
+                        flow = UnifiedLoginTracker.Flow.LOGIN_STORE_CREDS,
+                        step = UnifiedLoginTracker.Step.SUCCESS
+                    )
                 }
                 appPrefs.removeLoginSiteAddress()
                 selectedSite.set(site)

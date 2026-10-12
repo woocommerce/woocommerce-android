@@ -114,7 +114,7 @@ class MoreMenuViewModel @Inject constructor(
         }
     }
 
-    private fun generateAllSections(
+    private suspend fun generateAllSections(
         buttonsStates: Map<MoreMenuItemButton.Type, MoreMenuItemButton.State>,
         count: Int,
         paymentsFeatureWasClicked: Boolean
@@ -138,7 +138,7 @@ class MoreMenuViewModel @Inject constructor(
     }
 
     @Suppress("LongMethod")
-    private fun generateGeneralSection(
+    private suspend fun generateGeneralSection(
         unseenReviewsCount: Int,
         paymentsFeatureWasClicked: Boolean,
         googleForWooState: MoreMenuItemButton.State,
@@ -252,7 +252,7 @@ class MoreMenuViewModel @Inject constructor(
         }
     }
 
-    private fun buildPaymentsBadgeState(paymentsFeatureWasClicked: Boolean) =
+    private suspend fun buildPaymentsBadgeState(paymentsFeatureWasClicked: Boolean) =
         if (!paymentsFeatureWasClicked && tapToPayAvailabilityStatus().isAvailable) {
             BadgeState(
                 badgeSize = R.dimen.major_110,

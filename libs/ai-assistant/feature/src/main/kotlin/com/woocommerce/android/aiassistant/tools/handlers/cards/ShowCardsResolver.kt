@@ -280,7 +280,7 @@ internal class DefaultShowCardsResolver @Inject constructor(
         )
     }
 
-    private fun analyticsStatsResolution(
+    private suspend fun analyticsStatsResolution(
         ref: ValidatedRef,
         query: AnalyticsStatsCardId,
         stats: AnalyticsStats,

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.cardreader
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
@@ -16,7 +17,7 @@ class WooPosIsTapToPayAvailableTest {
     private val sut = WooPosIsTapToPayAvailable(tapToPayAvailabilityStatus, featureFlagRepository)
 
     @Test
-    fun `given flag off, when invoked, then returns false regardless of availability`() {
+    fun `given flag off, when invoked, then returns false regardless of availability`() = runTest {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TAP_TO_PAY)).thenReturn(false)
         whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
 
@@ -24,7 +25,7 @@ class WooPosIsTapToPayAvailableTest {
     }
 
     @Test
-    fun `given flag on and Available, when invoked, then returns true`() {
+    fun `given flag on and Available, when invoked, then returns true`() = runTest {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TAP_TO_PAY)).thenReturn(true)
         whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
 
@@ -32,7 +33,7 @@ class WooPosIsTapToPayAvailableTest {
     }
 
     @Test
-    fun `given flag on but country not supported, when invoked, then returns false`() {
+    fun `given flag on but country not supported, when invoked, then returns false`() = runTest {
         val unavailable: TapToPayAvailabilityStatus = mock {
             on { invoke() } doReturn TapToPayAvailabilityStatus.Result.NotAvailable.CountryNotSupported
         }
@@ -44,7 +45,7 @@ class WooPosIsTapToPayAvailableTest {
     }
 
     @Test
-    fun `given flag on but NFC missing, when invoked, then returns false`() {
+    fun `given flag on but NFC missing, when invoked, then returns false`() = runTest {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TAP_TO_PAY)).thenReturn(true)
         whenever(tapToPayAvailabilityStatus.invoke())
             .thenReturn(TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable)

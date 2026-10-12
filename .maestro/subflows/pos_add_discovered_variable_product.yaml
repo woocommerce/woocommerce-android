@@ -1,0 +1,22 @@
+# Discovers a variable product from the loaded POS catalog and adds its first
+# variation to the cart.
+appId: com.woocommerce.android
+---
+- scrollUntilVisible:
+    element: "Variable Product .*"
+    direction: DOWN
+    timeout: 30000
+    label: "Find a Variable product in the POS catalog"
+
+- copyTextFrom:
+    text: "Variable Product .*"
+
+- evalScript: ${output.posVariableProductName = maestro.copiedText.replace('Variable Product ', '')}
+- assertTrue:
+    condition: ${output.posVariableProductName.length > 0}
+    label: "Capture the discovered Variable product name"
+
+- runFlow:
+    file: pos_add_variable_product.yaml
+    env:
+      POS_PRODUCT_NAME: ${output.posVariableProductName}

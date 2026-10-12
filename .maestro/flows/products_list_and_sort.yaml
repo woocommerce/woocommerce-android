@@ -1,0 +1,161 @@
+# Smoke Test: Products - List and Sort
+# p2: products.list, products.sort, products.search
+# P2 ref: Products > Product list, Sort product list
+#
+# Verifies:
+#   - Products list loads
+#   - Product cards show name, stock status, price, SKU
+#   - Sorting produces different first products for A-to-Z and Z-to-A
+#   - Search for products
+#   - Product filters
+appId: com.woocommerce.android
+name: "Products - List, sort, and search"
+tags:
+  - smoke_core
+  - products
+---
+# Reuse the logged-in session — login flows run first and leave the
+# app authenticated. See subflows/ensure_logged_in.yaml.
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+# Navigate to Products
+- runFlow:
+    file: ../subflows/navigate_to_products.yaml
+
+# Verify products list loaded
+- assertVisible:
+    id: "product_list"
+    label: "Products list is visible"
+
+- assertVisible:
+    id: "product_list_title_.*"
+    label: "At least one product name is visible"
+
+# Validate first product has a non-empty name via JavaScript
+- copyTextFrom:
+    id: "product_list_title_.*"
+    index: 0
+- assertTrue:
+    condition: ${!!maestro.copiedText && maestro.copiedText.trim() != ''}
+    label: First product has a name
+- takeScreenshot: products_list
+
+# Test sorting with two explicit, opposing choices. Requiring different first
+# products proves the list was reordered instead of only opening the sheet.
+- assertVisible:
+    id: "product_list_sort"
+    label: "Require product sorting control"
+- tapOn:
+    id: "product_list_sort"
+    retryTapIfNoChange: true
+    label: "Open product sorting"
+- extendedWaitUntil:
+    visible: "Title: A to Z"
+    timeout: 10000
+- takeScreenshot: products_sort_options
+- tapOn:
+    text: "Title: A to Z"
+    label: "Sort products A to Z"
+- extendedWaitUntil:
+    visible: "A to Z"
+    timeout: 15000
+- extendedWaitUntil:
+    visible:
+      id: "product_list_title_.*"
+    timeout: 15000
+- copyTextFrom:
+    id: "product_list_title_.*"
+    index: 0
+- evalScript: ${output.firstProductAscending = maestro.copiedText.trim()}
+
+- tapOn:
+    id: "product_list_sort"
+    retryTapIfNoChange: true
+    label: "Reopen product sorting"
+- extendedWaitUntil:
+    visible: "Title: Z to A"
+    timeout: 10000
+- tapOn:
+    text: "Title: Z to A"
+    label: "Sort products Z to A"
+- extendedWaitUntil:
+    visible: "Z to A"
+    timeout: 15000
+- extendedWaitUntil:
+    visible:
+      id: "product_list_title_.*"
+    timeout: 15000
+- copyTextFrom:
+    id: "product_list_title_.*"
+    index: 0
+- assertTrue:
+    condition: ${!!maestro.copiedText && maestro.copiedText.trim() != '' && maestro.copiedText.trim() != output.firstProductAscending}
+    label: Opposing product sorts return different first products
+
+- takeScreenshot: products_sorted
+
+# Test search against the A-to-Z first product.
+- tapOn:
+    id: "product_list_search_action"
+    retryTapIfNoChange: true
+    label: "Open product search"
+
+- extendedWaitUntil:
+    visible:
+      id: "product_list_search_field"
+    timeout: 10000
+
+- tapOn:
+    id: "product_list_search_field"
+- inputText: ${output.firstProductAscending}
+- pressKey: Enter
+
+# Wait for search results
+- extendedWaitUntil:
+    visible:
+      id: "product_list_title_.*"
+    timeout: 15000
+
+- assertVisible:
+    id: "product_list_title_.*"
+    text: "${output.firstProductAscending}"
+    label: "Searched product appears as a result row, not only in the search field"
+
+- takeScreenshot: products_search_results
+
+# Enter usually hides the keyboard already, so a second back is only needed while
+# the search is still open. An extra back would leave the Products tab.
+- back
+- runFlow:
+    when:
+      visible:
+        id: "product_list_search_field"
+    commands:
+      - back
+
+# Test filters
+- tapOn:
+    id: "product_list_filters"
+    label: "Open product filters"
+- extendedWaitUntil:
+    visible: "Stock status"
+    timeout: 10000
+- takeScreenshot: products_filters
+- back
+
+# The app keeps the chosen sort, so put the list back on its default A to Z order
+# for the flows that open the first product.
+- tapOn:
+    id: "product_list_sort"
+    retryTapIfNoChange: true
+    label: "Reopen product sorting"
+- extendedWaitUntil:
+    visible: "Title: A to Z"
+    timeout: 10000
+- tapOn:
+    text: "Title: A to Z"
+    label: "Restore the default A to Z sort"
+- extendedWaitUntil:
+    visible: "A to Z"
+    timeout: 15000

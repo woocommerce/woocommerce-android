@@ -303,7 +303,7 @@ class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when currency code is null, then return site currency symbol`() {
+    fun `when currency code is null, then return site currency symbol`() = testBlocking {
         val site: SiteModel = SiteModel().apply { id = 1 }
         val settings = WCSettingsTestUtils.generateSettings(site.localId()).copy(currencyCode = "INR")
         whenever(selectedSite.get()).thenReturn(site)

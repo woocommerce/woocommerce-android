@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.PARSE_ER
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.SERVER_ERROR
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.TIMEOUT
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.store.Store.OnChangedError
@@ -24,7 +25,8 @@ data class WooError(
     val original: GenericErrorType,
     val message: String? = null,
     val apiErrorCode: String? = null,
-    val errorData: JSONObject? = null
+    val errorData: JSONObject? = null,
+    val unexpectedStoreResponse: UnexpectedStoreResponse? = null
 ) : OnChangedError {
     companion object {
         /**
@@ -59,6 +61,7 @@ fun WPComGsonNetworkError.toWooError() = WooError(
     message = message,
     apiErrorCode = apiError,
     errorData = errorData,
+    unexpectedStoreResponse = unexpectedStoreResponse,
 )
 
 fun WPAPINetworkError.toWooError() = WooError(
@@ -67,6 +70,7 @@ fun WPAPINetworkError.toWooError() = WooError(
     message = message,
     apiErrorCode = errorCode,
     errorData = errorData,
+    unexpectedStoreResponse = unexpectedStoreResponse,
 )
 
 @Suppress("CyclomaticComplexMethod")

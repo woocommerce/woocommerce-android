@@ -2,7 +2,6 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm
 
 import org.wordpress.android.fluxc.generated.endpoint.JPAPI
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
@@ -49,16 +48,8 @@ class JitmRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
         )
 
         return when (response) {
-            is WPAPIResponse.Success -> {
-                WooPayload(true)
-            }
-            is WPAPIResponse.Error -> {
-                if (response.error.type == BaseRequest.GenericErrorType.NOT_FOUND) {
-                    WooPayload(false)
-                } else {
-                    WooPayload(response.error.toWooError())
-                }
-            }
+            is WPAPIResponse.Success -> WooPayload(true)
+            is WPAPIResponse.Error -> WooPayload(response.error.toWooError())
         }
     }
 }

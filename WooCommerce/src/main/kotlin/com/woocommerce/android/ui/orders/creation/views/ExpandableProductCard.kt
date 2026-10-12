@@ -53,6 +53,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -110,6 +111,7 @@ fun ExpandableProductCard(
     }
     ConstraintLayout(
         modifier = Modifier
+            .testTag(ExpandableProductCardTestTags.PRODUCT_CARD)
             .fillMaxWidth()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -173,6 +175,7 @@ fun ExpandableProductCard(
         if (showsCollapsedDiscount) {
             Text(
                 modifier = Modifier
+                    .testTag(ExpandableProductCardTestTags.DISCOUNT_AMOUNT)
                     .constrainAs(discount) {
                         end.linkTo(chevron.start)
                         top.linkTo(stock.top)
@@ -423,6 +426,7 @@ fun ExtendedProductCardContent(
             }
             Text(
                 modifier = Modifier
+                    .testTag(ExpandableProductCardTestTags.DISCOUNT_AMOUNT)
                     .padding(horizontal = dimensionResource(id = R.dimen.minor_100))
                     .constrainAs(discountAmount) {
                         end.linkTo(parent.end)
@@ -868,4 +872,9 @@ fun ExtendedConfigurableProductCardContentPreview() {
     LegacyWooThemeWithBackground {
         ExtendedProductCardContent(state, product, {}, {}, {}) {}
     }
+}
+
+internal object ExpandableProductCardTestTags {
+    const val PRODUCT_CARD = "order_product_card"
+    const val DISCOUNT_AMOUNT = "order_product_discount_amount"
 }

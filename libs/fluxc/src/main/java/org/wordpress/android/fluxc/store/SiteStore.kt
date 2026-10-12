@@ -28,6 +28,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
 import org.wordpress.android.fluxc.model.asDomainModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordDeletionResult
@@ -173,7 +174,8 @@ open class SiteStore @Inject constructor(
         @JvmField val type: SiteErrorType,
         @JvmField val message: String? = null,
         @JvmField val selfHostedErrorType: SelfHostedErrorType = NOT_SET,
-        @JvmField val wpApiDiscovery: WPAPIDiscoveryResult? = null
+        @JvmField val wpApiDiscovery: WPAPIDiscoveryResult? = null,
+        @JvmField val unexpectedStoreResponse: UnexpectedStoreResponse? = null
     ) : OnChangedError
 
     data class DomainSupportedStatesError

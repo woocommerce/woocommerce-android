@@ -4,8 +4,7 @@ option java_package = "com.woocommerce.android.ui.mystore.data";
 option java_multiple_files = true;
 
 message CustomDateRange {
-  uint64 start_date_millis = 1;
-  uint64 end_date_millis = 2;
+  reserved 1, 2;
   int64 start_date_epoch_day = 3;
   int64 end_date_epoch_day = 4;
 }

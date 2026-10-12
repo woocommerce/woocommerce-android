@@ -11,7 +11,7 @@ class WooPosPaymentSuccessProperties @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
 ) {
-    operator fun invoke(order: Order): Map<String, Any> = mapOf(
+    suspend operator fun invoke(order: Order): Map<String, Any> = mapOf(
         "amount_normalized" to paymentUtils.convertToSmallestCurrencyUnit(order.total, order.currency),
         "currency" to order.currency,
         "order_id" to order.id,

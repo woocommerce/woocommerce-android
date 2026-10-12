@@ -64,7 +64,7 @@ class VariationSelectorViewModel @Inject constructor(
         private const val STATE_UPDATE_DELAY = 100L
     }
 
-    private val currencyCode by lazy {
+    private val currencyCode = async {
         wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     }
 
@@ -129,7 +129,7 @@ class VariationSelectorViewModel @Inject constructor(
         val price = price?.let {
             PriceUtils.formatCurrency(
                 price,
-                navArgs.orderCurrency ?: currencyCode,
+                navArgs.orderCurrency ?: currencyCode.await(),
                 currencyFormatter
             )
         }

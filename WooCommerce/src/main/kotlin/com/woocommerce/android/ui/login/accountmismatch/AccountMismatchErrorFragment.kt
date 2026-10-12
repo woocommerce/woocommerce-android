@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.support.help.HelpActivity
@@ -38,6 +39,8 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
     companion object {
         const val JETPACK_CONNECTED_NOTICE = "jetpack-connected"
     }
+
+    private val navArgs: AccountMismatchErrorFragmentArgs by navArgs()
 
     private val viewModel: AccountMismatchErrorViewModel by viewModels()
 
@@ -122,6 +125,7 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
         findNavController().navigate(
             AccountMismatchErrorFragmentDirections
                 .actionAccountMismatchErrorFragmentToNavGraphJetpackActivation(
+                    openedFromLogin = navArgs.openedFromLogin,
                     siteUrl = event.siteUrl,
                     jetpackStatus = event.jetpackStatus
                 )
