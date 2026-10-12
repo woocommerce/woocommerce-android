@@ -212,6 +212,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                             accountRepository.get()
                                 .logoutInvoluntarily(InvoluntaryLogoutReason.WOOCOMMERCE_NOT_AVAILABLE)
                             restartMainActivity()
+                            return@launch
                         } else if (current?.id == it.id && current != it) {
                             selectedSite.set(it)
                         }

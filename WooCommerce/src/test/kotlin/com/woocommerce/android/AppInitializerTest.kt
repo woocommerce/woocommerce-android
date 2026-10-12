@@ -264,6 +264,27 @@ class AppInitializerTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given selected site lost WooCommerce, when user is logged out, then site settings are not fetched`() =
+        testBlocking {
+            // GIVEN
+            val site = SiteModel().apply {
+                siteId = SITE_ID
+                origin = SiteModel.ORIGIN_WPAPI
+                hasWooCommerce = false
+            }
+            whenever(selectedSiteMock.getIfExists()).thenReturn(site)
+            whenever(wooCommerceStoreMock.fetchWooCommerceSite(site)).thenReturn(WooResult(site))
+
+            // WHEN
+            triggerUpdateSelectedSite()
+            coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+            // THEN
+            verify(wooCommerceStoreMock, never()).fetchSiteGeneralSettings(any())
+            verify(wooCommerceStoreMock, never()).fetchSiteProductSettings(any())
+        }
+
+    @Test
     fun `given selected site still has WooCommerce, when site is updated, then do not log user out`() =
         testBlocking {
             // GIVEN
