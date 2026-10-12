@@ -574,8 +574,10 @@ for flow in "${ORDERED_FLOWS[@]}"; do
     POS_FLOW_COUNT=$((POS_FLOW_COUNT + 1))
   fi
 done
+DEVICE_OPTION="--device"
 if [[ "$POS_FLOW_COUNT" -eq ${#ORDERED_FLOWS[@]} && -n "$POS_DEVICE_SELECTOR" ]]; then
   DEVICE_SELECTOR="$POS_DEVICE_SELECTOR"
+  DEVICE_OPTION="--pos-device"
   POS_DEVICE_SELECTOR=""
 fi
 USES_POS_DEVICE="no"
@@ -745,6 +747,7 @@ done < <(adb devices)
 
 resolve_device() {
   local selector="$1"
+  local option="${2:---device}"
   local serial avd
   if [[ ${#DEVICE_SERIALS[@]} -eq 0 ]]; then
     echo "No Android device/emulator connected. Start one and retry." >&2
@@ -762,7 +765,7 @@ resolve_device() {
         return
       fi
     done
-    echo "No attached device matched --device $selector" >&2
+    echo "No attached device matched $option $selector" >&2
     exit 1
   fi
   if [[ ${#DEVICE_SERIALS[@]} -eq 1 ]]; then
@@ -793,11 +796,11 @@ resolve_device() {
   printf '%s' "${DEVICE_SERIALS[$((selected - 1))]}"
 }
 
-PHONE_SERIAL="$(resolve_device "$DEVICE_SELECTOR")"
+PHONE_SERIAL="$(resolve_device "$DEVICE_SELECTOR" "$DEVICE_OPTION")"
 RUN_DEVICES=("$PHONE_SERIAL")
 POS_DEVICE_SERIAL=""
 if [[ "$USES_POS_DEVICE" == "yes" ]]; then
-  POS_DEVICE_SERIAL="$(resolve_device "$POS_DEVICE_SELECTOR")"
+  POS_DEVICE_SERIAL="$(resolve_device "$POS_DEVICE_SELECTOR" --pos-device)"
   if [[ "$POS_DEVICE_SERIAL" == "$PHONE_SERIAL" ]]; then
     echo "--pos-device must be a different device than --device." >&2
     exit 2
