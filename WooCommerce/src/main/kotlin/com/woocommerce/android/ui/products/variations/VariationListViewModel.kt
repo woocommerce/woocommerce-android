@@ -66,6 +66,7 @@ private const val BULK_UPDATE_VARIATIONS_LIMIT = 100
 class VariationListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val variationRepository: VariationRepository,
+    private val variationListPaginationHandler: VariationListPaginationHandler,
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
@@ -234,7 +235,7 @@ class VariationListViewModel @Inject constructor(
         loadMore: Boolean = false,
         withSkeletonView: Boolean = true
     ) {
-        if (loadMore && !variationRepository.canLoadMoreProductVariations) {
+        if (loadMore && !variationListPaginationHandler.canLoadMore) {
             WooLog.d(WooLog.T.PRODUCTS, "can't load more product variations")
             return
         }
@@ -263,8 +264,14 @@ class VariationListViewModel @Inject constructor(
 
     private suspend fun fetchVariations(remoteProductId: Long, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
-            variationRepository.fetchProductVariations(remoteProductId, loadMore).fold(
-                onSuccess = { fetchedVariations ->
+            val result = if (loadMore) {
+                variationListPaginationHandler.loadMore(remoteProductId)
+            } else {
+                variationListPaginationHandler.fetchVariations(remoteProductId)
+            }
+            result.fold(
+                onSuccess = {
+                    val fetchedVariations = variationRepository.getProductVariationList(remoteProductId)
                     if (fetchedVariations.isEmpty()) {
                         if (!loadMore) {
                             _variationList.value = emptyList()

@@ -38,53 +38,21 @@ class VariationRepository @Inject constructor(
         private const val PRODUCT_VARIATIONS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_VARIATIONS_PAGE_SIZE
     }
 
-    private var offset = 0
-
-    var canLoadMoreProductVariations = true
-        private set
-
     /**
-     * Submits a fetch request to get a list of products variations for the current site and productId
-     * and returns the full list of product variations from the database, or a failure if the request failed
+     * Submits a fetch request for a single page of product variations for the current site and productId and
+     * returns whether more pages can be loaded, or a failure if the request failed
      */
-    suspend fun fetchProductVariations(
+    suspend fun fetchProductVariationsPage(
         remoteProductId: Long,
-        loadMore: Boolean = false
-    ): Result<List<ProductVariation>> {
-        val requestedOffset = if (loadMore) offset + PRODUCT_VARIATIONS_PAGE_SIZE else 0
-        return fetchVariationsPage(remoteProductId, requestedOffset, VariationSorting.MENU_ORDER).map { canLoadMore ->
-            offset = requestedOffset
-            canLoadMoreProductVariations = canLoadMore
-            getProductVariationList(remoteProductId)
-        }
-    }
-
-    /**
-     * Fetches every page of variations for the given product, starting from the first page,
-     * and returns the full list from the database, or a failure if any page request failed.
-     * Pages are requested by id because variations sharing the same menu_order can repeat across offset pages.
-     */
-    suspend fun getAllVariations(remoteProductId: Long): Result<List<ProductVariation>> =
-        withContext(dispatchers.io) {
-            var pageOffset = 0
-            do {
-                val canLoadMore = fetchVariationsPage(remoteProductId, pageOffset, VariationSorting.ID)
-                    .getOrElse { return@withContext Result.failure(it) }
-                pageOffset += PRODUCT_VARIATIONS_PAGE_SIZE
-            } while (canLoadMore)
-            Result.success(getProductVariationList(remoteProductId))
-        }
-
-    private suspend fun fetchVariationsPage(
-        remoteProductId: Long,
-        pageOffset: Int,
+        offset: Int,
+        pageSize: Int,
         sorting: VariationSorting
     ): Result<Boolean> {
         val payload = WCProductStore.FetchProductVariationsPayload(
             selectedSite.get(),
             remoteProductId,
-            pageSize = PRODUCT_VARIATIONS_PAGE_SIZE,
-            offset = pageOffset,
+            pageSize = pageSize,
+            offset = offset,
             sorting = sorting
         )
         val result = productStore.fetchProductVariations(payload)
@@ -102,6 +70,26 @@ class VariationRepository @Inject constructor(
         AnalyticsTracker.track(AnalyticsEvent.PRODUCT_VARIANTS_LOADED)
         return Result.success(requireNotNull(result.model).canLoadMore)
     }
+
+    /**
+     * Fetches every page of variations for the given product, starting from the first page,
+     * and returns the full list from the database, or a failure if any page request failed.
+     * Pages are requested by id because variations sharing the same menu_order can repeat across offset pages.
+     */
+    suspend fun getAllVariations(remoteProductId: Long): Result<List<ProductVariation>> =
+        withContext(dispatchers.io) {
+            var pageOffset = 0
+            do {
+                val canLoadMore = fetchProductVariationsPage(
+                    remoteProductId = remoteProductId,
+                    offset = pageOffset,
+                    pageSize = PRODUCT_VARIATIONS_PAGE_SIZE,
+                    sorting = VariationSorting.ID
+                ).getOrElse { return@withContext Result.failure(it) }
+                pageOffset += PRODUCT_VARIATIONS_PAGE_SIZE
+            } while (canLoadMore)
+            Result.success(getProductVariationList(remoteProductId))
+        }
 
     /**
      * Returns all product variations for a product and current site that are in the database

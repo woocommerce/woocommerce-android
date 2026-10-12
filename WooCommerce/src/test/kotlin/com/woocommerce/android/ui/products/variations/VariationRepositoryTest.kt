@@ -41,43 +41,38 @@ class VariationRepositoryTest : BaseUnitTest() {
     )
 
     @Test
-    fun `given loading more fails, when loading more again, then the failed page is requested again`() = testBlocking {
-        // GIVEN
-        givenFetchResults(SUCCESS_WITH_MORE, ERROR, SUCCESS_WITH_MORE)
-        sut.fetchProductVariations(PRODUCT_ID)
-        sut.fetchProductVariations(PRODUCT_ID, loadMore = true)
+    fun `when fetching a page, then the requested page is fetched and whether more can be loaded is returned`() =
+        testBlocking {
+            // GIVEN
+            givenFetchResults(SUCCESS_WITH_MORE)
 
-        // WHEN
-        sut.fetchProductVariations(PRODUCT_ID, loadMore = true)
+            // WHEN
+            val result = sut.fetchProductVariationsPage(
+                remoteProductId = PRODUCT_ID,
+                offset = 50,
+                pageSize = 10,
+                sorting = VariationSorting.MENU_ORDER
+            )
 
-        // THEN
-        assertThat(requestedOffsets()).containsExactly(0, PAGE_SIZE, PAGE_SIZE)
-    }
-
-    @Test
-    fun `given loading more succeeds, when loading more again, then the next page is requested`() = testBlocking {
-        // GIVEN
-        givenFetchResults(SUCCESS_WITH_MORE, SUCCESS_WITH_MORE, SUCCESS_WITH_MORE)
-        sut.fetchProductVariations(PRODUCT_ID)
-        sut.fetchProductVariations(PRODUCT_ID, loadMore = true)
-
-        // WHEN
-        sut.fetchProductVariations(PRODUCT_ID, loadMore = true)
-
-        // THEN
-        assertThat(requestedOffsets()).containsExactly(0, PAGE_SIZE, PAGE_SIZE * 2)
-    }
+            // THEN
+            val payload = requestedPayloads().single()
+            assertThat(payload.remoteProductId).isEqualTo(PRODUCT_ID)
+            assertThat(payload.offset).isEqualTo(50)
+            assertThat(payload.pageSize).isEqualTo(10)
+            assertThat(payload.sorting).isEqualTo(VariationSorting.MENU_ORDER)
+            assertThat(result.getOrThrow()).isTrue()
+        }
 
     @Test
-    fun `given fetch fails, when fetching variations, then failure is returned`() = testBlocking {
+    fun `given fetch fails, when fetching a page, then failure is returned`() = testBlocking {
         // GIVEN
         givenFetchResults(ERROR)
 
         // WHEN
-        val result = sut.fetchProductVariations(PRODUCT_ID)
+        val result = sut.fetchProductVariationsPage(PRODUCT_ID, 0, PAGE_SIZE, VariationSorting.MENU_ORDER)
 
         // THEN
-        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()).isInstanceOf(WooException::class.java)
     }
 
     @Test
@@ -94,7 +89,7 @@ class VariationRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a fresh repository, when getting all variations, then every page is requested from the start`() =
+    fun `when getting all variations, then every page is requested from the start`() =
         testBlocking {
             // GIVEN
             givenFetchResults(SUCCESS_WITH_MORE, SUCCESS_WITH_MORE, SUCCESS_LAST_PAGE)
@@ -125,39 +120,17 @@ class VariationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given all pages were already loaded, when getting all variations, then pages are requested again`() =
+    fun `given variations were already fetched, when getting all variations, then it starts from the first page`() =
         testBlocking {
             // GIVEN
-            givenFetchResults(SUCCESS_LAST_PAGE, SUCCESS_WITH_MORE, SUCCESS_LAST_PAGE)
-            sut.fetchProductVariations(PRODUCT_ID)
+            givenFetchResults(SUCCESS_LAST_PAGE, SUCCESS_LAST_PAGE)
+            sut.getAllVariations(PRODUCT_ID)
 
             // WHEN
             sut.getAllVariations(PRODUCT_ID)
 
             // THEN
-            assertThat(requestedOffsets()).containsExactly(0, 0, PAGE_SIZE)
-        }
-
-    @Test
-    fun `given all variations were fetched, when loading more, then the list pagination is not affected`() =
-        testBlocking {
-            // GIVEN
-            givenFetchResults(
-                SUCCESS_WITH_MORE,
-                SUCCESS_WITH_MORE,
-                SUCCESS_WITH_MORE,
-                SUCCESS_LAST_PAGE,
-                SUCCESS_WITH_MORE
-            )
-            sut.fetchProductVariations(PRODUCT_ID)
-            sut.getAllVariations(PRODUCT_ID)
-            assertThat(sut.canLoadMoreProductVariations).isTrue()
-
-            // WHEN
-            sut.fetchProductVariations(PRODUCT_ID, loadMore = true)
-
-            // THEN
-            assertThat(requestedOffsets()).containsExactly(0, 0, PAGE_SIZE, PAGE_SIZE * 2, PAGE_SIZE)
+            assertThat(requestedOffsets()).containsExactly(0, 0)
         }
 
     @Test
@@ -170,18 +143,6 @@ class VariationRepositoryTest : BaseUnitTest() {
 
         // THEN
         assertThat(requestedPayloads().map { it.sorting }).containsOnly(VariationSorting.ID)
-    }
-
-    @Test
-    fun `when fetching a page of variations, then it is sorted by menu order`() = testBlocking {
-        // GIVEN
-        givenFetchResults(SUCCESS_WITH_MORE)
-
-        // WHEN
-        sut.fetchProductVariations(PRODUCT_ID)
-
-        // THEN
-        assertThat(requestedPayloads().single().sorting).isEqualTo(VariationSorting.MENU_ORDER)
     }
 
     @Test
