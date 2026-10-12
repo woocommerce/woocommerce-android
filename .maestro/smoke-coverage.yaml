@@ -275,7 +275,7 @@ items:
     manual: "Submitting a campaign needs payment, and the manual test fills the whole form first, so the whole item is one manual test."
   - id: hub.google-for-woo
     title: Google for Woo campaign webview
-    manual: "Feature-gated probe only; an ineligible store must not count as coverage."
+    flow: .maestro/flows/google_for_woo.yaml
 
   - id: payments.card-reader
     title: Collect payment using card reader
