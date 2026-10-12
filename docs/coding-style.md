@@ -8,7 +8,7 @@ Our code style guidelines are based on the [Android Code Style Guidelines for Co
 We use [editorconfig](https://editorconfig.org/) to keep our setups in sync. Unfortunately, not every settings is supported, therefore if you want to use autoformatting feature of Android Studio it's better to adjust it's settings:
 * Preferences -> Kotlin -> Imports -> Remove all from "Packages to use import with *"
 
-On top of the Android linter rules (best run for this project using `./gradlew lintVanillaRelease`), we use [detekt](https://detekt.github.io/detekt/).
+On top of the Android linter rules (best run for this project using `./gradlew lintWasabiRelease`), we use [detekt](https://detekt.github.io/detekt/).
 
 ## Detekt
 
@@ -31,3 +31,5 @@ Once installed, you can configure the plugin here:
 `Android Studio > Preferences... > Tools > Detekt`
 
 From there, add and enable the custom configuration file, located at [config/detekt/detekt.yml](https://github.com/woocommerce/woocommerce-android/blob/trunk/config/detekt/detekt.yml).
+
+If you want to use the **AutoCorrect** feature of the plugin, make sure that the option `Enable formatting (ktlint) rules` is enabled in the above settings, then you will be able to reformat any file according to detekt's rules using the refactor menu `AutoCorrect by Detekt Rules`

@@ -6,4 +6,5 @@ sealed class CardReaderModeEvent {
     data object RequestLocationPermission : CardReaderModeEvent()
     data object RequestLocalNetworkPermission : CardReaderModeEvent()
     data object OpenAppSettings : CardReaderModeEvent()
+    data object OpenNfcSettings : CardReaderModeEvent()
 }

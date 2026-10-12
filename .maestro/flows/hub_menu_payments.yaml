@@ -20,7 +20,6 @@ appId: com.woocommerce.android
 name: "Hub Menu - Payments"
 tags:
   - smoke_extended
-  - flaky_quarantine
   - hub_menu
 ---
 - runFlow:

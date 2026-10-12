@@ -22,7 +22,6 @@ appId: com.woocommerce.android
 name: "POS - Search and Coupons tab"
 tags:
   - pos_tablet
-  - flaky_quarantine
 ---
 # Reuse the logged-in session — login flows run first and leave the
 # app authenticated. See subflows/ensure_logged_in.yaml.

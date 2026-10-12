@@ -18,7 +18,6 @@ appId: com.woocommerce.android
 name: "Orders - Collect cash payment"
 tags:
   - smoke_extended
-  - flaky_quarantine
   - orders
   - destructive
 ---

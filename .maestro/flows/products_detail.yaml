@@ -27,7 +27,6 @@ appId: com.woocommerce.android
 name: "Products - Product detail view"
 tags:
   - smoke_extended
-  - flaky_quarantine
   - products
 ---
 # Reuse the logged-in session — login flows run first and leave the
