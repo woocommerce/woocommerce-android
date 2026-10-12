@@ -147,28 +147,28 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     private suspend fun showPaymentState() {
+        val order = order.first()
         val isTapToPayAvailableOnDevice = isTapToPayAvailable()
+        val isLocallyCollectable = cardPaymentCollectibilityChecker.isCollectable(order)
 
-        // Show the card reader / Tap to Pay rows disabled while we confirm eligibility over the
-        // network. Cash stays enabled throughout.
+        // Show the card reader / Tap to Pay rows disabled while we confirm eligibility over the network.
         emitPaymentState(
-            isPaymentCollectableWithCardReader = true,
+            isPaymentCollectableWithCardReader = isLocallyCollectable,
             isTapToPayAvailableOnDevice = isTapToPayAvailableOnDevice,
-            areCardReaderRowsLoading = true,
+            areCardReaderRowsLoading = isLocallyCollectable,
         )
-        emitPaymentState(
-            isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader(),
-            isTapToPayAvailableOnDevice = isTapToPayAvailableOnDevice,
-            areCardReaderRowsLoading = false,
-        )
+        if (isLocallyCollectable) {
+            emitPaymentState(
+                isPaymentCollectableWithCardReader = isFreeOfSubscriptions(order),
+                isTapToPayAvailableOnDevice = isTapToPayAvailableOnDevice,
+                areCardReaderRowsLoading = false,
+            )
+        }
     }
 
-    private suspend fun isPaymentCollectableWithCardReader(): Boolean {
-        val order = order.first()
-        // The subscription lookup is a separate step so we can tell a genuine subscription order
-        // (silently hide the card reader rows) apart from a lookup failure (hide them and surface an
-        // error so the merchant knows the check couldn't complete).
-        if (!cardPaymentCollectibilityChecker.isCollectable(order)) return false
+    // A genuine subscription order silently hides the card reader rows, while a lookup failure hides
+    // them and surfaces an error so the merchant knows the check couldn't complete.
+    private suspend fun isFreeOfSubscriptions(order: Order): Boolean {
         return when (orderSubscriptionChecker.getSubscriptionStatus(order)) {
             OrderSubscriptionChecker.SubscriptionStatus.NONE -> true
             OrderSubscriptionChecker.SubscriptionStatus.PRESENT -> false
