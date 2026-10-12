@@ -8,6 +8,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
@@ -250,5 +252,25 @@ class FetchWooCorePluginVersionTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(null)
+    }
+
+    @Test
+    fun `given a site, when invoke is called with that site, then return its version without reading selected site`() = runTest {
+        // GIVEN
+        val siteModel = mock<SiteModel>()
+        val version = "1.2.3"
+        val wooCorePlugin = createTestSitePlugin(
+            name = "woocommerce/woocommerce",
+            version = version,
+            isActive = true
+        )
+        whenever(wooCommerceStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(listOf(wooCorePlugin)))
+
+        // WHEN
+        val result = sut(siteModel)
+
+        // THEN
+        assertThat(result).isEqualTo(version)
+        verify(selectedSite, never()).getOrNull()
     }
 }
