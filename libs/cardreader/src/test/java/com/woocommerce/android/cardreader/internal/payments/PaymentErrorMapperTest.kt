@@ -626,6 +626,18 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
     }
 
     @Test
+    fun `given canceled by reader, when terminal exception thrown, then canceled returned`() {
+        // GIVEN
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.CANCELED_BY_READER)
+
+        // WHEN
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        // THEN
+        assertThat(result.type).isEqualTo(Canceled)
+    }
+
+    @Test
     fun `when DECLINED_BY_STRIPE_API with amount_too_small code, then AmountTooSmallStripe type returned`() {
         whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.DECLINED_BY_STRIPE_API)
         whenever(terminalException.apiError).thenReturn(mock())

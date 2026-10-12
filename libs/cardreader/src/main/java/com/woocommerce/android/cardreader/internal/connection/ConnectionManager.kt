@@ -235,7 +235,12 @@ internal class ConnectionManager(
     ): Reader {
         return terminal.connectToReader(
             cardReader.cardReader,
-            BluetoothConnectionConfiguration(locationId, true, bluetoothReaderListener)
+            BluetoothConnectionConfiguration(
+                locationId = locationId,
+                autoReconnectOnUnexpectedDisconnect = true,
+                bluetoothReaderListener = bluetoothReaderListener,
+                testReaderUpdate = terminal.simulatedReaderUpdate.takeIf { cardReader.cardReader.isSimulated },
+            )
         )
     }
 

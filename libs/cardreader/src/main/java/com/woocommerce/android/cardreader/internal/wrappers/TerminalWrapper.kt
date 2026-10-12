@@ -15,17 +15,18 @@ import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
 import com.stripe.stripeterminal.external.models.LocaleConfig
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
+import com.stripe.stripeterminal.external.models.ProcessRefundParameters
 import com.stripe.stripeterminal.external.models.Reader
+import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate.UpdateComponent
 import com.stripe.stripeterminal.external.models.ReaderSupportResult
 import com.stripe.stripeterminal.external.models.Refund
-import com.stripe.stripeterminal.external.models.RefundParameters
-import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
 import com.stripe.stripeterminal.external.models.SimulatedCard
 import com.stripe.stripeterminal.external.models.SimulatedCardType
 import com.stripe.stripeterminal.external.models.SimulatorConfiguration
 import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration
 import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration.Color
 import com.stripe.stripeterminal.external.models.TerminalException
+import com.stripe.stripeterminal.external.models.TestReaderUpdate
 import com.stripe.stripeterminal.ktx.cancelPaymentIntent
 import com.stripe.stripeterminal.ktx.collectPaymentMethod
 import com.stripe.stripeterminal.ktx.confirmPaymentIntent
@@ -48,6 +49,9 @@ import kotlin.coroutines.resumeWithException
  * Injectable wrapper for Stripe's Terminal object.
  */
 internal class TerminalWrapper {
+    var simulatedReaderUpdate: TestReaderUpdate? = null
+        private set
+
     fun isInitialized() = Terminal.isInitialized()
     fun getLifecycleObserver() = TerminalApplicationDelegateWrapper()
     fun initTerminal(
@@ -133,7 +137,7 @@ internal class TerminalWrapper {
         Terminal.getInstance().cancelPaymentIntent(paymentIntent)
 
     suspend fun processRefund(
-        refundParameters: RefundParameters,
+        refundParameters: ProcessRefundParameters,
         refundConfiguration: CollectRefundConfiguration
     ): Refund = Terminal.getInstance().processRefund(refundParameters, refundConfiguration)
 
@@ -146,8 +150,8 @@ internal class TerminalWrapper {
         useInterac: Boolean,
         useEftpos: Boolean,
     ) {
+        simulatedReaderUpdate = mapFrequencyOptions(updateFrequency)
         Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(
-            update = mapFrequencyOptions(updateFrequency),
             simulatedCard = SimulatedCard(
                 when {
                     useEftpos -> SimulatedCardType.EFTPOS_AU_DEBIT
@@ -158,17 +162,17 @@ internal class TerminalWrapper {
         )
     }
 
-    private fun mapFrequencyOptions(updateFrequency: CardReaderManager.SimulatorUpdateFrequency): SimulateReaderUpdate {
+    private fun mapFrequencyOptions(updateFrequency: CardReaderManager.SimulatorUpdateFrequency): TestReaderUpdate? {
         return when (updateFrequency) {
-            CardReaderManager.SimulatorUpdateFrequency.NEVER -> SimulateReaderUpdate.NONE
-            CardReaderManager.SimulatorUpdateFrequency.ALWAYS -> SimulateReaderUpdate.REQUIRED
-            CardReaderManager.SimulatorUpdateFrequency.LOW_BATTERY_ERROR -> SimulateReaderUpdate.LOW_BATTERY
-            CardReaderManager.SimulatorUpdateFrequency.LOW_BATTERY_SUCCEED_CONNECT -> {
-                SimulateReaderUpdate.LOW_BATTERY_SUCCEED_CONNECT
-            }
-            CardReaderManager.SimulatorUpdateFrequency.RANDOM -> SimulateReaderUpdate.RANDOM
+            CardReaderManager.SimulatorUpdateFrequency.NEVER -> null
+            CardReaderManager.SimulatorUpdateFrequency.ALWAYS ->
+                TestReaderUpdate.required(setOf(UpdateComponent.FIRMWARE))
+            CardReaderManager.SimulatorUpdateFrequency.LOW_BATTERY_ERROR -> TestReaderUpdate.lowBattery()
+            CardReaderManager.SimulatorUpdateFrequency.LOW_BATTERY_SUCCEED_CONNECT ->
+                TestReaderUpdate.lowBatterySucceedConnect()
+            CardReaderManager.SimulatorUpdateFrequency.RANDOM -> TestReaderUpdate.random()
             CardReaderManager.SimulatorUpdateFrequency.OPTIONAL_UPDATE_AVAILABLE ->
-                SimulateReaderUpdate.UPDATE_AVAILABLE
+                TestReaderUpdate.available(setOf(UpdateComponent.FIRMWARE))
         }
     }
 
@@ -180,18 +184,18 @@ internal class TerminalWrapper {
     fun setupTapToPayUx(config: CardReaderManager.TapToPayUxConfig) {
         val uxConfig = TapToPayUxConfiguration.Builder()
             .tapZone(TapToPayUxConfiguration.TapZone.Default)
-            .colors(
+            .colorScheme(
                 TapToPayUxConfiguration.ColorScheme.Builder()
                     .primary(Color.Resource(config.primaryColor))
                     .success(Color.Resource(config.successColor))
                     .error(Color.Resource(config.errorColor))
                     .build()
             )
-            .darkMode(
+            .theme(
                 if (config.isDarkMode) {
-                    TapToPayUxConfiguration.DarkMode.DARK
+                    TapToPayUxConfiguration.Theme.DARK
                 } else {
-                    TapToPayUxConfiguration.DarkMode.LIGHT
+                    TapToPayUxConfiguration.Theme.LIGHT
                 }
             )
             .build()
