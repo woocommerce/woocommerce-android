@@ -4,6 +4,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.subscription.SubscriptionRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS
 import java.util.concurrent.ConcurrentHashMap
@@ -45,12 +46,17 @@ class OrderSubscriptionChecker @Inject constructor(
     suspend fun getSubscriptionStatus(order: Order): SubscriptionStatus {
         val productIds = order.getProductIds()
         val site = selectedSite.get()
-        if (productIds.isEmpty()) return SubscriptionStatus.NONE
-        // Legacy subscription product types are known subscriptions without a network call.
-        if (orderDetailRepository.hasLegacySubscriptionProducts(productIds)) return SubscriptionStatus.PRESENT
-        // The plugin is inactive → the order can't have a plan-based subscription.
-        if (wooCommerceStore.getActiveSitePlugin(site, WOO_SUBSCRIPTIONS) == null) return SubscriptionStatus.NONE
+        return when {
+            productIds.isEmpty() -> SubscriptionStatus.NONE
+            // Legacy subscription product types are known subscriptions without a network call.
+            orderDetailRepository.hasLegacySubscriptionProducts(productIds) -> SubscriptionStatus.PRESENT
+            // The plugin is inactive → the order can't have a plan-based subscription.
+            wooCommerceStore.getActiveSitePlugin(site, WOO_SUBSCRIPTIONS) == null -> SubscriptionStatus.NONE
+            else -> fetchSubscriptionStatus(order, site)
+        }
+    }
 
+    private suspend fun fetchSubscriptionStatus(order: Order, site: SiteModel): SubscriptionStatus {
         val key = CacheKey(site.id, order.id)
         cache[key]?.let { return it.toStatus() }
 
