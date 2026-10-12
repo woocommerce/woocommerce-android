@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.jitm
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jitm.clientside.ClientSideJitmBannerProvider
 import dagger.Reusable
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import javax.inject.Inject
 
@@ -17,7 +18,11 @@ class JitmBannerMessageRepository @Inject constructor(
         return getProvider().getMessagesForPath(messagePath)
     }
 
-    override suspend fun dismissMessage(messagePath: String, jitmId: String, featureClass: String): Boolean {
+    override suspend fun dismissMessage(
+        messagePath: String,
+        jitmId: String,
+        featureClass: String
+    ): WooResult<Boolean> {
         return getProvider().dismissMessage(messagePath, jitmId, featureClass)
     }
 

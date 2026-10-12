@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.jitm
 
 import dagger.Reusable
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import javax.inject.Inject
 
@@ -13,9 +14,12 @@ class JitmBannerAdapter @Inject constructor(
         return jitmStoreInMemoryCache.getMessagesForPath(messagePath)
     }
 
-    override suspend fun dismissMessage(messagePath: String, jitmId: String, featureClass: String): Boolean {
-        val result = jitmStoreInMemoryCache.dismissJitmMessage(messagePath, jitmId, featureClass)
-        return result.model == true
+    override suspend fun dismissMessage(
+        messagePath: String,
+        jitmId: String,
+        featureClass: String
+    ): WooResult<Boolean> {
+        return jitmStoreInMemoryCache.dismissJitmMessage(messagePath, jitmId, featureClass)
     }
 
     override fun onCtaClicked(messagePath: String, jitmId: String) {

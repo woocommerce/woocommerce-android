@@ -105,8 +105,8 @@ class JitmViewModel @Inject constructor(
         _jitmState.value = JitmState.Hidden
         jitmTracker.trackJitmDismissTapped(utmSource, model.id, model.featureClass)
         launch {
-            val success = bannerMessageRepository.dismissMessage(messagePath, model.id, model.featureClass)
-            if (success) {
+            val result = bannerMessageRepository.dismissMessage(messagePath, model.id, model.featureClass)
+            if (result.model == true) {
                 jitmTracker.trackJitmDismissSuccess(
                     utmSource,
                     model.id,
@@ -117,8 +117,7 @@ class JitmViewModel @Inject constructor(
                     utmSource,
                     model.id,
                     model.featureClass,
-                    null,
-                    null
+                    result.error
                 )
             }
         }
