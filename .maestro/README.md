@@ -218,11 +218,11 @@ The runner:
 - `system_surface`: flow enters Android-owned UI; assertions stop at the documented handoff boundary.
 - `destructive`: mutates store data.
 - `store_shared`: runs against the shared store unless `--store` is passed; never combined with `destructive`.
-- `quarantine`: provisional or unstable flows, excluded unless the profile or `--include-quarantine` includes them.
+- `quarantine`: failing flows kept out of runs until they are fixed, excluded unless `--include-quarantine` is passed
+  or `--include-tags` names it.
 
 All login flows are required `smoke_core` coverage except `login_google`. It stays tagged `quarantine` because
 Google sign-in only accepts the Play-signed build, and the runner installs the GitHub release or a local build.
-Other provisional imported flows remain tagged `quarantine`.
 
 ## Coverage
 
