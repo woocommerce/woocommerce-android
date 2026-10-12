@@ -256,7 +256,7 @@ def main() -> int:
     if needs_pos_device(flows):
         if not args.pos_device:
             checks.append(Check("fail", "the selection has POS flows, which need a tablet; pass --pos-device"))
-        elif args.pos_device == args.device:
+        elif args.pos_device in run_devices:
             checks.append(Check("fail", "--pos-device must be a different device than --device"))
         elif args.pos_device in devices:
             run_devices.append(args.pos_device)
