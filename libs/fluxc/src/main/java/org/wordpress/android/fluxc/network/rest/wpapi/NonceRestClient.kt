@@ -362,8 +362,8 @@ class NonceRestClient @Inject constructor(
         }
 
     /**
-     * A nonce response can hold the nonce itself, so only a web page or a JSON error keeps its excerpt. A PHP warning
-     * printed before the nonce starts with a tag too, so a page needs a document tag.
+     * A successful nonce response can hold the nonce itself, so only a web page or a JSON error keeps its excerpt. A
+     * PHP warning printed before the nonce starts with a tag too, so a page needs a document tag.
      */
     private fun UnexpectedStoreResponse.withoutPlainTextExcerpt(body: String?): UnexpectedStoreResponse {
         val text = body.orEmpty().trimStart()
@@ -418,7 +418,7 @@ class NonceRestClient @Inject constructor(
                         statusCode.isMissingPage() -> null
                         // The credentials were already accepted, so the body can't explain a rejected nonce request.
                         else -> response.unacceptableStatus(Method.GET, nonceUrl)
-                    }?.withoutPlainTextExcerpt(response.error.volleyError?.networkResponse?.data?.decodeToString())
+                    }
                 )
             }
         }
