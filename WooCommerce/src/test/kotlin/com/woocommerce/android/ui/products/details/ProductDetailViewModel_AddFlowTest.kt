@@ -217,6 +217,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 determineProductPasswordApi = mock(),
                 customFieldsRepository = customFieldsRepository,
                 canAutoAuthenticateInWebView = mock(),
+                featureFlagRepository = mock(),
             )
         )
 
