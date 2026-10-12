@@ -1306,6 +1306,38 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when the visible switch is toggled, then only that attribute changes`() = testBlocking {
+        // GIVEN
+        givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE, VARIATION_GLOBAL_ATTRIBUTE))
+        viewModel.start()
+
+        // WHEN
+        viewModel.onAttributeVisibleToggled(0L, "Material", isVisible = true)
+
+        // THEN
+        Assertions.assertThat(viewModel.productDraftAttributes).containsExactly(
+            DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(isVisible = true),
+            VARIATION_GLOBAL_ATTRIBUTE
+        )
+    }
+
+    @Test
+    fun `when the used for variations switch is toggled, then only that attribute changes`() = testBlocking {
+        // GIVEN
+        givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE, VARIATION_GLOBAL_ATTRIBUTE))
+        viewModel.start()
+
+        // WHEN
+        viewModel.onAttributeUsedForVariationsToggled(VARIATION_GLOBAL_ATTRIBUTE.id, "Color", isVariation = false)
+
+        // THEN
+        Assertions.assertThat(viewModel.productDraftAttributes).containsExactly(
+            DISPLAY_ONLY_LOCAL_ATTRIBUTE,
+            VARIATION_GLOBAL_ATTRIBUTE.copy(isVariation = false)
+        )
+    }
+
+    @Test
     fun `given the feature is on, when attributes load outside the variation wizard, then all attributes are listed`() =
         testBlocking {
             // GIVEN
@@ -1378,6 +1410,22 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
             // THEN
             Assertions.assertThat(viewModel.productDraftAttributes.single().isVariation).isTrue()
+        }
+
+    @Test
+    fun `given two local attributes, when the visible switch is toggled on the second, then only the second changes`() =
+        testBlocking {
+            // GIVEN
+            val size = DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(name = "Size", position = 1)
+            givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE, size))
+            viewModel.start()
+
+            // WHEN
+            viewModel.onAttributeVisibleToggled(0L, "Size", isVisible = true)
+
+            // THEN
+            Assertions.assertThat(viewModel.productDraftAttributes)
+                .containsExactly(DISPLAY_ONLY_LOCAL_ATTRIBUTE, size.copy(isVisible = true))
         }
 
     private fun givenNonVariationAttributesEnabled(isEnabled: Boolean) {
