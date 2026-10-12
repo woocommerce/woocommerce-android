@@ -13,6 +13,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent.parent
 FLOWS_DIR = REPO_ROOT / ".maestro" / "flows"
 SHARED_STORE_TAG = "store_shared"
+POS_TAG = "pos_tablet"
 
 
 @dataclass(frozen=True)
@@ -23,13 +24,15 @@ class Profile:
 
 PROFILES = {
     "core": Profile(("smoke_core",), ("flaky_quarantine", "android_system")),
-    "phone-full": Profile(
-        ("smoke_core", "smoke_extended"),
-        ("pos_tablet", "android_system"),
+    "full": Profile(
+        ("smoke_core", "smoke_extended", "android_system", "pos_tablet"),
+        ("flaky_quarantine",),
     ),
-    "pos-tablet": Profile(("pos_tablet",), ()),
-    "android-system": Profile(("android_system",), ()),
+    "pos": Profile(("pos_tablet",), ("flaky_quarantine",)),
 }
+
+# Profiles that seed fixtures without --seed, because they include destructive flows.
+SEEDING_PROFILES = frozenset({"full", "pos"})
 
 P2_ORDERED_FLOW_NAMES = (
     "login_not_wp_site.yaml",
@@ -94,10 +97,20 @@ def flow_store(path: Path, store_override: str | None = None) -> str:
     return "shared" if SHARED_STORE_TAG in flow_tags(path) else "lab"
 
 
+def needs_pos_device(flows: tuple[Path, ...]) -> bool:
+    """POS flows need a tablet, so a selection that also has phone flows runs them on a second device."""
+    pos = [POS_TAG in flow_tags(flow) for flow in flows]
+    return any(pos) and not all(pos)
+
+
 def in_store_order(flows: tuple[Path, ...], store_override: str | None = None) -> tuple[Path, ...]:
-    """Lab flows run first, then the flows that need the shared store."""
-    return tuple(flow for flow in flows if flow_store(flow, store_override) == "lab") + tuple(
-        flow for flow in flows if flow_store(flow, store_override) == "shared"
+    """Lab flows run first, then the flows that need the shared store, then the POS flows on the tablet."""
+    pos_flows = tuple(flow for flow in flows if POS_TAG in flow_tags(flow)) if needs_pos_device(flows) else ()
+    phone_flows = tuple(flow for flow in flows if flow not in pos_flows)
+    return (
+        tuple(flow for flow in phone_flows if flow_store(flow, store_override) == "lab")
+        + tuple(flow for flow in phone_flows if flow_store(flow, store_override) == "shared")
+        + pos_flows
     )
 
 
@@ -124,6 +137,7 @@ def print_profile(name: str) -> None:
     profile = PROFILES[name]
     print(f"include\t{','.join(profile.include)}")
     print(f"exclude\t{','.join(profile.exclude)}")
+    print(f"seed\t{'yes' if name in SEEDING_PROFILES else 'no'}")
 
 
 def print_plan(args: argparse.Namespace) -> int:
@@ -144,8 +158,14 @@ def print_plan(args: argparse.Namespace) -> int:
     print(f"  flows:   {len(flows)}")
     print()
     print("Selected flows:")
+    pos_device = needs_pos_device(flows)
     for flow in flows:
-        suffix = " (shared store)" if not args.store and flow_store(flow) == "shared" else ""
+        if pos_device and POS_TAG in flow_tags(flow):
+            suffix = " (POS device)"
+        elif not args.store and flow_store(flow) == "shared":
+            suffix = " (shared store)"
+        else:
+            suffix = ""
         print(f"  - {flow.relative_to(REPO_ROOT)}{suffix}")
     return 0
 
