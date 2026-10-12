@@ -50,8 +50,8 @@ class WPAPIEncodedBodyRequestBuilder @Inject constructor(
         restClient: BaseWPAPIRestClient
     ) {
         val normalizedUrl = httpsUrlNormalizer.normalize(url).normalizedUrl
-        val request = WPAPIEncodedBodyRequest(method, normalizedUrl, params, body, { response, headers ->
-            cont.resume(Success(response, headers))
+        val request = WPAPIEncodedBodyRequest(method, normalizedUrl, params, body, { response, headers, statusCode ->
+            cont.resume(Success(response, headers, statusCode = statusCode))
         }, { error ->
             cont.resume(Error(error))
         })

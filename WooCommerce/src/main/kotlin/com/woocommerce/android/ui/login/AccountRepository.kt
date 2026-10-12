@@ -22,8 +22,10 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.LOGIN
 import com.woocommerce.android.util.dispatchAndAwait
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
@@ -148,9 +150,11 @@ class AccountRepository @Inject constructor(
         return true
     }
 
-    private fun logoutApplicationPasswordAccount(site: SiteModel?): Boolean {
+    private suspend fun logoutApplicationPasswordAccount(site: SiteModel?): Boolean {
         if (site != null) {
-            deleteApplicationPassword(site)
+            // Wait for the deletion before the cleanup resets the selected site, which can kill the process.
+            withTimeoutOrNull(APP_PASSWORD_DELETION_TIMEOUT_MS) { deleteApplicationPassword(site).join() }
+                ?: WooLog.w(LOGIN, "Application password deletion is taking too long, continuing with logout")
         } else {
             WooLog.w(LOGIN, "Skipping application password deletion, the selected site is not available")
         }
@@ -174,8 +178,8 @@ class AccountRepository @Inject constructor(
         }
     }
 
-    private fun deleteApplicationPassword(site: SiteModel) {
-        appCoroutineScope.launch {
+    private fun deleteApplicationPassword(site: SiteModel): Job {
+        return appCoroutineScope.launch {
             val result = siteStore.deleteApplicationPassword(site)
             val siteId = site.siteId.takeIf { it != 0L }
             if (result.isError) {
@@ -193,6 +197,10 @@ class AccountRepository @Inject constructor(
     sealed class CloseAccountResult {
         object Success : CloseAccountResult()
         data class Error(val hasActiveStores: Boolean) : CloseAccountResult()
+    }
+
+    companion object {
+        private const val APP_PASSWORD_DELETION_TIMEOUT_MS = 5_000L
     }
 }
 

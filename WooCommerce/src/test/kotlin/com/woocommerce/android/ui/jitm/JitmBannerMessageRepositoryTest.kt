@@ -13,6 +13,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMContent
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMCta
@@ -81,11 +82,12 @@ class JitmBannerMessageRepositoryTest : BaseUnitTest() {
         testBlocking {
             val site = createSite(isJetpackConnected = true)
             whenever(selectedSite.getIfExists()).thenReturn(site)
-            whenever(jitmBannerAdapter.dismissMessage(any(), any(), any())).thenReturn(true)
+            val expected = WooResult(true)
+            whenever(jitmBannerAdapter.dismissMessage(any(), any(), any())).thenReturn(expected)
 
             val result = sut.dismissMessage(JitmMessagePathsProvider.MY_STORE, "id", "feature")
 
-            assertThat(result).isTrue()
+            assertThat(result).isEqualTo(expected)
             verify(jitmBannerAdapter).dismissMessage(JitmMessagePathsProvider.MY_STORE, "id", "feature")
             verify(clientSideBannerProvider, never()).dismissMessage(any(), any(), any())
         }
@@ -95,11 +97,12 @@ class JitmBannerMessageRepositoryTest : BaseUnitTest() {
         testBlocking {
             val site = createSite(isJetpackConnected = false)
             whenever(selectedSite.getIfExists()).thenReturn(site)
-            whenever(clientSideBannerProvider.dismissMessage(any(), any(), any())).thenReturn(true)
+            val expected = WooResult(true)
+            whenever(clientSideBannerProvider.dismissMessage(any(), any(), any())).thenReturn(expected)
 
             val result = sut.dismissMessage(JitmMessagePathsProvider.MY_STORE, "id", "feature")
 
-            assertThat(result).isTrue()
+            assertThat(result).isEqualTo(expected)
             verify(clientSideBannerProvider).dismissMessage(JitmMessagePathsProvider.MY_STORE, "id", "feature")
             verify(jitmBannerAdapter, never()).dismissMessage(any(), any(), any())
         }

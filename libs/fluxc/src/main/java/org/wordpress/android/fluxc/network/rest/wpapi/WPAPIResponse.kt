@@ -7,6 +7,10 @@ sealed class WPAPIResponse<T> {
         val data: T?,
         val headers: List<Header>,
         val networkingMode: WPAPINetworkingMode? = null,
+        /**
+         * The store's HTTP status, or null when it isn't known, like through the Jetpack tunnel.
+         */
+        val statusCode: Int? = null,
     ) : WPAPIResponse<T>()
 
     data class Error<T>(

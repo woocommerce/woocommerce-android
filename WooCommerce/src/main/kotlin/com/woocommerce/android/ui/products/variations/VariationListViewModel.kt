@@ -287,7 +287,7 @@ class VariationListViewModel @Inject constructor(
         )
     }
 
-    private fun combineData(variations: List<ProductVariation>): List<ProductVariation> {
+    private suspend fun combineData(variations: List<ProductVariation>): List<ProductVariation> {
         val currencyCode = variationRepository.getCurrencyCode()
         variations.map { variation ->
             if (variation.isSaleInEffect) {

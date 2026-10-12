@@ -33,7 +33,7 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
     )
 
     @Before
-    fun setUp() {
+    fun setUp() = testBlocking {
         whenever(selectedSite.get()).thenReturn(site)
         whenever(wooStore.getStoreCountryCode(site)).thenReturn(countryCode)
     }

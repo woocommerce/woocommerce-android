@@ -35,6 +35,7 @@
 /sites/$site/blogging-prompts
 
 /sites/$site/wordads/dsp/api/v1/search/campaigns/site
+/sites/$site/wordads/dsp/api/v1/user/billing-summary
 
 /sites/$site/wordads/dsp/api/v1.1/targeting/languages
 /sites/$site/wordads/dsp/api/v1.1/targeting/locations

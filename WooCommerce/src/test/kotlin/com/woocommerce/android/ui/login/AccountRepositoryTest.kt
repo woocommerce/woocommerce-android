@@ -19,6 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.yield
@@ -229,6 +230,58 @@ class AccountRepositoryTest : BaseUnitTest() {
             verify(siteStore).deleteApplicationPassword(selectedSiteModel)
             verify(selectedSite, never()).get()
             verify(selectedSite).reset()
+        }
+
+    @Test
+    fun `given app password login, when the password deletion is in flight, then the selected site is reset only after it completes`() =
+        testBlocking {
+            // GIVEN
+            given(accountStore.hasAccessToken()).willReturn(false)
+            given(selectedSite.connectionType).willReturn(SiteConnectionType.ApplicationPasswords)
+            val selectedSiteModel = SiteModel()
+            given(selectedSite.getOrNull()).willReturn(selectedSiteModel)
+            val deletionGate = CompletableDeferred<Unit>()
+            whenever(siteStore.deleteApplicationPassword(selectedSiteModel)).doSuspendableAnswer {
+                deletionGate.await()
+                OnApplicationPasswordDeleted(selectedSiteModel)
+            }
+
+            // WHEN
+            val result = async { repository.logout() }
+            runCurrent()
+
+            // THEN
+            assertThat(result.isCompleted).isFalse()
+            verify(selectedSite, never()).reset()
+
+            deletionGate.complete(Unit)
+            assertThat(result.await()).isTrue()
+            verify(selectedSite).reset()
+        }
+
+    @Test
+    fun `given app password login, when the password deletion hangs, then logout completes after the timeout`() =
+        testBlocking {
+            // GIVEN
+            given(accountStore.hasAccessToken()).willReturn(false)
+            given(selectedSite.connectionType).willReturn(SiteConnectionType.ApplicationPasswords)
+            val selectedSiteModel = SiteModel()
+            given(selectedSite.getOrNull()).willReturn(selectedSiteModel)
+            val deletionGate = CompletableDeferred<Unit>()
+            whenever(siteStore.deleteApplicationPassword(selectedSiteModel)).doSuspendableAnswer {
+                deletionGate.await()
+                OnApplicationPasswordDeleted(selectedSiteModel)
+            }
+
+            // WHEN
+            val result = async { repository.logout() }
+            advanceTimeBy(5_001L)
+
+            // THEN
+            assertThat(result.isCompleted).isTrue()
+            assertThat(result.await()).isTrue()
+            verify(selectedSite).reset()
+            deletionGate.complete(Unit)
         }
 
     @Test

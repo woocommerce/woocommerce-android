@@ -49,6 +49,16 @@ class WebViewAuthenticationFlowResolverTest {
     }
 
     @Test
+    fun `given WPCom authenticated and a Blaze payment URL, when resolving the authentication flow, then it should return WPCom`() {
+        givenWPComAuthenticated()
+        val url = "https://adpurchase.wordpress.com/checkout/order-pay/826745/"
+
+        val result = sut.resolve(url)
+
+        assertThat(result).isEqualTo(WebViewAuthenticationFlowResolver.WebViewAuthenticationFlow.WPCom)
+    }
+
+    @Test
     fun `given WPCom authenticated and a Jetpack SSO site, when resolving the authentication flow, then it should return JetpackSSO`() {
         givenWPComAuthenticated()
         givenSite {

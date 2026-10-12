@@ -4,6 +4,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.CONNECT_JETPACK
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.NONE
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToSiteAddressLogin
 import com.woocommerce.android.util.captureValues
@@ -26,6 +29,7 @@ class AccountMismatchErrorViewModelTest : BaseUnitTest() {
     }
     private val resourceProvider: ResourceProvider = mock {
         on { getString(R.string.login_jetpack_not_connected, SITE_URL) } doReturn "Jetpack not connected"
+        on { getString(R.string.login_wpcom_account_mismatch, SITE_URL) } doReturn "WPCom account mismatch"
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val webViewAuthenticator: WebViewAuthenticator = mock()
@@ -61,14 +65,38 @@ class AccountMismatchErrorViewModelTest : BaseUnitTest() {
             verify(accountRepository, never()).logout()
         }
 
-    private suspend fun setup(isUserLoggedIn: Boolean, logoutResult: Boolean = false) {
+    @Test
+    fun `given WordPress com site, when screen is shown, then account mismatch message is displayed`() =
+        testBlocking {
+            setup(isUserLoggedIn = true, primaryButton = CONNECT_WPCOM_SITE)
+
+            val viewState = viewModel.viewState.captureValues().last()
+
+            assertThat(viewState.message).isEqualTo("WPCom account mismatch")
+        }
+
+    @Test
+    fun `given self-hosted site, when screen is shown, then Jetpack not connected message is displayed`() =
+        testBlocking {
+            setup(isUserLoggedIn = true, primaryButton = CONNECT_JETPACK)
+
+            val viewState = viewModel.viewState.captureValues().last()
+
+            assertThat(viewState.message).isEqualTo("Jetpack not connected")
+        }
+
+    private suspend fun setup(
+        isUserLoggedIn: Boolean,
+        logoutResult: Boolean = false,
+        primaryButton: AccountMismatchPrimaryButton = NONE
+    ) {
         doReturn(isUserLoggedIn).`when`(accountRepository).isUserLoggedIn()
         doReturn(logoutResult).`when`(accountRepository).logout()
 
         viewModel = AccountMismatchErrorViewModel(
             savedStateHandle = AccountMismatchErrorFragmentArgs(
                 siteUrl = SITE_URL,
-                primaryButton = NONE
+                primaryButton = primaryButton
             ).toSavedStateHandle(),
             accountRepository = accountRepository,
             resourceProvider = resourceProvider,

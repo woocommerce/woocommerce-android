@@ -36,7 +36,7 @@ internal class AIAnalyticsDataSource @Inject constructor(
         )
     }
 
-    fun getSelectedSiteCurrencyCode(): String? =
+    suspend fun getSelectedSiteCurrencyCode(): String? =
         wooCommerceStore.getSiteSettings(selectedSite.get())
             ?.currencyCode
             ?.trim()

@@ -59,6 +59,7 @@ import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationEdgeToEdgeEnabler
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.PackageUtils
@@ -128,6 +129,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var wooCommerceStore: WooCommerceStore // Required to ensure the WooCommerceStore is initialized
 
     @Inject lateinit var selectedSite: SelectedSite
+
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     @Inject lateinit var networkStatus: NetworkStatus
 
@@ -209,16 +212,10 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                         if (!it.hasWooCommerce && it.connectionType == ApplicationPasswords) {
                             // The previously selected site doesn't have Woo anymore, take the user to the login screen
                             WooLog.w(T.LOGIN, "Selected site no longer has WooCommerce")
-
-                            analyticsTracker.track(
-                                AnalyticsEvent.ACCOUNT_INVOLUNTARY_LOGOUT,
-                                mapOf(
-                                    AnalyticsTracker.KEY_REASON to
-                                        InvoluntaryLogoutReason.WOOCOMMERCE_NOT_AVAILABLE.trackingValue
-                                )
-                            )
-                            selectedSite.reset()
+                            accountRepository.get()
+                                .logoutInvoluntarily(InvoluntaryLogoutReason.WOOCOMMERCE_NOT_AVAILABLE)
                             restartMainActivity()
+                            return@launch
                         } else if (current?.id == it.id && current != it) {
                             selectedSite.set(it)
                         }
@@ -280,6 +277,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         appCoroutineScope.launch {
             siteObserver.observeAndUpdateSelectedSiteData()
         }
+        appCoroutineScope.launch { currencyFormatter.observeSiteSettings() }
         appCoroutineScope.launch { blazeCampaignsObserver.observeAndScheduleNotifications() }
 
         monitorApplicationPasswordsStatus()

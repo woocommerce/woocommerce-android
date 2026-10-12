@@ -14,7 +14,14 @@ class WebViewAuthenticationFlowResolver @Inject constructor(
 ) {
     // A list of domains that we know that wordpress.com supports redirecting to
     private val wpComAuthAcceptedDomains
-        get() = listOf("wordpress.com", "wp.com", "jetpack.com", "jetpack.wordpress.com", "woocommerce.com")
+        get() = listOf(
+            "wordpress.com",
+            "wp.com",
+            "jetpack.com",
+            "jetpack.wordpress.com",
+            "woocommerce.com",
+            "adpurchase.wordpress.com"
+        )
 
     fun resolve(url: String): WebViewAuthenticationFlow {
         val currentSite = selectedSite.getOrNull()

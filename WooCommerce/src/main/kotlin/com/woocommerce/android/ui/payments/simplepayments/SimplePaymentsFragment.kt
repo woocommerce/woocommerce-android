@@ -6,7 +6,6 @@ import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,7 +31,6 @@ import javax.inject.Inject
 class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments), BackPressListener {
     private val args: SimplePaymentsFragmentArgs by navArgs()
     private val viewModel: SimplePaymentsViewModel by viewModels()
-    private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
@@ -75,7 +73,7 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments), 
             viewModel.onCustomerNoteClicked()
         }
 
-        _orderTaxesAdapter = OrderTaxesAdapter(currencyFormatter, sharedViewModel.currencyCode)
+        _orderTaxesAdapter = OrderTaxesAdapter(currencyFormatter, args.order.currency)
         binding.listTaxes.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = orderTaxesAdapter
@@ -113,7 +111,7 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments), 
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.orderSubtotal.takeIfNotEqualTo(old?.orderSubtotal) { subtotal ->
-                val subTotalStr = currencyFormatter.formatCurrency(subtotal, sharedViewModel.currencyCode)
+                val subTotalStr = currencyFormatter.formatCurrency(subtotal, args.order.currency)
                 binding.textCustomAmount.text = subTotalStr
                 binding.textSubtotal.text = subTotalStr
             }
@@ -121,7 +119,7 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments), 
                 orderTaxesAdapter.submitList(taxes)
             }
             new.orderTotal.takeIfNotEqualTo(old?.orderTotal) { total ->
-                val totalStr = currencyFormatter.formatCurrency(total, sharedViewModel.currencyCode)
+                val totalStr = currencyFormatter.formatCurrency(total, args.order.currency)
                 binding.textTotal.text = totalStr
                 binding.buttonDone.text = getString(R.string.simple_payments_take_payment_button, totalStr)
             }

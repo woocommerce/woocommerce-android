@@ -25,11 +25,14 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.INVALID_SSL_CERTIFICATE
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NO_CONNECTION
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseKind
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator.CookieNonceAuthenticationResult.Error
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator.CookieNonceAuthenticationResult.Success
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_NONCE
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -135,6 +138,25 @@ class WPApiSiteRepositoryTest : BaseUnitTest() {
             assertThat(exception.errorMessage).isEqualTo(UiStringRes(R.string.error_generic))
             assertThat(exception.message).isNull()
         }
+
+    @Test
+    fun `given an unexpected store response, when logging in, then the exception keeps its details`() = testBlocking {
+        val unexpectedStoreResponse = UnexpectedStoreResponse(
+            kind = UnexpectedStoreResponseKind.UNEXPECTED_CONTENT,
+            statusCode = 200,
+            contentType = "text/html",
+            requestType = "GET /wp-admin/admin-ajax.php",
+            excerpt = "Access Denied | Blocked by the firewall."
+        )
+        whenever(authenticator.authenticate(ENDPOINTS, USERNAME, PASSWORD)).thenReturn(
+            Error(type = INVALID_NONCE, unexpectedStoreResponse = unexpectedStoreResponse)
+        )
+
+        val exception = repository.login(SITE_URL, USERNAME, PASSWORD, ENDPOINTS).exceptionOrNull()
+            as WPApiSiteRepository.CookieNonceAuthenticationException
+
+        assertThat(exception.unexpectedStoreResponse).isEqualTo(unexpectedStoreResponse)
+    }
 
     @Test
     fun `given dispatch error, when saving proven endpoints, then fail without mutating caller`() = testBlocking {

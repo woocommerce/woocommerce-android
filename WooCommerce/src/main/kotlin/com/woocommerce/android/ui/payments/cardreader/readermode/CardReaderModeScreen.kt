@@ -47,6 +47,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLoca
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocalNetworkPermissionExplainer
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionDenied
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayLocationPermissionExplainer
+import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayNfcDisabled
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayReadyToPair
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayViewState
@@ -86,6 +87,7 @@ private fun CardReaderModeContent(state: RemoteTapToPayViewState?) {
                 is RemoteTapToPayLocationPermissionDenied,
                 is RemoteTapToPayLocalNetworkPermissionExplainer,
                 is RemoteTapToPayLocalNetworkPermissionDenied,
+                is RemoteTapToPayNfcDisabled,
                 is RemoteTapToPayReadyToPair,
                 is RemoteTapToPayWaitingForPayment,
                 is RemoteTapToPayError -> StatefulContent(targetState)
@@ -135,6 +137,7 @@ private fun illustrationModifier(state: RemoteTapToPayViewState): Modifier = whe
     is RemoteTapToPayLocationPermissionDenied,
     is RemoteTapToPayLocalNetworkPermissionExplainer,
     is RemoteTapToPayLocalNetworkPermissionDenied,
+    is RemoteTapToPayNfcDisabled,
     is RemoteTapToPayReadyToPair,
     is RemoteTapToPayWaitingForPayment,
     is RemoteTapToPayError -> Modifier.size(dimensionResource(id = R.dimen.image_major_120))
@@ -189,6 +192,7 @@ private fun StatefulContent(state: RemoteTapToPayViewState) {
                 is RemoteTapToPayLocationPermissionDenied,
                 is RemoteTapToPayLocalNetworkPermissionExplainer,
                 is RemoteTapToPayLocalNetworkPermissionDenied,
+                is RemoteTapToPayNfcDisabled,
                 is RemoteTapToPayWaitingForPayment,
                 is RemoteTapToPayError -> Unit
             }
@@ -293,6 +297,14 @@ fun CardReaderModeIntroPreview() {
 fun CardReaderModeStartingPreview() {
     LegacyWooThemeWithBackground {
         CardReaderModeContent(state = RemoteTapToPayStarting(onPrimaryActionClicked = {}))
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun CardReaderModeNfcDisabledPreview() {
+    LegacyWooThemeWithBackground {
+        CardReaderModeContent(state = RemoteTapToPayNfcDisabled(onPrimaryActionClicked = {}))
     }
 }
 

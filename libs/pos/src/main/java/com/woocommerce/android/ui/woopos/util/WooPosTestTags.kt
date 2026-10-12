@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.util
 
 object WooPosTestTags {
     const val PRODUCT_ITEM = "woo_pos_product_item"
+    const val SEARCH_INPUT = "woo_pos_search_input"
+    const val COUPON_ADD_TO_CART_BUTTON = "woo_pos_coupon_add_to_cart_button"
     const val CHECKOUT_BUTTON = "woo_pos_checkout_button"
     const val CASH_PAYMENT_BUTTON = "woo_pos_cash_payment_button"
     const val CARD_READER_PAYMENT_BUTTON = "woo_pos_card_reader_payment_button"
@@ -19,4 +21,6 @@ object WooPosTestTags {
     const val NEW_ORDER_BUTTON = "woo_pos_new_order_button"
     const val SUCCESS_CHECKMARK_ICON = "woo_pos_success_checkmark_icon"
     const val CART_ITEMS_COUNT = "woo_pos_cart_items_count"
+    const val CLEAR_CART_BUTTON = "woo_pos_clear_cart_button"
+    const val CART_COUPON_ITEM = "woo_pos_cart_coupon_item"
 }

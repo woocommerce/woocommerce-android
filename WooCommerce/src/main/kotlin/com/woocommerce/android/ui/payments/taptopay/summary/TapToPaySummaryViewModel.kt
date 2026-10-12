@@ -21,6 +21,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -40,19 +41,22 @@ class TapToPaySummaryViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: TapToPaySummaryFragmentArgs by savedState.navArgs()
 
-    private val countryConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(
-        wooStore.getStoreCountryCode(selectedSite.get())
-    ) as CardReaderConfigForSupportedCountry
+    private val countryConfig = async {
+        cardReaderCountryConfigProvider.provideCountryConfigFor(
+            wooStore.getStoreCountryCode(selectedSite.get())
+        ) as CardReaderConfigForSupportedCountry
+    }
 
-    private val _viewState = MutableLiveData(
-        UiState(messageWithAmount = countryConfig.buildPaymentMessage())
-    )
+    private val _viewState = MutableLiveData<UiState>()
     val viewState: LiveData<UiState> = _viewState
 
     init {
         analyticsTrackerWrapper.track(AnalyticsEvent.TAP_TO_PAY_SUMMARY_SHOWN)
 
-        handleFlowParam(navArgs.testTapToPayFlow)
+        launch {
+            _viewState.value = UiState(messageWithAmount = countryConfig.await().buildPaymentMessage())
+            handleFlowParam(navArgs.testTapToPayFlow)
+        }
     }
 
     @VisibleForTesting
@@ -78,7 +82,7 @@ class TapToPaySummaryViewModel @Inject constructor(
         launch {
             _viewState.value = _viewState.value!!.copy(isProgressVisible = true)
             val result = orderCreateEditRepository.createSimplePaymentOrder(
-                countryConfig.minimumAllowedChargeAmount,
+                countryConfig.await().minimumAllowedChargeAmount,
                 customerNote = resourceProvider.getString(R.string.card_reader_tap_to_pay_test_payment_note),
                 isTaxable = false,
             )
@@ -106,7 +110,9 @@ class TapToPaySummaryViewModel @Inject constructor(
     }
 
     fun onLearnMoreClicked() {
-        triggerEvent(NavigateTTPAboutScreen(countryConfig))
+        launch {
+            triggerEvent(NavigateTTPAboutScreen(countryConfig.await()))
+        }
     }
 
     private suspend fun autoRefundTestPayment(order: Order) {

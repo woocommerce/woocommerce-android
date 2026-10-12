@@ -5,7 +5,10 @@
 25.9
 -----
 - [*] Editing a product attribute's terms or name no longer moves it to the end of the list or changes the settings of other attributes [https://github.com/woocommerce/woocommerce-android/pull/16671]
-
+- [*] Card Reader Mode on the phone now asks to turn on NFC and opens the NFC settings when NFC is off [https://github.com/woocommerce/woocommerce-android/pull/16666]
+- [*] The Blaze campaign list now shows an outstanding balance notice with a Pay button for each unpaid order [https://github.com/woocommerce/woocommerce-android/pull/16612]
+- [*] Shipping Labels: The recipient phone number is now optional for domestic shipments. It's still required for international shipments and FedEx services. [https://github.com/woocommerce/woocommerce-android/pull/16665]
+- [*] Closing the custom date range picker in order filters without saving no longer leaves Custom Range selected [https://github.com/woocommerce/woocommerce-android/pull/16679]
 
 25.8
 -----
@@ -22,6 +25,7 @@
 - [*****] Refreshed My Store, Orders, Products, and the More menu with the new design system — new top app bars, bottom navigation, list styling, and icons [https://github.com/woocommerce/woocommerce-android/pull/16322]
 - [*] Fixed the add product button staying on screen after clearing the product search term [https://github.com/woocommerce/woocommerce-android/pull/16451]
 - [Internal] Card Reader Mode on the phone now tracks when it rejects a Remote Tap to Pay payment from the tablet [https://github.com/woocommerce/woocommerce-android/pull/16584]
+- [Internal][WEAR] Currency amounts on the phone and the watch are formatted without a blocking read of the store settings [https://github.com/woocommerce/woocommerce-android/pull/16606]
 - [Internal] [WEAR] Wear stack traces in Sentry now carry source context: the source bundle uploads to the `woocommerce-wear` project rather than the phone app's [https://github.com/woocommerce/woocommerce-android/pull/16427]
 
 - [*] Card Reader Mode on the phone now explains what it is for before it starts [https://github.com/woocommerce/woocommerce-android/pull/16579]
