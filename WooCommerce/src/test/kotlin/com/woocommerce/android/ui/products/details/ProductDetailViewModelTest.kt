@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.DuplicateProduct
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductHelper
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeTerms
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageGallery
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -1276,7 +1277,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the feature is on, when an attribute is tapped outside the variation wizard, then its flags are kept`() =
+    fun `given the feature is on, when an attribute is tapped outside the variation wizard, then its flags are kept and its options open`() =
         testBlocking {
             // GIVEN
             givenNonVariationAttributesEnabled(true)
@@ -1284,10 +1285,30 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             // WHEN
-            viewModel.onAttributeListItemClick(0L, "Material", isVariationCreation = false)
+            val events = viewModel.event.runAndCaptureValues {
+                viewModel.onAttributeListItemClick(0L, "Material", isVariationCreation = false)
+            }
 
             // THEN
             Assertions.assertThat(viewModel.productDraftAttributes).containsExactly(DISPLAY_ONLY_LOCAL_ATTRIBUTE)
+            Assertions.assertThat(events.filterIsInstance<AddProductAttributeTerms>()).containsExactly(
+                AddProductAttributeTerms(0L, "Material", isNewAttribute = false, isVariationCreation = false)
+            )
+        }
+
+    @Test
+    fun `given the feature is on and a simple product, when a term is added to a new global attribute in the variation wizard, then it is used for variations`() =
+        testBlocking {
+            // GIVEN
+            givenNonVariationAttributesEnabled(true)
+            givenStoredProductAttributes(emptyList())
+            viewModel.start()
+
+            // WHEN
+            viewModel.addAttributeTermToDraft(3L, "Size", "S", isVariationCreation = true)
+
+            // THEN
+            Assertions.assertThat(viewModel.productDraftAttributes.single().isVariation).isTrue()
         }
 
     @Test

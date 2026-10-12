@@ -20,8 +20,7 @@ abstract class AttributeBaseAdapter<T : AttributeBaseAdapter.AttributeBaseViewHo
         holder.bind(attributeList[position])
 
         holder.itemView.setOnClickListener {
-            val item = attributeList[position]
-            onItemClick(item.id, item.name)
+            attributeList.getOrNull(holder.bindingAdapterPosition)?.let { onItemClick(it.id, it.name) }
         }
     }
 

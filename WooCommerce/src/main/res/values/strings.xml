@@ -100,6 +100,7 @@
     <string name="product_attribute_stop_using_for_variations_title">Stop using for variations?</string>
     <string name="product_attribute_stop_using_for_variations_message">Existing variations will no longer match on this attribute.</string>
     <string name="product_attribute_stop_using_for_variations_confirm">Stop using</string>
+    <string name="product_attribute_no_options">No options</string>
     <string name="product_attribute_no_options_warning">This attribute has no options and will be removed. Do you want to continue?</string>
     <string name="product_bulk_update_regular_price">Update regular price</string>
     <string name="product_bulk_update_price_updated">Price updated!</string>

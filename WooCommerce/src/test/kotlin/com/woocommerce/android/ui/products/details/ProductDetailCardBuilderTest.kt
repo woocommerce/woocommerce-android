@@ -161,6 +161,42 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given the feature is on, when an attribute has no options, then the Attributes row says it has no options`() =
+        testBlocking {
+            // GIVEN
+            whenever(viewModel.isNonVariationAttributesEnabled).thenReturn(true)
+            productStub = ProductTestUtils.generateProduct(productType = ProductType.SIMPLE.value)
+                .copy(attributes = listOf(DISPLAY_ONLY_ATTRIBUTE.copy(terms = emptyList())))
+
+            // WHEN
+            val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
+
+            // THEN
+            val attributesRow = cards.propertyGroupWithTitle(R.string.product_attributes)
+            Assertions.assertThat(attributesRow?.properties)
+                .containsExactly(Assertions.entry("Material", R.string.product_attribute_no_options.toString()))
+        }
+
+    @Test
+    fun `given the feature is on, when a global and a local attribute have the same name, then the row lists both options`() =
+        testBlocking {
+            // GIVEN
+            whenever(viewModel.isNonVariationAttributesEnabled).thenReturn(true)
+            productStub = ProductTestUtils.generateProduct(productType = ProductType.SIMPLE.value)
+                .copy(
+                    attributes = listOf(VARIATION_ATTRIBUTE, VARIATION_ATTRIBUTE.copy(id = 0L, terms = listOf("Green")))
+                )
+
+            // WHEN
+            val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
+
+            // THEN
+            val attributesRow = cards.propertyGroupWithTitle(R.string.product_attributes)
+            Assertions.assertThat(attributesRow?.properties)
+                .containsExactly(Assertions.entry("Color", "Red, Blue, Green"))
+        }
+
+    @Test
     fun `given the feature is on, when a variable product has only display-only attributes, then show an Attributes row`() =
         testBlocking {
             // GIVEN
