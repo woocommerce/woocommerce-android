@@ -10,6 +10,7 @@
 #       card-reader help link
 #   - Tapping "Order Card Reader" opens its dedicated screen (P2-level
 #     navigation check)
+#   - Tapping "Card Reader Manuals" lists the reader manuals
 #
 # Why we don't actually toggle Pay-in-Person or tap Order Card Reader
 # all the way through: Pay-in-Person toggling commits a real store
@@ -105,6 +106,30 @@ tags:
     label: "Verify we left the Payments hub"
 
 - takeScreenshot: hub_payments_order_reader
+
+- back
+
+- extendedWaitUntil:
+    visible: "Pay In Person"
+    timeout: 15000
+
+# ── Navigate into Card Reader Manuals ────────────────────────────────
+- scrollUntilVisible:
+    element: "Card Reader Manuals"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Card Reader Manuals"
+
+- tapOn:
+    text: "Card Reader Manuals"
+    label: "Open Card Reader Manuals"
+
+- extendedWaitUntil:
+    visible: "Stripe M2"
+    timeout: 15000
+    label: "Reader manuals are listed"
+
+- takeScreenshot: hub_payments_manuals
 
 - back
 
