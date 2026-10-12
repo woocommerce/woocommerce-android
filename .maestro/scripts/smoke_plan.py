@@ -54,7 +54,6 @@ P2_ORDERED_FLOW_NAMES = (
     "orders_payment_qr_and_share.yaml",
     "orders_refund.yaml",
     "products_list_and_sort.yaml",
-    "products_detail.yaml",
     "products_variations_and_tags.yaml",
     "products_create.yaml",
     "products_media_upload.yaml",

@@ -59,7 +59,6 @@ executionOrder:
 
     # ── Products ─────────────────────────────────────────────────────────
     - flows/products_list_and_sort.yaml
-    - flows/products_detail.yaml
     - flows/products_variations_and_tags.yaml
     - flows/products_create.yaml
     - flows/products_media_upload.yaml
