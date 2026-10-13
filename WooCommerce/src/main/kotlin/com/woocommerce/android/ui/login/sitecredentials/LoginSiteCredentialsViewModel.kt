@@ -157,6 +157,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 "$url?app_name=${applicationPasswordsConfiguration.applicationName}&success_url=$REDIRECTION_URL"
             }
 
+    private val username: String
+        get() = savedStateHandle[USERNAME_KEY] ?: ""
+
+    private val password: String
+        get() = savedStateHandle[PASSWORD_KEY] ?: ""
+
     val viewState = combine(
         flowOf(siteAddress.removeSchemeAndSuffix()),
         savedStateHandle.getStateFlow(USERNAME_KEY, ""),
@@ -352,13 +358,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         endpoints: CookieNonceAuthenticationEndpoints = currentAuthenticationEndpoints(),
         retryingEndpoint: EndpointType? = null
     ): Boolean {
-        val state = requireNotNull(this@LoginSiteCredentialsViewModel.viewState.value)
         loadingMessage.value = R.string.logging_in
         pendingUnexpectedResponse = null
         val result = wpApiSiteRepository.login(
             url = siteAddress,
-            username = state.username,
-            password = state.password,
+            username = username,
+            password = password,
             endpoints = endpoints
         )
         result.fold(
@@ -572,12 +577,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     private suspend fun fetchSite() {
-        val viewState = viewState.value
         loadingMessage.value = R.string.logging_in
         wpApiSiteRepository.fetchSite(
             url = siteAddress,
-            username = viewState?.username,
-            password = viewState?.password,
+            username = username,
+            password = password,
             wasUrlNormalizedToHttps = wasSiteAddressNormalizedToHttps,
         ).fold(
             onSuccess = { site ->
