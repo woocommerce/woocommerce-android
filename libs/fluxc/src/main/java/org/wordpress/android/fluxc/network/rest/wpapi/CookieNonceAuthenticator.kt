@@ -8,6 +8,7 @@ import org.wordpress.android.fluxc.network.discovery.DiscoveryWPAPIRestClient
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.Available
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.FailedRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.Unknown
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.persistence.SiteStorePersistence
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.tools.CoroutineEngine
@@ -21,6 +22,7 @@ class CookieNonceAuthenticator @Inject constructor(
     private val siteStore: SiteStore,
     private val coroutineEngine: CoroutineEngine,
     private val httpsUrlNormalizer: HttpsUrlNormalizer,
+    private val applicationPasswordsStore: ApplicationPasswordsStore,
 ) {
     suspend fun authenticate(
         siteUrl: String,
@@ -78,7 +80,7 @@ class CookieNonceAuthenticator @Inject constructor(
             endpoints = CookieNonceAuthenticationEndpoints.from(site),
             wpApiUrl = site.wpApiRestUrl,
             username = site.username,
-            password = site.password
+            password = applicationPasswordsStore.getSitePassword(site)
         ) { _, nonce ->
             fetchMethod(nonce)
         }
@@ -110,7 +112,7 @@ class CookieNonceAuthenticator @Inject constructor(
         endpoints: CookieNonceAuthenticationEndpoints,
         wpApiUrl: String,
         username: String,
-        password: String,
+        password: String?,
         fetchMethod: suspend (wpApiUrl: String, nonce: Available) -> WPAPIResponse<T>
     ): WPAPIResponse<T> {
         val normalizedEndpoints = endpoints.normalizedToHttps()
@@ -118,7 +120,7 @@ class CookieNonceAuthenticator @Inject constructor(
         var nonce = nonceRestClient.getNonce(normalizedEndpoints.siteUrl, username)
         val usingSavedNonce = nonce is Available
         if (nonce !is Available) {
-            nonce = nonceRestClient.requestNonce(normalizedEndpoints, username, password)
+            nonce = requestNonce(normalizedEndpoints, username, password)
         }
         if (nonce !is Available) return nonce.toErrorResponse()
 
@@ -135,7 +137,7 @@ class CookieNonceAuthenticator @Inject constructor(
                 if (usingSavedNonce) {
                     // Call with saved nonce failed, so try getting a new one
                     val previousNonce = nonce
-                    val newNonce = nonceRestClient.requestNonce(normalizedEndpoints, username, password)
+                    val newNonce = requestNonce(normalizedEndpoints, username, password)
 
                     // Try original call again if we have a new nonce
                     when {
@@ -150,6 +152,21 @@ class CookieNonceAuthenticator @Inject constructor(
             // For all other failures just return the error response
             else -> response
         }
+    }
+
+    private suspend fun requestNonce(
+        endpoints: CookieNonceAuthenticationEndpoints,
+        username: String,
+        password: String?
+    ): Nonce = if (password != null) {
+        nonceRestClient.requestNonce(endpoints, username, password)
+    } else {
+        FailedRequest(
+            timeOfResponse = System.currentTimeMillis(),
+            username = username,
+            type = Nonce.CookieNonceErrorType.INVALID_CREDENTIALS,
+            errorMessage = "The site password is missing"
+        )
     }
 
     private fun discoverApiEndpoint(

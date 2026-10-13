@@ -4,6 +4,7 @@ import com.android.volley.NetworkResponse
 import com.android.volley.VolleyError
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -14,6 +15,7 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
 import org.wordpress.android.fluxc.network.UnexpectedStoreResponseKind
 import org.wordpress.android.fluxc.network.discovery.DiscoveryWPAPIRestClient
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
@@ -27,6 +29,7 @@ class CookieNonceAuthenticatorTest {
     private val nonceClient: NonceRestClient = mock()
     private val discoveryClient: DiscoveryWPAPIRestClient = mock()
     private val siteStore: SiteStore = mock()
+    private val applicationPasswordsStore: ApplicationPasswordsStore = mock()
     private lateinit var subject: CookieNonceAuthenticator
 
     @Before
@@ -37,6 +40,7 @@ class CookieNonceAuthenticatorTest {
             siteStore,
             initCoroutineEngine(),
             HttpsUrlNormalizer(),
+            applicationPasswordsStore,
         )
     }
 
@@ -156,8 +160,24 @@ class CookieNonceAuthenticatorTest {
     private fun site() = SiteModel().apply {
         url = SITE_URL
         username = USERNAME
-        password = PASSWORD
         wpApiRestUrl = WP_API_URL
+    }.also {
+        whenever(applicationPasswordsStore.getSitePassword(it)).thenReturn(PASSWORD)
+    }
+
+    @Test
+    fun `given the site password was deleted, when making an authenticated request, then don't log in`() = test {
+        val site = site()
+        whenever(applicationPasswordsStore.getSitePassword(site)).thenReturn(null)
+        whenever(nonceClient.getNonce(SITE_URL, USERNAME)).thenReturn(null)
+
+        val actual = subject.makeAuthenticatedWPAPIRequest(site) {
+            WPAPIResponse.Success("response", emptyList())
+        }
+
+        val error = assertIs<WPAPIResponse.Error<String>>(actual)
+        assertEquals(GenericErrorType.NOT_AUTHENTICATED, error.error.type)
+        verify(nonceClient, never()).requestNonce(any<CookieNonceAuthenticationEndpoints>(), any(), any())
     }
 
     private fun nonceFailure(
