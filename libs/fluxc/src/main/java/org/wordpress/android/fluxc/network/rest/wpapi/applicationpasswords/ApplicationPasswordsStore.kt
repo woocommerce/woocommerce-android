@@ -19,6 +19,8 @@ class ApplicationPasswordsStore @Inject constructor(
         private const val USERNAME_PREFERENCE_KEY_PREFIX = "username_"
         private const val PASSWORD_PREFERENCE_KEY_PREFIX = "app_password_"
         private const val UUID_PREFERENCE_KEY_PREFIX = "app_password_uuid_"
+        private const val SITE_USERNAME_PREFERENCE_KEY_PREFIX = "site_username_"
+        private const val SITE_PASSWORD_PREFERENCE_KEY_PREFIX = "site_password_"
         const val APPLICATION_PASSWORDS_KEYSTORE_ENCRYPTION_ERROR = "application_passwords_keystore_encryption_error"
     }
 
@@ -66,6 +68,36 @@ class ApplicationPasswordsStore @Inject constructor(
             .remove(site.usernamePrefKey)
             .remove(site.passwordPrefKey)
             .remove(site.uuidPrefKey)
+            .apply()
+    }
+
+    /**
+     * The wp-admin password of a site logged in with site credentials. It's used to create application passwords,
+     * and lives here rather than on [SiteModel] so that deleting it on logout takes it away from any copy of the
+     * site that in-flight work still holds.
+     */
+    @Synchronized
+    fun getSitePassword(site: SiteModel): String? {
+        val username = encryptedPreferences.getString(site.siteUsernamePrefKey, null)
+        return encryptedPreferences.getString(site.sitePasswordPrefKey, null)
+            ?.takeIf { username != null && username == site.username }
+    }
+
+    fun hasSitePassword(site: SiteModel): Boolean = !getSitePassword(site).isNullOrEmpty()
+
+    @Synchronized
+    fun saveSitePassword(site: SiteModel, username: String, password: String) {
+        encryptedPreferences.edit()
+            .putString(site.siteUsernamePrefKey, username)
+            .putString(site.sitePasswordPrefKey, password)
+            .apply()
+    }
+
+    @Synchronized
+    fun deleteSitePassword(site: SiteModel) {
+        encryptedPreferences.edit()
+            .remove(site.siteUsernamePrefKey)
+            .remove(site.sitePasswordPrefKey)
             .apply()
     }
 
@@ -124,4 +156,10 @@ class ApplicationPasswordsStore @Inject constructor(
 
     private val SiteModel.uuidPrefKey
         get() = "$UUID_PREFERENCE_KEY_PREFIX$domainName"
+
+    private val SiteModel.siteUsernamePrefKey
+        get() = "$SITE_USERNAME_PREFERENCE_KEY_PREFIX$domainName"
+
+    private val SiteModel.sitePasswordPrefKey
+        get() = "$SITE_PASSWORD_PREFERENCE_KEY_PREFIX$domainName"
 }
