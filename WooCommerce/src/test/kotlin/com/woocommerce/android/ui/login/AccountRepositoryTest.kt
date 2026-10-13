@@ -37,6 +37,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnApplicationPasswordDeleted
@@ -56,6 +57,7 @@ class AccountRepositoryTest : BaseUnitTest() {
     private val registerDevice: RegisterDevice = mock()
     private val posDataStore: DataStore<Preferences> = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
+    private val applicationPasswordsStore: ApplicationPasswordsStore = mock()
     private val appCoroutineScope = CoroutineScope(coroutinesTestRule.testDispatcher)
     private val dispatcher = FakeDispatcher().apply {
         registerActionHandler(AccountAction.SIGN_OUT) {
@@ -80,7 +82,8 @@ class AccountRepositoryTest : BaseUnitTest() {
         pushNotificationRepository = pushNotificationRepository,
         registerDevice = registerDevice,
         posDataStore = posDataStore,
-        analyticsTracker = analyticsTracker
+        analyticsTracker = analyticsTracker,
+        applicationPasswordsStore = applicationPasswordsStore
     )
 
     @Test
@@ -169,6 +172,42 @@ class AccountRepositoryTest : BaseUnitTest() {
             // THEN
             verify(pushNotificationRepository).unregisterDeviceFromPushNotifications()
             verify(siteStore).deleteApplicationPassword(selectedSiteModel)
+        }
+
+    @Test
+    fun `given signed in using app password, when logout is called, then delete the site password before unregistering push notifications and deleting the app password`() =
+        testBlocking {
+            // GIVEN
+            given(accountStore.hasAccessToken()).willReturn(false)
+            given(selectedSite.connectionType).willReturn(SiteConnectionType.ApplicationPasswords)
+            val selectedSiteModel = SiteModel()
+            given(selectedSite.getOrNull()).willReturn(selectedSiteModel)
+            given(siteStore.deleteApplicationPassword(selectedSiteModel))
+                .willReturn(OnApplicationPasswordDeleted(selectedSiteModel))
+
+            // WHEN
+            repository.logout()
+
+            // THEN
+            inOrder(applicationPasswordsStore, pushNotificationRepository, siteStore) {
+                verify(applicationPasswordsStore).deleteSitePassword(selectedSiteModel)
+                verify(pushNotificationRepository).unregisterDeviceFromPushNotifications()
+                verify(siteStore).deleteApplicationPassword(selectedSiteModel)
+            }
+        }
+
+    @Test
+    fun `given signed in using wordpress_com, when logout is called, then the site password is not deleted`() =
+        testBlocking {
+            // GIVEN
+            given(accountStore.hasAccessToken()).willReturn(true)
+            given(selectedSite.getOrNull()).willReturn(SiteModel())
+
+            // WHEN
+            repository.logout()
+
+            // THEN
+            verify(applicationPasswordsStore, never()).deleteSitePassword(any())
         }
 
     @Test

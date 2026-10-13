@@ -31,6 +31,7 @@ import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
@@ -52,7 +53,8 @@ class AccountRepository @Inject constructor(
     private val pushNotificationRepository: PushNotificationRepository,
     private val registerDevice: RegisterDevice,
     @DataStoreQualifier(DataStoreType.WOO_POS) private val posDataStore: DataStore<Preferences>,
-    private val analyticsTracker: AnalyticsTrackerWrapper
+    private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val applicationPasswordsStore: ApplicationPasswordsStore
 ) {
     fun getUserAccount(): AccountModel? = accountStore.account.takeIf { it.userId != 0L }
 
@@ -75,6 +77,11 @@ class AccountRepository @Inject constructor(
 
         // Capture the site before the suspension points below, it may be reset while we are suspended.
         val applicationPasswordSite = selectedSite.getOrNull()
+        if (!accountStore.hasAccessToken() && applicationPasswordSite != null) {
+            // Delete the site password before anything else: until then, a request still in flight that gets
+            // rejected after the application password is deleted would use it to create a new one.
+            withContext(dispatchers.io) { applicationPasswordsStore.deleteSitePassword(applicationPasswordSite) }
+        }
 
         registerDevice.cancelInProgressRegistration()
         pushNotificationRepository.unregisterDeviceFromPushNotifications()
