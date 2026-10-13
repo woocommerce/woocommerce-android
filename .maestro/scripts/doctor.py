@@ -99,6 +99,7 @@ def candidates_for(ref: str, store: str) -> list[str]:
             f"MAESTRO_WOO_{upper}_WPCOM_PASSWORD",
             f"MAESTRO_WOO_{upper}_PASSWORD",
         ],
+        "WOO_WPCOM_USERNAME": [f"MAESTRO_WOO_{upper}_WPCOM_USERNAME"],
         "WOO_CONSUMER_KEY": [
             f"MAESTRO_WOO_{upper}_CONSUMER_KEY",
         ],
