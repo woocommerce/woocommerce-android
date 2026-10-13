@@ -74,6 +74,7 @@ import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.Lazy
 import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
@@ -90,6 +91,7 @@ import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.logging.FluxCCrashLogger
 import org.wordpress.android.fluxc.logging.FluxCCrashLoggerProvider
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WPComSiteInvalidationReason
 import org.wordpress.android.fluxc.store.AccountStore
@@ -196,6 +198,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var crashReportingSettingSync: CrashReportingSettingSync
 
+    @Inject lateinit var applicationPasswordsStore: Lazy<ApplicationPasswordsStore>
+
     private var connectionReceiverRegistered = false
 
     private lateinit var application: Application
@@ -281,6 +285,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         appCoroutineScope.launch { blazeCampaignsObserver.observeAndScheduleNotifications() }
 
         monitorApplicationPasswordsStatus()
+        appCoroutineScope.launch(Dispatchers.IO) { applicationPasswordsStore.get().migrateLegacySitePasswords() }
 
         monitorWPComSiteInvalidations()
 

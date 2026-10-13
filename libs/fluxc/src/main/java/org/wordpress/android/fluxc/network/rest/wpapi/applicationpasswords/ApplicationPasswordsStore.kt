@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.persistence.SiteStorePersistence
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.UrlUtils
 import java.security.KeyStore
@@ -13,7 +14,8 @@ import javax.inject.Singleton
 
 @Singleton
 class ApplicationPasswordsStore @Inject constructor(
-    private val context: Context
+    private val context: Context,
+    private val siteStorePersistence: SiteStorePersistence
 ) {
     companion object {
         private const val USERNAME_PREFERENCE_KEY_PREFIX = "username_"
@@ -32,6 +34,8 @@ class ApplicationPasswordsStore @Inject constructor(
     private val encryptedPreferences by lazy {
         initEncryptedPrefs()
     }
+
+    private var areLegacySitePasswordsMigrated = false
 
     fun hasCredentials(site: SiteModel): Boolean = getCredentials(site) != null
 
@@ -78,6 +82,7 @@ class ApplicationPasswordsStore @Inject constructor(
      */
     @Synchronized
     fun getSitePassword(site: SiteModel): String? {
+        migrateLegacySitePasswordsIfNeeded()
         val username = encryptedPreferences.getString(site.siteUsernamePrefKey, null)
         return encryptedPreferences.getString(site.sitePasswordPrefKey, null)
             ?.takeIf { username != null && username == site.username }
@@ -87,6 +92,7 @@ class ApplicationPasswordsStore @Inject constructor(
 
     @Synchronized
     fun saveSitePassword(site: SiteModel, username: String, password: String) {
+        migrateLegacySitePasswordsIfNeeded()
         encryptedPreferences.edit()
             .putString(site.siteUsernamePrefKey, username)
             .putString(site.sitePasswordPrefKey, password)
@@ -95,10 +101,48 @@ class ApplicationPasswordsStore @Inject constructor(
 
     @Synchronized
     fun deleteSitePassword(site: SiteModel) {
+        migrateLegacySitePasswordsIfNeeded()
         encryptedPreferences.edit()
             .remove(site.siteUsernamePrefKey)
             .remove(site.sitePasswordPrefKey)
             .apply()
+    }
+
+    /**
+     * Moves the passwords that older versions kept in plain text in the sites table, without waiting for the first
+     * access to them, which might never come while the application password keeps working.
+     */
+    @Synchronized
+    fun migrateLegacySitePasswords() = migrateLegacySitePasswordsIfNeeded()
+
+    /**
+     * It also runs before any access to the stored passwords, so that deleting one can't be undone by a later
+     * migration of its legacy copy.
+     */
+    @Suppress("TooGenericExceptionCaught")
+    private fun migrateLegacySitePasswordsIfNeeded() {
+        if (areLegacySitePasswordsMigrated) return
+        areLegacySitePasswordsMigrated = true
+
+        try {
+            val legacyPasswords = siteStorePersistence.getLegacySitePasswords()
+            if (legacyPasswords.isEmpty()) return
+
+            val editor = encryptedPreferences.edit()
+            legacyPasswords.forEach { legacy ->
+                val site = SiteModel().apply { url = legacy.url }
+                if (legacy.username != null) {
+                    editor.putString(site.siteUsernamePrefKey, legacy.username)
+                        .putString(site.sitePasswordPrefKey, legacy.password)
+                }
+            }
+            // Committed synchronously, the legacy copies are cleared right after
+            editor.commit()
+            siteStorePersistence.clearLegacySitePasswords()
+            AppLog.d(AppLog.T.MAIN, "Moved ${legacyPasswords.size} site password(s) to the encrypted storage")
+        } catch (e: Exception) {
+            AppLog.e(AppLog.T.MAIN, "Failed to move the site passwords to the encrypted storage", e)
+        }
     }
 
     private fun initEncryptedPrefs(): SharedPreferences {

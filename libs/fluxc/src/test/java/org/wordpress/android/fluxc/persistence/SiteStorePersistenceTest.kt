@@ -36,6 +36,46 @@ class SiteStorePersistenceTest {
         sut = SiteStorePersistence(accountStorePersistence)
     }
 
+    // region legacy site passwords
+
+    @Test
+    fun `given a database without the legacy password column, when reading legacy passwords, then return none`() {
+        sut.insertOrUpdateSite(SiteModel().apply { url = "https://test.com" })
+
+        assertThat(sut.getLegacySitePasswords()).isEmpty()
+        sut.clearLegacySitePasswords()
+    }
+
+    @Test
+    fun `given legacy passwords in the database, when reading them, then return the sites with a password`() {
+        givenLegacyPasswordColumn()
+        sut.insertOrUpdateSite(SiteModel().apply { url = "https://with-password.com"; username = "user" })
+        sut.insertOrUpdateSite(SiteModel().apply { url = "https://without-password.com"; username = "other" })
+        WellSql.giveMeWritableDb().execSQL("UPDATE SiteModel SET PASSWORD = 'pass' WHERE URL = 'https://with-password.com'")
+
+        assertThat(sut.getLegacySitePasswords()).containsExactly(
+            SiteStorePersistence.LegacySitePassword(url = "https://with-password.com", username = "user", password = "pass")
+        )
+    }
+
+    @Test
+    fun `given legacy passwords in the database, when clearing them, then none are left`() {
+        givenLegacyPasswordColumn()
+        sut.insertOrUpdateSite(SiteModel().apply { url = "https://test.com"; username = "user" })
+        WellSql.giveMeWritableDb().execSQL("UPDATE SiteModel SET PASSWORD = 'pass'")
+
+        sut.clearLegacySitePasswords()
+
+        assertThat(sut.getLegacySitePasswords()).isEmpty()
+        assertThat(siteSqlUtils.getSites()).singleElement().extracting(SiteModel::getUsername).isEqualTo("user")
+    }
+
+    private fun givenLegacyPasswordColumn() {
+        WellSql.giveMeWritableDb().execSQL("ALTER TABLE SiteModel ADD PASSWORD TEXT")
+    }
+
+    // endregion
+
     // region null and account validation
 
     @Test

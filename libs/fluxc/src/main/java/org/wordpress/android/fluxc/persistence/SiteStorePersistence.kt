@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.persistence
 
 import android.database.sqlite.SQLiteConstraintException
+import android.database.sqlite.SQLiteDatabase
 import com.wellsql.generated.SiteModelTable
 import com.yarolegovich.wellsql.WellSql
 import org.wordpress.android.fluxc.model.SiteModel
@@ -14,6 +15,8 @@ class SiteStorePersistence @Inject constructor(
     private val accountStorePersistence: AccountStorePersistence,
 ) {
     class DuplicateSiteException : Exception()
+
+    data class LegacySitePassword(val url: String, val username: String?, val password: String)
 
     /**
      * Inserts the given SiteModel into the DB, or updates an existing entry where sites match.
@@ -102,4 +105,38 @@ class SiteStorePersistence @Inject constructor(
             }
         }
     }
+
+    /**
+     * Site passwords used to be kept in plain text in the `PASSWORD` column, which is no longer mapped to
+     * [SiteModel]. Databases created since then don't have the column at all.
+     */
+    fun getLegacySitePasswords(): List<LegacySitePassword> {
+        val db = WellSql.giveMeReadableDb()
+        if (!db.hasLegacyPasswordColumn()) return emptyList()
+
+        return db.rawQuery(
+            "SELECT URL, USERNAME, PASSWORD FROM SiteModel WHERE PASSWORD IS NOT NULL AND PASSWORD != ''",
+            null
+        ).use { cursor ->
+            buildList {
+                while (cursor.moveToNext()) {
+                    val url = cursor.getString(0) ?: continue
+                    add(LegacySitePassword(url = url, username = cursor.getString(1), password = cursor.getString(2)))
+                }
+            }
+        }
+    }
+
+    fun clearLegacySitePasswords() {
+        val db = WellSql.giveMeWritableDb()
+        if (db.hasLegacyPasswordColumn()) {
+            db.execSQL("UPDATE SiteModel SET PASSWORD = NULL")
+        }
+    }
+
+    private fun SQLiteDatabase.hasLegacyPasswordColumn(): Boolean =
+        rawQuery("PRAGMA table_info(SiteModel)", null).use { cursor ->
+            val nameIndex = cursor.getColumnIndex("name")
+            generateSequence { cursor.takeIf { it.moveToNext() } }.any { it.getString(nameIndex) == "PASSWORD" }
+        }
 }
