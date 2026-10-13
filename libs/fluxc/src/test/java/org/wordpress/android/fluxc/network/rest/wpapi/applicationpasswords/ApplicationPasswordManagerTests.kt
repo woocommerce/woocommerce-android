@@ -14,6 +14,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -116,8 +117,8 @@ class ApplicationPasswordManagerTests {
             val site = testSite.apply {
                 origin = SiteModel.ORIGIN_XMLRPC
                 username = testCredentials.userName
-                password = "password"
             }
+            whenever(applicationPasswordsStore.hasSitePassword(site)).thenReturn(true)
 
             whenever(applicationPasswordsStore.getCredentials(testSite)).thenReturn(null)
             whenever(
@@ -213,8 +214,8 @@ class ApplicationPasswordManagerTests {
             val site = testSite.apply {
                 origin = SiteModel.ORIGIN_XMLRPC
                 username = testCredentials.userName
-                password = "password"
             }
+            whenever(applicationPasswordsStore.hasSitePassword(site)).thenReturn(true)
             val networkError = BaseNetworkError(VolleyError(NetworkResponse(404, null, true, 0, emptyList())))
 
             whenever(applicationPasswordsStore.getCredentials(testSite)).thenReturn(null)
@@ -234,8 +235,8 @@ class ApplicationPasswordManagerTests {
             val site = testSite.apply {
                 origin = SiteModel.ORIGIN_XMLRPC
                 username = testCredentials.userName
-                password = "password"
             }
+            whenever(applicationPasswordsStore.hasSitePassword(site)).thenReturn(true)
             val networkError = WPComGsonNetworkError(BaseNetworkError(GenericErrorType.SERVER_ERROR)).apply {
                 apiError = "application_passwords_disabled"
             }
@@ -257,8 +258,8 @@ class ApplicationPasswordManagerTests {
             val site = testSite.apply {
                 origin = SiteModel.ORIGIN_XMLRPC
                 username = testCredentials.userName
-                password = "password"
             }
+            whenever(applicationPasswordsStore.hasSitePassword(site)).thenReturn(true)
             val creationNetworkError = BaseNetworkError(VolleyError(NetworkResponse(409, null, true, 0, emptyList())))
             whenever(applicationPasswordsStore.getCredentials(testSite)).thenReturn(null)
             whenever(mWpApiApplicationPasswordsRestClient.createApplicationPassword(site, applicationName))
@@ -292,6 +293,18 @@ class ApplicationPasswordManagerTests {
             assertEquals(ApplicationPasswordDeletionResult.Success, result)
             verify(mWpApiApplicationPasswordsRestClient).deleteApplicationPassword(site, testCredentials)
         }
+
+    @Test
+    fun `given the site password was deleted, when we ask for a password, then don't create one`() = runTest {
+        val site = webFlowSite()
+        whenever(applicationPasswordsStore.getCredentials(site)).thenReturn(null)
+        whenever(applicationPasswordsStore.hasSitePassword(site)).thenReturn(false)
+
+        val result = mApplicationPasswordsManager.getApplicationCredentials(site)
+
+        assertIs<ApplicationPasswordCreationResult.Failure>(result)
+        verify(mWpApiApplicationPasswordsRestClient, never()).createApplicationPassword(any(), any())
+    }
 
     @Test
     fun `given the password is still accepted by the site, when deciding whether to regenerate, then don't`() =
@@ -510,8 +523,8 @@ class ApplicationPasswordManagerTests {
         username = testCredentials.userName
     }
 
-    private fun nativeCredentialsSite() = webFlowSite().apply {
-        password = "site-password"
+    private fun nativeCredentialsSite() = webFlowSite().also {
+        whenever(applicationPasswordsStore.hasSitePassword(it)).thenReturn(true)
     }
 
     companion object {

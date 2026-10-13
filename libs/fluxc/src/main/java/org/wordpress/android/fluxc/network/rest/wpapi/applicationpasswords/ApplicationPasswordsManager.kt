@@ -41,11 +41,11 @@ internal class ApplicationPasswordsManager @Inject constructor(
      * 1. For Jetpack sites, we always can call the API using the WordPress.com token.
      * 2. For self-hosted sites, we need to check if we have persisted credentials, otherwise we can't create it. This
      *    case happens when a site's Application Password was saved directly to the [ApplicationPasswordsStore],
-     *    which happens during the Web Authorization.
+     *    which happens during the Web Authorization, and after logging out, which deletes the site password.
      */
     private val SiteModel.supportsApplicationPasswordsGeneration
         get() = origin == SiteModel.ORIGIN_WPCOM_REST ||
-            (!username.isNullOrEmpty() && !password.isNullOrEmpty())
+            (!username.isNullOrEmpty() && applicationPasswordsStore.hasSitePassword(this))
 
     suspend fun getApplicationCredentials(
         site: SiteModel
