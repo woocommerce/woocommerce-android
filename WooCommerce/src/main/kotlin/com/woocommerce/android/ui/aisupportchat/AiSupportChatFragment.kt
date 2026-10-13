@@ -208,7 +208,7 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
                 aiSupportChatTicketAnalyticsContext = event.ticketAnalyticsContext,
                 diagnosticLog = event.diagnosticLog,
                 aiChatId = event.chatId,
-                aiSupportChatTranscript = event.description
+                aiSupportChatTranscript = event.description.takeIf { event.transcript.isNotBlank() }
             )
         )
     }
