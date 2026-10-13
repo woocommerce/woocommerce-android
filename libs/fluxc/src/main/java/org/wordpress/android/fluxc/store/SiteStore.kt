@@ -33,6 +33,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordDeletionResult
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsManager
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.network.rest.wpapi.site.SiteWPAPIRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Error
@@ -77,6 +78,7 @@ open class SiteStore @Inject constructor(
     private val siteStorePersistence: SiteStorePersistence,
     private val domainDao: DomainDao,
     private val coroutineEngine: CoroutineEngine,
+    private val applicationPasswordsStore: ApplicationPasswordsStore,
     private val crashLogger: Lazy<FluxCCrashLogger>
 ) : Store(dispatcher) {
     @Inject internal lateinit var applicationPasswordsManagerProvider: Provider<ApplicationPasswordsManager>
@@ -493,7 +495,12 @@ open class SiteStore @Inject constructor(
 
     suspend fun fetchWPAPISite(payload: FetchWPAPISitePayload): OnSiteChanged {
         return coroutineEngine.withDefaultContext(T.MAIN, this, "Fetch WPAPI Site") {
-            updateSite(siteWPAPIRestClient.fetchWPAPISite(payload))
+            val site = siteWPAPIRestClient.fetchWPAPISite(payload)
+            updateSite(site).also { result ->
+                if (!result.isError && payload.username != null && payload.password != null) {
+                    applicationPasswordsStore.saveSitePassword(site, payload.username, payload.password)
+                }
+            }
         }
     }
 

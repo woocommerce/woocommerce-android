@@ -65,7 +65,8 @@ class SiteStoreUnitTest {
             mSiteSqlUtils,
             SiteStorePersistence(accountStorePersistence),
             mock(),
-            initCoroutineEngine()
+            initCoroutineEngine(),
+            mock()
         ) { FakeCrashLogging }
     }
 

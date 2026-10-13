@@ -9,6 +9,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
@@ -21,6 +22,7 @@ import org.wordpress.android.fluxc.model.asDomainModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.PARSE_ERROR
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.network.rest.wpapi.site.SiteWPAPIRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response
@@ -33,6 +35,7 @@ import org.wordpress.android.fluxc.persistence.SiteStorePersistence
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.store.SiteStore.FetchConnectSiteInfoPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
+import org.wordpress.android.fluxc.store.SiteStore.FetchWPAPISitePayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedDomainsPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedPlansPayload
 import org.wordpress.android.fluxc.store.SiteStore.PlansError
@@ -55,6 +58,7 @@ class SiteStoreTest {
     private val domainsErrorResponse: Response.Error<DomainsResponse> = mock()
     private val plansErrorResponse: Response.Error<PlansResponse> = mock()
     private val crashLogger: FluxCCrashLogger = mock()
+    private val applicationPasswordsStore: ApplicationPasswordsStore = mock()
     private lateinit var siteStore: SiteStore
 
     private val siteStorePersistence: SiteStorePersistence = mock {
@@ -70,7 +74,8 @@ class SiteStoreTest {
             siteSqlUtils,
             siteStorePersistence,
             domainsDao,
-            initCoroutineEngine()
+            initCoroutineEngine(),
+            applicationPasswordsStore
         ) { crashLogger }
     }
 
@@ -122,6 +127,39 @@ class SiteStoreTest {
             eq(mapOf("origin" to SiteModel.ORIGIN_XMLRPC.toString(), "error" to GENERIC_ERROR.name)),
             any()
         )
+    }
+
+    @Test
+    fun `given site credentials, when fetchWPAPISite, then save the site password`() = test {
+        val payload = FetchWPAPISitePayload(url = "https://site.example", username = "user", password = "pass")
+        val fetchedSite = SiteModel().apply { url = "https://site.example" }
+        whenever(siteWPAPIClient.fetchWPAPISite(payload)).thenReturn(fetchedSite)
+
+        val onSiteChanged = siteStore.fetchWPAPISite(payload)
+
+        assertThat(onSiteChanged.error).isNull()
+        verify(applicationPasswordsStore).saveSitePassword(fetchedSite, "user", "pass")
+    }
+
+    @Test
+    fun `given no site credentials, when fetchWPAPISite, then don't save a site password`() = test {
+        val payload = FetchWPAPISitePayload(url = "https://site.example")
+        whenever(siteWPAPIClient.fetchWPAPISite(payload)).thenReturn(SiteModel())
+
+        siteStore.fetchWPAPISite(payload)
+
+        verify(applicationPasswordsStore, never()).saveSitePassword(any(), any(), any())
+    }
+
+    @Test
+    fun `given the site fetch fails, when fetchWPAPISite, then don't save the site password`() = test {
+        val payload = FetchWPAPISitePayload(url = "https://site.example", username = "user", password = "pass")
+        val errorSite = SiteModel().apply { error = BaseNetworkError(NETWORK_ERROR) }
+        whenever(siteWPAPIClient.fetchWPAPISite(payload)).thenReturn(errorSite)
+
+        siteStore.fetchWPAPISite(payload)
+
+        verify(applicationPasswordsStore, never()).saveSitePassword(any(), any(), any())
     }
 
     private suspend fun assertSiteFetchError(site: SiteModel) {
