@@ -4,18 +4,22 @@ import com.woocommerce.android.tools.SelectedSite
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.any
 import org.mockito.kotlin.given
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.AccountStore
 
 class WebViewAuthenticationFlowResolverTest {
     private val selectedSite = mock<SelectedSite>()
     private val accountStore = mock<AccountStore>()
+    private val applicationPasswordsStore = mock<ApplicationPasswordsStore>()
 
     private val sut = WebViewAuthenticationFlowResolver(
         selectedSite = selectedSite,
-        accountStore = accountStore
+        accountStore = accountStore,
+        applicationPasswordsStore = applicationPasswordsStore
     )
 
     @Test
@@ -86,9 +90,9 @@ class WebViewAuthenticationFlowResolverTest {
     fun `given a site with username and password, when resolving the authentication flow for a URL part of the site, then it should return SiteCredentials`() {
         givenSite {
             username = "username"
-            password = "password"
             url = "https://example.com"
         }
+        givenSitePasswordStored()
         val url = "https://example.com/test"
 
         val result = sut.resolve(url)
@@ -100,10 +104,23 @@ class WebViewAuthenticationFlowResolverTest {
     fun `given a site with username and password, when resolving the authentication flow for a URL not part of the site, then it should return None`() {
         givenSite {
             username = "username"
-            password = "password"
             url = "https://example.com"
         }
+        givenSitePasswordStored()
         val url = "https://another.com/test"
+
+        val result = sut.resolve(url)
+
+        assertThat(result).isEqualTo(WebViewAuthenticationFlowResolver.WebViewAuthenticationFlow.None)
+    }
+
+    @Test
+    fun `given a site with username but no stored password, when resolving the authentication flow for a URL part of the site, then it should return None`() {
+        givenSite {
+            username = "username"
+            url = "https://example.com"
+        }
+        val url = "https://example.com/test"
 
         val result = sut.resolve(url)
 
@@ -149,6 +166,10 @@ class WebViewAuthenticationFlowResolverTest {
     private fun givenWPComAuthenticated() {
         given(accountStore.accessToken).willReturn("token")
         given(accountStore.account).willReturn(AccountModel().apply { userName = "username" })
+    }
+
+    private fun givenSitePasswordStored() {
+        given(applicationPasswordsStore.hasSitePassword(any())).willReturn(true)
     }
 
     private fun givenSite(siteBuilder: SiteModel.() -> Unit) {

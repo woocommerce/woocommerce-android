@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.AccountStore
 import java.io.UnsupportedEncodingException
 import javax.inject.Inject
@@ -20,7 +21,8 @@ class WebViewAuthenticator @Inject constructor(
     private val authenticationFlowResolver: WebViewAuthenticationFlowResolver,
     private val selectedSite: SelectedSite,
     private val accountStore: AccountStore,
-    private val webViewCookieManager: CookieManager
+    private val webViewCookieManager: CookieManager,
+    private val applicationPasswordsStore: ApplicationPasswordsStore
 ) {
     suspend fun authenticateAndLoadUrl(webView: WebView, url: String, webViewEvents: Flow<WCWebViewEvent>) {
         val authenticationFlow = authenticationFlowResolver.resolve(url)
@@ -89,11 +91,13 @@ class WebViewAuthenticator @Inject constructor(
     ) {
         val site = selectedSite.get()
 
-        val postData = prepareLoginPostData(
-            redirectUrl = url,
-            username = site.username,
-            authorizationParam = "pwd" to site.password
-        )
+        val postData = applicationPasswordsStore.getSitePassword(site)?.let { password ->
+            prepareLoginPostData(
+                redirectUrl = url,
+                username = site.username,
+                authorizationParam = "pwd" to password
+            )
+        }
 
         if (postData != null) {
             webView.postUrl(site.loginUrlOrDefault, postData.toByteArray())

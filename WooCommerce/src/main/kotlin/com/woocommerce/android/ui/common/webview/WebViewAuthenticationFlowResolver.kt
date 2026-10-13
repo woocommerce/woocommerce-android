@@ -5,12 +5,14 @@ import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.tools.SelectedSite
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
 
 class WebViewAuthenticationFlowResolver @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val accountStore: AccountStore
+    private val accountStore: AccountStore,
+    private val applicationPasswordsStore: ApplicationPasswordsStore
 ) {
     // A list of domains that we know that wordpress.com supports redirecting to
     private val wpComAuthAcceptedDomains
@@ -65,7 +67,7 @@ class WebViewAuthenticationFlowResolver @Inject constructor(
     }
 
     private fun SiteModel.hasCredentials(): Boolean {
-        return username.isNotNullOrEmpty() && password.isNotNullOrEmpty()
+        return username.isNotNullOrEmpty() && applicationPasswordsStore.hasSitePassword(this)
     }
 
     enum class WebViewAuthenticationFlow {

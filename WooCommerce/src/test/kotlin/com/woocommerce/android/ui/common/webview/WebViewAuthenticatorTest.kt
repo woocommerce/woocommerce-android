@@ -17,9 +17,11 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.AccountStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -28,12 +30,14 @@ class WebViewAuthenticatorTest : BaseUnitTest() {
     private val selectedSite = mock<SelectedSite>()
     private val accountStore = mock<AccountStore>()
     private val webViewCookieManager = mock<CookieManager>()
+    private val applicationPasswordsStore = mock<ApplicationPasswordsStore>()
 
     private val sut = WebViewAuthenticator(
         authenticationFlowResolver = authenticationFlowResolver,
         selectedSite = selectedSite,
         accountStore = accountStore,
-        webViewCookieManager = webViewCookieManager
+        webViewCookieManager = webViewCookieManager,
+        applicationPasswordsStore = applicationPasswordsStore
     )
 
     @Test
@@ -85,8 +89,8 @@ class WebViewAuthenticatorTest : BaseUnitTest() {
             givenSite {
                 url = "https://example.com"
                 username = DEFAULT_USERNAME
-                password = DEFAULT_PASSWORD
             }
+            givenSitePassword(DEFAULT_PASSWORD)
             val webView = mock<WebView>()
             val url = "https://example.com/test"
             givenAuthenticationFlow(WebViewAuthenticationFlowResolver.WebViewAuthenticationFlow.SiteCredentials)
@@ -110,8 +114,8 @@ class WebViewAuthenticatorTest : BaseUnitTest() {
             givenSite {
                 url = "https://example.com"
                 username = DEFAULT_USERNAME
-                password = DEFAULT_PASSWORD
             }
+            givenSitePassword(DEFAULT_PASSWORD)
             val webView = mock<WebView>()
             val webViewEvents = MutableSharedFlow<WCWebViewEvent>()
             val url = "https://example.com/test"
@@ -125,6 +129,24 @@ class WebViewAuthenticatorTest : BaseUnitTest() {
             verify(webView).loadUrl(url)
         }
 
+    @Test
+    fun `given site credentials authentication and no stored site password, when authenticating and loading a URL, then it should load the URL without posting credentials`() =
+        testBlocking {
+            givenSite {
+                url = "https://example.com"
+                username = DEFAULT_USERNAME
+            }
+            givenSitePassword(null)
+            val webView = mock<WebView>()
+            val url = "https://example.com/test"
+            givenAuthenticationFlow(WebViewAuthenticationFlowResolver.WebViewAuthenticationFlow.SiteCredentials)
+
+            sut.authenticateAndLoadUrl(webView, url, emptyFlow())
+
+            verify(webView).loadUrl(url)
+            verify(webView, never()).postUrl(any(), any())
+        }
+
     private fun givenAuthenticationFlow(flow: WebViewAuthenticationFlowResolver.WebViewAuthenticationFlow) {
         given(authenticationFlowResolver.resolve(any())).willReturn(flow)
     }
@@ -132,6 +154,10 @@ class WebViewAuthenticatorTest : BaseUnitTest() {
     private fun givenWPComCredentials() {
         given(accountStore.accessToken).willReturn(DEFAULT_TOKEN)
         given(accountStore.account).willReturn(AccountModel().apply { userName = DEFAULT_USERNAME })
+    }
+
+    private fun givenSitePassword(password: String?) {
+        given(applicationPasswordsStore.getSitePassword(selectedSite.get())).willReturn(password)
     }
 
     private fun givenSite(siteBuilder: SiteModel.() -> Unit) {
