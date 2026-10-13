@@ -7,7 +7,7 @@ import androidx.compose.material3.SnackbarVisuals
 data class
 ShippingLabelsSnackbarData(
     @StringRes val message: Int,
-    val messageParameters: List<Int> = emptyList(),
+    val messageParameters: List<Any> = emptyList(),
     val duration: SnackbarDuration = SnackbarDuration.Short,
     val actionLabel: Int,
     val hasIcon: Boolean = false,

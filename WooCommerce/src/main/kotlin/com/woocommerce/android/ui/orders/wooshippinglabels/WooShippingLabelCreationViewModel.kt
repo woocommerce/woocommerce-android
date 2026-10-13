@@ -53,6 +53,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIMode
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.toAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
@@ -133,6 +134,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private var printJob: Job? = null
 
     var snackbarData by mutableStateOf<ShippingLabelsSnackbarData?>(null)
+
+    fun onSnackbarFinished(data: ShippingLabelsSnackbarData) {
+        if (snackbarData === data) snackbarData = null
+    }
 
     private val emptyOrder = Order.getEmptyOrder(Date(), Date())
     private val order = MutableStateFlow(emptyOrder)
@@ -232,6 +237,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 observeShippingLabelNotice(
                     shippingAddresses,
                     customsStatesFlow.filter { it.isNotEmpty() },
+                    selectedRatesFlow,
                     uiState.map { it.selectedIndex }.distinctUntilChanged(),
                     viewModelScope
                 )
@@ -252,6 +258,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                                     }
 
                                     NoticeType.MISSING_DESTINATION_ADDRESS,
+                                    NoticeType.RECIPIENT_PHONE_REQUIRED_BY_SERVICE,
                                     NoticeType.UNVERIFIED_DESTINATION_ADDRESS -> {
                                         shippingAddresses.value.getOrNull(selectedShipmentIndex)
                                             ?.shipTo?.let { shipTo ->
@@ -344,11 +351,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             Pair(order, shipments[selectedIndex].label?.destinationAddress)
         }.collectLatest { (order, labelDestination) ->
             val orderShippingEmail = order.shippingAddress.email.ifBlank { order.billingAddress.email }
+            val orderShippingPhone = order.shippingAddress.phone.ifBlank { order.billingAddress.phone }
 
             if (labelDestination == null) {
                 if (destinationAddress.value == DestinationShippingAddress.EMPTY) {
                     val defaultDestination = DestinationShippingAddress(
-                        address = order.shippingAddress.copy(email = orderShippingEmail),
+                        address = order.shippingAddress.copy(email = orderShippingEmail, phone = orderShippingPhone),
                         isVerified = false
                     )
                     destinationAddress.value = defaultDestination
@@ -906,10 +914,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onEditDestinationAddress(destinationAddress: DestinationShippingAddress) {
+        val originCountryCode = shippingAddresses.value.getOrNull(selectedShipmentIndex)?.shipFrom?.country.orEmpty()
         triggerEvent(
             NavigateToDestinationAddressEdit(
                 destinationAddress = destinationAddress,
-                orderId = navArgs.orderId
+                orderId = navArgs.orderId,
+                originCountryCode = originCountryCode
             )
         )
     }
@@ -1009,8 +1019,13 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             return
         }
 
-        if (!addressValidationHelper.isPhoneValidForShippingLabel(selectedAddress.shipTo.address.phone)) {
-            showPurchasePhoneErrorSnackbar(selectedAddress.shipTo)
+        val shipTo = selectedAddress.shipTo.address
+        val isInternational =
+            addressValidationHelper.isInternationalShipment(selectedAddress.shipFrom.country, shipTo.country.code)
+        val isPhoneRequired = isInternational || shippingRate.defaultRate.rate.carrier == WooShippingCarrier.FEDEX
+        if (addressValidationHelper.validatePhone(shipTo.phone, shipTo.country.code, isPhoneRequired) != null) {
+            val isMissingForFedEx = !isInternational && shipTo.phone.isBlank()
+            showPurchasePhoneErrorSnackbar(selectedAddress.shipTo, shippingRate.title.takeIf { isMissingForFedEx })
             return
         }
 
@@ -1061,17 +1076,23 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             message = R.string.woo_shipping_labels_purchase_origin_address_error,
             actionLabel = R.string.edit,
         ) {
-            snackbarData = null
             onEditOriginAddress(originAddress)
         }
     }
 
-    private fun showPurchasePhoneErrorSnackbar(destinationAddress: DestinationShippingAddress) {
+    private fun showPurchasePhoneErrorSnackbar(
+        destinationAddress: DestinationShippingAddress,
+        serviceRequiringPhone: String? = null
+    ) {
         snackbarData = ShippingLabelsSnackbarData(
-            message = R.string.woo_shipping_labels_purchase_phone_error,
+            message = if (serviceRequiringPhone != null) {
+                R.string.woo_shipping_labels_purchase_phone_required_by_service
+            } else {
+                R.string.woo_shipping_labels_purchase_phone_error
+            },
+            messageParameters = listOfNotNull(serviceRequiringPhone),
             actionLabel = R.string.edit,
         ) {
-            snackbarData = null
             onEditDestinationAddress(destinationAddress)
         }
     }
@@ -1121,7 +1142,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     message = R.string.woo_shipping_labels_purchase_error,
                     actionLabel = R.string.retry,
                 ) {
-                    snackbarData = null
                     onPurchaseShippingLabel()
                 }
             }
@@ -1223,9 +1243,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             .run { this as? Declared }
             ?.hazmatCategory
 
-        // Disables the current Snackbar before navigation
-        // to avoid presentation conflict with the Hazmat selection result
-        snackbarData = null
         triggerEvent(NavigateToHazmatFormEdit(selectedCategory))
     }
 
@@ -1251,7 +1268,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             message = snackbarMessage,
             actionLabel = R.string.undo,
             hasIcon = true,
-            dismissAction = { snackbarData = null }
         ) {
             hazmatStatesFlow.value = previousStates
         }
@@ -1362,7 +1378,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data class NavigateToOriginAddressEdit(val originAddress: OriginShippingAddress) : Event()
     data class NavigateToDestinationAddressEdit(
         val destinationAddress: DestinationShippingAddress,
-        val orderId: Long
+        val orderId: Long,
+        val originCountryCode: String
     ) : Event()
 
     data class NavigateToSplitShipment(val shipmentArgs: SplitShipmentArgs) : Event()

@@ -61,7 +61,7 @@ Validate the file before running flows, especially after pasting passwords:
 Run the pre-flight doctor when setting up a machine or changing credentials:
 
 ```bash
-.maestro/scripts/doctor.sh --profile phone-full --device emulator-5554
+.maestro/scripts/doctor.sh --profile full --device emulator-5554 --pos-device emulator-5556
 ```
 
 The doctor requires the non-debuggable production package (`com.woocommerce.android`). If it is missing from the
@@ -151,32 +151,35 @@ Common variants:
 
 ```bash
 .maestro/scripts/run-smoke-tests.sh --profile core
-.maestro/scripts/run-smoke-tests.sh --plan --profile phone-full
-.maestro/scripts/run-smoke-tests.sh --profile phone-full --seed --device emulator-5554
-.maestro/scripts/run-smoke-tests.sh --profile pos-tablet --seed --device Pixel_Tablet_API_35
-.maestro/scripts/run-smoke-tests.sh --profile android-system --device Pixel_8_API_35
-.maestro/scripts/doctor.sh --profile phone-full --seed
+.maestro/scripts/run-smoke-tests.sh --plan --profile full
+.maestro/scripts/run-smoke-tests.sh --profile full --device emulator-5554 --pos-device Pixel_Tablet_API_35
+.maestro/scripts/run-smoke-tests.sh --profile pos --device Pixel_Tablet_API_35
+.maestro/scripts/doctor.sh --profile full --device emulator-5554 --pos-device emulator-5556
 .maestro/scripts/run-smoke-tests.sh --device emulator-5554
 .maestro/scripts/run-smoke-tests.sh --apk /path/to/WooCommerce-production-release.apk
 .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --include-quarantine --seed
 .maestro/scripts/run-smoke-tests.sh --include-tags flaky_quarantine --seed .maestro/flows/orders_create.yaml
 .maestro/scripts/run-smoke-tests.sh --store shared --include-tags smoke_core
 .maestro/scripts/run-smoke-tests.sh --repeat 3 --store lab --include-tags smoke_core
-.maestro/scripts/run-smoke-tests.sh --profile phone-full --seed --rerun-failed ~/woocommerce-maestro-output/20260708141815/report.xml
+.maestro/scripts/run-smoke-tests.sh --profile full --device emulator-5554 --pos-device emulator-5556 --rerun-failed ~/woocommerce-maestro-output/20260708141815/report.xml
 ```
 
 Profiles are copy/paste-safe presets:
 
 - `core`: all login flows except `login_google`, plus the other `smoke_core` paths, with quarantine and Android system surfaces excluded.
-- `phone-full`: `smoke_core,smoke_extended`, tablet POS and Android system surfaces excluded. This includes quarantined phone flows.
-- `pos-tablet`: `pos_tablet`, quarantine included.
-- `android-system`: `android_system`, quarantine included. Requires an English Pixel Launcher AVD with the
-  production app discoverable as `Woo` in the app drawer.
+- `full`: every flow except the quarantined ones, for release smoke testing. The phone flows run on `--device`, then the
+  POS flows run on the tablet passed with `--pos-device`, in the same run, so they never share the lab store at once.
+  The phone needs to be an English Pixel Launcher AVD with the production app discoverable as `Woo` in the app drawer,
+  for the app shortcuts flow.
+- `pos`: the POS flows only, quarantine excluded, on the tablet passed with `--device`.
+
+`full` and `pos` seed their fixtures without `--seed`, because they include destructive flows. A selection that mixes
+phone and POS flows needs `--pos-device`. A selection of only POS flows runs on `--pos-device` when it is given.
 
 Use `--plan` with a profile or tag selection to print the exact store, repeat count, filters, and ordered flow list.
 Planning is side-effect-free: it does not load credentials, create output directories, or call Maestro/ADB.
-Without `--exclude-tags`, `flaky_quarantine` stays excluded unless the profile includes it,
-`--include-quarantine` is passed, or `--include-tags` names it. An explicit `--exclude-tags` list
+Without `--exclude-tags`, `flaky_quarantine` stays excluded unless `--include-quarantine` is passed
+or `--include-tags` names it. An explicit `--exclude-tags` list
 replaces that default, so add `flaky_quarantine` to it to keep quarantined flows out. A zero-flow
 selection is an error in both the runner and doctor.
 
@@ -187,7 +190,8 @@ The runner:
 
 - targets the production package (`com.woocommerce.android`) and rejects dev or debuggable APKs;
 - downloads and installs the latest stable GitHub release when no production app or candidate APK is installed;
-- selects one connected device automatically, or prompts when several are attached;
+- selects one connected device automatically, or prompts when several are attached, and runs the POS flows on
+  `--pos-device`;
 - captures and restores animation settings;
 - turns off the device's autofill service during the run, so password save sheets cannot cover the app, and restores
   it afterwards;

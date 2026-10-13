@@ -9,10 +9,13 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.MISSING_DESTINATION_ADDRESS
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.MISSING_ITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.MISSING_ORIGIN_ADDRESS
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.RECIPIENT_PHONE_REQUIRED_BY_SERVICE
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.UNVERIFIED_DESTINATION_ADDRESS
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.UNVERIFIED_ORIGIN_ADDRESS
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.VERIFIED_DESTINATION_ADDRESS
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.VERIFIED_ORIGIN_ADDRESS
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -29,17 +32,24 @@ class ObserveShippingLabelNotice @Inject constructor(private val addressValidati
     operator fun invoke(
         shippingAddresses: Flow<List<WooShippingAddresses>>,
         customsState: Flow<List<CustomsState>>,
+        selectedRates: Flow<List<ShippingRateUI?>>,
         selectedIndexFlow: Flow<Int>,
         coroutineScope: CoroutineScope,
     ) = combine(
         shippingAddresses.filter { it.isNotEmpty() },
         customsState,
+        selectedRates.filter { it.isNotEmpty() },
         selectedIndexFlow,
         isDismissedFlow
-    ) { addresses, customs, selectedIndex, isDismissed ->
-        val noticeType =
-            getNoticeType(addresses[selectedIndex], customs[selectedIndex], isDismissed) ?: return@combine null
-        getNoticeBannerUiState(noticeType).also { state ->
+    ) { addresses, customs, rates, selectedIndex, isDismissed ->
+        val selectedRate = rates[selectedIndex]
+        val noticeType = getNoticeType(
+            addresses[selectedIndex],
+            customs[selectedIndex],
+            selectedRate,
+            isDismissed
+        ) ?: return@combine null
+        getNoticeBannerUiState(noticeType, selectedRate).also { state ->
             previousNotice = state.type
             if (state.autoDismiss) {
                 // Dismiss the notice after AUTO_DISMISS_TIME passes
@@ -55,6 +65,7 @@ class ObserveShippingLabelNotice @Inject constructor(private val addressValidati
     private fun getNoticeType(
         addresses: WooShippingAddresses,
         customs: CustomsState,
+        selectedRate: ShippingRateUI?,
         isDismissed: Map<NoticeType, Boolean>
     ) = when {
         !addresses.shipFrom.isVerified && isDismissed[UNVERIFIED_ORIGIN_ADDRESS] == false -> {
@@ -63,10 +74,27 @@ class ObserveShippingLabelNotice @Inject constructor(private val addressValidati
 
         (
             addressValidationHelper.isMissingDestinationAddress(addresses.shipTo.address) ||
-                !addressValidationHelper.isPhoneValidForShippingLabel(addresses.shipTo.address.phone)
+                addressValidationHelper.validatePhone(
+                    value = addresses.shipTo.address.phone,
+                    countryCode = addresses.shipTo.address.country.code,
+                    isRequired = addressValidationHelper.isInternationalShipment(
+                        originCountryCode = addresses.shipFrom.country,
+                        destinationCountryCode = addresses.shipTo.address.country.code
+                    )
+                ) != null
             ) &&
             isDismissed[MISSING_DESTINATION_ADDRESS] == false -> {
             MISSING_DESTINATION_ADDRESS
+        }
+
+        selectedRate?.defaultRate?.rate?.carrier == WooShippingCarrier.FEDEX &&
+            !addressValidationHelper.isInternationalShipment(
+                originCountryCode = addresses.shipFrom.country,
+                destinationCountryCode = addresses.shipTo.address.country.code
+            ) &&
+            addresses.shipTo.address.phone.isBlank() &&
+            isDismissed[RECIPIENT_PHONE_REQUIRED_BY_SERVICE] == false -> {
+            RECIPIENT_PHONE_REQUIRED_BY_SERVICE
         }
 
         !addresses.shipTo.isVerified && isDismissed[MISSING_DESTINATION_ADDRESS] == false &&
@@ -99,7 +127,7 @@ class ObserveShippingLabelNotice @Inject constructor(private val addressValidati
         else -> null
     }
 
-    private fun getNoticeBannerUiState(noticeType: NoticeType) = when (noticeType) {
+    private fun getNoticeBannerUiState(noticeType: NoticeType, selectedRate: ShippingRateUI?) = when (noticeType) {
         MISSING_ORIGIN_ADDRESS -> NoticeBannerUiState(
             message = R.string.woo_shipping_address_notification_origin_missing_or_invalid,
             type = MISSING_ORIGIN_ADDRESS,
@@ -122,6 +150,15 @@ class ObserveShippingLabelNotice @Inject constructor(private val addressValidati
             autoDismiss = false,
             error = true,
             onDismissed = onDismissed(MISSING_DESTINATION_ADDRESS)
+        )
+
+        RECIPIENT_PHONE_REQUIRED_BY_SERVICE -> NoticeBannerUiState(
+            message = R.string.woo_shipping_labels_purchase_phone_required_by_service,
+            messageParameters = listOf(checkNotNull(selectedRate).title),
+            type = RECIPIENT_PHONE_REQUIRED_BY_SERVICE,
+            autoDismiss = false,
+            error = true,
+            onDismissed = onDismissed(RECIPIENT_PHONE_REQUIRED_BY_SERVICE)
         )
 
         UNVERIFIED_DESTINATION_ADDRESS -> NoticeBannerUiState(

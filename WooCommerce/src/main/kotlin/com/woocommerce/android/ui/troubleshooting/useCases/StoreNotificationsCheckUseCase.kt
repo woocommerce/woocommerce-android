@@ -73,7 +73,7 @@ class StoreNotificationsCheckUseCase @Inject constructor(
 
     fun checkPushRegistration(): Flow<ConnectivityCheckStatus> =
         runNotificationCheck(OPERATION_PUSH_NOTIFICATION_REGISTRATION) {
-            val status = pushNotificationRegistrationStatus(selectedSite.get().siteId)
+            val status = pushNotificationRegistrationStatus(selectedSite.get())
             if (status != PushNotificationRegistrationStatus.Status.UNREGISTERED) {
                 ConnectivityCheckStatus.Success()
             } else {
@@ -93,7 +93,7 @@ class StoreNotificationsCheckUseCase @Inject constructor(
 
             registerDevice(RegisterDevice.Trigger.TROUBLESHOOTING)
 
-            val status = pushNotificationRegistrationStatus(selectedSite.get().siteId)
+            val status = pushNotificationRegistrationStatus(selectedSite.get())
             check(status != PushNotificationRegistrationStatus.Status.UNREGISTERED) {
                 "Push notification registration did not complete."
             }

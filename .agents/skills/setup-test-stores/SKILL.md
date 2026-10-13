@@ -98,7 +98,7 @@ hand against a site created in a browser.
 ## Verifying
 
 ```bash
-.maestro/scripts/lint-env.py --seed
+.maestro/scripts/lint-env.py
 ```
 
 ## What the provisioned store supports

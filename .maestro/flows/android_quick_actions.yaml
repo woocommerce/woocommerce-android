@@ -7,7 +7,7 @@
 #   - Create order opens a fresh order draft
 #   - Payments opens the Payments hub
 #
-# Run only through the android-system profile on an English Pixel Launcher AVD.
+# Runs in the full profile and needs an English Pixel Launcher AVD.
 appId: com.woocommerce.android
 name: "Android system - App shortcuts"
 tags:
