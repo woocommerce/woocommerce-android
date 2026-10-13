@@ -42,6 +42,7 @@ import org.wordpress.android.fluxc.store.SiteStore.PlansError
 import org.wordpress.android.fluxc.store.SiteStore.PlansErrorType
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.UNKNOWN_SITE
 import org.wordpress.android.fluxc.store.SiteStore.SiteFilter.WPCOM
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
@@ -127,6 +128,35 @@ class SiteStoreTest {
             eq(mapOf("origin" to SiteModel.ORIGIN_XMLRPC.toString(), "error" to GENERIC_ERROR.name)),
             any()
         )
+    }
+
+    @Test
+    fun `given the site was removed during the refresh, when fetchSite, then don't insert it back`() = test {
+        val site = SiteModel().apply {
+            id = 5
+            origin = SiteModel.ORIGIN_WPAPI
+        }
+        val refreshedSite = SiteModel().apply { id = 5 }
+        whenever(siteWPAPIClient.fetchWPAPISite(site)).thenReturn(refreshedSite)
+        whenever(siteSqlUtils.getSitesWithLocalId(5)).thenReturn(emptyList())
+
+        val onSiteChanged = siteStore.fetchSite(site)
+
+        assertThat(onSiteChanged.error.type).isEqualTo(UNKNOWN_SITE)
+        verify(siteStorePersistence, never()).insertOrUpdateSite(any())
+    }
+
+    @Test
+    fun `given the site is still stored, when fetchSite for a WPAPI site, then update it`() = test {
+        val site = SiteModel().apply {
+            id = 5
+            origin = SiteModel.ORIGIN_WPAPI
+        }
+        val refreshedSite = SiteModel().apply { id = 5 }
+        whenever(siteWPAPIClient.fetchWPAPISite(site)).thenReturn(refreshedSite)
+        whenever(siteSqlUtils.getSitesWithLocalId(5)).thenReturn(listOf(site))
+
+        assertSiteFetched(refreshedSite, site)
     }
 
     @Test

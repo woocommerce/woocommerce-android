@@ -474,8 +474,8 @@ open class SiteStore @Inject constructor(
         return coroutineEngine.withDefaultContext(T.API, this, "Fetch site") {
             when (site.origin) {
                 SiteModel.ORIGIN_WPCOM_REST -> updateSite(siteRestClient.fetchSite(site))
-                SiteModel.ORIGIN_WPAPI -> updateSite(siteWPAPIRestClient.fetchWPAPISite(site))
-                else -> updateSite(siteWPAPIRestClient.fetchWPAPISite(site)).also { result ->
+                SiteModel.ORIGIN_WPAPI -> updateExistingSite(siteWPAPIRestClient.fetchWPAPISite(site))
+                else -> updateExistingSite(siteWPAPIRestClient.fetchWPAPISite(site)).also { result ->
                     if (result.isError) {
                         reportSiteMigrationFailed(site.origin, result.error)
                     } else {
@@ -502,6 +502,17 @@ open class SiteStore @Inject constructor(
                 }
             }
         }
+    }
+
+    /**
+     * A refresh can complete after the site was removed, e.g. by logging out. Inserting it back would restore
+     * a site that no longer belongs to anyone.
+     */
+    private fun updateExistingSite(siteModel: SiteModel): OnSiteChanged {
+        if (!siteModel.isError && siteModel.id != 0 && getSiteByLocalId(siteModel.id) == null) {
+            return OnSiteChanged(SiteError(UNKNOWN_SITE, "The site was removed while being refreshed"))
+        }
+        return updateSite(siteModel)
     }
 
     @Suppress("ForbiddenComment", "SwallowedException")
