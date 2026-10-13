@@ -13,6 +13,7 @@ class WooPosRemoteReaderErrorMapper @Inject constructor(
         when (error) {
             CardReaderRemoteError.PhoneNotEligible -> R.string.woopos_remote_reader_failed_phone_not_eligible
             CardReaderRemoteError.NfcDisabled -> R.string.woopos_remote_reader_failed_nfc_disabled
+            CardReaderRemoteError.InsecureEnvironment -> R.string.woopos_remote_reader_failed_insecure_environment
             CardReaderRemoteError.TokenInvalid -> R.string.woopos_remote_reader_failed_token_invalid
             CardReaderRemoteError.ConnectFailed,
             CardReaderRemoteError.CollectFailed,
