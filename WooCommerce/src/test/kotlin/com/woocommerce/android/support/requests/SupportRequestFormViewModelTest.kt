@@ -130,7 +130,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         verify(
             zendeskTicketRepository,
             times(1)
-        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
+        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull())
     }
 
     @Test
@@ -150,7 +150,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         verify(
             zendeskTicketRepository,
             never()
-        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
+        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull())
     }
 
     @Test
@@ -227,7 +227,8 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
                 ticketType = TicketType.Payments,
                 subject = "WooPayments Support Request",
                 siteAddress = "https://example.com",
-                message = "Transcript"
+                message = "Transcript",
+                aiChatId = AI_CHAT_ID
             )
         )
 
@@ -244,7 +245,8 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
             description = eq("Transcript"),
             extraTags = eq(listOf("in_app_support_escalate")),
             siteAddress = eq("https://example.com"),
-            diagnosticLog = anyOrNull()
+            diagnosticLog = anyOrNull(),
+            aiChatId = eq(AI_CHAT_ID)
         )
     }
 
@@ -279,7 +281,8 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
                 description = eq("Edited message"),
                 extraTags = eq(listOf("in_app_support_escalate")),
                 siteAddress = eq("https://edited.example.com"),
-                diagnosticLog = anyOrNull()
+                diagnosticLog = anyOrNull(),
+                aiChatId = anyOrNull()
             )
         }
 
@@ -300,7 +303,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         verify(
             zendeskTicketRepository,
             times(1)
-        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
+        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull())
     }
 
     @Test
@@ -376,6 +379,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
                     any(),
                     any(),
                     any(),
+                    anyOrNull(),
                     anyOrNull()
                 )
             } doReturn flowOf(requestResult)
@@ -398,5 +402,6 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
             supportAreaConfidence = "high",
             chatTopic = "woo_mobile_issue_mobile_app"
         )
+        const val AI_CHAT_ID = 123L
     }
 }

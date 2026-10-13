@@ -63,7 +63,8 @@ class SupportRequestFormViewModel @Inject constructor(
                 ticketType = it.ticketType ?: prefill.ticketType,
                 subject = it.subject.ifBlank { prefill.subject },
                 siteAddress = it.siteAddress.ifBlank { prefill.siteAddress },
-                message = it.message.ifBlank { prefill.message }
+                message = it.message.ifBlank { prefill.message },
+                aiChatId = it.aiChatId ?: prefill.aiChatId
             )
         }
     }
@@ -118,15 +119,16 @@ class SupportRequestFormViewModel @Inject constructor(
         viewState.update { it.copy(isLoading = true) }
         launch {
             zendeskTicketRepository.createRequest(
-                context,
-                helpOrigin,
-                ticketType,
-                selectedSite.getIfExists(),
-                viewState.value.subject,
-                viewState.value.message,
-                extraTags,
-                viewState.value.siteAddress,
-                diagnosticLog
+                context = context,
+                origin = helpOrigin,
+                ticketType = ticketType,
+                selectedSite = selectedSite.getIfExists(),
+                subject = viewState.value.subject,
+                description = viewState.value.message,
+                extraTags = extraTags,
+                siteAddress = viewState.value.siteAddress,
+                diagnosticLog = diagnosticLog,
+                aiChatId = viewState.value.aiChatId
             ).collect { it.handleCreateRequestResult(aiSupportChatTicketAnalyticsContext) }
         }
     }
@@ -191,7 +193,8 @@ class SupportRequestFormViewModel @Inject constructor(
         val ticketType: TicketType? = null,
         val subject: String = "",
         val siteAddress: String = "",
-        val message: String = ""
+        val message: String = "",
+        val aiChatId: Long? = null
     )
 
     @Parcelize
@@ -200,13 +203,14 @@ class SupportRequestFormViewModel @Inject constructor(
         val subject: String,
         val siteAddress: String,
         val message: String,
+        val aiChatId: Long?,
         val isLoading: Boolean
     ) : Parcelable {
         val dataIsValid
             get() = ticketType != null && subject.isNotBlank() && siteAddress.isNotBlank() && message.isNotBlank()
 
         companion object {
-            val EMPTY = ViewState(null, "", "", "", isLoading = false)
+            val EMPTY = ViewState(null, "", "", "", aiChatId = null, isLoading = false)
         }
     }
 }
