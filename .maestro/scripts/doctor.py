@@ -4,11 +4,14 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import shutil
 import subprocess
 import sys
+import urllib.error
+import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -147,6 +150,17 @@ def toolchain_check() -> Check:
     return Check("fail", message)
 
 
+def lab_store_check(url: str) -> Check:
+    """An expired Jurassic Ninja store stops answering, and only the setup skill can replace it."""
+    try:
+        with urllib.request.urlopen(f"{url.rstrip('/')}/?rest_route=/", timeout=15) as response:
+            if "namespaces" in json.load(response):
+                return Check("ok", "the lab store responds")
+    except (OSError, ValueError):
+        pass
+    return Check("fail", "the lab store doesn't respond; run the /setup-test-stores skill")
+
+
 def selection_checks(flows: list[Path], args: argparse.Namespace) -> list[Check]:
     """Report the selections the runner refuses before it runs any flow."""
     destructive = any("destructive" in flow_tags(flow) for flow in flows)
@@ -217,6 +231,10 @@ def main() -> int:
             checks.append(
                 Check("ok", f"all {len(refs)} referenced WOO_* env value(s) for the {store} store are available")
             )
+
+    lab_url = next((env[name] for name in candidates_for("WOO_JETPACK_STORE_URL", "lab") if env.get(name)), "")
+    if "lab" in stores and lab_url:
+        checks.append(lab_store_check(lab_url))
 
     if any("destructive" in flow_tags(flow) and flow_store(flow, args.store) == "shared" for flow in flows):
         checks.append(Check("fail", "destructive flows are refused on the shared store"))
