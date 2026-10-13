@@ -134,6 +134,15 @@ def adb_devices() -> list[str]:
     return devices
 
 
+def available_avds() -> list[str]:
+    emulator = Path(os.environ.get("ANDROID_HOME", Path.home() / "Library/Android/sdk")) / "emulator" / "emulator"
+    try:
+        result = subprocess.run([str(emulator), "-list-avds"], capture_output=True, text=True, check=False)
+    except OSError:
+        return []
+    return result.stdout.split()
+
+
 def toolchain_check() -> Check:
     result = subprocess.run(
         [sys.executable, str(CHECK_TOOLCHAIN)],
@@ -178,8 +187,8 @@ def main() -> int:
     parser.add_argument("--include-tags")
     parser.add_argument("--exclude-tags")
     parser.add_argument("--include-quarantine", action="store_true")
-    parser.add_argument("--device", help="Expected adb serial. AVD-name matching is handled by the runner.")
-    parser.add_argument("--pos-device", help="Tablet adb serial for the POS flows.")
+    parser.add_argument("--device", help="Adb serial, or the name of an AVD the runner starts.")
+    parser.add_argument("--pos-device", help="Tablet adb serial, or the name of an AVD the runner starts, for the POS flows.")
     parser.add_argument("--env-file", type=Path, default=DEFAULT_ENV_FILE)
     parser.add_argument("--seed", action="store_true")
     args = parser.parse_args()
@@ -242,11 +251,14 @@ def main() -> int:
         args.device, args.pos_device = args.pos_device, None
 
     devices = adb_devices()
+    avds = available_avds()
     run_devices: list[str] = []
     if args.device:
         if args.device in devices:
             run_devices.append(args.device)
             checks.append(Check("ok", f"requested adb device {args.device} is connected"))
+        elif args.device in avds:
+            checks.append(Check("ok", f"the {args.device} emulator will be started"))
         else:
             checks.append(Check("fail", f"requested adb device {args.device} is not connected"))
     elif len(devices) == 1:
@@ -265,6 +277,8 @@ def main() -> int:
         elif args.pos_device in devices:
             run_devices.append(args.pos_device)
             checks.append(Check("ok", f"requested POS device {args.pos_device} is connected"))
+        elif args.pos_device in avds:
+            checks.append(Check("ok", f"the {args.pos_device} emulator will be started for the POS flows"))
         else:
             checks.append(Check("fail", f"requested POS device {args.pos_device} is not connected"))
 
@@ -275,15 +289,15 @@ def main() -> int:
         except DeviceLocaleError as error:
             checks.append(Check("fail", str(error)))
 
-    if run_devices and not any(check.status == "fail" for check in checks):
+    if run_devices and any(check.status == "fail" for check in checks):
+        checks.append(Check("warn", "production release app check skipped because another pre-flight check failed"))
+    else:
         for device in run_devices:
             try:
                 release = ensure_release_app(device)
                 checks.append(Check("ok", release.message))
             except ReleaseAppError as error:
                 checks.append(Check("fail", str(error)))
-    else:
-        checks.append(Check("warn", "production release app check skipped because another pre-flight check failed"))
 
     print("Maestro smoke doctor")
     print(f"  profile: {args.profile}")

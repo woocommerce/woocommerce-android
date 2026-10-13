@@ -85,9 +85,10 @@ Usage:
 Options:
   --profile name              Preset: core, full, pos. full and pos skip quarantine and seed fixtures.
   --store lab|shared          Run every selected flow against this store. Default: each flow's own store.
-  --device serial|avd-name    Device serial or emulator AVD name.
+  --device serial|avd-name    Device serial or emulator AVD name. An AVD that isn't running is started.
   --pos-device serial|avd-name
                               Tablet for the POS flows. Needed when the selection also has phone flows.
+                              An AVD that isn't running is started when the POS flows begin.
   --apk path                  Validate and install a production release APK before running.
   --repeat N                  Run the selected flow set N times.
   -t, --tag tag               Alias for --include-tags.
@@ -691,6 +692,41 @@ while read -r serial state _rest; do
   fi
 done < <(adb devices)
 
+EMULATOR="${ANDROID_HOME:-$HOME/Library/Android/sdk}/emulator/emulator"
+# Emulators this run started, stopped again when it ends.
+STARTED_SERIALS=()
+
+is_attached() {
+  local serial
+  for serial in ${DEVICE_SERIALS[@]+"${DEVICE_SERIALS[@]}"}; do
+    [[ "$serial" == "$1" ]] && return 0
+    [[ "$(adb -s "$serial" emu avd name 2>/dev/null | tr -d '\r' | head -n 1 || true)" == "$1" ]] && return 0
+  done
+  return 1
+}
+
+is_avd() {
+  "$EMULATOR" -list-avds 2>/dev/null | grep -qx "$1"
+}
+
+# Starts an AVD and prints its serial once it has booted.
+start_avd() {
+  local avd="$1" serial attempt
+  nohup "$EMULATOR" -avd "$avd" -no-snapshot-save -no-boot-anim -no-audio </dev/null >"$TMP_DIR/emulator-$avd.log" 2>&1 &
+  for attempt in $(seq 1 120); do
+    for serial in $(adb devices | awk 'NR > 1 && $2 == "device" { print $1 }'); do
+      if [[ "$(adb -s "$serial" emu avd name 2>/dev/null | tr -d '\r' | head -n 1 || true)" == "$avd" &&
+        "$(adb -s "$serial" shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)" == "1" ]]; then
+        printf '%s' "$serial"
+        return
+      fi
+    done
+    sleep 5
+  done
+  echo "The $avd emulator did not finish booting." >&2
+  exit 1
+}
+
 resolve_device() {
   local selector="$1"
   local option="${2:---device}"
@@ -742,21 +778,34 @@ resolve_device() {
   printf '%s' "${DEVICE_SERIALS[$((selected - 1))]}"
 }
 
+if [[ -n "$DEVICE_SELECTOR" ]] && ! is_attached "$DEVICE_SELECTOR" && is_avd "$DEVICE_SELECTOR"; then
+  echo "--- Starting the $DEVICE_SELECTOR emulator"
+  started_serial="$(start_avd "$DEVICE_SELECTOR")"
+  STARTED_SERIALS+=("$started_serial")
+  DEVICE_SERIALS+=("$started_serial")
+fi
 PHONE_SERIAL="$(resolve_device "$DEVICE_SELECTOR" "$DEVICE_OPTION")"
 RUN_DEVICES=("$PHONE_SERIAL")
 POS_DEVICE_SERIAL=""
+POS_DEVICE_AVD=""
 if [[ "$USES_POS_DEVICE" == "yes" ]]; then
-  POS_DEVICE_SERIAL="$(resolve_device "$POS_DEVICE_SELECTOR" --pos-device)"
-  if [[ "$POS_DEVICE_SERIAL" == "$PHONE_SERIAL" ]]; then
-    echo "--pos-device must be a different device than --device." >&2
-    exit 2
+  if ! is_attached "$POS_DEVICE_SELECTOR" && is_avd "$POS_DEVICE_SELECTOR"; then
+    # Started when the POS flows begin, so only one emulator runs the flows at a time.
+    POS_DEVICE_AVD="$POS_DEVICE_SELECTOR"
+  else
+    POS_DEVICE_SERIAL="$(resolve_device "$POS_DEVICE_SELECTOR" --pos-device)"
+    if [[ "$POS_DEVICE_SERIAL" == "$PHONE_SERIAL" ]]; then
+      echo "--pos-device must be a different device than --device." >&2
+      exit 2
+    fi
+    RUN_DEVICES+=("$POS_DEVICE_SERIAL")
   fi
-  RUN_DEVICES+=("$POS_DEVICE_SERIAL")
 fi
 DEVICE_SERIAL="$PHONE_SERIAL"
 MAESTRO_DEVICE_ARGS=(--device "$DEVICE_SERIAL")
 echo "Device: $PHONE_SERIAL"
 [[ -n "$POS_DEVICE_SERIAL" ]] && echo "POS device: $POS_DEVICE_SERIAL"
+[[ -n "$POS_DEVICE_AVD" ]] && echo "POS device: $POS_DEVICE_AVD, started for the POS flows"
 echo "--- Checking device language"
 for serial in "${RUN_DEVICES[@]}"; do
   python3 "$CHECK_DEVICE_LOCALE_SCRIPT" --device "$serial"
@@ -848,6 +897,9 @@ cleanup_on_exit() {
     fi
   fi
   restore_device_settings
+  for serial in ${STARTED_SERIALS[@]+"${STARTED_SERIALS[@]}"}; do
+    adb -s "$serial" emu kill >/dev/null 2>&1 || true
+  done
   exit "$exit_code"
 }
 trap cleanup_on_exit EXIT
@@ -855,14 +907,33 @@ trap cleanup_on_exit EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
-echo "--- Ensuring production release app"
-for serial in "${RUN_DEVICES[@]}"; do
+prepare_run_device() {
+  local serial="$1"
   prepare_device_settings "$serial"
   release_app_args=(--device "$serial")
   if [[ -n "$APK_PATH" ]]; then
     release_app_args+=(--apk "$APK_PATH")
   fi
   python3 "$ENSURE_RELEASE_APP_SCRIPT" "${release_app_args[@]}"
+}
+
+start_pos_device() {
+  # The phone flows are done, so an emulator this run started for them can go.
+  if [[ "$REPEAT" -eq 1 && " ${STARTED_SERIALS[*]-} " == *" $PHONE_SERIAL "* ]]; then
+    restore_device_settings
+    adb -s "$PHONE_SERIAL" emu kill >/dev/null 2>&1 || true
+  fi
+  echo "--- Starting the $POS_DEVICE_AVD emulator"
+  POS_DEVICE_SERIAL="$(start_avd "$POS_DEVICE_AVD")"
+  STARTED_SERIALS+=("$POS_DEVICE_SERIAL")
+  RUN_DEVICES+=("$POS_DEVICE_SERIAL")
+  python3 "$CHECK_DEVICE_LOCALE_SCRIPT" --device "$POS_DEVICE_SERIAL"
+  prepare_run_device "$POS_DEVICE_SERIAL"
+}
+
+echo "--- Ensuring production release app"
+for serial in "${RUN_DEVICES[@]}"; do
+  prepare_run_device "$serial"
 done
 
 prepare_device_media_fixture
@@ -1062,10 +1133,9 @@ build_doctor_command() {
   if [[ -n "$STORE_OVERRIDE" ]]; then
     args+=(--store "$STORE_OVERRIDE")
   fi
-  # The doctor only accepts adb serials, not AVD names.
-  args+=(--device "$PHONE_SERIAL")
-  if [[ -n "$POS_DEVICE_SERIAL" ]]; then
-    args+=(--pos-device "$POS_DEVICE_SERIAL")
+  args+=(--device "${DEVICE_SELECTOR:-$PHONE_SERIAL}")
+  if [[ -n "$POS_DEVICE_SELECTOR" ]]; then
+    args+=(--pos-device "$POS_DEVICE_SELECTOR")
   fi
   if [[ "$SEED" == "yes" ]]; then
     args+=(--seed)
@@ -1206,6 +1276,9 @@ for repeat_index in $(seq 1 "$REPEAT"); do
   for flow in "${ORDERED_FLOWS[@]}"; do
     flow_device="$PHONE_SERIAL"
     if [[ "$USES_POS_DEVICE" == "yes" ]] && flow_has_any_tag "$flow" pos_tablet; then
+      if [[ -z "$POS_DEVICE_SERIAL" ]]; then
+        start_pos_device
+      fi
       flow_device="$POS_DEVICE_SERIAL"
     fi
     if [[ "$flow_device" != "$DEVICE_SERIAL" ]]; then

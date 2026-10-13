@@ -172,6 +172,8 @@ Profiles are copy/paste-safe presets:
 
 `full` and `pos` seed their fixtures without `--seed`, because they include destructive flows. A selection that mixes
 phone and POS flows needs `--pos-device`. A selection of only POS flows runs on `--pos-device` when it is given.
+`--device` and `--pos-device` take an AVD name too. The runner starts an AVD that isn't running, and starts the
+tablet only when the POS flows begin, stopping the phone it started first.
 
 Use `--plan` with a profile or tag selection to print the exact store, repeat count, filters, and ordered flow list.
 Planning is side-effect-free: it does not load credentials, create output directories, or call Maestro/ADB.
