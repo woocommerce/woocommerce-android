@@ -5,16 +5,11 @@ import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.AttributeItemBinding
 import com.woocommerce.android.model.ProductAttribute
-import java.util.Objects
 
 abstract class AttributeBaseAdapter<T : AttributeBaseAdapter.AttributeBaseViewHolder>(
     private val onItemClick: (attributeId: Long, attributeName: String) -> Unit
 ) : RecyclerView.Adapter<T>() {
     private var attributeList = listOf<ProductAttribute>()
-
-    init {
-        setHasStableIds(true)
-    }
 
     override fun onBindViewHolder(holder: T, position: Int) {
         holder.bind(attributeList[position])
@@ -23,9 +18,6 @@ abstract class AttributeBaseAdapter<T : AttributeBaseAdapter.AttributeBaseViewHo
             attributeList.getOrNull(holder.bindingAdapterPosition)?.let { onItemClick(it.id, it.name) }
         }
     }
-
-    // local attributes all have id 0, so the name is needed to tell them apart
-    override fun getItemId(position: Int) = attributeList[position].let { Objects.hash(it.id, it.name).toLong() }
 
     override fun getItemCount() = attributeList.size
 
