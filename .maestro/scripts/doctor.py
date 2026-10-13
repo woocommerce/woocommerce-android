@@ -10,7 +10,6 @@ import re
 import shutil
 import subprocess
 import sys
-import urllib.error
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
