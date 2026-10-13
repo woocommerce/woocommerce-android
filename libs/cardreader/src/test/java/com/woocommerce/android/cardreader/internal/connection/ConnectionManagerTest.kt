@@ -352,6 +352,27 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
         }
 
     @Test
+    fun `given reader without usb device, when connectToReader, then bluetooth connection configuration used`() =
+        testBlocking {
+            // GIVEN
+            val reader: Reader = mock {
+                on { deviceType }.thenReturn(DeviceType.WISEPAD_3)
+                on { usbDevice }.thenReturn(null)
+            }
+            val cardReader = CardReaderImpl(reader)
+            whenever(terminalWrapper.connectToReader(any(), any())).thenReturn(reader)
+
+            // WHEN
+            connectionManager.startConnectionToReader(cardReader, "location_id")
+
+            // THEN
+            val configCaptor = argumentCaptor<ConnectionConfiguration>()
+            verify(terminalWrapper).connectToReader(any(), configCaptor.capture())
+            assertThat(configCaptor.firstValue)
+                .isInstanceOf(ConnectionConfiguration.BluetoothConnectionConfiguration::class.java)
+        }
+
+    @Test
     fun `given reader with location id, when connectToReader fails, then status updated with not connected and other error code`() =
         testBlocking {
             val reader: Reader = mock {
