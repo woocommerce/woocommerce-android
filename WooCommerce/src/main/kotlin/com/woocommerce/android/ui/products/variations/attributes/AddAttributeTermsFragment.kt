@@ -45,6 +45,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         private const val LIST_STATE_KEY_GLOBAL = "list_state_global"
         private const val KEY_RENAMED_ATTRIBUTE_NAME = "renamed_attribute_name"
         private const val KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING = "is_remove_dialog_showing"
+        private const val KEY_IS_STOP_USING_FOR_VARIATIONS_DIALOG_SHOWING = "is_stop_variations_dialog_showing"
     }
 
     private val termsViewModel: AddAttributeTermsViewModel by viewModels()
@@ -59,6 +60,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private val skeletonView = SkeletonView()
 
     private var isConfirmRemoveDialogShowing = false
+    private var isStopUsingForVariationsDialogShowing = false
     private var renamedAttributeName: String? = null
     private var moveNextMenuItem: MenuItem? = null
 
@@ -147,6 +149,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
         if (savedInstanceState?.getBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING) == true) {
             confirmRemoveAttribute()
+        }
+        if (savedInstanceState?.getBoolean(KEY_IS_STOP_USING_FOR_VARIATIONS_DIALOG_SHOWING) == true) {
+            confirmStopUsingForVariations()
         }
     }
 
@@ -265,6 +270,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         super.onSaveInstanceState(outState)
         if (isConfirmRemoveDialogShowing) {
             outState.putBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING, true)
+        }
+        if (isStopUsingForVariationsDialogShowing) {
+            outState.putBoolean(KEY_IS_STOP_USING_FOR_VARIATIONS_DIALOG_SHOWING, true)
         }
         renamedAttributeName?.let {
             outState.putString(KEY_RENAMED_ATTRIBUTE_NAME, it)
@@ -456,9 +464,13 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private fun onUsedForVariationsChanged(isChecked: Boolean) {
         if (isChecked || !viewModel.draftHasVariations) {
             viewModel.onAttributeUsedForVariationsToggled(navArgs.attributeId, attributeName, isChecked)
-            return
+        } else {
+            confirmStopUsingForVariations()
         }
+    }
 
+    private fun confirmStopUsingForVariations() {
+        isStopUsingForVariationsDialogShowing = true
         WooDialog.showDialog(
             requireActivity(),
             titleId = R.string.product_attribute_stop_using_for_variations_title,
@@ -468,8 +480,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                 viewModel.onAttributeUsedForVariationsToggled(navArgs.attributeId, attributeName, false)
             },
             negativeButtonId = R.string.cancel,
-            // reset the switch to the draft value, so cancelling turns it back on
-            onDismiss = { if (_binding != null) updateAttributeSettings() }
+            // reset the switch to the draft value, so cancelling turns it back on. The flag is already saved
+            // when onStop dismisses the dialog, so a rotation still restores it.
+            onDismiss = {
+                isStopUsingForVariationsDialogShowing = false
+                if (_binding != null) updateAttributeSettings()
+            }
         )
     }
 

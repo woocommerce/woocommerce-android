@@ -35,8 +35,9 @@ object WooDialog {
 
         val builder = MaterialAlertDialogBuilder(activity)
             .setCancelable(cancellable)
-            .setOnDismissListener {
-                onCleared()
+            .setOnDismissListener { dialog ->
+                // the listener runs from a posted message, so after a rotation a newer dialog may already be shown
+                if (dialogRef?.get() === dialog) dialogRef?.clear()
                 onDismiss?.invoke()
             }
             .apply {
