@@ -54,6 +54,7 @@ import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import java.net.URL
 import javax.inject.Inject
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @HiltViewModel
 @Suppress("TooManyFunctions", "LongParameterList", "UnusedPrivateMember")
@@ -150,7 +151,7 @@ class MoreMenuViewModel @Inject constructor(
             MoreMenuItemButton(
                 title = R.string.more_menu_button_payments,
                 description = R.string.more_menu_button_payments_description,
-                icon = R.drawable.ic_more_menu_payments,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_credit_card_24dp,
                 badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
                 onClick = ::onPaymentsButtonClick,
             ),
@@ -164,47 +165,47 @@ class MoreMenuViewModel @Inject constructor(
             MoreMenuItemButton(
                 title = R.string.more_menu_button_blaze,
                 description = R.string.more_menu_button_blaze_description,
-                icon = R.drawable.ic_blaze,
+                icon = R.drawable.ic_blaze_monochrome,
                 onClick = ::onPromoteProductsWithBlaze,
                 state = blazeState,
             ),
             MoreMenuItemButton(
                 title = R.string.more_menu_button_wс_admin,
                 description = R.string.more_menu_button_wc_admin_description,
-                icon = R.drawable.ic_more_menu_wp_admin,
-                extraIcon = R.drawable.ic_external,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_gauge_24dp,
+                extraIcon = DesignSystemR.drawable.woo_ds_ic_regular_arrow_up_right_24dp,
                 onClick = ::onViewAdminButtonClick
             ),
             MoreMenuItemButton(
                 title = R.string.more_menu_button_store,
                 description = R.string.more_menu_button_store_description,
-                icon = R.drawable.ic_more_menu_store,
-                extraIcon = R.drawable.ic_external,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_globe_24dp,
+                extraIcon = DesignSystemR.drawable.woo_ds_ic_regular_arrow_up_right_24dp,
                 onClick = ::onViewStoreButtonClick
             ),
             MoreMenuItemButton(
                 title = R.string.more_menu_button_coupons,
                 description = R.string.more_menu_button_coupons_description,
-                icon = R.drawable.ic_more_menu_coupons,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_tag_24dp,
                 onClick = ::onCouponsButtonClick
             ),
             MoreMenuItemButton(
                 title = R.string.more_menu_button_reviews,
                 description = R.string.more_menu_button_reviews_description,
-                icon = R.drawable.ic_more_menu_reviews,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_star_24dp,
                 badgeState = buildUnseenReviewsBadgeState(unseenReviewsCount),
                 onClick = ::onReviewsButtonClick
             ),
             MoreMenuItemButton(
                 title = R.string.more_menu_button_customers,
                 description = R.string.more_menu_button_customers_description,
-                icon = R.drawable.icon_multiple_users,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_user_group_24dp,
                 onClick = ::onCustomersButtonClick
             ),
             MoreMenuItemButton(
                 title = R.string.more_menu_button_inbox,
                 description = R.string.more_menu_button_inbox_description,
-                icon = R.drawable.ic_more_menu_inbox,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_envelope_24dp,
                 onClick = ::onInboxButtonClick,
                 state = inboxState,
             )
@@ -218,13 +219,13 @@ class MoreMenuViewModel @Inject constructor(
                 MoreMenuItemButton(
                     title = R.string.more_menu_button_settings,
                     description = R.string.more_menu_button_settings_description,
-                    icon = R.drawable.ic_more_screen_settings,
+                    icon = DesignSystemR.drawable.woo_ds_ic_regular_gear_24dp,
                     onClick = ::onSettingsClick
                 ),
                 MoreMenuItemButton(
                     title = R.string.more_menu_button_subscriptions,
                     description = R.string.more_menu_button_subscriptions_description,
-                    icon = R.drawable.ic_more_menu_upgrades,
+                    icon = DesignSystemR.drawable.woo_ds_ic_regular_bolt_24dp,
                     state = settingsMenuButtonState,
                     onClick = ::onUpgradesButtonClick
                 )

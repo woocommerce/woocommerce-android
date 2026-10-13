@@ -37,6 +37,7 @@ import org.wordpress.android.fluxc.model.blaze.BlazeBillingSummary
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.time.ZonedDateTime
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @ExperimentalCoroutinesApi
 class MoreMenuViewModelTests : BaseUnitTest() {
@@ -138,7 +139,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         // THEN
         val paymentsButton =
             states.last().menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_payments }
-        assertThat(paymentsButton.icon).isEqualTo(R.drawable.ic_more_menu_payments)
+        assertThat(paymentsButton.icon).isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_credit_card_24dp)
         assertThat(paymentsButton.badgeState?.textColor).isEqualTo(
             R.color.color_on_surface
         )
@@ -188,7 +189,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         // THEN
         val reviewsButton =
             states.last().menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_reviews }
-        assertThat(reviewsButton.icon).isEqualTo(R.drawable.ic_more_menu_reviews)
+        assertThat(reviewsButton.icon).isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_star_24dp)
         assertThat(reviewsButton.badgeState?.textColor).isEqualTo(
             R.color.color_on_primary
         )
