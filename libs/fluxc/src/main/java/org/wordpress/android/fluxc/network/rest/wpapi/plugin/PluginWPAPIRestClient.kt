@@ -25,7 +25,8 @@ class PluginWPAPIRestClient @Inject constructor(
     ): WPAPINetwork {
         return when {
             applicationPasswordsStore.hasCredentials(site)
-                || site.username.isNullOrEmpty() || site.password.isNullOrEmpty() -> applicationPasswordsNetwork
+                || site.username.isNullOrEmpty() || !applicationPasswordsStore.hasSitePassword(site) ->
+                applicationPasswordsNetwork
 
             else -> cookieNonceWPAPINetwork
         }

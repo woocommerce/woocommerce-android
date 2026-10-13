@@ -28,7 +28,7 @@ class PluginWPApiRestClientTest(private val site: SiteModel) {
     private val applicationPasswordsNetwork: ApplicationPasswordsNetwork = mock()
     private val applicationPasswordsStore: ApplicationPasswordsStore = mock()
     private val expectedNetwork
-        get() = if (site.username.isNullOrEmpty() || site.password.isNullOrEmpty()) {
+        get() = if (!site.hasCredentials) {
             applicationPasswordsNetwork
         } else {
             cookieNonceWPAPINetwork
@@ -49,6 +49,7 @@ class PluginWPApiRestClientTest(private val site: SiteModel) {
             applicationPasswordsNetwork = applicationPasswordsNetwork,
             applicationPasswordsStore = applicationPasswordsStore
         )
+        whenever(applicationPasswordsStore.hasSitePassword(site)).thenReturn(site.hasCredentials)
     }
 
     @Test
@@ -150,6 +151,10 @@ class PluginWPApiRestClientTest(private val site: SiteModel) {
 
         private const val SITE_URL = "http://site.com"
 
+        // The parameterized site with a username stands for a site logged in with its credentials
+        private val SiteModel.hasCredentials
+            get() = !username.isNullOrEmpty()
+
         @Parameters(name = "{index}: {0}")
         @JvmStatic
         fun data(): List<Any> {
@@ -157,7 +162,6 @@ class PluginWPApiRestClientTest(private val site: SiteModel) {
                 SiteModel().apply {
                     url = SITE_URL
                     username = "username"
-                    password = "password"
                 },
                 SiteModel().apply {
                     url = SITE_URL
