@@ -75,7 +75,6 @@ class SiteWPAPIRestClientTest {
         val existingSite = SiteModel().apply {
             url = SITE_URL
             username = USERNAME
-            password = PASSWORD
             origin = SiteModel.ORIGIN_WPAPI
             loginUrl = VERIFIED_LOGIN_URL
             adminUrl = VERIFIED_ADMIN_URL
@@ -239,7 +238,6 @@ class SiteWPAPIRestClientTest {
     private fun existingSite() = SiteModel().apply {
         url = SITE_URL
         username = USERNAME
-        password = PASSWORD
         origin = SiteModel.ORIGIN_WPAPI
     }
 
@@ -274,7 +272,6 @@ class SiteWPAPIRestClientTest {
         const val HTTP_SITE_URL = "http://site.example"
         const val WP_API_URL = "$SITE_URL/wp-json/"
         const val USERNAME = "merchant"
-        const val PASSWORD = "password"
         const val VERIFIED_LOGIN_URL = "$SITE_URL/private-login"
         const val VERIFIED_ADMIN_URL = "$SITE_URL/private-admin/"
         const val STALE_REST_ADMIN_URL = "$SITE_URL/old-wp-admin/"

@@ -30,7 +30,6 @@ object SiteUtils {
         setIsJetpackInstalled(true)
         setIsJetpackConnected(true)
         username = "ponyuser"
-        password = "ponypass"
         setUrl("http://jetpack.url")
         origin = SiteModel.ORIGIN_XMLRPC
     }

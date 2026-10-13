@@ -93,7 +93,6 @@ class SiteWPAPIRestClient @Inject constructor(
                     wpApiRestUrl = discoveredWpApiUrl
                     this.url = cleanedUrl
                     this.username = payload.username
-                    this.password = payload.password
                 }
             }
 
@@ -112,7 +111,6 @@ class SiteWPAPIRestClient @Inject constructor(
             payload = FetchWPAPISitePayload(
                 url = site.url,
                 username = site.username,
-                password = site.password,
                 wasUrlNormalizedToHttps = site.url.startsWith("http://", ignoreCase = true),
             )
         ).also { refreshedSite ->

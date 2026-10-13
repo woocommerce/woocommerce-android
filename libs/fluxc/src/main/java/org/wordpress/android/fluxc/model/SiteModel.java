@@ -84,8 +84,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
     @Column
     private String mUsername;
     @Column
-    private String mPassword;
-    @Column
     private String mWpApiRestUrl;
 
     // Self hosted user's profile data
@@ -219,14 +217,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
 
     public void setUsername(String username) {
         mUsername = username;
-    }
-
-    public String getPassword() {
-        return mPassword;
-    }
-
-    public void setPassword(String password) {
-        mPassword = password;
     }
 
     public String getWpApiRestUrl() {
@@ -487,7 +477,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
                 Objects.equals(mName, siteModel.mName) &&
                 Objects.equals(mTimezone, siteModel.mTimezone) &&
                 Objects.equals(mUsername, siteModel.mUsername) &&
-                Objects.equals(mPassword, siteModel.mPassword) &&
                 Objects.equals(mWpApiRestUrl, siteModel.mWpApiRestUrl) &&
                 Objects.equals(mEmail, siteModel.mEmail) &&
                 Objects.equals(mDisplayName, siteModel.mDisplayName) &&
@@ -517,7 +506,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
                 mOrigin,
                 mSelfHostedSiteId,
                 mUsername,
-                mPassword,
                 mWpApiRestUrl,
                 mEmail,
                 mDisplayName,

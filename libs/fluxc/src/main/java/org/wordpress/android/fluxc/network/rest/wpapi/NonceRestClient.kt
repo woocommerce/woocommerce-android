@@ -47,11 +47,6 @@ class NonceRestClient @Inject constructor(
 
     fun getNonce(site: SiteModel): Nonce? = getNonce(site.url, site.username)
 
-    suspend fun requestNonce(site: SiteModel): Nonce {
-        if (site.username == null || site.password == null) return Unknown(site.username)
-        return requestNonce(CookieNonceAuthenticationEndpoints.from(site), site.username, site.password)
-    }
-
     suspend fun requestNonce(siteUrl: String, username: String, password: String) =
         requestNonce(CookieNonceAuthenticationEndpoints(siteUrl), username, password)
 
