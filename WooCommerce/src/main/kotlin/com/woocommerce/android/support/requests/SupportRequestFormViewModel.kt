@@ -53,6 +53,11 @@ class SupportRequestFormViewModel @Inject constructor(
         .distinctUntilChanged()
         .asLiveData()
 
+    val shouldShowTranscriptDisclosure = viewState
+        .map { it.aiSupportChatTranscript.isNullOrBlank().not() }
+        .distinctUntilChanged()
+        .asLiveData()
+
     fun onViewCreated() {
         tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_VIEWED)
     }
@@ -64,7 +69,8 @@ class SupportRequestFormViewModel @Inject constructor(
                 subject = it.subject.ifBlank { prefill.subject },
                 siteAddress = it.siteAddress.ifBlank { prefill.siteAddress },
                 message = it.message.ifBlank { prefill.message },
-                aiChatId = it.aiChatId ?: prefill.aiChatId
+                aiChatId = it.aiChatId ?: prefill.aiChatId,
+                aiSupportChatTranscript = it.aiSupportChatTranscript ?: prefill.aiSupportChatTranscript
             )
         }
     }
@@ -124,7 +130,7 @@ class SupportRequestFormViewModel @Inject constructor(
                 ticketType = ticketType,
                 selectedSite = selectedSite.getIfExists(),
                 subject = viewState.value.subject,
-                description = viewState.value.message,
+                description = viewState.value.requestDescription,
                 extraTags = extraTags,
                 siteAddress = viewState.value.siteAddress,
                 diagnosticLog = diagnosticLog,
@@ -194,7 +200,8 @@ class SupportRequestFormViewModel @Inject constructor(
         val subject: String = "",
         val siteAddress: String = "",
         val message: String = "",
-        val aiChatId: Long? = null
+        val aiChatId: Long? = null,
+        val aiSupportChatTranscript: String? = null
     )
 
     @Parcelize
@@ -204,13 +211,27 @@ class SupportRequestFormViewModel @Inject constructor(
         val siteAddress: String,
         val message: String,
         val aiChatId: Long?,
+        val aiSupportChatTranscript: String?,
         val isLoading: Boolean
     ) : Parcelable {
         val dataIsValid
             get() = ticketType != null && subject.isNotBlank() && siteAddress.isNotBlank() && message.isNotBlank()
 
         companion object {
-            val EMPTY = ViewState(null, "", "", "", aiChatId = null, isLoading = false)
+            val EMPTY = ViewState(
+                ticketType = null,
+                subject = "",
+                siteAddress = "",
+                message = "",
+                aiChatId = null,
+                aiSupportChatTranscript = null,
+                isLoading = false
+            )
         }
     }
+
+    private val ViewState.requestDescription: String
+        get() = listOfNotNull(message, aiSupportChatTranscript)
+            .filter { it.isNotBlank() }
+            .joinToString(separator = "\n\n")
 }
