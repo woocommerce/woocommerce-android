@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.jetpack
 
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.WooException
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -12,6 +13,7 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.JetpackStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -24,7 +26,8 @@ class JetpackActivationRepository @Inject constructor(
     private val siteStore: SiteStore,
     private val jetpackStore: JetpackStore,
     private val wooCommerceStore: WooCommerceStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val applicationPasswordsStore: ApplicationPasswordsStore
 ) {
     companion object {
         private const val DEFAULT_MAX_RETRY = 2
@@ -33,6 +36,10 @@ class JetpackActivationRepository @Inject constructor(
 
     suspend fun getSiteByUrl(url: String): SiteModel? = withContext(Dispatchers.IO) {
         SiteUtils.getSiteByMatchingUrl(siteStore, url)
+    }
+
+    suspend fun hasSiteCredentials(site: SiteModel): Boolean = withContext(Dispatchers.IO) {
+        site.username.isNotNullOrEmpty() && applicationPasswordsStore.hasSitePassword(site)
     }
 
     suspend fun registerSite(

@@ -46,7 +46,6 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
     private val site = SiteModel().apply {
         url = siteUrl
         username = "username"
-        password = "password"
     }
 
     private lateinit var viewModel: JetpackActivationMainViewModel
@@ -54,6 +53,7 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
     private val jetpackActivationRepository: JetpackActivationRepository = mock {
         on { fetchJetpackSite(siteUrl) } doReturn Result.success(site)
         on { getSiteByUrl(siteUrl) } doReturn site
+        on { hasSiteCredentials(site) } doReturn true
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val pluginRepository: PluginRepository = mock()
@@ -320,15 +320,10 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given site using application passwords, when starting, then allow empty username and password`() =
+    fun `given site using application passwords, when starting, then allow missing site credentials`() =
         testBlocking {
             setup(createJetpackStatus(isJetpackInstalled = false)) {
-                whenever(jetpackActivationRepository.getSiteByUrl(siteUrl)).thenReturn(
-                    site.apply {
-                        username = ""
-                        password = ""
-                    }
-                )
+                whenever(jetpackActivationRepository.hasSiteCredentials(site)).thenReturn(false)
                 whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
             }
 
@@ -338,7 +333,7 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given site not using application passwords, when starting, then require username and password`() =
+    fun `given site not using application passwords, when starting, then require site credentials`() =
         testBlocking {
             val originalHandler = Thread.getDefaultUncaughtExceptionHandler()
 
@@ -348,12 +343,7 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
             Thread.setDefaultUncaughtExceptionHandler { _, e -> exception = e }
 
             setup(createJetpackStatus(isJetpackInstalled = false)) {
-                whenever(jetpackActivationRepository.getSiteByUrl(siteUrl)).thenReturn(
-                    site.apply {
-                        username = ""
-                        password = ""
-                    }
-                )
+                whenever(jetpackActivationRepository.hasSiteCredentials(site)).thenReturn(false)
                 whenever(selectedSite.connectionType).thenReturn(null)
             }
 

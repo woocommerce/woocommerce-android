@@ -14,6 +14,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.JetpackStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -28,13 +29,17 @@ class JetpackActivationRepositoryTest : BaseUnitTest() {
     }
     private val wooCommerceStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
+    private val applicationPasswordsStore: ApplicationPasswordsStore = mock {
+        on { hasSitePassword(any()) }.thenReturn(true)
+    }
 
     private val repository = JetpackActivationRepository(
         dispatcher = dispatcher,
         siteStore = siteStore,
         jetpackStore = jetpackStore,
         wooCommerceStore = wooCommerceStore,
-        selectedSite = selectedSite
+        selectedSite = selectedSite,
+        applicationPasswordsStore = applicationPasswordsStore
     )
 
     @Test
@@ -119,5 +124,34 @@ class JetpackActivationRepositoryTest : BaseUnitTest() {
         )
 
         assertThat(result.isFailure).isTrue()
+    }
+
+    @Test
+    fun `given site has username and stored password, when checking site credentials, then return true`() =
+        testBlocking {
+            val site = SiteModel().apply { username = "username" }
+
+            val result = repository.hasSiteCredentials(site)
+
+            assertThat(result).isTrue()
+        }
+
+    @Test
+    fun `given site has no username, when checking site credentials, then return false`() = testBlocking {
+        val site = SiteModel().apply { username = "" }
+
+        val result = repository.hasSiteCredentials(site)
+
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `given site has no stored password, when checking site credentials, then return false`() = testBlocking {
+        val site = SiteModel().apply { username = "username" }
+        whenever(applicationPasswordsStore.hasSitePassword(site)).thenReturn(false)
+
+        val result = repository.hasSiteCredentials(site)
+
+        assertThat(result).isFalse()
     }
 }

@@ -11,7 +11,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.filterNotNull
-import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.support.help.HelpOrigin.JETPACK_INSTALLATION
 import com.woocommerce.android.tools.SelectedSite
@@ -91,7 +90,7 @@ class JetpackActivationMainViewModel @Inject constructor(
     private val site: Deferred<SiteModel>
         get() = async {
             val site = jetpackActivationRepository.getSiteByUrl(navArgs.siteUrl)?.takeIf {
-                val hasCredentials = it.username.isNotNullOrEmpty() && it.password.isNotNullOrEmpty()
+                val hasCredentials = jetpackActivationRepository.hasSiteCredentials(it)
                 if (!hasCredentials && !useApplicationPasswords) {
                     WooLog.w(WooLog.T.LOGIN, "The found site for jetpack activation doesn't have credentials")
                 }
