@@ -48,6 +48,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.CollectionInfo
 import androidx.compose.ui.semantics.CollectionItemInfo
 import androidx.compose.ui.semantics.Role
@@ -456,6 +457,11 @@ private fun MoreMenuIcon(
         )
         R.drawable.ic_more_menu_payments -> DesignSystemIcon(
             icon = WooIcons.Regular.CreditCard,
+            tone = WooIconContainerTone.Sandstone,
+            modifier = modifier,
+        )
+        R.drawable.ic_blaze -> DesignSystemIcon(
+            icon = ImageVector.vectorResource(R.drawable.ic_blaze_monochrome),
             tone = WooIconContainerTone.Sandstone,
             modifier = modifier,
         )
