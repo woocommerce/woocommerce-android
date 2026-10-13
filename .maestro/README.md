@@ -163,7 +163,7 @@ Common variants:
 
 Profiles are copy/paste-safe presets:
 
-- `core`: all login flows except `login_google`, plus the other `smoke_core` paths, with quarantine and Android system surfaces excluded.
+- `core`: the `smoke_core` flows, with quarantine and Android system surfaces excluded.
 - `full`: every flow except the quarantined ones, for release smoke testing. The phone flows run on `--device`, then the
   POS flows run on the tablet passed with `--pos-device`, in the same run, so they never share the lab store at once.
   The phone needs to be an English Pixel Launcher AVD with the production app discoverable as `Woo` in the app drawer,
@@ -217,9 +217,6 @@ The runner:
 - `store_shared`: runs against the shared store unless `--store` is passed; never combined with `destructive`.
 - `quarantine`: failing flows kept out of runs until they are fixed, excluded unless `--include-quarantine` is passed
   or `--include-tags` names it.
-
-All login flows are required `smoke_core` coverage except `login_google`. It stays tagged `quarantine` because
-Google sign-in only accepts the Play-signed build, and the runner installs the GitHub release or a local build.
 
 ## Coverage
 

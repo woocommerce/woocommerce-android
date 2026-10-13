@@ -45,7 +45,7 @@ items:
     manual: "Later automation needs Mailosaur API and secret management."
   - id: login.social-google
     title: Social login with Google
-    flow: .maestro/flows/login_google.yaml
+    manual: "Google sign-in only accepts the Play-signed build, which smoke runs never install."
   - id: login.social-apple
     title: Social login with Apple
     manual: "iOS-only per P2."

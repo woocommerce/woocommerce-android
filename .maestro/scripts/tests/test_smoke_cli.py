@@ -40,7 +40,7 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertIn('adb -s "$DEVICE_SERIAL" push "$MEDIA_FIXTURE"', source)
         self.assertLess(
             source.index("prepare_device_media_fixture\n"),
-            source.index("validate_google_login_apk()"),
+            source.index('echo "--- Stale automation orphan sweep"'),
         )
 
     def test_device_locale_is_checked_before_release_app_setup(self) -> None:
