@@ -13,6 +13,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
@@ -291,6 +292,35 @@ class ApplicationPasswordManagerTests {
             val result = mApplicationPasswordsManager.deleteApplicationCredentials(site)
 
             assertEquals(ApplicationPasswordDeletionResult.Success, result)
+            verify(mWpApiApplicationPasswordsRestClient).deleteApplicationPassword(site, testCredentials)
+        }
+
+    @Test
+    fun `given a password is being created, when deleting the credentials, then delete the created password`() =
+        runTest {
+            val site = nativeCredentialsSite()
+            var savedCredentials: ApplicationPasswordCredentials? = null
+            whenever(applicationPasswordsStore.getCredentials(site)).doAnswer { savedCredentials }
+            whenever(applicationPasswordsStore.saveCredentials(eq(site), any())).doAnswer {
+                savedCredentials = it.getArgument(1)
+            }
+            val creationCanFinish = CompletableDeferred<Unit>()
+            whenever(mWpApiApplicationPasswordsRestClient.createApplicationPassword(site, applicationName))
+                .doSuspendableAnswer {
+                    creationCanFinish.await()
+                    ApplicationPasswordCreationPayload(testCredentials.password, testCredentials.uuid!!)
+                }
+            whenever(mWpApiApplicationPasswordsRestClient.deleteApplicationPassword(site, testCredentials))
+                .thenReturn(ApplicationPasswordDeletionPayload(isDeleted = true))
+
+            val creation = async { mApplicationPasswordsManager.getApplicationCredentials(site) }
+            runCurrent()
+            val deletion = async { mApplicationPasswordsManager.deleteApplicationCredentials(site) }
+            runCurrent()
+            creationCanFinish.complete(Unit)
+            creation.await()
+
+            assertEquals(ApplicationPasswordDeletionResult.Success, deletion.await())
             verify(mWpApiApplicationPasswordsRestClient).deleteApplicationPassword(site, testCredentials)
         }
 

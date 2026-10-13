@@ -249,9 +249,13 @@ internal class ApplicationPasswordsManager @Inject constructor(
         }
     }
 
+    /**
+     * Holds the same lock as [getApplicationCredentials], so a password whose creation is in progress is deleted
+     * as well, instead of being saved after the deletion read the previous one.
+     */
     suspend fun deleteApplicationCredentials(
         site: SiteModel
-    ): ApplicationPasswordDeletionResult {
+    ): ApplicationPasswordDeletionResult = mutexLock.withLock {
         val credentials = applicationPasswordsStore.getCredentials(site)
         if (credentials == null) return ApplicationPasswordDeletionResult.Success
 
