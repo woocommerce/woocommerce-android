@@ -153,7 +153,6 @@ tags:
 
 - tapOn:
     id: "chart"
-    point: "70%,50%"
     label: "Select a month on the chart"
 
 - scrollUntilVisible:
