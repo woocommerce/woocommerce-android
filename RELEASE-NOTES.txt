@@ -12,6 +12,7 @@
 - [*] Shipping Labels: The recipient phone number is now optional for domestic shipments. It's still required for international shipments and FedEx services. [https://github.com/woocommerce/woocommerce-android/pull/16665]
 - [*] Closing the custom date range picker in order filters without saving no longer leaves Custom Range selected [https://github.com/woocommerce/woocommerce-android/pull/16679]
 - [*] [Woo POS] Added a Payments section to POS settings with an option to turn off the payment success sound [https://github.com/woocommerce/woocommerce-android/pull/16701]
+- [*] [Woo POS] On Android 17, the "Choose a device to connect" picker no longer reopens after "Don't connect" when connecting a card reader [https://github.com/woocommerce/woocommerce-android/pull/16702]
 
 25.8
 -----
