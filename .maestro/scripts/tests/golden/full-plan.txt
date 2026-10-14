@@ -5,7 +5,7 @@ Maestro smoke plan
   include: smoke_core,smoke_extended,android_system,pos_tablet
   exclude: quarantine
   seed:    yes
-  flows:   31
+  flows:   32
 
 Selected flows:
   - .maestro/flows/login_not_wp_site.yaml
@@ -33,6 +33,7 @@ Selected flows:
   - .maestro/flows/hub_menu_coupons.yaml
   - .maestro/flows/hub_menu_customers_inbox.yaml
   - .maestro/flows/other_localization.yaml
+  - .maestro/flows/install_upgrade.yaml
   - .maestro/flows/android_quick_actions.yaml
   - .maestro/flows/login_not_woo_store.yaml (shared store)
   - .maestro/flows/hub_menu_admin_and_store.yaml (shared store)

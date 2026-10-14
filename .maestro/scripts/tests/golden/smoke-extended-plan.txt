@@ -5,7 +5,7 @@ Maestro smoke plan
   include: smoke_extended
   exclude: <none>
   seed:    no
-  flows:   19
+  flows:   20
 
 Selected flows:
   - .maestro/flows/dashboard_view_all_analytics.yaml
@@ -25,5 +25,6 @@ Selected flows:
   - .maestro/flows/hub_menu_coupons.yaml
   - .maestro/flows/hub_menu_customers_inbox.yaml
   - .maestro/flows/other_localization.yaml
+  - .maestro/flows/install_upgrade.yaml
   - .maestro/flows/hub_menu_admin_and_store.yaml
   - .maestro/flows/google_for_woo.yaml

@@ -11,7 +11,7 @@
 items:
   - id: install.upgrade
     title: Upgrade from existing store version
-    manual: "Requires APK version swap and logged-in state migration outside Maestro."
+    flow: .maestro/flows/install_upgrade.yaml
   - id: install.fresh
     title: Fresh install smoke
     flow: .maestro/flows/login_successful.yaml
