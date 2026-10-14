@@ -257,6 +257,7 @@ private fun SettingsDialogs(
 private val previewScrollableCategories = listOf(
     WooPosSettingsCategory.STORE,
     WooPosSettingsCategory.HARDWARE,
+    WooPosSettingsCategory.PAYMENTS,
     WooPosSettingsCategory.LOCAL_CATALOG,
 )
 
