@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.woopos.cardreader.connection
 
+import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderLocationRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
@@ -16,15 +18,22 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.LocationUtils
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mockito.mockStatic
+import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.net.InetAddress
@@ -51,7 +60,7 @@ class WooPosCardReaderConnectionControllerTest {
     private val remoteReaderSession: WooPosRemoteReaderSession = mock()
     private val wooPosAnalyticsTracker: WooPosAnalyticsTracker = mock()
 
-    private fun createController(scope: TestScope) = WooPosCardReaderConnectionController(
+    private fun createController(scope: CoroutineScope) = WooPosCardReaderConnectionController(
         cardReaderManager = cardReaderManager,
         locationRepository = locationRepository,
         cardReaderOnboardingChecker = cardReaderOnboardingChecker,
@@ -100,6 +109,46 @@ class WooPosCardReaderConnectionControllerTest {
     }
 
     @Test
+    fun `given bluetooth requirement shown while discovering, when rechecking permissions, then discovery is not restarted`() =
+        runTest {
+            withBluetoothOff {
+                // GIVEN
+                whenever(unifiedDiscoveryStream.discover(any(), any(), any())).thenReturn(MutableSharedFlow())
+                val controller = createController(backgroundScope)
+                controller.onBluetoothEnabled()
+                runCurrent()
+
+                // WHEN
+                controller.recheckPermissions()
+                runCurrent()
+
+                // THEN
+                assertThat(controller.state.value)
+                    .isInstanceOf(WooPosCardReaderConnectionState.BluetoothDisabled::class.java)
+                verify(unifiedDiscoveryStream, times(1)).discover(any(), any(), any())
+            }
+        }
+
+    @Test
+    fun `given bluetooth requirement shown and discovery stopped, when rechecking permissions, then discovery is restarted`() =
+        runTest {
+            withBluetoothOff {
+                // GIVEN
+                whenever(unifiedDiscoveryStream.discover(any(), any(), any())).thenReturn(emptyFlow())
+                val controller = createController(backgroundScope)
+                controller.onBluetoothEnabled()
+                runCurrent()
+
+                // WHEN
+                controller.recheckPermissions()
+                runCurrent()
+
+                // THEN
+                verify(unifiedDiscoveryStream, times(2)).discover(any(), any(), any())
+            }
+        }
+
+    @Test
     fun `given the phone was re-advertised on a new port, when refreshing its address, then the new entry is used`() {
         // GIVEN
         val previousSession = phone(deviceId = "device-1", port = 35579)
@@ -123,6 +172,15 @@ class WooPosCardReaderConnectionControllerTest {
 
         // THEN
         assertThat(refreshed).isEqualTo(knownPhone)
+    }
+
+    @Suppress("DEPRECATION")
+    private inline fun withBluetoothOff(block: () -> Unit) {
+        mockStatic(BluetoothAdapter::class.java).use { bluetoothAdapter ->
+            bluetoothAdapter.`when`<BluetoothAdapter?> { BluetoothAdapter.getDefaultAdapter() }.thenReturn(null)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            block()
+        }
     }
 
     private fun phone(

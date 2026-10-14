@@ -92,6 +92,7 @@ class WooPosCardReaderConnectionController(
     private var isLocationPermissionPermanentlyDenied = false
     private var isLocalNetworkPermissionPermanentlyDenied = false
     private var bluetoothRequirement: BluetoothRequirement = BluetoothRequirement.Satisfied
+    private var discoveryStartedWithLocalNetworkPermission = false
     private var pendingBluetoothFailure: String? = null
 
     fun showRemoteTapToPayExplainer() {
@@ -210,13 +211,18 @@ class WooPosCardReaderConnectionController(
     fun recheckPermissions() {
         val currentState = _state.value
         when {
-            isShowingBluetoothRequirement() -> checkRequirementsAndStartDiscovery()
+            isShowingBluetoothRequirement() && shouldRestartDiscoveryOnResume() -> checkRequirementsAndStartDiscovery()
 
             currentState is WooPosCardReaderConnectionState.MissingLocalNetworkPermission &&
                 WooPermissionUtils.hasLocalNetworkPermission(context) ->
                 onPhoneConnectClicked(currentState.phone)
         }
     }
+
+    private fun shouldRestartDiscoveryOnResume(): Boolean =
+        evaluateBluetoothRequirement() != bluetoothRequirement ||
+            WooPermissionUtils.hasLocalNetworkPermission(context) != discoveryStartedWithLocalNetworkPermission ||
+            discoveryJob?.isActive != true
 
     private fun checkRequirementsAndStartDiscovery() {
         val requirement = evaluateBluetoothRequirement()
@@ -402,6 +408,7 @@ class WooPosCardReaderConnectionController(
 
     private fun startDiscovery(includeBluetooth: Boolean) {
         discoveryJob?.cancel()
+        discoveryStartedWithLocalNetworkPermission = WooPermissionUtils.hasLocalNetworkPermission(context)
         latestDiscoveredPhones = emptyList()
         pendingBluetoothFailure = null
         discoveryJob = scope.launch {
