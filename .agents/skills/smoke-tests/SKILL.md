@@ -14,7 +14,7 @@ It does NOT own the test-runner mechanics. Ordering, per-flow recording, report 
 ## Scope (what this skill is responsible for)
 
 1. **Tooling** — set up the pinned Maestro and Java with `.maestro/scripts/configure-toolchain.sh`, and confirm `adb` is on PATH.
-2. **Device** — confirm the devices the profile needs are attached (`adb devices`): a phone, plus a tablet for `full`. Choose the runner `--device` and `--pos-device` values with the user.
+2. **Device** — confirm the devices the profile needs exist: a phone, plus a tablet for `full`. Pass AVD names and the runner starts them, the tablet only when the POS flows begin. Choose the runner `--device` and `--pos-device` values with the user.
 3. **APK** — the runner installs the latest release by itself; ask only whether the user wants a local release build instead.
 4. **`.env.local`** — check it with `lint-env.py` and the doctor, which name missing variables without printing values.
 5. **Handoff** — print the exact CLI command. If the user explicitly asks ("run it", "go ahead", etc.), invoke the script for them and stream its output.
@@ -37,7 +37,7 @@ Run `adb devices`. Count the lines whose second column is `device`.
   - If none → tell the user to create one in Android Studio (AVD Manager) and stop.
   - If exactly one → ask the user if they want to boot it, then `emulator -avd <name> -no-snapshot-save &` (backgrounded). Find its `emulator-*` serial in `adb devices` and poll `adb -s <serial> shell getprop sys.boot_completed` until `1` (up to ~90s); a phone on wireless adb can be attached too.
   - If multiple → ask which one to boot.
-- **1+ devices:** proceed. For `full`, a tablet must be attached too; if only a phone is attached, boot a tablet AVD the same way, or offer `--profile core` instead.
+- **1+ devices:** proceed. For `full`, a tablet AVD must exist too; pass its name as `--pos-device` and the runner starts it, or offer `--profile core` instead.
 
 ### 3. Choose the app build
 
@@ -67,7 +67,7 @@ source .maestro/scripts/configure-toolchain.sh && .maestro/scripts/run-smoke-tes
 
 Tell the user:
 
-- Without `--profile`, the runner runs `smoke_core` only and excludes `flaky_quarantine`.
+- Without `--profile`, the runner runs `smoke_core` only and excludes `quarantine`.
 - `full` runs every flow except the quarantined ones: the phone flows on `--device`, then the POS flows on the tablet passed with `--pos-device`.
 - Each flow runs against the store it needs: `store_shared` flows on the shared store, the rest on the lab store. `--store lab|shared` forces one store for every flow, and the runner refuses destructive flows on the shared store.
 - Destructive flows need seeded fixtures. `full` and `pos` seed them without `--seed`, and cleanup deletes what the run created when it exits.

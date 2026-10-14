@@ -3,7 +3,7 @@ Maestro smoke plan
   store:   per flow
   repeat:  1
   include: pos_tablet
-  exclude: flaky_quarantine
+  exclude: quarantine
   seed:    yes
   flows:   2
 
