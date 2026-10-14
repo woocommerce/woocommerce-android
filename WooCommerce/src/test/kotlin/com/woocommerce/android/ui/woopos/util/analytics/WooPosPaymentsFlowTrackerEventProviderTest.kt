@@ -25,6 +25,7 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         val event = provider.CARD_PRESENT_COLLECT_PAYMENT_FAILED as WooPosAnalyticsEvent
 
         // THEN
+        assertThat(event.name).isEqualTo("card_present_collect_payment_failed")
         assertThat(event.properties).containsEntry("pos_timing_version", 2)
         assertThat(event.properties).containsEntry("sync_strategy", "unknown")
     }
@@ -35,6 +36,7 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         val event = provider.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED as WooPosAnalyticsEvent
 
         // THEN
+        assertThat(event.name).isEqualTo("card_present_collect_payment_cancelled")
         assertThat(event.properties).containsEntry("pos_timing_version", 2)
         assertThat(event.properties).containsEntry("sync_strategy", "unknown")
     }
