@@ -5,6 +5,8 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.ContentType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsItem
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiers
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiersRequirement
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.RestrictionType
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,6 +31,12 @@ class WooShippingCustomsValidatorTest : BaseUnitTest() {
     private val validator: WooShippingCustomsValidator = WooShippingCustomsValidator(
         validateHSTariffNumber = validateHSTariffNumber,
         validateITN = validateITN
+    )
+    private val identifierTooLongError = WooShippingCustomsValidator.FieldValidationResult.Invalid(
+        UiString.UiStringRes(
+            stringRes = R.string.woo_shipping_labels_customs_product_details_eu_identifier_too_long,
+            params = listOf(UiString.UiStringText("64"))
+        )
     )
 
     private val defaultCustomsData = CustomsData(
@@ -366,4 +374,96 @@ class WooShippingCustomsValidatorTest : BaseUnitTest() {
                 UiString.UiStringRes(R.string.woo_shipping_labels_customs_product_details_weight_invalid)
             )
         }
+
+    @Test
+    fun `given blank EU identifier, when validating it, then return required error`() {
+        val result = validator.validateEuProductIdentifier("")
+
+        assertThat(result).isEqualTo(
+            WooShippingCustomsValidator.FieldValidationResult.Invalid(
+                R.string.woo_shipping_labels_customs_product_details_eu_identifier_required
+            )
+        )
+    }
+
+    @Test
+    fun `given EU identifier over 64 characters, when validating it, then return too long error`() {
+        val result = validator.validateEuProductIdentifier("a".repeat(65))
+
+        assertThat(result).isEqualTo(identifierTooLongError)
+    }
+
+    @Test
+    fun `given 64 character EU identifier with surrounding spaces, when validating it, then return Valid`() {
+        val result = validator.validateEuProductIdentifier(" ${"a".repeat(64)} ")
+
+        assertThat(result).isEqualTo(WooShippingCustomsValidator.FieldValidationResult.Valid)
+    }
+
+    @Test
+    fun `given no barcode, when validating blank GTIN, then return Valid`() {
+        val result = validator.validateGtin("", hasNoBarcode = true)
+
+        assertThat(result).isEqualTo(WooShippingCustomsValidator.FieldValidationResult.Valid)
+    }
+
+    @Test
+    fun `given blank GTIN without no barcode, when validating it, then return GTIN error`() {
+        val result = validator.validateGtin("", hasNoBarcode = false)
+
+        assertThat(result).isEqualTo(
+            WooShippingCustomsValidator.FieldValidationResult.Invalid(
+                R.string.woo_shipping_labels_customs_product_details_gtin_required
+            )
+        )
+    }
+
+    @Test
+    fun `given GTIN over 64 characters, when validating it, then return too long error`() {
+        val result = validator.validateGtin("a".repeat(65), hasNoBarcode = false)
+
+        assertThat(result).isEqualTo(identifierTooLongError)
+    }
+
+    @Test
+    fun `given required identifiers for merchandise with blank then filled part number, when validating, then return Invalid then Valid`() {
+        val customsData = defaultCustomsData.copy(
+            euProductIdentifiersRequirement = EuProductIdentifiersRequirement.REQUIRED,
+            items = listOf(
+                defaultCustomsData.items.single().copy(
+                    euProductIdentifiers = EuProductIdentifiers(
+                        sku = "SKU",
+                        manufacturerPartNumber = "",
+                        gtin = "GTIN"
+                    )
+                )
+            )
+        )
+
+        val result = validator.validate(customsData, "US", "DE")
+
+        assertThat(result).isEqualTo(WooShippingCustomsValidator.FormValidationResult.Invalid)
+        val validData = customsData.copy(
+            items = listOf(
+                customsData.items.single().copy(
+                    euProductIdentifiers = EuProductIdentifiers("SKU", "MPN", "GTIN")
+                )
+            )
+        )
+
+        assertThat(validator.validate(validData, "US", "DE"))
+            .isEqualTo(WooShippingCustomsValidator.FormValidationResult.Valid)
+    }
+
+    @Test
+    fun `given required identifiers for documents with blank identifiers, when validating, then return Valid`() {
+        val customsData = defaultCustomsData.copy(
+            contentType = ContentType.DOCUMENTS,
+            euProductIdentifiersRequirement = EuProductIdentifiersRequirement.REQUIRED
+        )
+
+        val result = validator.validate(customsData, "US", "DE")
+
+        assertThat(result).isEqualTo(WooShippingCustomsValidator.FormValidationResult.Valid)
+    }
 }

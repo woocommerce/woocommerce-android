@@ -4634,6 +4634,15 @@
     <string name="woo_shipping_labels_customs_product_details_origin_country">Origin country</string>
     <string name="woo_shipping_labels_customs_product_details_origin_country_missing">Missing country</string>
     <string name="woo_shipping_labels_customs_product_details_origin_country_selection">Select a country</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_title">EU product identifiers</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_description">Required for shipments into the EU. SKU and GTIN / EAN are prefilled from the product\'s Inventory settings.</string>
+    <string name="woo_shipping_labels_customs_product_details_sku">SKU</string>
+    <string name="woo_shipping_labels_customs_product_details_manufacturer_part_number">Manufacturer part number</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin">GTIN / EAN</string>
+    <string name="woo_shipping_labels_customs_product_details_no_barcode">No barcode</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_required">Required for shipments to the EU</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin_required">Enter the GTIN/EAN, or select \"No barcode\"</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">Must be %1$s characters or fewer.</string>
     <string name="woo_shipping_labels_customs_itn_info_button">More info about ITN</string>
     <string name="woo_shipping_labels_customs_hs_tariff_info_button">More info about HS tariff</string>
     <string name="woo_shipping_labels_customs_description_info_button">More info about product description</string>

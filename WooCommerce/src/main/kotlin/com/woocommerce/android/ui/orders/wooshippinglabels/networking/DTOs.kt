@@ -234,7 +234,10 @@ data class CustomsItemDTO(
     val weight: Double,
     @SerializedName("hs_tariff_number") val hsTariffNumber: String,
     @SerializedName("origin_country") val originCountry: String,
-    @SerializedName("product_id") val productId: Long
+    @SerializedName("product_id") val productId: Long,
+    @SerializedName("code") val code: String? = null,
+    @SerializedName("manufacturer_product_id") val manufacturerProductId: String? = null,
+    @SerializedName("standardized_product_id") val standardizedProductId: String? = null
 )
 
 data class RefundLabelResponseDTO(val success: Boolean)

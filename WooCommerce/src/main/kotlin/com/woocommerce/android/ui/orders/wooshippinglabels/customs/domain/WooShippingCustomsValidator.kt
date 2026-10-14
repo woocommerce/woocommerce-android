@@ -32,7 +32,14 @@ class WooShippingCustomsValidator @Inject constructor(
                 validateHSTariffNumber(it.hsTariffNumber, destinationCountryCode).isValid &&
                     validateProductDescription(it.description, originCountryCode, destinationCountryCode).isValid &&
                     validateProductValue(it.value.toString()).isValid &&
-                    validateProductWeight(it.weight.toString()).isValid
+                    validateProductWeight(it.weight.toString()).isValid &&
+                    (
+                        !customsData.asksForEuProductIdentifiers || it.euProductIdentifiers.run {
+                            validateEuProductIdentifier(sku).isValid &&
+                                validateEuProductIdentifier(manufacturerPartNumber).isValid &&
+                                validateGtin(gtin, hasNoBarcode).isValid
+                        }
+                        )
             }
 
         return if (isValid) {
@@ -152,6 +159,30 @@ class WooShippingCustomsValidator @Inject constructor(
         else -> FieldValidationResult.Valid
     }
 
+    fun validateEuProductIdentifier(value: String): FieldValidationResult = when {
+        value.isBlank() -> FieldValidationResult.Invalid(
+            R.string.woo_shipping_labels_customs_product_details_eu_identifier_required
+        )
+
+        value.trim().length > MAX_EU_PRODUCT_IDENTIFIER_LENGTH -> FieldValidationResult.Invalid(
+            errorMessage = UiString.UiStringRes(
+                stringRes = R.string.woo_shipping_labels_customs_product_details_eu_identifier_too_long,
+                params = listOf(UiString.UiStringText(MAX_EU_PRODUCT_IDENTIFIER_LENGTH.toString()))
+            )
+        )
+
+        else -> FieldValidationResult.Valid
+    }
+
+    fun validateGtin(value: String, hasNoBarcode: Boolean): FieldValidationResult = when {
+        hasNoBarcode -> FieldValidationResult.Valid
+        value.isBlank() -> FieldValidationResult.Invalid(
+            R.string.woo_shipping_labels_customs_product_details_gtin_required
+        )
+
+        else -> validateEuProductIdentifier(value)
+    }
+
     enum class FormValidationResult {
         Valid, ItnMissing, Invalid
     }
@@ -169,6 +200,7 @@ class WooShippingCustomsValidator @Inject constructor(
 
     companion object {
         const val MAX_ITEM_DESCRIPTION_LENGTH = 30
+        const val MAX_EU_PRODUCT_IDENTIFIER_LENGTH = 64
 
         val ACCEPTED_USPS_ORIGIN_COUNTRIES = arrayOf(
             "US", // United States
