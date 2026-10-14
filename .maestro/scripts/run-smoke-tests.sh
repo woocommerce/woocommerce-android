@@ -902,6 +902,7 @@ log_in_before_locale_change() {
   "${MAESTRO_PROCESS_ENV_ARGS[@]}" maestro test "${MAESTRO_DEVICE_ARGS[@]}" "${MAESTRO_ENV_ARGS[@]}" \
     "$REPO_ROOT/.maestro/subflows/ensure_logged_in.yaml" >"$log_file" 2>&1 \
     || echo "  logging in before the language change failed, see logs/$(basename "$log_file")"
+  scrub_log "$log_file"
 }
 
 reset_app_locale() {
