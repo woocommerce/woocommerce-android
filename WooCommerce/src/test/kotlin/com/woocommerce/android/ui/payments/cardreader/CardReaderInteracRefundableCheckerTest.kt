@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.payments.cardreader
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
-import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundableChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCurrencySupportedChecker
+import com.woocommerce.android.ui.payments.cardreader.payment.OrderSubscriptionChecker
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -19,11 +19,11 @@ import java.util.Date
 
 @ExperimentalCoroutinesApi
 class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
-    private val repository: OrderDetailRepository = mock()
+    private val orderSubscriptionChecker: OrderSubscriptionChecker = mock()
     private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker = mock()
     private val checker: CardReaderInteracRefundableChecker = CardReaderInteracRefundableChecker(
-        repository,
         cardReaderPaymentCurrencySupportedChecker,
+        orderSubscriptionChecker,
     )
 
     private val generatedOrder = OrderTestUtils.generateTestOrder()
@@ -32,7 +32,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
     fun setUp() {
         testBlocking {
             whenever(cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(any())).thenReturn(true)
-            whenever(repository.hasSubscriptionProducts(any())).thenReturn(false)
+            whenever(orderSubscriptionChecker.isOrderFreeOfSubscriptions(any())).thenReturn(true)
         }
     }
 
@@ -125,10 +125,10 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order has no subscriptions items, then is refundable`() =
+    fun `when order is free of subscriptions, then is refundable`() =
         testBlocking {
             val order = getOrder()
-            doReturn(false).whenever(repository).hasSubscriptionProducts(any())
+            doReturn(true).whenever(orderSubscriptionChecker).isOrderFreeOfSubscriptions(order)
 
             val isRefundable = checker.isRefundable(order)
 
@@ -136,10 +136,10 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order has subscriptions items, then order is not refundable`() =
+    fun `when order contains a subscription, then order is not refundable`() =
         testBlocking {
             val order = getOrder()
-            doReturn(true).whenever(repository).hasSubscriptionProducts(any())
+            doReturn(false).whenever(orderSubscriptionChecker).isOrderFreeOfSubscriptions(order)
 
             val isRefundable = checker.isRefundable(order)
 
