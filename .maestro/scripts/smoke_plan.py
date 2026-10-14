@@ -60,6 +60,7 @@ P2_ORDERED_FLOW_NAMES = (
     "hub_menu_payments.yaml",
     "hub_menu_coupons.yaml",
     "hub_menu_customers_inbox.yaml",
+    "other_localization.yaml",
     "hub_menu_admin_and_store.yaml",
     "google_for_woo.yaml",
     "pos_search_and_coupons.yaml",
