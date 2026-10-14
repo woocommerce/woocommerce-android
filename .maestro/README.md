@@ -103,9 +103,9 @@ Requirements: `expect` (ships with macOS), `wc.oauth.app_id` and `wc.oauth.app_s
 account with two-factor authentication disabled**. The OAuth password grant cannot answer
 a 2FA challenge non-interactively. Use test accounts only.
 
-The store ships with the WooCommerce sample products, and the script adds 25 completed
-orders, one customer and a `maestro10` coupon. The negative-login fixtures are filled in
-by hand.
+The store ships with the WooCommerce sample products. The script tops it up to 100 products
+and 100 completed orders, and adds one customer and a `maestro10` coupon. The negative-login
+fixtures are filled in by hand.
 
 Jurassic Ninja sites expire after 7 days of inactivity. Re-run the script or the skill
 against a new site when that happens; the WordPress.com account already in `.env.local`
