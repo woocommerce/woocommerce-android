@@ -149,7 +149,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         key = "unexpected-response"
     )
     private var pendingUnexpectedResponse: LoginUnexpectedResponseFailure? = null
-    private var loginFailureStep: CookieNonceLoginStep? = null
+    private var retryingStep: UnexpectedResponseStep? = null
+    private var hasPassedRetryingStep = false
 
     private val SiteModel?.applicationPasswordAuthorizationUrl: String?
         get() = this?.applicationPasswordsAuthorizeUrl
@@ -375,12 +376,14 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     /**
-     * Counts as a success once the login gets past the step that failed, even if a later step fails.
+     * Counts as a success once any login attempt gets past the step that failed, even if a later step fails.
      */
     private suspend fun retryLogin(failedStep: UnexpectedResponseStep): Boolean {
-        loginFailureStep = null
-        val isLoggedIn = endpointRecovery.value?.let { continueEndpointRecovery(it) } ?: login()
-        return isLoggedIn || loginFailureStep?.isAfter(failedStep) == true
+        retryingStep = failedStep
+        hasPassedRetryingStep = false
+        endpointRecovery.value?.let { continueEndpointRecovery(it) } ?: login()
+        retryingStep = null
+        return hasPassedRetryingStep
     }
 
     private fun CookieNonceLoginStep.isAfter(step: UnexpectedResponseStep): Boolean {
@@ -390,6 +393,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     private suspend fun completeNativeAuthentication(endpoints: CookieNonceAuthenticationEndpoints) {
+        if (retryingStep != null) hasPassedRetryingStep = true
         promoteValidatedEndpoints(endpoints)
         endpointRecovery.value = null
         fetchSite()
@@ -410,7 +414,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             endpointRecovery.value = null
         }
 
-        loginFailureStep = authenticationError?.step
+        val failedStep = authenticationError?.step
+        val retryingStep = retryingStep
+        if (failedStep != null && retryingStep != null && failedStep.isAfter(retryingStep)) {
+            hasPassedRetryingStep = true
+        }
         pendingUnexpectedResponse = authenticationError?.toUnexpectedResponseFailure()
             ?.takeUnless { it.isAtTypedAddress(retryingEndpoint) }
         routeLoginFailure(authenticationError, endpoints, retryingEndpoint, hasVerifiedCustomLoginEntry)
