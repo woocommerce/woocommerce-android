@@ -47,7 +47,9 @@ tags:
 # P2: "Smoke test all items (ignore Delete Account)". Each item opens and
 # comes back; Settings can return scrolled to the top, so the row is
 # scrolled back into view. Rows whose screen repeats the row's title wait for the row to
-# leave the screen first. "Themes" is shown only on WPComAtomic sites.
+# leave the screen first. Rows shown only in some setups are skipped: Developers
+# (debug builds), Enable push notifications, Install Jetpack, Themes (WPComAtomic
+# sites) and What's New.
 - extendedWaitUntil:
     visible:
       id: "option_help_and_support"
