@@ -10,8 +10,8 @@
 #
 # The shared store meets both, so a missing "Google for WooCommerce" row
 # fails the flow. We verify tapping it launches the Google Ads webview
-# (GoogleAdsWebViewFragment, hosts a WebView with AppBarStatus.Hidden and
-# pulls the Google campaign creation/dashboard URL).
+# (GoogleAdsWebViewFragment, hosts a WebView with AppBarStatus.Hidden) and
+# that the campaign creation page loads.
 #
 # "Inbox" is the last item in the hub menu's general section
 # (MoreMenuViewModel.generateGeneralSection) and always renders, so we
