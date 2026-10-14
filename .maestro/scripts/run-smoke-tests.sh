@@ -439,7 +439,8 @@ flow_uses_wpcom_credentials() {
         continue
         ;;
     esac
-    if grep -Eq "$wpcom_ref_pattern|subflows/(ensure_logged_in|login)\\.yaml" "$flow"; then
+    # The runner logs in itself before a flow that changes the app language.
+    if grep -Eq "$wpcom_ref_pattern|subflows/(ensure_logged_in|login)\\.yaml" "$flow" || flow_has_any_tag "$flow" app_locale_de; then
       return 0
     fi
   done
@@ -883,6 +884,27 @@ collapse_system_ui() {
   adb -s "$DEVICE_SERIAL" shell cmd statusbar collapse >/dev/null 2>&1 || true
 }
 
+# Maestro cannot change the app's language, so the runner logs in first, in English,
+# and then sets it for flows tagged app_locale_de.
+APP_LOCALE_SET=""
+set_app_locale() {
+  log_in_before_locale_change
+  adb -s "$DEVICE_SERIAL" shell cmd locale set-app-locales "$APP_ID" --locales "$1" >/dev/null
+  APP_LOCALE_SET="$DEVICE_SERIAL"
+}
+
+log_in_before_locale_change() {
+  "${MAESTRO_PROCESS_ENV_ARGS[@]}" maestro test "${MAESTRO_DEVICE_ARGS[@]}" "${MAESTRO_ENV_ARGS[@]}" \
+    "$REPO_ROOT/.maestro/subflows/ensure_logged_in.yaml" >/dev/null 2>&1 || echo "  logging in before the language change failed"
+}
+
+reset_app_locale() {
+  if [[ -n "$APP_LOCALE_SET" ]]; then
+    adb -s "$APP_LOCALE_SET" shell cmd locale set-app-locales "$APP_ID" --locales "" >/dev/null 2>&1 || true
+    APP_LOCALE_SET=""
+  fi
+}
+
 cleanup_on_exit() {
   local exit_code=$? serial
   # Attempts record from a command substitution, so the recorder's PID never
@@ -896,6 +918,7 @@ cleanup_on_exit() {
       exit_code=1
     fi
   fi
+  reset_app_locale
   restore_device_settings
   for serial in ${STARTED_SERIALS[@]+"${STARTED_SERIALS[@]}"}; do
     adb -s "$serial" emu kill >/dev/null 2>&1 || true
@@ -1297,6 +1320,10 @@ for repeat_index in $(seq 1 "$REPEAT"); do
     run_index=$((run_index + 1))
     base="$(basename "$flow" .yaml)"
     echo "[$run_index/$TOTAL_RUNS] $base (repeat $repeat_index/$REPEAT)"
+    reset_app_locale
+    if flow_has_any_tag "$flow" app_locale_de; then
+      set_app_locale de-DE
+    fi
 
     first="$(run_one_attempt "$flow" "$base" 1 "$repeat_index")"
     IFS='|' read -r first_exit first_duration first_media first_log first_error first_recovery <<< "$first"
