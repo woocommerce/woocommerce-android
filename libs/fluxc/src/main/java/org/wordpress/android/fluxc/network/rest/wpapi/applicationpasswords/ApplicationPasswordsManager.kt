@@ -226,9 +226,7 @@ internal class ApplicationPasswordsManager @Inject constructor(
                         }
                     }
 
-                    statusCode == NOT_FOUND ||
-                        errorCode == APPLICATION_PASSWORDS_DISABLED_ERROR_CODE ||
-                        errorCode == APPLICATION_PASSWORDS_DISABLED_USER_ERROR_CODE -> {
+                    payload.error.meansApplicationPasswordsNotSupported(statusCode, errorCode) -> {
                         appLogWrapper.w(
                             MAIN,
                             "Application Password feature not supported, " +
@@ -248,6 +246,11 @@ internal class ApplicationPasswordsManager @Inject constructor(
             }
         }
     }
+
+    private fun BaseNetworkError.meansApplicationPasswordsNotSupported(statusCode: Int?, errorCode: String?) =
+        statusCode == NOT_FOUND ||
+            errorCode == APPLICATION_PASSWORDS_DISABLED_ERROR_CODE ||
+            errorCode == APPLICATION_PASSWORDS_DISABLED_USER_ERROR_CODE
 
     suspend fun deleteApplicationCredentials(
         site: SiteModel
