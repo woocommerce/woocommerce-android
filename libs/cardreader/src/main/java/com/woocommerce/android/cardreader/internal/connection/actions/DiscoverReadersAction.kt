@@ -11,6 +11,7 @@ import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverRe
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Started
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Success
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import com.woocommerce.android.cardreader.internal.wrappers.UsbManagerWrapper
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -24,6 +25,7 @@ private const val DISCOVERY_TIMEOUT_IN_SECONDS = 60
 
 internal class DiscoverReadersAction(
     private val terminal: TerminalWrapper,
+    private val usbManager: UsbManagerWrapper,
     private val logWrapper: LogWrapper,
 ) {
     sealed class DiscoverReadersStatus {
@@ -50,7 +52,13 @@ internal class DiscoverReadersAction(
     )
     fun discoverExternalReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> =
         discoverReaders(
-            DiscoveryConfiguration.BluetoothDiscoveryConfiguration(DISCOVERY_TIMEOUT_IN_SECONDS, isSimulated)
+            when (usbManager.isCardReaderAttached()) {
+                true -> DiscoveryConfiguration.UsbDiscoveryConfiguration(DISCOVERY_TIMEOUT_IN_SECONDS, isSimulated)
+                false -> DiscoveryConfiguration.BluetoothDiscoveryConfiguration(
+                    DISCOVERY_TIMEOUT_IN_SECONDS,
+                    isSimulated
+                )
+            }
         )
 
     @RequiresPermission(

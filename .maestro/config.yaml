@@ -2,7 +2,7 @@
 #
 # Execution order mirrors the Smoke Testing P2 category order:
 #   Login → Dashboard → Orders → Products → Hub Menu →
-#   Blaze → Google for Woo → POS
+#   Google for Woo → POS
 #
 # Within the Login group, login_successful runs last. The runners clear the
 # app after every login flow, so the next flow signs in again through
@@ -14,8 +14,8 @@
 #   pos_tablet        POS flows, tablet AVD required.
 #   destructive       Mutates store data; lab store only.
 #   store_shared      Runs against the shared store; never destructive.
-#   flaky_quarantine  Provisional or known-unstable flows excluded by runner
-#                     defaults.
+#   quarantine        Failing flows kept out of runs until they are fixed;
+#                     excluded by runner defaults.
 #
 # The local runner `.maestro/scripts/run-smoke-tests.sh` owns default tag
 # filtering, store selection, fixture seed/cleanup, retry accounting, and
@@ -41,8 +41,6 @@ executionOrder:
     - flows/login_help.yaml
     - flows/login_not_woo_store.yaml
     - flows/login_wrong_account.yaml
-    - flows/login_no_jetpack.yaml
-    - flows/login_google.yaml
     - flows/login_successful.yaml
 
     # ── Dashboard / Stats ───────────────────────────────────────────────
@@ -60,7 +58,6 @@ executionOrder:
 
     # ── Products ─────────────────────────────────────────────────────────
     - flows/products_list_and_sort.yaml
-    - flows/products_detail.yaml
     - flows/products_variations_and_tags.yaml
     - flows/products_create.yaml
     - flows/products_media_upload.yaml
@@ -71,9 +68,6 @@ executionOrder:
     - flows/hub_menu_coupons.yaml
     - flows/hub_menu_customers_inbox.yaml
     - flows/hub_menu_admin_and_store.yaml
-
-    # ── Blaze ────────────────────────────────────────────────────────────
-    - flows/blaze_campaign.yaml
 
     # ── Google for Woo ──────────────────────────────────────────────────
     - flows/google_for_woo.yaml

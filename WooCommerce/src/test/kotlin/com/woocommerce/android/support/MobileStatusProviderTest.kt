@@ -156,6 +156,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
 
     private val posPreferencesRepository: WooPosPreferencesRepository = mock {
         on { allowCellularDataUpdate } doReturn flowOf(true)
+        on { isPaymentSuccessSoundEnabled } doReturn flowOf(true)
         on { getLastUsedTimestamp() } doReturn POS_LAST_USED_MILLIS
     }
 
@@ -491,6 +492,15 @@ class MobileStatusProviderTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given payment success sound is off, when the report is generated, then it says so`() = testBlocking {
+        posPreferencesRepository.stub { on { isPaymentSuccessSoundEnabled } doReturn flowOf(false) }
+
+        val report = sut(SiteModel().apply { url = "https://example.com" })
+
+        assertThat(report).contains("Payment success sound enabled: false")
+    }
+
+    @Test
     fun `given the catalog file is blocked, when the report is generated, then it says so`() = testBlocking {
         syncTimestampManager.stub { on { isCatalogFileBlocked() } doReturn true }
 
@@ -784,6 +794,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
             Variations timestamp: 2026-07-29T09:29:51Z
             Catalog file blocked: false
             Full sync on cellular allowed: true
+            Payment success sound enabled: true
         """.trimIndent().trim()
 
         const val PLAY_STORE = "com.android.vending"

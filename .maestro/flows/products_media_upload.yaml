@@ -1,5 +1,5 @@
 # Smoke Test: Products - Media upload via WordPress media library and device media
-# p2: products.detail.media
+# p2: products.detail.media.device, products.detail.media.wp-library
 # P2 ref: Products > Media upload
 #
 # Exercises both deterministic gallery upload paths end-to-end:
