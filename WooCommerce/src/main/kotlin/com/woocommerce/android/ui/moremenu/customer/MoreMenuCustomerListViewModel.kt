@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.moremenu.customer
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.CustomerWithAnalytics
 import com.woocommerce.android.model.toCustomerWithAnalytics
@@ -32,7 +33,8 @@ class CustomerListDetailsViewModel @Inject constructor(
     isAdvancedSearchSupported,
     getSupportedSearchModes,
     analyticsTracker,
-    stringUtils
+    stringUtils,
+    trackingSource = AnalyticsTracker.VALUE_MORE_MENU_CUSTOMERS,
 ) {
     override fun onCustomerSelected(customerModel: WCCustomerModel) {
         launch {

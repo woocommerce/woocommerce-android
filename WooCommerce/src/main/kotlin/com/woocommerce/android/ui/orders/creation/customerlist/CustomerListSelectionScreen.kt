@@ -21,6 +21,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.customer.CustomerListScreen
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
@@ -50,7 +51,9 @@ fun CustomerListSelectionScreen(
             onCustomerSelected = viewModel::onCustomerSelected,
             onSearchQueryChanged = viewModel::onSearchQueryChanged,
             onSearchTypeChanged = viewModel::onSearchTypeChanged,
-            onEndOfListReached = viewModel::onEndOfListReached
+            onEndOfListReached = viewModel::onEndOfListReached,
+            onRetryClicked = viewModel::onRetryClicked,
+            onEnableAnalyticsClicked = viewModel::onEnableAnalyticsClicked,
         )
     }
 }
@@ -66,6 +69,8 @@ private fun CustomerListSelectionScreen(
     onSearchQueryChanged: (String) -> Unit,
     onSearchTypeChanged: (Int) -> Unit,
     onEndOfListReached: () -> Unit,
+    onRetryClicked: () -> Unit,
+    onEnableAnalyticsClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -100,6 +105,8 @@ private fun CustomerListSelectionScreen(
             onSearchQueryChanged = onSearchQueryChanged,
             onSearchTypeChanged = onSearchTypeChanged,
             onEndOfListReached = onEndOfListReached,
+            onRetryClicked = onRetryClicked,
+            onEnableAnalyticsClicked = onEnableAnalyticsClicked,
         )
     }
 }
@@ -189,6 +196,37 @@ fun OrderCustomerListScreenPreview() {
             onSearchQueryChanged = {},
             onSearchTypeChanged = {},
             onEndOfListReached = {},
+            onRetryClicked = {},
+            onEnableAnalyticsClicked = {},
+        )
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+fun OrderCustomerListAnalyticsUnavailablePreview() {
+    LegacyWooThemeWithBackground {
+        CustomerListSelectionScreen(
+            state = CustomerListViewState(
+                searchHint = R.string.order_creation_customer_search_hint,
+                searchModes = emptyList(),
+                showFab = true,
+                searchFocused = false,
+                body = CustomerListViewState.CustomerList.AnalyticsUnavailable(
+                    message = R.string.customer_list_analytics_disabled_message,
+                    canEnableAnalytics = true,
+                ),
+            ),
+            handleInsets = false,
+            showToolbar = true,
+            onNavigateBack = {},
+            onAddCustomerClicked = {},
+            onCustomerSelected = {},
+            onSearchQueryChanged = {},
+            onSearchTypeChanged = {},
+            onEndOfListReached = {},
+            onRetryClicked = {},
+            onEnableAnalyticsClicked = {},
         )
     }
 }

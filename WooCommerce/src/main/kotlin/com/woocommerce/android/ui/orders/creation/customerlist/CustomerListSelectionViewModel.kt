@@ -30,7 +30,12 @@ open class CustomerListSelectionViewModel @Inject constructor(
     isAdvancedSearchSupported,
     getSupportedSearchModes,
     analyticsTracker,
-    stringUtils
+    stringUtils,
+    trackingSource = if (savedState.get<Boolean>("allowCustomerCreation") == true) {
+        "order_form"
+    } else {
+        "order_list_filter"
+    },
 ) {
     private var loadingMoreInfoAboutCustomerJob: Job? = null
 

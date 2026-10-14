@@ -5,6 +5,7 @@
 25.9
 -----
 - [**] Card readers WisePad 3, M2 and Chipper 2X can now connect over USB [https://github.com/woocommerce/woocommerce-android/pull/16680]
+- [*] Customer lists now explain when WooCommerce Analytics is unavailable and offer a way to turn it on or retry loading customers [https://github.com/woocommerce/woocommerce-android/pull/16707]
 - [*] Fixed duplicate notifications for a store using store push notifications while another store with an older WooCommerce version was selected [https://github.com/woocommerce/woocommerce-android/pull/16654]
 - [*] Editing a product attribute's terms or name no longer moves it to the end of the list or changes the settings of other attributes [https://github.com/woocommerce/woocommerce-android/pull/16671]
 - [*] Undoing a product attribute change in the same session is now saved, and the product form no longer asks to save again after only its attributes were saved [https://github.com/woocommerce/woocommerce-android/pull/16689]
