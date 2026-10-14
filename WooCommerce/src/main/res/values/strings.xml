@@ -4017,6 +4017,10 @@
     <string name="woopos_settings_hardware_category_subtitle">Manage hardware connections</string>
     <string name="woopos_settings_store_category">Store</string>
     <string name="woopos_settings_store_category_subtitle">Store configuration and settings</string>
+    <string name="woopos_settings_payments_category">Payments</string>
+    <string name="woopos_settings_payments_category_subtitle">Manage payment settings</string>
+    <string name="woopos_settings_payments_success_sound">Payment success sound</string>
+    <string name="woopos_settings_payments_success_sound_subtitle">Play a sound when a payment completes</string>
     <string name="woopos_settings_hardware_barcode_scanners">Barcode scanners</string>
     <string name="woopos_settings_hardware_barcode_scanners_subtitle">Configure barcode scanner settings</string>
     <string name="woopos_settings_hardware_card_readers">Card Readers</string>

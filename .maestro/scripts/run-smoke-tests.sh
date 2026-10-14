@@ -6,7 +6,7 @@ set -euo pipefail
 # Defaults match the v2 smoke-test plan:
 #   - lab store, or the shared store for flows tagged store_shared
 #   - smoke_core only by default
-#   - flaky_quarantine excluded unless explicitly requested
+#   - quarantine excluded unless explicitly requested
 #   - no REST fixture seed unless --seed is passed or the profile seeds
 #   - animation settings captured and restored
 #   - autofill service turned off and restored
@@ -50,7 +50,7 @@ SWEEP_DRY_RUN="no"
 OUTPUT_ROOT=""
 REPEAT=1
 INCLUDE_TAGS=("smoke_core")
-EXCLUDE_TAGS=("flaky_quarantine")
+EXCLUDE_TAGS=("quarantine")
 INCLUDE_TAGS_EXPLICIT="no"
 EXCLUDE_TAGS_EXPLICIT="no"
 INCLUDE_QUARANTINE="no"
@@ -64,7 +64,7 @@ WooCommerce Android Maestro smoke-test runner.
 Defaults:
   - lab store, or the shared store for flows tagged store_shared
   - smoke_core only
-  - flaky_quarantine excluded unless explicitly requested
+  - quarantine excluded unless explicitly requested
   - no REST fixture seed unless --seed is passed
   - animation settings captured and restored
   - autofill service turned off and restored
@@ -83,17 +83,18 @@ Usage:
   .maestro/scripts/run-smoke-tests.sh .maestro/flows/orders_list_and_search.yaml
 
 Options:
-  --profile name              Preset: core, full, pos. full and pos skip flaky_quarantine and seed fixtures.
+  --profile name              Preset: core, full, pos. full and pos skip quarantine and seed fixtures.
   --store lab|shared          Run every selected flow against this store. Default: each flow's own store.
-  --device serial|avd-name    Device serial or emulator AVD name.
+  --device serial|avd-name    Device serial or emulator AVD name. An AVD that isn't running is started.
   --pos-device serial|avd-name
                               Tablet for the POS flows. Needed when the selection also has phone flows.
+                              An AVD that isn't running is started when the POS flows begin.
   --apk path                  Validate and install a production release APK before running.
   --repeat N                  Run the selected flow set N times.
   -t, --tag tag               Alias for --include-tags.
   --include-tags a,b          Include flows with any listed tag. Default: smoke_core.
-  --exclude-tags a,b          Exclude flows with any listed tag. Default: flaky_quarantine.
-  --include-quarantine        Remove flaky_quarantine from the active exclusions.
+  --exclude-tags a,b          Exclude flows with any listed tag. Default: quarantine.
+  --include-quarantine        Remove quarantine from the active exclusions.
   --rerun-failed report.xml   Rerun only testcases with failure/error in a previous JUnit report.
   --seed                      Run REST fixture seed/cleanup. Requires Woo REST API credentials.
   --no-seed                   Skip REST fixture seed/cleanup.
@@ -265,7 +266,7 @@ if ! [[ "$REPEAT" =~ ^[0-9]+$ ]] || [[ "$REPEAT" -lt 1 ]]; then
 fi
 if [[ "$INCLUDE_TAGS_EXPLICIT" == "yes" ]]; then
   for tag in ${INCLUDE_TAGS[@]+"${INCLUDE_TAGS[@]}"}; do
-    if [[ "$tag" == "flaky_quarantine" && "$EXCLUDE_TAGS_EXPLICIT" == "no" ]]; then
+    if [[ "$tag" == "quarantine" && "$EXCLUDE_TAGS_EXPLICIT" == "no" ]]; then
       EXCLUDE_TAGS=()
     fi
   done
@@ -273,7 +274,7 @@ fi
 if [[ "$INCLUDE_QUARANTINE" == "yes" ]]; then
   FILTERED_EXCLUDE_TAGS_CSV=""
   for tag in ${EXCLUDE_TAGS[@]+"${EXCLUDE_TAGS[@]}"}; do
-    if [[ "$tag" != "flaky_quarantine" ]]; then
+    if [[ "$tag" != "quarantine" ]]; then
       FILTERED_EXCLUDE_TAGS_CSV="${FILTERED_EXCLUDE_TAGS_CSV:+$FILTERED_EXCLUDE_TAGS_CSV,}$tag"
     fi
   done
@@ -434,7 +435,7 @@ flow_uses_wpcom_credentials() {
   for flow in "${ORDERED_FLOWS[@]}"; do
     name="$(basename "$flow")"
     case "$name" in
-      login_help.yaml|login_no_jetpack.yaml|login_not_wp_site.yaml)
+      login_help.yaml|login_not_wp_site.yaml)
         continue
         ;;
     esac
@@ -443,30 +444,6 @@ flow_uses_wpcom_credentials() {
     fi
   done
   return 1
-}
-
-validate_login_store_env() {
-  flow_uses_wpcom_credentials || return 0
-
-  local selected_host no_jetpack_host upper
-  upper="$(printf '%s' "$STORE" | tr '[:lower:]' '[:upper:]')"
-  selected_host="$(url_host "${MAESTRO_WOO_JETPACK_STORE_URL:-}")"
-  no_jetpack_host="$(url_host "${MAESTRO_WOO_NO_JETPACK_SITE_URL:-}")"
-
-  if [[ -n "$selected_host" && -n "$no_jetpack_host" && "$selected_host" == "$no_jetpack_host" ]]; then
-    cat >&2 <<EOF
-Setup error: selected --store $STORE points the Jetpack store at the same host as the no-Jetpack site.
-
-The selected flow set includes WP.com/Jetpack login flows. Set the $STORE store
-block to a Jetpack-connected WooCommerce store with MAESTRO_WOO_${upper}_JETPACK_STORE_URL,
-MAESTRO_WOO_${upper}_WPCOM_EMAIL, and MAESTRO_WOO_${upper}_WPCOM_PASSWORD.
-Keep MAESTRO_WOO_NO_JETPACK_* only for login_no_jetpack.yaml.
-
-To run only the no-Jetpack flow:
-  .maestro/scripts/run-smoke-tests.sh --no-seed .maestro/flows/login_no_jetpack.yaml
-EOF
-    exit 1
-  fi
 }
 
 read_failed_flow_names() {
@@ -699,39 +676,9 @@ validate_referenced_env() {
 }
 for store in "${RUN_STORES[@]}"; do
   use_store_group "$store"
-  validate_login_store_env
   validate_referenced_env
 done
 use_all_flows
-
-flow_is_selected() {
-  local expected="$1"
-  local flow
-  for flow in "${ORDERED_FLOWS[@]}"; do
-    [[ "$(basename "$flow")" == "$expected" ]] && return 0
-  done
-  return 1
-}
-
-site_url_without_wp_admin() {
-  local value="$1"
-  local candidate="${value%%\#*}"
-  candidate="${candidate%%\?*}"
-  case "$candidate" in
-    */wp-admin/) printf '%s/' "${candidate%/wp-admin/}" ;;
-    */wp-admin) printf '%s/' "${candidate%/wp-admin}" ;;
-    *) printf '%s' "$value" ;;
-  esac
-}
-
-prepare_login_flow_env() {
-  if flow_is_selected "login_no_jetpack.yaml"; then
-    export MAESTRO_WOO_NO_JETPACK_SITE_URL="$(
-      site_url_without_wp_admin "$MAESTRO_WOO_NO_JETPACK_SITE_URL"
-    )"
-  fi
-}
-prepare_login_flow_env
 
 RECORDER_PID=""
 CLEANUP_DONE="no"
@@ -744,6 +691,41 @@ while read -r serial state _rest; do
     DEVICE_SERIALS+=("$serial")
   fi
 done < <(adb devices)
+
+EMULATOR="${ANDROID_HOME:-$HOME/Library/Android/sdk}/emulator/emulator"
+# Emulators this run started, stopped again when it ends.
+STARTED_SERIALS=()
+
+is_attached() {
+  local serial
+  for serial in ${DEVICE_SERIALS[@]+"${DEVICE_SERIALS[@]}"}; do
+    [[ "$serial" == "$1" ]] && return 0
+    [[ "$(adb -s "$serial" emu avd name 2>/dev/null | tr -d '\r' | head -n 1 || true)" == "$1" ]] && return 0
+  done
+  return 1
+}
+
+is_avd() {
+  "$EMULATOR" -list-avds 2>/dev/null | grep -qx "$1"
+}
+
+# Starts an AVD and prints its serial once it has booted.
+start_avd() {
+  local avd="$1" serial attempt
+  nohup "$EMULATOR" -avd "$avd" -no-snapshot-save -no-boot-anim -no-audio </dev/null >"$TMP_DIR/emulator-$avd.log" 2>&1 &
+  for attempt in $(seq 1 120); do
+    for serial in $(adb devices | awk 'NR > 1 && $2 == "device" { print $1 }'); do
+      if [[ "$(adb -s "$serial" emu avd name 2>/dev/null | tr -d '\r' | head -n 1 || true)" == "$avd" &&
+        "$(adb -s "$serial" shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)" == "1" ]]; then
+        printf '%s' "$serial"
+        return
+      fi
+    done
+    sleep 5
+  done
+  echo "The $avd emulator did not finish booting." >&2
+  exit 1
+}
 
 resolve_device() {
   local selector="$1"
@@ -796,21 +778,34 @@ resolve_device() {
   printf '%s' "${DEVICE_SERIALS[$((selected - 1))]}"
 }
 
+if [[ -n "$DEVICE_SELECTOR" ]] && ! is_attached "$DEVICE_SELECTOR" && is_avd "$DEVICE_SELECTOR"; then
+  echo "--- Starting the $DEVICE_SELECTOR emulator"
+  started_serial="$(start_avd "$DEVICE_SELECTOR")"
+  STARTED_SERIALS+=("$started_serial")
+  DEVICE_SERIALS+=("$started_serial")
+fi
 PHONE_SERIAL="$(resolve_device "$DEVICE_SELECTOR" "$DEVICE_OPTION")"
 RUN_DEVICES=("$PHONE_SERIAL")
 POS_DEVICE_SERIAL=""
+POS_DEVICE_AVD=""
 if [[ "$USES_POS_DEVICE" == "yes" ]]; then
-  POS_DEVICE_SERIAL="$(resolve_device "$POS_DEVICE_SELECTOR" --pos-device)"
-  if [[ "$POS_DEVICE_SERIAL" == "$PHONE_SERIAL" ]]; then
-    echo "--pos-device must be a different device than --device." >&2
-    exit 2
+  if ! is_attached "$POS_DEVICE_SELECTOR" && is_avd "$POS_DEVICE_SELECTOR"; then
+    # Started when the POS flows begin, so only one emulator runs the flows at a time.
+    POS_DEVICE_AVD="$POS_DEVICE_SELECTOR"
+  else
+    POS_DEVICE_SERIAL="$(resolve_device "$POS_DEVICE_SELECTOR" --pos-device)"
+    if [[ "$POS_DEVICE_SERIAL" == "$PHONE_SERIAL" ]]; then
+      echo "--pos-device must be a different device than --device." >&2
+      exit 2
+    fi
+    RUN_DEVICES+=("$POS_DEVICE_SERIAL")
   fi
-  RUN_DEVICES+=("$POS_DEVICE_SERIAL")
 fi
 DEVICE_SERIAL="$PHONE_SERIAL"
 MAESTRO_DEVICE_ARGS=(--device "$DEVICE_SERIAL")
 echo "Device: $PHONE_SERIAL"
 [[ -n "$POS_DEVICE_SERIAL" ]] && echo "POS device: $POS_DEVICE_SERIAL"
+[[ -n "$POS_DEVICE_AVD" ]] && echo "POS device: $POS_DEVICE_AVD, started for the POS flows"
 echo "--- Checking device language"
 for serial in "${RUN_DEVICES[@]}"; do
   python3 "$CHECK_DEVICE_LOCALE_SCRIPT" --device "$serial"
@@ -902,6 +897,9 @@ cleanup_on_exit() {
     fi
   fi
   restore_device_settings
+  for serial in ${STARTED_SERIALS[@]+"${STARTED_SERIALS[@]}"}; do
+    adb -s "$serial" emu kill >/dev/null 2>&1 || true
+  done
   exit "$exit_code"
 }
 trap cleanup_on_exit EXIT
@@ -909,88 +907,36 @@ trap cleanup_on_exit EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
-echo "--- Ensuring production release app"
-for serial in "${RUN_DEVICES[@]}"; do
+prepare_run_device() {
+  local serial="$1"
   prepare_device_settings "$serial"
   release_app_args=(--device "$serial")
   if [[ -n "$APK_PATH" ]]; then
     release_app_args+=(--apk "$APK_PATH")
   fi
   python3 "$ENSURE_RELEASE_APP_SCRIPT" "${release_app_args[@]}"
+}
+
+start_pos_device() {
+  # The phone flows are done, so an emulator this run started for them can go.
+  if [[ "$REPEAT" -eq 1 && " ${STARTED_SERIALS[*]-} " == *" $PHONE_SERIAL "* ]]; then
+    restore_device_settings
+    adb -s "$PHONE_SERIAL" emu kill >/dev/null 2>&1 || true
+  fi
+  echo "--- Starting the $POS_DEVICE_AVD emulator"
+  POS_DEVICE_SERIAL="$(start_avd "$POS_DEVICE_AVD")"
+  STARTED_SERIALS+=("$POS_DEVICE_SERIAL")
+  RUN_DEVICES+=("$POS_DEVICE_SERIAL")
+  python3 "$CHECK_DEVICE_LOCALE_SCRIPT" --device "$POS_DEVICE_SERIAL"
+  prepare_run_device "$POS_DEVICE_SERIAL"
+}
+
+echo "--- Ensuring production release app"
+for serial in "${RUN_DEVICES[@]}"; do
+  prepare_run_device "$serial"
 done
 
 prepare_device_media_fixture
-
-validate_google_login_apk() {
-  local flow google_flow_selected="no"
-  for flow in "${ORDERED_FLOWS[@]}"; do
-    if [[ "$(basename "$flow")" == "login_google.yaml" ]]; then
-      google_flow_selected="yes"
-      break
-    fi
-  done
-  [[ "$google_flow_selected" == "yes" ]] || return 0
-
-  local installed_apk_path
-  installed_apk_path="$(
-    adb -s "$DEVICE_SERIAL" shell pm path "$APP_ID" 2>/dev/null |
-      tr -d '\r' |
-      sed -n '1s/^package://p'
-  )"
-  if [[ -z "$installed_apk_path" ]]; then
-    echo "Setup error: $APP_ID is not installed for login_google." >&2
-    exit 1
-  fi
-  local apk_to_check="$TMP_DIR/login-google-installed.apk"
-  adb -s "$DEVICE_SERIAL" pull "$installed_apk_path" "$apk_to_check" >/dev/null
-
-  local validation_status=0
-  python3 - "$REPO_ROOT/WooCommerce/google-services.json-example" "$apk_to_check" "$APP_ID" <<'PY' || validation_status=$?
-import json
-import pathlib
-import sys
-import zipfile
-
-config = json.loads(pathlib.Path(sys.argv[1]).read_text())
-example_client_id = ""
-for client in config.get("client", []):
-    package_name = client.get("client_info", {}).get("android_client_info", {}).get("package_name")
-    if package_name != sys.argv[3]:
-        continue
-    for oauth_client in client.get("oauth_client", []):
-        if oauth_client.get("client_type") == 3:
-            example_client_id = oauth_client.get("client_id", "")
-            break
-
-if not example_client_id:
-    raise SystemExit(3)
-
-try:
-    with zipfile.ZipFile(sys.argv[2]) as apk:
-        resources = apk.read("resources.arsc")
-except (KeyError, OSError, zipfile.BadZipFile):
-    raise SystemExit(3)
-
-raise SystemExit(2 if example_client_id.encode() in resources else 0)
-PY
-
-  rm -f "$apk_to_check"
-
-  if [[ "$validation_status" -eq 2 ]]; then
-    cat >&2 <<'EOF'
-Setup error: login_google cannot run with the example Google OAuth client.
-
-Install the official production release APK or pass a configured production
-release APK with --apk.
-EOF
-    exit 1
-  fi
-  if [[ "$validation_status" -ne 0 ]]; then
-    echo "Setup error: could not inspect the APK resources required by login_google." >&2
-    exit 1
-  fi
-}
-validate_google_login_apk
 
 if [[ "$SEED" == "yes" ]]; then
   echo "--- Stale automation orphan sweep"
@@ -1115,7 +1061,7 @@ selection_args() {
     printf '%s\0%s\0' --exclude-tags "$(join_csv "${EXCLUDE_TAGS[@]}")"
   else
     # The runner rejects an empty --exclude-tags, and without the option it skips
-    # flaky_quarantine.
+    # quarantine.
     printf '%s\0' --include-quarantine
   fi
 }
@@ -1187,10 +1133,9 @@ build_doctor_command() {
   if [[ -n "$STORE_OVERRIDE" ]]; then
     args+=(--store "$STORE_OVERRIDE")
   fi
-  # The doctor only accepts adb serials, not AVD names.
-  args+=(--device "$PHONE_SERIAL")
-  if [[ -n "$POS_DEVICE_SERIAL" ]]; then
-    args+=(--pos-device "$POS_DEVICE_SERIAL")
+  args+=(--device "${DEVICE_SELECTOR:-$PHONE_SERIAL}")
+  if [[ -n "$POS_DEVICE_SELECTOR" ]]; then
+    args+=(--pos-device "$POS_DEVICE_SELECTOR")
   fi
   if [[ "$SEED" == "yes" ]]; then
     args+=(--seed)
@@ -1331,6 +1276,9 @@ for repeat_index in $(seq 1 "$REPEAT"); do
   for flow in "${ORDERED_FLOWS[@]}"; do
     flow_device="$PHONE_SERIAL"
     if [[ "$USES_POS_DEVICE" == "yes" ]] && flow_has_any_tag "$flow" pos_tablet; then
+      if [[ -z "$POS_DEVICE_SERIAL" ]]; then
+        start_pos_device
+      fi
       flow_device="$POS_DEVICE_SERIAL"
     fi
     if [[ "$flow_device" != "$DEVICE_SERIAL" ]]; then

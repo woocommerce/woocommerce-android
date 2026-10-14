@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitConfirmed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,6 +23,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Rule
 import org.mockito.kotlin.argThat
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -42,6 +44,9 @@ class WooPosHomeViewModelTest {
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val soundHelper: WooPosSoundHelper = mock()
+    private val preferencesRepository: WooPosPreferencesRepository = mock {
+        on { isPaymentSuccessSoundEnabled } doReturn flowOf(true)
+    }
 
     private var viewModel: WooPosHomeViewModel? = null
 
@@ -343,6 +348,43 @@ class WooPosHomeViewModelTest {
         }
 
     @Test
+    fun `given payment success sound disabled, when OrderSuccessfullyPaid by cash, then sound not played`() =
+        runTest {
+            // GIVEN
+            whenever(preferencesRepository.isPaymentSuccessSoundEnabled).thenReturn(flowOf(false))
+            val events = MutableSharedFlow<ChildToParentEvent>()
+            whenever(childrenToParentEventReceiver.events).thenReturn(events)
+            val viewModel = createViewModel()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosHomeUIEvent.OnPaymentCompletedViaCash)
+
+            // THEN
+            verify(soundHelper, never()).playChaChing()
+            assertThat(viewModel.state.value.screenPositionState)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals)
+        }
+
+    @Test
+    fun `given payment success sound disabled, when OrderSuccessfullyPaid with CARD received, then sound not played`() =
+        runTest {
+            // GIVEN
+            whenever(preferencesRepository.isPaymentSuccessSoundEnabled).thenReturn(flowOf(false))
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.CARD))
+            )
+
+            // WHEN
+            createViewModel()
+
+            // THEN
+            verify(parentToChildrenEventSender).sendToChildren(
+                ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CARD)
+            )
+            verify(soundHelper, never()).playChaChing()
+        }
+
+    @Test
     fun `given home at Checkout, when back pressed, should return to Cart`() = runTest {
         // GIVEN
         val events = MutableSharedFlow<ChildToParentEvent>()
@@ -440,6 +482,7 @@ class WooPosHomeViewModelTest {
             parentToChildrenEventSender,
             analyticsTracker,
             soundHelper,
+            preferencesRepository,
             SavedStateHandle()
         ).also { viewModel = it }
     }

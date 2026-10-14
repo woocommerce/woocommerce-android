@@ -17,10 +17,8 @@ first. Before each store's flows, the runner clears the app data if the app was 
 in this run or an earlier one, so the next flow logs in with this store's account. `--store lab|shared` runs every
 selected flow against one store instead.
 
-The no-Jetpack login scenario uses its own `MAESTRO_WOO_NO_JETPACK_*` variables. Do not reuse those Jurassic Ninja
-site credentials as the `lab` store block when running the broader suite. The runner removes a trailing
-`/wp-admin` or `/wp-admin/` from this flow's site URL. The not-Woo store login runs against the shared store and
-logs in to a WordPress.com-hosted site with that store's account.
+The not-Woo store login runs against the shared store and logs in to a WordPress.com-hosted site with that store's
+account.
 
 The runner refuses destructive flows against the shared store. Run them with `--store lab`.
 
@@ -106,9 +104,8 @@ account with two-factor authentication disabled**. The OAuth password grant cann
 a 2FA challenge non-interactively. Use test accounts only.
 
 The store ships with the WooCommerce sample products, and the script adds 25 completed
-orders, one customer and a `maestro10` coupon. Pass `--no-jetpack-site` with a second
-Jurassic Ninja site created without Jetpack to fill in `MAESTRO_WOO_NO_JETPACK_*` as well.
-The other negative-login fixtures are filled in by hand.
+orders, one customer and a `maestro10` coupon. The negative-login fixtures are filled in
+by hand.
 
 Jurassic Ninja sites expire after 7 days of inactivity. Re-run the script or the skill
 against a new site when that happens; the WordPress.com account already in `.env.local`
@@ -158,7 +155,7 @@ Common variants:
 .maestro/scripts/run-smoke-tests.sh --device emulator-5554
 .maestro/scripts/run-smoke-tests.sh --apk /path/to/WooCommerce-production-release.apk
 .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --include-quarantine --seed
-.maestro/scripts/run-smoke-tests.sh --include-tags flaky_quarantine --seed .maestro/flows/orders_create.yaml
+.maestro/scripts/run-smoke-tests.sh --include-tags quarantine --seed .maestro/flows/orders_create.yaml
 .maestro/scripts/run-smoke-tests.sh --store shared --include-tags smoke_core
 .maestro/scripts/run-smoke-tests.sh --repeat 3 --store lab --include-tags smoke_core
 .maestro/scripts/run-smoke-tests.sh --profile full --device emulator-5554 --pos-device emulator-5556 --rerun-failed ~/woocommerce-maestro-output/20260708141815/report.xml
@@ -166,7 +163,7 @@ Common variants:
 
 Profiles are copy/paste-safe presets:
 
-- `core`: all login flows except `login_google`, plus the other `smoke_core` paths, with quarantine and Android system surfaces excluded.
+- `core`: the `smoke_core` flows, with quarantine and Android system surfaces excluded.
 - `full`: every flow except the quarantined ones, for release smoke testing. The phone flows run on `--device`, then the
   POS flows run on the tablet passed with `--pos-device`, in the same run, so they never share the lab store at once.
   The phone needs to be an English Pixel Launcher AVD with the production app discoverable as `Woo` in the app drawer,
@@ -175,12 +172,14 @@ Profiles are copy/paste-safe presets:
 
 `full` and `pos` seed their fixtures without `--seed`, because they include destructive flows. A selection that mixes
 phone and POS flows needs `--pos-device`. A selection of only POS flows runs on `--pos-device` when it is given.
+`--device` and `--pos-device` take an AVD name too. The runner starts an AVD that isn't running, and starts the
+tablet only when the POS flows begin, stopping the phone it started first.
 
 Use `--plan` with a profile or tag selection to print the exact store, repeat count, filters, and ordered flow list.
 Planning is side-effect-free: it does not load credentials, create output directories, or call Maestro/ADB.
-Without `--exclude-tags`, `flaky_quarantine` stays excluded unless `--include-quarantine` is passed
+Without `--exclude-tags`, `quarantine` stays excluded unless `--include-quarantine` is passed
 or `--include-tags` names it. An explicit `--exclude-tags` list
-replaces that default, so add `flaky_quarantine` to it to keep quarantined flows out. A zero-flow
+replaces that default, so add `quarantine` to it to keep quarantined flows out. A zero-flow
 selection is an error in both the runner and doctor.
 
 `--rerun-failed report.xml` reads failed/flaky JUnit test cases and runs only those flow files. It still honors
@@ -218,11 +217,8 @@ The runner:
 - `system_surface`: flow enters Android-owned UI; assertions stop at the documented handoff boundary.
 - `destructive`: mutates store data.
 - `store_shared`: runs against the shared store unless `--store` is passed; never combined with `destructive`.
-- `flaky_quarantine`: provisional or unstable flows, excluded unless the profile or `--include-quarantine` includes them.
-
-All login flows are required `smoke_core` coverage except `login_google`. It stays tagged `flaky_quarantine` because
-Google sign-in only accepts the Play-signed build, and the runner installs the GitHub release or a local build.
-Other provisional imported flows remain tagged `flaky_quarantine`.
+- `quarantine`: failing flows kept out of runs until they are fixed, excluded unless `--include-quarantine` is passed
+  or `--include-tags` names it.
 
 ## Coverage
 
