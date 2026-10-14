@@ -1149,6 +1149,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onSelectedRateSortOrderChanged(option: ShippingSortOption) {
+        if (shippingRatesStatesFlow.value.getOrNull(selectedShipmentIndex) is ShippingRatesState.Loading) return
+
         selectedRatesSortOrdersFlow.value = selectedRatesSortOrdersFlow.value.toMutableList().apply {
             set(selectedShipmentIndex, option)
         }

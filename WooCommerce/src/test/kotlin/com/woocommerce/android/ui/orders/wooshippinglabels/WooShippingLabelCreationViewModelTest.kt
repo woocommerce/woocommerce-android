@@ -73,9 +73,11 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -83,6 +85,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
 import org.mockito.kotlin.isNull
@@ -365,6 +368,28 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             savedState = savedState
         )
     }
+
+    private suspend fun TestScope.startLoadingReplacementRates(
+        replacementRates: CompletableDeferred<Result<Map<CarrierUI, List<ShippingRateUI>>>>
+    ) {
+        var calls = 0
+        whenever(getShippingRates(any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull()))
+            .doSuspendableAnswer {
+                if (calls++ == 0) Result.success(defaultShippingRates) else replacementRates.await()
+            }
+
+        createViewModel()
+        advanceUntilIdle()
+        sut.onPackageSelected(defaultPackageData)
+        advanceUntilIdle()
+        val ratesState = (sut.viewState.value as DataState).shipmentUIList[0]
+            .shippingRatesState as ShippingRatesState.DataState
+        ratesState.onSelectedShippingRateChanged(defaultShippingRates.values.first().first())
+        advanceUntilIdle()
+        sut.onRefreshShippingRates()
+        advanceUntilIdle()
+    }
+
 
     @Test
     fun `when the order NO contains shipping lines, then NO shipping lines summary is displayed`() = testBlocking {
@@ -663,7 +688,23 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         verify(getShippingRates, times(1))
             .invoke(any(), any(), any(), any(), any(), any(), isNull(), isNull())
+        val ratesState = (sut.viewState.value as DataState).shipmentUIList[0]
+            .shippingRatesState as ShippingRatesState.DataState
+        assertThat(ratesState.selectedRatesSortOrder).isEqualTo(ShippingSortOption.CHEAPEST)
     }
+
+    @Test
+    fun `when sort order changes while rates load, then keep loading state`() = testBlocking {
+        val pendingRates = CompletableDeferred<Result<Map<CarrierUI, List<ShippingRateUI>>>>()
+        startLoadingReplacementRates(pendingRates)
+
+        sut.onSelectedRateSortOrderChanged(ShippingSortOption.CHEAPEST)
+        advanceUntilIdle()
+
+        val dataState = sut.viewState.value as DataState
+        assertIs<ShippingRatesState.Loading>(dataState.shipmentUIList[0].shippingRatesState)
+    }
+
 
     @Test
     fun `when rates sort order is NOT changed then DON'T refresh shipping rates`() = testBlocking {
