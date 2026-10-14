@@ -231,7 +231,7 @@ def validate_release_apk(path: Path) -> ApkMetadata:
 def install_release_apk(device: str, path: Path) -> None:
     # Uninstall first, so the run starts from a fresh install with no data from an earlier run.
     adb(device, "uninstall", PRODUCTION_APP_ID)
-    result = adb(device, "install", "-g", str(path))
+    result = adb(device, "install", "-r", "-g", str(path))
     if result.returncode != 0:
         details = [line.strip() for line in (result.stderr + result.stdout).splitlines() if line.strip()]
         raise ReleaseAppError(details[-1] if details else f"adb could not install {path.name}")
