@@ -35,7 +35,11 @@ object WooDialog {
 
         val builder = MaterialAlertDialogBuilder(activity)
             .setCancelable(cancellable)
-            .setOnDismissListener { onCleared() }
+            .setOnDismissListener { dialog ->
+                // the listener runs from a posted message, so after a rotation a newer dialog may already be shown
+                if (dialogRef?.get() === dialog) dialogRef?.clear()
+                onDismiss?.invoke()
+            }
             .apply {
                 titleId?.let { setTitle(it) }
             }
@@ -50,9 +54,6 @@ object WooDialog {
             }
             .apply {
                 neutralButtonId?.let { setNeutralButton(it, neutBtAction) }
-            }
-            .apply {
-                onDismiss?.let { setOnDismissListener { it() } }
             }
 
         dialogRef = WeakReference(builder.show())

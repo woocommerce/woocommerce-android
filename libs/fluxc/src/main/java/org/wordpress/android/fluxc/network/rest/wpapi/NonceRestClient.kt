@@ -361,6 +361,17 @@ class NonceRestClient @Inject constructor(
             UnexpectedStoreResponse.of(UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE, it, method, url.toString())
         }
 
+    /**
+     * A nonce response can hold the nonce itself, even as a server error when a fatal error after the nonce turns it
+     * into a 500, so only a web page or a JSON error keeps its excerpt. A PHP warning printed before the nonce starts
+     * with a tag too, so a page needs a document tag.
+     */
+    private fun UnexpectedStoreResponse.withoutPlainTextExcerpt(body: String?): UnexpectedStoreResponse {
+        val text = body.orEmpty().trimStart()
+        val isPage = text.startsWith('<') && DOCUMENT_TAG_PATTERN.containsMatchIn(text)
+        return if (isPage || text.startsWith('{')) this else copy(excerpt = null)
+    }
+
     private fun Error<String>.unexpectedRedirect(method: Int, url: HttpUrl): UnexpectedStoreResponse? =
         error.volleyError?.networkResponse?.let {
             UnexpectedStoreResponse.of(UnexpectedStoreResponseKind.UNEXPECTED_CONTENT, it, method, url.toString())
@@ -388,11 +399,13 @@ class NonceRestClient @Inject constructor(
                     username = username,
                     type = CookieNonceErrorType.INVALID_NONCE,
                     unexpectedStoreResponse = response.unexpectedContent(Method.GET, nonceUrl)
+                        .withoutPlainTextExcerpt(response.data)
                 )
             }
 
             is Error -> {
-                val statusCode = response.error.volleyError?.networkResponse?.statusCode
+                val networkResponse = response.error.volleyError?.networkResponse
+                val statusCode = networkResponse?.statusCode
                 val errorType = if (statusCode == NOT_FOUND_STATUS_CODE) {
                     CookieNonceErrorType.CUSTOM_ADMIN_URL
                 } else {
@@ -406,6 +419,8 @@ class NonceRestClient @Inject constructor(
                         statusCode?.isRedirect() == true -> response.unexpectedRedirect(Method.GET, nonceUrl)
                         statusCode.isMissingPage() -> null
                         // The credentials were already accepted, so the body can't explain a rejected nonce request.
+                        statusCode?.isServerError() == true -> response.unacceptableStatus(Method.GET, nonceUrl)
+                            ?.withoutPlainTextExcerpt(networkResponse?.data?.decodeToString())
                         else -> response.unacceptableStatus(Method.GET, nonceUrl)
                     }
                 )
@@ -421,6 +436,8 @@ class NonceRestClient @Inject constructor(
     private fun HttpUrl.withoutFragment(): HttpUrl = newBuilder().fragment(null).build()
 
     private fun Int.isRedirect(): Boolean = this in REDIRECT_STATUS_CODE_START..REDIRECT_STATUS_CODE_END
+
+    private fun Int.isServerError(): Boolean = this in SERVER_ERROR_STATUS_CODE_START..SERVER_ERROR_STATUS_CODE_END
 
     private fun NetworkResponse.location(): String? = allHeaders
         ?.firstOrNull { it.name.equals(LOCATION_HEADER, ignoreCase = true) }
@@ -571,6 +588,7 @@ class NonceRestClient @Inject constructor(
         )
         private val WHITESPACE_PATTERN = Regex("\\s+")
         private val NONCE_PATTERN = Regex("[0-9a-zA-Z]{2,}")
+        private val DOCUMENT_TAG_PATTERN = Regex("""<(!doctype|html|head|body|title)\b""", RegexOption.IGNORE_CASE)
         private const val ID_ATTRIBUTE = "id"
         private const val NAME_ATTRIBUTE = "name"
         private const val TYPE_ATTRIBUTE = "type"
@@ -593,5 +611,7 @@ class NonceRestClient @Inject constructor(
         private const val MAX_ENDPOINT_REDIRECTS = 3
         private const val REDIRECT_STATUS_CODE_START = 300
         private const val REDIRECT_STATUS_CODE_END = 399
+        private const val SERVER_ERROR_STATUS_CODE_START = 500
+        private const val SERVER_ERROR_STATUS_CODE_END = 599
     }
 }

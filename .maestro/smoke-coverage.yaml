@@ -14,7 +14,7 @@ items:
     manual: "Requires APK version swap and logged-in state migration outside Maestro."
   - id: install.fresh
     title: Fresh install smoke
-    manual: "Requires uninstall/data reset plus first-launch assertions; the runner currently installs with replacement semantics."
+    manual: "The runner installs over the existing app instead of uninstalling it first."
 
   - id: login.help
     title: Login help section
@@ -27,7 +27,7 @@ items:
     flow: .maestro/flows/login_not_woo_store.yaml
   - id: login.no-jetpack
     title: Login to WooCommerce site without Jetpack
-    flow: .maestro/flows/login_no_jetpack.yaml
+    manual: "Installing Jetpack from the app permanently changes the site, and the manual test needs the site-credential login first, so the whole scenario is one manual test."
   - id: login.jetpack-not-connected
     title: Login with Jetpack installed but not connected
     manual: "Requires manually disconnecting Jetpack on a disposable Jurassic Ninja site."
@@ -45,7 +45,7 @@ items:
     manual: "Later automation needs Mailosaur API and secret management."
   - id: login.social-google
     title: Social login with Google
-    flow: .maestro/flows/login_google.yaml
+    manual: "Google sign-in only accepts the Play-signed build, which smoke runs never install."
   - id: login.social-apple
     title: Social login with Apple
     manual: "iOS-only per P2."
@@ -105,7 +105,7 @@ items:
     flow: .maestro/flows/orders_list_and_search.yaml
   - id: orders.pagination
     title: Orders pagination
-    manual: "Not automated."
+    manual: "The lab store has fewer orders than one page holds."
   - id: orders.search
     title: Search for an order
     flow: .maestro/flows/orders_list_and_search.yaml
@@ -178,7 +178,7 @@ items:
     flow: .maestro/flows/products_list_and_sort.yaml
   - id: products.pagination
     title: Product pagination
-    manual: "Not automated."
+    manual: "The lab store has fewer products than one page holds."
   - id: products.sort
     title: Sort product list
     flow: .maestro/flows/products_list_and_sort.yaml
@@ -188,9 +188,15 @@ items:
   - id: products.detail.description
     title: Product description details
     flow: .maestro/flows/products_create.yaml
-  - id: products.detail.media
-    title: Product media upload entry point
+  - id: products.detail.media.device
+    title: Upload product media from the device
     flow: .maestro/flows/products_media_upload.yaml
+  - id: products.detail.media.wp-library
+    title: Upload product media from the WordPress Media Library
+    flow: .maestro/flows/products_media_upload.yaml
+  - id: products.detail.media.camera
+    title: Upload product media with the camera
+    manual: "Taking a photo goes through the emulator's camera app."
   - id: products.detail.price
     title: Product price settings
     flow: .maestro/flows/products_create.yaml
@@ -199,7 +205,7 @@ items:
     flow: .maestro/flows/products_create.yaml
   - id: products.detail.categories
     title: Product categories settings
-    flow: .maestro/flows/products_detail.yaml
+    flow: .maestro/flows/products_create.yaml
   - id: products.detail.type
     title: Product type settings
     flow: .maestro/flows/products_create.yaml
@@ -234,8 +240,20 @@ items:
   - id: hub.settings
     title: Hub settings
     flow: .maestro/flows/hub_menu_settings.yaml
-  - id: hub.payments
-    title: Payments hub
+  - id: hub.payments.pay-in-person
+    title: Enable or disable Pay in Person
+    flow: .maestro/flows/hub_menu_payments.yaml
+  - id: hub.payments.tap-to-pay
+    title: Try out Tap to Pay
+    manual: "Needs a real device with NFC and Stripe in test mode."
+  - id: hub.payments.order-card-reader
+    title: Order Card Reader
+    flow: .maestro/flows/hub_menu_payments.yaml
+  - id: hub.payments.manage-card-reader
+    title: Manage Card Reader
+    manual: "The row stays disabled until the store finishes card-present payment setup."
+  - id: hub.payments.manuals
+    title: Card Reader Manuals
     flow: .maestro/flows/hub_menu_payments.yaml
   - id: hub.coupons.create
     title: Create a coupon
@@ -253,11 +271,11 @@ items:
     title: View Store
     flow: .maestro/flows/hub_menu_admin_and_store.yaml
   - id: hub.blaze.create
-    title: Blaze campaign creation entry point
-    manual: "Feature-gated probe only; an ineligible store must not count as coverage."
+    title: Create a Blaze campaign
+    manual: "Submitting a campaign needs payment, and the manual test fills the whole form first, so the whole item is one manual test."
   - id: hub.google-for-woo
     title: Google for Woo campaign webview
-    manual: "Feature-gated probe only; an ineligible store must not count as coverage."
+    flow: .maestro/flows/google_for_woo.yaml
 
   - id: payments.card-reader
     title: Collect payment using card reader

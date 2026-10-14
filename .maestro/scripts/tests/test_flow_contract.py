@@ -52,9 +52,7 @@ class MaestroFlowContractTests(unittest.TestCase):
         )
 
         direct_login_flows = [
-            "login_google.yaml",
             "login_help.yaml",
-            "login_no_jetpack.yaml",
             "login_not_woo_store.yaml",
             "login_not_wp_site.yaml",
             "login_wrong_account.yaml",
@@ -81,9 +79,7 @@ class MaestroFlowContractTests(unittest.TestCase):
         self.assertIn('- tapOn: "Skip"', helper)
 
         direct_login_flows = [
-            "login_google.yaml",
             "login_help.yaml",
-            "login_no_jetpack.yaml",
             "login_not_woo_store.yaml",
             "login_not_wp_site.yaml",
             "login_wrong_account.yaml",
@@ -111,9 +107,7 @@ class MaestroFlowContractTests(unittest.TestCase):
             with self.subTest(path=path):
                 source = path.read_text(encoding="utf-8")
                 self.assertIn("  - smoke_core\n", source)
-                # Google sign-in only accepts the Play-signed build, which the runner never installs.
-                if path.name != "login_google.yaml":
-                    self.assertNotIn("  - flaky_quarantine\n", source)
+                self.assertNotIn("  - quarantine\n", source)
 
     def test_not_woo_store_requires_the_rejection_and_another_account_action(self) -> None:
         flow = (

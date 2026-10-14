@@ -5,7 +5,7 @@
 # Verifies:
 #   - Dashboard loads with stats cards
 #   - The Orders, Visitors and Conversion stat tiles are visible
-#   - Switching the date range to This Week
+#   - Switching the date range to This Year and selecting a month on the chart
 #   - Top performers card is visible
 #   - The original date range is restored at the end
 appId: com.woocommerce.android
@@ -37,7 +37,7 @@ tags:
     label: "Stats card is visible"
 
 # The app saves the selected range, so record it here and switch back at the
-# end. A custom range is left as This Week, the flow cannot pick its dates again.
+# end. A custom range is left as This Year, the flow cannot pick its dates again.
 - evalScript: ${output.statsOriginalRange = ''}
 - runFlow:
     when:
@@ -118,30 +118,53 @@ tags:
 # than relying on its test tag surfacing in Maestro's hierarchy. This is
 # mandatory: otherwise the flow could pass without changing the chart range.
 - extendedWaitUntil:
-    visible: "This Week"
+    visible: "This Year"
     timeout: 10000
     label: "Wait for dashboard date range menu"
 
 - tapOn:
-    text: "This Week"
+    text: "This Year"
     retryTapIfNoChange: true
-    label: "Select This Week range"
+    label: "Select This Year range"
 
 # The menu closes even when the range does not change, so wait for the card
 # header itself. The menu is a popup, so this only matches the header.
 - extendedWaitUntil:
     visible:
-      text: "This Week"
+      text: "This Year"
       childOf:
         id: "dashboard_stats_card"
     timeout: 10000
-    label: "Wait for weekly dashboard stats"
+    label: "Wait for yearly dashboard stats"
 
 - assertNotVisible:
     text: "Custom"
     label: "Date range menu closes after selection"
 
-- takeScreenshot: dashboard_stats_week
+# The lab store has revenue this year, so the chart is drawn. Tapping it
+# selects a month, which the card header then names after the year.
+- scrollUntilVisible:
+    element:
+      id: "chart"
+    direction: DOWN
+    timeout: 15000
+    centerElement: true
+    label: "Scroll to the revenue chart"
+
+- tapOn:
+    id: "chart"
+    label: "Select a month on the chart"
+
+- scrollUntilVisible:
+    element:
+      text: "[0-9]{4} › [A-Za-z]+"
+      childOf:
+        id: "dashboard_stats_card"
+    direction: UP
+    timeout: 10000
+    label: "Wait for the selected month in the card header"
+
+- takeScreenshot: dashboard_stats_year
 
 # Scroll down to top performers via Compose testTag (DashboardStatsTestTags.DASHBOARD_TOP_PERFORMERS_CARD)
 - scrollUntilVisible:
@@ -171,7 +194,7 @@ tags:
 
 - runFlow:
     when:
-      true: ${output.statsOriginalRange !== '' && output.statsOriginalRange !== 'This Week'}
+      true: ${output.statsOriginalRange !== '' && output.statsOriginalRange !== 'This Year'}
     commands:
       - scrollUntilVisible:
           element:
