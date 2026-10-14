@@ -20,11 +20,11 @@ import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.parcelable
-import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowStopUsingForVariationsConfirmation
 import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsViewModel.LoadingState.Appending
 import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsViewModel.LoadingState.Loading
 import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermListener
@@ -377,6 +377,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ExitProductAddAttributeTerms -> findNavController().navigateUp()
+                is ShowStopUsingForVariationsConfirmation -> confirmStopUsingForVariations()
                 else -> event.isHandled = false
             }
         }
@@ -434,38 +435,27 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         updateAttributeSettings()
     }
 
-    /**
-     * Shows the "Visible on product page" and "Used for variations" switches. They stay disabled while the
-     * attribute isn't in the product draft. A global attribute is only added with its first option.
-     */
     private fun updateAttributeSettings() {
-        val isEnabled = viewModel.isNonVariationAttributesEnabled
-        binding.attributeSettingsContainer.isVisible = isEnabled
-        if (!isEnabled) return
+        val state = viewModel.getAttributeSettingsState(navArgs.attributeId, attributeName, navArgs.isVariationCreation)
+        binding.attributeSettingsContainer.isVisible = state != null
+        if (state == null) return
 
-        val attribute = viewModel.getProductDraftAttribute(navArgs.attributeId, attributeName)
         with(binding.visibleSwitch) {
             setOnCheckedChangeListener(null)
-            this.isEnabled = attribute != null
-            isChecked = attribute?.isVisible ?: ProductAttribute.DEFAULT_VISIBLE
+            isEnabled = state.isEnabled
+            isChecked = state.isVisible
             setOnCheckedChangeListener { _, isChecked ->
                 viewModel.onAttributeVisibleToggled(navArgs.attributeId, attributeName, isChecked)
             }
         }
         with(binding.usedForVariationsSwitch) {
-            isVisible = viewModel.isDraftVariableProduct && !navArgs.isVariationCreation
+            isVisible = state.isUsedForVariationsShown
             setOnCheckedChangeListener(null)
-            this.isEnabled = attribute != null
-            isChecked = attribute?.isVariation ?: viewModel.isDraftVariableProduct
-            setOnCheckedChangeListener { _, isChecked -> onUsedForVariationsChanged(isChecked) }
-        }
-    }
-
-    private fun onUsedForVariationsChanged(isChecked: Boolean) {
-        if (isChecked || !viewModel.draftHasVariations) {
-            viewModel.onAttributeUsedForVariationsToggled(navArgs.attributeId, attributeName, isChecked)
-        } else {
-            confirmStopUsingForVariations()
+            isEnabled = state.isEnabled
+            isChecked = state.isUsedForVariations
+            setOnCheckedChangeListener { _, isChecked ->
+                viewModel.onAttributeUsedForVariationsToggled(navArgs.attributeId, attributeName, isChecked)
+            }
         }
     }
 
@@ -476,9 +466,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             titleId = R.string.product_attribute_stop_using_for_variations_title,
             messageId = R.string.product_attribute_stop_using_for_variations_message,
             positiveButtonId = R.string.product_attribute_stop_using_for_variations_confirm,
-            posBtnAction = { _, _ ->
-                viewModel.onAttributeUsedForVariationsToggled(navArgs.attributeId, attributeName, false)
-            },
+            posBtnAction = { _, _ -> viewModel.onStopUsingForVariationsConfirmed(navArgs.attributeId, attributeName) },
             negativeButtonId = R.string.cancel,
             // reset the switch to the draft value, so cancelling turns it back on. The flag is already saved
             // when onStop dismisses the dialog, so a rotation still restores it.

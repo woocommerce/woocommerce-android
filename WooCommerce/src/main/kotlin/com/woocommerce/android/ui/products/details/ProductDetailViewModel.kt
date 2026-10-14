@@ -1695,24 +1695,43 @@ class ProductDetailViewModel @Inject constructor(
         return getDraftAttribute(attributeId, attributeName)?.terms ?: emptyList()
     }
 
-    /**
-     * Returns the draft attribute matching the passed id and name, or null if the product doesn't have it yet
-     */
-    fun getProductDraftAttribute(attributeId: Long, attributeName: String): ProductAttribute? =
-        getDraftAttribute(attributeId, attributeName)
-
     val isDraftVariableProduct: Boolean
         get() = viewState.productDraft?.productType?.isVariableProduct() == true
 
-    val draftHasVariations: Boolean
-        get() = (viewState.productDraft?.numVariations ?: 0) > 0
+    /**
+     * Returns null when the non-variation attributes feature is off, so the settings are hidden
+     */
+    fun getAttributeSettingsState(
+        attributeId: Long,
+        attributeName: String,
+        isVariationCreation: Boolean
+    ): AttributeSettingsState? {
+        if (!isNonVariationAttributesEnabled) return null
+        val attribute = getDraftAttribute(attributeId, attributeName)
+        return AttributeSettingsState(
+            // a global attribute is only added to the draft with its first option
+            isEnabled = attribute != null,
+            isVisible = attribute?.isVisible ?: ProductAttribute.DEFAULT_VISIBLE,
+            isUsedForVariationsShown = isDraftVariableProduct && !isVariationCreation,
+            isUsedForVariations = attribute?.isVariation ?: isNewAttributeUsedForVariations(isVariationCreation)
+        )
+    }
 
     fun onAttributeVisibleToggled(attributeId: Long, attributeName: String, isVisible: Boolean) {
         updateDraftAttribute(attributeId, attributeName) { it.copy(isVisible = isVisible) }
     }
 
     fun onAttributeUsedForVariationsToggled(attributeId: Long, attributeName: String, isVariation: Boolean) {
-        updateDraftAttribute(attributeId, attributeName) { it.copy(isVariation = isVariation) }
+        val hasVariations = (viewState.productDraft?.numVariations ?: 0) > 0
+        if (!isVariation && hasVariations) {
+            triggerEvent(ShowStopUsingForVariationsConfirmation)
+        } else {
+            updateDraftAttribute(attributeId, attributeName) { it.copy(isVariation = isVariation) }
+        }
+    }
+
+    fun onStopUsingForVariationsConfirmed(attributeId: Long, attributeName: String) {
+        updateDraftAttribute(attributeId, attributeName) { it.copy(isVariation = false) }
     }
 
     private fun updateDraftAttribute(
@@ -2803,6 +2822,8 @@ class ProductDetailViewModel @Inject constructor(
 
     data class TrashProduct(val productId: Long) : Event()
 
+    object ShowStopUsingForVariationsConfirmation : Event()
+
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
      * [storedProductAggregate.value] is the [Product] model that is fetched from the API and available in the local db.
@@ -2907,6 +2928,13 @@ class ProductDetailViewModel @Inject constructor(
         val isFetchingVariations: Boolean = false,
         val progressDialogState: ProgressDialogState? = null
     ) : Parcelable
+
+    data class AttributeSettingsState(
+        val isEnabled: Boolean,
+        val isVisible: Boolean,
+        val isUsedForVariationsShown: Boolean,
+        val isUsedForVariations: Boolean
+    )
 
     data class MenuButtonsState(
         val saveOption: Boolean,
