@@ -34,7 +34,6 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
@@ -1347,6 +1346,10 @@ class WooPosProductsRemoteDataSourceTest {
         // GIVEN
         var now = 100L
         whenever(elapsedTime.milliseconds()).thenAnswer { now }
+        whenever(productsCache.getAll()).thenAnswer {
+            now = 500L
+            sampleProducts
+        }
         whenever(productsIndex.getProductList()).thenReturn(listOf(sampleProducts.first()))
         whenever(productMapper.map(any())).thenAnswer {
             now += 700L
@@ -1369,9 +1372,7 @@ class WooPosProductsRemoteDataSourceTest {
         }
 
         // WHEN
-        createSUT().fetchFirstProductsPage(forceRefresh = false).collect { result ->
-            if (result is ProductsResult.Cached) now = 500L
-        }
+        createSUT().fetchFirstProductsPage(forceRefresh = false).toList()
 
         // THEN
         val event = argumentCaptor<IAnalyticsEvent>()
