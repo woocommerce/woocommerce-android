@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.customs.products
 
 import android.os.Parcelable
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsItem
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiers
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.InputValue
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
@@ -12,6 +13,10 @@ data class WooShippingCustomsProductUIModel(
     val name: String,
     val description: InputValue,
     val tariffNumber: InputValue,
+    val sku: InputValue = InputValue.Empty,
+    val manufacturerPartNumber: InputValue = InputValue.Empty,
+    val gtin: InputValue = InputValue.Empty,
+    val hasNoBarcode: Boolean = false,
     val valuePerUnit: InputValue,
     val weightPerUnit: InputValue,
     val originCountry: String,
@@ -21,12 +26,21 @@ data class WooShippingCustomsProductUIModel(
     val formattedPriceAndWeight: String
 ) : Parcelable {
 
-    val isValid: Boolean
-        get() = description is InputValue.Data &&
-            tariffNumber is InputValue.Data &&
-            valuePerUnit is InputValue.Data &&
-            weightPerUnit is InputValue.Data &&
-            originCountry.isNotBlank()
+    fun isValid(includeEuProductIdentifiers: Boolean) = description is InputValue.Data &&
+        tariffNumber is InputValue.Data && valuePerUnit is InputValue.Data &&
+        weightPerUnit is InputValue.Data && originCountry.isNotBlank() &&
+        (
+            !includeEuProductIdentifiers ||
+                sku is InputValue.Data && manufacturerPartNumber is InputValue.Data && gtin is InputValue.Data
+            )
+
+    val euProductIdentifiers: EuProductIdentifiers
+        get() = EuProductIdentifiers(
+            sku.currentInput,
+            manufacturerPartNumber.currentInput,
+            gtin.currentInput,
+            hasNoBarcode
+        )
 
     val shippingTotalValue: BigDecimal?
         get() = valuePerUnit
@@ -45,6 +59,7 @@ data class WooShippingCustomsProductUIModel(
             weight = weightPerUnit.currentInput.toFloatOrNull() ?: 0F,
             originCountry = originCountry,
             originCountryCode = originCountryCode,
-            quantity = quantity
+            quantity = quantity,
+            euProductIdentifiers = euProductIdentifiers
         )
 }
