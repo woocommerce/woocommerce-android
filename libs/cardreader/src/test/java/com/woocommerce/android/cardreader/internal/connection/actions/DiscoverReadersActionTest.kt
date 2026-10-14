@@ -10,6 +10,7 @@ import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverRe
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Started
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Success
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import com.woocommerce.android.cardreader.internal.wrappers.UsbManagerWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNot
@@ -29,11 +30,12 @@ import org.mockito.kotlin.whenever
 class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
     private lateinit var action: DiscoverReadersAction
     private val terminal: TerminalWrapper = mock()
+    private val usbManager: UsbManagerWrapper = mock()
     private val logWrapper: LogWrapper = mock()
 
     @Before
     fun setUp() {
-        action = DiscoverReadersAction(terminal, logWrapper)
+        action = DiscoverReadersAction(terminal, usbManager, logWrapper)
     }
 
     @Test
@@ -161,6 +163,23 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
                 60,
                 false
             )
+        )
+    }
+
+    @Test
+    fun `given card reader attached by usb, when discovery external readers, then config uses usb`() = testBlocking {
+        // GIVEN
+        whenever(usbManager.isCardReaderAttached()).thenReturn(true)
+        whenever(terminal.discoverReaders(any())).thenReturn(flow { })
+
+        // WHEN
+        action.discoverExternalReaders(false).toList()
+
+        // THEN
+        val configCaptor = argumentCaptor<DiscoveryConfiguration>()
+        verify(terminal).discoverReaders(configCaptor.capture())
+        assertThat(configCaptor.firstValue).isEqualTo(
+            DiscoveryConfiguration.UsbDiscoveryConfiguration(60, false)
         )
     }
 
