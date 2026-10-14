@@ -1726,10 +1726,6 @@ class ProductDetailViewModel @Inject constructor(
         )
     }
 
-    /**
-     * A new attribute is used for variations on variable products and in the variation wizard. With the
-     * non-variation attributes feature off, every new attribute is used for variations, as before.
-     */
     private fun isNewAttributeUsedForVariations(isVariationCreation: Boolean) =
         !isNonVariationAttributesEnabled || isVariationCreation || isDraftVariableProduct
 
@@ -1826,7 +1822,7 @@ class ProductDetailViewModel @Inject constructor(
         attributeId: Long,
         attributeName: String,
         termName: String,
-        isVariationCreation: Boolean = false
+        isVariationCreation: Boolean
     ) {
         val thisAttribute = getDraftAttribute(attributeId, attributeName)
         if (thisAttribute == null) {

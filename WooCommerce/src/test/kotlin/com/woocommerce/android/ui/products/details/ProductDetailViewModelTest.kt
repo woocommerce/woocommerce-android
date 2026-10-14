@@ -1011,7 +1011,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             // WHEN
-            viewModel.addAttributeTermToDraft(0L, "Material", "Linen")
+            viewModel.addAttributeTermToDraft(0L, "Material", "Linen", isVariationCreation = false)
 
             // THEN
             Assertions.assertThat(viewModel.productDraftAttributes).containsExactly(
@@ -1062,7 +1062,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             // WHEN
-            viewModel.addAttributeTermToDraft(3L, "Size", "S")
+            viewModel.addAttributeTermToDraft(3L, "Size", "S", isVariationCreation = false)
 
             // THEN
             val newAttribute = viewModel.productDraftAttributes.last()
