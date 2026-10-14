@@ -247,8 +247,12 @@ internal class ApplicationPasswordsManager @Inject constructor(
         }
     }
 
+    /**
+     * A 404 means the store has no application passwords route, unless the body is an unexpected page, like a
+     * firewall's block page.
+     */
     private fun BaseNetworkError.meansApplicationPasswordsNotSupported(statusCode: Int?, errorCode: String?) =
-        statusCode == NOT_FOUND ||
+        statusCode == NOT_FOUND && unexpectedStoreResponse == null ||
             errorCode == APPLICATION_PASSWORDS_DISABLED_ERROR_CODE ||
             errorCode == APPLICATION_PASSWORDS_DISABLED_USER_ERROR_CODE
 
