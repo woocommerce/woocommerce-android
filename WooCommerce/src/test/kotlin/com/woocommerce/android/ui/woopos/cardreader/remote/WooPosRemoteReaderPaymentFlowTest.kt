@@ -47,7 +47,9 @@ class WooPosRemoteReaderPaymentFlowTest {
     private val orderHelper: CardReaderPaymentOrderHelper = mock {
         on { getPaymentDescription(any()) }.thenReturn("Order")
     }
-    private val tracker: PaymentsFlowTracker = mock()
+    private val tracker: PaymentsFlowTracker = mock<PaymentsFlowTracker>().apply {
+        whenever(forPaymentAttempt()).thenReturn(this)
+    }
     private val trackingInfo = CardReaderTrackingInfoImpl()
     private val appPrefs: AppPrefs = mock()
     private val flow = WooPosRemoteReaderPaymentFlow(
@@ -69,6 +71,19 @@ class WooPosRemoteReaderPaymentFlowTest {
         total = BigDecimal("42.50"),
         currency = "EUR",
     )
+
+    @Test
+    fun `given unconfirmed remote outcome, when collecting payment, then confirmation timing is omitted`() = runTest {
+        // GIVEN
+        whenever(session.sendCollectPayment(any(), any()))
+            .thenReturn(CollectPaymentOutcome.Success("pi_123", "requires_confirmation", null))
+        whenever(store.capturePaymentIntent(order.id, "pi_123")).thenReturn(CapturePaymentResponse.Successful.Success)
+        // WHEN
+        flow.collect(order)
+        // THEN
+        verify(tracker).forPaymentAttempt()
+        verify(tracker, never()).onConfirmedIntentAvailable()
+    }
 
     @Test
     fun `given remote collection succeeds, when capture succeeds, then checkout tracks success once with current order`() = runTest {
@@ -96,6 +111,8 @@ class WooPosRemoteReaderPaymentFlowTest {
         // THEN
         assertThat(result).isEqualTo(WooPosRemoteReaderPaymentFlow.Result.Completed)
         inOrder(store, tracker) {
+            verify(tracker).forPaymentAttempt()
+            verify(tracker).onConfirmedIntentAvailable()
             verify(store).capturePaymentIntent(order.id, "pi_123")
             verify(tracker).trackPaymentSucceeded(order)
         }

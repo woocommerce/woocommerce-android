@@ -25,6 +25,7 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymen
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentIntentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentIntentAction.ProcessPaymentIntentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
@@ -88,6 +89,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         InitializingPayment::class,
         ProcessingPayment::class,
         ProcessingPaymentCompleted::class,
+        CardPaymentStatus.ConfirmedPaymentIntentAvailable::class,
         CapturingPayment::class,
         PaymentCompleted::class
     )
@@ -692,10 +694,23 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
             val paymentIntent = createPaymentIntent(REQUIRES_CAPTURE)
             val paymentData = PaymentDataImpl(paymentIntent)
 
-            val result = manager.retryPayment(DUMMY_ORDER_ID, paymentData).first()
+            val result = manager.retryPayment(DUMMY_ORDER_ID, paymentData).take(2).toList()
 
-            assertThat(result).isInstanceOf(CapturingPayment::class.java)
+            assertThat(result).containsExactly(CardPaymentStatus.ConfirmedPaymentIntentAvailable, CapturingPayment)
         }
+
+    @Test
+    fun `given confirmed retry intent without receipt, when retrying, then confirmation is available before failure`() = testBlocking {
+        // GIVEN
+        val paymentData = PaymentDataImpl(createPaymentIntent(REQUIRES_CAPTURE, receiptUrl = null))
+        // WHEN
+        val result = manager.retryPayment(DUMMY_ORDER_ID, paymentData).toList()
+        // THEN
+        assertThat(result.first()).isEqualTo(CardPaymentStatus.ConfirmedPaymentIntentAvailable)
+        assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
+        assertThat(result).doesNotContain(CapturingPayment)
+        verify(processPaymentIntentAction, never()).processPaymentIntent(anyOrNull())
+    }
 
     @Test
     fun `given PaymentStatus CANCELED, when retrying payment, then PaymentFailed is emitted`() =

@@ -139,6 +139,7 @@ class CardReaderPaymentController(
         MutableStateFlow(CardReaderPaymentState.LoadingData(::onCancelPaymentFlow))
     val paymentState: StateFlow<CardReaderPaymentOrRefundState> = _paymentState
 
+    private var activePaymentTracker = tracker
     private var paymentFlowJob: Job? = null
     private var refundFlowJob: Job? = null
     private var paymentDataForRetry: PaymentData? = null
@@ -220,8 +221,10 @@ class CardReaderPaymentController(
     }
 
     private fun initPaymentFlow(isRetry: Boolean) {
+        val attemptTracker = tracker.forPaymentAttempt()
+        activePaymentTracker = attemptTracker
         paymentFlowJob = scope.launch {
-            _paymentState.value = CardReaderPaymentState.LoadingData(::onCancelPaymentFlow)
+            _paymentState.value = CardReaderPaymentState.LoadingData({ onCancelPaymentFlow(attemptTracker) })
             if (isRetry) {
                 delay(ARTIFICIAL_RETRY_DELAY)
             }
@@ -234,13 +237,13 @@ class CardReaderPaymentController(
                 }
                 launch {
                     isTTPPaymentInProgress.set(cardReaderType == CardReaderType.BUILT_IN)
-                    collectPaymentFlow(cardReaderManager, order)
+                    collectPaymentFlow(cardReaderManager, order, attemptTracker)
                 }
                 launch {
                     listenForBluetoothCardReaderMessages()
                 }
             } ?: run {
-                tracker.trackPaymentFailed("Fetching order failed")
+                attemptTracker.trackPaymentFailed("Fetching order failed")
                 _paymentState.value = paymentStateProvider.provideNonCancellableFailedPaymentState(
                     cardReaderType = cardReaderType,
                     errorType = PaymentFlowError.FetchingOrderFailed,
@@ -288,15 +291,23 @@ class CardReaderPaymentController(
         billingEmail: String,
         paymentData: PaymentData,
         amountLabel: String,
-        onPaymentSucceeded: suspend () -> Unit = { tracker.trackPaymentSucceeded() },
+        onPaymentSucceeded: suspend (PaymentsFlowTracker) -> Unit = { it.trackPaymentSucceeded() },
     ) {
+        val attemptTracker = tracker.forPaymentAttempt()
+        activePaymentTracker = attemptTracker
         paymentFlowJob = scope.launch {
-            _paymentState.value = CardReaderPaymentState.LoadingData(::onCancelPaymentFlow)
+            _paymentState.value = CardReaderPaymentState.LoadingData({ onCancelPaymentFlow(attemptTracker) })
             delay(ARTIFICIAL_RETRY_DELAY)
             val previousStatusKey = orderRepository.getOrderById(orderId)?.status?.value
             cardReaderManager.retryCollectPayment(orderId, paymentData).collect { paymentStatus ->
                 onPaymentStatusChanged(
-                    orderId, previousStatusKey, billingEmail, paymentStatus, amountLabel, onPaymentSucceeded
+                    orderId,
+                    previousStatusKey,
+                    billingEmail,
+                    paymentStatus,
+                    amountLabel,
+                    onPaymentSucceeded,
+                    attemptTracker
                 )
             }
         }
@@ -306,7 +317,11 @@ class CardReaderPaymentController(
         initRefundFlow(isRetry = true)
     }
 
-    private suspend fun collectPaymentFlow(cardReaderManager: CardReaderManager, order: Order) {
+    private suspend fun collectPaymentFlow(
+        cardReaderManager: CardReaderManager,
+        order: Order,
+        attemptTracker: PaymentsFlowTracker,
+    ) {
         val customerEmail = order.billingAddress.email
         val site = selectedSite.get()
         val countryCode = getStoreCountryCode()
@@ -349,7 +364,8 @@ class CardReaderPaymentController(
                 customerEmail,
                 paymentStatus,
                 cardReaderPaymentOrderHelper.getAmountLabel(order),
-                onPaymentSucceeded = { tracker.trackPaymentSucceeded(order) },
+                onPaymentSucceeded = { it.trackPaymentSucceeded(order) },
+                attemptTracker = attemptTracker,
             )
         }
     }
@@ -361,20 +377,21 @@ class CardReaderPaymentController(
         billingEmail: String,
         paymentStatus: CardPaymentStatus,
         amountLabel: String,
-        onPaymentSucceeded: suspend () -> Unit,
+        onPaymentSucceeded: suspend (PaymentsFlowTracker) -> Unit,
+        attemptTracker: PaymentsFlowTracker,
     ) {
         paymentDataForRetry = null
         when (paymentStatus) {
             InitializingPayment -> {
                 _paymentState.value =
-                    CardReaderPaymentState.LoadingData(::onCancelPaymentFlow)
+                    CardReaderPaymentState.LoadingData({ onCancelPaymentFlow(attemptTracker) })
             }
 
             ProcessingPayment -> {
                 _paymentState.value = paymentStateProvider.provideProcessingPaymentState(
                     cardReaderType,
                     amountLabel,
-                    ::onCancelPaymentFlow
+                    { onCancelPaymentFlow(attemptTracker) }
                 )
             }
 
@@ -387,6 +404,8 @@ class CardReaderPaymentController(
                 }
             }
 
+            CardPaymentStatus.ConfirmedPaymentIntentAvailable -> attemptTracker.onConfirmedIntentAvailable()
+
             CapturingPayment -> {
                 _paymentState.value = paymentStateProvider.provideCapturingPaymentState(
                     cardReaderType,
@@ -395,7 +414,7 @@ class CardReaderPaymentController(
             }
 
             is PaymentCompleted -> {
-                onPaymentSucceeded()
+                onPaymentSucceeded(attemptTracker)
                 onPaymentCompleted(paymentStatus, orderId, previousStatusKey)
             }
 
@@ -405,7 +424,7 @@ class CardReaderPaymentController(
 
             is PaymentFailed -> {
                 paymentDataForRetry = paymentStatus.paymentDataForRetry
-                tracker.trackPaymentFailed(paymentStatus.errorMessage, paymentStatus.type)
+                attemptTracker.trackPaymentFailed(paymentStatus.errorMessage, paymentStatus.type)
                 emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel, onPaymentSucceeded)
             }
         }
@@ -588,7 +607,7 @@ class CardReaderPaymentController(
         billingEmail: String,
         error: PaymentFailed,
         amountLabel: String,
-        onPaymentSucceeded: suspend () -> Unit,
+        onPaymentSucceeded: suspend (PaymentsFlowTracker) -> Unit,
     ) {
         WooLog.e(WooLog.T.CARD_READER, error.errorMessage)
         cardReaderOnboardingChecker.invalidateCache()
@@ -883,7 +902,9 @@ class CardReaderPaymentController(
         }
     }
 
-    private fun onCancelPaymentFlow() {
+    private fun onCancelPaymentFlow() = onCancelPaymentFlow(activePaymentTracker)
+
+    private fun onCancelPaymentFlow(attemptTracker: PaymentsFlowTracker) {
         if (refetchOrderJob?.isActive == true) {
             if (_paymentState.value != CardReaderPaymentState.ReFetchingOrder) {
                 _paymentState.value = CardReaderPaymentState.ReFetchingOrder
@@ -892,7 +913,7 @@ class CardReaderPaymentController(
                 exitWithSnackbar(R.string.card_reader_refetching_order_failed)
             }
         } else {
-            trackCancelledFlow(_paymentState.value)
+            trackCancelledFlow(_paymentState.value, attemptTracker)
             triggerEvent(CardReaderPaymentEvent.Exit)
         }
     }

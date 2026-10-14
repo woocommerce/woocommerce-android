@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashPaymentTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosCheckoutTiming
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosPaymentSuccessProperties
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -117,6 +118,7 @@ class WooPosCashPaymentViewModel @Inject constructor(
     }
 
     private fun handleOrderCompletion() {
+        val timingContext = analyticsData.checkoutTiming.startPayment()
         viewModelScope.launch {
             analyticsTracker.track(CashPaymentTapped)
 
@@ -129,7 +131,7 @@ class WooPosCashPaymentViewModel @Inject constructor(
 
             val result = repository.completeOrder(orderId, stateBeforeCompleting.changeDue.toString())
             if (result.isSuccess) {
-                trackPaymentSuccess()
+                trackPaymentSuccess(timingContext)
                 _state.value = WooPosCashPaymentState.Complete
                 _navigationEvent.emit(WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment)
             } else {
@@ -145,14 +147,25 @@ class WooPosCashPaymentViewModel @Inject constructor(
         }
     }
 
-    private suspend fun trackPaymentSuccess() {
+    private suspend fun trackPaymentSuccess(
+        timingContext: WooPosCheckoutTiming.Context,
+    ) {
         val props = mutableMapOf<String, String>()
         analyticsData.interactionWithCustomerStartedTimestamp?.let {
             val timeElapsed = System.currentTimeMillis() - it
             props["milliseconds_since_customer_interaction_started"] = "$timeElapsed"
         }
         val paymentProps = repository.getOrderById(orderId)?.let { paymentSuccessProperties(it) }.orEmpty()
-        val event = CashCollectPaymentSuccess(paymentProps).apply { addProperties(props) }
+        val event = CashCollectPaymentSuccess(paymentProps).apply {
+            addProperties(props)
+            addProperties(
+                analyticsData.checkoutTiming.terminalSnapshot(
+                    success = true,
+                    includeCardStages = false,
+                    context = timingContext
+                )
+            )
+        }
         analyticsTracker.track(event)
     }
 

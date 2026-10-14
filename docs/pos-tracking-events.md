@@ -97,3 +97,23 @@ When a feature has many tracking calls, extract a dedicated tracker (e.g., `WooP
 | `_success` | Request success |
 | `_selected` | User selected an option |
 | `_shown` | View shown to user |
+
+## Checkout timing version 2
+
+Card success, failure and cancellation, and cash success include integer `pos_timing_version: 2`.
+`sync_strategy` is the active products source at checkout: `local_catalog`, `remote`, or `unknown`.
+
+| Optional integer milliseconds | Start boundary |
+| --- | --- |
+| `pos_time_since_checkout_started_ms` | Order-draft creation entry, before async work |
+| `pos_time_since_order_sync_completed_ms` | Successful order creation for this checkout |
+| `pos_time_since_payment_confirmed_ms` | Confirmed intent available before receipt lookup/backend capture, including reuse |
+
+Durations use `SystemClock.elapsedRealtime()`, including sleep. Zero is valid; missing/negative values are omitted.
+`pos_time_since_reader_ready_ms` is omitted: the SDK input callback has no operation identity, and processing entry does not prove readiness.
+Automatic product/coupon removal re-sync also starts a context; this measures a synchronization attempt, not a physical press.
+Contexts are captured before async work; snapshots follow success-property lookup. Late callbacks retain their own references.
+Failure/cancel clear captured confirmation; success closes only its captured collection. New collections after success omit old checkout timing.
+Customer reset replaces active pointers. Native retries can reuse open collections; duplicate/late-confirmed signals do not establish attempt identity.
+Cash uses its own collection and omits confirmation. Remote readers confirm only `requires_capture`/`succeeded`; simulation omits confirmation.
+Existing wall-clock properties, units, checkout counter and reset behavior remain unchanged. These metrics do not measure first display or card touch.

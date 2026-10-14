@@ -110,6 +110,27 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
     )
 
     @Test
+    fun `when payment timing lifecycle changes, then the provider receives each boundary`() {
+        // GIVEN
+        val provider = mock<PaymentsFlowTrackerEventProvider>()
+        whenever(provider.forPaymentAttempt()).thenReturn(provider)
+        val tracker = PaymentsFlowTracker(
+            trackerWrapper,
+            appPrefsWrapper,
+            selectedSite,
+            cardReaderTrackingInfoProvider,
+            paymentReceiptHelper,
+            provider
+        )
+        // WHEN
+        tracker.forPaymentAttempt()
+        tracker.onConfirmedIntentAvailable()
+        // THEN
+        verify(provider).forPaymentAttempt()
+        verify(provider).onConfirmedIntentAvailable()
+    }
+
+    @Test
     fun `when track learn more invoked, then CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED tracked`() =
         testBlocking {
             paymentsFlowTracker.trackOnboardingLearnMoreTapped()
