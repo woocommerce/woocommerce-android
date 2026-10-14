@@ -4,7 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.creation.customerlist.AddCustomer
 import com.woocommerce.android.ui.orders.creation.customerlist.Button
@@ -27,6 +29,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @Suppress("LongParameterList")
 abstract class CustomerListViewModel(
@@ -37,6 +40,7 @@ abstract class CustomerListViewModel(
     private val getSupportedSearchModes: CustomerListGetSupportedSearchModes,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val stringUtils: StringUtils,
+    private val trackingSource: String,
 ) : ScopedViewModel(savedState) {
     protected val allowGuests = savedState.get<Boolean>("allowGuests") ?: false
     protected val allowCustomerCreation = savedState.get<Boolean>("allowCustomerCreation") ?: false
@@ -61,6 +65,7 @@ abstract class CustomerListViewModel(
 
     private var loadingFirstPageJob: Job? = null
     private val mutex = Mutex()
+    private var canShowCachedCustomers = true
 
     init {
         launch {
@@ -85,7 +90,7 @@ abstract class CustomerListViewModel(
             _viewState.value = _viewState.value!!.copy(searchQuery = this)
         }
 
-        loadIfNeededAfterSearchChanged()
+        reloadCustomers()
     }
 
     fun onSearchTypeChanged(searchModeId: Int) {
@@ -97,11 +102,33 @@ abstract class CustomerListViewModel(
             )
         }
 
-        if (searchQuery.isNotEmpty()) loadIfNeededAfterSearchChanged()
+        if (searchQuery.isNotEmpty()) reloadCustomers()
     }
 
     fun onNavigateBack() {
         triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
+    fun onRetryClicked() {
+        if (_viewState.value?.body !is CustomerListViewState.CustomerList.AnalyticsUnavailable) return
+
+        showLoading()
+        reloadCustomers(ReloadTrigger.RETRY)
+    }
+
+    fun onEnableAnalyticsClicked() {
+        val body = _viewState.value?.body as? CustomerListViewState.CustomerList.AnalyticsUnavailable ?: return
+        if (!body.canEnableAnalytics) return
+
+        triggerEvent(
+            MultiLiveEvent.Event.ShowDialog(
+                titleId = R.string.customer_list_enable_analytics_confirmation_title,
+                messageId = R.string.customer_list_enable_analytics_confirmation_message,
+                positiveButtonId = R.string.customer_list_enable_analytics_confirmation_action,
+                negativeButtonId = R.string.cancel,
+                positiveBtnAction = { _, _ -> enableAnalyticsAndReload() },
+            )
+        )
     }
 
     fun onAddCustomerClicked(email: String? = null) {
@@ -113,66 +140,179 @@ abstract class CustomerListViewModel(
         launch { loadCustomers(paginationState.currentPage + 1) }
     }
 
-    private fun loadIfNeededAfterSearchChanged() {
-        loadingFirstPageJob?.cancel()
-        loadingFirstPageJob = launch {
-            if (searchQuery.isNotEmpty() || isAdvancedSearchSupported()) {
-                loadCustomers(1)
-            } else {
-                _viewState.value = advancedSearchNotSupportedInitState()
-            }
-        }
-    }
-    private suspend fun loadCustomers(page: Int): Unit = mutex.withLock {
+    private suspend fun loadCustomers(page: Int, reloadTrigger: ReloadTrigger? = null): Unit = mutex.withLock {
         if (page != 1 && !paginationState.hasNextPage) return
 
-        val searchBy = getSearchParam()
-
-        if (page == 1) {
-            if (searchQuery.isNotEmpty()) {
-                _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Loading)
-                // Add a delay to avoid multiple requests when the user types fast or switches search types
-                delay(SEARCH_DELAY_MS)
-                analyticsTracker.track(
-                    AnalyticsEvent.ORDER_CREATION_CUSTOMER_SEARCH,
-                    mapOf(
-                        "search_type" to viewState.value?.searchModes?.firstOrNull { it.isSelected }?.searchParam
-                    )
-                )
-            } else {
-                val cachedCustomers = repository.getCustomerList(PAGE_SIZE)
-                if (cachedCustomers.isNotEmpty()) {
-                    handleFirstPageLoaded(
-                        customers = cachedCustomers,
-                        searchParam = searchBy
-                    )
-                } else {
-                    _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Loading)
-                    // Add a delay to avoid multiple requests when the user types fast or switches search types
-                    delay(SEARCH_DELAY_MS)
-                }
-            }
+        val requestedQuery = searchQuery
+        val requestedSearchModeId = selectedSearchModeId
+        if (page == 1 && requestedQuery.isEmpty() && !isAdvancedSearchSupported()) {
+            _viewState.value = advancedSearchNotSupportedInitState()
+            return
         }
 
+        val searchBy = getSearchParam(requestedSearchModeId)
+
+        if (page == 1 && reloadTrigger == null) prepareFirstPage(requestedQuery, searchBy)
+
         val result = repository.searchCustomerListWithEmail(
-            searchQuery = searchQuery,
+            searchQuery = requestedQuery,
             searchBy = searchBy,
             pageSize = PAGE_SIZE,
             page = page,
         )
         if (result.isFailure) {
             paginationState = PaginationState(1, false)
+            handleRequestFailure(
+                error = result.exceptionOrNull(),
+                requestedQuery = requestedQuery,
+                requestedSearchModeId = requestedSearchModeId,
+                reloadTrigger = reloadTrigger,
+            )
+            return
+        }
+
+        val customers = result.getOrNull() ?: emptyList()
+        val hasNextPage = customers.size == PAGE_SIZE
+        canShowCachedCustomers = true
+        paginationState = PaginationState(page, hasNextPage)
+        handleSuccessfulResponse(customers, page == 1, hasNextPage, searchBy)
+        if (page == 1 && reloadTrigger != null) {
+            analyticsTracker.track(
+                AnalyticsEvent.CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_RELOAD_SUCCESS,
+                mapOf(
+                    AnalyticsTracker.KEY_SOURCE to trackingSource,
+                    AnalyticsTracker.KEY_TYPE to reloadTrigger.trackingValue,
+                )
+            )
+        }
+    }
+
+    private suspend fun prepareFirstPage(requestedQuery: String, searchBy: String) {
+        if (requestedQuery.isNotEmpty()) {
+            showLoading()
+            // Add a delay to avoid multiple requests when the user types fast or switches search types
+            delay(SEARCH_DELAY_MS)
+            analyticsTracker.track(
+                AnalyticsEvent.ORDER_CREATION_CUSTOMER_SEARCH,
+                mapOf(
+                    "search_type" to viewState.value?.searchModes?.firstOrNull { it.isSelected }?.searchParam
+                )
+            )
+        } else if (canShowCachedCustomers) {
+            val cachedCustomers = repository.getCustomerList(PAGE_SIZE)
+            if (cachedCustomers.isNotEmpty()) {
+                handleFirstPageLoaded(cachedCustomers, searchBy)
+            } else {
+                showLoading()
+                // Add a delay to avoid multiple requests when the user types fast or switches search types
+                delay(SEARCH_DELAY_MS)
+            }
+        } else {
+            showLoading()
+        }
+    }
+
+    private suspend fun handleRequestFailure(
+        error: Throwable?,
+        requestedQuery: String,
+        requestedSearchModeId: Int?,
+        reloadTrigger: ReloadTrigger?,
+    ) {
+        if ((error as? WooException)?.error?.apiErrorCode == REST_NO_ROUTE_ERROR_CODE) {
+            handleMissingCustomerRoute(requestedQuery, requestedSearchModeId, reloadTrigger)
+        } else {
             _viewState.value = _viewState.value!!.copy(
                 body = CustomerListViewState.CustomerList.Error(R.string.error_generic),
                 showFab = allowCustomerCreation,
             )
-        } else {
-            val customers = result.getOrNull() ?: emptyList()
-            val hasNextPage = customers.size == PAGE_SIZE
-            paginationState = PaginationState(page, hasNextPage)
-            handleSuccessfulResponse(customers, page == 1, hasNextPage, searchBy)
         }
     }
+
+    private suspend fun handleMissingCustomerRoute(
+        requestedQuery: String,
+        requestedSearchModeId: Int?,
+        reloadTrigger: ReloadTrigger?,
+    ) {
+        if (!isCurrentRequest(requestedQuery, requestedSearchModeId)) return
+
+        canShowCachedCustomers = false
+        _viewState.value = _viewState.value!!.copy(
+            body = CustomerListViewState.CustomerList.Loading,
+            showFab = allowCustomerCreation,
+        )
+
+        val settingsResult = repository.fetchAnalyticsEnabled()
+        if (!isCurrentRequest(requestedQuery, requestedSearchModeId)) return
+
+        showAnalyticsUnavailable(settingsResult, reloadTrigger)
+    }
+
+    private fun showAnalyticsUnavailable(settingsResult: WooResult<Boolean>, reloadTrigger: ReloadTrigger?) {
+        val isAnalyticsDisabled = !settingsResult.isError && settingsResult.model == false
+        val isAnalyticsEnabled = !settingsResult.isError && settingsResult.model == true
+        val isPermissionDenied = settingsResult.isError &&
+            settingsResult.error.apiErrorCode == ANALYTICS_PERMISSION_DENIED_ERROR_CODE
+        val cause = when {
+            isAnalyticsDisabled -> AnalyticsTracker.VALUE_CUSTOMER_LIST_CAUSE_DISABLED
+            isAnalyticsEnabled -> AnalyticsTracker.VALUE_OTHER
+            else -> AnalyticsTracker.VALUE_CUSTOMER_LIST_CAUSE_UNKNOWN
+        }
+        val justEnabledAnalytics = reloadTrigger == ReloadTrigger.ENABLE_ANALYTICS
+        val message = when {
+            justEnabledAnalytics -> R.string.customer_list_analytics_unavailable_message
+            isAnalyticsDisabled -> R.string.customer_list_analytics_disabled_message
+            isPermissionDenied -> R.string.customer_list_analytics_permission_denied_message
+            else -> R.string.customer_list_analytics_unavailable_message
+        }
+        _viewState.value = _viewState.value!!.copy(
+            body = CustomerListViewState.CustomerList.AnalyticsUnavailable(
+                message = message,
+                canEnableAnalytics = isAnalyticsDisabled && !justEnabledAnalytics,
+            ),
+            showFab = allowCustomerCreation,
+        )
+        analyticsTracker.track(
+            AnalyticsEvent.CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_ERROR_SHOWN,
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to trackingSource,
+                AnalyticsTracker.KEY_CAUSE to cause,
+            )
+        )
+    }
+
+    private fun showLoading() {
+        _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Loading)
+    }
+
+    private fun enableAnalyticsAndReload() {
+        val body = _viewState.value?.body as? CustomerListViewState.CustomerList.AnalyticsUnavailable ?: return
+        if (!body.canEnableAnalytics) return
+
+        showLoading()
+        loadingFirstPageJob?.cancel()
+        launch {
+            mutex.withLock {
+                val result = repository.enableAnalytics()
+                if (!result.isError && result.model == true) {
+                    reloadCustomers(ReloadTrigger.ENABLE_ANALYTICS)
+                } else {
+                    _viewState.value = _viewState.value!!.copy(body = body)
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.customer_list_enable_analytics_error))
+                }
+            }
+        }
+    }
+
+    private fun reloadCustomers(reloadTrigger: ReloadTrigger? = null) {
+        loadingFirstPageJob?.cancel()
+        loadingFirstPageJob = launch {
+            loadCustomers(page = 1, reloadTrigger = reloadTrigger)
+        }
+    }
+
+    private fun isCurrentRequest(requestedQuery: String, requestedSearchModeId: Int?) =
+        searchQuery == requestedQuery &&
+            (requestedQuery.isEmpty() || selectedSearchModeId == requestedSearchModeId)
 
     private fun handleSuccessfulResponse(
         customers: List<WCCustomerModel>,
@@ -260,11 +400,12 @@ abstract class CustomerListViewModel(
         )
     }
 
-    private suspend fun getSearchParam() =
+    private suspend fun getSearchParam(searchModeId: Int?) =
         if (isAdvancedSearchSupported()) {
             CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_ALL
         } else {
-            _viewState.value!!.searchModes.first { it.isSelected }.searchParam
+            _viewState.value!!.searchModes.firstOrNull { it.labelResId == searchModeId }?.searchParam
+                ?: _viewState.value!!.searchModes.first { it.isSelected }.searchParam
         }
 
     private fun searchParamToSearchType(searchParam: String) =
@@ -315,6 +456,11 @@ abstract class CustomerListViewModel(
             else -> map { it.copy(isSelected = it.labelResId == searchTypeId) }
         }
 
+    private enum class ReloadTrigger(val trackingValue: String) {
+        RETRY(AnalyticsTracker.VALUE_CUSTOMER_LIST_RELOAD_RETRY),
+        ENABLE_ANALYTICS(AnalyticsTracker.VALUE_CUSTOMER_LIST_RELOAD_ENABLE_ANALYTICS),
+    }
+
     private companion object {
         private const val SEARCH_QUERY_KEY = "search_query"
         private const val SEARCH_MODE_KEY = "search_mode"
@@ -322,5 +468,7 @@ abstract class CustomerListViewModel(
         private const val SEARCH_DELAY_MS = 500L
 
         private const val PAGE_SIZE = 30
+        private const val REST_NO_ROUTE_ERROR_CODE = "rest_no_route"
+        private const val ANALYTICS_PERMISSION_DENIED_ERROR_CODE = "woocommerce_rest_cannot_view"
     }
 }

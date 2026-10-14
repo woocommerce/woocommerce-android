@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -45,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
@@ -52,6 +54,10 @@ import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
+import com.woocommerce.android.ui.compose.preview.FontScalePreviews
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.customer.compose.CustomerSummaryRow
 import com.woocommerce.android.ui.orders.creation.customerlist.Button
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListViewState
@@ -66,6 +72,8 @@ fun CustomerListScreen(
     onSearchQueryChanged: (String) -> Unit,
     onSearchTypeChanged: (Int) -> Unit,
     onEndOfListReached: () -> Unit,
+    onRetryClicked: () -> Unit,
+    onEnableAnalyticsClicked: () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -100,6 +108,12 @@ fun CustomerListScreen(
             )
 
             is CustomerListViewState.CustomerList.Error -> CustomerListError(body.message)
+            is CustomerListViewState.CustomerList.AnalyticsUnavailable -> CustomerListAnalyticsUnavailable(
+                body = body,
+                showFab = state.showFab,
+                onRetryClicked = onRetryClicked,
+                onEnableAnalyticsClicked = onEnableAnalyticsClicked,
+            )
             CustomerListViewState.CustomerList.Loading -> CustomerListSkeleton()
             is CustomerListViewState.CustomerList.Loaded -> {
                 CustomerListLoaded(
@@ -262,6 +276,26 @@ private fun CustomerListError(@StringRes message: Int) {
 }
 
 @Composable
+private fun CustomerListAnalyticsUnavailable(
+    body: CustomerListViewState.CustomerList.AnalyticsUnavailable,
+    showFab: Boolean,
+    onRetryClicked: () -> Unit,
+    onEnableAnalyticsClicked: () -> Unit,
+) {
+    CustomerListNoDataState(
+        title = R.string.customer_list_analytics_unavailable_title,
+        text = body.message,
+        image = R.drawable.img_woo_generic_error,
+        button = Button(
+            text = if (body.canEnableAnalytics) R.string.customer_list_enable_analytics else R.string.retry,
+            onClick = if (body.canEnableAnalytics) onEnableAnalyticsClicked else onRetryClicked,
+        ),
+        secondaryButton = if (body.canEnableAnalytics) Button(R.string.retry, onRetryClicked) else null,
+        bottomPadding = if (showFab) FAB_CLEARANCE else 0.dp,
+    )
+}
+
+@Composable
 private fun CustomerListSkeleton() {
     val numberOfSkeletonRows = 10
     LazyColumn(
@@ -287,12 +321,16 @@ private fun CustomerListNoDataState(
     @StringRes text: Int,
     @DrawableRes image: Int,
     button: Button?,
+    @StringRes title: Int? = null,
+    secondaryButton: Button? = null,
+    bottomPadding: Dp = 0.dp,
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(dimensionResource(id = R.dimen.major_200)),
+            .padding(dimensionResource(id = R.dimen.major_200))
+            .padding(bottom = bottomPadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.weight(1f))
@@ -300,6 +338,14 @@ private fun CustomerListNoDataState(
             painter = painterResource(id = image),
             contentDescription = null,
         )
+        title?.let {
+            Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
+            Text(
+                text = stringResource(id = it),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.h6,
+            )
+        }
         Spacer(Modifier.size(dimensionResource(id = R.dimen.major_200)))
         Text(
             text = stringResource(id = text),
@@ -311,10 +357,25 @@ private fun CustomerListNoDataState(
             )
         )
 
-        button?.let {
-            Spacer(Modifier.size(dimensionResource(id = R.dimen.minor_100)))
-            WCColoredButton(onClick = button.onClick) {
-                Text(text = stringResource(id = button.text))
+        Column(modifier = Modifier.width(IntrinsicSize.Max)) {
+            button?.let {
+                Spacer(Modifier.size(dimensionResource(id = R.dimen.minor_100)))
+                WCColoredButton(
+                    onClick = button.onClick,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(text = stringResource(id = button.text))
+                }
+            }
+
+            secondaryButton?.let {
+                Spacer(Modifier.size(dimensionResource(id = R.dimen.minor_100)))
+                WCOutlinedButton(
+                    onClick = it.onClick,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(text = stringResource(id = it.text))
+                }
             }
         }
 
@@ -434,6 +495,8 @@ fun CustomerListScreenPreview() {
         {},
         {},
         {},
+        {},
+        {},
     )
 }
 
@@ -477,6 +540,8 @@ fun CustomerListScreenEmptyOldPreview() {
         {},
         {},
         {},
+        {},
+        {},
     )
 }
 
@@ -497,6 +562,8 @@ fun CustomerListScreenEmptyNewPreview() {
                 button = null
             ),
         ),
+        {},
+        {},
         {},
         {},
         {},
@@ -538,7 +605,65 @@ fun CustomerListScreenErrorPreview() {
         {},
         {},
         {},
+        {},
+        {},
     )
+}
+
+@LightDarkThemePreviews
+@FontScalePreviews
+@Composable
+fun CustomerListAnalyticsDisabledPreview() {
+    CustomerListAnalyticsUnavailablePreviewContent(
+        message = R.string.customer_list_analytics_disabled_message,
+        canEnableAnalytics = true,
+    )
+}
+
+@LightDarkThemePreviews
+@Composable
+fun CustomerListAnalyticsPermissionDeniedPreview() {
+    CustomerListAnalyticsUnavailablePreviewContent(
+        message = R.string.customer_list_analytics_permission_denied_message,
+        canEnableAnalytics = false,
+    )
+}
+
+@LightDarkThemePreviews
+@Composable
+fun CustomerListAnalyticsUnavailablePreview() {
+    CustomerListAnalyticsUnavailablePreviewContent(
+        message = R.string.customer_list_analytics_unavailable_message,
+        canEnableAnalytics = false,
+    )
+}
+
+@Composable
+private fun CustomerListAnalyticsUnavailablePreviewContent(
+    message: Int,
+    canEnableAnalytics: Boolean,
+) {
+    LegacyWooThemeWithBackground {
+        CustomerListScreen(
+            modifier = Modifier,
+            state = CustomerListViewState(
+                searchHint = R.string.order_creation_customer_search_hint,
+                searchModes = emptyList(),
+                showFab = false,
+                searchFocused = false,
+                body = CustomerListViewState.CustomerList.AnalyticsUnavailable(
+                    message = message,
+                    canEnableAnalytics = canEnableAnalytics,
+                ),
+            ),
+            onCustomerSelected = {},
+            onSearchQueryChanged = {},
+            onSearchTypeChanged = {},
+            onEndOfListReached = {},
+            onRetryClicked = {},
+            onEnableAnalyticsClicked = {},
+        )
+    }
 }
 
 @Preview
@@ -574,5 +699,9 @@ fun CustomerListScreenLoadingPreview() {
         {},
         {},
         {},
+        {},
+        {},
     )
 }
+
+private val FAB_CLEARANCE = 72.dp
