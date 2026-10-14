@@ -9,8 +9,8 @@ import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListAdapter.AttributeViewHolder
 
 class AttributeListAdapter(
-    private val showHiddenLabel: Boolean = false,
-    private val showUsedForVariationsLabel: Boolean = false,
+    private val showHiddenLabel: Boolean,
+    private val showUsedForVariationsLabel: Boolean,
     onItemClick: (attributeId: Long, attributeName: String) -> Unit
 ) : AttributeBaseAdapter<AttributeViewHolder>(onItemClick) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AttributeViewHolder {

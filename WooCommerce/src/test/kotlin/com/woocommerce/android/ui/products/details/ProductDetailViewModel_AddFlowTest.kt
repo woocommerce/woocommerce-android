@@ -289,7 +289,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             viewModel.productDetailViewStateData.observeForever { _, _ -> }
             viewModel.start()
             viewModel.addLocalAttribute("Material", isVariationCreation = false)
-            viewModel.addAttributeTermToDraft(0L, "Material", "Cotton")
+            viewModel.addAttributeTermToDraft(0L, "Material", "Cotton", isVariationCreation = false)
 
             // WHEN
             viewModel.saveAttributeChanges()
