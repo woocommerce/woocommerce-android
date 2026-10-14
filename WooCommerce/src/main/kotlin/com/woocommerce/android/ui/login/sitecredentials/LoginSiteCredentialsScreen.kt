@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseAlert
 
 @Composable
 fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
@@ -50,7 +51,9 @@ fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
             onBackClick = viewModel::onBackClick,
             onHelpButtonClick = viewModel::onHelpButtonClick,
             onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-            onStartWebAuthorizationClick = viewModel::onStartWebAuthorizationClick
+            onStartWebAuthorizationClick = viewModel::onStartWebAuthorizationClick,
+            onUnexpectedResponseRetryClick = viewModel::onUnexpectedResponseRetryClick,
+            onUnexpectedResponseDismissClick = viewModel::onUnexpectedResponseDismissClick
         )
     }
 }
@@ -67,7 +70,9 @@ fun LoginSiteCredentialsScreen(
     onBackClick: () -> Unit,
     onHelpButtonClick: () -> Unit,
     onErrorDialogDismissed: () -> Unit,
-    onStartWebAuthorizationClick: () -> Unit
+    onStartWebAuthorizationClick: () -> Unit,
+    onUnexpectedResponseRetryClick: () -> Unit,
+    onUnexpectedResponseDismissClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     Scaffold(
@@ -194,6 +199,13 @@ fun LoginSiteCredentialsScreen(
             )
         }
 
+        if (viewState.unexpectedResponse != null) {
+            LoginUnexpectedResponseAlert(
+                onRetryClick = onUnexpectedResponseRetryClick,
+                onDismissClick = onUnexpectedResponseDismissClick
+            )
+        }
+
         if (viewState.loadingMessage != null) {
             ProgressDialog(title = "", subtitle = stringResource(id = viewState.loadingMessage))
         }
@@ -308,7 +320,9 @@ private fun LoginSiteCredentialsScreenPreview(viewState: LoginSiteCredentialsVie
             onBackClick = {},
             onHelpButtonClick = {},
             onErrorDialogDismissed = {},
-            onStartWebAuthorizationClick = {}
+            onStartWebAuthorizationClick = {},
+            onUnexpectedResponseRetryClick = {},
+            onUnexpectedResponseDismissClick = {}
         )
     }
 }
