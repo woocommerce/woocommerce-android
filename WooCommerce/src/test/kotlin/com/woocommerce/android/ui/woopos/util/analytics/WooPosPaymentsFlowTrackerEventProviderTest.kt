@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.util.analytics
 
-import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -397,7 +397,7 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         val clock = mock<WooPosElapsedTime>()
         val timing = WooPosCheckoutTiming(clock)
         val properties = mock<WooPosPaymentSuccessProperties>()
-        val order = mock<Order>()
+        val order = OrderTestUtils.generateTestOrder()
         timing.startCheckout("remote")
         val metadata = CompletableDeferred<Map<String, Any>>()
         whenever(properties(order)).doSuspendableAnswer { metadata.await() }
@@ -420,7 +420,7 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         val timing = WooPosCheckoutTiming(clock)
         timing.startCheckout("remote")
         val properties = mock<WooPosPaymentSuccessProperties>()
-        val order = mock<Order>()
+        val order = OrderTestUtils.generateTestOrder()
         val metadata = CompletableDeferred<Map<String, Any>>()
         whenever(properties(order)).doSuspendableAnswer { metadata.await() }
         val events = WooPosPaymentsFlowTrackerEventProvider(WooPosAnalyticsTrackingDataKeeper(timing), properties)
@@ -476,7 +476,7 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         timing.startCheckout("remote")
         val metadata = CompletableDeferred<Map<String, Any>>()
         val properties = mock<WooPosPaymentSuccessProperties>()
-        val order = mock<Order>()
+        val order = OrderTestUtils.generateTestOrder()
         whenever(properties(order)).doSuspendableAnswer { metadata.await() }
         val base = WooPosPaymentsFlowTrackerEventProvider(WooPosAnalyticsTrackingDataKeeper(timing), properties)
         val old = base.forPaymentAttempt() as WooPosPaymentsFlowTrackerEventProvider

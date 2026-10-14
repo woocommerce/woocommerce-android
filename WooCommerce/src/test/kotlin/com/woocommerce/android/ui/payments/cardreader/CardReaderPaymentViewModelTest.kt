@@ -186,6 +186,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Suppress("LongMethod")
     @Before
     fun setUp() = testBlocking {
+        whenever(tracker.forPaymentAttempt()).thenReturn(tracker)
         viewModel = CardReaderPaymentViewModel(
             savedState,
             cardReaderManager = cardReaderManager,
