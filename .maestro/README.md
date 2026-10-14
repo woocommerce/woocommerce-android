@@ -189,6 +189,7 @@ The runner:
 
 - targets the production package (`com.woocommerce.android`) and rejects dev or debuggable APKs;
 - downloads and installs the latest stable GitHub release when no production app or candidate APK is installed;
+- uninstalls the app before it installs an APK, so a run with `--apk` starts from a fresh install;
 - selects one connected device automatically, or prompts when several are attached, and runs the POS flows on
   `--pos-device`;
 - captures and restores animation settings;
