@@ -888,7 +888,7 @@ collapse_system_ui() {
 # and then sets it for flows tagged app_locale_de.
 APP_LOCALE_SET=""
 set_app_locale() {
-  log_in_before_locale_change "$2"
+  log_in_before_flow "$2"
   # A failure here fails only this flow, not the whole run.
   if adb -s "$DEVICE_SERIAL" shell cmd locale set-app-locales "$APP_ID" --locales "$1" >/dev/null 2>&1; then
     APP_LOCALE_SET="$DEVICE_SERIAL"
@@ -897,11 +897,11 @@ set_app_locale() {
   fi
 }
 
-log_in_before_locale_change() {
-  local log_file="$LOGS_DIR/${1}_login_before_language_change.log"
+log_in_before_flow() {
+  local log_file="$LOGS_DIR/${1}_login_before_flow.log"
   "${MAESTRO_PROCESS_ENV_ARGS[@]}" maestro test "${MAESTRO_DEVICE_ARGS[@]}" "${MAESTRO_ENV_ARGS[@]}" \
     "$REPO_ROOT/.maestro/subflows/ensure_logged_in.yaml" >"$log_file" 2>&1 \
-    || echo "  logging in before the language change failed, see logs/$(basename "$log_file")"
+    || echo "  logging in before the flow failed, see logs/$(basename "$log_file")"
   scrub_log "$log_file"
 }
 
