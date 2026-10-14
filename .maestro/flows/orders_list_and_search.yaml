@@ -131,12 +131,13 @@ tags:
 - back
 
 # The lab store's 100 seeded orders are numbered oldest first, and one page of the
-# list holds 60 orders, so "Order 040" only shows once the next page has loaded.
+# list holds 60 orders. Orders seeded in the same second can swap places, so look for
+# "Order 030", well inside the next page.
 - runFlow:
     file: ../subflows/navigate_to_orders.yaml
 - scrollUntilVisible:
     element:
-      text: ".*Order 040.*"
+      text: ".*Order 030.*"
     direction: DOWN
     timeout: 240000
     label: "An order from the next page loads"
