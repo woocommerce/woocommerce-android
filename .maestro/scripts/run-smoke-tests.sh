@@ -888,14 +888,20 @@ collapse_system_ui() {
 # and then sets it for flows tagged app_locale_de.
 APP_LOCALE_SET=""
 set_app_locale() {
-  log_in_before_locale_change
-  adb -s "$DEVICE_SERIAL" shell cmd locale set-app-locales "$APP_ID" --locales "$1" >/dev/null
-  APP_LOCALE_SET="$DEVICE_SERIAL"
+  log_in_before_locale_change "$2"
+  # A failure here fails only this flow, not the whole run.
+  if adb -s "$DEVICE_SERIAL" shell cmd locale set-app-locales "$APP_ID" --locales "$1" >/dev/null 2>&1; then
+    APP_LOCALE_SET="$DEVICE_SERIAL"
+  else
+    echo "  could not set the app language to $1"
+  fi
 }
 
 log_in_before_locale_change() {
+  local log_file="$LOGS_DIR/${1}_login_before_language_change.log"
   "${MAESTRO_PROCESS_ENV_ARGS[@]}" maestro test "${MAESTRO_DEVICE_ARGS[@]}" "${MAESTRO_ENV_ARGS[@]}" \
-    "$REPO_ROOT/.maestro/subflows/ensure_logged_in.yaml" >/dev/null 2>&1 || echo "  logging in before the language change failed"
+    "$REPO_ROOT/.maestro/subflows/ensure_logged_in.yaml" >"$log_file" 2>&1 \
+    || echo "  logging in before the language change failed, see logs/$(basename "$log_file")"
 }
 
 reset_app_locale() {
@@ -1322,7 +1328,7 @@ for repeat_index in $(seq 1 "$REPEAT"); do
     echo "[$run_index/$TOTAL_RUNS] $base (repeat $repeat_index/$REPEAT)"
     reset_app_locale
     if flow_has_any_tag "$flow" app_locale_de; then
-      set_app_locale de-DE
+      set_app_locale de-DE "$base"
     fi
 
     first="$(run_one_attempt "$flow" "$base" 1 "$repeat_index")"
