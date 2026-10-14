@@ -254,6 +254,10 @@ def ensure_release_app(
     if installed is not None:
         return InstalledRelease(installed.version_name, False, "device")
 
+    return install_latest_release(device, cache_dir)
+
+
+def install_latest_release(device: str, cache_dir: Path = DEFAULT_CACHE_DIR) -> InstalledRelease:
     asset = latest_release_asset()
     print(f"Downloading WooCommerce Android {asset.tag} production APK from GitHub Releases...")
     downloaded = download_release_asset(asset, cache_dir)
