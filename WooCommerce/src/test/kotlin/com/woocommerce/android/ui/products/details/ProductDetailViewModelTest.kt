@@ -1327,6 +1327,38 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when the visible switch is toggled, then only that attribute changes`() = testBlocking {
+        // GIVEN
+        givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE, VARIATION_GLOBAL_ATTRIBUTE))
+        viewModel.start()
+
+        // WHEN
+        viewModel.onAttributeVisibleToggled(0L, "Material", isVisible = true)
+
+        // THEN
+        Assertions.assertThat(viewModel.productDraftAttributes).containsExactly(
+            DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(isVisible = true),
+            VARIATION_GLOBAL_ATTRIBUTE
+        )
+    }
+
+    @Test
+    fun `when the used for variations switch is toggled, then only that attribute changes`() = testBlocking {
+        // GIVEN
+        givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE, VARIATION_GLOBAL_ATTRIBUTE))
+        viewModel.start()
+
+        // WHEN
+        viewModel.onAttributeUsedForVariationsToggled(VARIATION_GLOBAL_ATTRIBUTE.id, "Color", isVariation = false)
+
+        // THEN
+        Assertions.assertThat(viewModel.productDraftAttributes).containsExactly(
+            DISPLAY_ONLY_LOCAL_ATTRIBUTE,
+            VARIATION_GLOBAL_ATTRIBUTE.copy(isVariation = false)
+        )
+    }
+
+    @Test
     fun `given the feature is on, when attributes load outside the variation wizard, then all attributes are listed`() =
         testBlocking {
             // GIVEN
@@ -1401,17 +1433,184 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             Assertions.assertThat(viewModel.productDraftAttributes.single().isVariation).isTrue()
         }
 
+    @Test
+    fun `given two local attributes, when the visible switch is toggled on the second, then only the second changes`() =
+        testBlocking {
+            // GIVEN
+            val size = DISPLAY_ONLY_LOCAL_ATTRIBUTE.copy(name = "Size", position = 1)
+            givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE, size))
+            viewModel.start()
+
+            // WHEN
+            viewModel.onAttributeVisibleToggled(0L, "Size", isVisible = true)
+
+            // THEN
+            Assertions.assertThat(viewModel.productDraftAttributes)
+                .containsExactly(DISPLAY_ONLY_LOCAL_ATTRIBUTE, size.copy(isVisible = true))
+        }
+
+    @Test
+    fun `given a product with variations, when used for variations is turned off, then a confirmation is shown`() =
+        testBlocking {
+            // GIVEN
+            givenStoredProductAttributes(listOf(VARIATION_GLOBAL_ATTRIBUTE), ProductType.VARIABLE, numVariations = 4)
+            viewModel.start()
+
+            // WHEN
+            val events = viewModel.event.runAndCaptureValues {
+                viewModel.onAttributeUsedForVariationsToggled(
+                    VARIATION_GLOBAL_ATTRIBUTE.id,
+                    "Color",
+                    isVariation = false
+                )
+            }
+
+            // THEN
+            Assertions.assertThat(events).contains(ProductDetailViewModel.ShowStopUsingForVariationsConfirmation)
+            Assertions.assertThat(viewModel.productDraftAttributes).containsExactly(VARIATION_GLOBAL_ATTRIBUTE)
+        }
+
+    @Test
+    fun `given a product with variations, when used for variations is turned on, then the attribute changes without a confirmation`() =
+        testBlocking {
+            // GIVEN
+            val color = VARIATION_GLOBAL_ATTRIBUTE.copy(isVariation = false)
+            givenStoredProductAttributes(listOf(color), ProductType.VARIABLE, numVariations = 4)
+            viewModel.start()
+
+            // WHEN
+            val events = viewModel.event.runAndCaptureValues {
+                viewModel.onAttributeUsedForVariationsToggled(color.id, "Color", isVariation = true)
+            }
+
+            // THEN
+            Assertions.assertThat(events).doesNotContain(ProductDetailViewModel.ShowStopUsingForVariationsConfirmation)
+            Assertions.assertThat(viewModel.productDraftAttributes).containsExactly(VARIATION_GLOBAL_ATTRIBUTE)
+        }
+
+    @Test
+    fun `when stop using for variations is confirmed, then the attribute is no longer used for variations`() =
+        testBlocking {
+            // GIVEN
+            givenStoredProductAttributes(listOf(VARIATION_GLOBAL_ATTRIBUTE), ProductType.VARIABLE, numVariations = 4)
+            viewModel.start()
+
+            // WHEN
+            viewModel.onStopUsingForVariationsConfirmed(VARIATION_GLOBAL_ATTRIBUTE.id, "Color")
+
+            // THEN
+            Assertions.assertThat(viewModel.productDraftAttributes)
+                .containsExactly(VARIATION_GLOBAL_ATTRIBUTE.copy(isVariation = false))
+        }
+
+    @Test
+    fun `given the feature is off, when the attribute settings state is read, then it is null`() = testBlocking {
+        // GIVEN
+        givenNonVariationAttributesEnabled(false)
+        givenStoredProductAttributes(listOf(VARIATION_GLOBAL_ATTRIBUTE), ProductType.VARIABLE)
+        viewModel.start()
+
+        // WHEN
+        val state = viewModel.getAttributeSettingsState(VARIATION_GLOBAL_ATTRIBUTE.id, "Color", false)
+
+        // THEN
+        Assertions.assertThat(state).isNull()
+    }
+
+    @Test
+    fun `given the feature is on and a variable product, when the state is read for a draft attribute, then it has the attribute flags`() =
+        testBlocking {
+            // GIVEN
+            givenNonVariationAttributesEnabled(true)
+            givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE), ProductType.VARIABLE)
+            viewModel.start()
+
+            // WHEN
+            val state = viewModel.getAttributeSettingsState(0L, "Material", isVariationCreation = false)
+
+            // THEN
+            Assertions.assertThat(state).isEqualTo(
+                ProductDetailViewModel.AttributeSettingsState(
+                    isEnabled = true,
+                    isVisible = false,
+                    isUsedForVariationsShown = true,
+                    isUsedForVariations = false
+                )
+            )
+        }
+
+    @Test
+    fun `given the feature is on and a variable product, when the state is read for an attribute not in the draft, then it is disabled with the new attribute values`() =
+        testBlocking {
+            // GIVEN
+            givenNonVariationAttributesEnabled(true)
+            givenStoredProductAttributes(emptyList(), ProductType.VARIABLE)
+            viewModel.start()
+
+            // WHEN
+            val state = viewModel.getAttributeSettingsState(3L, "Size", isVariationCreation = false)
+
+            // THEN
+            Assertions.assertThat(state).isEqualTo(
+                ProductDetailViewModel.AttributeSettingsState(
+                    isEnabled = false,
+                    isVisible = true,
+                    isUsedForVariationsShown = true,
+                    isUsedForVariations = true
+                )
+            )
+        }
+
+    @Test
+    fun `given the feature is on and a simple product, when the state is read, then used for variations is not shown`() =
+        testBlocking {
+            // GIVEN
+            givenNonVariationAttributesEnabled(true)
+            givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
+            viewModel.start()
+
+            // WHEN
+            val state = viewModel.getAttributeSettingsState(0L, "Material", isVariationCreation = false)
+
+            // THEN
+            Assertions.assertThat(state?.isUsedForVariationsShown).isFalse()
+        }
+
+    @Test
+    fun `given the feature is on and a variable product, when the state is read in the variation wizard, then used for variations is not shown`() =
+        testBlocking {
+            // GIVEN
+            givenNonVariationAttributesEnabled(true)
+            givenStoredProductAttributes(listOf(VARIATION_GLOBAL_ATTRIBUTE), ProductType.VARIABLE)
+            viewModel.start()
+
+            // WHEN
+            val state = viewModel.getAttributeSettingsState(
+                VARIATION_GLOBAL_ATTRIBUTE.id,
+                "Color",
+                isVariationCreation = true
+            )
+
+            // THEN
+            Assertions.assertThat(state?.isUsedForVariationsShown).isFalse()
+        }
+
     private fun givenNonVariationAttributesEnabled(isEnabled: Boolean) {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.NON_VARIATION_PRODUCT_ATTRIBUTES)).thenReturn(isEnabled)
     }
 
     private suspend fun givenStoredProductAttributes(
         attributes: List<ProductAttribute>,
-        type: ProductType = ProductType.SIMPLE
+        type: ProductType = ProductType.SIMPLE,
+        numVariations: Int = 0
     ) {
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
         val storedProductAggregate = productAggregate.copy(
-            product = productAggregate.product.copy(attributes = attributes, type = type.value)
+            product = productAggregate.product.copy(
+                attributes = attributes,
+                type = type.value,
+                numVariations = numVariations
+            )
         )
         doReturn(storedProductAggregate).whenever(productRepository).getProductAggregate(any())
     }
