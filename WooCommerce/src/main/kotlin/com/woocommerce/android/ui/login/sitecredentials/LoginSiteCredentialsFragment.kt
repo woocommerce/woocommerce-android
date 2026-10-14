@@ -8,7 +8,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.error.ApplicationPasswordsDisabledDialogFragment
@@ -20,7 +19,6 @@ import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsView
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowNonWooErrorScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowResetPasswordScreen
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
-import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
@@ -98,8 +96,7 @@ class LoginSiteCredentialsFragment : Fragment() {
                     passwordTutorialListener?.onApplicationPasswordHelpRequired(
                         verifiedLoginUrl = it.verifiedLoginUrl,
                         applicationPasswordAuthorizationUrl = it.applicationPasswordAuthorizationUrl,
-                        errorMessage = it.errorMessage,
-                        unexpectedResponse = it.unexpectedResponse
+                        errorMessage = it.errorMessage
                     )
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(it.message)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -131,23 +128,13 @@ class LoginSiteCredentialsFragment : Fragment() {
                 ?.let { viewModel.onWebAuthorizationUrlLoaded(it) }
                 ?: viewModel.onPasswordTutorialAborted()
         }
-
-        parentFragmentManager.setFragmentResultListener(
-            ApplicationPasswordTutorialFragment.RETRY_LOGIN_RESULT,
-            viewLifecycleOwner
-        ) { _, result ->
-            result.parcelable<LoginUnexpectedResponseFailure>(
-                ApplicationPasswordTutorialFragment.RETRY_LOGIN_RESULT_FAILURE_KEY
-            )?.let { viewModel.onApplicationPasswordTutorialRetryRequested(it) }
-        }
     }
 
     interface Listener {
         fun onApplicationPasswordHelpRequired(
             verifiedLoginUrl: String?,
             applicationPasswordAuthorizationUrl: String,
-            errorMessage: String,
-            unexpectedResponse: LoginUnexpectedResponseFailure?
+            errorMessage: String
         )
     }
 }

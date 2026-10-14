@@ -37,7 +37,6 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.web.WCWebView
 import com.woocommerce.android.ui.compose.component.web.WCWebViewClient
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
-import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseAlert
 import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
@@ -59,13 +58,6 @@ fun ApplicationPasswordTutorialScreen(viewModel: ApplicationPasswordTutorialView
         onPageLoaded = viewModel::onWebPageLoaded,
         onNavigationButtonClicked = viewModel::onNavigationButtonClicked
     )
-
-    if (viewState.value?.unexpectedResponse != null) {
-        LoginUnexpectedResponseAlert(
-            onRetryClick = viewModel::onUnexpectedResponseRetryClick,
-            onDismissClick = viewModel::onUnexpectedResponseDismissClick
-        )
-    }
 }
 
 @Composable

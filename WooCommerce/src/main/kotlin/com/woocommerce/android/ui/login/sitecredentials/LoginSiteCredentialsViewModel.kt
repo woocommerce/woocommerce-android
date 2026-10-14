@@ -293,13 +293,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         }
     }
 
-    fun onApplicationPasswordTutorialRetryRequested(failure: LoginUnexpectedResponseFailure) {
-        fetchedSiteId.value = -1
-        launch {
-            unexpectedResponseTracker.trackRetryResult(failure, isSuccess = retryLogin(failure.step))
-        }
-    }
-
     fun onResetPasswordClick() {
         triggerEvent(ShowResetPasswordScreen(siteAddress))
     }
@@ -934,7 +927,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     data class ShowApplicationPasswordTutorialScreen(
         val verifiedLoginUrl: String?,
         val applicationPasswordAuthorizationUrl: String,
-        val errorMessage: String,
-        val unexpectedResponse: LoginUnexpectedResponseFailure? = null
+        val errorMessage: String
     ) : MultiLiveEvent.Event()
 }
