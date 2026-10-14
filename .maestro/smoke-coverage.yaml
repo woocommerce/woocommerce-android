@@ -14,7 +14,7 @@ items:
     manual: "Requires APK version swap and logged-in state migration outside Maestro."
   - id: install.fresh
     title: Fresh install smoke
-    manual: "The runner installs over the existing app instead of uninstalling it first."
+    flow: .maestro/flows/login_successful.yaml
 
   - id: login.help
     title: Login help section
