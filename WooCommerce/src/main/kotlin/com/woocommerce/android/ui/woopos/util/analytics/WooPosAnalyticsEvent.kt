@@ -877,6 +877,24 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
+        data class ItemsFetched(
+            val returnedItemsCount: Int,
+            val millisecondsSinceRequestSent: Long?,
+        ) : Event() {
+            override val name: String = "items_fetched"
+
+            init {
+                addProperties(
+                    buildMap {
+                        put("returned_items_count", returnedItemsCount)
+                        put(ItemsListItemType.ITEM_TYPE, ItemsListItemType.PRODUCT.toString())
+                        put("sync_strategy", "remote")
+                        millisecondsSinceRequestSent?.let { put("milliseconds_since_request_sent", it) }
+                    }
+                )
+            }
+        }
+
         data class ItemsNextPageLoaded(
             val source: ItemsListSource,
             val sourceType: ItemsListSourceType
