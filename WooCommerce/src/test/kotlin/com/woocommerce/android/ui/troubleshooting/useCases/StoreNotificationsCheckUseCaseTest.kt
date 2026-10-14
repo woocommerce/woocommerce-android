@@ -107,7 +107,7 @@ class StoreNotificationsCheckUseCaseTest : BaseUnitTest() {
 
     @Test
     fun `given push registration exists, when check runs, then emit success`() = testBlocking {
-        whenever(pushNotificationRegistrationStatus(TEST_SITE_ID))
+        whenever(pushNotificationRegistrationStatus(site))
             .thenReturn(PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY)
 
         val stateEvents = sut.checkPushRegistration().toList()
@@ -117,7 +117,7 @@ class StoreNotificationsCheckUseCaseTest : BaseUnitTest() {
 
     @Test
     fun `given push registration is missing, when check runs, then emit registration failure`() = testBlocking {
-        whenever(pushNotificationRegistrationStatus(TEST_SITE_ID))
+        whenever(pushNotificationRegistrationStatus(site))
             .thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
 
         val stateEvents = sut.checkPushRegistration().toList()
@@ -131,7 +131,7 @@ class StoreNotificationsCheckUseCaseTest : BaseUnitTest() {
     fun `given push registration succeeds, when registering push notifications, then return success`() =
         testBlocking {
             whenever(appPrefsWrapper.getFCMToken()).thenReturn("token")
-            whenever(pushNotificationRegistrationStatus(TEST_SITE_ID))
+            whenever(pushNotificationRegistrationStatus(site))
                 .thenReturn(PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY)
 
             val result = sut.registerPushNotifications()

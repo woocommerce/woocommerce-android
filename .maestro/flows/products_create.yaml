@@ -1,5 +1,5 @@
 # Smoke Test: Products - Create and publish a full product
-# p2: products.create, products.detail.description, products.detail.price, products.detail.inventory, products.detail.shipping, products.detail.type, products.detail.tags, products.detail.short-description, products.detail.linked, products.detail.downloads
+# p2: products.create, products.detail.description, products.detail.price, products.detail.inventory, products.detail.categories, products.detail.shipping, products.detail.type, products.detail.tags, products.detail.short-description, products.detail.linked, products.detail.downloads
 # P2 ref: Products > Create product
 #
 # Exercises the full happy-path creation flow for a run-owned Simple physical

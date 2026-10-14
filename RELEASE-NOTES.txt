@@ -4,10 +4,15 @@
 
 25.9
 -----
+- [**] Card readers WisePad 3, M2 and Chipper 2X can now connect over USB [https://github.com/woocommerce/woocommerce-android/pull/16680]
+- [*] Fixed duplicate notifications for a store using store push notifications while another store with an older WooCommerce version was selected [https://github.com/woocommerce/woocommerce-android/pull/16654]
+- [*] Editing a product attribute's terms or name no longer moves it to the end of the list or changes the settings of other attributes [https://github.com/woocommerce/woocommerce-android/pull/16671]
 - [*] Card Reader Mode on the phone now asks to turn on NFC and opens the NFC settings when NFC is off [https://github.com/woocommerce/woocommerce-android/pull/16666]
 - [*] The Blaze campaign list now shows an outstanding balance notice with a Pay button for each unpaid order [https://github.com/woocommerce/woocommerce-android/pull/16612]
+- [*] Shipping Labels: The recipient phone number is now optional for domestic shipments. It's still required for international shipments and FedEx services. [https://github.com/woocommerce/woocommerce-android/pull/16665]
 - [*] Closing the custom date range picker in order filters without saving no longer leaves Custom Range selected [https://github.com/woocommerce/woocommerce-android/pull/16679]
 - [*] In-person payment collection and Interac refunds are now hidden for orders sold as a subscription, including plan-based and variable subscriptions the previous check missed [https://github.com/woocommerce/woocommerce-android/pull/16563]
+- [*] [Woo POS] Added a Payments section to POS settings with an option to turn off the payment success sound [https://github.com/woocommerce/woocommerce-android/pull/16701]
 
 25.8
 -----

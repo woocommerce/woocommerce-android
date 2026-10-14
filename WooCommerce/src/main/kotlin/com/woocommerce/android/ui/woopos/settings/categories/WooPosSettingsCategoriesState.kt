@@ -25,6 +25,11 @@ enum class WooPosSettingsCategory(
         R.string.woopos_settings_hardware_category_subtitle,
         WooPosSettingsDetailDestination.Hardware.Overview
     ),
+    PAYMENTS(
+        R.string.woopos_settings_payments_category,
+        R.string.woopos_settings_payments_category_subtitle,
+        WooPosSettingsDetailDestination.Payments.Overview
+    ),
     LOCAL_CATALOG(
         R.string.woopos_settings_local_catalog_category,
         R.string.woopos_settings_local_catalog_category_subtitle,

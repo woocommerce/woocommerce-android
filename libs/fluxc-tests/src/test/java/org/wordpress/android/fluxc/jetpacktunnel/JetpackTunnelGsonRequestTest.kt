@@ -248,7 +248,7 @@ class JetpackTunnelGsonRequestTest {
     }
 
     @Test
-    fun `given a raw body without the store status, when it is delivered, then the transport status is used`() {
+    fun `given a raw body without the store status, when it is delivered, then it has no store response details`() {
         val receivedErrors = mutableListOf<WPComGsonNetworkError>()
         val request = buildRequest("POST", "/wc/v3/orders", receivedErrors)
         val responseJson = """
@@ -263,10 +263,7 @@ class JetpackTunnelGsonRequestTest {
 
         request.deliverError(VolleyError(NetworkResponse(429, responseJson.toByteArray(), emptyMap(), true)))
 
-        val details = receivedErrors.single().unexpectedStoreResponse
-        assertEquals(429, details?.statusCode)
-        assertEquals("POST /wc/v3/orders", details?.requestType)
-        assertEquals("429 Too Many Requests", details?.excerpt)
+        assertNull(receivedErrors.single().unexpectedStoreResponse)
     }
 
     @Test

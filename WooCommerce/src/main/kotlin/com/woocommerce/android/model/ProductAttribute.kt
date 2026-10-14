@@ -13,7 +13,8 @@ data class ProductAttribute(
     val name: String,
     val terms: List<String>,
     val isVisible: Boolean = DEFAULT_VISIBLE,
-    val isVariation: Boolean = DEFAULT_IS_VARIATION
+    val isVariation: Boolean = DEFAULT_IS_VARIATION,
+    val position: Int = 0
 ) : Parcelable {
     companion object {
         const val DEFAULT_VISIBLE = true
@@ -35,7 +36,8 @@ data class ProductAttribute(
             name = name,
             visible = isVisible,
             options = terms.toMutableList(),
-            variation = isVariation
+            variation = isVariation,
+            position = position
         )
 }
 
@@ -45,6 +47,7 @@ fun WCProductModel.ProductAttribute.toAppModel(): ProductAttribute {
         name = this.name,
         terms = this.options,
         isVisible = this.visible,
-        isVariation = this.variation
+        isVariation = this.variation,
+        position = this.position
     )
 }

@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -115,10 +114,10 @@ class MainSettingsPresenterTest : BaseUnitTest() {
     fun `given smarter notifications enabled for Woo-driven site, when notifications button clicked, then open smarter settings`() =
         testBlocking {
             setup {
-                val site = mock<SiteModel> { on { siteId } doReturn SITE_ID }
+                val site = mock<SiteModel>()
                 whenever(featureFlagRepository.isEnabled(FeatureFlag.SMARTER_NOTIFICATIONS)).thenReturn(true)
                 whenever(selectedSite.getIfExists()).thenReturn(site)
-                whenever(pushNotificationRepository.isWooPushTokenRegisteredForSite(SITE_ID)).thenReturn(true)
+                whenever(pushNotificationRepository.isWooPushTokenRegisteredForSite(site)).thenReturn(true)
             }
 
             presenter.setupNotificationsOption()
@@ -132,10 +131,10 @@ class MainSettingsPresenterTest : BaseUnitTest() {
     fun `given smarter notifications enabled for non-Woo-driven site, when notifications button clicked, then open device notification settings`() =
         testBlocking {
             setup {
-                val site = mock<SiteModel> { on { siteId } doReturn SITE_ID }
+                val site = mock<SiteModel>()
                 whenever(featureFlagRepository.isEnabled(FeatureFlag.SMARTER_NOTIFICATIONS)).thenReturn(true)
                 whenever(selectedSite.getIfExists()).thenReturn(site)
-                whenever(pushNotificationRepository.isWooPushTokenRegisteredForSite(SITE_ID)).thenReturn(false)
+                whenever(pushNotificationRepository.isWooPushTokenRegisteredForSite(site)).thenReturn(false)
                 whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
                     .thenReturn(NewOrderNotificationSoundStatus.DEFAULT)
             }
@@ -152,10 +151,10 @@ class MainSettingsPresenterTest : BaseUnitTest() {
     fun `given smarter notifications enabled for non-Woo-driven site with modified sound, when notifications button clicked, then open notifications settings`() =
         testBlocking {
             setup {
-                val site = mock<SiteModel> { on { siteId } doReturn SITE_ID }
+                val site = mock<SiteModel>()
                 whenever(featureFlagRepository.isEnabled(FeatureFlag.SMARTER_NOTIFICATIONS)).thenReturn(true)
                 whenever(selectedSite.getIfExists()).thenReturn(site)
-                whenever(pushNotificationRepository.isWooPushTokenRegisteredForSite(SITE_ID)).thenReturn(false)
+                whenever(pushNotificationRepository.isWooPushTokenRegisteredForSite(site)).thenReturn(false)
                 whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
                     .thenReturn(NewOrderNotificationSoundStatus.SOUND_MODIFIED)
             }
@@ -171,10 +170,10 @@ class MainSettingsPresenterTest : BaseUnitTest() {
     fun `given smarter notifications enabled for Woo-driven site, when settings shown, then show smarter option`() =
         testBlocking {
             setup {
-                val site = mock<SiteModel> { on { siteId } doReturn SITE_ID }
+                val site = mock<SiteModel>()
                 whenever(featureFlagRepository.isEnabled(FeatureFlag.SMARTER_NOTIFICATIONS)).thenReturn(true)
                 whenever(selectedSite.getIfExists()).thenReturn(site)
-                whenever(pushNotificationRepository.isWooPushTokenRegisteredForSite(SITE_ID)).thenReturn(true)
+                whenever(pushNotificationRepository.isWooPushTokenRegisteredForSite(site)).thenReturn(true)
             }
 
             presenter.setupNotificationsOption()
@@ -187,10 +186,10 @@ class MainSettingsPresenterTest : BaseUnitTest() {
     fun `given smarter notifications enabled for non-Woo-driven site, when settings shown, then show default option`() =
         testBlocking {
             setup {
-                val site = mock<SiteModel> { on { siteId } doReturn SITE_ID }
+                val site = mock<SiteModel>()
                 whenever(featureFlagRepository.isEnabled(FeatureFlag.SMARTER_NOTIFICATIONS)).thenReturn(true)
                 whenever(selectedSite.getIfExists()).thenReturn(site)
-                whenever(pushNotificationRepository.isWooPushTokenRegisteredForSite(SITE_ID)).thenReturn(false)
+                whenever(pushNotificationRepository.isWooPushTokenRegisteredForSite(site)).thenReturn(false)
             }
 
             presenter.setupNotificationsOption()
@@ -269,9 +268,5 @@ class MainSettingsPresenterTest : BaseUnitTest() {
         presenter.dropView()
         advanceUntilIdle()
         assertThat(shouldShowPushNotificationOption.subscriptionCount.value).isEqualTo(0)
-    }
-
-    companion object {
-        private const val SITE_ID = 123L
     }
 }

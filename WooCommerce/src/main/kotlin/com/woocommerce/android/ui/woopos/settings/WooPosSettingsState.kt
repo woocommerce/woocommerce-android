@@ -76,6 +76,20 @@ sealed class WooPosSettingsDetailDestination : Parcelable {
         }
     }
 
+    sealed class Payments : WooPosSettingsDetailDestination() {
+        @Parcelize
+        data object Overview : Payments() {
+            @IgnoredOnParcel
+            override val titleRes: Int = R.string.woopos_settings_payments_category
+
+            @IgnoredOnParcel
+            override val parentDestination: WooPosSettingsDetailDestination? = null
+
+            @IgnoredOnParcel
+            override val childDestinations: List<WooPosSettingsDetailDestination> = emptyList()
+        }
+    }
+
     sealed class LocalCatalog : WooPosSettingsDetailDestination() {
         @Parcelize
         data object Overview : LocalCatalog() {

@@ -10,6 +10,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.utils.PreferenceUtils
 
@@ -18,6 +19,7 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
     private val prefsWrapper: PreferenceUtils.PreferenceUtilsWrapper = mock()
     private val pushNotificationRepository: PushNotificationRepository = mock()
     private val sharedPreferences: SharedPreferences = mock()
+    private val testSite = SiteModel().apply { siteId = TEST_SITE_ID }
 
     private lateinit var sut: PushNotificationRegistrationStatus
 
@@ -34,9 +36,9 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
     @Test
     fun `given both Woo and WPCom registered, when invoked, then returns REGISTERED_IN_BOTH`() = testBlocking {
         setupWpComRegistration(isRegistered = true)
-        setupWooRegistration(siteId = TEST_SITE_ID, isRegistered = true)
+        setupWooRegistration(site = testSite, isRegistered = true)
 
-        val result = sut(TEST_SITE_ID)
+        val result = sut(testSite)
 
         assertThat(result).isEqualTo(Status.REGISTERED_BOTH)
     }
@@ -44,9 +46,9 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
     @Test
     fun `given only Woo registered, when invoked, then returns WOO_REGISTERED`() = testBlocking {
         setupWpComRegistration(isRegistered = false)
-        setupWooRegistration(siteId = TEST_SITE_ID, isRegistered = true)
+        setupWooRegistration(site = testSite, isRegistered = true)
 
-        val result = sut(TEST_SITE_ID)
+        val result = sut(testSite)
 
         assertThat(result).isEqualTo(Status.REGISTERED_WOO_ONLY)
     }
@@ -54,9 +56,9 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
     @Test
     fun `given only WPCom registered, when invoked, then returns WPCOM_REGISTERED`() = testBlocking {
         setupWpComRegistration(isRegistered = true)
-        setupWooRegistration(siteId = TEST_SITE_ID, isRegistered = false)
+        setupWooRegistration(site = testSite, isRegistered = false)
 
-        val result = sut(TEST_SITE_ID)
+        val result = sut(testSite)
 
         assertThat(result).isEqualTo(Status.REGISTERED_WPCOM_ONLY)
     }
@@ -64,9 +66,9 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
     @Test
     fun `given neither registered, when invoked, then returns UNREGISTERED`() = testBlocking {
         setupWpComRegistration(isRegistered = false)
-        setupWooRegistration(siteId = TEST_SITE_ID, isRegistered = false)
+        setupWooRegistration(site = testSite, isRegistered = false)
 
-        val result = sut(TEST_SITE_ID)
+        val result = sut(testSite)
 
         assertThat(result).isEqualTo(Status.UNREGISTERED)
     }
@@ -93,9 +95,9 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
     fun `given WPCom device id is empty string, when invoked, then treats as not registered`() = testBlocking {
         whenever(sharedPreferences.getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null))
             .thenReturn("")
-        setupWooRegistration(siteId = TEST_SITE_ID, isRegistered = false)
+        setupWooRegistration(site = testSite, isRegistered = false)
 
-        val result = sut(TEST_SITE_ID)
+        val result = sut(testSite)
 
         assertThat(result).isEqualTo(Status.UNREGISTERED)
     }
@@ -106,8 +108,8 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
             .thenReturn(deviceId)
     }
 
-    private fun setupWooRegistration(siteId: Long, isRegistered: Boolean) {
-        whenever(pushNotificationRepository.observeWooPushTokenRegisteredForSite(siteId))
+    private fun setupWooRegistration(site: SiteModel, isRegistered: Boolean) {
+        whenever(pushNotificationRepository.observeWooPushTokenRegisteredForSite(site))
             .thenReturn(flowOf(isRegistered))
     }
 
