@@ -338,6 +338,9 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         val shouldDisplayEuProductIdentifiers: Boolean
             get() = asCustomData.asksForEuProductIdentifiers
 
+        val shouldDisplayPluginUpdateNotice: Boolean
+            get() = asCustomData.asksToUpdatePluginForEuProductIdentifiers
+
         val isAddCustomsButtonEnabled: Boolean
             get() = itnValue.isValid &&
                 (contentType != ContentType.OTHER || otherContentInput.isValid) &&

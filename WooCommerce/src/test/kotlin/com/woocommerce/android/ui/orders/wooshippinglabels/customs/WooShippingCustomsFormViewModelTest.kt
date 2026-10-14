@@ -467,7 +467,6 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
             )
             val state = viewModel.viewState.runAndCaptureValues { advanceUntilIdle() }.last()
 
-            assertThat(state.shouldDisplayEuProductIdentifiers).isFalse
             assertThat(state.isAddCustomsButtonEnabled).isTrue
         }
 
@@ -478,6 +477,7 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
         val state = viewModel.viewState.runAndCaptureValues { advanceUntilIdle() }.last()
 
         assertThat(state.shouldDisplayEuProductIdentifiers).isTrue
+        assertThat(state.shouldDisplayPluginUpdateNotice).isFalse
         assertThat(state.isAddCustomsButtonEnabled).isFalse
 
         val validState = viewModel.viewState.runAndCaptureValues {
@@ -490,6 +490,31 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(validState.isAddCustomsButtonEnabled).isTrue
+    }
+
+    @Test
+    fun `given outdated plugin and merchandise, when loaded, then show notice and hide identifiers`() = testBlocking {
+        createSut(
+            defaultCustomsData.copy(euProductIdentifiersRequirement = EuProductIdentifiersRequirement.PLUGIN_OUTDATED)
+        )
+        val state = viewModel.viewState.runAndCaptureValues { advanceUntilIdle() }.last()
+
+        assertThat(state.shouldDisplayPluginUpdateNotice).isTrue
+        assertThat(state.shouldDisplayEuProductIdentifiers).isFalse
+    }
+
+    @Test
+    fun `given outdated plugin and Documents, when loaded, then hide notice and identifiers`() = testBlocking {
+        createSut(
+            defaultCustomsData.copy(
+                contentType = ContentType.DOCUMENTS,
+                euProductIdentifiersRequirement = EuProductIdentifiersRequirement.PLUGIN_OUTDATED
+            )
+        )
+        val state = viewModel.viewState.runAndCaptureValues { advanceUntilIdle() }.last()
+
+        assertThat(state.shouldDisplayPluginUpdateNotice).isFalse
+        assertThat(state.shouldDisplayEuProductIdentifiers).isFalse
     }
 
     @Test

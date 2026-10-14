@@ -59,8 +59,9 @@ fun WooShippingCustomsFormScreen(viewModel: WooShippingCustomsFormViewModel) {
         shouldDisplayContentTypeInput = viewState?.shouldDisplayContentTypeInput ?: false,
         shouldDisplayRestrictionTypeInput = viewState?.shouldDisplayRestrictionTypeInput ?: false,
         shouldDisplayEuProductIdentifiers = viewState?.shouldDisplayEuProductIdentifiers ?: false,
+        shouldDisplayPluginUpdateNotice = viewState?.shouldDisplayPluginUpdateNotice ?: false,
         shippingProducts = viewState?.shippingProducts ?: emptyList(),
-        currencySymbol = viewState?.currencySymbol ?: "",
+        currencySymbol = viewState?.currencySymbol.orEmpty(),
         weightUnit = viewState?.weightUnit ?: "",
         onContentTypeClick = viewModel::onContentTypeClick,
         onRestrictionTypeClick = viewModel::onRestrictionTypeClick,
@@ -92,6 +93,7 @@ fun WooShippingCustomsFormScreen(
     shouldDisplayContentTypeInput: Boolean,
     shouldDisplayRestrictionTypeInput: Boolean,
     shouldDisplayEuProductIdentifiers: Boolean,
+    shouldDisplayPluginUpdateNotice: Boolean,
     shippingProducts: List<WooShippingCustomsProductUIModel>,
     currencySymbol: String,
     weightUnit: String,
@@ -121,6 +123,10 @@ fun WooShippingCustomsFormScreen(
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
         ) {
+            AnimatedVisibility(visible = shouldDisplayPluginUpdateNotice) {
+                WooShippingCustomsPluginUpdateNotice(modifier = Modifier.padding(bottom = 16.dp))
+            }
+
             WCOutlinedSpinner(
                 onClick = onContentTypeClick,
                 value = stringResource(id = contentType.resourceId),
@@ -280,6 +286,7 @@ fun PreviewWooShippingCustomsFormScreen() {
                 shouldDisplayContentTypeInput = true,
                 shouldDisplayRestrictionTypeInput = false,
                 shouldDisplayEuProductIdentifiers = true,
+                shouldDisplayPluginUpdateNotice = false,
                 shippingProducts = listOf(
                     WooShippingCustomsProductUIModel(
                         productId = 0,

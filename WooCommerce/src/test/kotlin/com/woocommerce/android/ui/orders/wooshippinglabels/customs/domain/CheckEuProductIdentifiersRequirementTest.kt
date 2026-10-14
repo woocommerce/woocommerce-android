@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiers
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiersRequirement.NOT_REQUIRED
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiersRequirement.PLUGIN_OUTDATED
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiersRequirement.REQUIRED
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.CustomsRequirementsResponse
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
@@ -16,9 +17,12 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NOT_FOUND
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_NOT_FOUND
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_ID
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -56,9 +60,16 @@ class CheckEuProductIdentifiersRequirementTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when customs requirement check fails, then treat it as not required`() = testBlocking {
+    fun `when the order is not found, then treat the requirement as not required`() = testBlocking {
         whenever(repository.fetchCustomsRequirements(site, ORDER_ID, ORIGIN_ID)).thenReturn(
-            WooResult(WooError(type = GENERIC_ERROR, original = UNKNOWN, message = "Request failed"))
+            WooResult(
+                WooError(
+                    type = INVALID_ID,
+                    original = NOT_FOUND,
+                    message = "Order not found.",
+                    apiErrorCode = "woocommerce_rest_shop_order_invalid_id"
+                )
+            )
         )
 
         val result = sut(ORDER_ID, ORIGIN_ID)
@@ -67,6 +78,20 @@ class CheckEuProductIdentifiersRequirementTest : BaseUnitTest() {
         assertThat(result.productIdentifiers).isEmpty()
         verify(repository, never()).fetchEuProductIdentifiers(site, ORDER_ID)
     }
+
+    @Test
+    fun `when customs requirement endpoint is missing, then report outdated plugin without fetching config`() =
+        testBlocking {
+            whenever(repository.fetchCustomsRequirements(site, ORDER_ID, ORIGIN_ID)).thenReturn(
+                WooResult(WooError(type = API_NOT_FOUND, original = UNKNOWN, message = "Endpoint not found"))
+            )
+
+            val result = sut(ORDER_ID, ORIGIN_ID)
+
+            assertThat(result.requirement).isEqualTo(PLUGIN_OUTDATED)
+            assertThat(result.productIdentifiers).isEmpty()
+            verify(repository, never()).fetchEuProductIdentifiers(site, ORDER_ID)
+        }
 
     @Test
     fun `when required identifiers cannot be loaded, then keep requirement and return an empty map`() = testBlocking {

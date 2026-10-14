@@ -19,6 +19,10 @@ data class CustomsData(
     val asksForEuProductIdentifiers: Boolean
         get() = euProductIdentifiersRequirement == EuProductIdentifiersRequirement.REQUIRED &&
             contentType != ContentType.DOCUMENTS
+
+    val asksToUpdatePluginForEuProductIdentifiers: Boolean
+        get() = euProductIdentifiersRequirement == EuProductIdentifiersRequirement.PLUGIN_OUTDATED &&
+            contentType != ContentType.DOCUMENTS
 }
 
 @Parcelize
@@ -52,7 +56,8 @@ data class EuProductIdentifiers(
 enum class EuProductIdentifiersRequirement {
     PENDING,
     REQUIRED,
-    NOT_REQUIRED
+    NOT_REQUIRED,
+    PLUGIN_OUTDATED
 }
 
 enum class ContentType(val resourceId: Int) {

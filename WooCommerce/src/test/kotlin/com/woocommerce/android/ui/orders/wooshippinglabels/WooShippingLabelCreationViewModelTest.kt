@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBann
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiers
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiersRequirement.NOT_REQUIRED
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiersRequirement.PLUGIN_OUTDATED
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiersRequirement.REQUIRED
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.CheckEuProductIdentifiersRequirement
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.CheckEuProductIdentifiersRequirement.CheckResult
@@ -1098,6 +1099,18 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         verifyNoInteractions(checkEuProductIdentifiersRequirement)
     }
+
+    @Test
+    fun `when requirement check reports outdated plugin, then customs remain available after validation`() =
+        testBlocking {
+            givenCustomsRequired { CheckResult(PLUGIN_OUTDATED, emptyMap()) }
+
+            createViewModel()
+            advanceUntilIdle()
+
+            assertThat(customsState).isInstanceOf(CustomsState.DataAvailable::class.java)
+            assertThat(customsData.euProductIdentifiersRequirement).isEqualTo(PLUGIN_OUTDATED)
+        }
 
     @Test
     fun `when prefilling EU identifiers, then keep entered SKU and no barcode choice`() = testBlocking {
