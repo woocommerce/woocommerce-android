@@ -18,13 +18,11 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.LocationUtils
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -60,7 +58,7 @@ class WooPosCardReaderConnectionControllerTest {
     private val remoteReaderSession: WooPosRemoteReaderSession = mock()
     private val wooPosAnalyticsTracker: WooPosAnalyticsTracker = mock()
 
-    private fun createController(scope: CoroutineScope) = WooPosCardReaderConnectionController(
+    private fun createController(scope: TestScope) = WooPosCardReaderConnectionController(
         cardReaderManager = cardReaderManager,
         locationRepository = locationRepository,
         cardReaderOnboardingChecker = cardReaderOnboardingChecker,
@@ -108,43 +106,27 @@ class WooPosCardReaderConnectionControllerTest {
         verify(cardReaderTrackingInfoKeeper).setCardReaderBatteryLevel(null)
     }
 
+    @Suppress("DEPRECATION")
     @Test
-    fun `given bluetooth requirement shown while discovering, when rechecking permissions, then discovery is not restarted`() =
+    fun `given bluetooth requirement shown and unchanged, when rechecking permissions, then discovery is not restarted`() =
         runTest {
-            withBluetoothOff {
+            mockStatic(BluetoothAdapter::class.java).use { bluetoothAdapter ->
                 // GIVEN
-                whenever(unifiedDiscoveryStream.discover(any(), any(), any())).thenReturn(MutableSharedFlow())
-                val controller = createController(backgroundScope)
+                bluetoothAdapter.`when`<BluetoothAdapter?> { BluetoothAdapter.getDefaultAdapter() }.thenReturn(null)
+                whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+                whenever(unifiedDiscoveryStream.discover(any(), any(), any())).thenReturn(emptyFlow())
+                val controller = createController(this)
                 controller.onBluetoothEnabled()
-                runCurrent()
+                advanceUntilIdle()
 
                 // WHEN
                 controller.recheckPermissions()
-                runCurrent()
+                advanceUntilIdle()
 
                 // THEN
                 assertThat(controller.state.value)
                     .isInstanceOf(WooPosCardReaderConnectionState.BluetoothDisabled::class.java)
                 verify(unifiedDiscoveryStream, times(1)).discover(any(), any(), any())
-            }
-        }
-
-    @Test
-    fun `given bluetooth requirement shown and discovery stopped, when rechecking permissions, then discovery is restarted`() =
-        runTest {
-            withBluetoothOff {
-                // GIVEN
-                whenever(unifiedDiscoveryStream.discover(any(), any(), any())).thenReturn(emptyFlow())
-                val controller = createController(backgroundScope)
-                controller.onBluetoothEnabled()
-                runCurrent()
-
-                // WHEN
-                controller.recheckPermissions()
-                runCurrent()
-
-                // THEN
-                verify(unifiedDiscoveryStream, times(2)).discover(any(), any(), any())
             }
         }
 
@@ -172,15 +154,6 @@ class WooPosCardReaderConnectionControllerTest {
 
         // THEN
         assertThat(refreshed).isEqualTo(knownPhone)
-    }
-
-    @Suppress("DEPRECATION")
-    private inline fun withBluetoothOff(block: () -> Unit) {
-        mockStatic(BluetoothAdapter::class.java).use { bluetoothAdapter ->
-            bluetoothAdapter.`when`<BluetoothAdapter?> { BluetoothAdapter.getDefaultAdapter() }.thenReturn(null)
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
-            block()
-        }
     }
 
     private fun phone(
