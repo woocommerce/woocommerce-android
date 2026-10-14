@@ -120,7 +120,7 @@ Existing wall-clock properties, units, checkout counter and reset behavior remai
 
 ## Ordinary remote product first page
 
-`items_fetched` is a new Android POS event for each successful ordinary remote product page 1 result, including an empty result. It excludes cached-only collection, canceled or failed requests, prepopulation, local DB reads, pagination and search. iOS already emits this event for its own remote first-page population; these populations and query filters are not identical.
+`items_fetched` is a new Android POS event for each successful ordinary remote product page 1 result, including an empty result. Cached emissions alone create no event. A remote request that succeeds before cancellation can emit even when the consumer observes only cached items, because the flow can prefetch its next result. It excludes canceled or failed requests, prepopulation, local DB reads, pagination and search. iOS already emits this event for its own remote first-page population; these populations and query filters are not identical.
 
 - `milliseconds_since_request_sent`: integer monotonic milliseconds around the remote store await, including request/response work and coroutine scheduling; excludes later POS mapping, cache/index work and rendering. Zero is retained; negative deltas omit the field.
 - `returned_items_count`: integer product response length before POS mapping/cache/index.
