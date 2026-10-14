@@ -94,6 +94,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         private const val HAS_RECONCILED_SITE_URL_KEY = "has-reconciled-site-url"
         private const val LOGIN_ENTRY_URL_KEY = "login-entry-url"
         private const val ADMIN_BASE_URL_KEY = "admin-base-url"
+        private const val TUTORIAL_AFTER_ALERT_KEY = "tutorial-after-alert"
     }
 
     private val wasSiteAddressNormalizedToHttps =
@@ -275,6 +276,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         unexpectedResponseTracker.trackActionTapped(failure, Action.RETRY)
         unexpectedResponse.value = null
         authError.value = null
+        if (savedStateHandle.remove<ApplicationPasswordTutorial>(TUTORIAL_AFTER_ALERT_KEY) != null) {
+            fetchedSiteId.value = -1
+        }
         launch {
             unexpectedResponseTracker.trackRetryResult(failure, isSuccess = retryLogin(failure.step))
         }
@@ -284,6 +288,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         val failure = unexpectedResponse.value ?: return
         unexpectedResponseTracker.trackActionTapped(failure, Action.DISMISS)
         unexpectedResponse.value = null
+        savedStateHandle.remove<ApplicationPasswordTutorial>(TUTORIAL_AFTER_ALERT_KEY)?.let {
+            triggerEvent(it.toEvent())
+        }
     }
 
     fun onApplicationPasswordTutorialRetryRequested(failure: LoginUnexpectedResponseFailure) {
@@ -520,11 +527,18 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         unexpectedResponseTracker.trackErrorShown(failure)
     }
 
-    private fun takeUnexpectedResponseForTutorial(): LoginUnexpectedResponseFailure? =
-        pendingUnexpectedResponse?.also {
-            pendingUnexpectedResponse = null
-            unexpectedResponseTracker.trackErrorShown(it)
+    /**
+     * After an unexpected response, the alert comes first and the browser login opens only when it's dismissed.
+     */
+    private fun showApplicationPasswordTutorial(tutorial: ApplicationPasswordTutorial) {
+        val failure = pendingUnexpectedResponse
+        if (failure == null) {
+            triggerEvent(tutorial.toEvent())
+        } else {
+            savedStateHandle[TUTORIAL_AFTER_ALERT_KEY] = tutorial
+            showUnexpectedResponse(failure)
         }
+    }
 
     private fun showNativeAuthenticationError(errorMessage: UiString) {
         authError.value = AuthenticationError(
@@ -555,12 +569,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                         ?: resourceProvider.getString(R.string.error_generic)
                     val applicationPasswordAuthorizationUrl = site.applicationPasswordAuthorizationUrl
                     if (!applicationPasswordAuthorizationUrl.isNullOrEmpty()) {
-                        triggerEvent(
-                            ShowApplicationPasswordTutorialScreen(
+                        showApplicationPasswordTutorial(
+                            ApplicationPasswordTutorial(
                                 verifiedLoginUrl = savedStateHandle.get<String>(LOGIN_ENTRY_URL_KEY),
                                 applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
-                                errorMessage = errorMessage,
-                                unexpectedResponse = takeUnexpectedResponseForTutorial()
+                                errorMessage = errorMessage
                             )
                         )
                     } else {
@@ -878,6 +891,19 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             LOGIN -> endpoints.loginEntryUrl
             ADMIN -> endpoints.adminBaseUrl
         }
+    }
+
+    @Parcelize
+    data class ApplicationPasswordTutorial(
+        val verifiedLoginUrl: String?,
+        val applicationPasswordAuthorizationUrl: String,
+        val errorMessage: String
+    ) : Parcelable {
+        fun toEvent() = ShowApplicationPasswordTutorialScreen(
+            verifiedLoginUrl = verifiedLoginUrl,
+            applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
+            errorMessage = errorMessage
+        )
     }
 
     @Parcelize

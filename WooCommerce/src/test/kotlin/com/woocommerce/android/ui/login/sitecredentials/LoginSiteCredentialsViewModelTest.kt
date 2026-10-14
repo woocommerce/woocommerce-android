@@ -884,7 +884,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given cookie login gets an unexpected response, when submitting, then open the browser login with the alert`() =
+    fun `given cookie login gets an unexpected response, when dismissing the alert, then open the browser login`() =
         testBlocking {
             whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
                 .thenReturn(Result.failure(unexpectedResponseError()))
@@ -893,10 +893,12 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.viewState.observeForTesting {
                 enterCredentialsAndContinue()
                 advanceUntilIdle()
+                assertThat(viewModel.viewState.value?.unexpectedResponse).isEqualTo(LOGIN_PAGE_FAILURE)
+                assertThat(viewModel.event.value is ShowApplicationPasswordTutorialScreen).isFalse()
+                viewModel.onUnexpectedResponseDismissClick()
             }
 
-            val event = viewModel.event.value as ShowApplicationPasswordTutorialScreen
-            assertThat(event.unexpectedResponse).isEqualTo(LOGIN_PAGE_FAILURE)
+            assertThat(viewModel.event.value).isInstanceOf(ShowApplicationPasswordTutorialScreen::class.java)
             assertThat(viewModel.viewState.value?.unexpectedResponse).isNull()
             verify(unexpectedResponseTracker).trackErrorShown(LOGIN_PAGE_FAILURE)
         }
@@ -920,7 +922,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the alert on the browser login, when trying again successfully, then log in and track it`() =
+    fun `given the login alert, when trying again successfully, then log in and track it`() =
         testBlocking {
             whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
                 .thenReturn(Result.failure(unexpectedResponseError()), Result.success(Unit))
@@ -929,7 +931,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.viewState.observeForTesting {
                 enterCredentialsAndContinue()
                 advanceUntilIdle()
-                viewModel.onApplicationPasswordTutorialRetryRequested(LOGIN_PAGE_FAILURE)
+                viewModel.onUnexpectedResponseRetryClick()
                 advanceUntilIdle()
             }
 
@@ -952,7 +954,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.viewState.observeForTesting {
                 enterCredentialsAndContinue()
                 advanceUntilIdle()
-                viewModel.onApplicationPasswordTutorialRetryRequested(LOGIN_PAGE_FAILURE)
+                viewModel.onUnexpectedResponseRetryClick()
                 advanceUntilIdle()
             }
 
@@ -960,7 +962,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the alert on the browser login, when trying again fails, then open it again and track it`() =
+    fun `given the login alert, when trying again fails, then show it again and track it`() =
         testBlocking {
             whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
                 .thenReturn(Result.failure(unexpectedResponseError()))
@@ -969,12 +971,11 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.viewState.observeForTesting {
                 enterCredentialsAndContinue()
                 advanceUntilIdle()
-                viewModel.onApplicationPasswordTutorialRetryRequested(LOGIN_PAGE_FAILURE)
+                viewModel.onUnexpectedResponseRetryClick()
                 advanceUntilIdle()
             }
 
-            val event = viewModel.event.value as ShowApplicationPasswordTutorialScreen
-            assertThat(event.unexpectedResponse).isEqualTo(LOGIN_PAGE_FAILURE)
+            assertThat(viewModel.viewState.value?.unexpectedResponse).isEqualTo(LOGIN_PAGE_FAILURE)
             verify(repository, times(2)).login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS)
             verify(unexpectedResponseTracker, times(2)).trackErrorShown(LOGIN_PAGE_FAILURE)
             verify(unexpectedResponseTracker).trackRetryResult(LOGIN_PAGE_FAILURE, isSuccess = false)
