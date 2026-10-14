@@ -439,8 +439,8 @@ flow_uses_wpcom_credentials() {
         continue
         ;;
     esac
-    # The runner logs in itself before a flow that changes the app language.
-    if grep -Eq "$wpcom_ref_pattern|subflows/(ensure_logged_in|login)\\.yaml" "$flow" || flow_has_any_tag "$flow" app_locale_de; then
+    # The runner logs in itself before a flow that changes the app language or upgrades the app.
+    if grep -Eq "$wpcom_ref_pattern|subflows/(ensure_logged_in|login)\\.yaml" "$flow" || flow_has_any_tag "$flow" app_locale_de app_upgrade; then
       return 0
     fi
   done
@@ -905,6 +905,25 @@ log_in_before_flow() {
   scrub_log "$log_file"
 }
 
+# Maestro cannot install apps, so for a flow tagged app_upgrade the runner installs the
+# latest release, logs in, and installs the --apk build over it. The flow reads
+# APP_UPGRADED to know the upgrade happened.
+APP_UPGRADED="no"
+upgrade_app() {
+  if [[ -z "$APK_PATH" ]]; then
+    echo "  no --apk was given, so there is no new build to upgrade to"
+    return 0
+  fi
+  if ! python3 "$ENSURE_RELEASE_APP_SCRIPT" --device "$DEVICE_SERIAL" --latest-release; then
+    echo "  could not install the latest release"
+    return 0
+  fi
+  log_in_before_flow "$1"
+  if python3 "$ENSURE_RELEASE_APP_SCRIPT" --device "$DEVICE_SERIAL" --upgrade-to "$APK_PATH"; then
+    APP_UPGRADED="yes"
+  fi
+}
+
 reset_app_locale() {
   if [[ -n "$APP_LOCALE_SET" ]]; then
     adb -s "$APP_LOCALE_SET" shell cmd locale set-app-locales "$APP_ID" --locales "" >/dev/null 2>&1 || true
@@ -1225,7 +1244,7 @@ run_one_attempt() {
   started=$(date +%s)
   set +e
   mkdir -p "$attempt_debug_dir"
-  "${MAESTRO_PROCESS_ENV_ARGS[@]}" maestro test "${MAESTRO_DEVICE_ARGS[@]}" "${MAESTRO_ENV_ARGS[@]}" \
+  "${MAESTRO_PROCESS_ENV_ARGS[@]}" maestro test "${MAESTRO_DEVICE_ARGS[@]}" "${MAESTRO_ENV_ARGS[@]}" -e "APP_UPGRADED=$APP_UPGRADED" \
     --debug-output "$attempt_debug_dir" --flatten-debug-output "$flow" >"$log_file" 2>&1
   exit_code=$?
   set -e
@@ -1330,6 +1349,10 @@ for repeat_index in $(seq 1 "$REPEAT"); do
     reset_app_locale
     if flow_has_any_tag "$flow" app_locale_de; then
       set_app_locale de-DE "$base"
+    fi
+    APP_UPGRADED="no"
+    if flow_has_any_tag "$flow" app_upgrade; then
+      upgrade_app "$base"
     fi
 
     first="$(run_one_attempt "$flow" "$base" 1 "$repeat_index")"
