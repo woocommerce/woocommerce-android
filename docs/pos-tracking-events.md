@@ -117,3 +117,13 @@ Failure/cancel clear captured confirmation; success closes only its captured col
 Customer reset replaces active pointers. Native retries can reuse open collections; duplicate/late-confirmed signals do not establish attempt identity.
 Cash uses its own collection and omits confirmation. Remote readers confirm only `requires_capture`/`succeeded`; simulation omits confirmation.
 Existing wall-clock properties, units, checkout counter and reset behavior remain unchanged. These metrics do not measure first display or card touch.
+
+## Ordinary remote product first page
+
+`items_fetched` is a new Android POS event for each successful ordinary remote product page 1 result, including an empty result. Cached emissions alone create no event. A remote request that succeeds before cancellation can emit even when the consumer observes only cached items, because the flow can prefetch its next result. It excludes canceled or failed requests, prepopulation, local DB reads, pagination and search. iOS already emits this event for its own remote first-page population; these populations and query filters are not identical.
+
+- `milliseconds_since_request_sent`: integer monotonic milliseconds around the remote store await, including request/response work and coroutine scheduling; excludes later POS mapping, cache/index work and rendering. Zero is retained; negative deltas omit the field.
+- `returned_items_count`: integer product response length before POS mapping/cache/index.
+- `item_type`: `product`; `sync_strategy`: `remote`.
+
+Android omits `total_items` because this API does not supply a store total. iOS retains its existing string store-total property from response headers. This event has no checkout timing version tag and does not measure startup or first visible content.

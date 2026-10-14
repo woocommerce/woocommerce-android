@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items
 
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.IAnalyticsEvent
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
@@ -24,23 +25,33 @@ import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsL
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosElapsedTime
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import junit.framework.TestCase.assertFalse
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -104,6 +115,8 @@ class WooPosProductsRemoteDataSourceTest {
         )
     )
 
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val elapsedTime: WooPosElapsedTime = mock()
     private val productStore: WCProductStore = mock()
     private val searchProductsDataSource: WooPosSearchProductsDataSource = mock()
     private val siteModel: SiteModel = mock()
@@ -1299,6 +1312,233 @@ class WooPosProductsRemoteDataSourceTest {
             verify(variationsCache).put(eq(productId), any())
         }
 
+    @Test
+    fun `given successful empty remote page one, when fetched, then event has integer request duration`() = runTest {
+        // GIVEN
+        whenever(elapsedTime.milliseconds()).thenReturn(100L, 125L)
+        whenever(productsIndex.getProductList()).thenReturn(emptyList())
+        stubRemoteProducts(WooResult(emptyList()))
+        val sut = createSUT()
+
+        // WHEN
+        sut.fetchFirstProductsPage(forceRefresh = true).toList()
+
+        // THEN
+        val event = argumentCaptor<IAnalyticsEvent>()
+        verify(analyticsTracker).track(event.capture())
+        assertThat(event.firstValue).isInstanceOf(WooPosAnalyticsEvent::class.java)
+        val actual = event.firstValue as WooPosAnalyticsEvent
+        assertThat(actual.name).isEqualTo("items_fetched")
+        assertThat(actual.properties).doesNotContainKey("total_items")
+        assertThat(actual.properties).doesNotContainKey("pos_timing_version")
+        assertThat(actual.properties).containsAllEntriesOf(
+            mapOf(
+                "returned_items_count" to 0,
+                "item_type" to "product",
+                "milliseconds_since_request_sent" to 25L,
+                "sync_strategy" to "remote",
+            )
+        )
+    }
+
+    @Test
+    fun `given delayed cached emission and mapping, when remote first page succeeds, then only request is timed`() = runTest {
+        // GIVEN
+        var now = 100L
+        whenever(elapsedTime.milliseconds()).thenAnswer { now }
+        whenever(productsCache.getAll()).thenAnswer {
+            now = 500L
+            sampleProducts
+        }
+        whenever(productsIndex.getProductList()).thenReturn(listOf(sampleProducts.first()))
+        whenever(productMapper.map(any())).thenAnswer {
+            now += 700L
+            sampleProducts.first()
+        }
+        stubRemoteProducts(WooResult(listOf(WCProductModel())))
+        whenever(
+            productStore.fetchProducts(
+                site = any(),
+                offset = any(),
+                pageSize = any(),
+                sortType = any(),
+                filterOptions = any(),
+                includeTypes = any(),
+                posProductsOnly = any(),
+            )
+        ).thenAnswer {
+            now += 50L
+            WooResult(listOf(WCProductModel()))
+        }
+
+        // WHEN
+        createSUT().fetchFirstProductsPage(forceRefresh = false).toList()
+
+        // THEN
+        val event = argumentCaptor<IAnalyticsEvent>()
+        verify(analyticsTracker).track(event.capture())
+        val actual = event.firstValue as WooPosAnalyticsEvent
+        assertThat(actual.properties).containsEntry("milliseconds_since_request_sent", 50L)
+        assertThat(actual.properties).containsEntry("returned_items_count", 1)
+    }
+
+    @Test
+    fun `given measured zero request duration, when first page succeeds, then zero is retained`() = runTest {
+        // GIVEN
+        whenever(elapsedTime.milliseconds()).thenReturn(100L)
+        whenever(productsIndex.getProductList()).thenReturn(emptyList())
+        stubRemoteProducts(WooResult(emptyList()))
+
+        // WHEN
+        createSUT().fetchFirstProductsPage(forceRefresh = true).toList()
+
+        // THEN
+        val event = argumentCaptor<IAnalyticsEvent>()
+        verify(analyticsTracker).track(event.capture())
+        assertThat((event.firstValue as WooPosAnalyticsEvent).properties)
+            .containsEntry("milliseconds_since_request_sent", 0L)
+    }
+
+    @Test
+    fun `given negative clock delta, when first page succeeds, then duration is omitted`() = runTest {
+        // GIVEN
+        whenever(elapsedTime.milliseconds()).thenReturn(100L, 90L)
+        whenever(productsIndex.getProductList()).thenReturn(emptyList())
+        stubRemoteProducts(WooResult(emptyList()))
+
+        // WHEN
+        createSUT().fetchFirstProductsPage(forceRefresh = true).toList()
+
+        // THEN
+        val event = argumentCaptor<IAnalyticsEvent>()
+        verify(analyticsTracker).track(event.capture())
+        assertThat((event.firstValue as WooPosAnalyticsEvent).properties)
+            .doesNotContainKey("milliseconds_since_request_sent")
+    }
+
+    @Test
+    fun `given failed remote request, when first page fetched, then no items fetched event`() = runTest {
+        // GIVEN
+        stubRemoteProducts(WooResult(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.UNKNOWN)))
+
+        // WHEN
+        createSUT().fetchFirstProductsPage(forceRefresh = true).toList()
+
+        // THEN
+        verifyNoInteractions(analyticsTracker)
+    }
+
+    @Test
+    fun `given cached result and held request, when only cache is collected, then no items fetched event`() = runTest {
+        // GIVEN
+        doSuspendableAnswer { awaitCancellation() }.whenever(productStore).fetchProducts(
+            site = any(),
+            offset = any(),
+            pageSize = any(),
+            sortType = any(),
+            filterOptions = any(),
+            includeTypes = any(),
+            posProductsOnly = any(),
+        )
+
+        // WHEN
+        createSUT().fetchFirstProductsPage(forceRefresh = false).first()
+
+        // THEN
+        verifyNoInteractions(analyticsTracker)
+    }
+
+    @Test
+    fun `given prepopulation, when remote preload succeeds, then no ordinary page event`() = runTest {
+        // GIVEN
+        stubRemoteProducts(WooResult(emptyList()))
+
+        // WHEN
+        createSUT().prepopulateCache()
+
+        // THEN
+        verifyNoInteractions(analyticsTracker, elapsedTime)
+    }
+
+    @Test
+    fun `given later page, when fetched after first page, then only first page has event and timer`() = runTest {
+        // GIVEN
+        whenever(elapsedTime.milliseconds()).thenReturn(100L, 125L)
+        whenever(productsIndex.getProductList()).thenReturn(emptyList())
+        whenever(productMapper.map(any())).thenReturn(sampleProducts.first())
+        whenever(
+            productStore.fetchProducts(
+                site = any(),
+                offset = any(),
+                pageSize = any(),
+                sortType = any(),
+                filterOptions = any(),
+                includeTypes = any(),
+                posProductsOnly = any(),
+            )
+        ).thenReturn(WooResult(List(25) { WCProductModel() }), WooResult(emptyList()))
+        val sut = createSUT()
+
+        // WHEN
+        sut.fetchFirstProductsPage(forceRefresh = true).toList()
+        sut.loadMoreProducts()
+
+        // THEN
+        verify(analyticsTracker, times(1)).track(any())
+        verify(elapsedTime, times(2)).milliseconds()
+        verify(productStore, times(2)).fetchProducts(
+            site = any(),
+            offset = any(),
+            pageSize = any(),
+            sortType = any(),
+            filterOptions = any(),
+            includeTypes = any(),
+            posProductsOnly = any(),
+        )
+    }
+
+    @Test
+    fun `given held remote request, when first page collection canceled, then no items fetched event`() = runTest {
+        // GIVEN
+        val started = CompletableDeferred<Unit>()
+        val response = CompletableDeferred<WooResult<List<WCProductModel>>>()
+        doSuspendableAnswer {
+            started.complete(Unit)
+            response.await()
+        }.whenever(productStore).fetchProducts(
+            site = any(),
+            offset = any(),
+            pageSize = any(),
+            sortType = any(),
+            filterOptions = any(),
+            includeTypes = any(),
+            posProductsOnly = any(),
+        )
+        val sut = createSUT()
+
+        // WHEN
+        val collection = launch { sut.fetchFirstProductsPage(forceRefresh = true).toList() }
+        started.await()
+        collection.cancelAndJoin()
+
+        // THEN
+        verifyNoInteractions(analyticsTracker)
+    }
+
+    private suspend fun stubRemoteProducts(result: WooResult<List<WCProductModel>>) {
+        whenever(
+            productStore.fetchProducts(
+                site = any(),
+                offset = any(),
+                pageSize = any(),
+                sortType = any(),
+                filterOptions = any(),
+                includeTypes = any(),
+                posProductsOnly = any(),
+            )
+        ).thenReturn(result)
+    }
+
     private fun createSUT(): WooPosProductsRemoteDataSource {
         val sut = WooPosProductsRemoteDataSource(
             productStore,
@@ -1312,7 +1552,9 @@ class WooPosProductsRemoteDataSourceTest {
             variationsCache,
             WooPosVariationsTypesFilterConfig(),
             variationMapper,
-            searchProductsDataSource
+            searchProductsDataSource,
+            analyticsTracker,
+            elapsedTime,
         )
         return sut
     }

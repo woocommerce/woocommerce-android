@@ -28,6 +28,9 @@ import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncWith
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncProductResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationResult
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsFetched
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosElapsedTime
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -414,6 +417,8 @@ class WooPosProductsRemoteDataSource @Inject constructor(
     private val variationFilterConfig: WooPosVariationsTypesFilterConfig,
     private val variationMapper: WooPosVariationMapper,
     private val searchProductsDataSource: WooPosSearchProductsDataSource,
+    private val analyticsTracker: WooPosAnalyticsTracker,
+    private val elapsedTime: WooPosElapsedTime,
 ) : WooPosProductsDataSourceInterface {
     private val canLoadMore = AtomicBoolean(false)
     private val offset = AtomicInteger(0)
@@ -474,7 +479,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
             emit(ProductsResult.Cached(cachedProducts))
         }
 
-        val fetchResult = fetchProducts()
+        val fetchResult = fetchProducts(trackFirstPage = true)
 
         if (fetchResult.isSuccess) {
             emit(ProductsResult.Remote(Result.success(fetchResult.getOrThrow())))
@@ -507,11 +512,13 @@ class WooPosProductsRemoteDataSource @Inject constructor(
         return products.sortedBy { it.name.lowercase() }
     }
 
-    private suspend fun fetchProducts(): Result<List<WooPosProductModel>> {
+    private suspend fun fetchProducts(trackFirstPage: Boolean = false): Result<List<WooPosProductModel>> {
+        val requestStart = if (trackFirstPage) elapsedTime.milliseconds() else null
         val result = fetchProductsFromStore(
             offset = offset.get(),
             pageSize = NORMAL_PAGE_SIZE
         )
+        val requestDuration = requestStart?.let { (elapsedTime.milliseconds() - it).takeIf { elapsed -> elapsed >= 0 } }
 
         return if (!result.isError) {
             val productsList = result.model ?: emptyList()
@@ -522,6 +529,9 @@ class WooPosProductsRemoteDataSource @Inject constructor(
 
             productsCache.addAll(products)
             productsIndex.storeProductList(products.map { it.remoteId })
+            if (trackFirstPage) {
+                analyticsTracker.track(ItemsFetched(productsList.size, requestDuration))
+            }
             Result.success(productsIndex.getProductList())
         } else {
             result.logFailure()
