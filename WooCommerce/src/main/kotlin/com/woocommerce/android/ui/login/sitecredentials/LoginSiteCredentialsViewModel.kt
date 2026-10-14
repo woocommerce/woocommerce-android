@@ -507,6 +507,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private fun showUnexpectedResponse(failure: LoginUnexpectedResponseFailure) {
         pendingUnexpectedResponse = null
+        authError.value = null
         unexpectedResponse.value = failure
         unexpectedResponseTracker.trackErrorShown(failure)
     }
