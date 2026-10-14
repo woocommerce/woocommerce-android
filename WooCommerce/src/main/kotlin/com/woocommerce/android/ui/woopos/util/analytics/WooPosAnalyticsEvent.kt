@@ -670,6 +670,14 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "payments_tapped"
         }
 
+        data class PaymentSuccessSoundToggled(val isEnabled: Boolean) : Event() {
+            override val name: String = "payment_success_sound_toggled"
+
+            init {
+                addProperties(mapOf("enabled" to isEnabled.toString()))
+            }
+        }
+
         data object LocalCatalogTapped : Event() {
             override val name: String = "local_catalog_tapped"
         }

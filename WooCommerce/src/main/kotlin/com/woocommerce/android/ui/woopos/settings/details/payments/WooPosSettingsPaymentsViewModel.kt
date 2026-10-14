@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.settings.details.payments
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPosSettingsPaymentsViewModel @Inject constructor(
     private val preferencesRepository: WooPosPreferencesRepository,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosSettingsPaymentsState>(WooPosSettingsPaymentsState.Loading)
     val state: StateFlow<WooPosSettingsPaymentsState> = _state.asStateFlow()
@@ -34,6 +37,7 @@ class WooPosSettingsPaymentsViewModel @Inject constructor(
     private fun onPaymentSuccessSoundToggled(isEnabled: Boolean) {
         viewModelScope.launch {
             preferencesRepository.setPaymentSuccessSoundEnabled(isEnabled)
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.PaymentSuccessSoundToggled(isEnabled))
         }
     }
 }
