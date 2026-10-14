@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos.settings.details.payments
 
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +24,7 @@ class WooPosSettingsPaymentsViewModelTest {
     val coroutineTestRule = WooPosCoroutineTestRule()
 
     private val preferencesRepository: WooPosPreferencesRepository = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     @Test
     fun `given preference not loaded yet, when viewmodel is initialized, then state is Loading`() = runTest {
@@ -102,7 +105,21 @@ class WooPosSettingsPaymentsViewModelTest {
         verify(preferencesRepository).setPaymentSuccessSoundEnabled(true)
     }
 
+    @Test
+    fun `when sound toggled, then toggle event is tracked with new value`() = runTest {
+        // GIVEN
+        whenever(preferencesRepository.isPaymentSuccessSoundEnabled).thenReturn(flowOf(true))
+        val sut = createViewModel()
+
+        // WHEN
+        sut.onUIEvent(WooPosSettingsPaymentsUIEvent.PaymentSuccessSoundToggled(isEnabled = false))
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.PaymentSuccessSoundToggled(isEnabled = false))
+    }
+
     private fun createViewModel() = WooPosSettingsPaymentsViewModel(
         preferencesRepository = preferencesRepository,
+        analyticsTracker = analyticsTracker,
     )
 }
