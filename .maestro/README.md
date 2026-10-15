@@ -191,6 +191,7 @@ The runner:
 - downloads and installs the latest stable GitHub release when no production app or candidate APK is installed;
 - uninstalls the app before it installs an APK, so a run with `--apk` starts from a fresh install;
 - sets the app language to German for the localization flow and resets it afterwards;
+- installs the latest release, logs in and installs the `--apk` build over it for the upgrade flow, so that build has to be signed with the release key;
 - selects one connected device automatically, or prompts when several are attached, and runs the POS flows on
   `--pos-device`;
 - captures and restores animation settings;
@@ -216,9 +217,12 @@ The runner:
 - `smoke_extended`: broader P2 coverage.
 - `pos_tablet`: POS flows, tablet AVD required.
 - `android_system`: launcher/system-surface flows, English Pixel Launcher AVD required.
+- `app_locale_de`: the runner logs in and sets the app language to German first.
 - `system_surface`: flow enters Android-owned UI; assertions stop at the documented handoff boundary.
 - `destructive`: mutates store data.
 - `store_shared`: runs against the shared store unless `--store` is passed; never combined with `destructive`.
+- `app_upgrade`: the runner installs the latest release, logs in and installs the `--apk` build over it first. Needs
+  an `--apk` signed with the release key.
 - `quarantine`: failing flows kept out of runs until they are fixed, excluded unless `--include-quarantine` is passed
   or `--include-tags` names it.
 

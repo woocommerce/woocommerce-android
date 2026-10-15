@@ -254,6 +254,10 @@ def ensure_release_app(
     if installed is not None:
         return InstalledRelease(installed.version_name, False, "device")
 
+    return install_latest_release(device, cache_dir)
+
+
+def install_latest_release(device: str, cache_dir: Path = DEFAULT_CACHE_DIR) -> InstalledRelease:
     asset = latest_release_asset()
     print(f"Downloading WooCommerce Android {asset.tag} production APK from GitHub Releases...")
     downloaded = download_release_asset(asset, cache_dir)
@@ -265,15 +269,43 @@ def ensure_release_app(
     return InstalledRelease(installed.version_name, True, f"GitHub release {asset.tag}")
 
 
+def upgrade_to_apk(device: str, apk_path: Path) -> InstalledRelease:
+    metadata = validate_release_apk(apk_path)
+    # No uninstall here: the app data from the installed release has to survive.
+    result = adb(device, "install", "-r", "-g", str(apk_path))
+    if result.returncode != 0:
+        output = result.stdout + result.stderr
+        if "INSTALL_FAILED_UPDATE_INCOMPATIBLE" in output:
+            raise ReleaseAppError(
+                f"{apk_path.name} is not signed with the same key as the release; use the Play-signed APK"
+            )
+        details = [line.strip() for line in output.splitlines() if line.strip()]
+        failures = [line for line in details if "Failure" in line]
+        message = failures or details or [f"adb could not install {apk_path.name} over the release"]
+        raise ReleaseAppError(message[-1])
+    installed = installed_release(device)
+    if installed is None or installed.version_name != metadata.version_name:
+        raise ReleaseAppError(f"installed {PRODUCTION_APP_ID} does not match supplied APK {metadata.version_name}")
+    return InstalledRelease(installed.version_name, True, f"supplied APK {apk_path.name}, over the release")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--device", required=True, help="adb device serial")
-    parser.add_argument("--apk", type=Path, help="production release APK to validate and install")
     parser.add_argument("--cache-dir", type=Path, default=DEFAULT_CACHE_DIR)
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--apk", type=Path, help="production release APK to validate and install")
+    mode.add_argument("--latest-release", action="store_true", help="install the latest GitHub release fresh")
+    mode.add_argument("--upgrade-to", type=Path, help="install this APK over the installed app, keeping its data")
     args = parser.parse_args()
 
     try:
-        release = ensure_release_app(args.device, args.cache_dir, args.apk)
+        if args.latest_release:
+            release = install_latest_release(args.device, args.cache_dir)
+        elif args.upgrade_to is not None:
+            release = upgrade_to_apk(args.device, args.upgrade_to)
+        else:
+            release = ensure_release_app(args.device, args.cache_dir, args.apk)
     except ReleaseAppError as error:
         print(f"Production release app check failed: {error}", file=sys.stderr)
         return 1
