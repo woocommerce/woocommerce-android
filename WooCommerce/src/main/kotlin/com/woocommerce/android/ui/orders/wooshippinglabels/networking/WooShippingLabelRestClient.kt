@@ -100,6 +100,24 @@ class WooShippingLabelRestClient @Inject constructor(
         }
     }
 
+    suspend fun fetchCustomsRequirements(
+        site: SiteModel,
+        orderId: Long,
+        originId: String
+    ): WooPayload<CustomsRequirementsResponse> = wooNetwork.executePostGsonRequest(
+        site = site,
+        path = "/wcshipping/v1/label/customs-requirements",
+        body = mapOf("order_id" to orderId, "origin_id" to originId),
+        clazz = CustomsRequirementsResponse::class.java
+    ).toWooPayload()
+
+    suspend fun fetchConfigLineItems(site: SiteModel, orderId: Long): WooPayload<ConfigLineItemsResponse> =
+        wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = "/wcshipping/v1/config/label-purchase/$orderId",
+            clazz = ConfigLineItemsResponse::class.java
+        ).toWooPayload()
+
     suspend fun fetchConfig(site: SiteModel, orderId: Long): WooPayload<ConfigResponse> {
         val url = "/wcshipping/v1/config/label-purchase/$orderId"
 
