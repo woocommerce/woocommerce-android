@@ -917,14 +917,15 @@ upgrade_app() {
     echo "  no --apk was given, so there is no new build to upgrade to"
     return 0
   fi
-  if ! python3 "$ENSURE_RELEASE_APP_SCRIPT" --device "$DEVICE_SERIAL" --latest-release; then
-    echo "  could not install the latest release"
+  if python3 "$ENSURE_RELEASE_APP_SCRIPT" --device "$DEVICE_SERIAL" --latest-release \
+    && log_in_before_flow "$1" \
+    && python3 "$ENSURE_RELEASE_APP_SCRIPT" --device "$DEVICE_SERIAL" --upgrade-to "$APK_PATH"; then
+    APP_UPGRADED="yes"
     return 0
   fi
-  log_in_before_flow "$1" || true
-  if python3 "$ENSURE_RELEASE_APP_SCRIPT" --device "$DEVICE_SERIAL" --upgrade-to "$APK_PATH"; then
-    APP_UPGRADED="yes"
-  fi
+  # The device may now have the release or no app, so put the --apk build back for the next flows.
+  echo "  the upgrade could not be set up, so the --apk build is installed again"
+  python3 "$ENSURE_RELEASE_APP_SCRIPT" --device "$DEVICE_SERIAL" --apk "$APK_PATH" || exit 1
 }
 
 reset_app_locale() {
