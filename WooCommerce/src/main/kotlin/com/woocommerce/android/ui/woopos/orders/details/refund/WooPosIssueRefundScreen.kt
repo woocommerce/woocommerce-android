@@ -48,7 +48,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -58,9 +57,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.offset
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
@@ -1413,7 +1410,6 @@ private fun ReviewRefundContent(
                 verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .bleed(WooPosSpacing.Small.value)
                     .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                     .clickable(onClick = onEditReason)
                     .padding(WooPosSpacing.Small.value)
@@ -1451,15 +1447,6 @@ private fun ReviewRefundContent(
                 }
             }
         }
-    }
-}
-
-// Grows the bounds by [amount] on every side without moving the content, so a ripple can extend past it.
-private fun Modifier.bleed(amount: Dp): Modifier = layout { measurable, constraints ->
-    val amountPx = amount.roundToPx()
-    val placeable = measurable.measure(constraints.offset(horizontal = amountPx * 2, vertical = amountPx * 2))
-    layout(placeable.width - amountPx * 2, placeable.height - amountPx * 2) {
-        placeable.place(-amountPx, -amountPx)
     }
 }
 
