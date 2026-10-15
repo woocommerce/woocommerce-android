@@ -490,8 +490,8 @@ private fun RefundModalLayer(
                 modifier = Modifier
                     .weight(1f)
                     .padding(
-                        start = WooPosSpacing.Medium.value,
-                        end = WooPosSpacing.Medium.value,
+                        start = WooPosSpacing.Small.value,
+                        end = WooPosSpacing.Small.value,
                         bottom = WooPosSpacing.XLarge.value,
                     ),
             ) {
@@ -510,8 +510,14 @@ private fun RefundModalLayer(
                             onEvent = onEvent,
                             disablePartialRefund = disablePartialRefund,
                         )
-                        is WooPosRefundState.Error -> ErrorContent(animatedState)
-                        is WooPosRefundState.RefundSuccess -> RefundSuccessContent(state = animatedState)
+                        is WooPosRefundState.Error -> ErrorContent(
+                            errorState = animatedState,
+                            modifier = Modifier.refundStepInset(),
+                        )
+                        is WooPosRefundState.RefundSuccess -> RefundSuccessContent(
+                            state = animatedState,
+                            modifier = Modifier.refundStepInset(),
+                        )
                         is WooPosRefundState.Loading,
                         is WooPosRefundState.NoRefundableItems -> Unit
                     }
@@ -524,6 +530,7 @@ private fun RefundModalLayer(
                     onEvent = onEvent,
                     onConnectReaderClicked = handleConnectReaderClicked,
                     onNavigationEvent = onNavigationEvent,
+                    modifier = Modifier.refundStepInset(),
                 )
             }
         }
@@ -963,6 +970,7 @@ private fun ContentStateHandler(
                 SelectItemsContent(
                     state = state,
                     onEvent = onEvent,
+                    modifier = Modifier.refundStepInset(),
                     disableItemSelection = disablePartialRefund,
                 )
             }
@@ -983,18 +991,18 @@ private fun ContentStateHandler(
 
             WooPosRefundState.Content.RefundStep.ConfirmRefund,
             WooPosRefundState.Content.RefundStep.Processing -> {
-                ConfirmRefundContent(state = state)
+                ConfirmRefundContent(state = state, modifier = Modifier.refundStepInset())
             }
 
             WooPosRefundState.Content.RefundStep.ReaderDisconnected -> {
-                RefundReaderDisconnectedContent()
+                RefundReaderDisconnectedContent(modifier = Modifier.refundStepInset())
             }
 
             WooPosRefundState.Content.RefundStep.PreparingReader,
             is WooPosRefundState.Content.RefundStep.ReadyForRefund,
             WooPosRefundState.Content.RefundStep.ProcessingRefund,
             WooPosRefundState.Content.RefundStep.NotifyingStore -> {
-                RefundReaderContent(state = state)
+                RefundReaderContent(state = state, modifier = Modifier.refundStepInset())
             }
         }
     }
@@ -1362,6 +1370,7 @@ private fun ReviewRefundContent(
     onEditReason: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val rowModifier = Modifier.refundStepInset()
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -1377,17 +1386,20 @@ private fun ReviewRefundContent(
                     state.itemsCount
                 ),
                 value = state.formattedSubtotal,
-                isTotal = false
+                isTotal = false,
+                modifier = rowModifier,
             )
             ReviewSummaryRow(
                 label = stringResource(R.string.taxes),
                 value = state.formattedTaxes,
-                isTotal = false
+                isTotal = false,
+                modifier = rowModifier,
             )
 
-            Divider()
+            Divider(modifier = rowModifier)
 
             Column(
+                modifier = rowModifier,
                 verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
             ) {
                 ReviewSummaryRow(
@@ -1403,7 +1415,7 @@ private fun ReviewRefundContent(
                 )
             }
 
-            Divider()
+            Divider(modifier = rowModifier)
 
             val editReasonText = stringResource(R.string.woopos_orders_edit_reason)
             Column(
@@ -1412,7 +1424,8 @@ private fun ReviewRefundContent(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                     .clickable(onClick = onEditReason)
-                    .padding(WooPosSpacing.Small.value)
+                    .refundStepInset()
+                    .padding(vertical = WooPosSpacing.Small.value)
                     .semantics {
                         contentDescription = editReasonText
                     }
@@ -1449,6 +1462,11 @@ private fun ReviewRefundContent(
         }
     }
 }
+
+// The modal keeps only Small of its side padding, so tappable rows can draw their ripple into the rest.
+@Composable
+private fun Modifier.refundStepInset(): Modifier =
+    padding(horizontal = WooPosSpacing.Medium.value - WooPosSpacing.Small.value)
 
 @Composable
 private fun ReviewSummaryRow(
