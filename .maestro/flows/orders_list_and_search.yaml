@@ -1,10 +1,11 @@
 # Smoke Test: Orders - List and Search
-# p2: orders.list, orders.search
-# P2 ref: Orders > Order list, Search for an order
+# p2: orders.list, orders.search, orders.pagination
+# P2 ref: Orders > Order list, Search for an order, Verify pagination works
 #
 # Verifies:
 #   - Orders list loads with order data
 #   - Search for an order by number or keyword
+#   - Scrolling loads the next page of orders
 appId: com.woocommerce.android
 name: "Orders - List and search"
 tags:
@@ -128,3 +129,16 @@ tags:
 # Go back from search
 - back
 - back
+
+# The lab store's 100 seeded orders are numbered oldest first, and one page of the
+# list holds 60 orders. Orders seeded in the same second can swap places, so look for
+# "Order 030", well inside the next page.
+- runFlow:
+    file: ../subflows/navigate_to_orders.yaml
+- scrollUntilVisible:
+    element:
+      text: ".*Order 030.*"
+    direction: DOWN
+    timeout: 240000
+    label: "An order from the next page loads"
+- takeScreenshot: orders_next_page
