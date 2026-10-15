@@ -1424,7 +1424,7 @@ private fun ReviewRefundContent(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                     .clickable(onClick = onEditReason)
-                    .padding(WooPosSpacing.Small.value)
+                    .padding(horizontal = WooPosSpacing.Small.value, vertical = WooPosSpacing.Medium.value)
                     .semantics {
                         contentDescription = editReasonText
                     }
