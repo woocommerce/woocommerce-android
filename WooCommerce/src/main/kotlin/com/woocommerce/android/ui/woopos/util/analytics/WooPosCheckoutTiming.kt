@@ -2,12 +2,14 @@ package com.woocommerce.android.ui.woopos.util.analytics
 
 import android.os.SystemClock
 import javax.inject.Inject
+import javax.inject.Singleton
 
 class WooPosElapsedTime @Inject constructor() {
     fun milliseconds(): Long = SystemClock.elapsedRealtime()
 }
 
 /** References preserve attribution when old asynchronous payment work overlaps a newer checkout. */
+@Singleton
 class WooPosCheckoutTiming @Inject constructor(private val clock: WooPosElapsedTime) {
     class Context internal constructor(
         internal val checkout: Checkout?,

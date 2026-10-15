@@ -53,6 +53,7 @@ class PaymentsFlowTracker @Inject constructor(
             provider
         )
     }
+
     fun onConfirmedIntentAvailable() = eventProvider.onConfirmedIntentAvailable()
 
     @VisibleForTesting

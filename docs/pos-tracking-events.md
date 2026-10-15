@@ -100,7 +100,11 @@ When a feature has many tracking calls, extract a dedicated tracker (e.g., `WooP
 
 ## Checkout timing
 
-Card success, failure and cancellation, and cash success include the available checkout timing properties.
+The terminal events `card_present_collect_payment_success`, `card_present_collect_payment_failed`,
+`card_present_collect_payment_cancelled`, and `cash_collect_payment_success` include the available checkout
+timing properties. Interac payments use the generic timed card-success event after payment is recorded on the store.
+The supplemental `card_present_collect_interac_payment_success` processing event is outside this timing contract;
+it does not consume a terminal snapshot.
 `sync_strategy` is the active products source at checkout: `local_catalog`, `remote`, or `unknown`.
 
 | Optional integer milliseconds | Start boundary |

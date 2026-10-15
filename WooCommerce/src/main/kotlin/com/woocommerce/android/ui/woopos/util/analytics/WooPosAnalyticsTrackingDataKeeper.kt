@@ -7,8 +7,6 @@ import javax.inject.Singleton
 class WooPosAnalyticsTrackingDataKeeper @Inject constructor(
     val checkoutTiming: WooPosCheckoutTiming,
 ) {
-    constructor() : this(WooPosCheckoutTiming(WooPosElapsedTime()))
-
     var interactionWithCustomerStartedTimestamp: Long? = null
     var orderSyncSuccessTimestamp: Long? = null
     var readerReadyForPaymentTimestamp: Long? = null

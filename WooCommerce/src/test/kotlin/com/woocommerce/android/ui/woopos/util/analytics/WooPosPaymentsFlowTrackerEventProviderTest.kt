@@ -15,7 +15,7 @@ import kotlin.test.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosPaymentsFlowTrackerEventProviderTest {
     private val provider = WooPosPaymentsFlowTrackerEventProvider(
-        WooPosAnalyticsTrackingDataKeeper(),
+        WooPosAnalyticsTrackingDataKeeper(WooPosCheckoutTiming(mock())),
         mock(),
     )
 
@@ -129,7 +129,7 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         val keeper = WooPosAnalyticsTrackingDataKeeper(timing)
         val events = WooPosPaymentsFlowTrackerEventProvider(keeper, mock())
         whenever(clock.milliseconds()).thenReturn(0L)
-        val generation = timing.startCheckout("remote")
+        timing.startCheckout("remote")
         // WHEN
         whenever(clock.milliseconds()).thenReturn(25L)
         val actual = (events.CARD_PRESENT_COLLECT_PAYMENT_FAILED as WooPosAnalyticsEvent).properties
@@ -185,7 +185,7 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         whenever(clock.milliseconds()).thenReturn(0L)
         timing.orderSyncCompleted(timing.startCheckout("local_catalog"))
         whenever(clock.milliseconds()).thenReturn(500L)
-        val generation = timing.startCheckout("local_catalog")
+        timing.startCheckout("local_catalog")
         whenever(clock.milliseconds()).thenReturn(510L)
         keeper.readerReadyForPaymentTimestamp = 150L
         whenever(clock.milliseconds()).thenReturn(520L)

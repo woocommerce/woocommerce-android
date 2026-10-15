@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosBarcodeEventTracker
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosCheckoutTiming
 import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
@@ -148,7 +149,7 @@ class WooPosCartViewModelTest {
     }
 
     private val savedState: SavedStateHandle = SavedStateHandle()
-    private val trackerData: WooPosAnalyticsTrackingDataKeeper = WooPosAnalyticsTrackingDataKeeper()
+    private val trackerData = WooPosAnalyticsTrackingDataKeeper(WooPosCheckoutTiming(mock()))
     private val cartItemsUpdater: WooPosCartItemsUpdater = mock()
     private val customAmountCartHandler: WooPosCustomAmountCartHandler = WooPosCustomAmountCartHandler()
     private val searchByIdentifier: WooPosSearchByIdentifier = mock()

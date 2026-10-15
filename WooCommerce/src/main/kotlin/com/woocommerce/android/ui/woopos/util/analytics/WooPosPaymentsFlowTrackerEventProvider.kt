@@ -115,6 +115,7 @@ class WooPosPaymentsFlowTrackerEventProvider(
     override val CARD_READER_CONNECTION_SUCCESS: IAnalyticsEvent
         get() = PaymentFlowTrackerEvent.CardReaderConnectionSuccess
 
+    // Terminal getters consume timing state: snapshot once, then track the returned event.
     override val CARD_PRESENT_COLLECT_PAYMENT_FAILED: IAnalyticsEvent
         get() = PaymentFlowTrackerEvent.CardPresentCollectPaymentFailed().apply {
             addProperties(terminalSnapshot(success = false))
