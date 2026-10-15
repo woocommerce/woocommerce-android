@@ -65,6 +65,7 @@ google-firebase-bom = '34.5.0'
 google-gson = '2.14.0'
 google-guava = '33.7.2-android'
 google-horologist = '0.7.15'
+google-identity-googleid = '1.1.1'
 google-material = '1.14.0'
 google-compose-material3 = '1.4.0'
 google-mlkit-barcode-scanning = '17.3.0'
@@ -233,6 +234,7 @@ google-firebase-config = { group = "com.google.firebase", name = "firebase-confi
 google-firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
 google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "google-gson" }
 google-guava = { group = "com.google.guava", name = "guava", version.ref = "google-guava" }
+google-identity-googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "google-identity-googleid" }
 google-horologist-compose-layout = { group = "com.google.android.horologist", name = "horologist-compose-layout", version.ref = "google-horologist" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "google-material" }
 google-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "google-compose-material3" }

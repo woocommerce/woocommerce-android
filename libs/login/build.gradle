@@ -55,6 +55,7 @@ dependencies {
 
     implementation libs.androidx.credentials.main
     runtimeOnly libs.androidx.credentials.play.service.auth
+    implementation libs.google.identity.googleid
 
     // Dagger
     api libs.google.dagger
