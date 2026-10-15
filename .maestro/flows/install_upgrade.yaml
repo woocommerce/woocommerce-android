@@ -22,13 +22,12 @@ tags:
 - launchApp:
     clearState: false
     stopApp: true
+# What's New and the privacy sheet show only for a logged-in app and hide My store, so
+# they count as logged in too.
 - extendedWaitUntil:
-    visible: ".*My store.*|.*Enter your store address.*|.*Log in.*"
+    visible: ".*My store.*|.*Enter your store address.*|.*Log in.*|.*Not Now.*|.*Manage privacy.*"
     timeout: 45000
 - assertNotVisible:
     text: ".*Enter your store address.*|.*Log in.*"
     label: "The app did not ask to log in again"
-- assertVisible:
-    text: ".*My store.*"
-    label: "The app opens on My store"
 - takeScreenshot: upgrade_my_store
