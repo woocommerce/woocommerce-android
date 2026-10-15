@@ -171,6 +171,14 @@ class EnsureReleaseAppTests(unittest.TestCase):
         with self.assertRaisesRegex(release_app.ReleaseAppError, "INSTALL_FAILED_VERSION_DOWNGRADE"):
             self.upgrade(release_app.subprocess.CompletedProcess([], 1, output, ""))
 
+    def test_upgrade_failure_without_a_failure_line_shows_the_last_error_line(self) -> None:
+        output = release_app.subprocess.CompletedProcess(
+            [], 1, "Performing Streamed Install\n", "adb: device offline\n"
+        )
+
+        with self.assertRaisesRegex(release_app.ReleaseAppError, "adb: device offline"):
+            self.upgrade(output)
+
     def test_upgrade_that_leaves_another_version_installed_fails(self) -> None:
         with self.assertRaisesRegex(release_app.ReleaseAppError, "does not match supplied APK 25.8"):
             self.upgrade(release_app.subprocess.CompletedProcess([], 0, "Success\n", ""), installed_version="25.7")

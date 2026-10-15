@@ -274,13 +274,15 @@ def upgrade_to_apk(device: str, apk_path: Path) -> InstalledRelease:
     # No uninstall here: the app data from the installed release has to survive.
     result = adb(device, "install", "-r", "-g", str(apk_path))
     if result.returncode != 0:
-        output = result.stderr + result.stdout
+        output = result.stdout + result.stderr
         if "INSTALL_FAILED_UPDATE_INCOMPATIBLE" in output:
             raise ReleaseAppError(
                 f"{apk_path.name} is not signed with the same key as the release; use the Play-signed APK"
             )
-        failures = [line.strip() for line in output.splitlines() if "Failure" in line]
-        raise ReleaseAppError(failures[-1] if failures else f"adb could not install {apk_path.name} over the release")
+        details = [line.strip() for line in output.splitlines() if line.strip()]
+        failures = [line for line in details if "Failure" in line]
+        message = failures or details or [f"adb could not install {apk_path.name} over the release"]
+        raise ReleaseAppError(message[-1])
     installed = installed_release(device)
     if installed is None or installed.version_name != metadata.version_name:
         raise ReleaseAppError(f"installed {PRODUCTION_APP_ID} does not match supplied APK {metadata.version_name}")
