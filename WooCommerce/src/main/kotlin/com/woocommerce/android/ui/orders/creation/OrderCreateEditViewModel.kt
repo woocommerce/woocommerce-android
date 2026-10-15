@@ -137,6 +137,7 @@ import com.woocommerce.android.ui.orders.creation.views.ProductAmountEvent
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsFragment.Companion.CUSTOM_AMOUNT
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType
+import com.woocommerce.android.ui.products.GetUnsupportedParentRestriction
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductRestriction
@@ -199,6 +200,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val barcodeScanningTracker: BarcodeScanningTracker,
     private val resourceProvider: ResourceProvider,
     private val productRestrictions: OrderCreationProductRestrictions,
+    private val getUnsupportedParentRestriction: GetUnsupportedParentRestriction,
     private val getTaxRatesInfoDialogState: GetTaxRatesInfoDialogViewState,
     private val getAddressFromTaxRate: GetAddressFromTaxRate,
     private val getAutoTaxRateSetting: GetAutoTaxRateSetting,
@@ -958,7 +960,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun handleFetchProductBySKUSuccess(
+    private suspend fun handleFetchProductBySKUSuccess(
         product: com.woocommerce.android.model.Product,
         selectedItems: List<SelectedItem>,
         source: ScanningSource,
@@ -995,13 +997,14 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     @Suppress("LongMethod")
-    private fun addScannedProduct(
+    private suspend fun addScannedProduct(
         product: ModelProduct,
         selectedItems: List<SelectedItem>,
         source: ScanningSource,
         barcodeFormat: BarcodeFormat
     ) {
         val restriction = productRestrictions.getRestriction(product)
+            ?: product.takeIf { it.parentId != 0L }?.let { getUnsupportedParentRestriction(it) }
         if (restriction != null) {
             handleRestrictedProduct(restriction, source, barcodeFormat)
         } else if (product.isVariable()) {
