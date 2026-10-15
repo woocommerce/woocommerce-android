@@ -290,10 +290,11 @@ def upgrade_to_apk(device: str, apk_path: Path) -> InstalledRelease:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--device", required=True, help="adb device serial")
-    parser.add_argument("--apk", type=Path, help="production release APK to validate and install")
     parser.add_argument("--cache-dir", type=Path, default=DEFAULT_CACHE_DIR)
-    parser.add_argument("--latest-release", action="store_true", help="install the latest GitHub release fresh")
-    parser.add_argument("--upgrade-to", type=Path, help="install this APK over the installed app, keeping its data")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--apk", type=Path, help="production release APK to validate and install")
+    mode.add_argument("--latest-release", action="store_true", help="install the latest GitHub release fresh")
+    mode.add_argument("--upgrade-to", type=Path, help="install this APK over the installed app, keeping its data")
     args = parser.parse_args()
 
     try:
