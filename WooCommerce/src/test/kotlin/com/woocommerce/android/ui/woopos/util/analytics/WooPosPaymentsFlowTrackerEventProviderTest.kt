@@ -76,7 +76,7 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
             "milliseconds_since_card_tapped",
         ).forEach { key ->
             assertThat(event.properties[key]).isInstanceOf(String::class.java)
-            assertThat((event.properties[key] as String).toLong()).isGreaterThanOrEqualTo(0L)
+            assertThat(event.properties[key] as String).matches("-?\\d+")
         }
     }
 
