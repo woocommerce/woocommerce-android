@@ -15,6 +15,7 @@
 - [Internal] Logging out while the store is still refreshing after launch no longer reports a SelectedSiteResetException error [https://github.com/woocommerce/woocommerce-android/pull/16692]
 - [*] In-person payment collection and Interac refunds are now hidden for orders sold as a subscription, including plan-based and variable subscriptions the previous check missed [https://github.com/woocommerce/woocommerce-android/pull/16563]
 - [*] [Woo POS] Added a Payments section to POS settings with an option to turn off the payment success sound [https://github.com/woocommerce/woocommerce-android/pull/16701]
+- [*] [Woo POS] On Android 17, the "Choose a device to connect" picker no longer reopens after "Don't connect" when connecting a card reader [https://github.com/woocommerce/woocommerce-android/pull/16702]
 - [*] [Woo POS] The refund reason row on the Review refund screen now has padding around its tap highlight [https://github.com/woocommerce/woocommerce-android/pull/16708]
 - [**] Shipping Labels: For shipments into the EU, the customs form now asks for each item's SKU, manufacturer part number and GTIN/EAN when WooCommerce Shipping requires them [https://github.com/woocommerce/woocommerce-android/pull/16706]
 
