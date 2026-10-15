@@ -53,7 +53,8 @@ fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
             onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
             onStartWebAuthorizationClick = viewModel::onStartWebAuthorizationClick,
             onUnexpectedResponseRetryClick = viewModel::onUnexpectedResponseRetryClick,
-            onUnexpectedResponseDismissClick = viewModel::onUnexpectedResponseDismissClick
+            onUnexpectedResponseDismissClick = viewModel::onUnexpectedResponseDismissClick,
+            onUnexpectedResponseBrowserLoginClick = viewModel::onUnexpectedResponseBrowserLoginClick
         )
     }
 }
@@ -72,7 +73,8 @@ fun LoginSiteCredentialsScreen(
     onErrorDialogDismissed: () -> Unit,
     onStartWebAuthorizationClick: () -> Unit,
     onUnexpectedResponseRetryClick: () -> Unit,
-    onUnexpectedResponseDismissClick: () -> Unit
+    onUnexpectedResponseDismissClick: () -> Unit,
+    onUnexpectedResponseBrowserLoginClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     Scaffold(
@@ -202,7 +204,8 @@ fun LoginSiteCredentialsScreen(
         if (viewState.unexpectedResponse != null) {
             LoginUnexpectedResponseAlert(
                 onRetryClick = onUnexpectedResponseRetryClick,
-                onDismissClick = onUnexpectedResponseDismissClick
+                onDismissClick = onUnexpectedResponseDismissClick,
+                onBrowserLoginClick = onUnexpectedResponseBrowserLoginClick.takeIf { viewState.offersBrowserLogin }
             )
         }
 
@@ -322,7 +325,8 @@ private fun LoginSiteCredentialsScreenPreview(viewState: LoginSiteCredentialsVie
             onErrorDialogDismissed = {},
             onStartWebAuthorizationClick = {},
             onUnexpectedResponseRetryClick = {},
-            onUnexpectedResponseDismissClick = {}
+            onUnexpectedResponseDismissClick = {},
+            onUnexpectedResponseBrowserLoginClick = {}
         )
     }
 }

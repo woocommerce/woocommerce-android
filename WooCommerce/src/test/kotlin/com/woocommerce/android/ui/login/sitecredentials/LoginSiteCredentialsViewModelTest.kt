@@ -884,7 +884,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given cookie login gets an unexpected response, when dismissing the alert, then open the browser login`() =
+    fun `given cookie login gets an unexpected response, when tapping the browser login on the alert, then open it`() =
         testBlocking {
             whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
                 .thenReturn(Result.failure(unexpectedResponseError()))
@@ -894,13 +894,54 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 enterCredentialsAndContinue()
                 advanceUntilIdle()
                 assertThat(viewModel.viewState.value?.unexpectedResponse).isEqualTo(LOGIN_PAGE_FAILURE)
+                assertThat(viewModel.viewState.value?.offersBrowserLogin).isTrue()
                 assertThat(viewModel.event.value is ShowApplicationPasswordTutorialScreen).isFalse()
-                viewModel.onUnexpectedResponseDismissClick()
+                viewModel.onUnexpectedResponseBrowserLoginClick()
             }
 
             assertThat(viewModel.event.value).isInstanceOf(ShowApplicationPasswordTutorialScreen::class.java)
             assertThat(viewModel.viewState.value?.unexpectedResponse).isNull()
             verify(unexpectedResponseTracker).trackErrorShown(LOGIN_PAGE_FAILURE)
+        }
+
+    @Test
+    fun `given cookie login gets an unexpected response, when dismissing the alert, then stay on the form`() =
+        testBlocking {
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
+                .thenReturn(Result.failure(unexpectedResponseError()))
+            setup()
+
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+                viewModel.onUnexpectedResponseDismissClick()
+            }
+
+            assertThat(viewModel.event.value is ShowApplicationPasswordTutorialScreen).isFalse()
+            assertThat(viewModel.viewState.value?.unexpectedResponse).isNull()
+            assertThat(viewModel.viewState.value?.authenticationError).isNull()
+        }
+
+    @Test
+    fun `given the site check fails after an unexpected response, when tapping the browser login, then check again`() =
+        testBlocking {
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
+                .thenReturn(Result.failure(unexpectedResponseError()))
+            whenever(repository.fetchSite(SITE_URL))
+                .thenReturn(Result.failure(Exception("503")), Result.success(site))
+            setup()
+
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+                assertThat(viewModel.viewState.value?.authenticationError).isNull()
+                assertThat(viewModel.viewState.value?.offersBrowserLogin).isTrue()
+                viewModel.onUnexpectedResponseBrowserLoginClick()
+                advanceUntilIdle()
+            }
+
+            assertThat(viewModel.event.value).isInstanceOf(ShowApplicationPasswordTutorialScreen::class.java)
+            verify(repository, times(2)).fetchSite(SITE_URL)
         }
 
     @Test

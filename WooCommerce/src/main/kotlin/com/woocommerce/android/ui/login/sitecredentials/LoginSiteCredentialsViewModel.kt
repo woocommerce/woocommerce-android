@@ -95,6 +95,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         private const val LOGIN_ENTRY_URL_KEY = "login-entry-url"
         private const val ADMIN_BASE_URL_KEY = "admin-base-url"
         private const val TUTORIAL_AFTER_ALERT_KEY = "tutorial-after-alert"
+        private const val BROWSER_LOGIN_IN_ALERT_KEY = "browser-login-in-alert"
     }
 
     private val wasSiteAddressNormalizedToHttps =
@@ -149,6 +150,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         clazz = LoginUnexpectedResponseFailure::class.java,
         key = "unexpected-response"
     )
+    private val offersBrowserLogin = savedStateHandle.getStateFlow(viewModelScope, false, BROWSER_LOGIN_IN_ALERT_KEY)
     private var pendingUnexpectedResponse: LoginUnexpectedResponseFailure? = null
     private var retryingStep: UnexpectedResponseStep? = null
     private var hasPassedRetryingStep = false
@@ -172,8 +174,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         loadingMessage.map { message -> message.takeIf { it != 0 } },
         authError,
         endpointRecovery,
-        unexpectedResponse
-    ) { siteAddress, username, password, loadingMessage, authenticationError, endpointRecovery, unexpectedResponse ->
+        unexpectedResponse,
+        offersBrowserLogin
+    ) { siteAddress, username, password, loadingMessage, authenticationError, endpointRecovery, unexpectedResponse,
+        offersBrowserLogin ->
         ViewState(
             siteUrl = siteAddress,
             username = username,
@@ -181,7 +185,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             loadingMessage = loadingMessage,
             authenticationError = authenticationError,
             endpointRecovery = endpointRecovery,
-            unexpectedResponse = unexpectedResponse
+            unexpectedResponse = unexpectedResponse,
+            offersBrowserLogin = offersBrowserLogin
         )
     }.asLiveData()
 
@@ -288,9 +293,16 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         val failure = unexpectedResponse.value ?: return
         unexpectedResponseTracker.trackActionTapped(failure, Action.DISMISS)
         unexpectedResponse.value = null
-        savedStateHandle.remove<ApplicationPasswordTutorial>(TUTORIAL_AFTER_ALERT_KEY)?.let {
-            triggerEvent(it.toEvent())
+        if (savedStateHandle.remove<ApplicationPasswordTutorial>(TUTORIAL_AFTER_ALERT_KEY) != null) {
+            fetchedSiteId.value = -1
         }
+    }
+
+    fun onUnexpectedResponseBrowserLoginClick() {
+        unexpectedResponse.value ?: return
+        unexpectedResponse.value = null
+        val tutorial = savedStateHandle.remove<ApplicationPasswordTutorial>(TUTORIAL_AFTER_ALERT_KEY)
+        if (tutorial != null) triggerEvent(tutorial.toEvent()) else onStartWebAuthorizationClick()
     }
 
     fun onResetPasswordClick() {
@@ -515,13 +527,15 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private fun showUnexpectedResponse(failure: LoginUnexpectedResponseFailure) {
         pendingUnexpectedResponse = null
+        offersBrowserLogin.value = authError.value?.showWpAdminFallbackOption == true ||
+            savedStateHandle.contains(TUTORIAL_AFTER_ALERT_KEY)
         authError.value = null
         unexpectedResponse.value = failure
         unexpectedResponseTracker.trackErrorShown(failure)
     }
 
     /**
-     * After an unexpected response, the alert comes first and the browser login opens only when it's dismissed.
+     * After an unexpected response, the alert comes first and offers the browser login instead of opening it.
      */
     private fun showApplicationPasswordTutorial(tutorial: ApplicationPasswordTutorial) {
         val failure = pendingUnexpectedResponse
@@ -862,7 +876,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         @StringRes val loadingMessage: Int? = null,
         val authenticationError: AuthenticationError? = null,
         val endpointRecovery: EndpointRecovery? = null,
-        val unexpectedResponse: LoginUnexpectedResponseFailure? = null
+        val unexpectedResponse: LoginUnexpectedResponseFailure? = null,
+        val offersBrowserLogin: Boolean = false
     ) {
         val isValid = username.isNotBlank() && password.isNotBlank()
     }

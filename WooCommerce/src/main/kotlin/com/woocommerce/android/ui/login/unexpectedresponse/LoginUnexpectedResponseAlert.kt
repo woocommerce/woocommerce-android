@@ -14,7 +14,8 @@ import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 @Composable
 fun LoginUnexpectedResponseAlert(
     onRetryClick: () -> Unit,
-    onDismissClick: () -> Unit
+    onDismissClick: () -> Unit,
+    onBrowserLoginClick: (() -> Unit)? = null
 ) {
     AlertDialog(
         title = { Text(text = stringResource(id = R.string.login_unexpected_response_title)) },
@@ -24,6 +25,11 @@ fun LoginUnexpectedResponseAlert(
             Column(horizontalAlignment = Alignment.End) {
                 WCTextButton(onClick = onRetryClick) {
                     Text(text = stringResource(id = R.string.try_again))
+                }
+                if (onBrowserLoginClick != null) {
+                    WCTextButton(onClick = onBrowserLoginClick) {
+                        Text(text = stringResource(id = R.string.login_site_credentials_use_web_authorization))
+                    }
                 }
                 WCTextButton(onClick = onDismissClick) {
                     Text(text = stringResource(id = R.string.dismiss))
@@ -37,6 +43,6 @@ fun LoginUnexpectedResponseAlert(
 @Composable
 private fun LoginUnexpectedResponseAlertPreview() {
     LegacyWooThemeWithBackground {
-        LoginUnexpectedResponseAlert(onRetryClick = {}, onDismissClick = {})
+        LoginUnexpectedResponseAlert(onRetryClick = {}, onDismissClick = {}, onBrowserLoginClick = {})
     }
 }
