@@ -2,24 +2,16 @@ package org.wordpress.android.login;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentSender;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.CancellationSignal;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-
 import org.wordpress.android.fluxc.Dispatcher;
 import org.wordpress.android.fluxc.store.SiteStore;
+import org.wordpress.android.login.google.GoogleCredentialClient;
+import org.wordpress.android.login.google.GoogleCredentialResult;
 import org.wordpress.android.util.AppLog;
 import org.wordpress.android.util.AppLog.T;
 
@@ -28,27 +20,21 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-import static android.app.Activity.RESULT_OK;
-
-public abstract class GoogleFragment extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener {
-    private static final String STATE_SHOULD_RESOLVE_ERROR = "STATE_SHOULD_RESOLVE_ERROR";
+public abstract class GoogleFragment extends Fragment {
     private static final String STATE_FINISHED = "STATE_FINISHED";
     private static final String STATE_DISPLAY_NAME = "STATE_DISPLAY_NAME";
     private static final String STATE_GOOGLE_EMAIL = "STATE_GOOGLE_EMAIL";
     private static final String STATE_GOOGLE_TOKEN_ID = "STATE_GOOGLE_TOKEN_ID";
     private static final String STATE_GOOGLE_PHOTO_URL = "STATE_GOOGLE_PHOTO_URL";
-    private boolean mIsResolvingError;
-    private boolean mShouldResolveError;
     /**
      * This flag is used to store the information the finishFlow was called when the fragment wasn't attached to an
      * activity (for example an EventBus event was received during ongoing configuration change).
      */
     private boolean mFinished;
+    private boolean mFlowStarted;
 
-    private static final String STATE_RESOLVING_ERROR = "STATE_RESOLVING_ERROR";
-    private static final int REQUEST_CONNECT = 1000;
-
-    protected GoogleApiClient mGoogleApiClient;
+    private GoogleCredentialClient mGoogleCredentialClient;
+    private CancellationSignal mCredentialRequestCancellationSignal;
     protected GoogleListener mGoogleListener;
     protected LoginListener mLoginListener;
     protected String mDisplayName;
@@ -76,8 +62,6 @@ public abstract class GoogleFragment extends Fragment implements ConnectionCallb
         super.onCreate(savedInstanceState);
         mDispatcher.register(this);
         if (savedInstanceState != null) {
-            mIsResolvingError = savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
-            mShouldResolveError = savedInstanceState.getBoolean(STATE_SHOULD_RESOLVE_ERROR, false);
             mFinished = savedInstanceState.getBoolean(STATE_FINISHED, false);
             mDisplayName = savedInstanceState.getString(STATE_DISPLAY_NAME);
             mGoogleEmail = savedInstanceState.getString(STATE_GOOGLE_EMAIL);
@@ -85,32 +69,13 @@ public abstract class GoogleFragment extends Fragment implements ConnectionCallb
             mPhotoUrl = savedInstanceState.getString(STATE_GOOGLE_PHOTO_URL);
         }
 
-        // Configure sign-in to request user's ID, basic profile, email address, and ID token.
-        // ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestServerAuthCode(getString(R.string.default_web_client_id))
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestProfile()
-                .requestEmail()
-                .build();
-
-        // Build Google API client with access to sign-in API and options specified above.
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity().getApplicationContext())
-                .addApi(Auth.GOOGLE_SIGN_IN_API, googleSignInOptions)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-
-        if (!mIsResolvingError) {
-            connectGoogleClient();
-        }
+        mGoogleCredentialClient = new GoogleCredentialClient(requireContext(),
+                getString(R.string.default_web_client_id));
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(STATE_RESOLVING_ERROR, mIsResolvingError);
-        outState.putBoolean(STATE_SHOULD_RESOLVE_ERROR, mShouldResolveError);
         outState.putBoolean(STATE_FINISHED, mFinished);
         outState.putString(STATE_DISPLAY_NAME, mDisplayName);
         outState.putString(STATE_GOOGLE_EMAIL, mGoogleEmail);
@@ -142,8 +107,10 @@ public abstract class GoogleFragment extends Fragment implements ConnectionCallb
 
     @Override
     public void onDestroy() {
-        disconnectGoogleClient();
-        AppLog.d(T.MAIN, "GOOGLE SIGNUP/LOGIN: disconnecting google client");
+        if (mCredentialRequestCancellationSignal != null) {
+            mCredentialRequestCancellationSignal.cancel();
+        }
+        AppLog.d(T.MAIN, "GOOGLE SIGNUP/LOGIN: destroying fragment");
         mDispatcher.unregister(this);
         super.onDestroy();
     }
@@ -151,76 +118,39 @@ public abstract class GoogleFragment extends Fragment implements ConnectionCallb
     @Override
     public void onResume() {
         super.onResume();
-        // Show account dialog when Google API onConnected callback returns before fragment is attached.
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected() && !mIsResolvingError && !mShouldResolveError) {
+        // The fragment is retained across configuration changes, so the flow is started only once per instance.
+        if (!mFlowStarted && !mFinished) {
+            mFlowStarted = true;
             startFlow();
         }
     }
 
-    @Override
-    public void onConnected(Bundle bundle) {
-        // Indicates account was selected, that account has granted any required permissions, and a
-        // connection to Google Play services has been established.
-        if (mShouldResolveError) {
-            mShouldResolveError = false;
-
-            // if the fragment is not attached to an activity, the process is started in the onResume
+    protected void requestGoogleCredential() {
+        mCredentialRequestCancellationSignal = new CancellationSignal();
+        mGoogleCredentialClient.requestIdToken(requireActivity(), mCredentialRequestCancellationSignal, result -> {
+            mCredentialRequestCancellationSignal = null;
+            // Google's account picker should be shown again on the next attempt.
+            mGoogleCredentialClient.clearCredentialState();
             if (isAdded()) {
-                startFlow();
-            }
-        }
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        // Could not connect to Google Play Services.  The user needs to select an account, grant
-        // permissions or resolve an error in order to sign in.  Refer to the documentation for
-        // ConnectionResult to see possible error codes.
-        if (!mIsResolvingError && mShouldResolveError) {
-            if (connectionResult.hasResolution()) {
-                try {
-                    mIsResolvingError = true;
-                    connectionResult.startResolutionForResult(getActivity(), REQUEST_CONNECT);
-                } catch (IntentSender.SendIntentException exception) {
-                    mIsResolvingError = false;
-                    mGoogleApiClient.connect();
-                }
+                onGoogleCredentialResult(result);
             } else {
-                mIsResolvingError = false;
-                AppLog.e(AppLog.T.NUX, GoogleApiAvailability.getInstance().getErrorString(
-                        connectionResult.getErrorCode()));
-                showError(getString(R.string.login_error_generic));
+                AppLog.d(T.MAIN, "GOOGLE SIGNUP/LOGIN: credential result ignored, fragment not attached");
             }
-        }
+        });
     }
 
-    @Override
-    public void onConnectionSuspended(int i) {
-        // Connection to Google Play services was lost.  GoogleApiClient will automatically attempt
-        // to re-connect.  Any UI elements depending on connection to Google APIs should be hidden
-        // or disabled until onConnected is called again.
-        Log.w(LoginGoogleFragment.class.getSimpleName(), "onConnectionSuspended: " + i);
-    }
-
-    public void connectGoogleClient() {
-        if (!mGoogleApiClient.isConnecting() && !mGoogleApiClient.isConnected()) {
-            mShouldResolveError = true;
-            mGoogleApiClient.connect();
-        } else {
-            startFlow();
-        }
-    }
-
-    protected void disconnectGoogleClient() {
-        if (mGoogleApiClient.isConnected()) {
-            Auth.GoogleSignInApi.signOut(mGoogleApiClient);
-            mGoogleApiClient.disconnect();
-        }
+    protected void setGoogleAccount(@NonNull GoogleCredentialResult.Success account) {
+        mDisplayName = account.getDisplayName();
+        mGoogleEmail = account.getEmail();
+        mIdToken = account.getIdToken();
+        mPhotoUrl = removeScaleFromGooglePhotoUrl(account.getPhotoUrl());
     }
 
     protected abstract String getProgressDialogText();
 
     protected abstract void startFlow();
+
+    protected abstract void onGoogleCredentialResult(@NonNull GoogleCredentialResult result);
 
     protected void finishFlow() {
         /* This flag might get lost when the finishFlow is called after the fragment's
@@ -236,27 +166,6 @@ public abstract class GoogleFragment extends Fragment implements ConnectionCallb
     protected void showError(String message) {
         finishFlow();
         mGoogleListener.onGoogleSignupError(message);
-    }
-
-    @Override
-    public void onActivityResult(int request, int result, Intent data) {
-        super.onActivityResult(request, result, data);
-
-        switch (request) {
-            case REQUEST_CONNECT:
-                if (result != RESULT_OK) {
-                    mShouldResolveError = false;
-                }
-
-                if (!mGoogleApiClient.isConnecting() && !mGoogleApiClient.isConnected()) {
-                    mGoogleApiClient.connect();
-                } else {
-                    startFlow();
-                }
-
-                mIsResolvingError = false;
-                break;
-        }
     }
 
     private void dismissProgressDialog() {
