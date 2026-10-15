@@ -98,9 +98,9 @@ When a feature has many tracking calls, extract a dedicated tracker (e.g., `WooP
 | `_selected` | User selected an option |
 | `_shown` | View shown to user |
 
-## Checkout timing version 2
+## Checkout timing
 
-Card success, failure and cancellation, and cash success include integer `pos_timing_version: 2`.
+Card success, failure and cancellation, and cash success include the available checkout timing properties.
 `sync_strategy` is the active products source at checkout: `local_catalog`, `remote`, or `unknown`.
 
 | Optional integer milliseconds | Start boundary |
@@ -117,3 +117,9 @@ Failure/cancel clear captured confirmation; success closes only its captured col
 Customer reset replaces active pointers. Native retries can reuse open collections; duplicate/late-confirmed signals do not establish attempt identity.
 Cash uses its own collection and omits confirmation. Remote readers confirm only `requires_capture`/`succeeded`; simulation omits confirmation.
 Existing wall-clock properties, units, checkout counter and reset behavior remain unchanged. These metrics do not measure first display or card touch.
+
+For timing coverage, select Android and iOS cohorts separately with each platform's app-version/build metadata.
+Use the first released version/build that contains these fields as that platform's lower bound; the release
+boundaries can differ. No runtime timing-version property is emitted. Within each cohort, count the eligible
+terminal events and the events with each timing property. A missing property means its start boundary is
+unavailable or its duration is invalid; it does not mean zero. Keep valid zero durations in timing distributions.

@@ -70,7 +70,7 @@ class WooPosCheckoutTiming @Inject constructor(private val clock: WooPosElapsedT
         includeCardStages: Boolean = true,
         context: Context = current,
     ): Map<String, Any> {
-        val properties = mutableMapOf<String, Any>("pos_timing_version" to 2, "sync_strategy" to context.strategy)
+        val properties = mutableMapOf<String, Any>("sync_strategy" to context.strategy)
         val checkout = context.checkout.takeUnless { context.payment.closed }
         val now = checkout?.let { clock.milliseconds() }
         fun add(key: String, stamp: Long?) {

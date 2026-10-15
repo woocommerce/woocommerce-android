@@ -20,25 +20,64 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
     )
 
     @Test
-    fun `when payment fails, then the event identifies the versioned timing contract`() {
+    fun `when payment fails, then the event keeps sync strategy without a timing version`() {
         // WHEN
         val event = provider.CARD_PRESENT_COLLECT_PAYMENT_FAILED as WooPosAnalyticsEvent
 
         // THEN
         assertThat(event.name).isEqualTo("card_present_collect_payment_failed")
-        assertThat(event.properties).containsEntry("pos_timing_version", 2)
+        assertThat(event.properties).doesNotContainKey("pos_timing_version")
         assertThat(event.properties).containsEntry("sync_strategy", "unknown")
     }
 
     @Test
-    fun `when payment is canceled, then the event identifies the versioned timing contract`() {
+    fun `when payment is canceled, then the event keeps sync strategy without a timing version`() {
         // WHEN
         val event = provider.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED as WooPosAnalyticsEvent
 
         // THEN
         assertThat(event.name).isEqualTo("card_present_collect_payment_cancelled")
-        assertThat(event.properties).containsEntry("pos_timing_version", 2)
+        assertThat(event.properties).doesNotContainKey("pos_timing_version")
         assertThat(event.properties).containsEntry("sync_strategy", "unknown")
+    }
+
+    @Test
+    fun `when payment succeeds, then legacy properties and zero timing remain without a timing version`() {
+        // GIVEN
+        val clock = mock<WooPosElapsedTime>()
+        whenever(clock.milliseconds()).thenReturn(100L)
+        val timing = WooPosCheckoutTiming(clock)
+        timing.startCheckout("local_catalog")
+        val keeper = WooPosAnalyticsTrackingDataKeeper(timing).apply {
+            val now = System.currentTimeMillis()
+            interactionWithCustomerStartedTimestamp = now
+            orderSyncSuccessTimestamp = now
+            readerReadyForPaymentTimestamp = now
+            cardTappedTimestamp = now
+            checkoutButtonTapsCount = 3
+        }
+        val events = WooPosPaymentsFlowTrackerEventProvider(keeper, mock())
+
+        // WHEN
+        val event = events.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS as WooPosAnalyticsEvent
+
+        // THEN
+        assertThat(event.name).isEqualTo("card_present_collect_payment_success")
+        assertThat(event.properties).doesNotContainKey("pos_timing_version")
+            .containsEntry("sync_strategy", "local_catalog")
+            .containsEntry("pos_time_since_checkout_started_ms", 0L)
+            .doesNotContainKey("pos_time_since_order_sync_completed_ms")
+            .doesNotContainKey("pos_time_since_payment_confirmed_ms")
+            .containsEntry("checkout_tap_count", "3")
+        listOf(
+            "milliseconds_since_customer_interaction_started",
+            "milliseconds_since_order_sync_success",
+            "milliseconds_since_reader_ready_to_collect_payment",
+            "milliseconds_since_card_tapped",
+        ).forEach { key ->
+            assertThat(event.properties[key]).isInstanceOf(String::class.java)
+            assertThat((event.properties[key] as String).toLong()).isGreaterThanOrEqualTo(0L)
+        }
     }
 
     @Test
@@ -74,7 +113,6 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         assertThat(actual).doesNotContainKey("pos_time_since_reader_ready_ms")
         assertThat(actual).isEqualTo(
             mapOf(
-                "pos_timing_version" to 2,
                 "sync_strategy" to "local_catalog",
                 "pos_time_since_checkout_started_ms" to 250L,
                 "pos_time_since_order_sync_completed_ms" to 150L,
@@ -100,7 +138,6 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         assertThat(actual).doesNotContainKey("pos_time_since_reader_ready_ms")
         assertThat(actual).isEqualTo(
             mapOf(
-                "pos_timing_version" to 2,
                 "sync_strategy" to "remote",
                 "pos_time_since_checkout_started_ms" to 25L,
             )
@@ -130,7 +167,6 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         assertThat(actual).doesNotContainKey("pos_time_since_reader_ready_ms")
         assertThat(actual).isEqualTo(
             mapOf(
-                "pos_timing_version" to 2,
                 "sync_strategy" to "unknown",
                 "pos_time_since_checkout_started_ms" to 0L,
                 "pos_time_since_order_sync_completed_ms" to 0L,
@@ -162,7 +198,6 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         assertThat(actual).doesNotContainKey("pos_time_since_reader_ready_ms")
         assertThat(actual).isEqualTo(
             mapOf(
-                "pos_timing_version" to 2,
                 "sync_strategy" to "local_catalog",
                 "pos_time_since_checkout_started_ms" to 50L,
                 "pos_time_since_payment_confirmed_ms" to 30L,
@@ -193,7 +228,6 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         assertThat(actual).doesNotContainKey("pos_time_since_reader_ready_ms")
         assertThat(actual).isEqualTo(
             mapOf(
-                "pos_timing_version" to 2,
                 "sync_strategy" to "local_catalog",
                 "pos_time_since_checkout_started_ms" to 350L,
                 "pos_time_since_order_sync_completed_ms" to 250L,
@@ -222,7 +256,6 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         assertThat(actual).doesNotContainKey("pos_time_since_reader_ready_ms")
         assertThat(actual).isEqualTo(
             mapOf(
-                "pos_timing_version" to 2,
                 "sync_strategy" to "local_catalog",
                 "pos_time_since_checkout_started_ms" to 450L,
                 "pos_time_since_order_sync_completed_ms" to 350L,
@@ -252,7 +285,6 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         assertThat(actual).doesNotContainKey("pos_time_since_reader_ready_ms")
         assertThat(actual).isEqualTo(
             mapOf(
-                "pos_timing_version" to 2,
                 "sync_strategy" to "local_catalog",
                 "pos_time_since_checkout_started_ms" to 200L,
                 "pos_time_since_order_sync_completed_ms" to 100L,
@@ -283,7 +315,6 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         assertThat(actual).doesNotContainKey("pos_time_since_reader_ready_ms")
         assertThat(actual).isEqualTo(
             mapOf(
-                "pos_timing_version" to 2,
                 "sync_strategy" to "local_catalog",
                 "pos_time_since_checkout_started_ms" to 250L,
                 "pos_time_since_order_sync_completed_ms" to 150L,
@@ -312,7 +343,6 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         assertThat(actual).doesNotContainKey("pos_time_since_reader_ready_ms")
         assertThat(actual).isEqualTo(
             mapOf(
-                "pos_timing_version" to 2,
                 "sync_strategy" to "remote",
                 "pos_time_since_checkout_started_ms" to 300L,
                 "pos_time_since_order_sync_completed_ms" to 200L,
@@ -356,7 +386,7 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         val duplicate = timing.terminalSnapshot(success = true)
         // THEN
         assertThat(actual).containsEntry("pos_time_since_payment_confirmed_ms", 10L)
-        assertThat(duplicate).isEqualTo(mapOf("pos_timing_version" to 2, "sync_strategy" to "remote"))
+        assertThat(duplicate).isEqualTo(mapOf("sync_strategy" to "remote"))
     }
 
     @Test
@@ -371,7 +401,7 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         whenever(clock.milliseconds()).thenReturn(5L)
         val actual = timing.terminalSnapshot(success = false)
         // THEN
-        assertThat(actual).isEqualTo(mapOf("pos_timing_version" to 2, "sync_strategy" to "unknown"))
+        assertThat(actual).isEqualTo(mapOf("sync_strategy" to "unknown"))
     }
 
     @Test
@@ -388,7 +418,7 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         timing.orderSyncCompleted(oldGeneration)
         val actual = timing.terminalSnapshot(success = false)
         // THEN
-        assertThat(actual).isEqualTo(mapOf("pos_timing_version" to 2, "sync_strategy" to "remote"))
+        assertThat(actual).isEqualTo(mapOf("sync_strategy" to "remote"))
     }
 
     @Test
