@@ -18,6 +18,7 @@ import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.PaymentGateway
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -33,6 +34,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -69,6 +71,7 @@ class RefundSummaryViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val REFUND_METHOD_MANUAL = "manual"
+        private const val STORE_REFUND_ERROR_PREFIX = "woocommerce_rest_"
     }
 
     private val navArgs: RefundSummaryFragmentArgs by savedStateHandle.navArgs()
@@ -270,7 +273,7 @@ class RefundSummaryViewModel @Inject constructor(
             val result = initiateRefund(order)
             if (result.isError) {
                 trackRefundError(order, result)
-                triggerUIMessage()
+                triggerUIMessage(result)
             } else {
                 trackRefundSuccess(order, result)
                 updateRefundSummaryStateWithOrderNote(order)
@@ -326,15 +329,17 @@ class RefundSummaryViewModel @Inject constructor(
         )
     }
 
-    private fun triggerUIMessage() {
-        if (isInteracRefund()) {
-            triggerEvent(
+    private fun triggerUIMessage(result: WooResult<WCRefundModel>) {
+        val storeRejectionMessage = result.error.message
+            ?.takeIf { it.isNotBlank() && result.error.apiErrorCode?.startsWith(STORE_REFUND_ERROR_PREFIX) == true }
+        when {
+            isInteracRefund() -> triggerEvent(
                 ShowSnackbar(
                     R.string.card_reader_interac_refund_notifying_backend_about_successful_refund_failed
                 )
             )
-        } else {
-            triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
+            storeRejectionMessage != null -> triggerEvent(ShowUiStringSnackbar(UiStringText(storeRejectionMessage)))
+            else -> triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
         }
     }
 

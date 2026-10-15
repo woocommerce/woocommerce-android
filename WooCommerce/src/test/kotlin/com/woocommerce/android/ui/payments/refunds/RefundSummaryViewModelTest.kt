@@ -5,6 +5,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -17,6 +18,8 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -48,6 +51,7 @@ import java.util.Date
 class RefundSummaryViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_ID = 1L
+        private const val STORE_REJECTION_MESSAGE = "Refund amount cannot be less than the total of line items."
     }
 
     private val selectedSite: SelectedSite = mock()
@@ -880,6 +884,61 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
                 items = itemsCaptor.capture()
             )
             assertThat(itemsCaptor.firstValue.single().total).isEqualByComparingTo("10")
+        }
+    }
+
+    @Test
+    fun `given store rejects the refund, when refunding, then store message is shown`() {
+        testBlocking {
+            // GIVEN
+            val order = createTestOrder(paymentMethod = "cod")
+            whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(order)
+            givenRefundResult(
+                WooResult(
+                    error = WooError(
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = BaseRequest.GenericErrorType.UNKNOWN,
+                        message = STORE_REJECTION_MESSAGE,
+                        apiErrorCode = "woocommerce_rest_invalid_refund_amount"
+                    )
+                )
+            )
+
+            // WHEN
+            initViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.refund()
+
+            // THEN
+            assertThat(events).contains(ShowUiStringSnackbar(UiStringText(STORE_REJECTION_MESSAGE)))
+        }
+    }
+
+    @Test
+    fun `given refund fails without a store error, when refunding, then generic error is shown`() {
+        testBlocking {
+            // GIVEN
+            val order = createTestOrder(paymentMethod = "cod")
+            whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(order)
+            givenRefundResult(
+                WooResult(
+                    error = WooError(
+                        type = WooErrorType.TIMEOUT,
+                        original = BaseRequest.GenericErrorType.TIMEOUT,
+                        message = "timeout"
+                    )
+                )
+            )
+
+            // WHEN
+            initViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.refund()
+
+            // THEN
+            assertThat(events).contains(ShowSnackbar(R.string.order_refunds_amount_refund_error))
         }
     }
 
