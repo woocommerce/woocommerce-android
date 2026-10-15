@@ -13,10 +13,10 @@ import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.getMaxRefundQuantities
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
+import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.max
 import com.woocommerce.android.util.min
@@ -53,6 +53,7 @@ class IssueRefundViewModel @Inject constructor(
     refundStore: WCRefundStore,
     private val orderMapper: OrderMapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val parameterRepository: ParameterRepository,
 ) : ScopedViewModel(savedState) {
     private val orderFlow: SharedFlow<Order> = flow {
         val order = requireNotNull(
@@ -63,6 +64,10 @@ class IssueRefundViewModel @Inject constructor(
 
     private val refundsFlow: SharedFlow<List<Refund>> = flow {
         emit(refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() })
+    }.shareIn(viewModelScope, started = SharingStarted.Lazily, replay = 1)
+
+    private val currencyDecimalsFlow: SharedFlow<Int> = flow {
+        emit(parameterRepository.getCurrencyDecimals())
     }.shareIn(viewModelScope, started = SharingStarted.Lazily, replay = 1)
 
     private val refundItems = savedState.getNullableListStateFlow(
@@ -190,18 +195,18 @@ class IssueRefundViewModel @Inject constructor(
         viewModelScope.launch {
             val order = orderFlow.first()
             val refunds = refundsFlow.first()
-            val maxQuantities = refunds.getMaxRefundQuantities(order.items)
-                .map { (id, quantity) -> id to quantity }
-                .toMap()
 
-            val items = order.items.mapNotNull {
-                val maxQuantity = maxQuantities[it.itemId] ?: return@mapNotNull null
+            val items = order.items.map {
+                val refundedItems = refunds.refundedItemsOf(it)
                 ProductRefundListItem(
                     orderItem = it,
-                    maxQuantity = maxQuantity,
+                    maxQuantity = it.quantity - refundedItems.sumOf { item -> item.quantity },
                     quantity = 0,
                     subtotal = BigDecimal.ZERO,
-                    taxes = emptyList()
+                    taxes = emptyList(),
+                    refundedTotal = refundedItems.sumOf { item -> item.total },
+                    refundedTaxes = refundedItems.flatMap { item -> item.taxes }
+                        .map { tax -> TaxRefund(rateId = tax.rateId, tax = tax.taxAmount) }
                 )
             }
 
@@ -224,6 +229,19 @@ class IssueRefundViewModel @Inject constructor(
             }
         }
     }
+
+    /**
+     * Refunded items are tied to their order line through `_refunded_item_id`. Refunds without it can only be matched
+     * by product, which can't tell apart two lines of the same product.
+     */
+    private fun List<Refund>.refundedItemsOf(orderItem: Order.Item): List<Refund.Item> =
+        flatMap { it.items }.filter { refundedItem ->
+            if (refundedItem.orderItemId > 0) {
+                refundedItem.orderItemId == orderItem.itemId
+            } else {
+                refundedItem.productId == orderItem.productId
+            }
+        }
 
     private fun prepareProductsRefundSection(
         items: List<ProductRefundListItem>
@@ -340,41 +358,27 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onRefundQuantityChanged(uniqueId: Long, newQuantity: Int) {
-        val newItems = getUpdatedItemList(uniqueId, newQuantity)
-        refundItems.value = newItems
+        launch {
+            updateRefundQuantity(uniqueId, newQuantity)
+        }
     }
 
-    private fun getUpdatedItemList(uniqueId: Long, newQuantity: Int): MutableList<ProductRefundListItem> {
-        val newItems = mutableListOf<ProductRefundListItem>()
-        refundItems.value?.forEach {
-            if (it.orderItem.itemId == uniqueId) {
-                // Update the quantity
-                var newItem = it.copy(quantity = newQuantity)
-
-                // Update the subtotal and taxes based on the new quantity
-                newItem = newItem.copy(
-                    subtotal = newItem.calculateTotalSubtotal(),
-                    totalTax = newItem.calculateTotalTaxes(),
-                    taxes = newItem.calculateTaxesList()
-                )
-
-                newItems.add(newItem)
-            } else {
-                newItems.add(it)
-            }
+    private suspend fun updateRefundQuantity(uniqueId: Long, newQuantity: Int) {
+        val decimals = currencyDecimalsFlow.first()
+        refundItems.value = refundItems.value?.map {
+            if (it.orderItem.itemId == uniqueId) it.withRefundQuantity(newQuantity, decimals) else it
         }
-        return newItems
     }
 
     fun onSelectButtonTapped() {
         launch {
             if (productsRefundSection.first().allItemsSelected) {
                 refundItems.value?.forEach {
-                    onRefundQuantityChanged(it.orderItem.itemId, 0)
+                    updateRefundQuantity(it.orderItem.itemId, 0)
                 }
             } else {
                 refundItems.value?.forEach {
-                    onRefundQuantityChanged(it.orderItem.itemId, it.availableRefundQuantity)
+                    updateRefundQuantity(it.orderItem.itemId, it.availableRefundQuantity)
                 }
             }
 

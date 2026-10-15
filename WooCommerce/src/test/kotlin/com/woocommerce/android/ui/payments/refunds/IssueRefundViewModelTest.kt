@@ -11,6 +11,9 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -25,8 +28,11 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.metadata.WCMetaData
+import org.wordpress.android.fluxc.model.order.WCLineTaxEntry
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
@@ -40,6 +46,10 @@ import kotlin.test.assertTrue
 class IssueRefundViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_ID = 1L
+        private const val ORDER_ITEM_ID = 6L
+        private const val OTHER_ORDER_ITEM_ID = 7L
+        private const val PRODUCT_ID = 11L
+        private const val TAX_RATE_ID = 1L
     }
 
     private val orderStore: WCOrderStore = mock()
@@ -49,6 +59,21 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
     private val currencyFormatter: CurrencyFormatter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val parameterRepository: ParameterRepository = mock {
+        on { getParameters() } doReturn SiteParameters(
+            currencyCode = "USD",
+            currencySymbol = "$",
+            currencyFormattingParameters = CurrencyFormattingParameters(
+                currencyThousandSeparator = ",",
+                currencyDecimalSeparator = ".",
+                currencyDecimalNumber = 2,
+                currencyPosition = CurrencyPosition.LEFT
+            ),
+            weightUnit = null,
+            dimensionUnit = null,
+            gmtOffset = 0f
+        )
+    }
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
         on { getString(R.string.multiple_shipping) } doAnswer { "Multiple shipping lines" }
@@ -82,6 +107,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             refundStore = refundStore,
             orderMapper = orderMapper,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
+            parameterRepository = parameterRepository,
         )
     }
 
@@ -246,17 +272,14 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         val items = listOf(
             mock<Order.Item> {
                 on { productId }.thenReturn(1L)
-                on { itemId }.thenReturn(1L)
                 on { quantity }.thenReturn(1.0F)
             },
             mock {
                 on { productId }.thenReturn(2L)
-                on { itemId }.thenReturn(2L)
                 on { quantity }.thenReturn(1.0F)
             },
             mock {
                 on { productId }.thenReturn(3L)
-                on { itemId }.thenReturn(3L)
                 on { quantity }.thenReturn(1.0F)
             },
         )
@@ -310,17 +333,14 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val items = listOf(
                 mock<Order.Item> {
                     on { productId }.thenReturn(1L)
-                    on { itemId }.thenReturn(1L)
                     on { quantity }.thenReturn(2.0F)
                 },
                 mock {
                     on { productId }.thenReturn(2L)
-                    on { itemId }.thenReturn(2L)
                     on { quantity }.thenReturn(2.0F)
                 },
                 mock {
                     on { productId }.thenReturn(3L)
-                    on { itemId }.thenReturn(3L)
                     on { quantity }.thenReturn(2.0F)
                 },
             )
@@ -385,27 +405,22 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val items = listOf(
                 mock<Order.Item> {
                     on { productId }.thenReturn(1L)
-                    on { itemId }.thenReturn(1L)
                     on { quantity }.thenReturn(2.0F)
                 },
                 mock {
                     on { productId }.thenReturn(2L)
-                    on { itemId }.thenReturn(2L)
                     on { quantity }.thenReturn(2.0F)
                 },
                 mock {
                     on { productId }.thenReturn(3L)
-                    on { itemId }.thenReturn(3L)
                     on { quantity }.thenReturn(2.0F)
                 },
                 mock {
                     on { productId }.thenReturn(4L)
-                    on { itemId }.thenReturn(4L)
                     on { quantity }.thenReturn(2.0F)
                 },
                 mock {
                     on { productId }.thenReturn(5L)
-                    on { itemId }.thenReturn(5L)
                     on { quantity }.thenReturn(2.0F)
                 },
             )
@@ -540,4 +555,111 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             }
         }
     }
+
+    @Test
+    fun `given tax that does not divide evenly per unit, when selecting all, then refund does not exceed the line`() =
+        testBlocking {
+            // GIVEN
+            val orderMapper = givenOrder(items = listOf(givenOrderItem()), maxRefund = BigDecimal("10.49"))
+
+            // WHEN
+            initViewModel(orderMapper)
+            viewModel.viewState.getOrAwaitValue()
+            viewModel.onSelectButtonTapped()
+
+            // THEN
+            val viewState = viewModel.viewState.getOrAwaitValue()
+            assertThat(viewState.productsSection.productsRefund).isEqualByComparingTo("10.49")
+            assertThat(viewState.grandTotalRefund).isEqualByComparingTo("10.49")
+        }
+
+    @Test
+    fun `given two units refunded one by one, when refunding the last unit, then only what is left is refunded`() =
+        testBlocking {
+            // GIVEN
+            val orderMapper = givenOrder(items = listOf(givenOrderItem()), maxRefund = BigDecimal("3.49"))
+            whenever(refundStore.getAllRefunds(any(), any())).thenReturn(
+                listOf(givenUnitRefund(refundId = 1L), givenUnitRefund(refundId = 2L))
+            )
+
+            // WHEN
+            initViewModel(orderMapper)
+            viewModel.viewState.getOrAwaitValue()
+            viewModel.onRefundQuantityChanged(ORDER_ITEM_ID, 1)
+
+            // THEN
+            val item = viewModel.viewState.getOrAwaitValue().productsSection.refundItems.single()
+            assertThat(item.subtotal).isEqualByComparingTo("3.33")
+            assertThat(item.totalTax).isEqualByComparingTo("0.16")
+        }
+
+    @Test
+    fun `given another line of the same product was refunded, when refunding one unit, then only one unit is refunded`() =
+        testBlocking {
+            // GIVEN
+            val refundedLine = givenOrderItem().copy(itemId = OTHER_ORDER_ITEM_ID, quantity = 1F)
+            val orderMapper = givenOrder(
+                items = listOf(refundedLine, givenOrderItem()),
+                maxRefund = BigDecimal("10.49")
+            )
+            whenever(refundStore.getAllRefunds(any(), any())).thenReturn(
+                listOf(givenUnitRefund(refundId = 1L, orderItemId = OTHER_ORDER_ITEM_ID))
+            )
+
+            // WHEN
+            initViewModel(orderMapper)
+            viewModel.viewState.getOrAwaitValue()
+            viewModel.onRefundQuantityChanged(ORDER_ITEM_ID, 1)
+
+            // THEN
+            val item = viewModel.viewState.getOrAwaitValue().productsSection.refundItems.single()
+            assertThat(item.orderItem.itemId).isEqualTo(ORDER_ITEM_ID)
+            assertThat(item.maxQuantity).isEqualTo(3F)
+            assertThat(item.subtotal).isEqualByComparingTo("3.33")
+            assertThat(item.totalTax).isEqualByComparingTo("0.17")
+        }
+
+    private suspend fun givenOrder(items: List<Order.Item>, maxRefund: BigDecimal): OrderMapper {
+        val order = mock<Order> {
+            on { this.items }.thenReturn(items)
+            on { this.currency }.thenReturn("USD")
+            on { this.maxRefund } doReturn maxRefund
+        }
+        val orderEntity = mock<OrderEntity>()
+        whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderEntity)
+        return mock {
+            on { toAppModel(orderEntity) }.thenReturn(order)
+        }
+    }
+
+    private fun givenOrderItem() = OrderTestUtils.generateTestOrderItems(quantity = 3F).first().copy(
+        itemId = ORDER_ITEM_ID,
+        productId = PRODUCT_ID,
+        price = BigDecimal("3.33"),
+        total = BigDecimal("9.99"),
+        totalTax = BigDecimal("0.50"),
+        taxes = listOf(Order.LineTaxEntry(rateId = TAX_RATE_ID, taxAmount = BigDecimal("0.50")))
+    )
+
+    private fun givenUnitRefund(refundId: Long, orderItemId: Long = ORDER_ITEM_ID) = WCRefundModel(
+        id = refundId,
+        dateCreated = Date(),
+        amount = BigDecimal("3.50"),
+        reason = "",
+        automaticGatewayRefund = false,
+        items = listOf(
+            WCRefundItem(
+                itemId = refundId,
+                quantity = -1,
+                productId = PRODUCT_ID,
+                subtotal = BigDecimal("-3.33"),
+                total = BigDecimal("-3.33"),
+                totalTax = BigDecimal("-0.17"),
+                metaData = listOf(WCMetaData(id = refundId, key = "_refunded_item_id", value = "$orderItemId")),
+                taxes = listOf(WCLineTaxEntry(rateId = TAX_RATE_ID, totalString = "-0.17"))
+            )
+        ),
+        shippingLineItems = listOf(),
+        feeLineItems = listOf()
+    )
 }

@@ -45,7 +45,9 @@ data class ProductRefundListItem(
     override val quantity: Int = 0,
     override val subtotal: BigDecimal = BigDecimal.ZERO,
     override val totalTax: BigDecimal = BigDecimal.ZERO,
-    override val taxes: List<TaxRefund> = emptyList()
+    override val taxes: List<TaxRefund> = emptyList(),
+    val refundedTotal: BigDecimal = BigDecimal.ZERO,
+    val refundedTaxes: List<TaxRefund> = emptyList(),
 ) : RefundItem() {
     override val itemId: Long
         get() = orderItem.itemId
