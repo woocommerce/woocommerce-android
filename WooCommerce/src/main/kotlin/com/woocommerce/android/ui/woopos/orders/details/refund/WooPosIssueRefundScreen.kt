@@ -512,11 +512,11 @@ private fun RefundModalLayer(
                         )
                         is WooPosRefundState.Error -> ErrorContent(
                             errorState = animatedState,
-                            modifier = Modifier.refundStepInset(),
+                            modifier = Modifier.padding(horizontal = WooPosSpacing.Small.value),
                         )
                         is WooPosRefundState.RefundSuccess -> RefundSuccessContent(
                             state = animatedState,
-                            modifier = Modifier.refundStepInset(),
+                            modifier = Modifier.padding(horizontal = WooPosSpacing.Small.value),
                         )
                         is WooPosRefundState.Loading,
                         is WooPosRefundState.NoRefundableItems -> Unit
@@ -530,7 +530,7 @@ private fun RefundModalLayer(
                     onEvent = onEvent,
                     onConnectReaderClicked = handleConnectReaderClicked,
                     onNavigationEvent = onNavigationEvent,
-                    modifier = Modifier.refundStepInset(),
+                    modifier = Modifier.padding(horizontal = WooPosSpacing.Small.value),
                 )
             }
         }
@@ -970,7 +970,7 @@ private fun ContentStateHandler(
                 SelectItemsContent(
                     state = state,
                     onEvent = onEvent,
-                    modifier = Modifier.refundStepInset(),
+                    modifier = Modifier.padding(horizontal = WooPosSpacing.Small.value),
                     disableItemSelection = disablePartialRefund,
                 )
             }
@@ -991,18 +991,18 @@ private fun ContentStateHandler(
 
             WooPosRefundState.Content.RefundStep.ConfirmRefund,
             WooPosRefundState.Content.RefundStep.Processing -> {
-                ConfirmRefundContent(state = state, modifier = Modifier.refundStepInset())
+                ConfirmRefundContent(state = state, modifier = Modifier.padding(horizontal = WooPosSpacing.Small.value))
             }
 
             WooPosRefundState.Content.RefundStep.ReaderDisconnected -> {
-                RefundReaderDisconnectedContent(modifier = Modifier.refundStepInset())
+                RefundReaderDisconnectedContent(modifier = Modifier.padding(horizontal = WooPosSpacing.Small.value))
             }
 
             WooPosRefundState.Content.RefundStep.PreparingReader,
             is WooPosRefundState.Content.RefundStep.ReadyForRefund,
             WooPosRefundState.Content.RefundStep.ProcessingRefund,
             WooPosRefundState.Content.RefundStep.NotifyingStore -> {
-                RefundReaderContent(state = state, modifier = Modifier.refundStepInset())
+                RefundReaderContent(state = state, modifier = Modifier.padding(horizontal = WooPosSpacing.Small.value))
             }
         }
     }
@@ -1370,7 +1370,7 @@ private fun ReviewRefundContent(
     onEditReason: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val rowModifier = Modifier.refundStepInset()
+    val rowModifier = Modifier.padding(horizontal = WooPosSpacing.Small.value)
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -1424,8 +1424,7 @@ private fun ReviewRefundContent(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                     .clickable(onClick = onEditReason)
-                    .refundStepInset()
-                    .padding(vertical = WooPosSpacing.Small.value)
+                    .padding(WooPosSpacing.Small.value)
                     .semantics {
                         contentDescription = editReasonText
                     }
@@ -1462,11 +1461,6 @@ private fun ReviewRefundContent(
         }
     }
 }
-
-// The modal keeps only Small of its side padding, so tappable rows can draw their ripple into the rest.
-@Composable
-private fun Modifier.refundStepInset(): Modifier =
-    padding(horizontal = WooPosSpacing.Medium.value - WooPosSpacing.Small.value)
 
 @Composable
 private fun ReviewSummaryRow(
