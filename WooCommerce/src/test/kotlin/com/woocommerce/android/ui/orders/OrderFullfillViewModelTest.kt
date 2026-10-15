@@ -18,6 +18,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -532,4 +533,31 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         assertNotNull(exit)
         assertNull(exitWithResult)
     }
+
+    @Test
+    fun `given a stored tracking, when delete is clicked, then it is removed from the list and undo is offered`() =
+        testBlocking {
+            val deletedTracking = testOrderShipmentTrackings.first()
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+            doReturn(deletedTracking).whenever(repository)
+                .getOrderShipmentTrackingByTrackingNumber(ORDER_ID, deletedTracking.trackingNumber)
+            doReturn("Tracking deleted").whenever(resources)
+                .getString(string.order_shipment_tracking_delete_snackbar_msg)
+
+            var orderShipmentTrackings = emptyList<OrderShipmentTracking>()
+            viewModel.shipmentTrackings.observeForever {
+                it?.let { orderShipmentTrackings = it }
+            }
+            var undoSnackbar: ShowUndoSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowUndoSnackbar) undoSnackbar = it
+            }
+
+            viewModel.start()
+            viewModel.onDeleteShipmentTrackingClicked(deletedTracking.trackingNumber)
+
+            assertThat(orderShipmentTrackings).isEqualTo(testOrderShipmentTrackings - deletedTracking)
+            assertNotNull(undoSnackbar)
+        }
 }
