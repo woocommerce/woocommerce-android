@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.refunds
 
 import com.woocommerce.android.ui.products.ParameterRepository
+import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
 import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
@@ -62,6 +63,52 @@ fun ProductRefundListItem.withRefundQuantity(newQuantity: Int, decimals: Int): P
     )
 }
 
+/**
+ * Scales the line amounts down so they add up to [amount].
+ *
+ * WooCommerce rejects refunds whose lines add up to more than the refund amount. That happens when earlier refunds
+ * that weren't tied to items leave less to refund on the order than the selected lines are worth.
+ */
+fun List<RefundRequestItem>.scaledToFit(amount: BigDecimal, decimals: Int): List<RefundRequestItem> {
+    val linesTotal = sumOf { it.total }
+    if (linesTotal <= amount || linesTotal.signum() <= 0 || amount.signum() < 0) return this
+
+    val ratio = amount.divide(linesTotal, MathContext.DECIMAL128)
+    val scaled = map { item ->
+        item.copy(
+            refundTotal = item.refundTotal.scaledDownBy(ratio, decimals),
+            refundTax = item.refundTax.map { it.copy(refundTotal = it.refundTotal.scaledDownBy(ratio, decimals)) }
+        )
+    }
+    return scaled.withRemainderSpread(originals = this, remainder = amount - scaled.sumOf { it.total }, decimals)
+}
+
+/**
+ * Rounding the scaled amounts down leaves a few smallest currency units unallocated. Hands them back to the amounts
+ * that were scaled down, never above their original values.
+ */
+private fun List<RefundRequestItem>.withRemainderSpread(
+    originals: List<RefundRequestItem>,
+    remainder: BigDecimal,
+    decimals: Int
+): List<RefundRequestItem> {
+    var left = remainder
+    fun toppedUp(current: BigDecimal, original: BigDecimal): BigDecimal {
+        val topUp = left.min(original - current).coerceAtLeast(BigDecimal.ZERO).setScale(decimals, RoundingMode.FLOOR)
+        left -= topUp
+        return current + topUp
+    }
+    return mapIndexed { index, item ->
+        val original = originals[index]
+        item.copy(
+            refundTotal = toppedUp(item.refundTotal, original.refundTotal),
+            refundTax = item.refundTax.mapIndexed { taxIndex, tax ->
+                tax.copy(refundTotal = toppedUp(tax.refundTotal, original.refundTax[taxIndex].refundTotal))
+            }
+        )
+    }
+}
+
 private fun clampToLineTotal(
     subtotal: BigDecimal,
     taxes: List<TaxRefund>,
@@ -79,3 +126,6 @@ private fun clampToLineTotal(
 }
 
 private fun BigDecimal.roundedTo(decimals: Int): BigDecimal = setScale(decimals, RoundingMode.HALF_UP)
+
+private fun BigDecimal.scaledDownBy(ratio: BigDecimal, decimals: Int): BigDecimal =
+    multiply(ratio).setScale(decimals, RoundingMode.FLOOR)

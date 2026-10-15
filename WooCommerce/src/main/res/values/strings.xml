@@ -1442,6 +1442,7 @@
     <string name="order_refunds_refunded_items">Refunded items</string>
     <string name="order_refunds_shipping_refund_variable_notice">You can refund %1$s</string>
     <string name="order_refunds_store_admin_link_text">in your store admin</string>
+    <string name="order_refunds_amount_capped_notice">Only %1$s is left to refund on this order, so this refund is limited to that amount.</string>
     <!--
         Add Order Note
     -->

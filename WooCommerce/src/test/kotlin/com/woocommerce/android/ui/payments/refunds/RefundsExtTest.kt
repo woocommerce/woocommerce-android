@@ -4,6 +4,8 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
+import org.wordpress.android.fluxc.model.refunds.RefundRequestTax
 import java.math.BigDecimal
 
 class RefundsExtTest {
@@ -161,6 +163,72 @@ class RefundsExtTest {
         assertThat(result.taxes).isEmpty()
     }
 
+    @Test
+    fun `given scaled lines leave cents unallocated, when scaling to fit, then cents are also spread to taxes`() {
+        // GIVEN
+        val lines = listOf(
+            givenRequestItem(id = 1, total = "10.00", tax = "0.50"),
+            givenRequestItem(id = 2, total = "10.00", tax = "0.50"),
+            givenRequestItem(id = 3, total = "10.00", tax = "0.50")
+        )
+
+        // WHEN
+        val result = lines.scaledToFit(BigDecimal("31.49"), decimals = 2)
+
+        // THEN
+        assertThat(result.sumOf { it.total }).isEqualByComparingTo("31.49")
+        result.zip(lines).forEach { (scaled, original) ->
+            assertThat(scaled.refundTotal).isLessThanOrEqualTo(original.refundTotal)
+            assertThat(scaled.refundTax.single().refundTotal)
+                .isLessThanOrEqualTo(original.refundTax.single().refundTotal)
+        }
+    }
+
+    @Test
+    fun `given lines within the refund amount, when scaling to fit, then lines are unchanged`() {
+        // GIVEN
+        val lines = listOf(givenRequestItem(id = 1, total = "10.00", tax = "0.50"))
+
+        // WHEN
+        val result = lines.scaledToFit(BigDecimal("10.50"), decimals = 2)
+
+        // THEN
+        assertThat(result).isEqualTo(lines)
+    }
+
+    @Test
+    fun `given lines above the refund amount, when scaling to fit, then lines add up to the amount`() {
+        // GIVEN
+        val lines = listOf(givenRequestItem(id = 1, total = "100.00"))
+
+        // WHEN
+        val result = lines.scaledToFit(BigDecimal("50.00"), decimals = 2)
+
+        // THEN
+        assertThat(result.single().total).isEqualByComparingTo("50.00")
+        assertThat(result.single().quantity).isEqualTo(1)
+    }
+
+    @Test
+    fun `given lines that do not split evenly, when scaling to fit, then no line exceeds its original amount`() {
+        // GIVEN
+        val lines = listOf(
+            givenRequestItem(id = 1, total = "10.00", tax = "0.50"),
+            givenRequestItem(id = 2, total = "10.00", tax = "0.50"),
+            givenRequestItem(id = 3, total = "10.00", tax = "0.50")
+        )
+
+        // WHEN
+        val result = lines.scaledToFit(BigDecimal("20.00"), decimals = 2)
+
+        // THEN
+        assertThat(result.sumOf { it.total }).isEqualByComparingTo("20.00")
+        result.zip(lines).forEach { (scaled, original) ->
+            assertThat(scaled.refundTotal).isLessThanOrEqualTo(original.refundTotal)
+            assertThat(scaled.total).isLessThanOrEqualTo(original.total)
+        }
+    }
+
     private fun givenRefundListItem(
         quantity: Float,
         total: String,
@@ -182,6 +250,13 @@ class RefundsExtTest {
             refundedTaxes = refundedTaxes.map { (rateId, amount) -> TaxRefund(rateId, BigDecimal(amount)) }
         )
     }
+
+    private fun givenRequestItem(id: Long, total: String, tax: String? = null) = RefundRequestItem(
+        itemId = id,
+        quantity = 1,
+        refundTotal = BigDecimal(total),
+        refundTax = listOfNotNull(tax?.let { RefundRequestTax(TAX_RATE_ID, BigDecimal(it)) })
+    )
 
     private companion object {
         const val TAX_RATE_ID = 1L

@@ -594,6 +594,42 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given less is left to refund than the selected items, when selecting all, then capped notice is shown`() =
+        testBlocking {
+            // GIVEN
+            val orderMapper = givenOrder(items = listOf(givenOrderItem()), maxRefund = BigDecimal("5.00"))
+            whenever(
+                resourceProvider.getString(R.string.order_refunds_amount_capped_notice, "")
+            ).thenReturn("capped")
+
+            // WHEN
+            initViewModel(orderMapper)
+            viewModel.viewState.getOrAwaitValue()
+            viewModel.onSelectButtonTapped()
+
+            // THEN
+            val viewState = viewModel.viewState.getOrAwaitValue()
+            assertThat(viewState.grandTotalRefund).isEqualByComparingTo("5.00")
+            assertThat(viewState.refundCapNotice).isEqualTo("capped")
+            assertThat(viewState.isRefundNoticeVisible).isTrue()
+        }
+
+    @Test
+    fun `given selected items within what is left to refund, when selecting all, then no capped notice`() =
+        testBlocking {
+            // GIVEN
+            val orderMapper = givenOrder(items = listOf(givenOrderItem()), maxRefund = BigDecimal("10.49"))
+
+            // WHEN
+            initViewModel(orderMapper)
+            viewModel.viewState.getOrAwaitValue()
+            viewModel.onSelectButtonTapped()
+
+            // THEN
+            assertThat(viewModel.viewState.getOrAwaitValue().refundCapNotice).isNull()
+        }
+
+    @Test
     fun `given another line of the same product was refunded, when refunding one unit, then only one unit is refunded`() =
         testBlocking {
             // GIVEN

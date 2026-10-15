@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRef
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.PaymentMethodType
 import com.woocommerce.android.ui.payments.toCardBrandDisplayName
+import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
@@ -64,6 +65,7 @@ class RefundSummaryViewModel @Inject constructor(
     private val refundStore: WCRefundStore,
     private val coroutineDispatchers: CoroutineDispatchers,
     private val refreshProductsSignal: RefreshProductsSignal,
+    private val parameterRepository: ParameterRepository,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val REFUND_METHOD_MANUAL = "manual"
@@ -299,14 +301,16 @@ class RefundSummaryViewModel @Inject constructor(
     }
 
     private suspend fun initiateRefund(order: Order): WooResult<WCRefundModel> {
+        val amount = refundSummaryState.refundAmount
+        val items = navArgs.refundItems.map { it.toDataModel() }
         return refundStore.createItemsRefund(
             site = selectedSite.get(),
             orderId = order.id,
-            amount = refundSummaryState.refundAmount,
+            amount = amount,
             reason = refundSummaryState.refundReason ?: "",
             restockItems = true,
             autoRefund = gateway.await().supportsRefunds,
-            items = navArgs.refundItems.map { it.toDataModel() }
+            items = amount?.let { items.scaledToFit(it, parameterRepository.getCurrencyDecimals()) } ?: items
         )
     }
 

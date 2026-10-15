@@ -146,7 +146,13 @@ class IssueRefundViewModel @Inject constructor(
             feesSection = feesSection,
             shippingSection = shippingSection,
             refundNotice = refundNotice,
-            maxRefund = order.maxRefund
+            maxRefund = order.maxRefund,
+            refundCapNotice = prepareRefundCapNotice(
+                selectedTotal = productsSection.productsRefund +
+                    shippingSection.shippingRefund +
+                    feesSection.feesRefund,
+                maxRefund = order.maxRefund
+            )
         )
     }.asLiveData()
 
@@ -241,6 +247,13 @@ class IssueRefundViewModel @Inject constructor(
             } else {
                 refundedItem.productId == orderItem.productId
             }
+        }
+
+    private fun prepareRefundCapNotice(selectedTotal: BigDecimal, maxRefund: BigDecimal): String? =
+        if (selectedTotal > maxRefund && maxRefund > BigDecimal.ZERO) {
+            resourceProvider.getString(R.string.order_refunds_amount_capped_notice, formatCurrency(maxRefund))
+        } else {
+            null
         }
 
     private fun prepareProductsRefundSection(
@@ -427,7 +440,8 @@ class IssueRefundViewModel @Inject constructor(
         val feesSection: FeesRefundSection,
         val shippingSection: ShippingRefundSection,
         val refundNotice: String?,
-        val maxRefund: BigDecimal
+        val maxRefund: BigDecimal,
+        val refundCapNotice: String?,
     ) {
         val grandTotalRefund: BigDecimal
             get() {
@@ -442,7 +456,7 @@ class IssueRefundViewModel @Inject constructor(
             get() = grandTotalRefund > BigDecimal.ZERO
 
         val isRefundNoticeVisible
-            get() = !refundNotice.isNullOrEmpty()
+            get() = !refundNotice.isNullOrEmpty() || !refundCapNotice.isNullOrEmpty()
     }
 
     data class ProductsRefundSection(
