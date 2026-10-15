@@ -656,12 +656,11 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         }
 
     private suspend fun givenOrder(items: List<Order.Item>, maxRefund: BigDecimal): OrderMapper {
-        val order = mock<Order> {
-            on { this.items }.thenReturn(items)
-            on { this.currency }.thenReturn("USD")
-            on { this.maxRefund } doReturn maxRefund
-        }
-        val orderEntity = mock<OrderEntity>()
+        val order = OrderTestUtils.generateTestOrder(refundTotal = BigDecimal.ZERO).copy(
+            items = items,
+            total = maxRefund
+        )
+        val orderEntity = OrderTestUtils.generateOrder()
         whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderEntity)
         return mock {
             on { toAppModel(orderEntity) }.thenReturn(order)
