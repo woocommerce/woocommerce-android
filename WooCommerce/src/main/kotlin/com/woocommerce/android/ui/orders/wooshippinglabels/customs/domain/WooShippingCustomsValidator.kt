@@ -5,6 +5,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.ContentType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsItem
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.RestrictionType
 import javax.inject.Inject
 
@@ -33,13 +34,7 @@ class WooShippingCustomsValidator @Inject constructor(
                     validateProductDescription(it.description, originCountryCode, destinationCountryCode).isValid &&
                     validateProductValue(it.value.toString()).isValid &&
                     validateProductWeight(it.weight.toString()).isValid &&
-                    (
-                        !customsData.asksForEuProductIdentifiers || it.euProductIdentifiers.run {
-                            validateEuProductIdentifier(sku).isValid &&
-                                validateEuProductIdentifier(manufacturerPartNumber).isValid &&
-                                validateGtin(gtin, hasNoBarcode).isValid
-                        }
-                        )
+                    meetsEuRequirements(it, customsData)
             }
 
         return if (isValid) {
@@ -139,6 +134,14 @@ class WooShippingCustomsValidator @Inject constructor(
         destinationCountryCode: String
     ): Boolean = originCountryCode in ACCEPTED_USPS_ORIGIN_COUNTRIES &&
         destinationCountryCode in ACCEPTED_USPS_ORIGIN_COUNTRIES
+
+    private fun meetsEuRequirements(item: CustomsItem, customsData: CustomsData): Boolean {
+        if (!customsData.asksForEuProductIdentifiers) return true
+        val identifiers = item.euProductIdentifiers
+        return validateEuProductIdentifier(identifiers.sku).isValid &&
+            validateEuProductIdentifier(identifiers.manufacturerPartNumber).isValid &&
+            validateGtin(identifiers.gtin, identifiers.hasNoBarcode).isValid
+    }
 
     fun validateProductValue(value: String) = when (value.isBlank()) {
         false -> FieldValidationResult.Valid
