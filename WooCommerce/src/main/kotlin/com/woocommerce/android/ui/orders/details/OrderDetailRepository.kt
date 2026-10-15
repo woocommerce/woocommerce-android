@@ -29,7 +29,6 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
@@ -271,20 +270,17 @@ class OrderDetailRepository @Inject constructor(
         .reversed()
         .sortedBy { it.id }
 
-    fun getOrderShipmentTrackingByTrackingNumber(
+    suspend fun getOrderShipmentTrackingByTrackingNumber(
         orderId: Long,
         trackingNumber: String
-    ): OrderShipmentTracking? = runBlocking {
-        orderStore.getShipmentTrackingByTrackingNumber(
-            selectedSite.get(),
-            orderId,
-            trackingNumber
-        )?.toAppModel()
-    }
+    ): OrderShipmentTracking? = orderStore.getShipmentTrackingByTrackingNumber(
+        selectedSite.get(),
+        orderId,
+        trackingNumber
+    )?.toAppModel()
 
-    fun getOrderShipmentTrackings(orderId: Long) = runBlocking {
+    suspend fun getOrderShipmentTrackings(orderId: Long): List<OrderShipmentTracking> =
         orderStore.getShipmentTrackingsForOrder(selectedSite.get(), orderId).map { it.toAppModel() }
-    }
 
     fun getOrderShippingLabels(remoteOrderId: Long) = shippingLabelStore
         .getShippingLabelsForOrder(selectedSite.get(), remoteOrderId)

@@ -855,7 +855,7 @@ class OrderDetailViewModel @Inject constructor(
         orderDetailsTransactionLauncher.onPackageCreationEligibleFetched()
     }
 
-    private fun loadShipmentTracking(
+    private suspend fun loadShipmentTracking(
         shippingLabels: ListInfo<ShippingLabelModel>,
         isVirtualOrder: Boolean
     ): ListInfo<OrderShipmentTracking> {
