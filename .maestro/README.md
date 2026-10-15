@@ -220,6 +220,8 @@ The runner:
 - `system_surface`: flow enters Android-owned UI; assertions stop at the documented handoff boundary.
 - `destructive`: mutates store data.
 - `store_shared`: runs against the shared store unless `--store` is passed; never combined with `destructive`.
+- `app_upgrade`: the runner installs the latest release, logs in and installs the `--apk` build over it first. Needs
+  an `--apk` signed with the release key.
 - `quarantine`: failing flows kept out of runs until they are fixed, excluded unless `--include-quarantine` is passed
   or `--include-tags` names it.
 
