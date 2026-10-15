@@ -22,6 +22,14 @@ fun ProductRefundListItem.withRefundQuantity(newQuantity: Int, decimals: Int): P
         return copy(quantity = newQuantity, subtotal = BigDecimal.ZERO, totalTax = BigDecimal.ZERO, taxes = emptyList())
     }
 
+    // Lines with a negative total, like a discount added as a product, refund negative amounts. The math runs on
+    // magnitudes and the line's sign is put back at the end.
+    val sign = if ((orderItem.total + orderItem.totalTax).signum() < 0) BigDecimal.ONE.negate() else BigDecimal.ONE
+    val lineTotal = orderItem.total * sign
+    val lineTotalTax = orderItem.totalTax * sign
+    val refundedLineTotal = refundedTotal * sign
+    val refundedLineTax = refundedTaxes.sumOf { it.tax } * sign
+
     val isRefundingAllRemaining = newQuantity >= availableRefundQuantity
     val shareOfLine: (BigDecimal) -> BigDecimal = { amount ->
         amount.multiply(newQuantity.toBigDecimal())
@@ -29,21 +37,18 @@ fun ProductRefundListItem.withRefundQuantity(newQuantity: Int, decimals: Int): P
             .roundedTo(decimals)
     }
 
-    val remainingSubtotal = (orderItem.total - refundedTotal).roundedTo(decimals).coerceAtLeast(BigDecimal.ZERO)
-    val subtotal = if (isRefundingAllRemaining) {
-        remainingSubtotal
-    } else {
-        shareOfLine(orderItem.total).min(remainingSubtotal)
-    }
+    val remainingSubtotal = (lineTotal - refundedLineTotal).roundedTo(decimals).coerceAtLeast(BigDecimal.ZERO)
+    val subtotal = if (isRefundingAllRemaining) remainingSubtotal else shareOfLine(lineTotal).min(remainingSubtotal)
 
     val taxes = orderItem.taxes.map { tax ->
-        val refundedTax = refundedTaxes.filter { it.rateId == tax.rateId }.sumOf { it.tax }
-        val remainingTax = (tax.taxAmount - refundedTax).roundedTo(decimals).coerceAtLeast(BigDecimal.ZERO)
-        val taxToRefund = if (isRefundingAllRemaining) remainingTax else shareOfLine(tax.taxAmount).min(remainingTax)
+        val taxAmount = tax.taxAmount * sign
+        val refundedTax = refundedTaxes.filter { it.rateId == tax.rateId }.sumOf { it.tax } * sign
+        val remainingTax = (taxAmount - refundedTax).roundedTo(decimals).coerceAtLeast(BigDecimal.ZERO)
+        val taxToRefund = if (isRefundingAllRemaining) remainingTax else shareOfLine(taxAmount).min(remainingTax)
         TaxRefund(rateId = tax.rateId, tax = taxToRefund)
     }
 
-    val remainingLineTotal = (orderItem.total + orderItem.totalTax - refundedTotal - refundedTaxes.sumOf { it.tax })
+    val remainingLineTotal = (lineTotal + lineTotalTax - refundedLineTotal - refundedLineTax)
         .roundedTo(decimals)
         .coerceAtLeast(BigDecimal.ZERO)
     val (clampedSubtotal, clampedTaxes) = clampToLineTotal(subtotal, taxes, remainingLineTotal)
@@ -51,15 +56,15 @@ fun ProductRefundListItem.withRefundQuantity(newQuantity: Int, decimals: Int): P
     // Without a per-rate breakdown the tax can't go on the line, so it's only added to the refund amount.
     val taxWithoutRate = when {
         orderItem.taxes.isNotEmpty() -> BigDecimal.ZERO
-        isRefundingAllRemaining -> (orderItem.totalTax - refundedTaxes.sumOf { it.tax }).roundedTo(decimals)
-        else -> shareOfLine(orderItem.totalTax)
+        isRefundingAllRemaining -> (lineTotalTax - refundedLineTax).roundedTo(decimals)
+        else -> shareOfLine(lineTotalTax)
     }.coerceAtLeast(BigDecimal.ZERO)
 
     return copy(
         quantity = newQuantity,
-        subtotal = clampedSubtotal,
-        totalTax = clampedTaxes.sumOf { it.tax } + taxWithoutRate,
-        taxes = clampedTaxes
+        subtotal = clampedSubtotal * sign,
+        totalTax = (clampedTaxes.sumOf { it.tax } + taxWithoutRate) * sign,
+        taxes = clampedTaxes.map { it.copy(tax = it.tax * sign) }
     )
 }
 

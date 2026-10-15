@@ -110,6 +110,52 @@ class RefundsExtTest {
     }
 
     @Test
+    fun `given a negative line, when refunding it, then its negative total is refunded`() {
+        // GIVEN
+        val item = givenRefundListItem(quantity = 1F, total = "-20.00", taxes = emptyList())
+
+        // WHEN
+        val result = item.withRefundQuantity(newQuantity = 1, decimals = 2)
+
+        // THEN
+        assertThat(result.subtotal).isEqualByComparingTo("-20.00")
+        assertThat(result.total).isEqualByComparingTo("-20.00")
+    }
+
+    @Test
+    fun `given a negative line, when refunding one unit, then its negative share is refunded`() {
+        // GIVEN
+        val item = givenRefundListItem(quantity = 3F, total = "-9.99", taxes = listOf(TAX_RATE_ID to "-0.50"))
+
+        // WHEN
+        val result = item.withRefundQuantity(newQuantity = 1, decimals = 2)
+
+        // THEN
+        assertThat(result.subtotal).isEqualByComparingTo("-3.33")
+        assertThat(result.taxes).containsExactly(TaxRefund(TAX_RATE_ID, BigDecimal("-0.17")))
+    }
+
+    @Test
+    fun `given two units of a negative line already refunded, when refunding the last unit, then what is left is refunded`() {
+        // GIVEN
+        val item = givenRefundListItem(
+            quantity = 3F,
+            total = "-9.99",
+            taxes = listOf(TAX_RATE_ID to "-0.50"),
+            maxQuantity = 1F,
+            refundedTotal = "-6.66",
+            refundedTaxes = listOf(TAX_RATE_ID to "-0.34")
+        )
+
+        // WHEN
+        val result = item.withRefundQuantity(newQuantity = 1, decimals = 2)
+
+        // THEN
+        assertThat(result.subtotal).isEqualByComparingTo("-3.33")
+        assertThat(result.totalTax).isEqualByComparingTo("-0.16")
+    }
+
+    @Test
     fun `when refunding zero units, then nothing is refunded`() {
         // GIVEN
         val item = givenRefundListItem(quantity = 3F, total = "9.99", taxes = listOf(TAX_RATE_ID to "0.50"))
