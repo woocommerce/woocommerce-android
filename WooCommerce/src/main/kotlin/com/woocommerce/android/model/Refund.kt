@@ -173,12 +173,8 @@ fun List<Refund>.getNonRefundedProducts(
 fun List<Refund>.getMaxRefundQuantities(
     products: List<Order.Item>
 ): Map<Long, Float> {
-    val allRefundedItems = this.flatMap { it.items }
-
     return products.mapNotNull { product ->
-        val refundedQuantity = allRefundedItems
-            .filter { it.productId == product.productId }
-            .sumOf { it.quantity }
+        val refundedQuantity = refundedItemsOf(product).sumOf { it.quantity }
 
         val quantityLeftToRefund = product.quantity - refundedQuantity
 
@@ -189,3 +185,16 @@ fun List<Refund>.getMaxRefundQuantities(
         }
     }.toMap()
 }
+
+/**
+ * Refunded items are tied to their order line through `_refunded_item_id`. Refunds without it can only be matched
+ * by product, which can't tell apart two lines of the same product.
+ */
+fun List<Refund>.refundedItemsOf(orderItem: Order.Item): List<Refund.Item> =
+    flatMap { it.items }.filter { refundedItem ->
+        if (refundedItem.orderItemId > 0) {
+            refundedItem.orderItemId == orderItem.itemId
+        } else {
+            refundedItem.productId == orderItem.productId
+        }
+    }

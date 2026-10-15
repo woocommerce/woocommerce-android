@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.refundedItemsOf
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
@@ -235,19 +236,6 @@ class IssueRefundViewModel @Inject constructor(
             }
         }
     }
-
-    /**
-     * Refunded items are tied to their order line through `_refunded_item_id`. Refunds without it can only be matched
-     * by product, which can't tell apart two lines of the same product.
-     */
-    private fun List<Refund>.refundedItemsOf(orderItem: Order.Item): List<Refund.Item> =
-        flatMap { it.items }.filter { refundedItem ->
-            if (refundedItem.orderItemId > 0) {
-                refundedItem.orderItemId == orderItem.itemId
-            } else {
-                refundedItem.productId == orderItem.productId
-            }
-        }
 
     private fun prepareRefundCapNotice(selectedTotal: BigDecimal, maxRefund: BigDecimal): String? =
         if (selectedTotal > maxRefund && maxRefund > BigDecimal.ZERO) {
