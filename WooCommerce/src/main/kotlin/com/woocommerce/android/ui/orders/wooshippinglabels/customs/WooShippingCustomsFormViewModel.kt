@@ -92,6 +92,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
             otherRestrictionInput = validateAsInputValue(customData.restrictionDescription) {
                 customsValidator.validateRestrictionType(customData.restrictionType, it)
             },
+            euProductIdentifiersRequirement = customData.euProductIdentifiersRequirement,
             itnValue = InputValue.Data(customData.itn),
             returnToSenderChecked = customData.isReturnToSender,
             shippingProducts = customData.items.map { item ->
@@ -117,7 +118,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
                         item.value.toString(),
                         item.weight.toString()
                     )
-                )
+                ).withEuProductIdentifiers(item.euProductIdentifiers)
             },
             currencySymbol = currencySymbol,
             weightUnit = weightUnit
@@ -205,6 +206,10 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         }
     }
 
+    fun onShippableProductEuProductIdentifiersChanged(itemIndex: Int, identifiers: EuProductIdentifiers) {
+        updateShippingProductsAt(itemIndex) { it.withEuProductIdentifiers(identifiers) }
+    }
+
     fun onShippableProductValuePerUnitChanged(itemIndex: Int, newValue: String) {
         updateShippingProductsAt(itemIndex) { item ->
             validateAsInputValue(newValue, customsValidator::validateProductValue).let {
@@ -277,6 +282,18 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         }
     }
 
+    private fun WooShippingCustomsProductUIModel.withEuProductIdentifiers(identifiers: EuProductIdentifiers) = copy(
+        sku = validateAsInputValue(identifiers.sku, customsValidator::validateEuProductIdentifier),
+        manufacturerPartNumber = validateAsInputValue(
+            identifiers.manufacturerPartNumber,
+            customsValidator::validateEuProductIdentifier
+        ),
+        gtin = validateAsInputValue(if (identifiers.hasNoBarcode) "" else identifiers.gtin) {
+            customsValidator.validateGtin(it, identifiers.hasNoBarcode)
+        },
+        hasNoBarcode = identifiers.hasNoBarcode
+    )
+
     private suspend fun loadCountries() {
         getAllCountries().fold(
             onSuccess = { possibleLocations = it },
@@ -308,6 +325,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         val itnValue: InputValue = InputValue.Empty,
         val returnToSenderChecked: Boolean = false,
         val shippingProducts: List<WooShippingCustomsProductUIModel> = emptyList(),
+        val euProductIdentifiersRequirement: EuProductIdentifiersRequirement,
         val currencySymbol: String,
         val weightUnit: String,
     ) : Parcelable {
@@ -317,11 +335,17 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         val shouldDisplayRestrictionTypeInput: Boolean
             get() = restrictionType == RestrictionType.OTHER
 
+        val shouldDisplayEuProductIdentifiers: Boolean
+            get() = asCustomData.asksForEuProductIdentifiers
+
+        val shouldDisplayPluginUpdateNotice: Boolean
+            get() = asCustomData.asksToUpdatePluginForEuProductIdentifiers
+
         val isAddCustomsButtonEnabled: Boolean
             get() = itnValue.isValid &&
                 (contentType != ContentType.OTHER || otherContentInput.isValid) &&
                 (restrictionType != RestrictionType.OTHER || otherRestrictionInput.isValid) &&
-                shippingProducts.all { it.isValid }
+                shippingProducts.all { it.isValid(shouldDisplayEuProductIdentifiers) }
 
         val asCustomData: CustomsData
             get() = CustomsData(
@@ -331,7 +355,8 @@ class WooShippingCustomsFormViewModel @Inject constructor(
                 restrictionDescription = otherRestrictionInput.currentInput,
                 itn = itnValue.currentInput,
                 isReturnToSender = returnToSenderChecked,
-                items = shippingProducts.map { it.asCustomItem }
+                items = shippingProducts.map { it.asCustomItem },
+                euProductIdentifiersRequirement = euProductIdentifiersRequirement
             )
     }
 

@@ -7,7 +7,6 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentC
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCurrencySupportedChecker
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -20,22 +19,20 @@ import java.util.Date
 
 @ExperimentalCoroutinesApi
 class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
-    private val repository: OrderDetailRepository = mock()
     private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker = mock()
+    private val orderDetailRepository: OrderDetailRepository = mock()
     private val checker: CardReaderPaymentCollectibilityChecker = CardReaderPaymentCollectibilityChecker(
-        orderDetailRepository = repository,
-        cardReaderPaymentCurrencySupportedChecker = cardReaderPaymentCurrencySupportedChecker
+        cardReaderPaymentCurrencySupportedChecker = cardReaderPaymentCurrencySupportedChecker,
+        orderDetailRepository = orderDetailRepository,
     )
 
     private val generatedOrder = OrderTestUtils.generateTestOrder()
 
     @Before
     fun setUp() {
-        runBlocking {
-            whenever(repository.hasSubscriptionProducts(any())).doReturn(false)
-        }
         testBlocking {
             whenever(cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(any())).thenReturn(true)
+            whenever(orderDetailRepository.hasLegacySubscriptionProducts(any())).thenReturn(false)
         }
     }
 
@@ -148,10 +145,10 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order has no subscriptions items, then is collectable`() =
+    fun `when order has no legacy subscription products, then is collectable`() =
         testBlocking {
             val order = getOrder()
-            doReturn(false).whenever(repository).hasSubscriptionProducts(any())
+            doReturn(false).whenever(orderDetailRepository).hasLegacySubscriptionProducts(any())
 
             val isCollectable = checker.isCollectable(order)
 
@@ -159,10 +156,10 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order has subscriptions items, then hide collect button`() =
+    fun `when order has legacy subscription products, then hide collect button`() =
         testBlocking {
             val order = getOrder()
-            doReturn(true).whenever(repository).hasSubscriptionProducts(any())
+            doReturn(true).whenever(orderDetailRepository).hasLegacySubscriptionProducts(any())
 
             val isCollectable = checker.isCollectable(order)
 

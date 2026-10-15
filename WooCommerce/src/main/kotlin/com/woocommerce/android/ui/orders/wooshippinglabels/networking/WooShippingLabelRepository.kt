@@ -4,6 +4,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiers
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAccountSettingsDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAddressDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingEligibilityDataStore
@@ -99,6 +100,31 @@ class WooShippingLabelRepository @Inject constructor(
                         )
                     }
             }
+
+    suspend fun fetchCustomsRequirements(
+        site: SiteModel,
+        orderId: Long,
+        originId: String
+    ) = restClient.fetchCustomsRequirements(site, orderId, originId).asWooResult()
+
+    suspend fun fetchEuProductIdentifiers(
+        site: SiteModel,
+        orderId: Long
+    ): WooResult<Map<Long, EuProductIdentifiers>> =
+        restClient.fetchConfigLineItems(site, orderId).asWooResult { response ->
+            response.config?.order?.lineItems.orEmpty().mapNotNull { lineItem ->
+                val productId = lineItem.productId ?: return@mapNotNull null
+                val customsInfo = lineItem.meta?.customsInfo
+                val standardizedProductId = customsInfo?.standardizedProductId.orEmpty()
+                val hasNoBarcode = standardizedProductId == EuProductIdentifiers.NO_BARCODE_STANDARDIZED_PRODUCT_ID
+                productId to EuProductIdentifiers(
+                    sku = lineItem.sku.orEmpty(),
+                    manufacturerPartNumber = customsInfo?.manufacturerProductId.orEmpty(),
+                    gtin = if (hasNoBarcode) "" else standardizedProductId,
+                    hasNoBarcode = hasNoBarcode
+                )
+            }.toMap()
+        }
 
     suspend fun fetchPurchasedShippingLabels(
         site: SiteModel,

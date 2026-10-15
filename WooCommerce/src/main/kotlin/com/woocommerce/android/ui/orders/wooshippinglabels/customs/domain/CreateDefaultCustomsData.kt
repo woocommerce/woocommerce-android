@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsItem
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.RestrictionType
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.ui.products.ProductHelper
 import org.wordpress.android.fluxc.model.data.WCLocationModel
 import org.wordpress.android.fluxc.store.WCDataStore
 import javax.inject.Inject
@@ -28,7 +29,7 @@ class CreateDefaultCustomsData @Inject constructor(
     }
 
     private fun ShippableItemModel.createDefaultCustomsItem(defaultOriginCountry: WCLocationModel?) = CustomsItem(
-        productID = productId,
+        productID = ProductHelper.productOrVariationId(productId, variationId),
         description = title,
         quantity = quantity,
         value = price,

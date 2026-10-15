@@ -75,6 +75,21 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when getting the user for a site, then the user is read for that site without the selected site`() = runTest {
+        // GIVEN
+        val site = SiteModel().apply { id = 2 }
+        doReturn(expectedUser.email).whenever(appPrefsWrapper).getUserEmail()
+        doReturn(expectedUser).whenever(userStore).getUserByEmail(site, expectedUser.email)
+
+        // WHEN
+        val user = fetcher.getUser(site)
+
+        // THEN
+        assertThat(user).isEqualTo(expectedUser.toAppModel())
+        verify(selectedSite, never()).get()
+    }
+
+    @Test
     fun `Do not update prefs when request failed`() = runTest {
         whenever(userStore.fetchUserRole(any())).thenReturn(WooResult(WooError(GENERIC_ERROR, UNKNOWN, "")))
 
