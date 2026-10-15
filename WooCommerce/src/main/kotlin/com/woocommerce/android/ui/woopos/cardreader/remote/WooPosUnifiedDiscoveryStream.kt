@@ -82,6 +82,8 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
                                 send(WooPosUnifiedDiscoveryEvent.Failed(event.msg))
                             is CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported ->
                                 send(WooPosUnifiedDiscoveryEvent.Failed(event.msg))
+                            is CardReaderDiscoveryEvents.FailedTapToPayInsecureEnvironment ->
+                                send(WooPosUnifiedDiscoveryEvent.Failed(event.msg))
                             is CardReaderDiscoveryEvents.Succeeded -> send(WooPosUnifiedDiscoveryEvent.Succeeded)
                         }
                     }

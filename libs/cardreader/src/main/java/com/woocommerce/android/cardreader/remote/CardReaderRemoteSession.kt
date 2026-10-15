@@ -264,15 +264,25 @@ class CardReaderRemoteSession internal constructor(
             .mapNotNull { event ->
                 when (event) {
                     is CardReaderDiscoveryEvents.ReadersFound -> event.list.firstOrNull()
-                    is CardReaderDiscoveryEvents.Failed ->
-                        throw CardReaderRemoteFailure(CardReaderRemoteError.ConnectFailed, event.msg)
-                    is CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported ->
-                        throw CardReaderRemoteFailure(CardReaderRemoteError.PhoneNotEligible, event.msg)
+                    is CardReaderDiscoveryEvents.Failed,
+                    is CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported,
+                    is CardReaderDiscoveryEvents.FailedTapToPayInsecureEnvironment -> throw event.toRemoteFailure()
                     CardReaderDiscoveryEvents.Started,
                     CardReaderDiscoveryEvents.Succeeded -> null
                 }
             }
             .first()
+    }
+
+    private fun CardReaderDiscoveryEvents.toRemoteFailure() = when (this) {
+        is CardReaderDiscoveryEvents.Failed -> CardReaderRemoteFailure(CardReaderRemoteError.ConnectFailed, msg)
+        is CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported ->
+            CardReaderRemoteFailure(CardReaderRemoteError.PhoneNotEligible, msg)
+        is CardReaderDiscoveryEvents.FailedTapToPayInsecureEnvironment ->
+            CardReaderRemoteFailure(CardReaderRemoteError.InsecureEnvironment, msg)
+        CardReaderDiscoveryEvents.Started,
+        is CardReaderDiscoveryEvents.ReadersFound,
+        CardReaderDiscoveryEvents.Succeeded -> error("Unexpected discovery event $this")
     }
 
     private suspend fun handleCollectPaymentRequest(
