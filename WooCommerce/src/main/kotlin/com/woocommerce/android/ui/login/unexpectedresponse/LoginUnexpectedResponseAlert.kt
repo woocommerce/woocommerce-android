@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -24,15 +25,18 @@ fun LoginUnexpectedResponseAlert(
         confirmButton = {
             Column(horizontalAlignment = Alignment.End) {
                 WCTextButton(onClick = onRetryClick) {
-                    Text(text = stringResource(id = R.string.try_again))
+                    Text(text = stringResource(id = R.string.try_again), textAlign = TextAlign.End)
                 }
                 if (onBrowserLoginClick != null) {
                     WCTextButton(onClick = onBrowserLoginClick) {
-                        Text(text = stringResource(id = R.string.login_site_credentials_use_web_authorization))
+                        Text(
+                            text = stringResource(id = R.string.login_site_credentials_use_web_authorization),
+                            textAlign = TextAlign.End
+                        )
                     }
                 }
                 WCTextButton(onClick = onDismissClick) {
-                    Text(text = stringResource(id = R.string.dismiss))
+                    Text(text = stringResource(id = R.string.dismiss), textAlign = TextAlign.End)
                 }
             }
         }
