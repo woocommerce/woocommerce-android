@@ -1,2 +1,0 @@
-25.8:
-Mağazam, Siparişler, Ürünler ve Daha Fazla menüsünün yeni bir görünümü var. Anlık bildirimler daha güvenilirdir, beklenmeyen oturumları azaltır ve büyük mağazalar zaman aşımına uğramadan siparişleri senkronize eder. POS'ta özel tutarlar ve indirimler ödeme sırasında daha temizdir. Ayrıca oturum açma, ödeme, ürün varyasyonları ve mağaza güncellemeleri için düzeltmeler.
