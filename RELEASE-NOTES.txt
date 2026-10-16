@@ -4,7 +4,7 @@
 
 26.0
 -----
-
+- [***] [Internal] Migrated Google sign-in from the deprecated Play Services Auth API to Credential Manager [https://github.com/woocommerce/woocommerce-android/pull/16721]
 
 25.9
 -----
