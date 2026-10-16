@@ -20,6 +20,7 @@
 - [*] [Woo POS] On Android 17, the "Choose a device to connect" picker no longer reopens after "Don't connect" when connecting a card reader [https://github.com/woocommerce/woocommerce-android/pull/16702]
 - [*] [Woo POS] The refund reason row on the Review refund screen now has padding around its tap highlight [https://github.com/woocommerce/woocommerce-android/pull/16708]
 - [**] Shipping Labels: For shipments into the EU, the customs form now asks for each item's SKU, manufacturer part number and GTIN/EAN when WooCommerce Shipping requires them [https://github.com/woocommerce/woocommerce-android/pull/16706]
+- [Internal] Shipping labels and the label eligibility check are no longer read from the database on the main thread [https://github.com/woocommerce/woocommerce-android/pull/16720]
 
 25.8
 -----
