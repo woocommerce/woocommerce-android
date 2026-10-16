@@ -4,6 +4,7 @@
 
 26.0
 -----
+- [*] [Woo POS] On Android 17, POS asks for local network access only when you choose to use a phone as a card reader [https://github.com/woocommerce/woocommerce-android/pull/16723]
 
 
 25.9

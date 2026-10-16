@@ -99,6 +99,10 @@ class WooPosCardReaderConnectionController(
         discoveryJob?.cancel()
         _state.value = WooPosCardReaderConnectionState.RemoteTapToPayExplainer(
             onDismissClicked = ::hideRemoteTapToPayExplainer,
+            onAllowLocalNetworkClicked = when (WooPermissionUtils.hasLocalNetworkPermission(context)) {
+                true -> null
+                false -> ::requestLocalNetworkPermission
+            },
         )
         scope.launch {
             wooPosAnalyticsTracker.track(WooPosAnalyticsEvent.Event.RemoteTapToPayExplainerShown)
@@ -194,8 +198,12 @@ class WooPosCardReaderConnectionController(
     fun onLocalNetworkPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
         isLocalNetworkPermissionPermanentlyDenied = !granted && !shouldShowRationale
         val currentState = _state.value
-        if (granted && currentState is WooPosCardReaderConnectionState.MissingLocalNetworkPermission) {
-            onPhoneConnectClicked(currentState.phone)
+        when {
+            !granted -> Unit
+            currentState is WooPosCardReaderConnectionState.MissingLocalNetworkPermission ->
+                onPhoneConnectClicked(currentState.phone)
+            currentState is WooPosCardReaderConnectionState.RemoteTapToPayExplainer ->
+                hideRemoteTapToPayExplainer()
         }
     }
 
@@ -216,6 +224,11 @@ class WooPosCardReaderConnectionController(
             currentState is WooPosCardReaderConnectionState.MissingLocalNetworkPermission &&
                 WooPermissionUtils.hasLocalNetworkPermission(context) ->
                 onPhoneConnectClicked(currentState.phone)
+
+            currentState is WooPosCardReaderConnectionState.RemoteTapToPayExplainer &&
+                currentState.onAllowLocalNetworkClicked != null &&
+                WooPermissionUtils.hasLocalNetworkPermission(context) ->
+                hideRemoteTapToPayExplainer()
         }
     }
 
@@ -305,6 +318,14 @@ class WooPosCardReaderConnectionController(
             emitEvent(ControllerEvent.OpenAppSettings)
         } else {
             emitEvent(ControllerEvent.RequestLocationPermission)
+        }
+    }
+
+    private fun requestLocalNetworkPermission() {
+        if (isLocalNetworkPermissionPermanentlyDenied) {
+            emitEvent(ControllerEvent.OpenAppSettings)
+        } else {
+            emitEvent(ControllerEvent.RequestLocalNetworkPermission)
         }
     }
 
@@ -422,7 +443,10 @@ class WooPosCardReaderConnectionController(
                     cardReaderTypesToDiscover = ExternalReaders(
                         listOf(Chipper2X, StripeM2, WisePade3)
                     ),
-                    includeBluetooth = includeBluetooth,
+                    transports = buildSet {
+                        if (includeBluetooth) add(WooPosDiscoveryTransport.Bluetooth)
+                        if (WooPermissionUtils.hasLocalNetworkPermission(context)) add(WooPosDiscoveryTransport.WifiLan)
+                    },
                 )
                 .flowOn(dispatchers.io)
                 .collect { event ->
@@ -582,13 +606,7 @@ class WooPosCardReaderConnectionController(
             logger.d("Local network permission not granted")
             _state.value = WooPosCardReaderConnectionState.MissingLocalNetworkPermission(
                 phone = phone,
-                onRequestPermissionClicked = {
-                    if (isLocalNetworkPermissionPermanentlyDenied) {
-                        emitEvent(ControllerEvent.OpenAppSettings)
-                    } else {
-                        emitEvent(ControllerEvent.RequestLocalNetworkPermission)
-                    }
-                },
+                onRequestPermissionClicked = ::requestLocalNetworkPermission,
                 onCancelClicked = { cancel() },
             )
             return

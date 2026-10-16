@@ -300,7 +300,10 @@ fun WooPosCardReaderConnectionDialogContent(
         ) { currentState ->
             when (currentState) {
                 is WooPosCardReaderConnectionState.RemoteTapToPayExplainer -> {
-                    WooPosRemoteReaderExplainerContent(onDismiss = currentState.onDismissClicked)
+                    WooPosRemoteReaderExplainerContent(
+                        onDismiss = currentState.onDismissClicked,
+                        onAllowLocalNetworkClicked = currentState.onAllowLocalNetworkClicked,
+                    )
                 }
                 is WooPosCardReaderConnectionState.Scanning -> {
                     ScanningContent(
