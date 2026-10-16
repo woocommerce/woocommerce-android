@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.store
 
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.shippinglabels.WCAddressVerificationResult
@@ -58,18 +57,17 @@ class WCShippingLabelStore @Inject internal constructor(
     /**
      * returns a list of shipping labels for an order from the database
      */
-    fun getShippingLabelsForOrder(
+    suspend fun getShippingLabelsForOrder(
         site: SiteModel,
         orderId: Long
-    ): List<WCShippingLabelModel> =
-            runBlocking { shippingLabelDao.getShippingLabels(site.localId(), RemoteId(orderId)) }
+    ): List<WCShippingLabelModel> = shippingLabelDao.getShippingLabels(site.localId(), RemoteId(orderId))
 
-    fun getShippingLabelById(
+    suspend fun getShippingLabelById(
         site: SiteModel,
         orderId: Long,
         remoteShippingLabelId: Long
     ): WCShippingLabelModel? =
-            runBlocking { shippingLabelDao.getShippingLabel(site.localId(), RemoteId(orderId), RemoteId(remoteShippingLabelId)) }
+        shippingLabelDao.getShippingLabel(site.localId(), RemoteId(orderId), RemoteId(remoteShippingLabelId))
 
     suspend fun fetchShippingLabelsForOrder(
         site: SiteModel,
@@ -133,19 +131,17 @@ class WCShippingLabelStore @Inject internal constructor(
         }
     }
 
-    fun isOrderEligibleForShippingLabelCreation(
+    suspend fun isOrderEligibleForShippingLabelCreation(
         site: SiteModel,
         orderId: Long,
         canCreatePackage: Boolean,
         canCreatePaymentMethod: Boolean,
         canCreateCustomsForm: Boolean
     ): WCShippingLabelCreationEligibility? {
-        val eligibility = runBlocking {
-            shippingLabelCreationEligibilityDao.getShippingLabelCreationEligibility(
-                site.localId(),
-                RemoteId(orderId)
-            )
-        } ?: return null
+        val eligibility = shippingLabelCreationEligibilityDao.getShippingLabelCreationEligibility(
+            site.localId(),
+            RemoteId(orderId)
+        ) ?: return null
 
         return if (eligibility.canCreatePackage == canCreatePackage &&
                 eligibility.canCreatePaymentMethod == canCreatePaymentMethod &&
