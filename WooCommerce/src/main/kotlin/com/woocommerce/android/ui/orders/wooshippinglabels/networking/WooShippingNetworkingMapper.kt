@@ -8,6 +8,7 @@ import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiers
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
@@ -587,16 +588,24 @@ class WooShippingNetworkingMapper @Inject constructor(
             restrictionComments = customsData.restrictionDescription,
             isReturnToSender = if (customsData.isReturnToSender) "return" else "abandon",
             itn = customsData.itn,
-            items = customsData.items.map {
-                CustomsItemDTO(
-                    productId = it.productID,
-                    description = it.description,
-                    quantity = it.quantity,
-                    value = it.value.toDouble(),
-                    weight = it.weight.toDouble(),
-                    hsTariffNumber = it.hsTariffNumber.replace(Regex("""\D"""), ""),
-                    originCountry = it.originCountryCode
-                )
+            items = toCustomsItemDTOs(customsData)
+        )
+    }
+
+    fun toCustomsItemDTOs(customsData: CustomsData): List<CustomsItemDTO> = customsData.items.map { item ->
+        val euProductIdentifiers = item.euProductIdentifiers.takeIf { customsData.asksForEuProductIdentifiers }
+        CustomsItemDTO(
+            productId = item.productID,
+            description = item.description,
+            quantity = item.quantity,
+            value = item.value.toDouble(),
+            weight = item.weight.toDouble(),
+            hsTariffNumber = item.hsTariffNumber.replace(Regex("""\D"""), ""),
+            originCountry = item.originCountryCode,
+            code = euProductIdentifiers?.sku?.trim(),
+            manufacturerProductId = euProductIdentifiers?.manufacturerPartNumber?.trim(),
+            standardizedProductId = euProductIdentifiers?.let {
+                if (it.hasNoBarcode) EuProductIdentifiers.NO_BARCODE_STANDARDIZED_PRODUCT_ID else it.gtin.trim()
             }
         )
     }

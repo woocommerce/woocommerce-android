@@ -105,7 +105,7 @@ class DuplicateProductTest : BaseUnitTest() {
             // THEN
             assertThat(result).isEqualTo(Result.success(DUPLICATED_PRODUCT_ID))
             verify(productDetailRepository, never()).addProduct(any<ProductAggregate>())
-            verify(variationRepository, never()).fetchProductVariations(any(), any())
+            verify(variationRepository, never()).getAllVariations(any())
             verify(variationRepository, never()).createVariations(any(), any())
         }
 
@@ -149,7 +149,7 @@ class DuplicateProductTest : BaseUnitTest() {
             assertThat(result.exceptionOrNull()).isInstanceOf(WooException::class.java)
             assertThat((result.exceptionOrNull() as WooException).error).isEqualTo(endpointError)
             verify(productDetailRepository, never()).addProduct(any<ProductAggregate>())
-            verify(variationRepository, never()).fetchProductVariations(any(), any())
+            verify(variationRepository, never()).getAllVariations(any())
             verify(variationRepository, never()).createVariations(any(), any())
         }
 
@@ -177,7 +177,7 @@ class DuplicateProductTest : BaseUnitTest() {
             assertThat(result.exceptionOrNull()).isInstanceOf(WooException::class.java)
             assertThat((result.exceptionOrNull() as WooException).error).isEqualTo(endpointError)
             verify(productDetailRepository, never()).addProduct(any<ProductAggregate>())
-            verify(variationRepository, never()).fetchProductVariations(any(), any())
+            verify(variationRepository, never()).getAllVariations(any())
             verify(variationRepository, never()).createVariations(any(), any())
         }
 
@@ -218,7 +218,7 @@ class DuplicateProductTest : BaseUnitTest() {
                     .map { it.copy(sku = "not an empty value") }
             variationRepository.stub {
                 on {
-                    fetchProductVariations(eq(productToDuplicate.remoteId), any())
+                    getAllVariations(productToDuplicate.remoteId)
                 } doReturn Result.success(variationsOfProductToDuplicate)
                 on { createVariations(any(), any()) } doReturn Result.success(Unit)
             }
@@ -245,6 +245,32 @@ class DuplicateProductTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given more than 100 variations, when duplicating a variable product, then only the first 100 are created`() =
+        testBlocking {
+            // GIVEN
+            val productToDuplicate = ProductAggregate(ProductTestUtils.generateProduct().copy(numVariations = 150))
+            val sourceVariations = (1L..150L).map {
+                ProductTestUtils.generateProductVariation(productToDuplicate.remoteId, it)
+            }
+            productDetailRepository.stub {
+                on { addProduct(any<ProductAggregate>()) } doReturn Pair(true, DUPLICATED_PRODUCT_ID)
+            }
+            variationRepository.stub {
+                on { getAllVariations(productToDuplicate.remoteId) } doReturn Result.success(sourceVariations)
+                on { createVariations(any(), any()) } doReturn Result.success(Unit)
+            }
+
+            // WHEN
+            sut.invoke(productToDuplicate)
+
+            // THEN
+            val createdVariations = argumentCaptor<List<ProductVariation>>()
+            verify(variationRepository).createVariations(eq(DUPLICATED_PRODUCT_ID), createdVariations.capture())
+            assertThat(createdVariations.firstValue.map { it.remoteVariationId })
+                .containsExactlyElementsOf(sourceVariations.take(100).map { it.remoteVariationId })
+        }
+
+    @Test
     fun `given fetching variations fails, when duplicating a variable product, then duplication fails`() =
         testBlocking {
             // GIVEN
@@ -254,9 +280,7 @@ class DuplicateProductTest : BaseUnitTest() {
                 on { addProduct(any<ProductAggregate>()) } doReturn Pair(true, DUPLICATED_PRODUCT_ID)
             }
             variationRepository.stub {
-                on {
-                    fetchProductVariations(eq(productToDuplicate.remoteId), any())
-                } doReturn Result.failure(fetchError)
+                on { getAllVariations(productToDuplicate.remoteId) } doReturn Result.failure(fetchError)
             }
 
             // WHEN

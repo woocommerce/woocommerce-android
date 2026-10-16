@@ -34,7 +34,8 @@ class GetShipments @Inject constructor(
                     imageUrl = product.firstImageUrl,
                     quantity = item.quantity,
                     price = item.price,
-                    currency = order.currency
+                    currency = order.currency,
+                    variationId = item.variationId
                 )
             } else {
                 null

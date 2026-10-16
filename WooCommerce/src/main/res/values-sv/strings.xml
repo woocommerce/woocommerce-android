@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-22 13:58:21+0000
+Translation-Revision-Date: 2026-10-05 15:55:01+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_orders_details_breakdown_custom_amounts_label">Anpassade belopp</string>
+    <string name="woopos_payment_custom_amounts_label">Anpassade belopp</string>
+    <string name="woopos_cart_item_discount_applied">Rabatt tillämpad</string>
+    <string name="more_menu_payments_new_feature_state_description">Ny betalningsfunktion tillgänglig</string>
+    <string name="more_menu_switch_store">Växla butik</string>
+    <string name="logviewer_next_match">Nästa matchning</string>
+    <string name="logviewer_previous_match">Föregående matchning</string>
+    <string name="variation_list_fetch_error">Fel vid hämtning av variationer</string>
+    <string name="product_list_deselect_product">Avmarkera %s</string>
+    <string name="product_list_select_product">Markera %s</string>
+    <string name="no_filters_applied_state_description">Inga filter tillämpade</string>
+    <string name="product_rating_content_description">%1$.1f av 5</string>
+    <string name="card_reader_mode_intro_not_now">Inte nu</string>
+    <string name="card_reader_mode_intro_start">Starta</string>
+    <string name="card_reader_mode_intro_requirement_nfc">Aktivera NFC på den här telefonen</string>
+    <string name="card_reader_mode_intro_requirement_wifi">Anslut båda enheterna till samma Wi-Fi</string>
+    <string name="card_reader_mode_intro_requirement_pos">Öppna Woo POS på en Android-surfplatta inloggad i samma butik</string>
+    <string name="card_reader_mode_intro_requirements_heading">Innan du börjar</string>
+    <string name="card_reader_mode_intro_subtitle">Den här telefonen visas som en kortläsare i Woo POS på din surfplatta. Vid kassan skickar surfplattan beloppet hit och kunden håller upp sitt kort mot den här telefonen.</string>
+    <string name="card_reader_mode_intro_header">Denna telefon som en kortläsare</string>
+    <string name="orderlist_deselect_order">Avmarkera beställning %1$s</string>
+    <string name="orderlist_select_order">Markera beställning %1$s</string>
+    <string name="dashboard_customize_new_sections_state_description">Nya adminpanelssektioner är tillgängliga</string>
     <string name="woopos_eligibility_reason_unsupported_country_generic">POS-systemet är inte tillgängligt i din butiks land. Kontrollera din butiks adressinställningar eller kontakta supporten för att få hjälp.</string>
     <string name="woopos_eligibility_reason_unsupported_country">POS-systemet är inte tillgängligt i %1$s. Kontrollera din butiks adressinställningar eller kontakta supporten för att få hjälp.</string>
     <string name="woo_push_notifications_introduction_error_offline_mode_body">Pushnotiser kan inte konfigureras eftersom din butik är i offline-läge. Om du fortfarande behöver hjälp, kontakta supporten.</string>
@@ -2596,7 +2619,6 @@ Language: sv_SE
     <string name="product_search_all">Alla produkter</string>
     <string name="card_reader_upsell_card_reader_banner_cta">Köp kortläsare</string>
     <string name="card_reader_upsell_card_reader_banner_title">Ta emot betalningar enkelt</string>
-    <string name="card_reader_upsell_card_reader_banner_new">NYTT</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">Avfärda</string>
     <string name="orderdetail_custom_fields">Anpassade fält</string>
     <string name="order_sync_failed">Det gick inte att spara ändringar</string>
@@ -4201,6 +4223,18 @@ Language: sv_SE
         <item>Anpassat paket</item>
         <item>Tjänstepaket</item>
     </string-array>
+    <plurals name="dashboard_review_rating_content_description">
+        <item quantity="one">%1$d-stjärnbetyg</item>
+        <item quantity="other">%1$d-stjärnbetyg</item>
+    </plurals>
+    <plurals name="filters_applied_state_description">
+        <item quantity="one">%d filter tillämpat</item>
+        <item quantity="other">%d filter tillämpade</item>
+    </plurals>
+    <plurals name="more_menu_unseen_reviews_state_description">
+        <item quantity="one">%d ej visad recension</item>
+        <item quantity="other">%d ej visade recensioner</item>
+    </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Delsumma artiklar (%d artikel)</item>
         <item quantity="other">Delsumma artiklar (%d artiklar)</item>

@@ -13,8 +13,17 @@ data class CustomsData(
     val restrictionDescription: String,
     val isReturnToSender: Boolean,
     val itn: String,
-    val items: List<CustomsItem>
-) : Parcelable
+    val items: List<CustomsItem>,
+    val euProductIdentifiersRequirement: EuProductIdentifiersRequirement = EuProductIdentifiersRequirement.PENDING
+) : Parcelable {
+    val asksForEuProductIdentifiers: Boolean
+        get() = euProductIdentifiersRequirement == EuProductIdentifiersRequirement.REQUIRED &&
+            contentType != ContentType.DOCUMENTS
+
+    val asksToUpdatePluginForEuProductIdentifiers: Boolean
+        get() = euProductIdentifiersRequirement == EuProductIdentifiersRequirement.PLUGIN_OUTDATED &&
+            contentType != ContentType.DOCUMENTS
+}
 
 @Parcelize
 data class CustomsItem(
@@ -25,10 +34,30 @@ data class CustomsItem(
     val weight: Float,
     val hsTariffNumber: String,
     val originCountry: String,
-    val originCountryCode: String
+    val originCountryCode: String,
+    val euProductIdentifiers: EuProductIdentifiers = EuProductIdentifiers()
 ) : Parcelable {
     val totalValue: BigDecimal
         get() = value * quantity.toBigDecimal()
+}
+
+@Parcelize
+data class EuProductIdentifiers(
+    val sku: String = "",
+    val manufacturerPartNumber: String = "",
+    val gtin: String = "",
+    val hasNoBarcode: Boolean = false
+) : Parcelable {
+    companion object {
+        const val NO_BARCODE_STANDARDIZED_PRODUCT_ID = "Y081"
+    }
+}
+
+enum class EuProductIdentifiersRequirement {
+    PENDING,
+    REQUIRED,
+    NOT_REQUIRED,
+    PLUGIN_OUTDATED
 }
 
 enum class ContentType(val resourceId: Int) {

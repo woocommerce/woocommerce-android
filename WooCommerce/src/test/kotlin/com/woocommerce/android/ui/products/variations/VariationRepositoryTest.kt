@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.variations
 
+import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,7 +14,9 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -21,6 +24,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductVariationsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.ProductVariationsPage
+import org.wordpress.android.fluxc.store.WCProductStore.VariationSorting
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class VariationRepositoryTest : BaseUnitTest() {
@@ -37,43 +41,38 @@ class VariationRepositoryTest : BaseUnitTest() {
     )
 
     @Test
-    fun `given loading more fails, when loading more again, then the failed page is requested again`() = testBlocking {
-        // GIVEN
-        givenFetchResults(SUCCESS_WITH_MORE, ERROR, SUCCESS_WITH_MORE)
-        sut.fetchProductVariations(PRODUCT_ID)
-        sut.fetchProductVariations(PRODUCT_ID, loadMore = true)
+    fun `when fetching a page, then the requested page is fetched and whether more can be loaded is returned`() =
+        testBlocking {
+            // GIVEN
+            givenFetchResults(SUCCESS_WITH_MORE)
 
-        // WHEN
-        sut.fetchProductVariations(PRODUCT_ID, loadMore = true)
+            // WHEN
+            val result = sut.fetchProductVariationsPage(
+                remoteProductId = PRODUCT_ID,
+                offset = 50,
+                pageSize = 10,
+                sorting = VariationSorting.MENU_ORDER
+            )
 
-        // THEN
-        assertThat(requestedOffsets()).containsExactly(0, PAGE_SIZE, PAGE_SIZE)
-    }
-
-    @Test
-    fun `given loading more succeeds, when loading more again, then the next page is requested`() = testBlocking {
-        // GIVEN
-        givenFetchResults(SUCCESS_WITH_MORE, SUCCESS_WITH_MORE, SUCCESS_WITH_MORE)
-        sut.fetchProductVariations(PRODUCT_ID)
-        sut.fetchProductVariations(PRODUCT_ID, loadMore = true)
-
-        // WHEN
-        sut.fetchProductVariations(PRODUCT_ID, loadMore = true)
-
-        // THEN
-        assertThat(requestedOffsets()).containsExactly(0, PAGE_SIZE, PAGE_SIZE * 2)
-    }
+            // THEN
+            val payload = requestedPayloads().single()
+            assertThat(payload.remoteProductId).isEqualTo(PRODUCT_ID)
+            assertThat(payload.offset).isEqualTo(50)
+            assertThat(payload.pageSize).isEqualTo(10)
+            assertThat(payload.sorting).isEqualTo(VariationSorting.MENU_ORDER)
+            assertThat(result.getOrThrow()).isTrue()
+        }
 
     @Test
-    fun `given fetch fails, when fetching variations, then failure is returned`() = testBlocking {
+    fun `given fetch fails, when fetching a page, then failure is returned`() = testBlocking {
         // GIVEN
         givenFetchResults(ERROR)
 
         // WHEN
-        val result = sut.fetchProductVariations(PRODUCT_ID)
+        val result = sut.fetchProductVariationsPage(PRODUCT_ID, 0, PAGE_SIZE, VariationSorting.MENU_ORDER)
 
         // THEN
-        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()).isInstanceOf(WooException::class.java)
     }
 
     @Test
@@ -82,10 +81,81 @@ class VariationRepositoryTest : BaseUnitTest() {
         givenFetchResults(ERROR)
 
         // WHEN
-        sut.getAllVariations(PRODUCT_ID)
+        val result = sut.getAllVariations(PRODUCT_ID)
 
         // THEN
         verify(productStore, times(1)).fetchProductVariations(any<FetchProductVariationsPayload>())
+        assertThat(result.exceptionOrNull()).isInstanceOf(WooException::class.java)
+    }
+
+    @Test
+    fun `when getting all variations, then every page is requested from the start`() =
+        testBlocking {
+            // GIVEN
+            givenFetchResults(SUCCESS_WITH_MORE, SUCCESS_WITH_MORE, SUCCESS_LAST_PAGE)
+
+            // WHEN
+            val result = sut.getAllVariations(PRODUCT_ID)
+
+            // THEN
+            assertThat(requestedOffsets()).containsExactly(0, PAGE_SIZE, PAGE_SIZE * 2)
+            assertThat(result.isSuccess).isTrue()
+        }
+
+    @Test
+    fun `given all pages succeed, when getting all variations, then variations from the database are returned`() =
+        testBlocking {
+            // GIVEN
+            givenFetchResults(SUCCESS_WITH_MORE, SUCCESS_LAST_PAGE)
+            val storedVariations = listOf(1L, 2L).map {
+                WCProductVariationModel(remoteProductId = RemoteId(PRODUCT_ID), remoteVariationId = RemoteId(it))
+            }
+            whenever(productStore.getVariationsForProduct(any(), any())).thenReturn(storedVariations)
+
+            // WHEN
+            val result = sut.getAllVariations(PRODUCT_ID)
+
+            // THEN
+            assertThat(result.getOrThrow().map { it.remoteVariationId }).containsExactlyInAnyOrder(1L, 2L)
+        }
+
+    @Test
+    fun `given variations were already fetched, when getting all variations, then it starts from the first page`() =
+        testBlocking {
+            // GIVEN
+            givenFetchResults(SUCCESS_LAST_PAGE, SUCCESS_LAST_PAGE)
+            sut.getAllVariations(PRODUCT_ID)
+
+            // WHEN
+            sut.getAllVariations(PRODUCT_ID)
+
+            // THEN
+            assertThat(requestedOffsets()).containsExactly(0, 0)
+        }
+
+    @Test
+    fun `when getting all variations, then pages are sorted by id`() = testBlocking {
+        // GIVEN
+        givenFetchResults(SUCCESS_WITH_MORE, SUCCESS_LAST_PAGE)
+
+        // WHEN
+        sut.getAllVariations(PRODUCT_ID)
+
+        // THEN
+        assertThat(requestedPayloads().map { it.sorting }).containsOnly(VariationSorting.ID)
+    }
+
+    @Test
+    fun `given a middle page fails, when getting all variations, then failure is returned`() = testBlocking {
+        // GIVEN
+        givenFetchResults(SUCCESS_WITH_MORE, ERROR)
+
+        // WHEN
+        val result = sut.getAllVariations(PRODUCT_ID)
+
+        // THEN
+        assertThat(requestedOffsets()).containsExactly(0, PAGE_SIZE)
+        assertThat(result.exceptionOrNull()).isInstanceOf(WooException::class.java)
     }
 
     private suspend fun givenFetchResults(
@@ -96,16 +166,19 @@ class VariationRepositoryTest : BaseUnitTest() {
         whenever(productStore.getVariationsForProduct(any(), any())).thenReturn(emptyList())
     }
 
-    private suspend fun requestedOffsets(): List<Int> {
+    private suspend fun requestedOffsets(): List<Int> = requestedPayloads().map { it.offset }
+
+    private suspend fun requestedPayloads(): List<FetchProductVariationsPayload> {
         val captor = argumentCaptor<FetchProductVariationsPayload>()
         verify(productStore, atLeastOnce()).fetchProductVariations(captor.capture())
-        return captor.allValues.map { it.offset }
+        return captor.allValues
     }
 
     private companion object {
         const val PRODUCT_ID = 1L
         const val PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_VARIATIONS_PAGE_SIZE
         val SUCCESS_WITH_MORE = WooResult(ProductVariationsPage(variations = emptyList(), canLoadMore = true))
+        val SUCCESS_LAST_PAGE = WooResult(ProductVariationsPage(variations = emptyList(), canLoadMore = false))
         val ERROR = WooResult<ProductVariationsPage>(
             WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.SERVER_ERROR)
         )

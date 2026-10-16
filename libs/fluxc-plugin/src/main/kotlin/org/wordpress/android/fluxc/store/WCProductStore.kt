@@ -196,7 +196,8 @@ class WCProductStore @Inject internal constructor(
         var site: SiteModel,
         var remoteProductId: Long,
         var pageSize: Int = DEFAULT_PRODUCT_VARIATIONS_PAGE_SIZE,
-        var offset: Int = 0
+        var offset: Int = 0,
+        var sorting: VariationSorting = VariationSorting.MENU_ORDER
     ) : Payload<BaseNetworkError>()
 
     class FetchProductShippingClassListPayload(
@@ -441,6 +442,11 @@ class WCProductStore @Inject internal constructor(
         DATE_DESC,
         POPULARITY_ASC,
         POPULARITY_DESC
+    }
+
+    enum class VariationSorting(val orderBy: String) {
+        MENU_ORDER("menu_order"),
+        ID("id")
     }
 
     enum class ProductCategorySorting {
@@ -1432,6 +1438,7 @@ class WCProductStore @Inject internal constructor(
                     productId = remoteProductId,
                     pageSize = pageSize,
                     offset = offset,
+                    sorting = sorting,
                     context = "edit"
                 )
             }

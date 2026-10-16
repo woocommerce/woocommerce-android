@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-25 09:58:44+0000
+Translation-Revision-Date: 2026-10-07 09:54:40+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_orders_details_breakdown_custom_amounts_label">Индивидуальные суммы</string>
+    <string name="woopos_payment_custom_amounts_label">Индивидуальные суммы</string>
+    <string name="woopos_cart_item_discount_applied">Использованная скидка</string>
+    <string name="more_menu_payments_new_feature_state_description">Доступна новая функция оплаты</string>
+    <string name="more_menu_switch_store">Переключиться на другой магазин</string>
+    <string name="logviewer_next_match">Следующее совпадение</string>
+    <string name="logviewer_previous_match">Предыдущее совпадение</string>
+    <string name="variation_list_fetch_error">Ошибка при получении вариантов</string>
+    <string name="product_list_deselect_product">Отменить выбор %s</string>
+    <string name="product_list_select_product">Выбрать %s</string>
+    <string name="no_filters_applied_state_description">Фильтры не применены</string>
+    <string name="product_rating_content_description">%1$.1f из 5</string>
+    <string name="card_reader_mode_intro_not_now">Не сейчас</string>
+    <string name="card_reader_mode_intro_start">Начать</string>
+    <string name="card_reader_mode_intro_requirement_nfc">Включите NFC на этом телефоне</string>
+    <string name="card_reader_mode_intro_requirement_wifi">Подключите оба устройства к одному Wi-Fi</string>
+    <string name="card_reader_mode_intro_requirement_pos">Откройте Woo POS на планшете Android, который был зарегистрирован в том же магазине</string>
+    <string name="card_reader_mode_intro_requirements_heading">Перед началом работы</string>
+    <string name="card_reader_mode_intro_header">Этот телефон в качестве устройства чтения карт</string>
+    <string name="orderlist_deselect_order">Отменить выбор заказа %1$s</string>
+    <string name="card_reader_mode_intro_subtitle">Этот телефон отображается в качестве устройства чтения карт в Woo POS на вашем планшете. При оформлении заказа планшет отправляет сумму сюда, и клиент прикладывает карту к этому телефону.</string>
+    <string name="orderlist_select_order">Выберите заказ %1$s</string>
+    <string name="dashboard_customize_new_sections_state_description">Доступны новые разделы консоли</string>
     <string name="woopos_eligibility_reason_unsupported_country_generic">Система POS недоступна в стране вашего магазина. Проверьте настройки адреса магазина или обратитесь за помощью в службу поддержки.</string>
     <string name="woopos_eligibility_reason_unsupported_country">Система POS недоступна в %1$s. Проверьте настройки адреса магазина или обратитесь за помощью в службу поддержки.</string>
     <string name="woo_push_notifications_introduction_error_offline_mode_body">Невозможно настроить push-уведомления, так как ваш магазин находится в автономном режиме. Если вам всё ещё требуется помощь, обратитесь в службу поддержки.</string>
@@ -2596,7 +2619,6 @@ Language: ru
     <string name="product_search_all">Все товары</string>
     <string name="card_reader_upsell_card_reader_banner_cta">Купить устройство считывания карт</string>
     <string name="card_reader_upsell_card_reader_banner_title">Принимайте платежи легко</string>
-    <string name="card_reader_upsell_card_reader_banner_new">НОВИНКА</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">Закрыть</string>
     <string name="orderdetail_custom_fields">Произвольные поля</string>
     <string name="order_sync_failed">Не удалось сохранить изменения</string>
@@ -4201,6 +4223,21 @@ Language: ru
         <item>Индивидуальный пакет</item>
         <item>Пакет услуг</item>
     </string-array>
+    <plurals name="dashboard_review_rating_content_description">
+        <item quantity="one">Рейтинг: %1$d</item>
+        <item quantity="few">Рейтинг: %1$d</item>
+        <item quantity="many">Рейтинг: %1$d</item>
+    </plurals>
+    <plurals name="filters_applied_state_description">
+        <item quantity="one">Применены фильтры: %d</item>
+        <item quantity="few">Применены фильтры: %d</item>
+        <item quantity="many">Применены фильтры: %d</item>
+    </plurals>
+    <plurals name="more_menu_unseen_reviews_state_description">
+        <item quantity="one">Непрочитанные отзывы: %d</item>
+        <item quantity="few">Непрочитанные отзывы: %d</item>
+        <item quantity="many">Непрочитанные отзывы: %d</item>
+    </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Промежуточный итог по товарам (позиций: %d)</item>
         <item quantity="few">Промежуточный итог по товарам (позиций: %d)</item>

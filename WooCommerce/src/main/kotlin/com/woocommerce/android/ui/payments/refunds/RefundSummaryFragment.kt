@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRef
 import com.woocommerce.android.ui.payments.refunds.RefundSummaryViewModel.NavigateToCardReaderScreen
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
@@ -123,6 +124,7 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
         ) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
+                is ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> {
                     navigateBackWithNotice(
                         key = REFUND_ORDER_NOTICE_KEY,

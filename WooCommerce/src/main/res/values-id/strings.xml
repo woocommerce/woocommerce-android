@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-29 09:58:16+0000
+Translation-Revision-Date: 2026-10-06 09:57:02+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_orders_details_breakdown_custom_amounts_label">Jumlah kustom</string>
+    <string name="woopos_payment_custom_amounts_label">Jumlah kustom</string>
+    <string name="woopos_cart_item_discount_applied">Diskon digunakan</string>
+    <string name="more_menu_payments_new_feature_state_description">Tersedia fitur pembayaran baru</string>
+    <string name="more_menu_switch_store">Beralih toko</string>
+    <string name="logviewer_next_match">Hasil berikutnya</string>
+    <string name="logviewer_previous_match">Hasil sebelumnya</string>
+    <string name="variation_list_fetch_error">Error saat mengambil variasi</string>
+    <string name="product_list_deselect_product">Batalkan pilihan %s</string>
+    <string name="product_list_select_product">Pilih %s</string>
+    <string name="no_filters_applied_state_description">Tidak ada penyaring diterapkan</string>
+    <string name="product_rating_content_description">%1$.1f dari 5</string>
+    <string name="card_reader_mode_intro_not_now">Lain kali</string>
+    <string name="card_reader_mode_intro_start">Mulai</string>
+    <string name="card_reader_mode_intro_requirement_nfc">Aktifkan NFC pada ponsel ini</string>
+    <string name="card_reader_mode_intro_requirement_wifi">Hubungkan kedua perangkat ke Wi-Fi yang sama</string>
+    <string name="card_reader_mode_intro_requirement_pos">Buka Woo POS pada tablet Android yang sudah login ke toko yang sama</string>
+    <string name="card_reader_mode_intro_requirements_heading">Sebelum Anda memulai</string>
+    <string name="card_reader_mode_intro_subtitle">Ponsel ini muncul sebagai pembaca kartu di Woo POS pada tablet Anda. Saat checkout, tablet mengirimkan jumlahnya ke sini dan pelanggan menempelkan kartunya pada ponsel ini.</string>
+    <string name="card_reader_mode_intro_header">Ponsel ini sebagai pembaca kartu</string>
+    <string name="orderlist_deselect_order">Batalkan pilihan pesanan %1$s</string>
+    <string name="orderlist_select_order">Pilih pesanan %1$s</string>
+    <string name="dashboard_customize_new_sections_state_description">Tersedia bagian dasbor baru</string>
     <string name="woopos_eligibility_reason_unsupported_country_generic">Sistem POS tidak tersedia dalam mata uang toko Anda. Harap periksa pengaturan alamat toko Anda atau hubungi bagian dukungan untuk mendapatkan bantuan.</string>
     <string name="woopos_eligibility_reason_unsupported_country">Sistem POS tidak tersedia di %1$s. Harap periksa pengaturan alamat toko Anda atau hubungi bagian dukungan untuk mendapatkan bantuan.</string>
     <string name="woo_push_notifications_introduction_error_offline_mode_body">Pemberitahuan push tidak dapat diatur karena toko Anda berada dalam Mode Offline. Jika butuh bantuan, hubungi dukungan.</string>
@@ -2596,7 +2619,6 @@ Language: id
     <string name="product_search_all">Semua produk</string>
     <string name="card_reader_upsell_card_reader_banner_cta">Beli Pembaca Kartu</string>
     <string name="card_reader_upsell_card_reader_banner_title">Terima pembayaran dengan mudah</string>
-    <string name="card_reader_upsell_card_reader_banner_new">Baru</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">Tutup</string>
     <string name="orderdetail_custom_fields">Kolom khusus</string>
     <string name="order_sync_failed">Tidak dapat menyimpan perubahan</string>
@@ -4201,6 +4223,15 @@ Language: id
         <item>Paket khusus</item>
         <item>Paket layanan</item>
     </string-array>
+    <plurals name="dashboard_review_rating_content_description">
+        <item quantity="other">Nilai berbintang %1$d</item>
+    </plurals>
+    <plurals name="filters_applied_state_description">
+        <item quantity="other">%d penyaring diterapkan</item>
+    </plurals>
+    <plurals name="more_menu_unseen_reviews_state_description">
+        <item quantity="other">%d tinjauan belum dilihat</item>
+    </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">Subtotal item (%d item)</item>
     </plurals>

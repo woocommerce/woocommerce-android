@@ -19,6 +19,37 @@ data class EligibilityResponse(
     @SerializedName("is_eligible") val isEligible: Boolean? = null,
 )
 
+data class CustomsRequirementsResponse(
+    @SerializedName("eu_product_ids_required") val euProductIdsRequired: Boolean? = null
+)
+
+data class ConfigLineItemsResponse(
+    val config: ConfigLineItemsDTO? = null
+)
+
+data class ConfigLineItemsDTO(
+    val order: ConfigOrderDTO? = null
+)
+
+data class ConfigOrderDTO(
+    @SerializedName("line_items") val lineItems: List<ConfigLineItemDTO>? = null
+)
+
+data class ConfigLineItemDTO(
+    @SerializedName("product_id") val productId: Long? = null,
+    val sku: String? = null,
+    val meta: ConfigLineItemMetaDTO? = null
+)
+
+data class ConfigLineItemMetaDTO(
+    @SerializedName("customs_info") val customsInfo: ConfigCustomsInfoDTO? = null
+)
+
+data class ConfigCustomsInfoDTO(
+    @SerializedName("manufacturer_product_id") val manufacturerProductId: String? = null,
+    @SerializedName("standardized_product_id") val standardizedProductId: String? = null
+)
+
 data class AccountSettingsDTO(
     val storeOptions: StoreOptionsDTO,
     val formData: FormDataDTO,
@@ -234,7 +265,10 @@ data class CustomsItemDTO(
     val weight: Double,
     @SerializedName("hs_tariff_number") val hsTariffNumber: String,
     @SerializedName("origin_country") val originCountry: String,
-    @SerializedName("product_id") val productId: Long
+    @SerializedName("product_id") val productId: Long,
+    @SerializedName("code") val code: String? = null,
+    @SerializedName("manufacturer_product_id") val manufacturerProductId: String? = null,
+    @SerializedName("standardized_product_id") val standardizedProductId: String? = null
 )
 
 data class RefundLabelResponseDTO(val success: Boolean)
