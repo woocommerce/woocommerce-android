@@ -61,32 +61,24 @@ fun WooPosRemoteReaderExplainerContent(
 
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
 
-        when (onAllowLocalNetworkClicked) {
-            null -> WooPosButton(
+        onAllowLocalNetworkClicked?.let { onAllowClicked ->
+            WooPosOutlinedButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
-                text = stringResource(R.string.woopos_remote_ttp_explainer_got_it),
-                onClick = onDismiss,
+                text = stringResource(R.string.woopos_remote_ttp_explainer_allow_local_network),
+                onClick = onAllowClicked,
             )
-            else -> {
-                WooPosButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally),
-                    text = stringResource(R.string.woopos_remote_ttp_explainer_allow_local_network),
-                    onClick = onAllowLocalNetworkClicked,
-                )
-                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
-                WooPosOutlinedButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally),
-                    text = stringResource(R.string.woopos_remote_ttp_explainer_got_it),
-                    onClick = onDismiss,
-                )
-            }
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
         }
+
+        WooPosButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterHorizontally),
+            text = stringResource(R.string.woopos_remote_ttp_explainer_got_it),
+            onClick = onDismiss,
+        )
     }
 }
 
