@@ -110,10 +110,14 @@ abstract class CustomerListViewModel(
     }
 
     fun onRetryClicked() {
-        if (_viewState.value?.body !is CustomerListViewState.CustomerList.AnalyticsUnavailable) return
-
-        showLoading()
-        reloadCustomers(ReloadTrigger.RETRY)
+        val body = _viewState.value?.body
+        if (body is CustomerListViewState.CustomerList.Error) {
+            showLoading()
+            reloadCustomers()
+        } else if (body is CustomerListViewState.CustomerList.AnalyticsUnavailable) {
+            showLoading()
+            reloadCustomers(ReloadTrigger.RETRY)
+        }
     }
 
     fun onEnableAnalyticsClicked() {
