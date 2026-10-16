@@ -17,6 +17,7 @@ import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.VerificationCollector
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.wordpress.android.fluxc.store.WCProductStore.VariationSorting
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -34,7 +35,7 @@ class VariationSelectorViewModelTest : BaseUnitTest() {
     private val productSelectorTracker: ProductSelectorTracker = ProductSelectorTracker(tracker)
 
     @Test
-    fun `given order creation flow, when view model is initiated, should call fetchVariations with order currency`() = testBlocking {
+    fun `given order creation flow, when view model is initiated, then variations are fetched newest first with order currency`() = testBlocking {
         val navArgs = VariationSelectorFragmentArgs(
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             productId = 1L,
@@ -50,7 +51,9 @@ class VariationSelectorViewModelTest : BaseUnitTest() {
             1L,
             forceRefresh = true,
             filterOptions = null,
-            orderCurrency = "USD"
+            orderCurrency = "USD",
+            sorting = VariationSorting.DATE_DESC,
+            pageSize = 100
         )
     }
 

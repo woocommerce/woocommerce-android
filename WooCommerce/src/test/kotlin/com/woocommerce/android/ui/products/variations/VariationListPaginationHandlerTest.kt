@@ -10,7 +10,6 @@ import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.VariationSorting
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -20,7 +19,7 @@ class VariationListPaginationHandlerTest : BaseUnitTest() {
     private val sut = VariationListPaginationHandler(repository)
 
     @Test
-    fun `when fetching variations, then the first page is requested sorted by menu order`() = testBlocking {
+    fun `when fetching variations, then the first page is requested newest first`() = testBlocking {
         // GIVEN
         givenPageResults(listOf(PAGE_WITH_MORE))
 
@@ -28,7 +27,7 @@ class VariationListPaginationHandlerTest : BaseUnitTest() {
         sut.fetchVariations(PRODUCT_ID)
 
         // THEN
-        verify(repository).fetchProductVariationsPage(PRODUCT_ID, 0, PAGE_SIZE, VariationSorting.MENU_ORDER)
+        verify(repository).fetchProductVariationsPage(PRODUCT_ID, 0, PAGE_SIZE, VariationSorting.DATE_DESC)
     }
 
     @Test
@@ -130,7 +129,7 @@ class VariationListPaginationHandlerTest : BaseUnitTest() {
 
     private companion object {
         const val PRODUCT_ID = 1L
-        const val PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_VARIATIONS_PAGE_SIZE
+        const val PAGE_SIZE = 100
         val FETCH_ERROR = Exception()
         val PAGE_WITH_MORE = Result.success(true)
         val LAST_PAGE = Result.success(false)

@@ -33,6 +33,7 @@ internal class AIProductVariationsDataSource @Inject constructor(
             remoteProductId = productId,
             pageSize = clampedPerPage,
             offset = (clampedPage - 1) * clampedPerPage,
+            sorting = WCProductStore.VariationSorting.DATE_DESC,
         )
         val result = productStore.fetchProductVariations(payload)
 

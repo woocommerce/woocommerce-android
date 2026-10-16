@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCProductStore.VariationSorting
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class)
@@ -35,6 +36,7 @@ class VariationPickerViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
+        private const val VARIATIONS_PAGE_SIZE = 100
     }
 
     private val navArgs: VariationPickerFragmentArgs by savedState.navArgs()
@@ -59,7 +61,12 @@ class VariationPickerViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             loadingState.value = LoadingState.LOADING
-            variationListHandler.fetchVariations(productId = navArgs.productId, forceRefresh = true)
+            variationListHandler.fetchVariations(
+                productId = navArgs.productId,
+                forceRefresh = true,
+                sorting = VariationSorting.DATE_DESC,
+                pageSize = VARIATIONS_PAGE_SIZE
+            )
             loadingState.value = LoadingState.IDLE
         }
     }

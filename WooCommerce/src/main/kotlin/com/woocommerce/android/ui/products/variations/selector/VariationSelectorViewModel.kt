@@ -45,6 +45,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCProductStore.VariationSorting
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -62,6 +63,7 @@ class VariationSelectorViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
+        private const val VARIATIONS_PAGE_SIZE = 100
     }
 
     private val currencyCode = async {
@@ -106,7 +108,9 @@ class VariationSelectorViewModel @Inject constructor(
             variationListHandler.fetchVariations(
                 productId = navArgs.productId,
                 forceRefresh = true,
-                orderCurrency = navArgs.orderCurrency
+                orderCurrency = navArgs.orderCurrency,
+                sorting = VariationSorting.DATE_DESC,
+                pageSize = VARIATIONS_PAGE_SIZE
             )
             loadingState.value = IDLE
         }

@@ -3,16 +3,19 @@ package com.woocommerce.android.ui.products.variations.selector
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCProductStore.VariationSorting
 import javax.inject.Inject
 
 class VariationListHandler @Inject constructor(private val repository: VariationSelectorRepository) {
     companion object {
-        private const val PAGE_SIZE = 25
+        private const val DEFAULT_PAGE_SIZE = 25
     }
 
     private val mutex = Mutex()
     private var offset = 0
     private var canLoadMore = false
+    private var pageSize = DEFAULT_PAGE_SIZE
+    private var sorting = VariationSorting.MENU_ORDER
 
     fun getVariationsFlow(productId: Long) = repository.observeVariations(productId)
 
@@ -24,7 +27,7 @@ class VariationListHandler @Inject constructor(private val repository: Variation
     }
 
     fun canLoadMore(numOfVariations: Int): Boolean {
-        return canLoadMore || (offset + PAGE_SIZE < numOfVariations)
+        return canLoadMore || (offset + pageSize < numOfVariations)
     }
 
     suspend fun fetchVariations(
@@ -32,9 +35,13 @@ class VariationListHandler @Inject constructor(private val repository: Variation
         forceRefresh: Boolean = false,
         filterOptions: Map<WCProductStore.VariationFilterOption, String>? = null,
         orderCurrency: String? = null,
+        sorting: VariationSorting = VariationSorting.MENU_ORDER,
+        pageSize: Int = DEFAULT_PAGE_SIZE,
     ): Result<Unit> = mutex.withLock {
         // Reset the offset
         offset = 0
+        this.sorting = sorting
+        this.pageSize = pageSize
 
         if (forceRefresh) {
             loadVariations(productId, filterOptions, orderCurrency)
@@ -60,12 +67,13 @@ class VariationListHandler @Inject constructor(private val repository: Variation
         return repository.fetchVariations(
             productId,
             offset,
-            PAGE_SIZE,
+            pageSize,
             filterOptions,
-            orderCurrency = orderCurrency
+            orderCurrency = orderCurrency,
+            sorting = sorting
         ).onSuccess {
             canLoadMore = it
-            offset += PAGE_SIZE
+            offset += pageSize
         }.map { }
     }
 }

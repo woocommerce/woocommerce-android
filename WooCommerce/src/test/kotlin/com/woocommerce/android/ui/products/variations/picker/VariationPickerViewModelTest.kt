@@ -22,6 +22,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.store.WCProductStore.VariationSorting
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class VariationPickerViewModelTest : BaseUnitTest() {
@@ -55,6 +56,17 @@ class VariationPickerViewModelTest : BaseUnitTest() {
 
         // Initialize ViewModel with the mocks
         viewModel = VariationPickerViewModel(savedState, variationListHandler, variationRepository)
+    }
+
+    @Test
+    fun `when view model is initiated, then variations are fetched newest first in pages of 100`() = testBlocking {
+        // THEN
+        verify(variationListHandler).fetchVariations(
+            productId = navArgs.productId,
+            forceRefresh = true,
+            sorting = VariationSorting.DATE_DESC,
+            pageSize = 100
+        )
     }
 
     @Test
