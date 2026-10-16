@@ -12,10 +12,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderCustomerListFragment : BaseFragment() {
@@ -24,6 +26,8 @@ class OrderCustomerListFragment : BaseFragment() {
     }
 
     private val viewModel by viewModels<CustomerListSelectionViewModel>()
+
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
 
@@ -63,6 +67,8 @@ class OrderCustomerListFragment : BaseFragment() {
                 }
 
                 is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
+
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
 
                 is MultiLiveEvent.Event.Exit -> {
                     findNavController().navigateUp()
