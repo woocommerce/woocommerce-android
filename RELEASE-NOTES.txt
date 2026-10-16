@@ -11,6 +11,7 @@
 - [*] On tablets, an open order editor no longer closes and loses its text when the app is restored [https://github.com/woocommerce/woocommerce-android/pull/16731]
 - [*] Customer lists now explain when WooCommerce Analytics is unavailable and offer a way to turn it on or retry loading customers [https://github.com/woocommerce/woocommerce-android/pull/16707]
 - [Internal] Shipping labels and the label eligibility check are no longer read from the database on the main thread [https://github.com/woocommerce/woocommerce-android/pull/16720]
+- [***] [Internal] Migrated Google sign-in from the deprecated Play Services Auth API to Credential Manager [https://github.com/woocommerce/woocommerce-android/pull/16721]
 
 25.9
 -----
