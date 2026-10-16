@@ -59,6 +59,15 @@ fun WooPosRemoteReaderExplainerContent(
             body = stringResource(R.string.woopos_remote_ttp_explainer_requirements_body),
         )
 
+        onAllowLocalNetworkClicked?.let {
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            ExplainerSection(
+                heading = stringResource(R.string.woopos_remote_ttp_explainer_local_network_heading),
+                body = stringResource(R.string.woopos_remote_ttp_explainer_local_network_body),
+            )
+        }
+
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
 
         onAllowLocalNetworkClicked?.let { onAllowClicked ->
