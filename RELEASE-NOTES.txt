@@ -4,6 +4,7 @@
 
 26.0
 -----
+- [*] Order creation no longer adds a variation of a subscription product when its SKU is scanned [https://github.com/woocommerce/woocommerce-android/pull/16713]
 
 
 25.9

@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRatePercenta
 import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
 import com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsHelper
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.products.GetUnsupportedParentRestriction
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductRestriction
@@ -99,6 +100,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var resourceProvider: ResourceProvider
     private lateinit var barcodeScanningTracker: BarcodeScanningTracker
     private lateinit var productRestrictions: OrderCreationProductRestrictions
+    private lateinit var getUnsupportedParentRestriction: GetUnsupportedParentRestriction
     private lateinit var taxRateToAddress: GetAddressFromTaxRate
     private lateinit var getAutoTaxRateSetting: GetAutoTaxRateSetting
     private lateinit var getTaxRatePercentageValueText: GetTaxRatePercentageValueText
@@ -206,6 +208,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             on { getString(R.string.order_creation_set_tax_rate) } doReturn "Set New Tax Rate"
         }
         productRestrictions = mock()
+        getUnsupportedParentRestriction = mock {
+            on { invoke(any()) } doReturn GetUnsupportedParentRestriction.Result.NotRestricted
+        }
         selectedSite = mock()
         taxRateToAddress = mock()
         getAutoTaxRateSetting = mock {
@@ -741,6 +746,36 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             sut.handleBarcodeScannedStatus(scannedStatus)
 
             assertThat(newOrder?.getProductIds()?.any { it == 10L }).isFalse()
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for a variation of a subscription, then do not add it and show the reason`() {
+        testBlocking {
+            // GIVEN
+            whenever(resourceProvider.getString(R.string.product_selector_subscription_not_supported))
+                .thenReturn("Subscription products are not supported for order creation")
+            createSut()
+            val variation = ProductTestUtils.generateProduct(
+                productId = 10L,
+                parentID = 20L,
+                productType = "subscription_variation",
+                customStatus = ProductStatus.PUBLISH.name
+            )
+            whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA))
+                .thenReturn(Result.success(variation))
+            whenever(getUnsupportedParentRestriction(variation))
+                .thenReturn(GetUnsupportedParentRestriction.Result.Restricted(ProductRestriction.SubscriptionProducts))
+            var newOrder: Order? = null
+            sut.orderDraft.observeForever { newOrder = it }
+
+            // WHEN
+            sut.handleBarcodeScannedStatus(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+
+            // THEN
+            assertThat(newOrder?.items).isEmpty()
+            assertThat((sut.event.value as OnAddingProductViaScanningFailed).message)
+                .isEqualTo("Subscription products are not supported for order creation")
         }
     }
 
@@ -2305,6 +2340,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             barcodeScanningTracker = barcodeScanningTracker,
             resourceProvider = resourceProvider,
             productRestrictions = productRestrictions,
+            getUnsupportedParentRestriction = getUnsupportedParentRestriction,
             getTaxRatesInfoDialogState = GetTaxRatesInfoDialogViewState(
                 orderCreateEditRepository,
                 selectedSite,
