@@ -14,6 +14,7 @@ import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.ClearCredentialException
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.GetCredentialInterruptedException
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
@@ -94,6 +95,12 @@ internal fun GetCredentialException.toGoogleCredentialResult(): GoogleCredential
         is GetCredentialCancellationException -> GoogleCredentialResult.Cancelled(
             errorType = type,
             errorMessage = errorMessage?.toString()
+        )
+
+        is GetCredentialInterruptedException -> GoogleCredentialResult.Failure(
+            errorType = type,
+            errorMessage = errorMessage?.toString(),
+            isNetworkError = true
         )
 
         else -> GoogleCredentialResult.Failure(
