@@ -10,7 +10,11 @@ sealed interface GoogleCredentialResult {
 
     data class Cancelled(val errorType: String, val errorMessage: String?) : GoogleCredentialResult
 
-    data class Failure(val errorType: String, val errorMessage: String?) : GoogleCredentialResult
+    data class Failure(
+        val errorType: String,
+        val errorMessage: String?,
+        val isNetworkError: Boolean = false
+    ) : GoogleCredentialResult
 
     companion object {
         const val ERROR_TYPE_UNEXPECTED_CREDENTIAL = "unexpected_credential"

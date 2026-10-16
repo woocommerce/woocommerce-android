@@ -77,7 +77,8 @@ public class LoginGoogleFragment extends GoogleFragment {
             AppLog.d(T.MAIN, "GOOGLE LOGIN: Google has returned a sign in result - error");
             trackSocialButtonFailure(FAILURE_SOURCE_CREDENTIAL_ERROR, failure.getErrorType(),
                     failure.getErrorMessage());
-            showError(getString(R.string.login_error_generic));
+            showError(getString(failure.isNetworkError()
+                    ? R.string.error_generic_network : R.string.login_error_generic));
         }
     }
 
