@@ -4,6 +4,7 @@
 
 26.0
 -----
+- [*] Fixed variations missing from the variations list and the order creation variation picker on products with more than 25 variations [https://github.com/woocommerce/woocommerce-android/pull/16725]
 
 
 25.9
