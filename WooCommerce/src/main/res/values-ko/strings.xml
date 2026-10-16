@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-22 09:57:37+0000
+Translation-Revision-Date: 2026-10-06 09:57:32+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_orders_details_breakdown_custom_amounts_label">사용자 정의 금액</string>
+    <string name="woopos_payment_custom_amounts_label">사용자 정의 금액</string>
+    <string name="woopos_cart_item_discount_applied">할인 적용됨</string>
+    <string name="more_menu_payments_new_feature_state_description">새 결제 기능 사용 가능</string>
+    <string name="more_menu_switch_store">스토어 전환</string>
+    <string name="logviewer_next_match">다음 일치</string>
+    <string name="logviewer_previous_match">이전 일치</string>
+    <string name="variation_list_fetch_error">변형을 가져오는 중 오류 발생</string>
+    <string name="product_list_deselect_product">%s 선택 해제</string>
+    <string name="product_list_select_product">%s 선택</string>
+    <string name="no_filters_applied_state_description">적용된 필터 없음</string>
+    <string name="product_rating_content_description">%1$.1f/5</string>
+    <string name="card_reader_mode_intro_not_now">지금 안 함</string>
+    <string name="card_reader_mode_intro_start">시작</string>
+    <string name="card_reader_mode_intro_requirement_nfc">이 스마트폰에서 NFC 켜기</string>
+    <string name="card_reader_mode_intro_requirement_wifi">두 기기를 동일한 와이파이에 연결</string>
+    <string name="card_reader_mode_intro_requirement_pos">동일한 스토어에 로그인한 Android 태블릿에서 Woo POS 열기</string>
+    <string name="card_reader_mode_intro_requirements_heading">시작하기 전에</string>
+    <string name="card_reader_mode_intro_subtitle">이 스마트폰이 태블릿의 Woo POS에 카드 리더로 표시됩니다. 계산 시 태블릿에서 여기로 금액을 보내며, 고객은 이 스마트폰에 카드를 갖다 댑니다.</string>
+    <string name="card_reader_mode_intro_header">이 스마트폰을 카드 리더로</string>
+    <string name="orderlist_deselect_order">주문 %1$s 선택 해제</string>
+    <string name="orderlist_select_order">주문 %1$s 선택 </string>
+    <string name="dashboard_customize_new_sections_state_description">새 알림판 섹션 사용 가능</string>
     <string name="woopos_eligibility_reason_unsupported_country_generic">회원님 스토어의 국가에서는 POS 시스템을 사용할 수 없습니다. 스토어 주소 설정을 확인하거나 도움이 필요하면 지원을 문의해 주세요.</string>
     <string name="woopos_eligibility_reason_unsupported_country">%1$s에서는 POS 시스템을 사용할 수 없습니다. 스토어 주소 설정을 확인하거나 도움이 필요하면 지원을 문의해 주세요.</string>
     <string name="woo_push_notifications_introduction_error_offline_mode_body">회원님 스토어가 오프라인 모드로 되어 있어서 푸시 알림을 설정할 수 없습니다. 도움말이 더 필요하면 지원을 문의해 주세요.</string>
@@ -2596,7 +2619,6 @@ Language: ko_KR
     <string name="product_search_all">모든 상품</string>
     <string name="card_reader_upsell_card_reader_banner_cta">카드 리더 구매</string>
     <string name="card_reader_upsell_card_reader_banner_title">쉽게 결제 수락</string>
-    <string name="card_reader_upsell_card_reader_banner_new">신규</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">해제</string>
     <string name="orderdetail_custom_fields">사용자 정의 필드</string>
     <string name="order_sync_failed">변경 사항을 저장할 수 없음</string>
@@ -4201,6 +4223,15 @@ Language: ko_KR
         <item>사용자 정의 패키지</item>
         <item>서비스 패키지</item>
     </string-array>
+    <plurals name="dashboard_review_rating_content_description">
+        <item quantity="other">별점 평가 %1$d점</item>
+    </plurals>
+    <plurals name="filters_applied_state_description">
+        <item quantity="other">%d개 필터 적용됨</item>
+    </plurals>
+    <plurals name="more_menu_unseen_reviews_state_description">
+        <item quantity="other">표시되지 않는 리뷰 %d개</item>
+    </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">품목 소계(%d개 품목)</item>
     </plurals>

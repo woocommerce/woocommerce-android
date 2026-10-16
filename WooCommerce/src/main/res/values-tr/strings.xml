@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-25 09:59:05+0000
+Translation-Revision-Date: 2026-10-07 09:55:09+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_orders_details_breakdown_custom_amounts_label">Özel tutarlar</string>
+    <string name="woopos_payment_custom_amounts_label">Özel tutarlar</string>
+    <string name="more_menu_payments_new_feature_state_description">Yeni ödeme özelliği kullanılabilir</string>
+    <string name="more_menu_switch_store">Mağaza değiştir</string>
+    <string name="woopos_cart_item_discount_applied">İndirim uygulandı</string>
+    <string name="logviewer_next_match">Sonraki eşleşme</string>
+    <string name="no_filters_applied_state_description">Filtre uygulanmadı</string>
+    <string name="product_rating_content_description">5 üzerinden %1$.1f</string>
+    <string name="card_reader_mode_intro_not_now">Şimdi değil</string>
+    <string name="logviewer_previous_match">Önceki eşleşme</string>
+    <string name="variation_list_fetch_error">Varyasyonlar getirilirken hata oluştu</string>
+    <string name="product_list_deselect_product">%s seçimini kaldır</string>
+    <string name="product_list_select_product">Şunu seç: %s</string>
+    <string name="card_reader_mode_intro_start">Başlat</string>
+    <string name="card_reader_mode_intro_requirement_nfc">Bu telefonda NFC\'yi açın</string>
+    <string name="card_reader_mode_intro_requirement_wifi">Her iki aygıtı da aynı Wi-Fi ile bağlayın</string>
+    <string name="card_reader_mode_intro_requirement_pos">Aynı mağazada oturum açmış bir Android tabletinde Woo POS\'u açın</string>
+    <string name="card_reader_mode_intro_subtitle">Bu telefon, tabletinizde Woo POS\'ta bir kart okuyucu olarak görünür. Ödeme sırasında tablet tutarı buraya gönderir ve müşteri kartını bu telefona dokundurur.</string>
+    <string name="card_reader_mode_intro_header">Bu telefonun kart okuyucusu var</string>
+    <string name="card_reader_mode_intro_requirements_heading">Başlamadan önce</string>
+    <string name="orderlist_deselect_order">%1$s siparişinin seçimini kaldır</string>
+    <string name="dashboard_customize_new_sections_state_description">Yeni pano bölümleri mevcut</string>
+    <string name="orderlist_select_order">%1$s siparişini seç</string>
     <string name="woopos_eligibility_reason_unsupported_country_generic">POS sistemi, mağazanızın ülkesinde kullanılamıyor. Lütfen mağaza adresi ayarlarınızı kontrol edin veya yardım için destek birimine başvurun.</string>
     <string name="woopos_eligibility_reason_unsupported_country">POS sistemi %1$s konumda kullanılamıyor. Lütfen mağaza adresi ayarlarınızı kontrol edin veya yardım için destek birimine başvurun.</string>
     <string name="woo_push_notifications_introduction_error_offline_mode_body">Mağazanız Çevrimdışı Modda olduğundan anlık bildirimler ayarlanamıyor. Hâlâ yardıma ihtiyacınız olursa lütfen destek ekibiyle iletişime geçin.</string>
@@ -2594,7 +2617,6 @@ Language: tr
     <string name="product_search_all">Tüm ürünler</string>
     <string name="card_reader_upsell_card_reader_banner_cta">Kart Okuyucu Satın Alın</string>
     <string name="card_reader_upsell_card_reader_banner_title">Ödemeleri kolayca kabul edin</string>
-    <string name="card_reader_upsell_card_reader_banner_new">YENİ</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">Kapat</string>
     <string name="orderdetail_custom_fields">Özel alanlar</string>
     <string name="order_sync_failed">Değişiklikler kaydedilemiyor</string>
@@ -4200,6 +4222,18 @@ Language: tr
         <item>Özelleştirilmiş paket</item>
         <item>Hizmet paketi</item>
     </string-array>
+    <plurals name="dashboard_review_rating_content_description">
+        <item quantity="one">%1$d yıldız derecelendirmesi</item>
+        <item quantity="other">%1$d yıldız derecelendirmesi</item>
+    </plurals>
+    <plurals name="filters_applied_state_description">
+        <item quantity="one">%d filtre uygulandı</item>
+        <item quantity="other">%d filtre uygulandı</item>
+    </plurals>
+    <plurals name="more_menu_unseen_reviews_state_description">
+        <item quantity="one">%d görülmeyen inceleme</item>
+        <item quantity="other">%d görülmeyen inceleme</item>
+    </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Ürün alt toplamı (%d ürün)</item>
         <item quantity="other">Ürün alt toplamı (%d ürün)</item>
