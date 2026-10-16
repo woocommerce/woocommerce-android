@@ -68,6 +68,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.RemoteProductReviewPaylo
 import org.wordpress.android.fluxc.store.WCProductStore.RemoteUpdateProductPayload
 import org.wordpress.android.fluxc.store.WCProductStore.RemoteUpdateVariationPayload
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateVariationPayload
+import org.wordpress.android.fluxc.store.WCProductStore.VariationSorting
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
 import org.wordpress.android.fluxc.wc.utils.TestSiteSqlUtils
@@ -473,6 +474,43 @@ class WCProductStoreTest {
     }
 
     @Test
+    fun `given id sorting, when product variations are fetched, then the request is sorted by id`() = runTest {
+        val site = SiteModel().apply { id = 42 }
+        val productId = 100L
+        val fetchedVariations = ProductTestUtils.generateSampleVariations(2, productId, site.id)
+        whenever(
+            productRestClient.fetchProductVariationsWithSyncRequest(
+                site = site,
+                productId = productId,
+                pageSize = 2,
+                offset = 0,
+                sorting = VariationSorting.ID,
+                context = "edit"
+            )
+        ).thenReturn(WooPayload(fetchedVariations))
+
+        val result = productStore.fetchProductVariations(
+            FetchProductVariationsPayload(
+                site = site,
+                remoteProductId = productId,
+                pageSize = 2,
+                offset = 0,
+                sorting = VariationSorting.ID
+            )
+        )
+
+        assertThat(result.isError).isFalse
+        verify(productRestClient).fetchProductVariationsWithSyncRequest(
+            site = site,
+            productId = productId,
+            pageSize = 2,
+            offset = 0,
+            sorting = VariationSorting.ID,
+            context = "edit"
+        )
+    }
+
+    @Test
     fun `given cached variations, when product variations page is fetched, then only fetched page is returned`() =
         runTest {
             val site = SiteModel().apply { id = 42 }
@@ -654,6 +692,7 @@ class WCProductStoreTest {
                     filterOptions = anyOrNull(),
                     orderCurrency = anyOrNull(),
                     posProductsOnly = any(),
+                    sorting = any(),
                     context = any()
                 )
             ).thenReturn(WooPayload(listOf(cachedVariation.copy(editContextImage = null))))
@@ -681,6 +720,7 @@ class WCProductStoreTest {
                 filterOptions = anyOrNull(),
                 orderCurrency = anyOrNull(),
                 posProductsOnly = any(),
+                sorting = any(),
                 context = any()
             )
         ).thenReturn(WooPayload(fetchedVariations))
