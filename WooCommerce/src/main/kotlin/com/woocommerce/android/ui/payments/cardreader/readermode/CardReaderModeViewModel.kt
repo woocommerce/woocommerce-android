@@ -273,6 +273,8 @@ class CardReaderModeViewModel @Inject constructor(
             resourceProvider.getString(R.string.card_reader_mode_error_phone_not_eligible)
         CardReaderRemoteError.NfcDisabled ->
             resourceProvider.getString(R.string.card_reader_payment_failed_nfc_disabled)
+        CardReaderRemoteError.InsecureEnvironment ->
+            resourceProvider.getString(R.string.card_reader_payment_failed_insecure_environment)
         CardReaderRemoteError.TokenInvalid,
         CardReaderRemoteError.ConnectFailed,
         CardReaderRemoteError.CollectFailed,

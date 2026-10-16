@@ -7,6 +7,7 @@ import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.NetworkError
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.ServerError
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.DeviceIsNotSupported
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.InsecureEnvironment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.InvalidAppSetup
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.NfcDisabled
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Canceled
@@ -54,6 +55,7 @@ internal class PaymentErrorMapper {
             TerminalErrorCode.TAP_TO_PAY_DEVICE_TAMPERED,
             TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_ANDROID_VERSION -> DeviceIsNotSupported
             TerminalErrorCode.TAP_TO_PAY_LIBRARY_NOT_INCLUDED -> InvalidAppSetup
+            TerminalErrorCode.TAP_TO_PAY_INSECURE_ENVIRONMENT -> InsecureEnvironment
             TerminalErrorCode.CANCELED,
             TerminalErrorCode.CANCELED_BY_READER -> Canceled
             else -> Generic

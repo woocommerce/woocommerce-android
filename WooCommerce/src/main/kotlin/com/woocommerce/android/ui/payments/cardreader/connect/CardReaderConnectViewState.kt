@@ -114,6 +114,17 @@ sealed class CardReaderConnectViewState(
         secondaryActionLabel = R.string.cancel,
     )
 
+    data class TapToPayInsecureEnvironmentState(
+        override val onPrimaryActionClicked: () -> Unit,
+        override val onSecondaryActionClicked: () -> Unit,
+    ) : CardReaderConnectViewState(
+        headerLabel = UiString.UiStringRes(R.string.card_reader_tap_to_pay_not_available_error_title),
+        illustration = R.drawable.img_products_error,
+        hintLabel = R.string.card_reader_payment_failed_insecure_environment,
+        primaryActionLabel = R.string.try_again,
+        secondaryActionLabel = R.string.cancel,
+    )
+
     data class ConnectingFailedState(
         override val onPrimaryActionClicked: () -> Unit,
         override val onSecondaryActionClicked: () -> Unit,

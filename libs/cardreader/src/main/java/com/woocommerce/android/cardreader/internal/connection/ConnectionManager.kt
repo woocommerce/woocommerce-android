@@ -86,17 +86,7 @@ internal class ConnectionManager(
                     CardReaderDiscoveryEvents.Started
                 }
 
-                is DiscoverReadersStatus.Failure -> {
-                    when (state.exception.errorCode) {
-                        TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_DEVICE,
-                        TerminalErrorCode.TAP_TO_PAY_DEVICE_TAMPERED,
-                        TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_ANDROID_VERSION,
-                        TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_PROCESSOR,
-                        TerminalErrorCode.TAP_TO_PAY_INSECURE_ENVIRONMENT ->
-                            CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported(state.exception.errorMessage)
-                        else -> CardReaderDiscoveryEvents.Failed(state.exception.errorMessage)
-                    }
-                }
+                is DiscoverReadersStatus.Failure -> state.toDiscoveryFailedEvent()
 
                 is DiscoverReadersStatus.FoundReaders -> {
                     val filtering: (Reader) -> Boolean = when (cardReaderTypesToDiscover) {
@@ -114,6 +104,17 @@ internal class ConnectionManager(
                 }
             }
         }
+
+    private fun DiscoverReadersStatus.Failure.toDiscoveryFailedEvent() = when (exception.errorCode) {
+        TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_DEVICE,
+        TerminalErrorCode.TAP_TO_PAY_DEVICE_TAMPERED,
+        TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_ANDROID_VERSION,
+        TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_PROCESSOR ->
+            CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported(exception.errorMessage)
+        TerminalErrorCode.TAP_TO_PAY_INSECURE_ENVIRONMENT ->
+            CardReaderDiscoveryEvents.FailedTapToPayInsecureEnvironment(exception.errorMessage)
+        else -> CardReaderDiscoveryEvents.Failed(exception.errorMessage)
+    }
 
     private fun checkIfNecessaryPermissionsAreGranted() {
         val locationPermission = requiredLocationPermission()

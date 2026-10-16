@@ -295,6 +295,21 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
         }
 
     @Test
+    fun `given TTP insecure environment error, when discovery fails, then insecure environment event emitted`() =
+        testBlocking {
+            // GIVEN
+            val terminalException = TerminalException(TerminalErrorCode.TAP_TO_PAY_INSECURE_ENVIRONMENT, "insecure")
+            whenever(discoverReadersAction.discoverExternalReaders(anyBoolean()))
+                .thenReturn(flow { emit(Failure(terminalException)) })
+
+            // WHEN
+            val result = connectionManager.discoverReaders(true, supportedReaders).single()
+
+            // THEN
+            assertThat(result).isEqualTo(CardReaderDiscoveryEvents.FailedTapToPayInsecureEnvironment("insecure"))
+        }
+
+    @Test
     fun `given non TTP error code, when discovery fails, then generic Failed event emitted`() = testBlocking {
         val terminalException = TerminalException(TerminalErrorCode.NOT_CONNECTED_TO_READER, "other error")
         whenever(discoverReadersAction.discoverExternalReaders(anyBoolean()))

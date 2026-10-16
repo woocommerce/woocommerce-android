@@ -5,6 +5,7 @@
 25.9
 -----
 - [*****] [Internal] Update Stripe Terminal SDK from 5.8.2 to 6.0.0 [https://github.com/woocommerce/woocommerce-android/pull/16688]
+- [*] Tap to Pay: when a payment is blocked for security reasons (for example an accessibility service is on), the app now says what to check instead of showing a generic error [https://github.com/woocommerce/woocommerce-android/pull/16693]
 - [*] Card Reader Mode on the phone now asks to turn on NFC and opens the NFC settings when NFC is off [https://github.com/woocommerce/woocommerce-android/pull/16666]
 - [*] The Blaze campaign list now shows an outstanding balance notice with a Pay button for each unpaid order [https://github.com/woocommerce/woocommerce-android/pull/16612]
 - [*] Shipping Labels: The recipient phone number is now optional for domestic shipments. It's still required for international shipments and FedEx services. [https://github.com/woocommerce/woocommerce-android/pull/16665]

@@ -1713,6 +1713,7 @@
 
     <string name="card_reader_payment_failed_nfc_disabled">The app could not enable the card reader, because the NFC chip is disabled</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Enable NFC</string>
+    <string name="card_reader_payment_failed_insecure_environment">Tap to Pay was blocked for security reasons. Check that accessibility services and screen recording are turned off.</string>
     <string name="card_reader_payment_failed_device_is_not_supported">Your device is not supported. Please contact support for more details</string>
     <string name="card_reader_payment_failed_app_setup_is_invalid">Something went wrong with the app setup. Please contact support for more details</string>
 
@@ -3951,6 +3952,7 @@
     <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_reader_reconnecting">Reconnecting…</string>
     <string name="woopos_remote_reader_connect_failed_generic">Connection failed</string>
+    <string name="woopos_remote_reader_failed_insecure_environment">Tap to Pay was blocked on the phone for security reasons. On the phone, check that accessibility services and screen recording are turned off.</string>
     <string name="woopos_remote_reader_failed_phone_not_eligible">This phone isn\'t eligible for Tap to Pay. Try a different device.</string>
     <string name="woopos_remote_reader_failed_nfc_disabled">Turn on NFC on the phone, then try again.</string>
     <string name="woopos_remote_reader_failed_token_invalid">Payment service error. Try reconnecting.</string>
