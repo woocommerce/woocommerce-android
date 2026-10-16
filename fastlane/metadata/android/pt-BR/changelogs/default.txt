@@ -1,0 +1,2 @@
+25.8:
+Minha loja, Pedidos, Produtos e o menu Mais têm uma nova aparência. As notificações por push estão mais confiáveis, você verá menos logouts inesperados, e grandes lojas sincronizam pedidos sem atingir o tempo limite. No ponto de venda, os valores e descontos personalizados ficaram mais claros na finalização da compra. Além disso, fizemos correções no seguinte: login, pagamentos, variações de produtos e atualizações de lojas.
