@@ -57,7 +57,8 @@ class PrintShippingLabelViewModel @Inject constructor(
 
     init {
         launch {
-            // the case of expiring is possible only during reprinting, and when reprinting we will pass only one label
+            // Only a reprint can open this screen with an expired label, and a reprint passes a single label,
+            // so checking the first one is enough.
             val label = getShippingLabel(arguments.shippingLabelIds.first())
             viewState = viewState.copy(
                 isLabelExpired = label?.isAnonymized == true ||
