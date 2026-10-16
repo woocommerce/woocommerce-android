@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -54,6 +55,7 @@ fun WooPosCustomAmountFormScreen(
     editing: WooPosCartItemViewState.CustomAmount?,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    submitButtonPadding: PaddingValues = defaultSubmitButtonPadding(),
     viewModel: WooPosCustomAmountDialogViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(editing?.itemNumber) {
@@ -70,10 +72,6 @@ fun WooPosCustomAmountFormScreen(
     BackHandler(enabled = true) { onBackClick() }
 
     val state by viewModel.state.collectAsState()
-    val submitButtonKeyboardGap = when (WindowInsets.ime.getBottom(LocalDensity.current) > 0) {
-        true -> WooPosSpacing.Medium.value
-        false -> 0.dp
-    }
 
     Column(
         modifier = modifier
@@ -116,13 +114,25 @@ fun WooPosCustomAmountFormScreen(
             FormSubmitButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = WooPosSpacing.Medium.value)
-                    .padding(bottom = submitButtonKeyboardGap),
+                    .padding(submitButtonPadding),
                 state = state,
                 onSubmit = viewModel::onSubmit,
             )
         }
     }
+}
+
+@Composable
+private fun defaultSubmitButtonPadding(): PaddingValues {
+    val keyboardGap = when (WindowInsets.ime.getBottom(LocalDensity.current) > 0) {
+        true -> WooPosSpacing.Medium.value
+        false -> 0.dp
+    }
+    return PaddingValues(
+        start = WooPosSpacing.Medium.value,
+        end = WooPosSpacing.Medium.value,
+        bottom = keyboardGap,
+    )
 }
 
 @Composable
