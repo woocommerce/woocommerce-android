@@ -967,7 +967,7 @@ class OrderCreateEditViewModel @Inject constructor(
         barcodeOptions: BarcodeOptions
     ) {
         viewState = viewState.copy(isUpdatingOrderDraft = false)
-        addScannedProduct(product, selectedItems, source, barcodeOptions.barcodeFormat)
+        addScannedProduct(product, selectedItems, source, barcodeOptions)
     }
 
     private fun handleFetchProductBySKUEmpty(
@@ -1001,10 +1001,20 @@ class OrderCreateEditViewModel @Inject constructor(
         product: ModelProduct,
         selectedItems: List<SelectedItem>,
         source: ScanningSource,
-        barcodeFormat: BarcodeFormat
+        barcodeOptions: BarcodeOptions
     ) {
-        val restriction = productRestrictions.getRestriction(product)
-            ?: product.takeIf { it.parentId != 0L }?.let { getUnsupportedParentRestriction(it) }
+        val barcodeFormat = barcodeOptions.barcodeFormat
+        val restriction = productRestrictions.getRestriction(product) ?: when (product.parentId) {
+            0L -> null
+            else -> when (val parentResult = getUnsupportedParentRestriction(product)) {
+                GetUnsupportedParentRestriction.Result.NotRestricted -> null
+                is GetUnsupportedParentRestriction.Result.Restricted -> parentResult.restriction
+                GetUnsupportedParentRestriction.Result.ParentUnavailable -> {
+                    handleFetchProductBySKUFailure(source, barcodeOptions, "Parent of the scanned variation not loaded")
+                    return
+                }
+            }
+        }
         if (restriction != null) {
             handleRestrictedProduct(restriction, source, barcodeFormat)
         } else if (product.isVariable()) {

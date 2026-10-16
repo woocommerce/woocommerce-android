@@ -208,7 +208,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             on { getString(R.string.order_creation_set_tax_rate) } doReturn "Set New Tax Rate"
         }
         productRestrictions = mock()
-        getUnsupportedParentRestriction = mock()
+        getUnsupportedParentRestriction = mock {
+            on { invoke(any()) } doReturn GetUnsupportedParentRestriction.Result.NotRestricted
+        }
         selectedSite = mock()
         taxRateToAddress = mock()
         getAutoTaxRateSetting = mock {
@@ -762,7 +764,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA))
                 .thenReturn(Result.success(variation))
-            whenever(getUnsupportedParentRestriction(variation)).thenReturn(ProductRestriction.SubscriptionProducts)
+            whenever(getUnsupportedParentRestriction(variation))
+                .thenReturn(GetUnsupportedParentRestriction.Result.Restricted(ProductRestriction.SubscriptionProducts))
             var newOrder: Order? = null
             sut.orderDraft.observeForever { newOrder = it }
 
