@@ -443,8 +443,10 @@ class WooPosCardReaderConnectionController(
                     cardReaderTypesToDiscover = ExternalReaders(
                         listOf(Chipper2X, StripeM2, WisePade3)
                     ),
-                    includeBluetooth = includeBluetooth,
-                    includePhones = WooPermissionUtils.hasLocalNetworkPermission(context),
+                    transports = buildSet {
+                        if (includeBluetooth) add(WooPosDiscoveryTransport.Bluetooth)
+                        if (WooPermissionUtils.hasLocalNetworkPermission(context)) add(WooPosDiscoveryTransport.WifiLan)
+                    },
                 )
                 .flowOn(dispatchers.io)
                 .collect { event ->

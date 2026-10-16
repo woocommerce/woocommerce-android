@@ -117,7 +117,7 @@ class WooPosCardReaderConnectionControllerTest {
                 // GIVEN
                 bluetoothAdapter.`when`<BluetoothAdapter?> { BluetoothAdapter.getDefaultAdapter() }.thenReturn(null)
                 whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
-                whenever(unifiedDiscoveryStream.discover(any(), any(), any(), any())).thenReturn(emptyFlow())
+                whenever(unifiedDiscoveryStream.discover(any(), any(), any())).thenReturn(emptyFlow())
                 val controller = createController(this)
                 controller.onBluetoothEnabled()
                 advanceUntilIdle()
@@ -129,7 +129,7 @@ class WooPosCardReaderConnectionControllerTest {
                 // THEN
                 assertThat(controller.state.value)
                     .isInstanceOf(WooPosCardReaderConnectionState.BluetoothDisabled::class.java)
-                verify(unifiedDiscoveryStream, times(1)).discover(any(), any(), any(), any())
+                verify(unifiedDiscoveryStream, times(1)).discover(any(), any(), any())
             }
         }
 
@@ -141,7 +141,7 @@ class WooPosCardReaderConnectionControllerTest {
                 // GIVEN
                 bluetoothAdapter.`when`<BluetoothAdapter?> { BluetoothAdapter.getDefaultAdapter() }.thenReturn(null)
                 whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
-                whenever(unifiedDiscoveryStream.discover(any(), any(), any(), any())).thenReturn(emptyFlow())
+                whenever(unifiedDiscoveryStream.discover(any(), any(), any())).thenReturn(emptyFlow())
                 val controller = createController(this)
                 controller.onBluetoothEnabled()
                 advanceUntilIdle()
@@ -161,7 +161,7 @@ class WooPosCardReaderConnectionControllerTest {
                 // THEN
                 assertThat(controller.state.value)
                     .isInstanceOf(WooPosCardReaderConnectionState.LocationDisabled::class.java)
-                verify(unifiedDiscoveryStream, times(2)).discover(any(), any(), any(), any())
+                verify(unifiedDiscoveryStream, times(2)).discover(any(), any(), any())
             }
         }
 

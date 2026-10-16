@@ -59,8 +59,7 @@ class WooPosUnifiedDiscoveryStreamTest {
         sut.discover(
             isSimulated = false,
             cardReaderTypesToDiscover = types,
-            includeBluetooth = true,
-            includePhones = true,
+            transports = setOf(WooPosDiscoveryTransport.Bluetooth, WooPosDiscoveryTransport.WifiLan),
         ).test {
             assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
             val btOnly = awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound
@@ -91,8 +90,7 @@ class WooPosUnifiedDiscoveryStreamTest {
         sut.discover(
             isSimulated = false,
             cardReaderTypesToDiscover = types,
-            includeBluetooth = false,
-            includePhones = true,
+            transports = setOf(WooPosDiscoveryTransport.WifiLan),
         ).test {
             assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
             val found = awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound
@@ -121,8 +119,7 @@ class WooPosUnifiedDiscoveryStreamTest {
         sut.discover(
             isSimulated = false,
             cardReaderTypesToDiscover = types,
-            includeBluetooth = true,
-            includePhones = true,
+            transports = setOf(WooPosDiscoveryTransport.Bluetooth, WooPosDiscoveryTransport.WifiLan),
         ).test {
             val found = awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound
             assertThat(found.readers).containsExactly(phone)
@@ -155,8 +152,7 @@ class WooPosUnifiedDiscoveryStreamTest {
         sut.discover(
             isSimulated = false,
             cardReaderTypesToDiscover = types,
-            includeBluetooth = true,
-            includePhones = true,
+            transports = setOf(WooPosDiscoveryTransport.Bluetooth, WooPosDiscoveryTransport.WifiLan),
         ).test {
             assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
             val withPhone = awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound
@@ -193,8 +189,7 @@ class WooPosUnifiedDiscoveryStreamTest {
             sut.discover(
                 isSimulated = false,
                 cardReaderTypesToDiscover = types,
-                includeBluetooth = true,
-                includePhones = true,
+                transports = setOf(WooPosDiscoveryTransport.Bluetooth, WooPosDiscoveryTransport.WifiLan),
             ).test {
                 assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
                 val withPhone = awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound
@@ -227,8 +222,7 @@ class WooPosUnifiedDiscoveryStreamTest {
         sut.discover(
             isSimulated = false,
             cardReaderTypesToDiscover = types,
-            includeBluetooth = true,
-            includePhones = true,
+            transports = setOf(WooPosDiscoveryTransport.Bluetooth, WooPosDiscoveryTransport.WifiLan),
         ).test {
             assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
             awaitComplete()
@@ -257,8 +251,7 @@ class WooPosUnifiedDiscoveryStreamTest {
         sut.discover(
             isSimulated = false,
             cardReaderTypesToDiscover = types,
-            includeBluetooth = true,
-            includePhones = true,
+            transports = setOf(WooPosDiscoveryTransport.Bluetooth, WooPosDiscoveryTransport.WifiLan),
         ).test {
             assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
             val found = awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound
@@ -307,8 +300,7 @@ class WooPosUnifiedDiscoveryStreamTest {
             sut.discover(
                 isSimulated = false,
                 cardReaderTypesToDiscover = types,
-                includeBluetooth = true,
-                includePhones = true,
+                transports = setOf(WooPosDiscoveryTransport.Bluetooth, WooPosDiscoveryTransport.WifiLan),
             ).test {
                 assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
                 assertThat((awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound).readers)
@@ -341,8 +333,7 @@ class WooPosUnifiedDiscoveryStreamTest {
         sut.discover(
             isSimulated = false,
             cardReaderTypesToDiscover = types,
-            includeBluetooth = true,
-            includePhones = false,
+            transports = setOf(WooPosDiscoveryTransport.Bluetooth),
         ).test {
             assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
             val found = awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound

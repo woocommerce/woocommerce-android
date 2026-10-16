@@ -62,13 +62,12 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
     fun discover(
         isSimulated: Boolean,
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,
-        includeBluetooth: Boolean,
-        includePhones: Boolean,
+        transports: Set<WooPosDiscoveryTransport>,
     ): Flow<WooPosUnifiedDiscoveryEvent> = channelFlow {
         val mutex = Mutex()
         val state = DiscoveryState()
 
-        if (includeBluetooth) {
+        if (WooPosDiscoveryTransport.Bluetooth in transports) {
             launch {
                 // discoverReaders() throws before returning its flow when Terminal is not initialised.
                 flow { emitAll(cardReaderManager.discoverReaders(isSimulated, cardReaderTypesToDiscover)) }
@@ -91,7 +90,7 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
             send(WooPosUnifiedDiscoveryEvent.Started)
         }
 
-        if (includePhones) {
+        if (WooPosDiscoveryTransport.WifiLan in transports) {
             val phoneSource: WooPosPhoneDiscoverySource =
                 if (isSimulated) simulatedRemoteDiscovery else remoteDiscovery
             launch {
