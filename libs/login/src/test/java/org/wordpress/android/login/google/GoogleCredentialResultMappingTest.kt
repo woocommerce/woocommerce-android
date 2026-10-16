@@ -100,11 +100,13 @@ class GoogleCredentialResultMappingTest {
     }
 
     @Test
-    fun `given interrupted request, when mapping exception, then return failure`() {
+    fun `given interrupted request, when mapping exception, then return network failure`() {
         val exception = GetCredentialInterruptedException()
 
         val result = exception.toGoogleCredentialResult()
 
-        assertThat(result).isEqualTo(GoogleCredentialResult.Failure(errorType = exception.type, errorMessage = null))
+        assertThat(result).isEqualTo(
+            GoogleCredentialResult.Failure(errorType = exception.type, errorMessage = null, isNetworkError = true)
+        )
     }
 }
