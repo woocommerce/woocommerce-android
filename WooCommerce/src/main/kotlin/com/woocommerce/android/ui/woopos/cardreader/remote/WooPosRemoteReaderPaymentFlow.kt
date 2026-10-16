@@ -44,19 +44,24 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     private val terminalPaymentPreparationResolver = TerminalPaymentPreparationResolver(wooStore, appPrefs)
 
     suspend fun collect(order: Order, onCaptureStarting: suspend () -> Unit = {}): Result {
+        val attemptTracker = paymentsFlowTracker.forPaymentAttempt()
         trackingInfoKeeper.setCurrency(order.currency)
         trackingInfoKeeper.setPaymentMethodType(PaymentMethodType.UNKNOWN.stringRepresentation)
         trackingInfoKeeper.setCardReaderModel(TAP_TO_PAY_READER_MODEL)
         trackingInfoKeeper.setTransport(CardReaderTransport.WIFI_LAN.value)
-        val result = collectInternal(order, onCaptureStarting)
+        val result = collectInternal(order, onCaptureStarting, attemptTracker)
         when (result) {
-            Result.Completed -> paymentsFlowTracker.trackPaymentSucceeded(order)
-            is Result.Failed -> paymentsFlowTracker.trackPaymentFailed(result.errorDescription)
+            Result.Completed -> attemptTracker.trackPaymentSucceeded(order)
+            is Result.Failed -> attemptTracker.trackPaymentFailed(result.errorDescription)
         }
         return result
     }
 
-    private suspend fun collectInternal(order: Order, onCaptureStarting: suspend () -> Unit): Result {
+    private suspend fun collectInternal(
+        order: Order,
+        onCaptureStarting: suspend () -> Unit,
+        attemptTracker: PaymentsFlowTracker,
+    ): Result {
         if (isSimulatedReaderConnected()) {
             return simulatePayment(onCaptureStarting)
         }
@@ -102,16 +107,20 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
             ),
         )
 
-        return collectRemotePayment(order.id, paymentInfo, onCaptureStarting)
+        return collectRemotePayment(order.id, paymentInfo, onCaptureStarting, attemptTracker)
     }
 
     private suspend fun collectRemotePayment(
         orderId: Long,
         paymentInfo: PaymentInfo,
         onCaptureStarting: suspend () -> Unit,
+        attemptTracker: PaymentsFlowTracker,
     ): Result {
         return when (val outcome = remoteReaderSession.sendCollectPayment(paymentInfo)) {
             is CollectPaymentOutcome.Success -> {
+                if (outcome.status == "requires_capture" || outcome.status == "succeeded") {
+                    attemptTracker.onConfirmedIntentAvailable()
+                }
                 trackingInfoKeeper.setPaymentMethodType(
                     (outcome.paymentMethodType ?: PaymentMethodType.UNKNOWN).stringRepresentation
                 )

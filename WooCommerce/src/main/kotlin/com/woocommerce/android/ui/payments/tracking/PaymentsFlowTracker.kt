@@ -41,6 +41,20 @@ class PaymentsFlowTracker @Inject constructor(
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val eventProvider: PaymentsFlowTrackerEventProvider,
 ) {
+    fun forPaymentAttempt(): PaymentsFlowTracker {
+        val provider = eventProvider.forPaymentAttempt()
+        if (provider === eventProvider) return this
+        return PaymentsFlowTracker(
+            trackerWrapper,
+            appPrefsWrapper,
+            selectedSite,
+            cardReaderTrackingInfoProvider,
+            paymentReceiptHelper,
+            provider
+        )
+    }
+    fun onConfirmedIntentAvailable() = eventProvider.onConfirmedIntentAvailable()
+
     @VisibleForTesting
     fun track(
         stat: IAnalyticsEvent,

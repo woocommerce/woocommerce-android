@@ -66,6 +66,8 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.EmailReceiptTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosCheckoutTiming
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosElapsedTime
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -119,6 +121,8 @@ class WooPosTotalsViewModelTest {
     private val networkStatus: WooPosNetworkStatus = mock()
 
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
+    private val timingClock = mock<WooPosElapsedTime>()
+    private val timingData = WooPosAnalyticsTrackingDataKeeper(WooPosCheckoutTiming(timingClock))
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) }.thenReturn("")
     }
@@ -227,6 +231,33 @@ class WooPosTotalsViewModelTest {
         whenever(productsDataSource.getCurrentSyncStrategy()).thenReturn(
             WooPosProductsDataSource.SyncStrategy.REMOTE
         )
+    }
+
+    @Test
+    fun `given an existing checkout, when products or coupons are removed, then sync timing restarts without tap count`() = runTest {
+        // GIVEN
+        val items = listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L))
+        val events = MutableStateFlow<ParentToChildrenEvent>(ParentToChildrenEvent.CheckoutClicked(items))
+        val receiver = mock<WooPosParentToChildrenEventReceiver> { on { this.events }.thenReturn(events) }
+        val repository = mock<WooPosTotalsRepository>()
+        whenever(repository.createOrderFromCartItems(any())).thenReturn(Result.failure(Exception("sync failed")))
+        createViewModel(parentToChildrenEventReceiver = receiver, totalsRepository = repository)
+        advanceUntilIdle()
+        // WHEN
+        whenever(timingClock.milliseconds()).thenReturn(100L)
+        events.value = ParentToChildrenEvent.ProductsRemoved(items)
+        advanceUntilIdle()
+        whenever(timingClock.milliseconds()).thenReturn(130L)
+        val afterProducts = timingData.checkoutTiming.terminalSnapshot(success = false)
+        whenever(timingClock.milliseconds()).thenReturn(200L)
+        events.value = ParentToChildrenEvent.CouponsRemoved(items)
+        advanceUntilIdle()
+        whenever(timingClock.milliseconds()).thenReturn(230L)
+        val afterCoupons = timingData.checkoutTiming.terminalSnapshot(success = false)
+        // THEN
+        assertThat(afterProducts).containsEntry("pos_time_since_checkout_started_ms", 30L)
+        assertThat(afterCoupons).containsEntry("pos_time_since_checkout_started_ms", 30L)
+        assertThat(timingData.checkoutButtonTapsCount).isEqualTo(1)
     }
 
     @Test
@@ -2953,7 +2984,7 @@ class WooPosTotalsViewModelTest {
         savedState = savedState,
         totalsAnalyticsTracker = WooPosTotalsAnalyticsTracker(
             analyticsTracker = analyticsTracker,
-            analyticsData = WooPosAnalyticsTrackingDataKeeper(),
+            analyticsData = timingData,
             productsDataSource = productsDataSource,
             readerReadyForPaymentTracker = mock(),
         ),

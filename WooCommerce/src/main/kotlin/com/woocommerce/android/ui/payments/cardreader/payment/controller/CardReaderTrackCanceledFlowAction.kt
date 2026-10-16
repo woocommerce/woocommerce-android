@@ -9,7 +9,10 @@ import javax.inject.Inject
 class CardReaderTrackCanceledFlowAction @Inject constructor(
     private val tracker: PaymentsFlowTracker,
 ) {
-    operator fun invoke(state: CardReaderPaymentOrRefundState) = when (state) {
+    operator fun invoke(
+        state: CardReaderPaymentOrRefundState,
+        eventTracker: PaymentsFlowTracker = tracker,
+    ) = when (state) {
         is CardReaderPaymentState -> {
             val nameForTracking = when (state) {
                 is CardReaderPaymentState.PaymentCapturing -> "Capturing"
@@ -20,7 +23,7 @@ class CardReaderTrackCanceledFlowAction @Inject constructor(
             if (nameForTracking == null) {
                 WooLog.e(WooLog.T.CARD_READER, "Invalid state received")
             } else {
-                tracker.trackPaymentCancelled(nameForTracking)
+                eventTracker.trackPaymentCancelled(nameForTracking)
             }
         }
         is CardReaderInteracRefundState -> {
@@ -33,7 +36,7 @@ class CardReaderTrackCanceledFlowAction @Inject constructor(
             if (nameForTracking == null) {
                 WooLog.e(WooLog.T.CARD_READER, "Invalid state received")
             } else {
-                tracker.trackInteracRefundCancelled(nameForTracking)
+                eventTracker.trackInteracRefundCancelled(nameForTracking)
             }
         }
     }

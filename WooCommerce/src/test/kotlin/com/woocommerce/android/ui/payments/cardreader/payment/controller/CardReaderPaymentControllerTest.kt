@@ -153,6 +153,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
     @OptIn(InternalCoroutinesApi::class)
     @Before
     fun setUp() = testBlocking {
+        whenever(tracker.forPaymentAttempt()).thenReturn(tracker)
         createController()
         whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
         whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(mockedOrder)
@@ -646,6 +647,21 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             assertThat(controller.paymentState.value)
                 .isInstanceOf(CardReaderPaymentState.ProcessingPayment.BuiltInReaderProcessingPayment::class.java)
         }
+
+    @Test
+    fun `when confirmed intent is available, then analytics is notified without changing payment UI`() = testBlocking {
+        // GIVEN
+        whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+            flow { emit(CardPaymentStatus.ConfirmedPaymentIntentAvailable) }
+        }
+        // WHEN
+        controller.start()
+        // THEN
+        verify(tracker).forPaymentAttempt()
+        verify(tracker).onConfirmedIntentAvailable()
+        verify(tracker, never()).trackInteracPaymentSucceeded()
+        assertThat(controller.paymentState.value).isInstanceOf(CardReaderPaymentState.LoadingData::class.java)
+    }
 
     @Test
     fun `when processing payment completed with card present, then tracking keeper stores payment type`() =
@@ -1264,6 +1280,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), any())
+            verify(tracker, times(2)).forPaymentAttempt()
             verify(tracker).trackPaymentSucceeded(mockedOrder)
         }
 
@@ -1282,6 +1299,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), any())
+            verify(tracker, times(2)).forPaymentAttempt()
         }
 
     @Test
