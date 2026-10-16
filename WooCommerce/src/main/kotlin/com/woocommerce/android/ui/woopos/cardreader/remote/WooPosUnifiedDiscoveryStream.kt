@@ -63,6 +63,7 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
         isSimulated: Boolean,
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,
         includeBluetooth: Boolean,
+        includePhones: Boolean,
     ): Flow<WooPosUnifiedDiscoveryEvent> = channelFlow {
         val mutex = Mutex()
         val state = DiscoveryState()
@@ -90,20 +91,22 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
             send(WooPosUnifiedDiscoveryEvent.Started)
         }
 
-        val phoneSource: WooPosPhoneDiscoverySource =
-            if (isSimulated) simulatedRemoteDiscovery else remoteDiscovery
-        launch {
-            phoneSource.discover()
-                // NSD failures must not tear down BT discovery — degrade to BT-only.
-                .catch { throwable -> logger.e("NSD discovery failed, degrading to BT-only", throwable) }
-                .collect { event ->
-                    when (event) {
-                        is WooPosPhoneDiscoveryEvent.Added ->
-                            addPhoneAndSendSnapshot(mutex, state, event.phone)
-                        is WooPosPhoneDiscoveryEvent.Removed ->
-                            removePhoneAndSendSnapshot(mutex, state, event.name)
+        if (includePhones) {
+            val phoneSource: WooPosPhoneDiscoverySource =
+                if (isSimulated) simulatedRemoteDiscovery else remoteDiscovery
+            launch {
+                phoneSource.discover()
+                    // NSD failures must not tear down BT discovery — degrade to BT-only.
+                    .catch { throwable -> logger.e("NSD discovery failed, degrading to BT-only", throwable) }
+                    .collect { event ->
+                        when (event) {
+                            is WooPosPhoneDiscoveryEvent.Added ->
+                                addPhoneAndSendSnapshot(mutex, state, event.phone)
+                            is WooPosPhoneDiscoveryEvent.Removed ->
+                                removePhoneAndSendSnapshot(mutex, state, event.name)
+                        }
                     }
-                }
+            }
         }
     }
 

@@ -14,13 +14,17 @@ import androidx.compose.ui.text.style.TextAlign
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
-fun WooPosRemoteReaderExplainerContent(onDismiss: () -> Unit) {
+fun WooPosRemoteReaderExplainerContent(
+    onDismiss: () -> Unit,
+    onAllowLocalNetworkClicked: (() -> Unit)?,
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
         WooPosText(
             text = stringResource(R.string.woopos_remote_ttp_explainer_title),
@@ -57,13 +61,32 @@ fun WooPosRemoteReaderExplainerContent(onDismiss: () -> Unit) {
 
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
 
-        WooPosButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.CenterHorizontally),
-            text = stringResource(R.string.woopos_remote_ttp_explainer_got_it),
-            onClick = onDismiss,
-        )
+        when (onAllowLocalNetworkClicked) {
+            null -> WooPosButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally),
+                text = stringResource(R.string.woopos_remote_ttp_explainer_got_it),
+                onClick = onDismiss,
+            )
+            else -> {
+                WooPosButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally),
+                    text = stringResource(R.string.woopos_remote_ttp_explainer_allow_local_network),
+                    onClick = onAllowLocalNetworkClicked,
+                )
+                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+                WooPosOutlinedButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally),
+                    text = stringResource(R.string.woopos_remote_ttp_explainer_got_it),
+                    onClick = onDismiss,
+                )
+            }
+        }
     }
 }
 
@@ -87,6 +110,14 @@ private fun ExplainerSection(heading: String, body: String) {
 @Composable
 fun WooPosRemoteReaderExplainerContentPreview() {
     WooPosTheme {
-        WooPosRemoteReaderExplainerContent(onDismiss = {})
+        WooPosRemoteReaderExplainerContent(onDismiss = {}, onAllowLocalNetworkClicked = null)
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosRemoteReaderExplainerContentLocalNetworkPreview() {
+    WooPosTheme {
+        WooPosRemoteReaderExplainerContent(onDismiss = {}, onAllowLocalNetworkClicked = {})
     }
 }
