@@ -1489,6 +1489,44 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given a product with variations and a new attribute, when used for variations is turned off, then no confirmation is shown`() =
+        testBlocking {
+            // GIVEN
+            givenNonVariationAttributesEnabled(true)
+            givenStoredProductAttributes(listOf(VARIATION_GLOBAL_ATTRIBUTE), ProductType.VARIABLE, numVariations = 4)
+            viewModel.start()
+            viewModel.addAttributeTermToDraft(3L, "Size", "S", isVariationCreation = false)
+
+            // WHEN
+            val events = viewModel.event.runAndCaptureValues {
+                viewModel.onAttributeUsedForVariationsToggled(3L, "Size", isVariation = false)
+            }
+
+            // THEN
+            Assertions.assertThat(events).doesNotContain(ProductDetailViewModel.ShowStopUsingForVariationsConfirmation)
+            Assertions.assertThat(viewModel.productDraftAttributes.single { it.name == "Size" }.isVariation).isFalse()
+        }
+
+    @Test
+    fun `given a product with variations and an attribute saved as not used for variations, when it is turned on and off, then no confirmation is shown`() =
+        testBlocking {
+            // GIVEN
+            val color = VARIATION_GLOBAL_ATTRIBUTE.copy(isVariation = false)
+            givenStoredProductAttributes(listOf(color), ProductType.VARIABLE, numVariations = 4)
+            viewModel.start()
+            viewModel.onAttributeUsedForVariationsToggled(color.id, "Color", isVariation = true)
+
+            // WHEN
+            val events = viewModel.event.runAndCaptureValues {
+                viewModel.onAttributeUsedForVariationsToggled(color.id, "Color", isVariation = false)
+            }
+
+            // THEN
+            Assertions.assertThat(events).doesNotContain(ProductDetailViewModel.ShowStopUsingForVariationsConfirmation)
+            Assertions.assertThat(viewModel.productDraftAttributes).containsExactly(color)
+        }
+
+    @Test
     fun `when stop using for variations is confirmed, then the attribute is no longer used for variations`() =
         testBlocking {
             // GIVEN
