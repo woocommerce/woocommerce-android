@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 25.9
+Card readers WisePad 3, M2 and Chipper 2X can now connect over USB, and EU shipping labels ask for the product codes customs require. Managing variations and attributes is smoother, Blaze shows unpaid balances with a Pay button, and POS lets you mute the payment sound. Plus fixes for refunds, notifications, NFC setup, and order filters.
+
 ## 25.8
 My Store, Orders, Products, and the More menu have a fresh new look. Push notifications are more reliable, you'll see fewer unexpected sign-outs, and large stores sync orders without timing out. In POS, custom amounts and discounts are clearer at checkout. Plus fixes for login, payouts, product variations, and store updates.
 

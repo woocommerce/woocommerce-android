@@ -1,2 +1,0 @@
-25.8:
-Min butik, Beställningar, Produkter och menyn Mer har fått ett nytt, fräscht utseende. Pushnotiser är mer tillförlitliga, du kommer att uppleva färre oväntade utloggningar och stora butiker synkroniserar beställningar utan att tidsgränsen löper ut. I POS är anpassade belopp och rabatter tydligare i kassan. Plus korrigeringar för inloggning, utbetalningar, produktvariationer och butiksuppdateringar.

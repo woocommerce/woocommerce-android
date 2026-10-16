@@ -1,2 +1,0 @@
-25.8 :
-Les sections Ma boutique, Commandes, Produits et le menu Plus s’offrent un nouveau look. Les notifications push sont plus fiables. Vous verrez moins de déconnexions inattendues et les grandes boutiques synchronisent les commandes sans expiration de délai. Dans le PDV, les montants personnalisés et remises sont plus clairs lors de la validation de la commande. Des correctifs ont été apportés pour les connexions, les paiements, les variantes de produits et les mises à jour de la boutique.
