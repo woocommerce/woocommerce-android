@@ -1,5 +1,6 @@
 # Smoke Test: Google for Woo
-# P2 probe: hub.google-for-woo (runs on the shared store, which is eligible)
+# p2: hub.google-for-woo
+# Runs on the shared store, which is eligible.
 # P2 ref: Google for Woo > Trigger campaign creation, check webview loads
 #
 # Google for Woo is a CONDITIONAL hub-menu item — only shown when BOTH:
@@ -9,8 +10,8 @@
 #
 # The shared store meets both, so a missing "Google for WooCommerce" row
 # fails the flow. We verify tapping it launches the Google Ads webview
-# (GoogleAdsWebViewFragment, hosts a WebView with AppBarStatus.Hidden and
-# pulls the Google campaign creation/dashboard URL).
+# (GoogleAdsWebViewFragment, hosts a WebView with AppBarStatus.Hidden) and
+# that the campaign creation page loads.
 #
 # "Inbox" is the last item in the hub menu's general section
 # (MoreMenuViewModel.generateGeneralSection) and always renders, so we
@@ -57,6 +58,13 @@ tags:
     timeout: 25000
     label: "Verify Google Ads webview took over"
 - assertNotVisible: "Payments"
+# The shared store has no campaign, so the menu opens the campaign creation
+# page. Wait for the page itself rather than only the webview.
+- extendedWaitUntil:
+    visible: "Create your campaign"
+    timeout: 60000
+    label: "Campaign creation page loaded"
+- assertVisible: "Set your budget"
 - takeScreenshot: google_for_woo
 - back
 - extendedWaitUntil:

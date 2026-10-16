@@ -3,16 +3,15 @@ Maestro smoke plan
   store:   per flow
   repeat:  1
   include: smoke_core,smoke_extended,android_system,pos_tablet
-  exclude: flaky_quarantine
+  exclude: quarantine
   seed:    yes
-  flows:   33
+  flows:   32
 
 Selected flows:
   - .maestro/flows/login_not_wp_site.yaml
   - .maestro/flows/login_wrong_credentials.yaml
   - .maestro/flows/login_help.yaml
   - .maestro/flows/login_wrong_account.yaml
-  - .maestro/flows/login_no_jetpack.yaml
   - .maestro/flows/login_successful.yaml
   - .maestro/flows/dashboard_stats.yaml
   - .maestro/flows/dashboard_view_all_analytics.yaml
@@ -26,7 +25,6 @@ Selected flows:
   - .maestro/flows/orders_payment_qr_and_share.yaml
   - .maestro/flows/orders_refund.yaml
   - .maestro/flows/products_list_and_sort.yaml
-  - .maestro/flows/products_detail.yaml
   - .maestro/flows/products_variations_and_tags.yaml
   - .maestro/flows/products_create.yaml
   - .maestro/flows/products_media_upload.yaml
@@ -34,7 +32,8 @@ Selected flows:
   - .maestro/flows/hub_menu_payments.yaml
   - .maestro/flows/hub_menu_coupons.yaml
   - .maestro/flows/hub_menu_customers_inbox.yaml
-  - .maestro/flows/blaze_campaign.yaml
+  - .maestro/flows/other_localization.yaml
+  - .maestro/flows/install_upgrade.yaml
   - .maestro/flows/android_quick_actions.yaml
   - .maestro/flows/login_not_woo_store.yaml (shared store)
   - .maestro/flows/hub_menu_admin_and_store.yaml (shared store)

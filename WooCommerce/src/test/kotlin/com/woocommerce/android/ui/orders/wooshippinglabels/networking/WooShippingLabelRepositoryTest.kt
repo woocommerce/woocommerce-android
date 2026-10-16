@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiers
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingEligibilityDataStore
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -90,7 +91,46 @@ class WooShippingLabelRepositoryTest : BaseUnitTest() {
         assertThat(result.error).isSameAs(error)
     }
 
+    @Test
+    fun `when config line items contain customs identifiers, then map them by product id`() = testBlocking {
+        whenever(restClient.fetchConfigLineItems(site, ORDER_ID)).thenReturn(
+            WooPayload(
+                ConfigLineItemsResponse(
+                    config = ConfigLineItemsDTO(
+                        order = ConfigOrderDTO(
+                            lineItems = listOf(
+                                ConfigLineItemDTO(sku = "no product id"),
+                                ConfigLineItemDTO(
+                                    PRODUCT_ID,
+                                    "SKU",
+                                    ConfigLineItemMetaDTO(ConfigCustomsInfoDTO("MPN", "GTIN"))
+                                ),
+                                ConfigLineItemDTO(
+                                    NO_BARCODE_PRODUCT_ID,
+                                    meta = ConfigLineItemMetaDTO(
+                                        ConfigCustomsInfoDTO(standardizedProductId = "Y081")
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+
+        val result = repository.fetchEuProductIdentifiers(site, ORDER_ID)
+
+        assertThat(result.model).isEqualTo(
+            mapOf(
+                PRODUCT_ID to EuProductIdentifiers("SKU", "MPN", "GTIN"),
+                NO_BARCODE_PRODUCT_ID to EuProductIdentifiers(hasNoBarcode = true)
+            )
+        )
+    }
+
     private companion object {
         const val ORDER_ID = 1L
+        const val PRODUCT_ID = 456L
+        const val NO_BARCODE_PRODUCT_ID = 789L
     }
 }

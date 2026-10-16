@@ -17,11 +17,13 @@ import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionStat
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,6 +33,7 @@ class WooPosHomeViewModel @Inject constructor(
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val soundHelper: WooPosSoundHelper,
+    private val preferencesRepository: WooPosPreferencesRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -329,7 +332,9 @@ class WooPosHomeViewModel @Inject constructor(
 
     private fun onOrderSuccessfullyPaid(paymentMethod: PaymentMethod) {
         viewModelScope.launch {
-            soundHelper.playChaChing()
+            if (preferencesRepository.isPaymentSuccessSoundEnabled.first()) {
+                soundHelper.playChaChing()
+            }
         }
         _state.value = _state.value.copy(
             screenPositionState = ScreenPositionState.Checkout.FullScreenTotals

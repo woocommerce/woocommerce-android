@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.woocommerce.android.ui.products.ProductHelper
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundFeeLine
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
@@ -35,7 +36,8 @@ data class Refund(
         val totalTax: BigDecimal = BigDecimal.ZERO,
         val sku: String = "",
         val price: BigDecimal = BigDecimal.ZERO,
-        val orderItemId: Long = 0
+        val orderItemId: Long = 0,
+        val taxes: List<Order.LineTaxEntry> = emptyList(),
     ) : Parcelable {
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
@@ -96,13 +98,22 @@ fun WCRefundItem.toAppModel(): Refund.Item {
         -totalTax, // WCRefundItem.totalTax is NEGATIVE
         sku ?: "",
         price ?: BigDecimal.ZERO,
-        metaData?.get(0)?.value?.stringValue?.toLongOrNull() ?: -1
+        metaData.refundedItemId(),
+        taxes.orEmpty().mapNotNull { tax ->
+            val rateId = tax.rateId ?: return@mapNotNull null
+            Order.LineTaxEntry(rateId, -(tax.total ?: BigDecimal.ZERO)) // WCLineTaxEntry.total is NEGATIVE
+        }
     )
 }
 
+private const val REFUNDED_ITEM_ID_KEY = "_refunded_item_id"
+
+private fun List<WCMetaData>?.refundedItemId(): Long =
+    this?.firstOrNull { it.key == REFUNDED_ITEM_ID_KEY }?.value?.stringValue?.toLongOrNull() ?: -1
+
 fun WCRefundShippingLine.toAppModel(): Refund.ShippingLine {
     return Refund.ShippingLine(
-        itemId = metaData?.get(0)?.value?.stringValue?.toLongOrNull() ?: -1,
+        itemId = metaData.refundedItemId(),
         methodId = methodId ?: "",
         methodTitle = methodTitle ?: "",
         totalTax = -totalTax, // WCRefundShippineLine.totalTax is NEGATIVE
@@ -112,7 +123,7 @@ fun WCRefundShippingLine.toAppModel(): Refund.ShippingLine {
 
 fun WCRefundFeeLine.toAppModel(): Refund.FeeLine {
     return Refund.FeeLine(
-        id = metaData?.get(0)?.value?.stringValue?.toLongOrNull() ?: -1,
+        id = metaData.refundedItemId(),
         name = name,
         totalTax = -totalTax, // WCRefundFeeLine.totalTax is NEGATIVE
         total = (total), // WCRefundFeeLine.total is NEGATIVE
@@ -162,12 +173,8 @@ fun List<Refund>.getNonRefundedProducts(
 fun List<Refund>.getMaxRefundQuantities(
     products: List<Order.Item>
 ): Map<Long, Float> {
-    val allRefundedItems = this.flatMap { it.items }
-
     return products.mapNotNull { product ->
-        val refundedQuantity = allRefundedItems
-            .filter { it.productId == product.productId }
-            .sumOf { it.quantity }
+        val refundedQuantity = refundedItemsOf(product).sumOf { it.quantity }
 
         val quantityLeftToRefund = product.quantity - refundedQuantity
 
@@ -178,3 +185,16 @@ fun List<Refund>.getMaxRefundQuantities(
         }
     }.toMap()
 }
+
+/**
+ * Refunded items are tied to their order line through `_refunded_item_id`. Refunds without it can only be matched
+ * by product, which can't tell apart two lines of the same product.
+ */
+fun List<Refund>.refundedItemsOf(orderItem: Order.Item): List<Refund.Item> =
+    flatMap { it.items }.filter { refundedItem ->
+        if (refundedItem.orderItemId > 0) {
+            refundedItem.orderItemId == orderItem.itemId
+        } else {
+            refundedItem.productId == orderItem.productId
+        }
+    }

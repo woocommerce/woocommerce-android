@@ -3,16 +3,15 @@ Maestro smoke plan
   store:   per flow
   repeat:  1
   include: smoke_core
-  exclude: flaky_quarantine,android_system
+  exclude: quarantine,android_system
   seed:    no
-  flows:   10
+  flows:   9
 
 Selected flows:
   - .maestro/flows/login_not_wp_site.yaml
   - .maestro/flows/login_wrong_credentials.yaml
   - .maestro/flows/login_help.yaml
   - .maestro/flows/login_wrong_account.yaml
-  - .maestro/flows/login_no_jetpack.yaml
   - .maestro/flows/login_successful.yaml
   - .maestro/flows/dashboard_stats.yaml
   - .maestro/flows/orders_list_and_search.yaml

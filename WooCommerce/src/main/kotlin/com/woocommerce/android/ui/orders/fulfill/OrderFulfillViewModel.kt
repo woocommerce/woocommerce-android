@@ -109,7 +109,7 @@ class OrderFulfillViewModel @Inject constructor(
         _productList.value = products
     }
 
-    private fun displayShipmentTrackings(isVirtualOrder: Boolean) {
+    private suspend fun displayShipmentTrackings(isVirtualOrder: Boolean) {
         val isShippingLabelAvailable = repository.getOrderShippingLabels(navArgs.orderId).isNotEmpty()
         val trackingAvailable = appPrefs.isTrackingExtensionAvailable() &&
             !isVirtualOrder && !isShippingLabelAvailable
@@ -159,36 +159,40 @@ class OrderFulfillViewModel @Inject constructor(
             )
         )
         viewState = viewState.copy(shouldRefreshShipmentTracking = true)
-        _shipmentTrackings.value = repository.getOrderShipmentTrackings(navArgs.orderId)
+        launch {
+            _shipmentTrackings.value = repository.getOrderShipmentTrackings(navArgs.orderId)
+        }
     }
 
     fun onDeleteShipmentTrackingClicked(trackingNumber: String) {
         if (networkStatus.isConnected()) {
-            repository.getOrderShipmentTrackingByTrackingNumber(
-                navArgs.orderId,
-                trackingNumber
-            )?.let { deletedShipmentTracking ->
-                deletedOrderShipmentTrackingSet.add(trackingNumber)
+            launch {
+                repository.getOrderShipmentTrackingByTrackingNumber(
+                    navArgs.orderId,
+                    trackingNumber
+                )?.let { deletedShipmentTracking ->
+                    deletedOrderShipmentTrackingSet.add(trackingNumber)
 
-                val shipmentTrackings = _shipmentTrackings.value?.toMutableList() ?: mutableListOf()
-                shipmentTrackings.remove(deletedShipmentTracking)
-                _shipmentTrackings.value = shipmentTrackings
+                    val shipmentTrackings = _shipmentTrackings.value?.toMutableList() ?: mutableListOf()
+                    shipmentTrackings.remove(deletedShipmentTracking)
+                    _shipmentTrackings.value = shipmentTrackings
 
-                triggerEvent(
-                    ShowUndoSnackbar(
-                        message = resourceProvider.getString(string.order_shipment_tracking_delete_snackbar_msg),
-                        undoAction = { onDeleteShipmentTrackingReverted(deletedShipmentTracking) },
-                        dismissAction = object : Callback() {
-                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                                super.onDismissed(transientBottomBar, event)
-                                if (event != DISMISS_EVENT_ACTION) {
-                                    // delete the shipment only if user has not clicked on the undo snackbar
-                                    deleteOrderShipmentTracking(deletedShipmentTracking)
+                    triggerEvent(
+                        ShowUndoSnackbar(
+                            message = resourceProvider.getString(string.order_shipment_tracking_delete_snackbar_msg),
+                            undoAction = { onDeleteShipmentTrackingReverted(deletedShipmentTracking) },
+                            dismissAction = object : Callback() {
+                                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                    super.onDismissed(transientBottomBar, event)
+                                    if (event != DISMISS_EVENT_ACTION) {
+                                        // delete the shipment only if user has not clicked on the undo snackbar
+                                        deleteOrderShipmentTracking(deletedShipmentTracking)
+                                    }
                                 }
                             }
-                        }
+                        )
                     )
-                )
+                }
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))

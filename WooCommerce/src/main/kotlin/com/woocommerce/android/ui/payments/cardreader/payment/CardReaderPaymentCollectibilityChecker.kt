@@ -15,9 +15,13 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 class CardReaderPaymentCollectibilityChecker @Inject constructor(
+    private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker,
     private val orderDetailRepository: OrderDetailRepository,
-    private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker
 ) {
+    /**
+     * Runs local checks only. Plan-based subscriptions need a network lookup, which the payment
+     * method selection screen does separately via [OrderSubscriptionChecker].
+     */
     suspend fun isCollectable(order: Order, allowCancelledStatus: Boolean = false): Boolean {
         return with(order) {
             cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(currency) &&
@@ -26,7 +30,7 @@ class CardReaderPaymentCollectibilityChecker @Inject constructor(
                 order.total.compareTo(BigDecimal.ZERO) == 1 &&
                 BigDecimal.ZERO.compareTo(order.refundTotal) == 0 &&
                 isPaymentMethodCollectable() &&
-                !orderDetailRepository.hasSubscriptionProducts(order.getProductIds())
+                !orderDetailRepository.hasLegacySubscriptionProducts(order.getProductIds())
         }
     }
 

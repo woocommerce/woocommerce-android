@@ -1,6 +1,6 @@
 # Smoke Test: Products - List and Sort
-# p2: products.list, products.sort, products.search
-# P2 ref: Products > Product list, Sort product list
+# p2: products.list, products.sort, products.search, products.pagination
+# P2 ref: Products > Product list, Sort product list, Check pagination
 #
 # Verifies:
 #   - Products list loads
@@ -8,6 +8,7 @@
 #   - Sorting produces different first products for A-to-Z and Z-to-A
 #   - Search for products
 #   - Product filters
+#   - Scrolling loads the next page of products
 appId: com.woocommerce.android
 name: "Products - List, sort, and search"
 tags:
@@ -159,3 +160,13 @@ tags:
 - extendedWaitUntil:
     visible: "A to Z"
     timeout: 15000
+
+# One page of the list holds 25 products, and the lab store has 100, with numbered
+# names, so "Maestro Product 040" only shows once the next page has loaded.
+- scrollUntilVisible:
+    element:
+      text: "Maestro Product 040"
+    direction: DOWN
+    timeout: 120000
+    label: "A product from the next page loads"
+- takeScreenshot: products_next_page

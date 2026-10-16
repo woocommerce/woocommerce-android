@@ -30,7 +30,9 @@ class UserEligibilityFetcher @Inject constructor(
         }
     }
 
-    suspend fun getUser() = userStore.getUserByEmail(selectedSite.get(), appPrefs.getUserEmail())?.toAppModel()
+    suspend fun getUser() = getUser(selectedSite.get())
+
+    suspend fun getUser(site: SiteModel) = userStore.getUserByEmail(site, appPrefs.getUserEmail())?.toAppModel()
 
     private fun updateUserInfo(user: User) {
         appPrefs.setIsUserEligible(user.isEligible)

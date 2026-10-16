@@ -1,0 +1,33 @@
+# Smoke Test: Installation - Upgrade
+# p2: install.upgrade
+# P2 ref: Installation > Upgrade from the existing store version to the new build
+#
+# Verifies:
+#   - After the new build is installed over the latest store release, the app opens
+#     still logged in
+#
+# Maestro cannot install apps, so the runner installs the latest GitHub release, logs
+# in, and installs the --apk build over it before this flow. The --apk build has to be
+# signed with the same key as the release, as the release candidate's GitHub APK is.
+appId: com.woocommerce.android
+name: "Installation - Upgrade"
+tags:
+  - smoke_extended
+  - installation
+  - app_upgrade
+---
+- assertTrue:
+    condition: ${APP_UPGRADED == 'yes'}
+    label: "The runner installed the new build over the latest release"
+- launchApp:
+    clearState: false
+    stopApp: true
+# What's New and the privacy sheet show only for a logged-in app and hide My store, so
+# they count as logged in too.
+- extendedWaitUntil:
+    visible: ".*My store.*|.*Enter your store address.*|.*Log in.*|.*Not Now.*|.*Manage privacy.*"
+    timeout: 45000
+- assertNotVisible:
+    text: ".*Enter your store address.*|.*Log in.*"
+    label: "The app did not ask to log in again"
+- takeScreenshot: upgrade_my_store

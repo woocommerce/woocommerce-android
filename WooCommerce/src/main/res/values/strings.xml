@@ -94,6 +94,13 @@
     <string name="product_attribute_error_renaming">Error while renaming your attribute</string>
     <string name="product_attributes_error_saving">Error while saving your attributes</string>
     <string name="product_attribute_remove">Remove this attribute?</string>
+    <string name="product_attribute_visible_on_product_page">Visible on product page</string>
+    <string name="product_attribute_used_for_variations">Used for variations</string>
+    <string name="product_attribute_hidden">Hidden</string>
+    <string name="product_attribute_stop_using_for_variations_title">Stop using for variations?</string>
+    <string name="product_attribute_stop_using_for_variations_message">Existing variations will no longer match on this attribute.</string>
+    <string name="product_attribute_stop_using_for_variations_confirm">Stop using</string>
+    <string name="product_attribute_no_options">No options</string>
     <string name="product_attribute_no_options_warning">This attribute has no options and will be removed. Do you want to continue?</string>
     <string name="product_bulk_update_regular_price">Update regular price</string>
     <string name="product_bulk_update_price_updated">Price updated!</string>
@@ -1435,6 +1442,7 @@
     <string name="order_refunds_refunded_items">Refunded items</string>
     <string name="order_refunds_shipping_refund_variable_notice">You can refund %1$s</string>
     <string name="order_refunds_store_admin_link_text">in your store admin</string>
+    <string name="order_refunds_amount_capped_notice">Only %1$s is left to refund on this order, so this refund is limited to that amount.</string>
     <!--
         Add Order Note
     -->
@@ -1616,7 +1624,8 @@
     <string name="card_reader_interac_refund_refund_failed_test_card">System test cards are not permitted for refund</string>
     <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
     <string name="card_reader_interac_refund_refund_failed_cancelled">Refund cancelled</string>
-    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">The order is already refunded</string>
+    <string name="card_reader_interac_refund_not_available">This order can\'t be refunded in person</string>
+    <string name="card_reader_payment_subscription_check_failed">Couldn\'t check if this order can be paid in person. Please try again.</string>
     <string name="card_reader_interac_refund_refund_payment_hint">Tap or insert to refund</string>
     <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">Applying refund to order</string>
     <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">Something went wrong while applying the refund</string>
@@ -2258,6 +2267,7 @@
     <string name="bottom_sheet_shipping_desc">Add weight and dimensions</string>
     <string name="bottom_sheet_categories_desc">Organise your products into related groups</string>
     <string name="bottom_sheet_tags_desc">Make your products easier to find with tags</string>
+    <string name="bottom_sheet_attributes_desc">Add details like material or size to the product page</string>
     <string name="bottom_sheet_short_description_desc">A brief excerpt about your product</string>
     <string name="bottom_sheet_linked_products_desc">Increase sales with upsells and cross-sells</string>
 
@@ -4015,6 +4025,10 @@
     <string name="woopos_settings_hardware_category_subtitle">Manage hardware connections</string>
     <string name="woopos_settings_store_category">Store</string>
     <string name="woopos_settings_store_category_subtitle">Store configuration and settings</string>
+    <string name="woopos_settings_payments_category">Payments</string>
+    <string name="woopos_settings_payments_category_subtitle">Manage payment settings</string>
+    <string name="woopos_settings_payments_success_sound">Payment success sound</string>
+    <string name="woopos_settings_payments_success_sound_subtitle">Play a sound when a payment completes</string>
     <string name="woopos_settings_hardware_barcode_scanners">Barcode scanners</string>
     <string name="woopos_settings_hardware_barcode_scanners_subtitle">Configure barcode scanner settings</string>
     <string name="woopos_settings_hardware_card_readers">Card Readers</string>
@@ -4621,6 +4635,16 @@
     <string name="woo_shipping_labels_customs_product_details_origin_country">Origin country</string>
     <string name="woo_shipping_labels_customs_product_details_origin_country_missing">Missing country</string>
     <string name="woo_shipping_labels_customs_product_details_origin_country_selection">Select a country</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_title">EU product identifiers</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_description">Required for shipments into the EU. SKU and GTIN / EAN are prefilled from the product\'s Inventory settings.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_plugin_update_notice">Shipments into the EU now need product identifiers on each item. Update the WooCommerce Shipping plugin to add them.</string>
+    <string name="woo_shipping_labels_customs_product_details_sku">SKU</string>
+    <string name="woo_shipping_labels_customs_product_details_manufacturer_part_number">Manufacturer part number</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin">GTIN / EAN</string>
+    <string name="woo_shipping_labels_customs_product_details_no_barcode">No barcode</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_required">Required for shipments to the EU</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin_required">Enter the GTIN/EAN, or select \"No barcode\"</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">Must be %1$s characters or fewer.</string>
     <string name="woo_shipping_labels_customs_itn_info_button">More info about ITN</string>
     <string name="woo_shipping_labels_customs_hs_tariff_info_button">More info about HS tariff</string>
     <string name="woo_shipping_labels_customs_description_info_button">More info about product description</string>

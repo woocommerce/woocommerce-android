@@ -17,7 +17,8 @@ data class ShippableItemModel(
     override val length: Float,
     override val width: Float,
     override val height: Float,
-    override val weight: Float
+    override val weight: Float,
+    val variationId: Long = 0L
 ) : IProduct, Parcelable {
     val shippingTotalValue
         get() = price * quantity.toBigDecimal()

@@ -48,6 +48,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.CollectionInfo
 import androidx.compose.ui.semantics.CollectionItemInfo
 import androidx.compose.ui.semantics.Role
@@ -76,19 +77,10 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooIconContaine
 import com.woocommerce.android.ui.compose.designsystem.component.WooIconContainerTone
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleDown
-import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
-import com.woocommerce.android.ui.compose.designsystem.icons.Bolt
-import com.woocommerce.android.ui.compose.designsystem.icons.CreditCard
-import com.woocommerce.android.ui.compose.designsystem.icons.Envelope
-import com.woocommerce.android.ui.compose.designsystem.icons.Gauge
-import com.woocommerce.android.ui.compose.designsystem.icons.Gear
-import com.woocommerce.android.ui.compose.designsystem.icons.Globe
-import com.woocommerce.android.ui.compose.designsystem.icons.Star
-import com.woocommerce.android.ui.compose.designsystem.icons.Tag
-import com.woocommerce.android.ui.compose.designsystem.icons.UserGroup
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @Composable
 fun MoreMenuScreen(viewModel: MoreMenuViewModel, scrollToTopTrigger: Flow<Unit>) {
@@ -383,9 +375,9 @@ private fun MoreMenuTrailingContent(item: MoreMenuItemButton) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         MoreMenuBadge(item.badgeState)
-        if (item.extraIcon == R.drawable.ic_external) {
+        item.extraIcon?.let { extraIcon ->
             Icon(
-                imageVector = WooIcons.Regular.ArrowUpRight,
+                imageVector = ImageVector.vectorResource(extraIcon),
                 contentDescription = null,
                 modifier = Modifier
                     .size(WooTheme.iconSize.size18)
@@ -443,68 +435,16 @@ private fun MoreMenuIcon(
     icon: Int,
     modifier: Modifier = Modifier,
 ) {
-    when (icon) {
-        R.drawable.ic_more_screen_settings -> DesignSystemIcon(
-            icon = WooIcons.Regular.Gear,
+    if (icon == R.drawable.google_logo) {
+        BrandIconContainer(drawable = icon, modifier = modifier)
+    } else {
+        WooIconContainer(
+            imageVector = ImageVector.vectorResource(icon),
             tone = WooIconContainerTone.Sandstone,
-            modifier = modifier,
+            contentDescription = null,
+            modifier = modifier.clearAndSetSemantics {},
         )
-        R.drawable.ic_more_menu_upgrades -> DesignSystemIcon(
-            icon = WooIcons.Regular.Bolt,
-            tone = WooIconContainerTone.Sandstone,
-            modifier = modifier,
-        )
-        R.drawable.ic_more_menu_payments -> DesignSystemIcon(
-            icon = WooIcons.Regular.CreditCard,
-            tone = WooIconContainerTone.Sandstone,
-            modifier = modifier,
-        )
-        R.drawable.ic_more_menu_wp_admin -> DesignSystemIcon(
-            icon = WooIcons.Regular.Gauge,
-            tone = WooIconContainerTone.Sandstone,
-            modifier = modifier,
-        )
-        R.drawable.ic_more_menu_store -> DesignSystemIcon(
-            icon = WooIcons.Regular.Globe,
-            tone = WooIconContainerTone.Sandstone,
-            modifier = modifier,
-        )
-        R.drawable.ic_more_menu_coupons -> DesignSystemIcon(
-            icon = WooIcons.Regular.Tag,
-            tone = WooIconContainerTone.Sandstone,
-            modifier = modifier,
-        )
-        R.drawable.ic_more_menu_reviews -> DesignSystemIcon(
-            icon = WooIcons.Regular.Star,
-            tone = WooIconContainerTone.Sandstone,
-            modifier = modifier,
-        )
-        R.drawable.icon_multiple_users -> DesignSystemIcon(
-            icon = WooIcons.Regular.UserGroup,
-            tone = WooIconContainerTone.Sandstone,
-            modifier = modifier,
-        )
-        R.drawable.ic_more_menu_inbox -> DesignSystemIcon(
-            icon = WooIcons.Regular.Envelope,
-            tone = WooIconContainerTone.Sandstone,
-            modifier = modifier,
-        )
-        else -> BrandIconContainer(drawable = icon, modifier = modifier)
     }
-}
-
-@Composable
-private fun DesignSystemIcon(
-    icon: ImageVector,
-    modifier: Modifier = Modifier,
-    tone: WooIconContainerTone = WooIconContainerTone.Purple,
-) {
-    WooIconContainer(
-        imageVector = icon,
-        tone = tone,
-        contentDescription = null,
-        modifier = modifier.clearAndSetSemantics {},
-    )
 }
 
 @Composable
@@ -730,12 +670,12 @@ private fun previewMenuSections() = listOf(
             previewItem(
                 title = R.string.more_menu_button_settings,
                 description = R.string.more_menu_button_settings_description,
-                icon = R.drawable.ic_more_screen_settings,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_gear_24dp,
             ),
             previewItem(
                 title = R.string.more_menu_button_subscriptions,
                 description = R.string.more_menu_button_subscriptions_description,
-                icon = R.drawable.ic_more_menu_upgrades,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_bolt_24dp,
             ),
         ),
     ),
@@ -745,7 +685,7 @@ private fun previewMenuSections() = listOf(
             previewItem(
                 title = R.string.more_menu_button_payments,
                 description = R.string.more_menu_button_payments_description,
-                icon = R.drawable.ic_more_menu_payments,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_credit_card_24dp,
                 badgeState = previewPaymentBadge(),
             ),
             previewItem(
@@ -756,40 +696,40 @@ private fun previewMenuSections() = listOf(
             previewItem(
                 title = R.string.more_menu_button_blaze,
                 description = R.string.more_menu_button_blaze_description,
-                icon = R.drawable.ic_blaze,
+                icon = R.drawable.ic_blaze_monochrome,
             ),
             previewItem(
                 title = R.string.more_menu_button_wс_admin,
                 description = R.string.more_menu_button_wc_admin_description,
-                icon = R.drawable.ic_more_menu_wp_admin,
-                extraIcon = R.drawable.ic_external,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_gauge_24dp,
+                extraIcon = DesignSystemR.drawable.woo_ds_ic_regular_arrow_up_right_24dp,
             ),
             previewItem(
                 title = R.string.more_menu_button_store,
                 description = R.string.more_menu_button_store_description,
-                icon = R.drawable.ic_more_menu_store,
-                extraIcon = R.drawable.ic_external,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_globe_24dp,
+                extraIcon = DesignSystemR.drawable.woo_ds_ic_regular_arrow_up_right_24dp,
             ),
             previewItem(
                 title = R.string.more_menu_button_coupons,
                 description = R.string.more_menu_button_coupons_description,
-                icon = R.drawable.ic_more_menu_coupons,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_tag_24dp,
             ),
             previewItem(
                 title = R.string.more_menu_button_reviews,
                 description = R.string.more_menu_button_reviews_description,
-                icon = R.drawable.ic_more_menu_reviews,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_star_24dp,
                 badgeState = previewReviewBadge(PREVIEW_REVIEW_COUNT),
             ),
             previewItem(
                 title = R.string.more_menu_button_customers,
                 description = R.string.more_menu_button_customers_description,
-                icon = R.drawable.icon_multiple_users,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_user_group_24dp,
             ),
             previewItem(
                 title = R.string.more_menu_button_inbox,
                 description = R.string.more_menu_button_inbox_description,
-                icon = R.drawable.ic_more_menu_inbox,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_envelope_24dp,
             ),
         ),
     ),

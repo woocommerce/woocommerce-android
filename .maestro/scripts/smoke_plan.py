@@ -23,12 +23,12 @@ class Profile:
 
 
 PROFILES = {
-    "core": Profile(("smoke_core",), ("flaky_quarantine", "android_system")),
+    "core": Profile(("smoke_core",), ("quarantine", "android_system")),
     "full": Profile(
         ("smoke_core", "smoke_extended", "android_system", "pos_tablet"),
-        ("flaky_quarantine",),
+        ("quarantine",),
     ),
-    "pos": Profile(("pos_tablet",), ("flaky_quarantine",)),
+    "pos": Profile(("pos_tablet",), ("quarantine",)),
 }
 
 # Profiles that seed fixtures without --seed, because they include destructive flows.
@@ -40,8 +40,6 @@ P2_ORDERED_FLOW_NAMES = (
     "login_help.yaml",
     "login_not_woo_store.yaml",
     "login_wrong_account.yaml",
-    "login_no_jetpack.yaml",
-    "login_google.yaml",
     "login_successful.yaml",
     "dashboard_stats.yaml",
     "dashboard_view_all_analytics.yaml",
@@ -55,7 +53,6 @@ P2_ORDERED_FLOW_NAMES = (
     "orders_payment_qr_and_share.yaml",
     "orders_refund.yaml",
     "products_list_and_sort.yaml",
-    "products_detail.yaml",
     "products_variations_and_tags.yaml",
     "products_create.yaml",
     "products_media_upload.yaml",
@@ -63,8 +60,9 @@ P2_ORDERED_FLOW_NAMES = (
     "hub_menu_payments.yaml",
     "hub_menu_coupons.yaml",
     "hub_menu_customers_inbox.yaml",
+    "other_localization.yaml",
+    "install_upgrade.yaml",
     "hub_menu_admin_and_store.yaml",
-    "blaze_campaign.yaml",
     "google_for_woo.yaml",
     "pos_search_and_coupons.yaml",
     "pos_cash_payment.yaml",

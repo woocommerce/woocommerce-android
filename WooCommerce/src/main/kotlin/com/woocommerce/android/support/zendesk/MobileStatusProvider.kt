@@ -325,6 +325,9 @@ class MobileStatusProvider @Inject constructor(
             safeEntry("Full sync on cellular allowed") {
                 posPreferencesRepository.allowCellularDataUpdate.first()
             },
+            safeEntry("Payment success sound enabled") {
+                posPreferencesRepository.isPaymentSuccessSoundEnabled.first()
+            },
             POS_REASON_HINT.takeIf { !tabVisible || !launchable }
         )
     }
