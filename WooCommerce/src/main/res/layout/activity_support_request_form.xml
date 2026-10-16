@@ -187,6 +187,16 @@
 
                     </com.google.android.material.card.MaterialCardView>
 
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/ai_support_chat_transcript_disclosure"
+                        style="@style/Woo.TextView.Caption"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/major_100"
+                        android:layout_marginBottom="@dimen/minor_100"
+                        android:text="@string/support_request_ai_chat_transcript_disclosure"
+                        android:visibility="gone" />
+
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
             </com.google.android.material.card.MaterialCardView>
