@@ -60,9 +60,11 @@ class PrintShippingLabelViewModel @Inject constructor(
             // Only a reprint can open this screen with an expired label, and a reprint passes a single label,
             // so checking the first one is enough.
             val label = getShippingLabel(arguments.shippingLabelIds.first())
+            val isLabelExpired = label?.isAnonymized == true ||
+                label?.expiryDate?.let { Date().after(it) } ?: false
             viewState = viewState.copy(
-                isLabelExpired = label?.isAnonymized == true ||
-                    label?.expiryDate?.let { Date().after(it) } ?: false
+                isLabelExpired = isLabelExpired,
+                isPrintEnabled = !isLabelExpired
             )
         }
     }
@@ -159,6 +161,7 @@ class PrintShippingLabelViewModel @Inject constructor(
         val isProgressDialogShown: Boolean? = null,
         val previewShippingLabel: String? = null,
         val isLabelExpired: Boolean = false,
+        val isPrintEnabled: Boolean = false,
         val tempFile: File? = null
     ) : Parcelable
 }
