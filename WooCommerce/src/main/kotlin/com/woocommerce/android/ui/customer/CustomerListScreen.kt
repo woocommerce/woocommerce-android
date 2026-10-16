@@ -107,7 +107,11 @@ fun CustomerListScreen(
                 body.button,
             )
 
-            is CustomerListViewState.CustomerList.Error -> CustomerListError(body.message)
+            is CustomerListViewState.CustomerList.Error -> CustomerListError(
+                message = body.message,
+                showFab = state.showFab,
+                onRetryClicked = onRetryClicked,
+            )
             is CustomerListViewState.CustomerList.AnalyticsUnavailable -> CustomerListAnalyticsUnavailable(
                 body = body,
                 showFab = state.showFab,
@@ -267,11 +271,16 @@ private fun CustomerListEmpty(
 }
 
 @Composable
-private fun CustomerListError(@StringRes message: Int) {
+private fun CustomerListError(
+    @StringRes message: Int,
+    showFab: Boolean,
+    onRetryClicked: () -> Unit,
+) {
     CustomerListNoDataState(
         text = message,
         image = R.drawable.img_woo_generic_error,
-        button = null,
+        button = Button(R.string.retry, onRetryClicked),
+        bottomPadding = if (showFab) 72.dp else 0.dp,
     )
 }
 

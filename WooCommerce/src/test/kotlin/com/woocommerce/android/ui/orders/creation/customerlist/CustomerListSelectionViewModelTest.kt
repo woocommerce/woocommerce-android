@@ -386,6 +386,34 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given generic error and retry succeeds, when Retry is tapped, then reload without Analytics event`() =
+        testBlocking {
+            // GIVEN
+            whenever(customerListRepository.searchCustomerListWithEmail("", "all", 30, 1))
+                .thenReturn(Result.failure(Throwable()), Result.success(listOf(WCCustomerModel())))
+            val viewModel = initViewModel()
+            advanceUntilIdle()
+            val cachedCustomers = CompletableDeferred<List<WCCustomerModel>>()
+            whenever(customerListRepository.getCustomerList(any())).doSuspendableAnswer { cachedCustomers.await() }
+
+            // WHEN
+            viewModel.onRetryClicked()
+            assertThat(viewModel.viewState.value?.body)
+                .isEqualTo(CustomerListViewState.CustomerList.Loading)
+            cachedCustomers.complete(emptyList())
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(viewModel.viewState.value?.body)
+                .isInstanceOf(CustomerListViewState.CustomerList.Loaded::class.java)
+            verify(customerListRepository, times(2)).searchCustomerListWithEmail("", "all", 30, 1)
+            verify(analyticsTrackerWrapper, never()).track(
+                eq(AnalyticsEvent.CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_RELOAD_SUCCESS),
+                any(),
+            )
+        }
+
+    @Test
     fun `given rest no route and Analytics is disabled, when viewmodel init, then cached customers are replaced`() =
         testBlocking {
             // GIVEN
