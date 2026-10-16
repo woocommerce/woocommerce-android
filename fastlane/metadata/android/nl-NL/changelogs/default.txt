@@ -1,2 +1,0 @@
-25.8:
-Mijn winkel, bestellingen, producten en het menu Meer hebben een nieuwe look. Pushmeldingen zijn betrouwbaarder, je ziet minder onverwachte afmeldingen en grote winkels synchroniseren bestellingen zonder time-out. In POS zijn aangepaste bedragen en kortingen duidelijker bij het afrekenen. Plus oplossingen voor inloggen, uitbetalingen, productvariaties en winkelupdates.

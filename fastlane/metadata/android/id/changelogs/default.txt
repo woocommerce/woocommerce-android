@@ -1,2 +1,0 @@
-25.8:
-Toko Saya, Pesanan, Produk, dan menu Selengkapnya memiliki tampilan baru. Pemberitahuan push kini lebih andal, Anda akan melihat lebih sedikit logout yang tidak terduga, dan toko besar kini menyinkronkan pesanan tanpa kehabisan waktu. Di POS, jumlah dan diskon kustom terlihat lebih jelas saat checkout. Plus perbaikan untuk login, pembayaran, variasi produk, dan pembaruan toko.
