@@ -2,6 +2,10 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+26.0
+-----
+
+
 25.9
 -----
 - [*] Generate all variations no longer suggests variations that already exist, and bulk update now covers every variation of products with more than 25 variations [https://github.com/woocommerce/woocommerce-android/pull/16691]
