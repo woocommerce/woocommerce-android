@@ -23,6 +23,7 @@
 - [***] [Internal] Migrated Google sign-in from the deprecated Play Services Auth API to Credential Manager [https://github.com/woocommerce/woocommerce-android/pull/16721]
 - [*] Login now shows a clear message with a Try again option when the store returns an unexpected response [https://github.com/woocommerce/woocommerce-android/pull/16685]
 - [*] Login errors from an unexpected store response now offer Contact Support [https://github.com/woocommerce/woocommerce-android/pull/16750]
+- [*] Fixed variations missing from the variations list and the order creation variation picker on products with more than 25 variations [https://github.com/woocommerce/woocommerce-android/pull/16725]
 
 - [*] AI support chat now receives the Mobile Status Report, so it can help without asking for app and device details [https://github.com/woocommerce/woocommerce-android/pull/16733]
 - [*] Card payment dialogs now show the amount in the store's currency format, matching the rest of the order [https://github.com/woocommerce/woocommerce-android/pull/16771]
