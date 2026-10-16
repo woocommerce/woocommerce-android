@@ -9,7 +9,6 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.login.LoginAnalyticsListener
-import org.wordpress.android.login.LoginAnalyticsListener.CreatedAccountSource
 import javax.inject.Singleton
 
 @Singleton
@@ -26,10 +25,6 @@ class LoginAnalyticsTracker(
         if (!isWpcomLogin) {
             AnalyticsTracker.track(AnalyticsEvent.ADDED_SELF_HOSTED_SITE)
         }
-    }
-
-    override fun trackCreatedAccount(username: String?, email: String?, source: CreatedAccountSource) {
-        // TODO: Account creation
     }
 
     override fun trackEmailFormViewed() {
@@ -140,18 +135,6 @@ class LoginAnalyticsTracker(
 
     override fun trackSignupMagicLinkSucceeded() {
         AnalyticsTracker.track(AnalyticsEvent.SIGNUP_MAGIC_LINK_SUCCEEDED)
-    }
-
-    override fun trackSignupSocialAccountsNeedConnecting() {
-        AnalyticsTracker.track(AnalyticsEvent.SIGNUP_SOCIAL_ACCOUNTS_NEED_CONNECTING)
-    }
-
-    override fun trackSignupSocialButtonFailure() {
-        AnalyticsTracker.track(AnalyticsEvent.SIGNUP_SOCIAL_BUTTON_FAILURE)
-    }
-
-    override fun trackSignupSocialToLogin() {
-        AnalyticsTracker.track(AnalyticsEvent.SIGNUP_SOCIAL_TO_LOGIN)
     }
 
     override fun trackSignupTermsOfServiceTapped() {
