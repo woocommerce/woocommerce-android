@@ -4,6 +4,7 @@
 
 25.9
 -----
+- [*] Fixed item refunds failing on stores with WooCommerce 11.3 when tax doesn't split evenly per unit or less is left to refund on the order than the selected items [https://github.com/woocommerce/woocommerce-android/pull/16711]
 - [**] Card readers WisePad 3, M2 and Chipper 2X can now connect over USB [https://github.com/woocommerce/woocommerce-android/pull/16680]
 - [*] Fixed duplicate notifications for a store using store push notifications while another store with an older WooCommerce version was selected [https://github.com/woocommerce/woocommerce-android/pull/16654]
 - [*] Editing a product attribute's terms or name no longer moves it to the end of the list or changes the settings of other attributes [https://github.com/woocommerce/woocommerce-android/pull/16671]

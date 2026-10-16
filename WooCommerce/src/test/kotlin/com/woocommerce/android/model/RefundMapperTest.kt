@@ -1,10 +1,12 @@
 package com.woocommerce.android.model
 
 import com.google.gson.Gson
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.model.metadata.WCMetaDataValue
+import org.wordpress.android.fluxc.model.order.WCLineTaxEntry
 import org.wordpress.android.fluxc.model.refunds.RefundMapper
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient.RefundResponse
@@ -110,6 +112,54 @@ class RefundMapperTest {
 
         assertEquals(10, appModel.orderItemId)
     }
+
+    @Test
+    fun `given refunded item id is not the first meta entry, when mapping refund item, then it is found by key`() {
+        // GIVEN
+        val domainModel = givenRefundItem(
+            metaData = listOf(
+                WCMetaData(id = 0, key = "_reduced_stock", value = WCMetaDataValue("1")),
+                WCMetaData(id = 1, key = "_refunded_item_id", value = WCMetaDataValue("10"))
+            )
+        )
+
+        // WHEN
+        val appModel = domainModel.toAppModel()
+
+        // THEN
+        assertThat(appModel.orderItemId).isEqualTo(10)
+    }
+
+    @Test
+    fun `when mapping refund item with taxes, then per-rate taxes are mapped as positive amounts`() {
+        // GIVEN
+        val domainModel = givenRefundItem(
+            taxes = listOf(
+                WCLineTaxEntry(rateId = 1, totalString = "-0.17"),
+                WCLineTaxEntry(rateId = null, totalString = "-0.05")
+            )
+        )
+
+        // WHEN
+        val appModel = domainModel.toAppModel()
+
+        // THEN
+        assertThat(appModel.taxes).containsExactly(Order.LineTaxEntry(rateId = 1, taxAmount = BigDecimal("0.17")))
+    }
+
+    private fun givenRefundItem(
+        metaData: List<WCMetaData>? = null,
+        taxes: List<WCLineTaxEntry>? = null
+    ) = WCRefundModel.WCRefundItem(
+        productId = 1,
+        quantity = -1,
+        itemId = 2,
+        subtotal = BigDecimal("-3.33"),
+        total = BigDecimal("-3.33"),
+        totalTax = BigDecimal("-0.17"),
+        metaData = metaData,
+        taxes = taxes
+    )
 
     @Test
     fun `when mapping shipping lines from domain model, then extract its properties correctly`() {
