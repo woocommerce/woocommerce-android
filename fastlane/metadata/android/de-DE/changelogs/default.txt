@@ -1,0 +1,2 @@
+25.8:
+„Mein Shop“, „Bestellungen“, „Produkte“ und das Menü „Mehr“ haben einen neuen Look. Push-Benachrichtigungen sind zuverlässiger, es gibt weniger unerwartete Abmeldungen und Bestellungen werden in großen Shops ohne Zeitüberschreitung synchronisiert. In POS werden individuelle Beträge und Rabatte beim Bezahlen deutlicher angezeigt. Außerdem haben wir Fehlerbehebungen für Anmeldungen, Auszahlungen, Produktvarianten und Shop-Updates durchgeführt.

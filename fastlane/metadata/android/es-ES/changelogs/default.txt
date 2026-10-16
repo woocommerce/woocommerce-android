@@ -1,0 +1,2 @@
+25.8:
+Mi tienda, Pedidos, Productos y el menú Más tienen un nuevo aspecto. Las notificaciones push son más fiables, verás menos cierres de sesión inesperados y las grandes tiendas sincronizarán los pedidos sin que se agote el tiempo de espera. En el punto de venta, los importes y descuentos personalizados son más claros al finalizar la compra. Correcciones adicionales para el inicio de sesión, los pagos, las variaciones de productos y las actualizaciones de la tienda.

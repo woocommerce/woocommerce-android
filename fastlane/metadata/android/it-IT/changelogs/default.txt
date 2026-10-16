@@ -1,0 +1,2 @@
+25.8:
+Le sezioni Il mio negozio, Ordini, Prodotti e il menu Altro hanno una nuova veste grafica. Le notifiche push sono più affidabili, si verificheranno meno disconnessioni impreviste e i negozi di grandi dimensioni sincronizzano gli ordini senza problemi di timeout. Nel POS, gli importi personalizzati e gli sconti sono più chiari al momento del pagamento. In più, correzioni per accesso, accrediti, varianti di prodotto e aggiornamenti del negozio.
