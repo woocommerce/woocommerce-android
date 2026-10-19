@@ -1,10 +1,7 @@
 package org.wordpress.android.login
 
-import java.util.Locale
-
 interface LoginAnalyticsListener {
     fun trackAnalyticsSignIn(isWpcomLogin: Boolean)
-    fun trackCreatedAccount(username: String?, email: String?, source: CreatedAccountSource)
     fun trackEmailFormViewed()
     fun trackInsertedInvalidUrl()
     fun trackLoginAccessed()
@@ -33,9 +30,6 @@ interface LoginAnalyticsListener {
     fun trackSignupMagicLinkOpenEmailClientClicked()
     fun trackSignupMagicLinkSent()
     fun trackSignupMagicLinkSucceeded()
-    fun trackSignupSocialAccountsNeedConnecting()
-    fun trackSignupSocialButtonFailure()
-    fun trackSignupSocialToLogin()
     fun trackSignupTermsOfServiceTapped()
     fun trackSocialButtonStart()
     fun trackSocialAccountsNeedConnecting()
@@ -77,13 +71,4 @@ interface LoginAnalyticsListener {
     fun trackLoginSecurityKeySuccess()
     fun trackLoginSecurityKeyFailure()
     fun trackUseSecurityKeyClicked()
-
-    enum class CreatedAccountSource {
-        EMAIL,
-        GOOGLE;
-
-        fun asPropertyMap() = hashMapOf<String, Any>(
-                "source" to name.lowercase(Locale.ROOT)
-        )
-    }
 }

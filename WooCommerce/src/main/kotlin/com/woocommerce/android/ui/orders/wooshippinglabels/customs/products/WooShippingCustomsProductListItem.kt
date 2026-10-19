@@ -16,15 +16,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +44,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -53,6 +58,7 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.RoundedBorderDropDownWithLabel
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiers
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.InputValue
 
 @Composable
@@ -63,6 +69,8 @@ fun WooShippingCustomsProductListItem(
     onExpand: (isExtended: Boolean) -> Unit,
     onDescriptionChanged: (String) -> Unit,
     onTariffChanged: (String) -> Unit,
+    showEuProductIdentifiers: Boolean,
+    onEuProductIdentifiersChanged: (EuProductIdentifiers) -> Unit,
     onValuePerUnitChanged: (String) -> Unit,
     onWeightPerUnitChanged: (String) -> Unit,
     onCountrySelectorClick: () -> Unit,
@@ -74,7 +82,7 @@ fun WooShippingCustomsProductListItem(
 
     val borderColor = when {
         itemData.isExpanded -> colorResource(R.color.color_on_surface)
-        itemData.isValid.not() -> colorResource(R.color.color_error)
+        itemData.isValid(showEuProductIdentifiers).not() -> colorResource(R.color.color_error)
         else -> colorResource(R.color.divider_color)
     }
 
@@ -103,7 +111,7 @@ fun WooShippingCustomsProductListItem(
                 modifier = modifier.weight(1f)
             )
 
-            if (itemData.isValid.not()) {
+            if (itemData.isValid(showEuProductIdentifiers).not()) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_error_filled_24dp),
                     tint = MaterialTheme.colors.error,
@@ -132,6 +140,8 @@ fun WooShippingCustomsProductListItem(
                 weightUnit = weightUnit,
                 onDescriptionChanged = onDescriptionChanged,
                 onTariffChanged = onTariffChanged,
+                showEuProductIdentifiers = showEuProductIdentifiers,
+                onEuProductIdentifiersChanged = onEuProductIdentifiersChanged,
                 onValuePerUnitChanged = onValuePerUnitChanged,
                 onWeightPerUnitChanged = onWeightPerUnitChanged,
                 onCountrySelectorClick = onCountrySelectorClick,
@@ -200,6 +210,8 @@ fun WooShippingCustomsProductExpandedListItem(
     weightUnit: String,
     onDescriptionChanged: (String) -> Unit,
     onTariffChanged: (String) -> Unit,
+    showEuProductIdentifiers: Boolean,
+    onEuProductIdentifiersChanged: (EuProductIdentifiers) -> Unit,
     onValuePerUnitChanged: (String) -> Unit,
     onWeightPerUnitChanged: (String) -> Unit,
     onCountrySelectorClick: () -> Unit
@@ -292,6 +304,97 @@ fun WooShippingCustomsProductExpandedListItem(
                 onClick = onCountrySelectorClick,
                 modifier = Modifier.fillMaxWidth()
             )
+
+            if (showEuProductIdentifiers) {
+                val identifiers = itemData.euProductIdentifiers
+                Spacer(Modifier.height(16.dp))
+
+                Text(
+                    text = stringResource(R.string.woo_shipping_labels_customs_eu_product_identifiers_title),
+                    style = MaterialTheme.typography.subtitle1,
+                    fontWeight = FontWeight.SemiBold,
+                    color = colorResource(R.color.color_on_surface)
+                )
+
+                Text(
+                    text = stringResource(R.string.woo_shipping_labels_customs_eu_product_identifiers_description),
+                    style = MaterialTheme.typography.body2,
+                    color = colorResource(R.color.color_on_surface_medium)
+                )
+
+                Spacer(Modifier.height(16.dp))
+
+                WCOutlinedTextField(
+                    value = identifiers.sku,
+                    onValueChange = { onEuProductIdentifiersChanged(identifiers.copy(sku = it)) },
+                    label = stringResource(R.string.woo_shipping_labels_customs_product_details_sku),
+                    singleLine = true,
+                    isError = itemData.sku is InputValue.Error,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    modifier = Modifier.fillMaxWidth(),
+                    helperText = itemData.sku.errorMessageOrNull?.getText()
+                )
+
+                Spacer(Modifier.height(16.dp))
+
+                WCOutlinedTextField(
+                    value = identifiers.manufacturerPartNumber,
+                    onValueChange = {
+                        onEuProductIdentifiersChanged(identifiers.copy(manufacturerPartNumber = it))
+                    },
+                    label = stringResource(
+                        R.string.woo_shipping_labels_customs_product_details_manufacturer_part_number
+                    ),
+                    singleLine = true,
+                    isError = itemData.manufacturerPartNumber is InputValue.Error,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    modifier = Modifier.fillMaxWidth(),
+                    helperText = itemData.manufacturerPartNumber.errorMessageOrNull?.getText()
+                )
+
+                Spacer(Modifier.height(16.dp))
+
+                WCOutlinedTextField(
+                    value = identifiers.gtin,
+                    onValueChange = { onEuProductIdentifiersChanged(identifiers.copy(gtin = it)) },
+                    label = stringResource(R.string.woo_shipping_labels_customs_product_details_gtin),
+                    singleLine = true,
+                    isError = itemData.gtin is InputValue.Error,
+                    enabled = !itemData.hasNoBarcode,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    modifier = Modifier.fillMaxWidth(),
+                    helperText = itemData.gtin.errorMessageOrNull?.getText()
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.Absolute.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .toggleable(
+                            value = identifiers.hasNoBarcode,
+                            role = Role.Checkbox,
+                            onValueChange = {
+                                onEuProductIdentifiersChanged(identifiers.copy(hasNoBarcode = it))
+                            }
+                        )
+                        .minimumInteractiveComponentSize()
+                ) {
+                    Text(
+                        text = stringResource(R.string.woo_shipping_labels_customs_product_details_no_barcode),
+                        color = colorResource(R.color.color_on_surface),
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .weight(1f)
+                    )
+                    Checkbox(
+                        checked = identifiers.hasNoBarcode,
+                        onCheckedChange = null,
+                        colors = CheckboxDefaults.colors(
+                            uncheckedColor = colorResource(R.color.color_on_surface_disabled)
+                        )
+                    )
+                }
+            }
         }
     }
 }
@@ -429,6 +532,8 @@ fun WooShippingCustomsProductListCollapsedItemPreview() {
                 onExpand = { },
                 onDescriptionChanged = { },
                 onTariffChanged = { },
+                showEuProductIdentifiers = false,
+                onEuProductIdentifiersChanged = { },
                 onValuePerUnitChanged = { },
                 onWeightPerUnitChanged = { },
                 onCountrySelectorClick = { }
@@ -462,6 +567,8 @@ fun WooShippingCustomsProductListCollapsedItemErrorPreview() {
                 onExpand = { },
                 onDescriptionChanged = { },
                 onTariffChanged = { },
+                showEuProductIdentifiers = false,
+                onEuProductIdentifiersChanged = { },
                 onValuePerUnitChanged = { },
                 onWeightPerUnitChanged = { },
                 onCountrySelectorClick = { }
@@ -495,6 +602,8 @@ fun WooShippingCustomsProductListExpandedItemPreview() {
                 onExpand = { },
                 onDescriptionChanged = { },
                 onTariffChanged = { },
+                showEuProductIdentifiers = false,
+                onEuProductIdentifiersChanged = { },
                 onValuePerUnitChanged = { },
                 onWeightPerUnitChanged = { },
                 onCountrySelectorClick = { }
@@ -515,6 +624,13 @@ fun WooShippingCustomsProductListExpandedItemErrorPreview() {
                     name = "Little Nap Brazil 250g",
                     description = InputValue.Error("Coffee Beans", UiString.UiStringText("Error")),
                     tariffNumber = InputValue.Error("HS 14-1", UiString.UiStringText("Error")),
+                    sku = InputValue.Error(
+                        "",
+                        R.string.woo_shipping_labels_customs_product_details_eu_identifier_required
+                    ),
+                    manufacturerPartNumber = InputValue.Data("MPN-123"),
+                    gtin = InputValue.Error("", R.string.woo_shipping_labels_customs_product_details_gtin_required),
+                    hasNoBarcode = false,
                     valuePerUnit = InputValue.Data("20.00"),
                     weightPerUnit = InputValue.Data("0.3"),
                     originCountry = "Japan",
@@ -528,6 +644,8 @@ fun WooShippingCustomsProductListExpandedItemErrorPreview() {
                 onExpand = { },
                 onDescriptionChanged = { },
                 onTariffChanged = { },
+                showEuProductIdentifiers = true,
+                onEuProductIdentifiersChanged = { },
                 onValuePerUnitChanged = { },
                 onWeightPerUnitChanged = { },
                 onCountrySelectorClick = { }

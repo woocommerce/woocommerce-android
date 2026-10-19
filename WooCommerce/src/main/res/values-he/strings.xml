@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-22 09:59:05+0000
+Translation-Revision-Date: 2026-10-06 13:58:10+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_orders_details_breakdown_custom_amounts_label">סכומים בהתאמה אישית</string>
+    <string name="woopos_payment_custom_amounts_label">סכומים בהתאמה אישית</string>
+    <string name="woopos_cart_item_discount_applied">ההנחה הוחלה</string>
+    <string name="more_menu_payments_new_feature_state_description">אפשרות תשלום חדשה זמינה</string>
+    <string name="more_menu_switch_store">החלפת חנות</string>
+    <string name="logviewer_next_match">ההתאמה הבאה</string>
+    <string name="logviewer_previous_match">ההתאמה הקודמת</string>
+    <string name="variation_list_fetch_error">שגיאה בשליפת וריאציות</string>
+    <string name="product_list_deselect_product">ביטול בחירת %s</string>
+    <string name="product_list_select_product">בחירת %s</string>
+    <string name="no_filters_applied_state_description">לא הוחלו מסננים</string>
+    <string name="product_rating_content_description">%1$.1f מתוך 5</string>
+    <string name="card_reader_mode_intro_not_now">לא עכשיו</string>
+    <string name="card_reader_mode_intro_start">התחלה</string>
+    <string name="card_reader_mode_intro_requirement_nfc">יש להפעיל NFC בטלפון הזה</string>
+    <string name="card_reader_mode_intro_requirement_wifi">יש לחבר את שני ההתקנים לאותה רשת Wi-Fi</string>
+    <string name="card_reader_mode_intro_requirement_pos">יש לפתוח את Woo POS בטאבלט של Android שבו בוצעה כניסה לאותה חנות</string>
+    <string name="card_reader_mode_intro_requirements_heading">לפני שנתחיל</string>
+    <string name="card_reader_mode_intro_subtitle">הטלפון הזה מוצג כקורא כרטיסים ב-Woo POS בטאבלט שלך. בשלב התשלום בקופה, הלוח שולח את הסכום כאן, והלקוח מצמיד את הכרטיס שלו לטלפון הזה.</string>
+    <string name="card_reader_mode_intro_header">הטלפון הזה כקורא כרטיסים</string>
+    <string name="orderlist_deselect_order">ביטול בחירת הזמנה ⁦%1$s⁩</string>
+    <string name="orderlist_select_order">בחירת הזמנה ⁦%1$s⁩</string>
+    <string name="dashboard_customize_new_sections_state_description">זמינים מקטעים חדשים בלוח הבקרה</string>
     <string name="woopos_eligibility_reason_unsupported_country_generic">מערכת POS אינה זמינה במדינה של החנות שלך. יש לבדוק את הגדרות הכתובת של החנות או לפנות לתמיכה לקבלת סיוע.</string>
     <string name="woopos_eligibility_reason_unsupported_country">מערכת POS אינה זמינה ב⁦%1$s⁩. יש לבדוק את הגדרות הכתובת של החנות או לפנות לתמיכה לקבלת סיוע.</string>
     <string name="woo_push_notifications_introduction_error_offline_mode_body">לא ניתן להגדיר התראות בדחיפה, מכיוון שהחנות שלך נמצאת במצב לא מקוון. אם עדיין דרושה לך עזרה, ניתן ליצור קשר עם התמיכה.</string>
@@ -2594,7 +2617,6 @@ Language: he_IL
     <string name="product_search_all">כל המוצרים</string>
     <string name="card_reader_upsell_card_reader_banner_cta">לרכוש קורא כרטיסים</string>
     <string name="card_reader_upsell_card_reader_banner_title">לקבל תשלומים בקלות</string>
-    <string name="card_reader_upsell_card_reader_banner_new">חדש</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">ביטול</string>
     <string name="orderdetail_custom_fields">שדות מותאמים</string>
     <string name="order_sync_failed">אין אפשרות לשמור את השינויים</string>
@@ -4199,6 +4221,24 @@ Language: he_IL
         <item>חבילות מותאמות אישית</item>
         <item>חבילת שירות</item>
     </string-array>
+    <plurals name="dashboard_review_rating_content_description">
+        <item quantity="one">דירוג של כוכב ⁦%1$d⁩</item>
+        <item quantity="two">דירוג של ⁦%1$d⁩ כוכבים</item>
+        <item quantity="many">דירוג של ⁦%1$d⁩ כוכבים</item>
+        <item quantity="other">דירוג של ⁦%1$d⁩ כוכבים</item>
+    </plurals>
+    <plurals name="filters_applied_state_description">
+        <item quantity="one">הוחל מסנן %d</item>
+        <item quantity="two">הוחלו %d מסננים</item>
+        <item quantity="many">הוחלו %d מסננים</item>
+        <item quantity="other">הוחלו %d מסננים</item>
+    </plurals>
+    <plurals name="more_menu_unseen_reviews_state_description">
+        <item quantity="one">ביקורת %d שלא נקראה</item>
+        <item quantity="two">%d ביקורות שלא נקראו</item>
+        <item quantity="many">%d ביקורות שלא נקראו</item>
+        <item quantity="other">%d ביקורות שלא נקראו</item>
+    </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">סכום ביניים (פריט %d)</item>
         <item quantity="two">סכום ביניים (%d פריטים)</item>

@@ -118,12 +118,11 @@ class RefundDetailViewModel @Inject constructor(
                 )
             }
 
-            val (subtotal, taxes) = items.calculateTotals()
             viewState = viewState.copy(
                 currency = order.currency,
                 areItemsVisible = true,
-                subtotal = formatCurrency(subtotal),
-                taxes = formatCurrency(taxes)
+                subtotal = formatCurrency(refund.items.sumOf { it.total }),
+                taxes = formatCurrency(refund.items.sumOf { it.totalTax })
             )
 
             _refundItems.value = items

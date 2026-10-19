@@ -25,6 +25,10 @@ data class CustomerListViewState(
             val button: Button?,
         ) : CustomerList()
         data class Error(@StringRes val message: Int) : CustomerList()
+        data class AnalyticsUnavailable(
+            @StringRes val message: Int,
+            val canEnableAnalytics: Boolean,
+        ) : CustomerList()
         data class Loaded(
             val customers: List<Item>,
             val shouldResetScrollPosition: Boolean

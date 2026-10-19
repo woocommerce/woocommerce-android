@@ -11,20 +11,13 @@ abstract class AttributeBaseAdapter<T : AttributeBaseAdapter.AttributeBaseViewHo
 ) : RecyclerView.Adapter<T>() {
     private var attributeList = listOf<ProductAttribute>()
 
-    init {
-        setHasStableIds(true)
-    }
-
     override fun onBindViewHolder(holder: T, position: Int) {
         holder.bind(attributeList[position])
 
         holder.itemView.setOnClickListener {
-            val item = attributeList[position]
-            onItemClick(item.id, item.name)
+            attributeList.getOrNull(holder.bindingAdapterPosition)?.let { onItemClick(it.id, it.name) }
         }
     }
-
-    override fun getItemId(position: Int) = attributeList[position].id
 
     override fun getItemCount() = attributeList.size
 
@@ -33,7 +26,8 @@ abstract class AttributeBaseAdapter<T : AttributeBaseAdapter.AttributeBaseViewHo
         val newList: List<ProductAttribute>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldList[oldItemPosition].id == newList[newItemPosition].id
+            oldList[oldItemPosition].id == newList[newItemPosition].id &&
+                oldList[oldItemPosition].name == newList[newItemPosition].name
 
         override fun getOldListSize(): Int = oldList.size
 

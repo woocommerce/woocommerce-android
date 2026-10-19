@@ -141,6 +141,48 @@ class EnsureReleaseAppTests(unittest.TestCase):
         self.assertEqual(result.source, "GitHub release 25.4")
         install.assert_called_once_with("emulator-5554", apk)
 
+    def upgrade(self, install_result, installed_version="25.8"):
+        metadata = release_app.ApkMetadata("com.woocommerce.android", "25.8", False)
+        installed = release_app.ApkMetadata("com.woocommerce.android", installed_version, False)
+        with patch.object(release_app, "validate_release_apk", return_value=metadata), patch.object(
+            release_app, "adb", return_value=install_result
+        ) as adb, patch.object(release_app, "installed_release", return_value=installed):
+            try:
+                return release_app.upgrade_to_apk("emulator-5554", Path("WooCommerce-25.8-universal.apk"))
+            finally:
+                self.adb_calls = adb.call_args_list
+
+    def test_upgrade_installs_over_the_release_without_uninstalling(self) -> None:
+        result = self.upgrade(release_app.subprocess.CompletedProcess([], 0, "Success\n", ""))
+
+        self.assertEqual(result.version_name, "25.8")
+        self.assertEqual(len(self.adb_calls), 1)
+        self.assertEqual(self.adb_calls[0].args[1], "install")
+
+    def test_upgrade_with_a_differently_signed_apk_names_the_signing_key(self) -> None:
+        output = "Performing Streamed Install\nadb: failed to install: Failure [INSTALL_FAILED_UPDATE_INCOMPATIBLE]\n"
+
+        with self.assertRaisesRegex(release_app.ReleaseAppError, "not signed with the same key"):
+            self.upgrade(release_app.subprocess.CompletedProcess([], 1, output, ""))
+
+    def test_upgrade_failure_shows_the_last_failure_line(self) -> None:
+        output = "Performing Streamed Install\nadb: failed to install: Failure [INSTALL_FAILED_VERSION_DOWNGRADE]\n"
+
+        with self.assertRaisesRegex(release_app.ReleaseAppError, "INSTALL_FAILED_VERSION_DOWNGRADE"):
+            self.upgrade(release_app.subprocess.CompletedProcess([], 1, output, ""))
+
+    def test_upgrade_failure_without_a_failure_line_shows_the_last_error_line(self) -> None:
+        output = release_app.subprocess.CompletedProcess(
+            [], 1, "Performing Streamed Install\n", "adb: device offline\n"
+        )
+
+        with self.assertRaisesRegex(release_app.ReleaseAppError, "adb: device offline"):
+            self.upgrade(output)
+
+    def test_upgrade_that_leaves_another_version_installed_fails(self) -> None:
+        with self.assertRaisesRegex(release_app.ReleaseAppError, "does not match supplied APK 25.8"):
+            self.upgrade(release_app.subprocess.CompletedProcess([], 0, "Success\n", ""), installed_version="25.7")
+
 
 if __name__ == "__main__":
     unittest.main()

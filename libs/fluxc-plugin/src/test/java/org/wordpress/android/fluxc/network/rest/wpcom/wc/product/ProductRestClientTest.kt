@@ -272,6 +272,34 @@ class ProductRestClientTest {
     }
 
     @Test
+    fun `when variations are fetched with id sorting, then orderby id is used for network call`() {
+        runTest {
+            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductVariationApiResponse>::class.java), any(), any(), any(), any(), any(), any())).thenReturn(WPAPIResponse.Success(emptyArray<ProductVariationApiResponse>(), emptyList()))
+            sut.fetchProductVariationsWithSyncRequest(
+                site = site,
+                productId = productId,
+                pageSize = 25,
+                offset = 0,
+                sorting = WCProductStore.VariationSorting.ID
+            )
+            val argumentCaptor = argumentCaptor<MutableMap<String, String>>()
+            verify(wooNetwork).executeGetGsonRequest(
+                any(),
+                any(),
+                clazz = eq(Array<ProductVariationApiResponse>::class.java),
+                params = argumentCaptor.capture(),
+                enableCaching = any(),
+                cacheTimeToLive = any(),
+                forced = any(),
+                requestTimeout = any(),
+                retries = any()
+            )
+
+            assertThat(argumentCaptor.firstValue["orderby"]).isEqualTo("id")
+        }
+    }
+
+    @Test
     fun `when fetch products called with exact sku search, then correct params is used for network call`() {
         runTest {
             whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductApiResponse>::class.java), any(), any(), any(), any(), any(), any())).thenReturn(WPAPIResponse.Success(null, emptyList()))

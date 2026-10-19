@@ -524,6 +524,12 @@ class AnalyticsTracker private constructor(
         const val VALUE_MORE_MENU_PAYMENTS = "payments"
         const val VALUE_MORE_MENU_UPGRADES = "upgrades"
         const val VALUE_MORE_MENU_CUSTOMERS = "customers"
+        const val VALUE_CUSTOMER_LIST_SOURCE_ORDER_FORM = "order_form"
+        const val VALUE_CUSTOMER_LIST_SOURCE_ORDER_LIST_FILTER = "order_list_filter"
+        const val VALUE_CUSTOMER_LIST_CAUSE_DISABLED = "disabled"
+        const val VALUE_CUSTOMER_LIST_CAUSE_UNKNOWN = "unknown"
+        const val VALUE_CUSTOMER_LIST_RELOAD_RETRY = "retry"
+        const val VALUE_CUSTOMER_LIST_RELOAD_ENABLE_ANALYTICS = "enable_analytics"
 
         // We have to call in non consistent way to match the iOS naming
         const val VALUE_MORE_MENU_POS = "pointOfSale"
