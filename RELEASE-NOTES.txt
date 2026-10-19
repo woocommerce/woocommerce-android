@@ -4,6 +4,7 @@
 
 26.0
 -----
+- [*] Menu icons now use a dark background in dark mode [https://github.com/woocommerce/woocommerce-android/pull/16672]
 - [*] Order creation no longer adds a variation of a subscription product when its SKU is scanned [https://github.com/woocommerce/woocommerce-android/pull/16713]
 
 
