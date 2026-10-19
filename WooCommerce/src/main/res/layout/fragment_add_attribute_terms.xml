@@ -25,9 +25,7 @@
             android:id="@+id/attributeSettingsContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
+            android:orientation="vertical">
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/visibleSwitch"
