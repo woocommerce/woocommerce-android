@@ -4,6 +4,7 @@
 
 26.0
 -----
+- [**] Products: Add and edit attributes on all product types. Each attribute has "Visible on product page" and "Used for variations" settings, so you can add attributes that only show on the product page. [https://github.com/woocommerce/woocommerce-android/pull/16727]
 
 
 25.9
