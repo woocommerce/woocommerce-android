@@ -71,7 +71,8 @@ class WooPosPaymentSuccessPropertiesTest {
             on { getCardReaderPreferredPlugin(any(), any(), any()) }.thenReturn(PluginType.STRIPE_EXTENSION_GATEWAY)
         }
         val provider = WooPosPaymentsFlowTrackerEventProvider(
-            WooPosAnalyticsTrackingDataKeeper(WooPosCheckoutTiming(mock())), properties
+            WooPosAnalyticsTrackingDataKeeper(WooPosCheckoutTiming(mock())),
+            properties,
         )
         val tracker = PaymentsFlowTracker(wrapper, prefs, selectedSite, trackingInfo, mock(), provider)
         val order = Order.getEmptyOrder(Date(), Date()).copy(id = 123L, total = BigDecimal("42.50"), currency = "EUR")
@@ -105,7 +106,8 @@ class WooPosPaymentSuccessPropertiesTest {
     fun `given successive orders, when success events are created, then properties stay with their order`() = runTest {
         // GIVEN
         val provider = WooPosPaymentsFlowTrackerEventProvider(
-            WooPosAnalyticsTrackingDataKeeper(WooPosCheckoutTiming(mock())), properties
+            WooPosAnalyticsTrackingDataKeeper(WooPosCheckoutTiming(mock())),
+            properties,
         )
         val firstOrder = Order.getEmptyOrder(Date(), Date()).copy(id = 1L, total = BigDecimal.TEN, currency = "USD")
 
