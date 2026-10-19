@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -24,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import com.woocommerce.android.R
@@ -61,14 +62,14 @@ private fun WooPosLoadingIndicatorInternal(
     spinnerPrimaryColor: Color,
     spinnerSecondaryColor: Color,
 ) {
-    val infiniteTransition = rememberInfiniteTransition(label = "RotationTransition")
-    val animatedRotation by infiniteTransition.animateFloat(
+    val infiniteTransition = rememberInfiniteTransition(label = "ChaseTransition")
+    val cycleProgress by infiniteTransition.animateFloat(
         initialValue = 0f,
-        targetValue = 360f,
+        targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = FastOutSlowInEasing),
+            animation = tween(CHASE_CYCLE_DURATION_MILLIS, easing = LinearEasing),
         ),
-        label = "RotationAnimation"
+        label = "ChaseProgress"
     )
 
     Canvas(
@@ -84,15 +85,14 @@ private fun WooPosLoadingIndicatorInternal(
             radius = radius,
         )
 
-        rotate(animatedRotation) {
-            drawArc(
-                color = spinnerPrimaryColor,
-                startAngle = 0f,
-                sweepAngle = 110f,
-                useCenter = true,
-                style = Fill,
-            )
-        }
+        val tailAngle = chaseTailAngle(cycleProgress)
+        drawArc(
+            color = spinnerPrimaryColor,
+            startAngle = tailAngle,
+            sweepAngle = chaseHeadAngle(cycleProgress) - tailAngle,
+            useCenter = true,
+            style = Fill,
+        )
 
         drawCircle(
             color = Color.White,
@@ -101,6 +101,17 @@ private fun WooPosLoadingIndicatorInternal(
         )
     }
 }
+
+private fun chaseHeadAngle(cycleProgress: Float): Float =
+    chaseBaseAngle(cycleProgress) + CHASE_MIN_SWEEP_DEGREES +
+        CHASE_TRAVEL_DEGREES * CHASE_EASING.transform((2 * cycleProgress).coerceIn(0f, 1f))
+
+private fun chaseTailAngle(cycleProgress: Float): Float =
+    chaseBaseAngle(cycleProgress) +
+        CHASE_TRAVEL_DEGREES * CHASE_EASING.transform((2 * cycleProgress - 1).coerceIn(0f, 1f))
+
+private fun chaseBaseAngle(cycleProgress: Float): Float =
+    CHASE_START_ANGLE_DEGREES + (FULL_CIRCLE_DEGREES - CHASE_TRAVEL_DEGREES) * cycleProgress
 
 @Composable
 @WooPosPreview
@@ -238,3 +249,10 @@ fun PreviewWooPosUpdateProgressIndicatorComplete() {
         }
     }
 }
+
+private const val CHASE_CYCLE_DURATION_MILLIS = 1640
+private const val CHASE_START_ANGLE_DEGREES = -90f
+private const val CHASE_MIN_SWEEP_DEGREES = 70f
+private const val CHASE_TRAVEL_DEGREES = 180f
+private const val FULL_CIRCLE_DEGREES = 360f
+private val CHASE_EASING = CubicBezierEasing(0.6f, 0f, 0.25f, 1f)
