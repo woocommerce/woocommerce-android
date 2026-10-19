@@ -95,6 +95,7 @@ Group the public API shallowly by source intent; do not collapse the source into
 | Surface | Surface, surface bright, surface dim, surface container highest, on-default, on-variant, on-variant-lowest, on-variant-highest, inverted, and on-inverted roles. |
 | Outline | `outline` and `outlineVariant`. |
 | Status | Error, warning, caution, success, info, and neutral containers plus their on-container colors. |
+| Icon container | Sandstone icon box background. |
 | Alert | Red, orange, green, and blue alert ramp colors plus their on-colors. |
 | Background | Stable Android compatibility group backed by the export's three `Add-Ons` roles. `onSectionVariant` aliases `onSection`; there is no fourth source token. |
 | Overlay | Export-backed overlay roles; not validated by the Color roles frame. |
