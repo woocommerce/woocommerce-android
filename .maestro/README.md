@@ -103,9 +103,9 @@ Requirements: `expect` (ships with macOS), `wc.oauth.app_id` and `wc.oauth.app_s
 account with two-factor authentication disabled**. The OAuth password grant cannot answer
 a 2FA challenge non-interactively. Use test accounts only.
 
-The store ships with the WooCommerce sample products, and the script adds 25 completed
-orders, one customer and a `maestro10` coupon. The negative-login fixtures are filled in
-by hand.
+The store ships with the WooCommerce sample products. The script tops it up to 100 products
+and 100 completed orders, and adds one customer and a `maestro10` coupon. The negative-login
+fixtures are filled in by hand.
 
 Jurassic Ninja sites expire after 7 days of inactivity. Re-run the script or the skill
 against a new site when that happens; the WordPress.com account already in `.env.local`
@@ -189,6 +189,9 @@ The runner:
 
 - targets the production package (`com.woocommerce.android`) and rejects dev or debuggable APKs;
 - downloads and installs the latest stable GitHub release when no production app or candidate APK is installed;
+- uninstalls the app before it installs an APK, so a run with `--apk` starts from a fresh install;
+- sets the app language to German for the localization flow and resets it afterwards;
+- installs the latest release, logs in and installs the `--apk` build over it for the upgrade flow, so that build has to be signed with the release key;
 - selects one connected device automatically, or prompts when several are attached, and runs the POS flows on
   `--pos-device`;
 - captures and restores animation settings;
@@ -214,9 +217,12 @@ The runner:
 - `smoke_extended`: broader P2 coverage.
 - `pos_tablet`: POS flows, tablet AVD required.
 - `android_system`: launcher/system-surface flows, English Pixel Launcher AVD required.
+- `app_locale_de`: the runner logs in and sets the app language to German first.
 - `system_surface`: flow enters Android-owned UI; assertions stop at the documented handoff boundary.
 - `destructive`: mutates store data.
 - `store_shared`: runs against the shared store unless `--store` is passed; never combined with `destructive`.
+- `app_upgrade`: the runner installs the latest release, logs in and installs the `--apk` build over it first. Needs
+  an `--apk` signed with the release key.
 - `quarantine`: failing flows kept out of runs until they are fixed, excluded unless `--include-quarantine` is passed
   or `--include-tags` names it.
 

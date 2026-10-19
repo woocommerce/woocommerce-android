@@ -210,7 +210,8 @@ class WooPosCardReaderConnectionController(
     fun recheckPermissions() {
         val currentState = _state.value
         when {
-            isShowingBluetoothRequirement() -> checkRequirementsAndStartDiscovery()
+            isShowingBluetoothRequirement() && evaluateBluetoothRequirement() != bluetoothRequirement ->
+                checkRequirementsAndStartDiscovery()
 
             currentState is WooPosCardReaderConnectionState.MissingLocalNetworkPermission &&
                 WooPermissionUtils.hasLocalNetworkPermission(context) ->

@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-22 21:55:02+0000
+Translation-Revision-Date: 2026-10-06 11:59:46+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_orders_details_breakdown_custom_amounts_label">Montants personnalisés</string>
+    <string name="woopos_payment_custom_amounts_label">Montants personnalisés</string>
+    <string name="woopos_cart_item_discount_applied">Remise appliquée</string>
+    <string name="more_menu_payments_new_feature_state_description">Nouvelle fonctionnalité de paiement disponible</string>
+    <string name="more_menu_switch_store">Changer de boutique</string>
+    <string name="logviewer_next_match">Correspondance suivante</string>
+    <string name="logviewer_previous_match">Correspondance précédente</string>
+    <string name="variation_list_fetch_error">Erreur lors de la récupération des variations</string>
+    <string name="product_list_deselect_product">Désélectionner %s</string>
+    <string name="product_list_select_product">Sélectionner %s</string>
+    <string name="no_filters_applied_state_description">Aucun filtre appliqué</string>
+    <string name="card_reader_mode_intro_not_now">Pas maintenant</string>
+    <string name="card_reader_mode_intro_start">Démarrer</string>
+    <string name="card_reader_mode_intro_requirement_nfc">Activer le NFC sur ce téléphone</string>
+    <string name="card_reader_mode_intro_requirement_wifi">Connecter les deux appareils au même réseau Wi-Fi</string>
+    <string name="card_reader_mode_intro_requirement_pos">Ouvrir Woo POS sur une tablette Android connectée à la même boutique</string>
+    <string name="card_reader_mode_intro_requirements_heading">Avant de commencer</string>
+    <string name="card_reader_mode_intro_subtitle">Ce téléphone apparaît comme un lecteur de carte dans Woo POS sur votre tablette. Lors de la validation de la commande, c\'est sûr ce téléphone que la tablette envoie le montant et que le client pose sa carte.</string>
+    <string name="card_reader_mode_intro_header">Ce téléphone est un lecteur de carte</string>
+    <string name="orderlist_deselect_order">Désélectionner la commande %1$s</string>
+    <string name="orderlist_select_order">Sélectionner la commande %1$s</string>
+    <string name="dashboard_customize_new_sections_state_description">Nouvelles sections du tableau de bord disponibles</string>
     <string name="woopos_eligibility_reason_unsupported_country_generic">Le système PDV n’est pas disponible dans le pays de votre boutique. Veuillez vérifier les réglages d’adresse de votre boutique ou contacter l’assistance pour recevoir de l’aide.</string>
     <string name="woopos_eligibility_reason_unsupported_country">Le système PDV n’est pas disponible dans ce pays : %1$s. Veuillez vérifier les réglages d’adresse de votre boutique ou contacter l’assistance pour recevoir de l’aide.</string>
     <string name="woo_push_notifications_introduction_error_offline_mode_body">Les notifications push ne peuvent pas être configurées, car votre boutique est en mode hors ligne. Si vous avez besoin d’aide, veuillez contacter l’assistance.</string>
@@ -2596,7 +2618,6 @@ Language: fr
     <string name="product_search_all">Tous les produits</string>
     <string name="card_reader_upsell_card_reader_banner_cta">Lecteur de carte d’achat</string>
     <string name="card_reader_upsell_card_reader_banner_title">Accepter les paiements facilement</string>
-    <string name="card_reader_upsell_card_reader_banner_new">NOUVEAU</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">Ignorer</string>
     <string name="orderdetail_custom_fields">Champs personnalisés</string>
     <string name="order_sync_failed">Impossible d’enregistrer les modifications</string>
@@ -4201,6 +4222,18 @@ Language: fr
         <item>Colis personnalisé</item>
         <item>Ensemble de services</item>
     </string-array>
+    <plurals name="dashboard_review_rating_content_description">
+        <item quantity="one">Évaluation %1$d étoile</item>
+        <item quantity="other">Évaluation %1$d étoile</item>
+    </plurals>
+    <plurals name="filters_applied_state_description">
+        <item quantity="one">%d filtre appliqué</item>
+        <item quantity="other">%d filtres appliqués</item>
+    </plurals>
+    <plurals name="more_menu_unseen_reviews_state_description">
+        <item quantity="one">%d avis non lu</item>
+        <item quantity="other">%d avis non lus</item>
+    </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Sous-total des articles (%d article)</item>
         <item quantity="other">Sous-total des articles (%d articles)</item>

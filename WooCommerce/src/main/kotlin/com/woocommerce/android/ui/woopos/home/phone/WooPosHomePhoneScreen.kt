@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent
 import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewModel
 import com.woocommerce.android.ui.woopos.home.wooPosHomeRootContainer
@@ -76,6 +77,8 @@ private fun WooPosHomePhoneContent(
     val totalsViewModel: WooPosTotalsViewModel = hiltViewModel()
 
     val cartState by cartViewModel.state.observeAsState()
+    val itemsState by itemsViewModel.viewState.collectAsState()
+    val isCustomAmountFormOpen = itemsState is WooPosItemsToolbarViewState.CustomAmountForm
 
     BackHandler {
         when (state.screenPositionState) {
@@ -100,28 +103,28 @@ private fun WooPosHomePhoneContent(
     val persistentButtonState = resolver.resolve(
         screenPositionState = state.screenPositionState,
         cartState = cartState,
+        isCustomAmountFormOpen = isCustomAmountFormOpen,
     )
 
     Box(
         modifier = Modifier.wooPosHomeRootContainer(state, onHomeUIEvent)
     ) {
         AnimatedContent(
-            targetState = state.screenPositionState,
-            contentKey = { phoneScreenKey(it) },
+            targetState = phoneScreenFor(state.screenPositionState, isCustomAmountFormOpen),
             transitionSpec = { screenTransitionFor(initialState, targetState) },
             modifier = Modifier.fillMaxSize(),
             label = "phone_screen_transition",
         ) { screen ->
             when (screen) {
-                WooPosHomeState.ScreenPositionState.Products ->
+                WooPosPhoneScreen.Products ->
                     WooPosPhoneProductsScreen(itemsViewModel = itemsViewModel)
 
-                WooPosHomeState.ScreenPositionState.Cart -> WooPosPhoneCartScreen(
+                WooPosPhoneScreen.Cart -> WooPosPhoneCartScreen(
                     onBack = { onHomeUIEvent(WooPosHomeUIEvent.PhoneBackFromCartClicked) },
                     viewModel = cartViewModel,
                 )
 
-                is WooPosHomeState.ScreenPositionState.Checkout ->
+                WooPosPhoneScreen.Checkout ->
                     WooPosPhoneTotalsScreen(
                         onBack = { onHomeUIEvent(WooPosHomeUIEvent.PhoneBackFromCheckoutClicked) },
                         viewModel = totalsViewModel,
@@ -146,39 +149,38 @@ private fun WooPosHomePhoneContent(
     }
 }
 
-private enum class PhoneScreenKey { Products, Cart, Checkout }
+internal enum class WooPosPhoneScreen { Products, Cart, Checkout }
 
-private fun phoneScreenKey(
+// The custom amount form lives in the products screen, so it is shown there even when editing from the cart.
+internal fun phoneScreenFor(
     state: WooPosHomeState.ScreenPositionState,
-): PhoneScreenKey = when (state) {
-    WooPosHomeState.ScreenPositionState.Products -> PhoneScreenKey.Products
-    WooPosHomeState.ScreenPositionState.Cart -> PhoneScreenKey.Cart
-    is WooPosHomeState.ScreenPositionState.Checkout -> PhoneScreenKey.Checkout
+    isCustomAmountFormOpen: Boolean,
+): WooPosPhoneScreen = when (state) {
+    WooPosHomeState.ScreenPositionState.Products -> WooPosPhoneScreen.Products
+    WooPosHomeState.ScreenPositionState.Cart ->
+        if (isCustomAmountFormOpen) WooPosPhoneScreen.Products else WooPosPhoneScreen.Cart
+    is WooPosHomeState.ScreenPositionState.Checkout -> WooPosPhoneScreen.Checkout
 }
 
-private fun AnimatedContentTransitionScope<WooPosHomeState.ScreenPositionState>.screenTransitionFor(
-    from: WooPosHomeState.ScreenPositionState,
-    to: WooPosHomeState.ScreenPositionState,
+private fun AnimatedContentTransitionScope<WooPosPhoneScreen>.screenTransitionFor(
+    from: WooPosPhoneScreen,
+    to: WooPosPhoneScreen,
 ): ContentTransform {
     val spec = tween<IntOffset>(durationMillis = 300)
 
     return when {
-        from == WooPosHomeState.ScreenPositionState.Products &&
-            to == WooPosHomeState.ScreenPositionState.Cart ->
+        from == WooPosPhoneScreen.Products && to == WooPosPhoneScreen.Cart ->
             slideInVertically(spec) { it } togetherWith ExitTransition.KeepUntilTransitionsFinished
 
         // targetContentZIndex must be on the ContentTransform, not the scope, in Compose 1.9.x.
-        from == WooPosHomeState.ScreenPositionState.Cart &&
-            to == WooPosHomeState.ScreenPositionState.Products ->
+        from == WooPosPhoneScreen.Cart && to == WooPosPhoneScreen.Products ->
             (EnterTransition.None togetherWith slideOutVertically(spec) { it })
                 .apply { targetContentZIndex = -1f }
 
-        from == WooPosHomeState.ScreenPositionState.Cart &&
-            to is WooPosHomeState.ScreenPositionState.Checkout ->
+        from == WooPosPhoneScreen.Cart && to == WooPosPhoneScreen.Checkout ->
             slideInHorizontally(spec) { it } togetherWith slideOutHorizontally(spec) { -it }
 
-        from is WooPosHomeState.ScreenPositionState.Checkout &&
-            to == WooPosHomeState.ScreenPositionState.Cart ->
+        from == WooPosPhoneScreen.Checkout && to == WooPosPhoneScreen.Cart ->
             slideInHorizontally(spec) { -it } togetherWith slideOutHorizontally(spec) { it }
 
         else -> fadeIn() togetherWith fadeOut()

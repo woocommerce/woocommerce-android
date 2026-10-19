@@ -439,7 +439,8 @@ flow_uses_wpcom_credentials() {
         continue
         ;;
     esac
-    if grep -Eq "$wpcom_ref_pattern|subflows/(ensure_logged_in|login)\\.yaml" "$flow"; then
+    # The runner logs in itself before a flow that changes the app language or upgrades the app.
+    if grep -Eq "$wpcom_ref_pattern|subflows/(ensure_logged_in|login)\\.yaml" "$flow" || flow_has_any_tag "$flow" app_locale_de app_upgrade; then
       return 0
     fi
   done
@@ -883,6 +884,57 @@ collapse_system_ui() {
   adb -s "$DEVICE_SERIAL" shell cmd statusbar collapse >/dev/null 2>&1 || true
 }
 
+# Maestro cannot change the app's language, so the runner logs in first, in English,
+# and then sets it for flows tagged app_locale_de.
+APP_LOCALE_SET=""
+set_app_locale() {
+  log_in_before_flow "$2" || true
+  # A failure here fails only this flow, not the whole run.
+  if adb -s "$DEVICE_SERIAL" shell cmd locale set-app-locales "$APP_ID" --locales "$1" >/dev/null 2>&1; then
+    APP_LOCALE_SET="$DEVICE_SERIAL"
+  else
+    echo "  could not set the app language to $1"
+  fi
+}
+
+log_in_before_flow() {
+  local log_file="$LOGS_DIR/${1}_login_before_flow.log" status=0
+  "${MAESTRO_PROCESS_ENV_ARGS[@]}" maestro test "${MAESTRO_DEVICE_ARGS[@]}" "${MAESTRO_ENV_ARGS[@]}" \
+    "$REPO_ROOT/.maestro/subflows/ensure_logged_in.yaml" >"$log_file" 2>&1 || status=$?
+  if [[ "$status" -ne 0 ]]; then
+    echo "  logging in before the flow failed, see logs/$(basename "$log_file")"
+  fi
+  scrub_log "$log_file"
+  return "$status"
+}
+
+# Maestro cannot install apps, so for a flow tagged app_upgrade the runner installs the
+# latest release, logs in, and installs the --apk build over it. The flow reads
+# APP_UPGRADED to know the upgrade happened.
+APP_UPGRADED="no"
+upgrade_app() {
+  if [[ -z "$APK_PATH" ]]; then
+    echo "  no --apk was given, so there is no new build to upgrade to"
+    return 0
+  fi
+  if python3 "$ENSURE_RELEASE_APP_SCRIPT" --device "$DEVICE_SERIAL" --latest-release \
+    && log_in_before_flow "$1" \
+    && python3 "$ENSURE_RELEASE_APP_SCRIPT" --device "$DEVICE_SERIAL" --upgrade-to "$APK_PATH"; then
+    APP_UPGRADED="yes"
+    return 0
+  fi
+  # The device may now have the release or no app, so put the --apk build back for the next flows.
+  echo "  the upgrade could not be set up, so the --apk build is installed again"
+  python3 "$ENSURE_RELEASE_APP_SCRIPT" --device "$DEVICE_SERIAL" --apk "$APK_PATH" || exit 1
+}
+
+reset_app_locale() {
+  if [[ -n "$APP_LOCALE_SET" ]]; then
+    adb -s "$APP_LOCALE_SET" shell cmd locale set-app-locales "$APP_ID" --locales "" >/dev/null 2>&1 || true
+    APP_LOCALE_SET=""
+  fi
+}
+
 cleanup_on_exit() {
   local exit_code=$? serial
   # Attempts record from a command substitution, so the recorder's PID never
@@ -896,6 +948,7 @@ cleanup_on_exit() {
       exit_code=1
     fi
   fi
+  reset_app_locale
   restore_device_settings
   for serial in ${STARTED_SERIALS[@]+"${STARTED_SERIALS[@]}"}; do
     adb -s "$serial" emu kill >/dev/null 2>&1 || true
@@ -1195,7 +1248,7 @@ run_one_attempt() {
   started=$(date +%s)
   set +e
   mkdir -p "$attempt_debug_dir"
-  "${MAESTRO_PROCESS_ENV_ARGS[@]}" maestro test "${MAESTRO_DEVICE_ARGS[@]}" "${MAESTRO_ENV_ARGS[@]}" \
+  "${MAESTRO_PROCESS_ENV_ARGS[@]}" maestro test "${MAESTRO_DEVICE_ARGS[@]}" "${MAESTRO_ENV_ARGS[@]}" -e "APP_UPGRADED=$APP_UPGRADED" \
     --debug-output "$attempt_debug_dir" --flatten-debug-output "$flow" >"$log_file" 2>&1
   exit_code=$?
   set -e
@@ -1297,6 +1350,14 @@ for repeat_index in $(seq 1 "$REPEAT"); do
     run_index=$((run_index + 1))
     base="$(basename "$flow" .yaml)"
     echo "[$run_index/$TOTAL_RUNS] $base (repeat $repeat_index/$REPEAT)"
+    reset_app_locale
+    if flow_has_any_tag "$flow" app_locale_de; then
+      set_app_locale de-DE "$base"
+    fi
+    APP_UPGRADED="no"
+    if flow_has_any_tag "$flow" app_upgrade; then
+      upgrade_app "$base"
+    fi
 
     first="$(run_one_attempt "$flow" "$base" 1 "$repeat_index")"
     IFS='|' read -r first_exit first_duration first_media first_log first_error first_recovery <<< "$first"

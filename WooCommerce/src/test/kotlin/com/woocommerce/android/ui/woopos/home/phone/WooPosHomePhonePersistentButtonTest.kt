@@ -110,4 +110,59 @@ class WooPosHomePhonePersistentButtonTest {
         // THEN
         assertThat(result).isEqualTo(WooPosPhonePersistentButtonState.Hidden)
     }
+
+    @Test
+    fun `given Products screen with cart items and custom amount form open, when resolving state, then Hidden`() {
+        // GIVEN
+        val cartState = WooPosCartState(
+            body = WooPosCartState.Body.WithItems(
+                itemsInCart = listOf(
+                    WooPosCartItemViewState.Product.Simple(
+                        itemNumber = 0,
+                        id = 0L,
+                        name = "n",
+                        price = "",
+                        description = null,
+                        imageUrl = null,
+                    )
+                )
+            )
+        )
+        val resolver = WooPosPhonePersistentButtonStateResolver(
+            buildCartLabel = { "Cart ($it)" },
+            checkoutLabel = "Check out",
+        )
+
+        // WHEN
+        val result = resolver.resolve(
+            screenPositionState = WooPosHomeState.ScreenPositionState.Products,
+            cartState = cartState,
+            isCustomAmountFormOpen = true,
+        )
+
+        // THEN
+        assertThat(result).isEqualTo(WooPosPhonePersistentButtonState.Hidden)
+    }
+
+    @Test
+    fun `given Cart screen with Enabled checkout and custom amount form open, when resolving state, then Hidden`() {
+        // GIVEN
+        val cartState = WooPosCartState(
+            checkoutButtonState = WooPosCartState.CheckoutButtonState.Enabled
+        )
+        val resolver = WooPosPhonePersistentButtonStateResolver(
+            buildCartLabel = { "Cart ($it)" },
+            checkoutLabel = "Check out",
+        )
+
+        // WHEN
+        val result = resolver.resolve(
+            screenPositionState = WooPosHomeState.ScreenPositionState.Cart,
+            cartState = cartState,
+            isCustomAmountFormOpen = true,
+        )
+
+        // THEN
+        assertThat(result).isEqualTo(WooPosPhonePersistentButtonState.Hidden)
+    }
 }

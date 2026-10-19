@@ -702,11 +702,16 @@ class ProductDetailViewModel @Inject constructor(
         launch {
             attributeListViewState = attributeListViewState.copy(isFetchingVariations = true)
 
-            val variationCandidates = viewState.productDraft?.let {
+            val result = viewState.productDraft?.let {
                 generateVariationCandidates.invoke(it)
-            }.orEmpty()
+            } ?: Result.success(emptyList())
 
             attributeListViewState = attributeListViewState.copy(isFetchingVariations = false)
+
+            val variationCandidates = result.getOrElse {
+                triggerEvent(ShowGenerateVariationsError.NetworkError)
+                return@launch
+            }
 
             when {
                 variationCandidates.isEmpty() -> {
@@ -1723,12 +1728,19 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onAttributeUsedForVariationsToggled(attributeId: Long, attributeName: String, isVariation: Boolean) {
         val hasVariations = (viewState.productDraft?.numVariations ?: 0) > 0
-        if (!isVariation && hasVariations) {
+        if (!isVariation && hasVariations && isSavedAsUsedForVariations(attributeId, attributeName)) {
             triggerEvent(ShowStopUsingForVariationsConfirmation)
         } else {
             updateDraftAttribute(attributeId, attributeName) { it.copy(isVariation = isVariation) }
         }
     }
+
+    /**
+     * True when the product on the site has this attribute and uses it for variations
+     */
+    private fun isSavedAsUsedForVariations(attributeId: Long, attributeName: String) =
+        storedProductAggregate.value?.product?.attributes
+            ?.any { it.id == attributeId && it.name == attributeName && it.isVariation } == true
 
     fun onStopUsingForVariationsConfirmed(attributeId: Long, attributeName: String) {
         updateDraftAttribute(attributeId, attributeName) { it.copy(isVariation = false) }

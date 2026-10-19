@@ -929,10 +929,6 @@ class LoginActivity :
         // TODO: Signup
     }
 
-    override fun showSignupToLoginMessage() {
-        // TODO: Signup
-    }
-
     override fun onTermsOfServiceClicked() {
         ChromeCustomTabUtils.launchUrl(this, urlUtils.tosUrlWithLocale, ThreeQuarters)
     }
@@ -947,10 +943,6 @@ class LoginActivity :
 
     override fun onGoogleLoginFinished() {
         (supportFragmentManager.findFragmentByTag(LoginEmailFragment.TAG) as? LoginEmailFragment)?.finishLogin()
-    }
-
-    override fun onGoogleSignupFinished(name: String?, email: String?, photoUrl: String?, username: String?) {
-        // TODO: Signup
     }
 
     override fun onGoogleSignupError(msg: String?) {
