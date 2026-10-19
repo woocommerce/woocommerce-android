@@ -25,6 +25,7 @@ import com.woocommerce.android.cardreader.internal.payments.actions.ProcessRefun
 import com.woocommerce.android.cardreader.internal.wrappers.PaymentIntentParametersFactory
 import com.woocommerce.android.cardreader.internal.wrappers.PaymentMethodTypeMapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import com.woocommerce.android.cardreader.internal.wrappers.UsbManagerWrapper
 
 object CardReaderManagerFactory {
     @Suppress("LongMethod")
@@ -80,7 +81,7 @@ object CardReaderManagerFactory {
                 terminal,
                 bluetoothReaderListener,
                 tapToPayReaderListener,
-                DiscoverReadersAction(terminal, logWrapper),
+                DiscoverReadersAction(terminal, UsbManagerWrapper(application), logWrapper),
                 terminalListener,
                 application,
                 logWrapper,

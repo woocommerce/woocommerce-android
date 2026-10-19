@@ -178,8 +178,10 @@ class IssueRefundFragment :
                     productsBinding.issueRefundDividerBelowList.hide()
                 }
             }
-            new.refundNotice.takeIfNotEqualTo(old?.refundNotice) { notice ->
-                notice?.let { updateRefundNoticeView(it) }
+            (new.refundCapNotice to new.refundNotice).takeIfNotEqualTo(
+                old?.let { it.refundCapNotice to it.refundNotice }
+            ) { (capNotice, notice) ->
+                updateRefundNoticeView(capNotice, notice)
             }
         }
 
@@ -279,9 +281,13 @@ class IssueRefundFragment :
         }
     }
 
-    private fun updateRefundNoticeView(refundNoticeText: String) {
+    private fun updateRefundNoticeView(capNoticeText: String?, refundNoticeText: String?) {
+        if (refundNoticeText == null) {
+            productsBinding.issueRefundRefundNotice.text = capNoticeText.orEmpty()
+            return
+        }
         val linkText = getString(R.string.order_refunds_store_admin_link_text)
-        val noticeText = "$refundNoticeText $linkText"
+        val noticeText = listOfNotNull(capNoticeText, "$refundNoticeText $linkText").joinToString("\n\n")
         val spannable = SpannableString(noticeText)
         val span = WooClickableSpan { viewModel.onOpenStoreAdminLinkClicked() }
         span.useCustomStyle = false

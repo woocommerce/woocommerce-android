@@ -272,6 +272,7 @@ store's plugin list yet.
 | `Variations timestamp` | The same cursor for variations. Written alongside the products one, so they normally agree. | ISO-8601 UTC instant; `never` |
 | `Catalog file blocked` | The catalog file came back with a permissions error, so file-based sync cannot run. | `true`, `false` |
 | `Full sync on cellular allowed` | The merchant's setting for whether the background full sync may run off Wi-Fi. | `true`, `false` |
+| `Payment success sound enabled` | The merchant's setting for whether POS plays the cha-ching sound after a successful payment. Applies to every store on this device. | `true`, `false` |
 
 `Catalog strategy` comes from `WooPosIsLocalCatalogSupported.asOfLastEvaluation`, which applies the same rule as
 the live check — the `woo_pos_local_catalog_m1` flag, the `POS local catalog` beta toggle, a Woo core version of
@@ -286,6 +287,9 @@ These timestamps cover the POS local catalog only — not general order or produ
 The nightly background full sync stops running once POS has gone unopened for 30 days, and it only runs on an
 unmetered connection when cellular is not allowed, so a rarely-used or rarely-Wi-Fi device falls behind by
 design. Neither value is a fault on its own.
+
+`Payment success sound enabled: false` explains a merchant reporting that POS no longer plays a sound after a
+payment — it was turned off in POS Settings → Payments.
 
 When either flag is `false`, the report does not say why — the use cases that decide visibility and launchability
 write these preferences as a side effect of evaluating, and a status report must not change what it reports.

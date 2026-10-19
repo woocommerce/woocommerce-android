@@ -286,16 +286,15 @@ object JetpackTunnelGsonRequest {
 
     /**
      * The tunnel wraps a store response that isn't JSON in `data.raw_body`, with the store's status in `data.status`.
-     * The store's content type isn't forwarded.
+     * The store's content type isn't forwarded. Without `data.status`, the store's status is unknown: the tunnel's own
+     * status isn't the store's.
      */
     private fun WPComGsonNetworkError.toUnexpectedStoreResponse(
         method: String,
         wpApiEndpoint: String
     ): UnexpectedStoreResponse? {
         val rawBody = errorData?.optString(RAW_BODY_KEY)?.takeIf { it.isNotBlank() } ?: return null
-        val statusCode = errorData?.optInt(STATUS_KEY)?.takeIf { it > 0 }
-            ?: volleyError?.networkResponse?.statusCode
-            ?: return null
+        val statusCode = errorData?.optInt(STATUS_KEY)?.takeIf { it > 0 } ?: return null
         return UnexpectedStoreResponse.from(
             statusCode = statusCode,
             contentType = null,

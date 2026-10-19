@@ -20,12 +20,13 @@ class GenerateVariationCandidates @Inject constructor(
             get() = listOf(emptyList<VariationCandidate>())
     }
 
-    suspend operator fun invoke(product: Product): List<VariationCandidate> {
+    suspend operator fun invoke(product: Product): Result<List<VariationCandidate>> {
         if (!ProductType.fromString(product.type).isVariableProduct()) {
-            return emptyList()
+            return Result.success(emptyList())
         }
 
         val existingVariations = variationRepository.getAllVariations(product.remoteId)
+            .getOrElse { return Result.failure(it) }
 
         val termAssignmentsGroupedByAttribute: List<List<VariantOption>> = product.attributes
             .filter(ProductAttribute::isVariation)
@@ -46,11 +47,13 @@ class GenerateVariationCandidates @Inject constructor(
             termAssignmentsGroupedByAttribute
         ).minus(existingVariationsAsCandidates.toSet())
 
-        return if (variationCandidates == initialAccumulator) {
-            emptyList()
-        } else {
-            variationCandidates
-        }
+        return Result.success(
+            if (variationCandidates == initialAccumulator) {
+                emptyList()
+            } else {
+                variationCandidates
+            }
+        )
     }
 
     private fun cartesianProductForTermAssignments(

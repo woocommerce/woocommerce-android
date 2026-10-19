@@ -294,7 +294,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         assertThat(result.editableAddress.phone.error).isNull()
     }
 
-    private suspend fun initViewModelWithPhone(
+    protected suspend fun initViewModelWithPhone(
         phone: String,
         countryCode: String,
         hasStates: Boolean = countryCode == "US"
@@ -314,7 +314,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given US country, when phone is too short, then phone error is not null`() = testBlocking {
-        whenever(addressValidator.validateUSCustomsPhone("12345")).doReturn("error")
+        whenever(addressValidator.validatePhone(eq("12345"), eq("US"), any())).doReturn("error")
         initViewModelWithPhone(phone = "12345", countryCode = "US")
 
         advanceUntilIdle()
@@ -324,7 +324,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given US country, when phone has 10 digits, then phone error is null`() = testBlocking {
-        whenever(addressValidator.validateUSCustomsPhone("1234567890")).doReturn(null)
+        whenever(addressValidator.validatePhone(eq("1234567890"), eq("US"), any())).doReturn(null)
         initViewModelWithPhone(phone = "1234567890", countryCode = "US")
 
         advanceUntilIdle()
@@ -334,7 +334,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given non-US country, when phone has digits, then phone error is null`() = testBlocking {
-        whenever(addressValidator.validatePhoneNumber("12345")).doReturn(null)
+        whenever(addressValidator.validatePhone(eq("12345"), eq("AR"), any())).doReturn(null)
         initViewModelWithPhone(phone = "12345", countryCode = "AR")
 
         advanceUntilIdle()
@@ -344,8 +344,8 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given US phone error, when country changes to non-US, then phone error is cleared`() = testBlocking {
-        whenever(addressValidator.validateUSCustomsPhone("12345")).doReturn("error")
-        whenever(addressValidator.validatePhoneNumber("12345")).doReturn(null)
+        whenever(addressValidator.validatePhone(eq("12345"), eq("US"), any())).doReturn("error")
+        whenever(addressValidator.validatePhone(eq("12345"), eq("AR"), any())).doReturn(null)
         initViewModelWithPhone(phone = "12345", countryCode = "US")
 
         advanceUntilIdle()
@@ -360,8 +360,8 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given non-US valid phone, when country changes to US, then phone error is set`() = testBlocking {
-        whenever(addressValidator.validatePhoneNumber("12345")).doReturn(null)
-        whenever(addressValidator.validateUSCustomsPhone("12345")).doReturn("error")
+        whenever(addressValidator.validatePhone(eq("12345"), eq("AR"), any())).doReturn(null)
+        whenever(addressValidator.validatePhone(eq("12345"), eq("US"), any())).doReturn("error")
         initViewModelWithPhone(phone = "12345", countryCode = "AR")
 
         advanceUntilIdle()
@@ -797,7 +797,6 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
             whenever(addressValidator.validateAtLeastOneOf(any(), any())).doReturn(null)
             whenever(addressValidator.validateEmail("valid@test.com")).doReturn(null)
             whenever(addressValidator.validateEmail("")).doReturn("Required")
-            whenever(addressValidator.validateUSCustomsPhone(any())).doReturn(null)
             mockCountries(Result.success(countries))
             whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
             Snapshot.withMutableSnapshot {
@@ -836,7 +835,6 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
             whenever(addressValidator.validateAtLeastOneOf(any(), any())).doReturn(null)
             whenever(addressValidator.validateEmail("")).doReturn("Required")
             whenever(addressValidator.validateEmail("valid@test.com")).doReturn(null)
-            whenever(addressValidator.validateUSCustomsPhone(any())).doReturn(null)
             mockCountries(Result.success(countries))
             whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
             Snapshot.withMutableSnapshot {

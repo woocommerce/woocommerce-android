@@ -76,24 +76,19 @@ class DuplicateProduct @Inject constructor(
         product: Product,
         duplicatedProductRemoteId: Long
     ): Result<Long> {
-        var isLoadingMore = false
-        val duplicatedVariations = buildList {
-            do {
-                val variations = variationRepository.fetchProductVariations(product.remoteId, isLoadingMore)
-                    .getOrElse { return Result.failure(it) }
-                    .map { it.copy(remoteProductId = duplicatedProductRemoteId, sku = "") }
-                addAll(variations)
-                isLoadingMore = true
-            } while (variationRepository.canLoadMoreProductVariations)
-        }.also {
-            if (it.size > 100) {
-                // The API doesn't allow to create more than 100 variations at once
-                WooLog.w(
-                    WooLog.T.PRODUCTS,
-                    "Variations list is too big: ${it.size}, the duplicate will have only the first 100 variations"
-                )
+        val duplicatedVariations = variationRepository.getAllVariations(product.remoteId)
+            .getOrElse { return Result.failure(it) }
+            .map { it.copy(remoteProductId = duplicatedProductRemoteId, sku = "") }
+            .also {
+                if (it.size > 100) {
+                    // The API doesn't allow to create more than 100 variations at once
+                    WooLog.w(
+                        WooLog.T.PRODUCTS,
+                        "Variations list is too big: ${it.size}, the duplicate will have only the first 100 variations"
+                    )
+                }
             }
-        }.take(100)
+            .take(100)
 
         val variationsDuplicationResult = variationRepository.createVariations(
             duplicatedProductRemoteId,

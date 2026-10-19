@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-24 09:58:25+0000
+Translation-Revision-Date: 2026-10-06 09:57:15+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_orders_details_breakdown_custom_amounts_label">カスタム金額</string>
+    <string name="woopos_payment_custom_amounts_label">カスタム金額</string>
+    <string name="woopos_cart_item_discount_applied">割引を適用済み</string>
+    <string name="more_menu_payments_new_feature_state_description">新しい支払い機能を利用できます</string>
+    <string name="more_menu_switch_store">ストアを切り替える</string>
+    <string name="logviewer_next_match">次の一致</string>
+    <string name="logviewer_previous_match">前の一致</string>
+    <string name="variation_list_fetch_error">バリエーションを取得する際にエラーが発生しました</string>
+    <string name="product_list_deselect_product">%s の選択を解除</string>
+    <string name="product_list_select_product">%s を選択</string>
+    <string name="no_filters_applied_state_description">フィルターは適用されていません</string>
+    <string name="product_rating_content_description">5段階中%1$.1f</string>
+    <string name="card_reader_mode_intro_not_now">後で</string>
+    <string name="card_reader_mode_intro_start">開始</string>
+    <string name="card_reader_mode_intro_requirement_nfc">このスマートフォンで NFC をオン</string>
+    <string name="card_reader_mode_intro_requirement_wifi">両方の端末を同じ Wi-Fi に接続</string>
+    <string name="card_reader_mode_intro_requirement_pos">同じストアにログインしている Android タブレットで Woo POS を開く</string>
+    <string name="card_reader_mode_intro_requirements_heading">始める前に</string>
+    <string name="card_reader_mode_intro_subtitle">このスマートフォンは、タブレットの Woo POS でカードリーダーとして表示されます。 購入手続き時にタブレットがこちらに金額を送信し、顧客がこのスマートフォンにカードをタップします。</string>
+    <string name="card_reader_mode_intro_header">このスマートフォンをカードリーダーとして使用</string>
+    <string name="orderlist_deselect_order">注文 %1$s の選択を解除</string>
+    <string name="orderlist_select_order">注文 %1$s を選択 </string>
+    <string name="dashboard_customize_new_sections_state_description">新しいダッシュボードセクションが利用可能です</string>
     <string name="woopos_eligibility_reason_unsupported_country_generic">POS システムはストアの所在地の国では利用できません。 ストアの住所設定を確認するか、サポートにお問い合わせください。</string>
     <string name="woopos_eligibility_reason_unsupported_country">POS システムは%1$sでは利用できません。 ストアの住所設定を確認するか、サポートにお問い合わせください。</string>
     <string name="woo_push_notifications_introduction_error_offline_mode_body">ストアがオフラインモードになっているため、プッシュ通知を設定できません。 ヘルプが必要な場合は、サポートにお問い合わせください。</string>
@@ -2596,7 +2619,6 @@ Language: ja_JP
     <string name="product_search_all">すべての商品</string>
     <string name="card_reader_upsell_card_reader_banner_cta">カードリーダーを購入</string>
     <string name="card_reader_upsell_card_reader_banner_title">簡単に支払いを受け取る</string>
-    <string name="card_reader_upsell_card_reader_banner_new">新規</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">非表示</string>
     <string name="orderdetail_custom_fields">カスタムフィールド</string>
     <string name="order_sync_failed">変更内容を保存できません</string>
@@ -4201,6 +4223,15 @@ Language: ja_JP
         <item>カスタムパッケージ</item>
         <item>サービスパッケージ</item>
     </string-array>
+    <plurals name="dashboard_review_rating_content_description">
+        <item quantity="other">%1$dつ星評価</item>
+    </plurals>
+    <plurals name="filters_applied_state_description">
+        <item quantity="other">%d件のフィルターを適用しました</item>
+    </plurals>
+    <plurals name="more_menu_unseen_reviews_state_description">
+        <item quantity="other">%d件の未読のレビュー</item>
+    </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">商品小計 (%d点の商品)</item>
     </plurals>

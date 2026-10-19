@@ -27,6 +27,7 @@ class WooPosPreferencesRepository @Inject constructor(
     private val wasOpenedOnceKey = booleanPreferencesKey(POS_WAS_OPENED_ONCE_KEY)
     private val lastUsedTimestampKey = longPreferencesKey(POS_LAST_USED_TIMESTAMP_KEY)
     private val allowCellularDataUpdateKey = booleanPreferencesKey(ALLOW_FULL_SYNC_ON_CELLULAR_DATA_KEY)
+    private val isPaymentSuccessSoundEnabledKey = booleanPreferencesKey(PAYMENT_SUCCESS_SOUND_ENABLED_KEY)
 
     val recentProductSearches: Flow<List<String>> = dataStore.data
         .map { preferences ->
@@ -48,6 +49,11 @@ class WooPosPreferencesRepository @Inject constructor(
     val allowCellularDataUpdate: Flow<Boolean> = dataStore.data
         .map { preferences ->
             preferences[allowCellularDataUpdateKey] ?: true
+        }
+
+    val isPaymentSuccessSoundEnabled: Flow<Boolean> = dataStore.data
+        .map { preferences ->
+            preferences[isPaymentSuccessSoundEnabledKey] ?: true
         }
 
     suspend fun addRecentProductSearch(search: String) {
@@ -102,6 +108,12 @@ class WooPosPreferencesRepository @Inject constructor(
         }
     }
 
+    suspend fun setPaymentSuccessSoundEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[isPaymentSuccessSoundEnabledKey] = enabled
+        }
+    }
+
     suspend fun getFileBasedSyncPollAttempts(siteId: LocalOrRemoteId.LocalId): Int {
         val key = buildFileBasedSyncPollAttemptsKey(siteId)
         return dataStore.data.map { it[key] ?: 0 }.first()
@@ -136,6 +148,7 @@ class WooPosPreferencesRepository @Inject constructor(
         const val POS_WAS_OPENED_ONCE_KEY = "pos_was_opened_once_key"
         const val POS_LAST_USED_TIMESTAMP_KEY = "pos_last_used_timestamp_key"
         const val ALLOW_FULL_SYNC_ON_CELLULAR_DATA_KEY = "allow_full_sync_on_cellular_data_key"
+        const val PAYMENT_SUCCESS_SOUND_ENABLED_KEY = "payment_success_sound_enabled_key"
 
         const val MAX_RECENT_SEARCHES_COUNT = 10
     }

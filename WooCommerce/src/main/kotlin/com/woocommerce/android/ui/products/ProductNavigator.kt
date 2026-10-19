@@ -323,10 +323,13 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ProductNavigationTarget.AddProductAttribute -> {
-                when (target.isVariationCreation) {
+                // the variation wizard and the "Add more details" bottom sheet both start on the product detail
+                when (target.isVariationCreation || fragment is ProductDetailFragment) {
                     true ->
                         ProductDetailFragmentDirections
-                            .actionProductDetailFragmentToAddAttributeFragment(isVariationCreation = true)
+                            .actionProductDetailFragmentToAddAttributeFragment(
+                                isVariationCreation = target.isVariationCreation
+                            )
                             .run { fragment.findNavController().navigateSafely(this) }
 
                     else ->

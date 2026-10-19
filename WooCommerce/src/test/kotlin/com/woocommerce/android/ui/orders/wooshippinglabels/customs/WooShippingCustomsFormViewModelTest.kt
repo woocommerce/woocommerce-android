@@ -4,13 +4,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.GetAllCountries
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.FinishCustomsForm
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.InputValue
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowContentTypeDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowCountrySelector
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowRestrictionTypeDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ViewState
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.WooShippingCustomsValidator
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.runAndCaptureValues
@@ -47,7 +47,22 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
         on { validateProductValue(any()) } doReturn WooShippingCustomsValidator.FieldValidationResult.Valid
         on { validateProductWeight(any()) } doReturn WooShippingCustomsValidator.FieldValidationResult.Valid
         on { validateHSTariffNumber(any(), any()) } doReturn WooShippingCustomsValidator.FieldValidationResult.Valid
+        on { validateEuProductIdentifier(any()) } doReturn WooShippingCustomsValidator.FieldValidationResult.Valid
+        on { validateGtin(any(), any()) } doReturn WooShippingCustomsValidator.FieldValidationResult.Valid
     }
+
+    private val defaultCustomsData = CustomsData(
+        contentType = ContentType.MERCHANDISE,
+        contentDescription = "",
+        restrictionType = RestrictionType.NONE,
+        restrictionDescription = "",
+        isReturnToSender = false,
+        itn = "",
+        items = listOf(
+            customsItem(1, "Test Product", BigDecimal.ONE),
+            customsItem(2, "Expensive Product", BigDecimal.valueOf(2600))
+        )
+    )
 
     private val currencyFormatter: CurrencyFormatter = mock()
 
@@ -435,61 +450,158 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
         assertThat(capturedViewState.itnValue).isInstanceOf(InputValue.Error::class.java)
     }
 
-    @Suppress("LongMethod")
-    private fun createSut() {
-        // Create a test product with high value for ITN tests
-        val testProduct = ShippableItemModel(
-            itemId = 1,
-            productId = 1,
-            title = "Test Product",
-            price = BigDecimal.ONE,
-            quantity = 1f,
-            currency = "USD",
-            length = 1f,
-            width = 1f,
-            height = 1f,
-            weight = 1f
-        )
+    @Test
+    fun `given required identifiers and Documents, when loaded, then identifiers are hidden and add is enabled`() =
+        testBlocking {
+            stubBlankEuProductIdentifierAsInvalid()
+            whenever(customsValidator.validateGtin("", false)).thenReturn(
+                WooShippingCustomsValidator.FieldValidationResult.Invalid(
+                    R.string.woo_shipping_labels_customs_product_details_gtin_required
+                )
+            )
+            createSut(
+                defaultCustomsData.copy(
+                    contentType = ContentType.DOCUMENTS,
+                    euProductIdentifiersRequirement = EuProductIdentifiersRequirement.REQUIRED
+                )
+            )
+            val state = viewModel.viewState.runAndCaptureValues { advanceUntilIdle() }.last()
 
-        // Create expensive product for ITN required tests
-        val expensiveProduct = ShippableItemModel(
-            itemId = 2,
-            productId = 2,
-            title = "Expensive Product",
-            price = BigDecimal.valueOf(2600),
-            quantity = 1f,
-            currency = "USD",
-            length = 1f,
-            width = 1f,
-            height = 1f,
-            weight = 1f
-        )
+            assertThat(state.isAddCustomsButtonEnabled).isTrue
+        }
 
-        val defaultCustomsData = CustomsData(
-            contentType = ContentType.MERCHANDISE,
-            contentDescription = "",
-            restrictionType = RestrictionType.NONE,
-            restrictionDescription = "",
-            isReturnToSender = false,
-            itn = "",
-            items = listOf(testProduct, expensiveProduct).map {
-                CustomsItem(
-                    productID = it.productId,
-                    description = it.title,
-                    quantity = it.quantity,
-                    value = it.price,
-                    weight = it.weight,
-                    hsTariffNumber = "",
-                    originCountry = "",
-                    originCountryCode = ""
+    @Test
+    fun `given required identifiers, when merchandise identifiers are invalid, then add is disabled`() = testBlocking {
+        stubBlankEuProductIdentifierAsInvalid()
+        createSut(defaultCustomsData.copy(euProductIdentifiersRequirement = EuProductIdentifiersRequirement.REQUIRED))
+        val state = viewModel.viewState.runAndCaptureValues { advanceUntilIdle() }.last()
+
+        assertThat(state.shouldDisplayEuProductIdentifiers).isTrue
+        assertThat(state.shouldDisplayPluginUpdateNotice).isFalse
+        assertThat(state.isAddCustomsButtonEnabled).isFalse
+
+        val validState = viewModel.viewState.runAndCaptureValues {
+            defaultCustomsData.items.indices.forEach { index ->
+                viewModel.onShippableProductEuProductIdentifiersChanged(
+                    index,
+                    EuProductIdentifiers("SKU", "MPN", "GTIN")
                 )
             }
-        )
+        }.last()
 
+        assertThat(validState.isAddCustomsButtonEnabled).isTrue
+    }
+
+    @Test
+    fun `given outdated plugin and merchandise, when loaded, then show notice and hide identifiers`() = testBlocking {
+        createSut(
+            defaultCustomsData.copy(euProductIdentifiersRequirement = EuProductIdentifiersRequirement.PLUGIN_OUTDATED)
+        )
+        val state = viewModel.viewState.runAndCaptureValues { advanceUntilIdle() }.last()
+
+        assertThat(state.shouldDisplayPluginUpdateNotice).isTrue
+        assertThat(state.shouldDisplayEuProductIdentifiers).isFalse
+    }
+
+    @Test
+    fun `given outdated plugin and Documents, when loaded, then hide notice and identifiers`() = testBlocking {
+        createSut(
+            defaultCustomsData.copy(
+                contentType = ContentType.DOCUMENTS,
+                euProductIdentifiersRequirement = EuProductIdentifiersRequirement.PLUGIN_OUTDATED
+            )
+        )
+        val state = viewModel.viewState.runAndCaptureValues { advanceUntilIdle() }.last()
+
+        assertThat(state.shouldDisplayPluginUpdateNotice).isFalse
+        assertThat(state.shouldDisplayEuProductIdentifiers).isFalse
+    }
+
+    @Test
+    fun `given invalid identifiers, when changed, then show validation errors`() = testBlocking {
+        stubBlankEuProductIdentifierAsInvalid()
+
+        val state = viewModel.viewState.runAndCaptureValues {
+            viewModel.onShippableProductEuProductIdentifiersChanged(0, EuProductIdentifiers())
+        }.last()
+
+        assertThat(state.shippingProducts[0].sku).isInstanceOf(InputValue.Error::class.java)
+        assertThat(state.shippingProducts[0].manufacturerPartNumber).isInstanceOf(InputValue.Error::class.java)
+    }
+
+    @Test
+    fun `given a GTIN, when No barcode is selected, then clear GTIN and validate the empty value`() = testBlocking {
+        whenever(customsValidator.validateGtin("", false)).thenReturn(
+            WooShippingCustomsValidator.FieldValidationResult.Invalid(
+                R.string.woo_shipping_labels_customs_product_details_gtin_required
+            )
+        )
+        val state = viewModel.viewState.runAndCaptureValues {
+            viewModel.onShippableProductEuProductIdentifiersChanged(
+                0,
+                EuProductIdentifiers(gtin = "123", hasNoBarcode = true)
+            )
+        }.last()
+
+        assertThat(state.shippingProducts[0].hasNoBarcode).isTrue
+        assertThat(state.shippingProducts[0].gtin).isEqualTo(InputValue.Data(""))
+
+        val stateAfterUnselecting = viewModel.viewState.runAndCaptureValues {
+            viewModel.onShippableProductEuProductIdentifiersChanged(
+                0,
+                EuProductIdentifiers(hasNoBarcode = false)
+            )
+        }.last()
+
+        assertThat(stateAfterUnselecting.shippingProducts[0].gtin)
+            .isEqualTo(InputValue.Error("", R.string.woo_shipping_labels_customs_product_details_gtin_required))
+    }
+
+    @Test
+    fun `when customs data is submitted, then include requirement and EU product identifiers`() = testBlocking {
+        val identifiers = EuProductIdentifiers("coffee-250", "MPN-123", "0123456789012")
+        val customsData = defaultCustomsData.copy(
+            euProductIdentifiersRequirement = EuProductIdentifiersRequirement.REQUIRED,
+            items = defaultCustomsData.items.mapIndexed { index, item ->
+                if (index == 0) item.copy(euProductIdentifiers = identifiers) else item
+            }
+        )
+        createSut(customsData)
+        advanceUntilIdle()
+        var event: FinishCustomsForm? = null
+        viewModel.event.observeForever { if (it is FinishCustomsForm) event = it }
+
+        viewModel.onAddCustomsDataClick()
+
+        assertThat(event?.customData?.euProductIdentifiersRequirement)
+            .isEqualTo(EuProductIdentifiersRequirement.REQUIRED)
+        assertThat(event?.customData?.items?.first()?.euProductIdentifiers).isEqualTo(identifiers)
+    }
+
+    private fun stubBlankEuProductIdentifierAsInvalid() {
+        whenever(customsValidator.validateEuProductIdentifier("")).thenReturn(
+            WooShippingCustomsValidator.FieldValidationResult.Invalid(
+                R.string.woo_shipping_labels_customs_product_details_eu_identifier_required
+            )
+        )
+    }
+
+    private fun customsItem(productId: Long, description: String, value: BigDecimal) = CustomsItem(
+        productID = productId,
+        description = description,
+        quantity = 1f,
+        value = value,
+        weight = 1f,
+        hsTariffNumber = "",
+        originCountry = "United States",
+        originCountryCode = "US"
+    )
+
+    private fun createSut(customsData: CustomsData = defaultCustomsData) {
         val savedState = WooShippingCustomsFormFragmentArgs(
             originCountryCode = "US",
             destinationCountryCode = "CA",
-            customsData = defaultCustomsData,
+            customsData = customsData,
             storeOptions = StoreOptionsModel(
                 currencySymbol = "$",
                 weightUnit = "kg",

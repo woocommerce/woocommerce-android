@@ -108,7 +108,7 @@ class VariationPickerViewModel @Inject constructor(
             title = getName(parentProduct),
             imageUrl = image?.source,
             selectedAttributes = attributes.toList(),
-            selectableAttributes = parentProduct?.attributes.orEmpty()
+            selectableAttributes = parentProduct?.variationEnabledAttributes.orEmpty()
         )
 
     data class VariationListItem(

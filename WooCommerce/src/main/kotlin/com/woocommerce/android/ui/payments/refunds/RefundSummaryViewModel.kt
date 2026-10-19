@@ -18,6 +18,7 @@ import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.PaymentGateway
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -26,12 +27,14 @@ import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRef
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.PaymentMethodType
 import com.woocommerce.android.ui.payments.toCardBrandDisplayName
+import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -64,9 +67,11 @@ class RefundSummaryViewModel @Inject constructor(
     private val refundStore: WCRefundStore,
     private val coroutineDispatchers: CoroutineDispatchers,
     private val refreshProductsSignal: RefreshProductsSignal,
+    private val parameterRepository: ParameterRepository,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val REFUND_METHOD_MANUAL = "manual"
+        private const val STORE_REFUND_ERROR_PREFIX = "woocommerce_rest_"
     }
 
     private val navArgs: RefundSummaryFragmentArgs by savedStateHandle.navArgs()
@@ -268,7 +273,7 @@ class RefundSummaryViewModel @Inject constructor(
             val result = initiateRefund(order)
             if (result.isError) {
                 trackRefundError(order, result)
-                triggerUIMessage()
+                triggerUIMessage(result)
             } else {
                 trackRefundSuccess(order, result)
                 updateRefundSummaryStateWithOrderNote(order)
@@ -299,14 +304,16 @@ class RefundSummaryViewModel @Inject constructor(
     }
 
     private suspend fun initiateRefund(order: Order): WooResult<WCRefundModel> {
+        val amount = refundSummaryState.refundAmount
+        val items = navArgs.refundItems.map { it.toDataModel() }
         return refundStore.createItemsRefund(
             site = selectedSite.get(),
             orderId = order.id,
-            amount = refundSummaryState.refundAmount,
+            amount = amount,
             reason = refundSummaryState.refundReason ?: "",
             restockItems = true,
             autoRefund = gateway.await().supportsRefunds,
-            items = navArgs.refundItems.map { it.toDataModel() }
+            items = amount?.let { items.scaledToFit(it, parameterRepository.getCurrencyDecimals()) } ?: items
         )
     }
 
@@ -322,15 +329,17 @@ class RefundSummaryViewModel @Inject constructor(
         )
     }
 
-    private fun triggerUIMessage() {
-        if (isInteracRefund()) {
-            triggerEvent(
+    private fun triggerUIMessage(result: WooResult<WCRefundModel>) {
+        val storeRejectionMessage = result.error.message
+            ?.takeIf { it.isNotBlank() && result.error.apiErrorCode?.startsWith(STORE_REFUND_ERROR_PREFIX) == true }
+        when {
+            isInteracRefund() -> triggerEvent(
                 ShowSnackbar(
                     R.string.card_reader_interac_refund_notifying_backend_about_successful_refund_failed
                 )
             )
-        } else {
-            triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
+            storeRejectionMessage != null -> triggerEvent(ShowUiStringSnackbar(UiStringText(storeRejectionMessage)))
+            else -> triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
         }
     }
 

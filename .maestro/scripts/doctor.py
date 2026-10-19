@@ -4,17 +4,19 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import shutil
 import subprocess
 import sys
+import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
 from device_locale import DeviceLocaleError, ensure_english_device_locale
 from ensure_release_app import ReleaseAppError, ensure_release_app
-from smoke_plan import PROFILES, flow_store, flow_tags, selected_flows
+from smoke_plan import POS_TAG, PROFILES, SEEDING_PROFILES, flow_store, flow_tags, needs_pos_device, selected_flows
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -97,6 +99,7 @@ def candidates_for(ref: str, store: str) -> list[str]:
             f"MAESTRO_WOO_{upper}_WPCOM_PASSWORD",
             f"MAESTRO_WOO_{upper}_PASSWORD",
         ],
+        "WOO_WPCOM_USERNAME": [f"MAESTRO_WOO_{upper}_WPCOM_USERNAME"],
         "WOO_CONSUMER_KEY": [
             f"MAESTRO_WOO_{upper}_CONSUMER_KEY",
         ],
@@ -111,11 +114,6 @@ def candidates_for(ref: str, store: str) -> list[str]:
 
 def has_value(env: dict[str, str], names: list[str]) -> bool:
     return any(bool(env.get(name, "")) for name in names)
-
-
-def url_host(value: str) -> str:
-    value = value.removeprefix("http://").removeprefix("https://")
-    return value.split("/", 1)[0].split(":", 1)[0].lower()
 
 
 def command_check(name: str) -> Check:
@@ -137,6 +135,15 @@ def adb_devices() -> list[str]:
     return devices
 
 
+def available_avds() -> list[str]:
+    emulator = Path(os.environ.get("ANDROID_HOME", Path.home() / "Library/Android/sdk")) / "emulator" / "emulator"
+    try:
+        result = subprocess.run([str(emulator), "-list-avds"], capture_output=True, text=True, check=False)
+    except OSError:
+        return []
+    return result.stdout.split()
+
+
 def toolchain_check() -> Check:
     result = subprocess.run(
         [sys.executable, str(CHECK_TOOLCHAIN)],
@@ -150,6 +157,17 @@ def toolchain_check() -> Check:
     details = [line.strip() for line in result.stderr.splitlines() if line.strip()]
     message = details[-1] if details else "Maestro toolchain check failed"
     return Check("fail", message)
+
+
+def lab_store_check(url: str) -> Check:
+    """An expired Jurassic Ninja store stops answering, and only the setup skill can replace it."""
+    try:
+        with urllib.request.urlopen(f"{url.rstrip('/')}/?rest_route=/", timeout=15) as response:
+            if "namespaces" in json.load(response):
+                return Check("ok", "the lab store responds")
+    except (OSError, ValueError):
+        pass
+    return Check("fail", "the lab store doesn't respond; run the /setup-test-stores skill")
 
 
 def selection_checks(flows: list[Path], args: argparse.Namespace) -> list[Check]:
@@ -170,10 +188,13 @@ def main() -> int:
     parser.add_argument("--include-tags")
     parser.add_argument("--exclude-tags")
     parser.add_argument("--include-quarantine", action="store_true")
-    parser.add_argument("--device", help="Expected adb serial. AVD-name matching is handled by the runner.")
+    parser.add_argument("--device", help="Adb serial, or the name of an AVD the runner starts.")
+    parser.add_argument("--pos-device", help="Tablet adb serial, or the name of an AVD the runner starts, for the POS flows.")
     parser.add_argument("--env-file", type=Path, default=DEFAULT_ENV_FILE)
     parser.add_argument("--seed", action="store_true")
     args = parser.parse_args()
+    if args.profile in SEEDING_PROFILES:
+        args.seed = True
 
     profile = PROFILES[args.profile]
     include_tags = parse_csv(args.include_tags)
@@ -183,7 +204,7 @@ def main() -> int:
     if exclude_tags is None:
         exclude_tags = list(profile.exclude)
     if args.include_quarantine:
-        exclude_tags = [tag for tag in exclude_tags if tag != "flaky_quarantine"]
+        exclude_tags = [tag for tag in exclude_tags if tag != "quarantine"]
 
     checks: list[Check] = [
         command_check("bash"),
@@ -195,8 +216,6 @@ def main() -> int:
 
     if args.env_file.exists():
         lint_command = [str(LINT_ENV), "--file", str(args.env_file)]
-        if args.seed:
-            lint_command.append("--seed")
         lint = subprocess.run(lint_command, cwd=REPO_ROOT, capture_output=True, text=True)
         checks.append(Check("ok" if lint.returncode == 0 else "fail", f"{args.env_file} lint {'passed' if lint.returncode == 0 else 'failed'}"))
     else:
@@ -222,46 +241,64 @@ def main() -> int:
                 Check("ok", f"all {len(refs)} referenced WOO_* env value(s) for the {store} store are available")
             )
 
-    no_jetpack_url = next((env[name] for name in candidates_for("WOO_NO_JETPACK_SITE_URL", "lab") if env.get(name)), "")
-    for store in stores:
-        jetpack_url = next((env[name] for name in candidates_for("WOO_JETPACK_STORE_URL", store) if env.get(name)), "")
-        if jetpack_url and no_jetpack_url and url_host(jetpack_url) == url_host(no_jetpack_url):
-            checks.append(Check("fail", f"the {store} Jetpack store URL matches the no-Jetpack site URL"))
+    lab_url = next((env[name] for name in candidates_for("WOO_JETPACK_STORE_URL", "lab") if env.get(name)), "")
+    if "lab" in stores and lab_url:
+        checks.append(lab_store_check(lab_url))
 
     if any("destructive" in flow_tags(flow) and flow_store(flow, args.store) == "shared" for flow in flows):
         checks.append(Check("fail", "destructive flows are refused on the shared store"))
 
+    if flows and args.pos_device and all(POS_TAG in flow_tags(flow) for flow in flows):
+        args.device, args.pos_device = args.pos_device, None
+
     devices = adb_devices()
-    selected_device: str | None = None
+    avds = available_avds()
+    run_devices: list[str] = []
     if args.device:
         if args.device in devices:
-            selected_device = args.device
+            run_devices.append(args.device)
             checks.append(Check("ok", f"requested adb device {args.device} is connected"))
+        elif args.device in avds:
+            checks.append(Check("ok", f"the {args.device} emulator will be started"))
         else:
             checks.append(Check("fail", f"requested adb device {args.device} is not connected"))
     elif len(devices) == 1:
-        selected_device = devices[0]
-        checks.append(Check("ok", f"adb device {selected_device} is connected"))
+        run_devices.append(devices[0])
+        checks.append(Check("ok", f"adb device {devices[0]} is connected"))
     elif len(devices) > 1:
         checks.append(Check("fail", "multiple adb devices are connected; pass --device to select one"))
     else:
         checks.append(Check("fail", "no adb devices are connected"))
 
-    if selected_device:
+    if needs_pos_device(flows):
+        if not args.pos_device:
+            checks.append(Check("fail", "the selection has POS flows, which need a tablet; pass --pos-device"))
+        elif args.pos_device in run_devices:
+            checks.append(Check("fail", "--pos-device must be a different device than --device"))
+        elif args.pos_device in devices:
+            run_devices.append(args.pos_device)
+            checks.append(Check("ok", f"requested POS device {args.pos_device} is connected"))
+        elif args.pos_device in avds:
+            checks.append(Check("ok", f"the {args.pos_device} emulator will be started for the POS flows"))
+        else:
+            checks.append(Check("fail", f"requested POS device {args.pos_device} is not connected"))
+
+    for device in run_devices:
         try:
-            locale = ensure_english_device_locale(selected_device)
+            locale = ensure_english_device_locale(device)
             checks.append(Check("ok", locale.message))
         except DeviceLocaleError as error:
             checks.append(Check("fail", str(error)))
 
-    if selected_device and not any(check.status == "fail" for check in checks):
-        try:
-            release = ensure_release_app(selected_device)
-            checks.append(Check("ok", release.message))
-        except ReleaseAppError as error:
-            checks.append(Check("fail", str(error)))
-    else:
+    if run_devices and any(check.status == "fail" for check in checks):
         checks.append(Check("warn", "production release app check skipped because another pre-flight check failed"))
+    else:
+        for device in run_devices:
+            try:
+                release = ensure_release_app(device)
+                checks.append(Check("ok", release.message))
+            except ReleaseAppError as error:
+                checks.append(Check("fail", str(error)))
 
     print("Maestro smoke doctor")
     print(f"  profile: {args.profile}")

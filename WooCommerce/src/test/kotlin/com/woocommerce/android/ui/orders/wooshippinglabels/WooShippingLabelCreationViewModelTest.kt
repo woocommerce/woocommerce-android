@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.HazmatState
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToDestinationAddressEdit
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToFedExTermsOfService
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToHazmatFormEdit
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToOriginAddressEdit
@@ -37,6 +38,12 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.destination.V
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.ObserveOriginAddresses
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBannerUiState
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiers
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiersRequirement.NOT_REQUIRED
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiersRequirement.PLUGIN_OUTDATED
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.EuProductIdentifiersRequirement.REQUIRED
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.CheckEuProductIdentifiersRequirement
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.CheckEuProductIdentifiersRequirement.CheckResult
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.CreateDefaultCustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireCustomsForm
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.WooShippingCustomsValidator
@@ -72,16 +79,25 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.withContext
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
 import org.mockito.kotlin.isNull
@@ -288,7 +304,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     private val addressValidationHelper: AddressValidationHelper = mock {
         on { canFetchShippingRates(any()) } doReturn true
-        on { isPhoneValidForShippingLabel(any()) } doReturn true
         on { isMissingOriginAddress(any()) } doReturn false
     }
 
@@ -329,9 +344,15 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         on { invoke(orderId) } doReturn Result.success(DestinationShippingAddress(defaultShipToAddress, true))
     }
     private val observeShippingLabelNotice: ObserveShippingLabelNotice = mock {
-        on { invoke(any(), any(), any(), any()) } doReturn flowOf(null)
+        on { invoke(any(), any(), any(), any(), any()) } doReturn flowOf(null)
     }
     private val customsValidator: WooShippingCustomsValidator = mock()
+    private val checkEuProductIdentifiersRequirement: CheckEuProductIdentifiersRequirement = mock {
+        on { invoke(any(), any()) } doSuspendableAnswer {
+            delay(1)
+            CheckResult(NOT_REQUIRED, emptyMap())
+        }
+    }
     private val fetchShippingLabelFile: FetchShippingLabelFile = mock()
     private val observeShippingLabelStatus: ObserveShippingLabelStatus = mock()
     private val file: File = mock()
@@ -339,6 +360,16 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     private val createDefaultCustomsData = CreateDefaultCustomsData(mock())
 
     private lateinit var sut: WooShippingLabelCreationViewModel
+    private var requirementCheckCalls = 0
+
+    private val customsState get() = (sut.viewState.value as DataState).shipmentUIList[0].customsState
+    private val customsData get() = (customsState as CustomsState.DataAvailable).customsData
+
+    @Before
+    fun setup() {
+        whenever(customsValidator.validate(any(), any(), any())) doReturn
+            WooShippingCustomsValidator.FormValidationResult.Valid
+    }
 
     fun createViewModel() {
         sut = WooShippingLabelCreationViewModel(
@@ -358,12 +389,45 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             createDefaultCustomsData = createDefaultCustomsData,
             shouldRequireCustoms = shouldRequireCustomsForm,
             customsValidator = customsValidator,
+            checkEuProductIdentifiersRequirement = checkEuProductIdentifiersRequirement,
             fetchShippingLabelFile = fetchShippingLabelFile,
             observeShippingLabelStatus = observeShippingLabelStatus,
             downloadAndPrintInvoiceUseCase = mock(),
             analyticsTracker = analyticsTracker,
             savedState = savedState
         )
+    }
+
+    private suspend fun givenCustomsRequired(
+        checkAnswer: suspend (Int) -> CheckResult = { CheckResult(NOT_REQUIRED, emptyMap()) }
+    ) {
+        whenever(shouldRequireCustomsForm.invoke(any())) doReturn true
+        whenever(checkEuProductIdentifiersRequirement.invoke(any(), any())).doSuspendableAnswer {
+            val call = requirementCheckCalls++
+            delay(1)
+            checkAnswer(call)
+        }
+    }
+
+    private suspend fun TestScope.startLoadingReplacementRates(
+        replacementRates: CompletableDeferred<Result<Map<CarrierUI, List<ShippingRateUI>>>>
+    ) {
+        var calls = 0
+        whenever(getShippingRates(any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull()))
+            .doSuspendableAnswer {
+                if (calls++ == 0) Result.success(defaultShippingRates) else replacementRates.await()
+            }
+
+        createViewModel()
+        advanceUntilIdle()
+        sut.onPackageSelected(defaultPackageData)
+        advanceUntilIdle()
+        val ratesState = (sut.viewState.value as DataState).shipmentUIList[0]
+            .shippingRatesState as ShippingRatesState.DataState
+        ratesState.onSelectedShippingRateChanged(defaultShippingRates.values.first().first())
+        advanceUntilIdle()
+        sut.onRefreshShippingRates()
+        advanceUntilIdle()
     }
 
     @Test
@@ -447,6 +511,48 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         assertThat(dataState.shippingAddresses.first().shipFrom.email).isEqualTo(updatedOriginAddress.email)
     }
+
+    @Test
+    fun `given a blank shipping phone and a billing phone, when the address can't be verified, then use the billing phone`() =
+        testBlocking {
+            val billingPhone = "555-555-5555"
+            val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+                shippingLines = defaultShippingLines,
+                customer = Order.Customer(
+                    billingAddress = defaultShipToAddress.copy(phone = billingPhone),
+                    shippingAddress = defaultShipToAddress.copy(phone = "")
+                )
+            )
+            whenever(orderDetailRepository.getOrderById(any())) doReturn order
+            whenever(verifyDestinationAddress.invoke(orderId)) doReturn Result.failure(Exception())
+
+            createViewModel()
+            advanceUntilIdle()
+
+            val dataState = sut.viewState.value as DataState
+            assertThat(dataState.shippingAddresses.first().shipTo.address.phone).isEqualTo(billingPhone)
+        }
+
+    @Test
+    fun `given a shipping phone and a billing phone, when the address can't be verified, then keep the shipping phone`() =
+        testBlocking {
+            val shippingPhone = "333-333-3333"
+            val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+                shippingLines = defaultShippingLines,
+                customer = Order.Customer(
+                    billingAddress = defaultShipToAddress.copy(phone = "555-555-5555"),
+                    shippingAddress = defaultShipToAddress.copy(phone = shippingPhone)
+                )
+            )
+            whenever(orderDetailRepository.getOrderById(any())) doReturn order
+            whenever(verifyDestinationAddress.invoke(orderId)) doReturn Result.failure(Exception())
+
+            createViewModel()
+            advanceUntilIdle()
+
+            val dataState = sut.viewState.value as DataState
+            assertThat(dataState.shippingAddresses.first().shipTo.address.phone).isEqualTo(shippingPhone)
+        }
 
     @Test
     fun `when shipping rates succeed then display the shipping rates`() = testBlocking {
@@ -621,6 +727,9 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         verify(getShippingRates, times(1))
             .invoke(any(), any(), any(), any(), any(), any(), isNull(), isNull())
+        val ratesState = (sut.viewState.value as DataState).shipmentUIList[0]
+            .shippingRatesState as ShippingRatesState.DataState
+        assertThat(ratesState.selectedRatesSortOrder).isEqualTo(ShippingSortOption.CHEAPEST)
     }
 
     @Test
@@ -642,6 +751,18 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         verify(getShippingRates, times(1))
             .invoke(any(), any(), any(), any(), any(), any(), isNull(), isNull())
+    }
+
+    @Test
+    fun `when sort order changes while rates load, then keep loading state`() = testBlocking {
+        val pendingRates = CompletableDeferred<Result<Map<CarrierUI, List<ShippingRateUI>>>>()
+        startLoadingReplacementRates(pendingRates)
+
+        sut.onSelectedRateSortOrderChanged(ShippingSortOption.CHEAPEST)
+        advanceUntilIdle()
+
+        val dataState = sut.viewState.value as DataState
+        assertIs<ShippingRatesState.Loading>(dataState.shipmentUIList[0].shippingRatesState)
     }
 
     @Test
@@ -970,6 +1091,258 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when customs are not required, then EU product identifiers are not checked`() = testBlocking {
+        whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
+
+        createViewModel()
+        advanceUntilIdle()
+
+        verifyNoInteractions(checkEuProductIdentifiersRequirement)
+    }
+
+    @Test
+    fun `when requirement check reports outdated plugin, then customs remain available after validation`() =
+        testBlocking {
+            givenCustomsRequired { CheckResult(PLUGIN_OUTDATED, emptyMap()) }
+
+            createViewModel()
+            advanceUntilIdle()
+
+            assertThat(customsState).isInstanceOf(CustomsState.DataAvailable::class.java)
+            assertThat(customsData.euProductIdentifiersRequirement).isEqualTo(PLUGIN_OUTDATED)
+        }
+
+    @Test
+    fun `when prefilling EU identifiers, then keep entered SKU and no barcode choice`() = testBlocking {
+        val checkResult = CompletableDeferred<CheckResult>()
+        givenCustomsRequired { checkResult.await() }
+
+        createViewModel()
+        advanceUntilIdle()
+
+        val draft = createDefaultCustomsData(defaultShippableItems, defaultOriginAddresses.first())
+        val entered = listOf(
+            EuProductIdentifiers(sku = "entered-sku"),
+            EuProductIdentifiers(manufacturerPartNumber = "entered-mpn", hasNoBarcode = true),
+            EuProductIdentifiers(gtin = "entered-gtin")
+        )
+        sut.onCustomsDataAvailable(
+            draft.copy(
+                items = draft.items.zip(entered) { item, identifiers ->
+                    item.copy(euProductIdentifiers = identifiers)
+                }
+            )
+        )
+        val prefill = EuProductIdentifiers("sku", "mpn", "gtin")
+        checkResult.complete(CheckResult(REQUIRED, draft.items.associate { it.productID to prefill }))
+        advanceUntilIdle()
+
+        assertThat(customsData.euProductIdentifiersRequirement).isEqualTo(REQUIRED)
+        assertThat(customsData.items.map { it.euProductIdentifiers }).containsExactly(
+            EuProductIdentifiers("entered-sku", "mpn", "gtin"),
+            EuProductIdentifiers("sku", "entered-mpn", "", hasNoBarcode = true),
+            EuProductIdentifiers("sku", "mpn", "entered-gtin")
+        )
+    }
+
+    @Test
+    fun `given customs are required, when only the destination phone changes, then the requirement is not checked again`() =
+        testBlocking {
+            givenCustomsRequired()
+
+            createViewModel()
+            advanceUntilIdle()
+
+            sut.onUpdateDestinationAddress(
+                DestinationShippingAddress(defaultShipToAddress.copy(phone = "555-555-5555"), true)
+            )
+            advanceUntilIdle()
+
+            verify(checkEuProductIdentifiersRequirement, times(1)).invoke(orderId, "id_1")
+        }
+
+    @Test
+    fun `given a pending check, when only the destination phone changes, then apply the result once`() = testBlocking {
+        val check = CompletableDeferred<CheckResult>()
+        givenCustomsRequired { check.await() }
+        createViewModel()
+        advanceUntilIdle()
+
+        sut.onUpdateDestinationAddress(DestinationShippingAddress(defaultShipToAddress.copy(phone = "555"), true))
+        check.complete(CheckResult(NOT_REQUIRED, emptyMap()))
+        advanceUntilIdle()
+
+        assertThat(customsData.euProductIdentifiersRequirement).isEqualTo(NOT_REQUIRED)
+        verify(checkEuProductIdentifiersRequirement, times(1)).invoke(orderId, "id_1")
+    }
+
+    @Test
+    fun `when shipment 1 is selected, then its requirement check leaves shipment 0 unchanged`() = testBlocking {
+        val secondShipment = ShipmentUIModel(localId = "1", items = defaultShippableItems)
+        val secondOrigin = defaultOriginAddresses.first().copy(id = "id_2")
+        whenever(getShipments.invoke(any())) doReturn defaultShipments + secondShipment
+        whenever(observeOriginAddresses.invoke()) doReturn flowOf(defaultOriginAddresses + secondOrigin)
+        givenCustomsRequired { call ->
+            if (call == 0) CheckResult(REQUIRED, emptyMap()) else CheckResult(NOT_REQUIRED, emptyMap())
+        }
+
+        createViewModel()
+        advanceUntilIdle()
+        sut.onSelectedShipmentChanged(1)
+        sut.onOriginAddressSelected(secondOrigin)
+        advanceUntilIdle()
+
+        val dataState = sut.viewState.value as DataState
+        val firstCustomsData = (dataState.shipmentUIList[0].customsState as CustomsState.DataAvailable).customsData
+        val secondCustomsData = (dataState.shipmentUIList[1].customsState as CustomsState.DataAvailable).customsData
+        assertThat(firstCustomsData.euProductIdentifiersRequirement).isEqualTo(REQUIRED)
+        assertThat(secondCustomsData.euProductIdentifiersRequirement).isEqualTo(NOT_REQUIRED)
+        assertThat(dataState.shippingAddresses[1].shipFrom.id).isEqualTo("id_2")
+        verify(checkEuProductIdentifiersRequirement).invoke(orderId, "id_2")
+    }
+
+    @Test
+    fun `when the origin changes, then check the EU requirement with the new origin id`() = testBlocking {
+        val secondOrigin = defaultOriginAddresses.first().copy(id = "id_2")
+        whenever(observeOriginAddresses.invoke()) doReturn flowOf(defaultOriginAddresses + secondOrigin)
+        givenCustomsRequired()
+
+        createViewModel()
+        advanceUntilIdle()
+
+        sut.onOriginAddressSelected(secondOrigin)
+        advanceUntilIdle()
+
+        verify(checkEuProductIdentifiersRequirement).invoke(orderId, "id_2")
+    }
+
+    @Test
+    fun `when an old check ignores cancellation, then only the newer answer is applied`() = testBlocking {
+        val oldCheck = CompletableDeferred<CheckResult>()
+        val newCheck = CompletableDeferred<CheckResult>()
+        givenCustomsRequired { call ->
+            if (call == 0) withContext(NonCancellable) { oldCheck.await() } else newCheck.await()
+        }
+
+        createViewModel()
+        advanceUntilIdle()
+        sut.onUpdateDestinationAddress(
+            DestinationShippingAddress(defaultShipToAddress.copy(city = "Berlin"), true)
+        )
+        advanceUntilIdle()
+
+        oldCheck.complete(CheckResult(REQUIRED, emptyMap()))
+        advanceUntilIdle()
+        assertThat(customsState).isEqualTo(CustomsState.CheckingRequirements)
+
+        newCheck.complete(CheckResult(NOT_REQUIRED, emptyMap()))
+        advanceUntilIdle()
+
+        assertThat(customsData.euProductIdentifiersRequirement).isEqualTo(NOT_REQUIRED)
+        assertThat(requirementCheckCalls).isEqualTo(2)
+    }
+
+    @Test
+    fun `when the shipment is purchased, then EU product identifiers are not checked`() = testBlocking {
+        whenever(getShipments(any())) doReturn listOf(
+            defaultShipments.first().copy(label = shippingLabelModel.copy(status = ShippingLabelStatus.PURCHASED))
+        )
+        givenCustomsRequired()
+
+        createViewModel()
+        advanceUntilIdle()
+
+        verifyNoInteractions(checkEuProductIdentifiersRequirement)
+    }
+
+    @Test
+    fun `given a resolved draft, when it returns with a different requirement, then check again`() =
+        testBlocking {
+            val thirdCheck = CompletableDeferred<CheckResult>()
+            givenCustomsRequired { call ->
+                if (call == 0) CheckResult(NOT_REQUIRED, emptyMap()) else thirdCheck.await()
+            }
+
+            createViewModel()
+            advanceUntilIdle()
+            val draft = createDefaultCustomsData(defaultShippableItems, defaultOriginAddresses.first())
+                .copy(euProductIdentifiersRequirement = REQUIRED)
+            sut.onCustomsDataAvailable(draft)
+            advanceUntilIdle()
+
+            assertThat(requirementCheckCalls).isEqualTo(2)
+            assertThat(customsState).isEqualTo(CustomsState.CheckingRequirements)
+
+            thirdCheck.complete(CheckResult(NOT_REQUIRED, emptyMap()))
+            advanceUntilIdle()
+
+            assertThat(customsData.euProductIdentifiersRequirement).isEqualTo(NOT_REQUIRED)
+            assertThat(requirementCheckCalls).isEqualTo(2)
+        }
+
+    @Test
+    fun `given a resolved draft, when it returns with the same requirement, then keep the edit without checking again`() =
+        testBlocking {
+            givenCustomsRequired()
+
+            createViewModel()
+            advanceUntilIdle()
+            val draft = createDefaultCustomsData(defaultShippableItems, defaultOriginAddresses.first())
+            val returnedDraft = draft.copy(
+                euProductIdentifiersRequirement = NOT_REQUIRED,
+                items = draft.items.mapIndexed { index, item ->
+                    if (index == 0) item.copy(description = "Merchant edit") else item
+                }
+            )
+
+            sut.onCustomsDataAvailable(returnedDraft)
+            advanceUntilIdle()
+
+            assertThat(customsData).isEqualTo(returnedDraft)
+            verify(checkEuProductIdentifiersRequirement, times(1)).invoke(orderId, "id_1")
+        }
+
+    @Test
+    fun `when the requirement check is pending, then purchase is blocked`() = testBlocking {
+        givenCustomsRequired { call ->
+            if (call == 0) CheckResult(NOT_REQUIRED, emptyMap()) else awaitCancellation()
+        }
+
+        createViewModel()
+        advanceUntilIdle()
+        sut.onPackageSelected(defaultPackageData)
+        advanceUntilIdle()
+        val loadedRates = (sut.viewState.value as DataState).shipmentUIList[0]
+            .shippingRatesState as ShippingRatesState.DataState
+        loadedRates.onSelectedShippingRateChanged(defaultShippingRates.values.first().first())
+        advanceUntilIdle()
+
+        sut.onUpdateDestinationAddress(
+            DestinationShippingAddress(defaultShipToAddress.copy(city = "Berlin"), true)
+        )
+        runCurrent()
+        assertThat(customsState).isEqualTo(CustomsState.CheckingRequirements)
+        assertIs<ShippingRatesState.DataState>(
+            (sut.viewState.value as DataState).shipmentUIList[0].shippingRatesState
+        )
+
+        sut.onPurchaseShippingLabel()
+        runCurrent()
+
+        verifyNoInteractions(purchaseShippingLabel)
+    }
+
+    @Test
+    fun `when replacement rates are loading, then purchase is blocked`() = testBlocking {
+        val replacementRates = CompletableDeferred<Result<Map<CarrierUI, List<ShippingRateUI>>>>()
+        startLoadingReplacementRates(replacementRates)
+
+        sut.onPurchaseShippingLabel()
+
+        verifyNoInteractions(purchaseShippingLabel)
+    }
+
+    @Test
     fun `CustomState is ItnMissing when shouldRequireCustomsForm returns true and ShippingLines exceeds the 2500 limit`() =
         testBlocking {
             var currentViewState: WooShippingViewState? = null
@@ -1105,7 +1478,162 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when edit origin snackbar action is tapped, then dismiss snackbar and navigate to edit origin`() = testBlocking {
+    fun `given a snackbar is shown, when it finishes, then it is cleared`() = testBlocking {
+        createViewModel()
+        sut.onHazmatCategorySelected(ShippingLabelHazmatCategory.CLASS_1)
+
+        val snackbarData = checkNotNull(sut.snackbarData)
+        sut.onSnackbarFinished(snackbarData)
+
+        assertThat(sut.snackbarData).isNull()
+    }
+
+    @Test
+    fun `given a newer snackbar replaced an older one, when the older one finishes, then the newer one is kept`() =
+        testBlocking {
+            createViewModel()
+            sut.onHazmatCategorySelected(ShippingLabelHazmatCategory.CLASS_1)
+            val olderSnackbarData = checkNotNull(sut.snackbarData)
+
+            sut.onHazmatCategorySelected(ShippingLabelHazmatCategory.CLASS_3)
+            val newerSnackbarData = checkNotNull(sut.snackbarData)
+
+            sut.onSnackbarFinished(olderSnackbarData)
+
+            assertThat(sut.snackbarData).isSameAs(newerSnackbarData)
+        }
+
+    @Test
+    fun `given a domestic shipment with a blank recipient phone and a non-FedEx rate, when purchase is tapped, then the purchase starts`() =
+        testBlocking {
+            whenever(addressValidationHelper.validatePhone(eq(""), any(), eq(false))).doReturn(null)
+
+            createViewModel()
+
+            val selectedRate = defaultShippingRates.values.first().first()
+            val ratesState = sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last().let { viewState ->
+                (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+            }
+
+            ratesState.onSelectedShippingRateChanged(selectedRate)
+            advanceUntilIdle()
+
+            sut.onPurchaseShippingLabel()
+
+            assertThat(sut.snackbarData).isNull()
+            verify(purchaseShippingLabel).invoke(
+                any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull()
+            )
+        }
+
+    @Test
+    fun `given an international shipment with a blank recipient phone, when purchase is tapped, then show the phone error snackbar`() =
+        testBlocking {
+            whenever(addressValidationHelper.validatePhone(eq(""), any(), eq(true))).doReturn("required")
+            whenever(addressValidationHelper.isInternationalShipment(any(), any())).doReturn(true)
+
+            createViewModel()
+
+            val selectedRate = defaultShippingRates.values.first().first()
+            val ratesState = sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last().let { viewState ->
+                (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+            }
+
+            ratesState.onSelectedShippingRateChanged(selectedRate)
+            advanceUntilIdle()
+
+            sut.onPurchaseShippingLabel()
+
+            assertThat(sut.snackbarData).matches {
+                it?.message == R.string.woo_shipping_labels_purchase_phone_error
+            }
+            verifyNoInteractions(purchaseShippingLabel)
+        }
+
+    @Test
+    fun `given an invalid recipient phone, when purchase is tapped, then show the phone error snackbar`() = testBlocking {
+        whenever(
+            verifyDestinationAddress.invoke(orderId)
+        ) doReturn Result.success(DestinationShippingAddress(defaultShipToAddress.copy(phone = "12345"), true))
+        whenever(addressValidationHelper.validatePhone(eq("12345"), any(), any())).doReturn("invalid")
+
+        createViewModel()
+
+        val selectedRate = defaultShippingRates.values.first().first()
+        val ratesState = sut.viewState.runAndCaptureValues {
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+        }.last().let { viewState ->
+            (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        }
+
+        ratesState.onSelectedShippingRateChanged(selectedRate)
+        advanceUntilIdle()
+
+        sut.onPurchaseShippingLabel()
+
+        assertThat(sut.snackbarData).matches {
+            it?.message == R.string.woo_shipping_labels_purchase_phone_error
+        }
+        verifyNoInteractions(purchaseShippingLabel)
+    }
+
+    @Test
+    fun `given a domestic shipment with a blank recipient phone and a FedEx rate, when purchase is tapped, then show the FedEx phone snackbar`() =
+        testBlocking {
+            val fedExRate = defaultShippingRates.getValue(defaultCarrier).first().copy(
+                title = "FedEx Ground Economy",
+                options = mapOf(
+                    ShippingRateOption.DEFAULT to defaultShippableItemUI.copy(
+                        rate = defaultShippingRate.copy(
+                            carrierId = "fedex",
+                            carrier = WooShippingCarrier.FEDEX
+                        )
+                    )
+                )
+            )
+            whenever(getShippingRates(any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull()))
+                .thenReturn(
+                    Result.success(
+                        mapOf(CarrierUI(WooShippingCarrier.FEDEX, "FedEx") to listOf(fedExRate))
+                    )
+                )
+            whenever(addressValidationHelper.validatePhone(eq(""), any(), eq(true))).doReturn("required")
+
+            createViewModel()
+
+            val ratesState = sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last().let { viewState ->
+                (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+            }
+
+            ratesState.onSelectedShippingRateChanged(fedExRate)
+            advanceUntilIdle()
+
+            sut.onPurchaseShippingLabel()
+
+            assertThat(sut.snackbarData?.message)
+                .isEqualTo(R.string.woo_shipping_labels_purchase_phone_required_by_service)
+            assertThat(sut.snackbarData?.messageParameters).isEqualTo(listOf("FedEx Ground Economy"))
+            verifyNoInteractions(purchaseShippingLabel)
+
+            val events = sut.event.captureValues()
+            sut.snackbarData?.action?.invoke()
+
+            val event = events.last() as NavigateToDestinationAddressEdit
+            assertThat(event.originCountryCode).isEqualTo(defaultOriginAddresses.first().country)
+        }
+
+    @Test
+    fun `when edit origin snackbar action is tapped, then navigate to edit origin`() = testBlocking {
         whenever(addressValidationHelper.isMissingOriginAddress(any())) doReturn true
 
         createViewModel()
@@ -1128,7 +1656,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         sut.snackbarData?.action?.invoke()
 
-        assertThat(sut.snackbarData).isNull()
         assertThat(events.last()).isEqualTo(NavigateToOriginAddressEdit(defaultOriginAddresses.first()))
     }
 
@@ -1298,7 +1825,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             error = true,
         )
 
-        whenever(observeShippingLabelNotice(any(), any(), any(), any())) doReturn flowOf(notice)
+        whenever(observeShippingLabelNotice(any(), any(), any(), any(), any())) doReturn flowOf(notice)
 
         createViewModel()
 
@@ -1311,7 +1838,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     @Test
     fun `when there are no notices then do not display the notices`() = testBlocking {
         val notice = null
-        whenever(observeShippingLabelNotice(any(), any(), any(), any())) doReturn flowOf(notice)
+        whenever(observeShippingLabelNotice(any(), any(), any(), any(), any())) doReturn flowOf(notice)
 
         createViewModel()
 

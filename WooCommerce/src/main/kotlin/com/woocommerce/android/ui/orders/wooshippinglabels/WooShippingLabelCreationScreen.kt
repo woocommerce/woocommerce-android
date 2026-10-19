@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -34,6 +35,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -64,6 +66,7 @@ import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState.CheckingRequirements
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState.ItnMissing
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState.NotRequired
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState.Unavailable
@@ -121,6 +124,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onEditDestinationAddress = viewModel::onEditDestinationAddress,
                 destinationStatus = viewState.destinationStatus,
                 snackbarData = viewModel.snackbarData,
+                onSnackbarFinished = viewModel::onSnackbarFinished,
                 onSplitShipment = viewModel::onSplitShipmentButtonTapped,
                 onHazmatNoticeClick = viewModel::onHazmatNoticeClick,
                 onLabelPaperSizeOptionSelected = viewModel::onLabelPaperSizeOptionSelected,
@@ -170,6 +174,7 @@ fun WooShippingLabelCreationScreen(
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
     snackbarData: ShippingLabelsSnackbarData? = null,
+    onSnackbarFinished: (ShippingLabelsSnackbarData) -> Unit = {},
     onSplitShipment: () -> Unit = {},
     onHazmatNoticeClick: () -> Unit = {},
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
@@ -215,6 +220,7 @@ fun WooShippingLabelCreationScreen(
             onEditDestinationAddress = onEditDestinationAddress,
             destinationStatus = destinationStatus,
             snackbarData = snackbarData,
+            onSnackbarFinished = onSnackbarFinished,
             onSplitShipment = onSplitShipment,
             onHazmatNoticeClick = onHazmatNoticeClick,
             onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
@@ -273,6 +279,7 @@ private fun LabelCreationScreenWithBottomSheet(
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
     snackbarData: ShippingLabelsSnackbarData? = null,
+    onSnackbarFinished: (ShippingLabelsSnackbarData) -> Unit = {},
     onSplitShipment: () -> Unit = {},
     onHazmatNoticeClick: () -> Unit = {},
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
@@ -423,22 +430,29 @@ private fun LabelCreationScreenWithBottomSheet(
                 }
             }
 
-            val actionSnackbarMessage = snackbarData?.let { stringResource(it.message) }
+            @Suppress("SpreadOperator")
+            val actionSnackbarMessage = snackbarData?.let {
+                stringResource(it.message, *it.messageParameters.toTypedArray())
+            }
             val actionSnackbarActionLabel = snackbarData?.let { stringResource(it.actionLabel) }
 
             LaunchedEffect(snackbarData) {
                 snackbarData?.let {
-                    val result = snackbarHostState.showSnackbar(
-                        visuals = ShippingLabelsSnackbarVisuals(
-                            message = actionSnackbarMessage.orEmpty(),
-                            actionLabel = actionSnackbarActionLabel,
-                            duration = snackbarData.duration,
-                            hasSuccessCheckmark = it.hasIcon
+                    try {
+                        val result = snackbarHostState.showSnackbar(
+                            visuals = ShippingLabelsSnackbarVisuals(
+                                message = actionSnackbarMessage.orEmpty(),
+                                actionLabel = actionSnackbarActionLabel,
+                                duration = snackbarData.duration,
+                                hasSuccessCheckmark = it.hasIcon
+                            )
                         )
-                    )
-                    when (result) {
-                        SnackbarResult.ActionPerformed -> snackbarData.action()
-                        SnackbarResult.Dismissed -> snackbarData.dismissAction()
+                        when (result) {
+                            SnackbarResult.ActionPerformed -> snackbarData.action()
+                            SnackbarResult.Dismissed -> snackbarData.dismissAction()
+                        }
+                    } finally {
+                        onSnackbarFinished(it)
                     }
                 } ?: snackbarHostState.currentSnackbarData?.dismiss()
             }
@@ -571,33 +585,43 @@ private fun CustomsCard(
                     .align(Alignment.CenterVertically)
                     .weight(1f)
             )
-            Box(
-                modifier = Modifier
-                    .background(
-                        color = backgroundColor,
-                        shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_medium))
-                    )
-                    .align(Alignment.CenterVertically)
-            ) {
-                Text(
-                    text = labelText,
-                    style = MaterialTheme.typography.caption,
-                    color = MaterialTheme.colors.onSurface,
+            if (customsState is CheckingRequirements) {
+                CircularProgressIndicator(
                     modifier = Modifier
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .align(Alignment.CenterVertically)
+                        .minimumInteractiveComponentSize()
+                        .size(24.dp),
+                    strokeWidth = 2.dp
                 )
-            }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = backgroundColor,
+                            shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_medium))
+                        )
+                        .align(Alignment.CenterVertically)
+                ) {
+                    Text(
+                        text = labelText,
+                        style = MaterialTheme.typography.caption,
+                        color = MaterialTheme.colors.onSurface,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                }
 
-            IconButton(
-                onClick = onEditCustomsClick,
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_edit_filled_24dp),
-                    tint = colorResource(id = R.color.color_icon_menu),
-                    contentDescription = stringResource(id = R.string.shipping_label_package_selected_description)
-                )
+                IconButton(
+                    onClick = onEditCustomsClick,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_edit_filled_24dp),
+                        tint = colorResource(id = R.color.color_icon_menu),
+                        contentDescription = stringResource(id = R.string.shipping_label_package_selected_description)
+                    )
+                }
             }
         }
     }

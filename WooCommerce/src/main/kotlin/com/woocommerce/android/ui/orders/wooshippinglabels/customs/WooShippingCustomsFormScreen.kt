@@ -58,8 +58,10 @@ fun WooShippingCustomsFormScreen(viewModel: WooShippingCustomsFormViewModel) {
         isAddCustomsButtonEnabled = viewState?.isAddCustomsButtonEnabled ?: false,
         shouldDisplayContentTypeInput = viewState?.shouldDisplayContentTypeInput ?: false,
         shouldDisplayRestrictionTypeInput = viewState?.shouldDisplayRestrictionTypeInput ?: false,
+        shouldDisplayEuProductIdentifiers = viewState?.shouldDisplayEuProductIdentifiers ?: false,
+        shouldDisplayPluginUpdateNotice = viewState?.shouldDisplayPluginUpdateNotice ?: false,
         shippingProducts = viewState?.shippingProducts ?: emptyList(),
-        currencySymbol = viewState?.currencySymbol ?: "",
+        currencySymbol = viewState?.currencySymbol.orEmpty(),
         weightUnit = viewState?.weightUnit ?: "",
         onContentTypeClick = viewModel::onContentTypeClick,
         onRestrictionTypeClick = viewModel::onRestrictionTypeClick,
@@ -70,6 +72,7 @@ fun WooShippingCustomsFormScreen(viewModel: WooShippingCustomsFormViewModel) {
         onProductExpanded = viewModel::onShippableProductExpanded,
         onDescriptionChanged = viewModel::onShippableProductDescriptionChanged,
         onTariffChanged = viewModel::onShippableProductTariffNumberChanged,
+        onEuProductIdentifiersChanged = viewModel::onShippableProductEuProductIdentifiersChanged,
         onValuePerUnitChanged = viewModel::onShippableProductValuePerUnitChanged,
         onWeightPerUnitChanged = viewModel::onShippableProductWeightPerUnitChanged,
         onCountrySelectorClick = viewModel::onCountrySelectorClick,
@@ -89,6 +92,8 @@ fun WooShippingCustomsFormScreen(
     isAddCustomsButtonEnabled: Boolean,
     shouldDisplayContentTypeInput: Boolean,
     shouldDisplayRestrictionTypeInput: Boolean,
+    shouldDisplayEuProductIdentifiers: Boolean,
+    shouldDisplayPluginUpdateNotice: Boolean,
     shippingProducts: List<WooShippingCustomsProductUIModel>,
     currencySymbol: String,
     weightUnit: String,
@@ -101,6 +106,7 @@ fun WooShippingCustomsFormScreen(
     onProductExpanded: (position: Int, isExpanded: Boolean) -> Unit,
     onDescriptionChanged: (position: Int, description: String) -> Unit,
     onTariffChanged: (position: Int, tariff: String) -> Unit,
+    onEuProductIdentifiersChanged: (position: Int, identifiers: EuProductIdentifiers) -> Unit,
     onValuePerUnitChanged: (position: Int, valuePerUnit: String) -> Unit,
     onWeightPerUnitChanged: (position: Int, weightPerUnit: String) -> Unit,
     onCountrySelectorClick: (position: Int) -> Unit,
@@ -117,6 +123,10 @@ fun WooShippingCustomsFormScreen(
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
         ) {
+            AnimatedVisibility(visible = shouldDisplayPluginUpdateNotice) {
+                WooShippingCustomsPluginUpdateNotice(modifier = Modifier.padding(bottom = 16.dp))
+            }
+
             WCOutlinedSpinner(
                 onClick = onContentTypeClick,
                 value = stringResource(id = contentType.resourceId),
@@ -240,6 +250,8 @@ fun WooShippingCustomsFormScreen(
                     onExpand = { onProductExpanded(index, it) },
                     onDescriptionChanged = { onDescriptionChanged(index, it) },
                     onTariffChanged = { onTariffChanged(index, it) },
+                    showEuProductIdentifiers = shouldDisplayEuProductIdentifiers,
+                    onEuProductIdentifiersChanged = { onEuProductIdentifiersChanged(index, it) },
                     onValuePerUnitChanged = { onValuePerUnitChanged(index, it) },
                     onWeightPerUnitChanged = { onWeightPerUnitChanged(index, it) },
                     onCountrySelectorClick = { onCountrySelectorClick(index) }
@@ -273,12 +285,18 @@ fun PreviewWooShippingCustomsFormScreen() {
                 isAddCustomsButtonEnabled = true,
                 shouldDisplayContentTypeInput = true,
                 shouldDisplayRestrictionTypeInput = false,
+                shouldDisplayEuProductIdentifiers = true,
+                shouldDisplayPluginUpdateNotice = false,
                 shippingProducts = listOf(
                     WooShippingCustomsProductUIModel(
                         productId = 0,
                         name = "Little Nap Brazil 250g",
                         description = InputValue.Data("Product Description"),
                         tariffNumber = InputValue.Data("123456"),
+                        sku = InputValue.Data("coffee-250"),
+                        manufacturerPartNumber = InputValue.Data("MPN-123"),
+                        gtin = InputValue.Data("0123456789012"),
+                        hasNoBarcode = false,
                         valuePerUnit = InputValue.Data("10.00"),
                         weightPerUnit = InputValue.Data("1.00"),
                         originCountry = "United Stats of America",
@@ -292,6 +310,10 @@ fun PreviewWooShippingCustomsFormScreen() {
                         name = "Little Nap Brazil 250g",
                         description = InputValue.Data("Product Description"),
                         tariffNumber = InputValue.Data("123456"),
+                        sku = InputValue.Data("coffee-250"),
+                        manufacturerPartNumber = InputValue.Data("MPN-123"),
+                        gtin = InputValue.Data("0123456789012"),
+                        hasNoBarcode = false,
                         valuePerUnit = InputValue.Data("10.00"),
                         weightPerUnit = InputValue.Data("1.00"),
                         originCountry = "United Stats of America",
@@ -313,6 +335,7 @@ fun PreviewWooShippingCustomsFormScreen() {
                 onAddCustomsDataClick = {},
                 onDescriptionChanged = { _, _ -> },
                 onTariffChanged = { _, _ -> },
+                onEuProductIdentifiersChanged = { _, _ -> },
                 onValuePerUnitChanged = { _, _ -> },
                 onWeightPerUnitChanged = { _, _ -> },
                 onCountrySelectorClick = { }
