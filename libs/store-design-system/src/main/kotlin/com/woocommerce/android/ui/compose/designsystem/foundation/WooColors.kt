@@ -78,7 +78,6 @@ data class WooStatusColors(
 @Immutable
 data class WooIconContainerToneColors(
     val sandstone: Color,
-    val onSandstone: Color,
 )
 
 @Immutable
@@ -139,6 +138,7 @@ data class WooSandstoneColors(
     val shade20: Color,
     val shade40: Color,
     val shade60: Color,
+    val shade80: Color,
 )
 
 @Immutable
