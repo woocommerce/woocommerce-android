@@ -2755,7 +2755,6 @@
     <string name="signup_magic_link_error_button_positive">Retry</string>
 
     <string name="signup_magic_link_progress">Sending email</string>
-    <string name="signup_with_google_progress">Signing up with Google…</string>
 
     <string name="enter_email_for_site" content_override="true">Log in with WordPress.com to connect to &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="username">Username</string>
