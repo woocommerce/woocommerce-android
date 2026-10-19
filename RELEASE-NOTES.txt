@@ -4,6 +4,7 @@
 
 26.0
 -----
+- [*] Fixed a crash when an order status update fails while the order list refreshes [https://github.com/woocommerce/woocommerce-android/pull/16728]
 
 
 25.9
