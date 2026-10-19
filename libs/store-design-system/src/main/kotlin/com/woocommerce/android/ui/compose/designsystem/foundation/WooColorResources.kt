@@ -23,6 +23,7 @@ internal fun wooColors(useDarkTheme: Boolean): WooColors {
 internal fun loadWooColors(context: Context, useDarkTheme: Boolean): WooColors =
     context.createWooColorContext(useDarkTheme = useDarkTheme).loadWooColorsFromResources()
 
+@Suppress("LongMethod")
 internal fun loadWooPaletteColors(context: Context): WooPaletteColors = WooPaletteColors(
     sandstone = WooSandstoneColors(
         shade5 = context.color(R.color.woo_ds_color_palette_sandstone_shade5),
