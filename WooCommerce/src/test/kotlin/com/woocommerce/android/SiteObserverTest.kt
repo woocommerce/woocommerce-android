@@ -41,7 +41,7 @@ class SiteObserverTest : BaseUnitTest() {
     private val dispatcher: FakeDispatcher = FakeDispatcher()
     private val appVersionName: GetAppVersionName = mock()
     private val isEligibleForSubscriptions: IsEligibleForSubscriptions = mock {
-        on { invoke() } doReturn false
+        on { invoke(any()) } doReturn false
     }
 
     private val siteObserver = SiteObserver(
@@ -143,7 +143,7 @@ class SiteObserverTest : BaseUnitTest() {
             whenever(selectedSite.observe()).thenReturn(flowOf(site))
             whenever(siteStore.fetchConnectSiteInfoSync(site.url))
                 .thenReturn(SiteStore.ConnectSiteInfoPayload(url = site.url))
-            whenever(isEligibleForSubscriptions()).thenReturn(true)
+            whenever(isEligibleForSubscriptions(site)).thenReturn(true)
 
             // WHEN
             val job = launch {
@@ -183,7 +183,7 @@ class SiteObserverTest : BaseUnitTest() {
             advanceUntilIdle()
 
             // THEN
-            verify(isEligibleForSubscriptions, never()).invoke()
+            verify(isEligibleForSubscriptions, never()).invoke(any())
 
             job.cancel()
         }
@@ -199,7 +199,7 @@ class SiteObserverTest : BaseUnitTest() {
             whenever(selectedSite.observe()).thenReturn(flowOf(site))
             whenever(siteStore.fetchConnectSiteInfoSync(site.url))
                 .thenReturn(SiteStore.ConnectSiteInfoPayload(url = site.url))
-            whenever(isEligibleForSubscriptions()).thenReturn(false)
+            whenever(isEligibleForSubscriptions(site)).thenReturn(false)
 
             // WHEN
             val job = launch {

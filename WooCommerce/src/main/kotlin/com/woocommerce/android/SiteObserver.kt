@@ -75,7 +75,7 @@ class SiteObserver @Inject constructor(
 
     // The settings group only exists while the Woo Subscriptions plugin is active, so this runs after fetchPlugins
     private suspend fun fetchSubscriptionProductCreationSettings(site: SiteModel) {
-        if (!isEligibleForSubscriptions()) return
+        if (!isEligibleForSubscriptions(site)) return
 
         WooLog.d(WooLog.T.UTILS, "Fetch subscription product creation settings for site ${site.name}")
         wooCommerceStore.fetchSubscriptionProductCreationSettings(site)
