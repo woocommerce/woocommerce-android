@@ -15,7 +15,6 @@ import com.woocommerce.android.wear.WearableConnectionRepository
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
@@ -45,9 +44,9 @@ class SiteObserver @Inject constructor(
 ) {
     suspend fun observeAndUpdateSelectedSiteData() {
         selectedSite.observe()
-            .filterNotNull()
-            .distinctUntilChanged { old, new -> new.id == old.id }
+            .distinctUntilChanged { old, new -> new?.id == old?.id }
             .collectLatest { site ->
+                if (site == null) return@collectLatest
                 coroutineScope {
                     launch {
                         fetchPlugins(site)
