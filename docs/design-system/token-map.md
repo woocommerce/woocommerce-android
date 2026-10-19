@@ -19,6 +19,22 @@ Agent note: Figma references use the public GitHub shorthand `{fileKey}-fi`. Whe
 strip the `-fi` suffix and pass only `{fileKey}` as the Figma `fileKey`. For live Figma component
 inspection, use [figma-navigation.md](figma-navigation.md).
 
+## Refreshing The Figma Export
+
+Export `figma-export.json` with the `Luckino - Variables Import/Export JSON & CSS` Figma plugin:
+
+1. Open the `Woo Mobile Design System` file in Dev Mode (needs a Dev or Full seat) and run the
+   plugin from the Plugins tab.
+2. The plugin opens on Import. Switch to Export with the upload icon on the left.
+3. Source: select all 8 collections. For Font Theme, Typescale, and Screen Size, keep only the
+   `Android` mode.
+4. Format: pick `W3C Luckino Type Custom` and `Single file`, with no type filter. Tick every
+   checkbox except `Include $extensions metadata`.
+5. Click Export, then Download, and replace `figma-export.json` with the downloaded file.
+
+Nothing reads the export at build time. Use its git diff to update this token map and the
+design-system code by hand.
+
 ## Figma Export Parsing Rules
 
 `figma-export.json` is the committed export of Figma variables used for foundation reconciliation.
@@ -199,6 +215,7 @@ runtime mapping.
 | `WooTheme.colors.status.onInfoContainer` | `Woo Theme/Alerts/On-Info-Container` | `figma-export.json` | `#001B4F` / 100% | `#001B4F` / 100% | No direct M3 role | production | Foreground for `infoContainer`. |
 | `WooTheme.colors.status.neutralContainer` | `Woo Theme/Alerts/Neutral-Container` | `figma-export.json` | `#F4F4F4` / 100% | `#F4F4F4` / 100% | No direct M3 role | production | Neutral container. |
 | `WooTheme.colors.status.onNeutralContainer` | `Woo Theme/Alerts/On-Neutral-Container` | `figma-export.json` | `#1E1E1E` / 100% | `#1E1E1E` / 100% | No direct M3 role | production | Foreground for `neutralContainer`. |
+| `WooTheme.colors.iconContainer.sandstone` | `Woo Theme/Color/Icon-Container/Sandstone` | `figma-export.json` | `#F1EEEB` / 100% | `#3D3C39` / 100% | No direct M3 role | production | Sandstone icon box background, aliasing `Sandstone 10` / `Sandstone 80`. |
 | `WooTheme.colors.overlay.overlay20` | `Woo Theme/Tint-Layers/Overlay/Opacity-20` | `figma-export.json` | `#101517` / 20% | `#101517` / 20% | No direct M3 role | production | Overlay color; Android `#33101517`. |
 | `WooTheme.colors.overlay.overlay50` | `Woo Theme/Tint-Layers/Overlay/Opacity-50` | `figma-export.json` | `#2C3338` / 50% | `#2C3338` / 50% | `scrim` | production | Overlay color; Android `#802C3338`. |
 | `WooTheme.colors.stateLayers.onSurface.opacity08` | `Woo Theme/State-Layers/On-Surface/Opacity-08` | `figma-export.json` | `#10151714` | `#FFFFFF14` | No M3 projection | production | Android-only disabled Segmented Control track fallback (Figma has no disabled variant). |
@@ -225,6 +242,7 @@ runtime mapping.
 | `WooTheme.colors.palette.sandstone.shade20` | `Colors/Sandstone/Sandstone-20` | `figma-export.json` | `#E6E2DE` / 100% | `#E6E2DE` / 100% | No direct M3 role | production | Public palette ramp token. |
 | `WooTheme.colors.palette.sandstone.shade40` | `Colors/Sandstone/Sandstone-40` | `figma-export.json` | `#C5C2BF` / 100% | `#C5C2BF` / 100% | No direct M3 role | production | Public palette ramp token. |
 | `WooTheme.colors.palette.sandstone.shade60` | `Colors/Sandstone/Sandstone-60` | `figma-export.json` | `#8B8A89` / 100% | `#8B8A89` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.sandstone.shade80` | `Colors/Sandstone/Sandstone-80` | `figma-export.json` | `#3D3C39` / 100% | `#3D3C39` / 100% | No direct M3 role | production | Public palette ramp token. |
 | `WooTheme.colors.palette.wooBlue.shade20` | `Colors/Blue/Blue-20` | `figma-export.json` | `#75FFFF` / 100% | `#75FFFF` / 100% | No direct M3 role | production | Public palette ramp token. |
 | `WooTheme.colors.palette.wooBlue.shade40` | `Colors/Blue/Blue-40` | `figma-export.json` | `#1AD0FD` / 100% | `#1AD0FD` / 100% | No direct M3 role | production | Public palette ramp token. |
 | `WooTheme.colors.palette.wooBlue.shade60` | `Colors/Blue/Blue-60` | `figma-export.json` | `#05096C` / 100% | `#05096C` / 100% | No direct M3 role | production | Public palette ramp token. |
