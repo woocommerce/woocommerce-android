@@ -810,6 +810,15 @@
     <string name="order_creation_fee_percentage_toggle_text">Calculate as percentage</string>
     <string name="order_creation_fee_percentage_calculated_amount">Calculated amount: %s</string>
     <string name="order_creation_customer_search_empty">No customers found</string>
+    <string name="customer_list_analytics_unavailable_title">Customers can\'t be loaded</string>
+    <string name="customer_list_analytics_disabled_message">Customer lists need WooCommerce Analytics, which is turned off for this store. You can enable it here, or in your store admin under WooCommerce › Settings › Advanced › Features and then tap Retry.</string>
+    <string name="customer_list_analytics_permission_denied_message">Customer lists need WooCommerce Analytics, which isn\'t available on this store. Ask a store administrator to turn it on in WooCommerce › Settings › Advanced › Features.</string>
+    <string name="customer_list_analytics_unavailable_message">Customer lists need WooCommerce Analytics, which isn\'t available on this store right now. Ask a store administrator to check that it\'s turned on.</string>
+    <string name="customer_list_enable_analytics">Enable Analytics</string>
+    <string name="customer_list_enable_analytics_confirmation_title">Enable WooCommerce Analytics?</string>
+    <string name="customer_list_enable_analytics_confirmation_message">This changes a setting for your whole store. It stays on until someone turns it off in WooCommerce › Settings › Advanced › Features. Customers from the time Analytics was off may only show up after you import historical data in WooCommerce › Analytics › Settings.</string>
+    <string name="customer_list_enable_analytics_confirmation_action">Enable</string>
+    <string name="customer_list_enable_analytics_error">WooCommerce Analytics couldn\'t be enabled. Please try again.</string>
     <string name="order_creation_customer_search_empty_on_old_version_wcpay">Search for an existing customer or</string>
     <string name="order_creation_customer_search_hint">Search for customers</string>
     <string name="order_creation_customer_search_old_wc_hint">Search for customers by</string>

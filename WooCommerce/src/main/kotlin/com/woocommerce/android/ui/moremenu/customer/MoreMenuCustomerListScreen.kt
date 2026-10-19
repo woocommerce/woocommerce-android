@@ -31,6 +31,8 @@ fun MenuCustomerListScreen(viewModel: CustomerListDetailsViewModel) {
                 onSearchQueryChanged = viewModel::onSearchQueryChanged,
                 onSearchTypeChanged = viewModel::onSearchTypeChanged,
                 onEndOfListReached = viewModel::onEndOfListReached,
+                onRetryClicked = viewModel::onRetryClicked,
+                onEnableAnalyticsClicked = viewModel::onEnableAnalyticsClicked,
             )
         }
     }
