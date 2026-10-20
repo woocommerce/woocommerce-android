@@ -457,7 +457,7 @@ private fun BrandIconContainer(
             .size(ICON_CONTAINER_SIZE)
             .clearAndSetSemantics {},
         shape = RoundedCornerShape(WooTheme.radius.medium),
-        color = WooTheme.colors.palette.sandstone.shade10,
+        color = WooTheme.colors.iconContainer.sandstone,
     ) {
         Box(contentAlignment = Alignment.Center) {
             Image(
