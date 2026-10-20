@@ -119,25 +119,17 @@ fun WPComLogin2FAScreen(
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     if (viewState.showBackupCodeButton) {
-                        WCOutlinedButton(
+                        AlternateMethodButton(
                             onClick = onBackupCodeClick,
                             text = stringResource(id = R.string.login_text_backup_code),
-                            modifier = Modifier.fillMaxWidth(),
-                            enabled = viewState.canUseAlternateMethods,
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = MaterialTheme.colorScheme.primary
-                            ),
-                            border = if (viewState.canUseAlternateMethods) {
-                                BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-                            } else {
-                                ButtonDefaults.outlinedButtonBorder(enabled = false)
-                            }
+                            enabled = viewState.canUseAlternateMethods
                         )
                     }
                 } else {
                     LaunchedEffect(viewState.isBackupCodeRequested) {
                         if (viewState.isBackupCodeRequested) {
                             focusRequester.requestFocus()
+                            keyboardController?.show()
                         }
                     }
                     WCOutlinedTextField(
@@ -161,7 +153,7 @@ fun WPComLogin2FAScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     if (viewState.isSmsSupported) {
-                        WCOutlinedButton(
+                        AlternateMethodButton(
                             onClick = onSmsButtonClick,
                             text = stringResource(
                                 id = if (viewState.hasRequestedSms) {
@@ -170,23 +162,24 @@ fun WPComLogin2FAScreen(
                                     R.string.login_text_otp
                                 }
                             ),
-                            modifier = Modifier.fillMaxWidth(),
+                            enabled = viewState.canUseAlternateMethods,
+                            loading = viewState.isRequestingSms,
                             leadingIcon = {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(R.drawable.ic_comment),
                                     contentDescription = null
                                 )
-                            },
-                            enabled = viewState.canUseAlternateMethods,
-                            loading = viewState.isRequestingSms,
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = MaterialTheme.colorScheme.primary
-                            ),
-                            border = if (viewState.canUseAlternateMethods) {
-                                BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-                            } else {
-                                ButtonDefaults.outlinedButtonBorder(enabled = false)
                             }
+                        )
+                    }
+                    if (viewState.showBackupCodeButton) {
+                        if (viewState.isSmsSupported) {
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                        AlternateMethodButton(
+                            onClick = onBackupCodeClick,
+                            text = stringResource(id = R.string.login_text_backup_code),
+                            enabled = viewState.canUseAlternateMethods
                         )
                     }
                     if (viewState.isSecurityKeySupported) {
@@ -225,6 +218,32 @@ fun WPComLogin2FAScreen(
     }
 }
 
+@Composable
+private fun AlternateMethodButton(
+    onClick: () -> Unit,
+    text: String,
+    enabled: Boolean,
+    loading: Boolean = false,
+    leadingIcon: @Composable (() -> Unit)? = null
+) {
+    WCOutlinedButton(
+        onClick = onClick,
+        text = text,
+        modifier = Modifier.fillMaxWidth(),
+        leadingIcon = leadingIcon,
+        enabled = enabled,
+        loading = loading,
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = MaterialTheme.colorScheme.primary
+        ),
+        border = if (enabled) {
+            BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+        } else {
+            ButtonDefaults.outlinedButtonBorder(enabled = false)
+        }
+    )
+}
+
 @Preview
 @Composable
 private fun JetpackModePreview() {
@@ -234,7 +253,9 @@ private fun JetpackModePreview() {
                 isJetpackInstalled = false,
                 emailOrUsername = "test@email.com",
                 password = "",
-                otp = "123456"
+                otp = "123456",
+                showBackupCodeButton = true,
+                isSecurityKeySupported = true
             )
         )
     }

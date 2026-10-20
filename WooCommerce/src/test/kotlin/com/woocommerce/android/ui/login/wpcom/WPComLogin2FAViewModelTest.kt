@@ -48,6 +48,19 @@ class WPComLogin2FAViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given authenticator and backup, when backup code is requested, then show backup instructions and hide backup option`() = testBlocking {
+        setup(supportedAuthTypes = arrayOf("backup", "authenticator"))
+        val states = viewModel.viewState.captureValues()
+
+        assertThat(states.last().showBackupCodeButton).isTrue()
+
+        viewModel.onBackupCodeClick()
+
+        assertThat(states.last().instructions).isEqualTo(R.string.enter_verification_code_backup)
+        assertThat(states.last().showBackupCodeButton).isFalse()
+    }
+
+    @Test
     fun `given SMS is supported, when initialized, then show SMS instructions`() = testBlocking {
         setup(supportedAuthTypes = arrayOf("backup", "sms"))
 
@@ -67,13 +80,14 @@ class WPComLogin2FAViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given no supported methods, when initialized, then show generic instructions and SMS`() = testBlocking {
+    fun `given no supported methods, when initialized, then show generic instructions and SMS without backup option`() = testBlocking {
         setup()
 
         val viewState = viewModel.viewState.captureValues().last()
 
         assertThat(viewState.instructions).isEqualTo(R.string.enter_verification_code)
         assertThat(viewState.isSmsSupported).isTrue()
+        assertThat(viewState.showBackupCodeButton).isFalse()
     }
 
     @Test
@@ -145,6 +159,21 @@ class WPComLogin2FAViewModelTest : BaseUnitTest() {
 
         assertThat(viewState.isSecurityKeyMode).isFalse()
         assertThat(viewState.otp).isEqualTo("12345678")
+    }
+
+    @Test
+    fun `given SMS was sent, when backup code is requested, then show backup instructions`() = testBlocking {
+        setup(
+            supportedAuthTypes = arrayOf("backup", "authenticator", "sms"),
+            restoredState = mapOf("has-requested-sms" to true)
+        )
+        val states = viewModel.viewState.captureValues()
+
+        assertThat(states.last().instructions).isEqualTo(R.string.enter_verification_code_sms_generic)
+
+        viewModel.onBackupCodeClick()
+
+        assertThat(states.last().instructions).isEqualTo(R.string.enter_verification_code_backup)
     }
 
     @Test
@@ -226,10 +255,13 @@ class WPComLogin2FAViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when SMS request succeeds, then show sent state and success message`() = testBlocking {
+    fun `given backup code requested, when SMS request succeeds, then show SMS instructions and backup option`() = testBlocking {
         whenever(wpComLoginRepository.requestTwoStepSMS(EMAIL, PASSWORD))
             .thenReturn(Result.success(SMSRequestResult.SMSRequested))
-        setup()
+        setup(
+            supportedAuthTypes = arrayOf("backup", "authenticator", "sms"),
+            restoredState = mapOf("is-backup-code-requested" to true)
+        )
         val states = viewModel.viewState.captureValues()
         val events = viewModel.event.captureValues()
 
@@ -238,6 +270,7 @@ class WPComLogin2FAViewModelTest : BaseUnitTest() {
         assertThat(states.last().hasRequestedSms).isTrue()
         assertThat(states.last().isRequestingSms).isFalse()
         assertThat(states.last().instructions).isEqualTo(R.string.enter_verification_code_sms_generic)
+        assertThat(states.last().showBackupCodeButton).isTrue()
         assertThat(events.last()).isEqualTo(ShowSnackbar(R.string.requesting_sms_otp_success))
     }
 

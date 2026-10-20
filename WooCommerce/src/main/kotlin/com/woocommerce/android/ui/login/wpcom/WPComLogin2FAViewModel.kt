@@ -103,11 +103,11 @@ class WPComLogin2FAViewModel @Inject constructor(
             isSecurityKeySupported = isSecurityKeySupported,
             isSmsSupported = isSmsSupported,
             isSecurityKeyMode = isSecurityKeyMode,
-            showBackupCodeButton = isSecurityKeyMode && "backup" in navArgs.supportedAuthTypes,
+            showBackupCodeButton = !isBackupCodeRequested && "backup" in navArgs.supportedAuthTypes,
             isBackupCodeRequested = isBackupCodeRequested,
             instructions = when {
-                smsRequestState.hasRequestedSms -> R.string.enter_verification_code_sms_generic
                 isBackupCodeRequested -> R.string.enter_verification_code_backup
+                smsRequestState.hasRequestedSms -> R.string.enter_verification_code_sms_generic
                 else -> initialInstructions
             },
             errorMessage = errorMessage.takeIf { it != 0 },
@@ -143,6 +143,7 @@ class WPComLogin2FAViewModel @Inject constructor(
                         WPComLoginRepository.SMSRequestResult.UserSignedIn -> fetchAccount()
                         WPComLoginRepository.SMSRequestResult.SMSRequested -> {
                             hasRequestedSms.value = true
+                            isBackupCodeRequested.value = false
                             triggerEvent(ShowSnackbar(R.string.requesting_sms_otp_success))
                         }
                     }
