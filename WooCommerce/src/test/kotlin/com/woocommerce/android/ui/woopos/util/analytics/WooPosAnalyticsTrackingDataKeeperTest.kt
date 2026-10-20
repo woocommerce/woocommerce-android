@@ -260,4 +260,41 @@ class WooPosAnalyticsTrackingDataKeeperTest {
         assertThat(keeper.readerReadyTimingProperties)
             .doesNotContainKeys("reader_connected_at_checkout", "milliseconds_waiting_for_reader_connection")
     }
+
+    @Test
+    fun `given reader ready, when reader reconnects before the outcome, then preparation is kept`() {
+        // GIVEN
+        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 500)
+        keeper.startCustomerInteraction(timestamp = 1_000)
+        keeper.orderSyncSuccessTimestamp = 2_000
+        keeper.startPaymentAttempt(timestamp = 2_500)
+        keeper.readerReadyForAttemptTimestamp = 3_000
+
+        // WHEN
+        keeper.onReaderConnectionChanged(isConnected = false, timestamp = 4_000)
+        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 5_000)
+
+        // THEN
+        assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isEqualTo(500)
+        assertThat(keeper.readerReadyTimingProperties["milliseconds_from_order_sync_to_reader_ready"]).isEqualTo("500")
+    }
+
+    @Test
+    fun `given reconnect after reader ready, when the next attempt starts, then preparation starts at the attempt`() {
+        // GIVEN
+        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 500)
+        keeper.startCustomerInteraction(timestamp = 1_000)
+        keeper.orderSyncSuccessTimestamp = 2_000
+        keeper.startPaymentAttempt(timestamp = 2_500)
+        keeper.readerReadyForAttemptTimestamp = 3_000
+        keeper.onReaderConnectionChanged(isConnected = false, timestamp = 4_000)
+        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 5_000)
+
+        // WHEN
+        keeper.startPaymentAttempt(timestamp = 6_000)
+        keeper.readerReadyForAttemptTimestamp = 6_750
+
+        // THEN
+        assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isEqualTo(750)
+    }
 }

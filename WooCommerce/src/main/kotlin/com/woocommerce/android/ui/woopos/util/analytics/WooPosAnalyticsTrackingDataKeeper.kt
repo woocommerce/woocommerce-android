@@ -22,7 +22,8 @@ class WooPosAnalyticsTrackingDataKeeper @Inject constructor() {
     var readerConnectedTimestamp: Long? = null
         private set
 
-    // Latest disconnected to connected transition in this interaction. Preparation starts no earlier than this.
+    // Latest disconnected to connected transition before this attempt's reader-ready. Preparation starts no earlier
+    // than this. Frozen once the reader is ready, so a later reconnect never changes that attempt's preparation.
     var latestReaderConnectedTimestamp: Long? = null
         private set
 
@@ -74,7 +75,9 @@ class WooPosAnalyticsTrackingDataKeeper @Inject constructor() {
         isReaderConnected = isConnected
         val isNewConnection = isConnected && wasConnected == false
         if (!isNewConnection) return
-        latestReaderConnectedTimestamp = timestamp
+        if (readerReadyForAttemptTimestamp == null) {
+            latestReaderConnectedTimestamp = timestamp
+        }
         if (readerConnectedAtCheckout == false && readerConnectedTimestamp == null) {
             readerConnectedTimestamp = timestamp
         }
