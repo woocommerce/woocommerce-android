@@ -631,14 +631,16 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         }
 
         data class ReaderReadyForCardPayment(
-            val waitingTimeSeconds: Long?,
+            val waitingTimeSeconds: Double?,
             val transport: String?,
+            val readerReadyTiming: Map<String, String> = emptyMap(),
         ) : Event() {
             override val name: String = "reader_ready_for_card_payment"
 
             init {
                 addProperties(
                     buildMap {
+                        putAll(readerReadyTiming)
                         waitingTimeSeconds?.let { put("waiting_time", it.toString()) }
                         transport?.let { put("transport", it) }
                     }

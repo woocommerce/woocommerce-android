@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.util.analytics
 
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoProvider
 import com.woocommerce.android.ui.payments.tracking.TrackingInfo
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ReaderReadySignal
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.mockito.kotlin.argumentCaptor
@@ -27,7 +28,7 @@ class WooPosReaderReadyForPaymentTrackerTest {
         whenever(trackingInfoProvider.trackingInfo).thenReturn(TrackingInfo(transport = "wifi_lan"))
 
         // WHEN
-        tracker.track()
+        tracker.track(ReaderReadySignal.INPUT_REQUESTED)
 
         // THEN
         val event = argumentCaptor<WooPosAnalyticsEvent.Event.ReaderReadyForCardPayment>()
@@ -41,7 +42,7 @@ class WooPosReaderReadyForPaymentTrackerTest {
         whenever(trackingInfoProvider.trackingInfo).thenReturn(TrackingInfo(transport = null))
 
         // WHEN
-        tracker.track()
+        tracker.track(ReaderReadySignal.INPUT_REQUESTED)
 
         // THEN
         val event = argumentCaptor<WooPosAnalyticsEvent.Event.ReaderReadyForCardPayment>()
@@ -56,11 +57,46 @@ class WooPosReaderReadyForPaymentTrackerTest {
         analyticsData.orderSyncSuccessTimestamp = System.currentTimeMillis()
 
         // WHEN
-        tracker.track()
+        tracker.track(ReaderReadySignal.INPUT_REQUESTED)
 
         // THEN
         val event = argumentCaptor<WooPosAnalyticsEvent.Event.ReaderReadyForCardPayment>()
         verify(analyticsTracker).track(event.capture())
         assertThat(event.firstValue.properties).containsKey("waiting_time")
     }
+
+    @Test
+    fun `given order synced one and a half seconds ago, when tracked, then the waiting time keeps the fraction`() = runTest {
+        // GIVEN
+        whenever(trackingInfoProvider.trackingInfo).thenReturn(TrackingInfo(transport = "bluetooth"))
+        analyticsData.orderSyncSuccessTimestamp = System.currentTimeMillis() - 1_500
+
+        // WHEN
+        tracker.track(ReaderReadySignal.INPUT_REQUESTED)
+
+        // THEN
+        val event = argumentCaptor<WooPosAnalyticsEvent.Event.ReaderReadyForCardPayment>()
+        verify(analyticsTracker).track(event.capture())
+        val waitingTime = event.firstValue.properties["waiting_time"] as String
+        assertThat(waitingTime.toDouble()).isGreaterThanOrEqualTo(1.5)
+    }
+
+    @Test
+    fun `given Tap to Pay, when tracked at collection start, then the event and keeper carry the collection_started signal`() =
+        runTest {
+            // GIVEN
+            whenever(trackingInfoProvider.trackingInfo).thenReturn(TrackingInfo(transport = "built_in"))
+
+            // WHEN
+            tracker.track(ReaderReadySignal.COLLECTION_STARTED)
+
+            // THEN
+            val event = argumentCaptor<WooPosAnalyticsEvent.Event.ReaderReadyForCardPayment>()
+            verify(analyticsTracker).track(event.capture())
+            assertThat(event.firstValue.properties["reader_ready_signal"]).isEqualTo("collection_started")
+            assertThat(analyticsData.readerReadySignal).isEqualTo(ReaderReadySignal.COLLECTION_STARTED)
+            assertThat(analyticsData.readerReadyForPaymentTimestamp).isNotNull()
+            assertThat(analyticsData.readerReadyForAttemptTimestamp)
+                .isEqualTo(analyticsData.readerReadyForPaymentTimestamp)
+        }
 }
