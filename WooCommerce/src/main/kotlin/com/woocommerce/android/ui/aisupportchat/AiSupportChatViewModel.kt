@@ -60,6 +60,7 @@ class AiSupportChatViewModel @Inject constructor(
     private var resumeLaunchMode: AiSupportChatLaunchMode.Resume? = null
     private val trackedEscalationButtonTriggers = mutableSetOf<AiSupportChatEscalationTrigger>()
     private var didTrackResolutionButtonShown = false
+    private var initialStatusReport: String? = null
 
     fun onLaunchModeLoaded(launchMode: AiSupportChatLaunchMode) {
         if (launchModeLoaded) return
@@ -601,9 +602,12 @@ class AiSupportChatViewModel @Inject constructor(
         }
 
         val context = if (chatId == null) {
+            val statusReport = initialStatusReport
+                ?: contextProvider.buildStatusReport(state.siteAddress).also { initialStatusReport = it }
             contextProvider.buildInitialContext(
                 diagnosticResult = state.diagnosticResult,
-                siteAddress = state.siteAddress
+                siteAddress = state.siteAddress,
+                statusReport = statusReport
             )
         } else {
             JsonObject()

@@ -1,23 +1,37 @@
 package com.woocommerce.android.ui.aisupportchat
 
 import com.google.gson.JsonObject
+import com.woocommerce.android.support.zendesk.MobileStatusProvider
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
 import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
 import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.Reusable
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @Reusable
 class SupportChatContextProvider @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val buildConfigWrapper: BuildConfigWrapper
+    private val buildConfigWrapper: BuildConfigWrapper,
+    private val mobileStatusProvider: MobileStatusProvider,
+    private val dispatchers: CoroutineDispatchers
 ) {
+    suspend fun buildStatusReport(siteAddress: String?): String = withContext(dispatchers.io) {
+        val site = selectedSite.getIfExists()
+        mobileStatusProvider(
+            selectedSite = site,
+            siteAddress = siteAddress?.takeIf { it.isNotBlank() && it != site?.url }
+        )
+    }
+
     fun buildInitialContext(
         diagnosticResult: DiagnosticResult? = null,
-        siteAddress: String? = null
+        siteAddress: String? = null,
+        statusReport: String? = null
     ): JsonObject {
         val site = selectedSite.getIfExists()
         val resolvedSiteAddress = siteAddress?.takeIf { it.isNotBlank() } ?: site?.url
@@ -30,8 +44,11 @@ class SupportChatContextProvider @Inject constructor(
                 }
             }
             resolvedSiteAddress?.let { addProperty("site_url", it) }
-            diagnosticResult?.toTroubleshootingResults()?.let { troubleshootingResults ->
-                addProperty("troubleshootingResults", troubleshootingResults)
+            listOfNotNull(
+                diagnosticResult?.toTroubleshootingResults(),
+                statusReport?.takeIf { it.isNotBlank() }
+            ).takeIf { it.isNotEmpty() }?.let { sections ->
+                addProperty("troubleshootingResults", sections.joinToString(separator = "\n\n"))
             }
         }
     }
