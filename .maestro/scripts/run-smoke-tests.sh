@@ -940,23 +940,33 @@ remove_home_widgets() {
       | grep -q "topResumedActivity.*launcher" && break
     sleep 1
   done
-  adb -s "$DEVICE_SERIAL" shell dumpsys activity activities 2>/dev/null \
-    | grep -q "topResumedActivity.*launcher" || return 0
+  if ! adb -s "$DEVICE_SERIAL" shell dumpsys activity activities 2>/dev/null \
+    | grep -q "topResumedActivity.*launcher"; then
+    echo "  warning: the launcher didn't open, so Woo widgets weren't removed"
+    return 0
+  fi
   width="$(adb -s "$DEVICE_SERIAL" shell wm size | sed -n 's/.*: \([0-9]*\)x[0-9]*.*/\1/p' | tail -1 || true)"
-  for attempt in 1 2 3 4 5; do
+  for attempt in 1 2 3 4 5 6; do
     sleep 1
-    adb -s "$DEVICE_SERIAL" shell uiautomator dump /sdcard/maestro_widgets.xml >/dev/null 2>&1 || return 0
+    if ! adb -s "$DEVICE_SERIAL" shell uiautomator dump /sdcard/maestro_widgets.xml >/dev/null 2>&1; then
+      echo "  warning: couldn't read the home screen, so Woo widgets weren't removed"
+      return 0
+    fi
     bounds="$(adb -s "$DEVICE_SERIAL" shell cat /sdcard/maestro_widgets.xml 2>/dev/null \
       | grep -o 'package="com.woocommerce.android"[^>]*bounds="[^"]*"' \
-      | sed 's/.*bounds="\[\([0-9]*\),\([0-9]*\)\]\[\([0-9]*\),\([0-9]*\)\]"/\1 \2 \3 \4/' \
-      | awk 'NR == 1 || $1 < a { a = $1 } NR == 1 || $2 < b { b = $2 }
-             NR == 1 || $3 > c { c = $3 } NR == 1 || $4 > d { d = $4 }
-             END { if (NR) print a, b, c, d }' || true)"
+      | head -n 1 | sed 's/.*bounds="\[\([0-9]*\),\([0-9]*\)\]\[\([0-9]*\),\([0-9]*\)\]"/\1 \2 \3 \4/' || true)"
     [[ -n "$bounds" ]] || break
+    if [[ "$attempt" -eq 6 ]]; then
+      echo "  warning: a Woo widget is still on the home screen"
+      break
+    fi
     read -r x1 y1 x2 y2 <<< "$bounds"
-    # A drag from the widget's title row doesn't pick it up, so drag from its middle.
+    # The first Woo node is a widget's root. A drag from its title row doesn't
+    # pick it up, so drag from its middle.
     adb -s "$DEVICE_SERIAL" shell input draganddrop \
-      $(((x1 + x2) / 2)) $(((y1 + y2) / 2)) $((${width:-1080} / 2)) 300 2500 >/dev/null 2>&1 || break
+      $(((x1 + x2) / 2)) $(((y1 + y2) / 2)) $((${width:-1080} / 2)) 300 2500 >/dev/null 2>&1 || true
+    # The launcher hides the other widgets while it settles after a removal.
+    sleep 3
   done
   adb -s "$DEVICE_SERIAL" shell rm -f /sdcard/maestro_widgets.xml >/dev/null 2>&1 || true
 }
