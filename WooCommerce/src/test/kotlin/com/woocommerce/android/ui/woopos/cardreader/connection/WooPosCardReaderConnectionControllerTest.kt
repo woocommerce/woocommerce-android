@@ -208,6 +208,30 @@ class WooPosCardReaderConnectionControllerTest {
         }
     }
 
+    @Suppress("DEPRECATION")
+    @Test
+    fun `given scanning, when local network permission granted, then discovery is restarted with wifi lan`() = runTest {
+        mockStatic(BluetoothAdapter::class.java).use { bluetoothAdapter ->
+            // GIVEN
+            bluetoothAdapter.`when`<BluetoothAdapter?> { BluetoothAdapter.getDefaultAdapter() }.thenReturn(null)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            whenever(unifiedDiscoveryStream.discover(any(), any(), any())).thenReturn(emptyFlow())
+            whenever(appPrefsWrapper.getLastConnectedPhoneDeviceId()).thenReturn("phone-device-id")
+            val controller = createController(this)
+            controller.onBluetoothEnabled()
+            advanceUntilIdle()
+
+            // WHEN
+            controller.onLocalNetworkPermissionResult(granted = true, shouldShowRationale = false)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(controller.state.value).isEqualTo(WooPosCardReaderConnectionState.Scanning)
+            verify(unifiedDiscoveryStream, times(2))
+                .discover(any(), any(), eq(setOf(WooPosDiscoveryTransport.WifiLan)))
+        }
+    }
+
     @Test
     fun `given the phone was re-advertised on a new port, when refreshing its address, then the new entry is used`() {
         // GIVEN

@@ -168,7 +168,15 @@ class WooPosCardReaderConnectionController(
         listenToConnectionStatus()
         listenToSoftwareUpdateStatus()
         checkRequirementsAndStartDiscovery()
+        if (shouldAskForLocalNetworkToReconnectPhone()) {
+            emitEvent(ControllerEvent.RequestLocalNetworkPermission)
+        }
     }
+
+    private fun shouldAskForLocalNetworkToReconnectPhone() =
+        hasConnectedPhoneReaderBefore() &&
+            !isLocalNetworkPermissionPermanentlyDenied &&
+            !WooPermissionUtils.hasLocalNetworkPermission(context)
 
     fun startUpdateFlow() {
         isRequiredUpdate = false
@@ -204,6 +212,8 @@ class WooPosCardReaderConnectionController(
                 onPhoneConnectClicked(currentState.phone)
             currentState is WooPosCardReaderConnectionState.RemoteTapToPayExplainer ->
                 hideRemoteTapToPayExplainer()
+            currentState is WooPosCardReaderConnectionState.Scanning || isShowingReaders() ->
+                checkRequirementsAndStartDiscovery()
         }
     }
 
