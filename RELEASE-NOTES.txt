@@ -18,8 +18,7 @@
 - [Internal] Shipping labels and the label eligibility check are no longer read from the database on the main thread [https://github.com/woocommerce/woocommerce-android/pull/16720]
 - [***] [Internal] Migrated Google sign-in from the deprecated Play Services Auth API to Credential Manager [https://github.com/woocommerce/woocommerce-android/pull/16721]
 - [*] Login now shows a clear message with a Try again option when the store returns an unexpected response [https://github.com/woocommerce/woocommerce-android/pull/16685]
-- [*] AI support chat now receives the Mobile Status Report, so it can help without asking for app and device details [https://github.com/woocommerce/woocommerce-android/pull/TBD]
-
+- [*] AI support chat now receives the Mobile Status Report, so it can help without asking for app and device details [https://github.com/woocommerce/woocommerce-android/pull/16733]
 
 25.9
 -----
