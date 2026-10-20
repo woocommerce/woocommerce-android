@@ -12,6 +12,8 @@ class WooPosAnalyticsTrackingDataKeeper @Inject constructor() {
 
     // Scoped to the current payment attempt, so a retry never reports the previous attempt's preparation.
     var readerReadyForAttemptTimestamp: Long? = null
+    var paymentAttemptStartedTimestamp: Long? = null
+        private set
     var readerReadySignal: ReaderReadySignal? = null
     var cardTappedTimestamp: Long? = null
     var checkoutButtonTapsCount: Int = 0
@@ -31,12 +33,17 @@ class WooPosAnalyticsTrackingDataKeeper @Inject constructor() {
             return readerConnected - interactionStarted
         }
 
-    // Starts at the later of order sync and reader connection, so connection waiting is not counted as preparation.
+    // Starts at the latest of order sync, reader connection and the start of this attempt, so neither connection
+    // waiting nor time on a previous attempt's error screen counts as preparation.
     val millisecondsFromOrderSyncToReaderReady: Long?
         get() {
             val orderSync = orderSyncSuccessTimestamp ?: return null
             val readerReady = readerReadyForAttemptTimestamp ?: return null
-            val preparationStart = maxOf(orderSync, readerConnectedTimestamp ?: orderSync)
+            val preparationStart = maxOf(
+                orderSync,
+                readerConnectedTimestamp ?: orderSync,
+                paymentAttemptStartedTimestamp ?: orderSync,
+            )
             return (readerReady - preparationStart).takeIf { it >= 0 }
         }
 
@@ -67,9 +74,10 @@ class WooPosAnalyticsTrackingDataKeeper @Inject constructor() {
         }
     }
 
-    fun startPaymentAttempt() {
+    fun startPaymentAttempt(timestamp: Long) {
         readerReadyForAttemptTimestamp = null
         readerReadySignal = null
+        paymentAttemptStartedTimestamp = timestamp
     }
 
     fun reset() {
@@ -77,6 +85,7 @@ class WooPosAnalyticsTrackingDataKeeper @Inject constructor() {
         orderSyncSuccessTimestamp = null
         readerReadyForPaymentTimestamp = null
         readerReadyForAttemptTimestamp = null
+        paymentAttemptStartedTimestamp = null
         readerReadySignal = null
         cardTappedTimestamp = null
         checkoutButtonTapsCount = 0

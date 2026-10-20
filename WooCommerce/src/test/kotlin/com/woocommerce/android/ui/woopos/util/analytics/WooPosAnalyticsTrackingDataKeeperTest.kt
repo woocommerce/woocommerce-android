@@ -13,6 +13,7 @@ class WooPosAnalyticsTrackingDataKeeperTest {
         keeper.startCustomerInteraction(timestamp = 1_000)
         keeper.onReaderConnectionChanged(isConnected = true, timestamp = 2_000)
         keeper.orderSyncSuccessTimestamp = 3_000
+        keeper.startPaymentAttempt(timestamp = 3_500)
         keeper.readerReadyForPaymentTimestamp = 4_000
         keeper.readerReadyForAttemptTimestamp = 4_000
         keeper.readerReadySignal = ReaderReadySignal.INPUT_REQUESTED
@@ -27,6 +28,7 @@ class WooPosAnalyticsTrackingDataKeeperTest {
         assertThat(keeper.orderSyncSuccessTimestamp).isNull()
         assertThat(keeper.readerReadyForPaymentTimestamp).isNull()
         assertThat(keeper.readerReadyForAttemptTimestamp).isNull()
+        assertThat(keeper.paymentAttemptStartedTimestamp).isNull()
         assertThat(keeper.readerReadySignal).isNull()
         assertThat(keeper.cardTappedTimestamp).isNull()
         assertThat(keeper.checkoutButtonTapsCount).isZero()
@@ -184,13 +186,30 @@ class WooPosAnalyticsTrackingDataKeeperTest {
         keeper.readerReadySignal = ReaderReadySignal.INPUT_REQUESTED
 
         // WHEN
-        keeper.startPaymentAttempt()
+        keeper.startPaymentAttempt(timestamp = 4_000)
 
         // THEN
         assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isNull()
         assertThat(keeper.readerReadyTimingProperties)
             .doesNotContainKeys("milliseconds_from_order_sync_to_reader_ready", "reader_ready_signal")
         assertThat(keeper.readerReadyForPaymentTimestamp).isEqualTo(3_000)
+    }
+
+    @Test
+    fun `given a declined attempt, when the retry reader is ready, then preparation starts at the retry`() {
+        // GIVEN
+        keeper.startCustomerInteraction(timestamp = 1_000)
+        keeper.orderSyncSuccessTimestamp = 1_000
+        keeper.startPaymentAttempt(timestamp = 1_000)
+        keeper.readerReadyForAttemptTimestamp = 2_000
+        assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isEqualTo(1_000)
+
+        // WHEN
+        keeper.startPaymentAttempt(timestamp = 30_000)
+        keeper.readerReadyForAttemptTimestamp = 32_000
+
+        // THEN
+        assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isEqualTo(2_000)
     }
 
     @Test
