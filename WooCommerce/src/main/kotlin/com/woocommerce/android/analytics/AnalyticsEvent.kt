@@ -64,9 +64,6 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     SIGNUP_MAGIC_LINK_OPEN_EMAIL_CLIENT_CLICKED(siteless = true),
     SIGNUP_MAGIC_LINK_SENT(siteless = true),
     SIGNUP_MAGIC_LINK_SUCCEEDED(siteless = true),
-    SIGNUP_SOCIAL_ACCOUNTS_NEED_CONNECTING(siteless = true),
-    SIGNUP_SOCIAL_BUTTON_FAILURE(siteless = true),
-    SIGNUP_SOCIAL_TO_LOGIN(siteless = true),
     ADDED_SELF_HOSTED_SITE(siteless = true),
     LOGIN_JETPACK_REQUIRED_SCREEN_VIEWED(siteless = true),
     LOGIN_WHAT_IS_JETPACK_HELP_SCREEN_VIEWED(siteless = true),
@@ -349,6 +346,10 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     REFUND_CREATE,
     REFUND_CREATE_SUCCESS,
     REFUND_CREATE_FAILED,
+
+    // -- Customers
+    CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_ERROR_SHOWN,
+    CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_RELOAD_SUCCESS,
 
     // -- Order Notes
     ADD_ORDER_NOTE_ADD_BUTTON_TAPPED,

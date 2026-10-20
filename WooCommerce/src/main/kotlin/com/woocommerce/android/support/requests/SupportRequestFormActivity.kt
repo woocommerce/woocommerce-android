@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.doOnTextChanged
 import com.woocommerce.android.R
@@ -57,7 +58,11 @@ class SupportRequestFormActivity : AppCompatActivity() {
             ticketType = intent.extras?.parcelable(PREFILL_TICKET_TYPE_KEY),
             subject = intent.extras?.getString(PREFILL_SUBJECT_KEY).orEmpty(),
             siteAddress = intent.extras?.getString(PREFILL_SITE_ADDRESS_KEY).orEmpty(),
-            message = intent.extras?.getString(PREFILL_MESSAGE_KEY).orEmpty()
+            message = intent.extras?.getString(PREFILL_MESSAGE_KEY).orEmpty(),
+            aiChatId = intent.extras
+                ?.takeIf { it.containsKey(AI_CHAT_ID_KEY) }
+                ?.getLong(AI_CHAT_ID_KEY),
+            aiSupportChatTranscript = intent.extras?.getString(AI_SUPPORT_CHAT_TRANSCRIPT_KEY)
         )
     }
 
@@ -164,6 +169,9 @@ class SupportRequestFormActivity : AppCompatActivity() {
         viewModel.isRequestLoading.observe(this) { isLoading ->
             if (isLoading) showProgressDialog() else hideProgressDialog()
         }
+        viewModel.shouldShowTranscriptDisclosure.observe(this) { shouldShow ->
+            binding.aiSupportChatTranscriptDisclosure.isVisible = shouldShow
+        }
         viewModel.event.observe(this) {
             when (it) {
                 is RequestCreationSucceeded -> showRequestCreationSuccessDialog()
@@ -256,6 +264,8 @@ class SupportRequestFormActivity : AppCompatActivity() {
         private const val PREFILL_SUBJECT_KEY = "PREFILL_SUBJECT_KEY"
         private const val PREFILL_SITE_ADDRESS_KEY = "PREFILL_SITE_ADDRESS_KEY"
         private const val PREFILL_MESSAGE_KEY = "PREFILL_MESSAGE_KEY"
+        private const val AI_CHAT_ID_KEY = "AI_CHAT_ID_KEY"
+        private const val AI_SUPPORT_CHAT_TRANSCRIPT_KEY = "AI_SUPPORT_CHAT_TRANSCRIPT_KEY"
         private const val AI_SUPPORT_CHAT_ANALYTICS_CONTEXT_KEY = "AI_SUPPORT_CHAT_ANALYTICS_CONTEXT_KEY"
 
         @JvmStatic
@@ -269,7 +279,9 @@ class SupportRequestFormActivity : AppCompatActivity() {
             prefilledSubject: String? = null,
             prefilledSiteAddress: String? = null,
             prefilledMessage: String? = null,
-            aiSupportChatTicketAnalyticsContext: AiSupportChatTicketAnalyticsContext? = null
+            aiSupportChatTicketAnalyticsContext: AiSupportChatTicketAnalyticsContext? = null,
+            aiChatId: Long? = null,
+            aiSupportChatTranscript: String? = null
         ) = Intent(context, SupportRequestFormActivity::class.java).apply {
             putExtra(ORIGIN_KEY, origin)
             putStringArrayListExtra(EXTRA_TAGS_KEY, ArrayList(extraTags))
@@ -278,6 +290,8 @@ class SupportRequestFormActivity : AppCompatActivity() {
             prefilledSubject?.let { putExtra(PREFILL_SUBJECT_KEY, it) }
             prefilledSiteAddress?.let { putExtra(PREFILL_SITE_ADDRESS_KEY, it) }
             prefilledMessage?.let { putExtra(PREFILL_MESSAGE_KEY, it) }
+            aiChatId?.let { putExtra(AI_CHAT_ID_KEY, it) }
+            aiSupportChatTranscript?.let { putExtra(AI_SUPPORT_CHAT_TRANSCRIPT_KEY, it) }
             aiSupportChatTicketAnalyticsContext?.let { putExtra(AI_SUPPORT_CHAT_ANALYTICS_CONTEXT_KEY, it) }
         }
     }

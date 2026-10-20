@@ -11,12 +11,14 @@ import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCCustomerStore
 import org.wordpress.android.fluxc.store.WCDataStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class CustomerListRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val customerStore: WCCustomerStore,
     private val dataStore: WCDataStore,
+    private val wooCommerceStore: WooCommerceStore,
     private val dispatchers: CoroutineDispatchers,
 ) {
     private var countries: List<Location> = emptyList()
@@ -91,6 +93,14 @@ class CustomerListRepository @Inject constructor(
         analyticsCustomerId: Long
     ): WooResult<WCCustomerFromAnalytics> = withContext(dispatchers.io) {
         customerStore.fetchSingleCustomerFromAnalyticsByAnalyticsCustomerId(selectedSite.get(), analyticsCustomerId)
+    }
+
+    suspend fun fetchAnalyticsEnabled(): WooResult<Boolean> = withContext(dispatchers.io) {
+        wooCommerceStore.fetchAnalyticsEnabled(selectedSite.get())
+    }
+
+    suspend fun enableAnalytics(): WooResult<Boolean> = withContext(dispatchers.io) {
+        wooCommerceStore.enableAnalytics(selectedSite.get())
     }
 
     suspend fun getCustomerByRemoteId(remoteId: Long) = withContext(dispatchers.io) {

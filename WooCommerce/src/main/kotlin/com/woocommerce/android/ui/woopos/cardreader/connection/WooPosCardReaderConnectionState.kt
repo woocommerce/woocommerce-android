@@ -19,6 +19,7 @@ sealed interface WooPosCardReaderConnectionState {
 
     data class RemoteTapToPayExplainer(
         val onDismissClicked: () -> Unit,
+        val onAllowLocalNetworkClicked: (() -> Unit)?,
     ) : WooPosCardReaderConnectionState {
         override val showCloseButton: Boolean = false
     }

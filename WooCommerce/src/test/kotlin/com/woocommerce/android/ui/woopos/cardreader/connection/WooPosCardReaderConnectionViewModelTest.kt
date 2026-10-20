@@ -282,6 +282,7 @@ class WooPosCardReaderConnectionViewModelTest {
             setupControllerMocks()
             controllerStateFlow.value = WooPosCardReaderConnectionState.RemoteTapToPayExplainer(
                 onDismissClicked = {},
+                onAllowLocalNetworkClicked = null,
             )
             val viewModel = createViewModel()
 

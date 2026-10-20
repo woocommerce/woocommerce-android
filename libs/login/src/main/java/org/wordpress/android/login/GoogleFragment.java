@@ -68,7 +68,6 @@ public abstract class GoogleFragment extends Fragment implements ConnectionCallb
     public interface GoogleListener {
         void onGoogleEmailSelected(String email);
         void onGoogleLoginFinished();
-        void onGoogleSignupFinished(String name, String email, String photoUrl, String username);
         void onGoogleSignupError(String msg);
     }
 
