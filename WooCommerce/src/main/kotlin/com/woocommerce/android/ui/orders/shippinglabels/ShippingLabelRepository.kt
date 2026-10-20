@@ -47,7 +47,7 @@ class ShippingLabelRepository @Inject constructor(
         }
     }
 
-    fun getShippingLabelByOrderIdAndLabelId(
+    suspend fun getShippingLabelByOrderIdAndLabelId(
         orderId: Long,
         shippingLabelId: Long
     ): ShippingLabel? {
