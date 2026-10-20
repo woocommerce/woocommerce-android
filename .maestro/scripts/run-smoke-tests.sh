@@ -928,6 +928,49 @@ upgrade_app() {
   python3 "$ENSURE_RELEASE_APP_SCRIPT" --device "$DEVICE_SERIAL" --apk "$APK_PATH" || exit 1
 }
 
+# Maestro cannot remove a home screen widget, so the runner drags any Woo widget
+# to the launcher's Remove target before and after flows tagged home_widget.
+remove_home_widgets() {
+  local attempt bounds x1 y1 x2 y2 width
+  adb -s "$DEVICE_SERIAL" shell input keyevent KEYCODE_HOME >/dev/null 2>&1 || true
+  # The app's own views share the widget's package, so read the screen only once
+  # the launcher is in front.
+  for attempt in 1 2 3 4 5 6 7 8 9 10; do
+    adb -s "$DEVICE_SERIAL" shell dumpsys activity activities 2>/dev/null \
+      | grep -q "topResumedActivity.*launcher" && break
+    sleep 1
+  done
+  if ! adb -s "$DEVICE_SERIAL" shell dumpsys activity activities 2>/dev/null \
+    | grep -q "topResumedActivity.*launcher"; then
+    echo "  warning: the launcher didn't open, so Woo widgets weren't removed"
+    return 0
+  fi
+  width="$(adb -s "$DEVICE_SERIAL" shell wm size | sed -n 's/.*: \([0-9]*\)x[0-9]*.*/\1/p' | tail -1 || true)"
+  for attempt in 1 2 3 4 5 6; do
+    sleep 1
+    if ! adb -s "$DEVICE_SERIAL" shell uiautomator dump /sdcard/maestro_widgets.xml >/dev/null 2>&1; then
+      echo "  warning: couldn't read the home screen, so Woo widgets weren't removed"
+      return 0
+    fi
+    bounds="$(adb -s "$DEVICE_SERIAL" shell cat /sdcard/maestro_widgets.xml 2>/dev/null \
+      | grep -o 'package="com.woocommerce.android"[^>]*bounds="[^"]*"' \
+      | head -n 1 | sed 's/.*bounds="\[\([0-9]*\),\([0-9]*\)\]\[\([0-9]*\),\([0-9]*\)\]"/\1 \2 \3 \4/' || true)"
+    [[ -n "$bounds" ]] || break
+    if [[ "$attempt" -eq 6 ]]; then
+      echo "  warning: a Woo widget is still on the home screen"
+      break
+    fi
+    read -r x1 y1 x2 y2 <<< "$bounds"
+    # The first Woo node is a widget's root. A drag from its title row doesn't
+    # pick it up, so drag from its middle.
+    adb -s "$DEVICE_SERIAL" shell input draganddrop \
+      $(((x1 + x2) / 2)) $(((y1 + y2) / 2)) $((${width:-1080} / 2)) 300 2500 >/dev/null 2>&1 || true
+    # The launcher hides the other widgets while it settles after a removal.
+    sleep 3
+  done
+  adb -s "$DEVICE_SERIAL" shell rm -f /sdcard/maestro_widgets.xml >/dev/null 2>&1 || true
+}
+
 reset_app_locale() {
   if [[ -n "$APP_LOCALE_SET" ]]; then
     adb -s "$APP_LOCALE_SET" shell cmd locale set-app-locales "$APP_ID" --locales "" >/dev/null 2>&1 || true
@@ -1358,6 +1401,9 @@ for repeat_index in $(seq 1 "$REPEAT"); do
     if flow_has_any_tag "$flow" app_upgrade; then
       upgrade_app "$base"
     fi
+    if flow_has_any_tag "$flow" home_widget; then
+      remove_home_widgets
+    fi
 
     first="$(run_one_attempt "$flow" "$base" 1 "$repeat_index")"
     IFS='|' read -r first_exit first_duration first_media first_log first_error first_recovery <<< "$first"
@@ -1375,6 +1421,9 @@ for repeat_index in $(seq 1 "$REPEAT"); do
         FAILED=$((FAILED + 1))
       else
         echo "  first attempt failed; retrying once"
+        if flow_has_any_tag "$flow" home_widget; then
+          remove_home_widgets
+        fi
         retry="$(run_one_attempt "$flow" "$base" 2 "$repeat_index")"
         IFS='|' read -r retry_exit retry_duration retry_media retry_log retry_error retry_recovery <<< "$retry"
         duration=$((first_duration + retry_duration))
@@ -1415,6 +1464,9 @@ for repeat_index in $(seq 1 "$REPEAT"); do
 
     RESULTS+=("$status|$repeat_index|$base|$duration|$media|$log_rel|$error|$recovery")
     echo "  $status in ${duration}s"
+    if flow_has_any_tag "$flow" home_widget; then
+      remove_home_widgets
+    fi
     # Login flows and failed flows can end signed in to another site, so the next
     # flow signs in again.
     if flow_has_any_tag "$flow" login || [[ "$status" == "FAIL" ]]; then

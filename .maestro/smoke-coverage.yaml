@@ -196,7 +196,7 @@ items:
     flow: .maestro/flows/products_media_upload.yaml
   - id: products.detail.media.camera
     title: Upload product media with the camera
-    manual: "Taking a photo goes through the emulator's camera app."
+    flow: .maestro/flows/products_media_upload.yaml
   - id: products.detail.price
     title: Product price settings
     flow: .maestro/flows/products_create.yaml
@@ -311,7 +311,7 @@ items:
     flow: .maestro/flows/other_localization.yaml
   - id: other.home-widget
     title: Home screen widgets
-    manual: "Outside Maestro app surface."
+    flow: .maestro/flows/other_home_widget.yaml
   - id: other.quick-actions
     title: Quick Actions
     flow: .maestro/flows/android_quick_actions.yaml

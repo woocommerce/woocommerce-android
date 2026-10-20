@@ -218,6 +218,7 @@ The runner:
 - `pos_tablet`: POS flows, tablet AVD required.
 - `android_system`: launcher/system-surface flows, English Pixel Launcher AVD required.
 - `app_locale_de`: the runner logs in and sets the app language to German first.
+- `home_widget`: the runner removes Woo widgets from the home screen before and after the flow.
 - `system_surface`: flow enters Android-owned UI; assertions stop at the documented handoff boundary.
 - `destructive`: mutates store data.
 - `store_shared`: runs against the shared store unless `--store` is passed; never combined with `destructive`.
