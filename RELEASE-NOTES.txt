@@ -8,6 +8,7 @@
 - [*] Login now shows a clear message with a Try again option when the store returns an unexpected response [https://github.com/woocommerce/woocommerce-android/pull/16685]
 - [*] Login errors from an unexpected store response now offer Contact Support [https://github.com/woocommerce/woocommerce-android/pull/16750]
 - [*] AI support chat now receives the Mobile Status Report, so it can help without asking for app and device details [https://github.com/woocommerce/woocommerce-android/pull/TBD]
+- [*] AI support chat now receives the Mobile Status Report, so it can help without asking for app and device details [https://github.com/woocommerce/woocommerce-android/pull/16733]
 
 
 25.9
