@@ -15,6 +15,8 @@ class WooPosPaymentStateAnalyticsTracker @Inject constructor(
     suspend fun trackPaymentStates(paymentState: StateFlow<CardReaderPaymentOrRefundState>?) {
         paymentState?.distinctUntilChanged { old, new -> old::class == new::class }?.collect {
             when (it) {
+                is CardReaderPaymentState.LoadingData -> analyticsData.startPaymentAttempt()
+
                 is CardReaderPaymentState.ProcessingPayment.BuiltInReaderProcessingPayment ->
                     readerReadyForPaymentTracker.track(ReaderReadySignal.COLLECTION_STARTED)
 
@@ -30,7 +32,6 @@ class WooPosPaymentStateAnalyticsTracker @Inject constructor(
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.InteracRefundSuccessful,
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.LoadingData,
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.ProcessingInteracRefund,
-                is CardReaderPaymentState.LoadingData,
                 is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.Cancelable,
                 is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable,
                 is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.Cancelable,

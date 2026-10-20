@@ -12,6 +12,7 @@ class WooPosReaderReadyForPaymentTracker @Inject constructor(
     suspend fun track(signal: ReaderReadySignal) {
         val readerReadyTimestamp = System.currentTimeMillis()
         analyticsData.readerReadyForPaymentTimestamp = readerReadyTimestamp
+        analyticsData.readerReadyForAttemptTimestamp = readerReadyTimestamp
         analyticsData.readerReadySignal = signal
 
         analyticsTracker.track(

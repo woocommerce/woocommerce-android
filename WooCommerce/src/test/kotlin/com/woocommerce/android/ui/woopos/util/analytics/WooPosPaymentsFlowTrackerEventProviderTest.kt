@@ -16,10 +16,12 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
     fun `given a timed payment, when outcome events are built, then success, failure and cancellation share the timing properties`() {
         // GIVEN
         val now = System.currentTimeMillis()
+        keeper.onReaderConnectionChanged(isConnected = false, timestamp = now - 20_000)
         keeper.startCustomerInteraction(timestamp = now - 10_000)
         keeper.orderSyncSuccessTimestamp = now - 9_000
         keeper.onReaderConnectionChanged(isConnected = true, timestamp = now - 8_000)
         keeper.readerReadyForPaymentTimestamp = now - 5_000
+        keeper.readerReadyForAttemptTimestamp = now - 5_000
         keeper.readerReadySignal = ReaderReadySignal.INPUT_REQUESTED
         keeper.cardTappedTimestamp = now - 2_000
 

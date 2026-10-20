@@ -87,6 +87,7 @@ class WooPosReaderReadyForPaymentTrackerTest {
             // GIVEN
             whenever(trackingInfoProvider.trackingInfo).thenReturn(TrackingInfo(transport = "bluetooth"))
             val now = System.currentTimeMillis()
+            analyticsData.onReaderConnectionChanged(isConnected = false, timestamp = now - 20_000)
             analyticsData.startCustomerInteraction(timestamp = now - 10_000)
             analyticsData.orderSyncSuccessTimestamp = now - 9_000
             analyticsData.onReaderConnectionChanged(isConnected = true, timestamp = now - 8_000)
@@ -121,5 +122,7 @@ class WooPosReaderReadyForPaymentTrackerTest {
             assertThat(event.firstValue.properties["reader_ready_signal"]).isEqualTo("collection_started")
             assertThat(analyticsData.readerReadySignal).isEqualTo(ReaderReadySignal.COLLECTION_STARTED)
             assertThat(analyticsData.readerReadyForPaymentTimestamp).isNotNull()
+            assertThat(analyticsData.readerReadyForAttemptTimestamp)
+                .isEqualTo(analyticsData.readerReadyForPaymentTimestamp)
         }
 }

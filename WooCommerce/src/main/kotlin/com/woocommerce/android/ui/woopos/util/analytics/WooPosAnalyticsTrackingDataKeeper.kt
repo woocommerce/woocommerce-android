@@ -9,6 +9,9 @@ class WooPosAnalyticsTrackingDataKeeper @Inject constructor() {
     var interactionWithCustomerStartedTimestamp: Long? = null
     var orderSyncSuccessTimestamp: Long? = null
     var readerReadyForPaymentTimestamp: Long? = null
+
+    // Scoped to the current payment attempt, so a retry never reports the previous attempt's preparation.
+    var readerReadyForAttemptTimestamp: Long? = null
     var readerReadySignal: ReaderReadySignal? = null
     var cardTappedTimestamp: Long? = null
     var checkoutButtonTapsCount: Int = 0
@@ -17,8 +20,9 @@ class WooPosAnalyticsTrackingDataKeeper @Inject constructor() {
     var readerConnectedTimestamp: Long? = null
         private set
 
-    // Mirrors the live reader status, so reset() leaves it alone.
-    private var isReaderConnected = false
+    // Mirrors the live reader status, so reset() leaves it alone. Null until the first status, so unknown is not
+    // reported as disconnected.
+    private var isReaderConnected: Boolean? = null
 
     val millisecondsWaitingForReaderConnection: Long?
         get() {
@@ -31,8 +35,9 @@ class WooPosAnalyticsTrackingDataKeeper @Inject constructor() {
     val millisecondsFromOrderSyncToReaderReady: Long?
         get() {
             val orderSync = orderSyncSuccessTimestamp ?: return null
-            val readerReady = readerReadyForPaymentTimestamp ?: return null
-            return readerReady - maxOf(orderSync, readerConnectedTimestamp ?: orderSync)
+            val readerReady = readerReadyForAttemptTimestamp ?: return null
+            val preparationStart = maxOf(orderSync, readerConnectedTimestamp ?: orderSync)
+            return (readerReady - preparationStart).takeIf { it >= 0 }
         }
 
     val readerReadyTimingProperties: Map<String, String>
@@ -54,17 +59,24 @@ class WooPosAnalyticsTrackingDataKeeper @Inject constructor() {
     }
 
     fun onReaderConnectionChanged(isConnected: Boolean, timestamp: Long) {
-        val isNewConnection = isConnected && !isReaderConnected
+        val wasConnected = isReaderConnected
         isReaderConnected = isConnected
+        val isNewConnection = isConnected && wasConnected == false
         if (isNewConnection && readerConnectedAtCheckout == false && readerConnectedTimestamp == null) {
             readerConnectedTimestamp = timestamp
         }
+    }
+
+    fun startPaymentAttempt() {
+        readerReadyForAttemptTimestamp = null
+        readerReadySignal = null
     }
 
     fun reset() {
         interactionWithCustomerStartedTimestamp = null
         orderSyncSuccessTimestamp = null
         readerReadyForPaymentTimestamp = null
+        readerReadyForAttemptTimestamp = null
         readerReadySignal = null
         cardTappedTimestamp = null
         checkoutButtonTapsCount = 0
