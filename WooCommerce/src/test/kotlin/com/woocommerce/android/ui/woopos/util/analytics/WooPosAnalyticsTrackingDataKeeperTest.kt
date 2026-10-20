@@ -34,6 +34,7 @@ class WooPosAnalyticsTrackingDataKeeperTest {
         assertThat(keeper.checkoutButtonTapsCount).isZero()
         assertThat(keeper.readerConnectedAtCheckout).isNull()
         assertThat(keeper.readerConnectedTimestamp).isNull()
+        assertThat(keeper.latestReaderConnectedTimestamp).isNull()
         assertThat(keeper.readerReadyTimingProperties).isEmpty()
     }
 
@@ -223,5 +224,40 @@ class WooPosAnalyticsTrackingDataKeeperTest {
 
         // THEN
         assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isNull()
+    }
+
+    @Test
+    fun `given reader connected at start, when it reconnects during the attempt, then preparation starts at reconnect`() {
+        // GIVEN
+        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 500)
+        keeper.startCustomerInteraction(timestamp = 1_000)
+        keeper.orderSyncSuccessTimestamp = 2_000
+        keeper.startPaymentAttempt(timestamp = 2_500)
+
+        // WHEN
+        keeper.onReaderConnectionChanged(isConnected = false, timestamp = 3_000)
+        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 5_000)
+        keeper.readerReadyForAttemptTimestamp = 6_000
+
+        // THEN
+        assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isEqualTo(1_000)
+        assertThat(keeper.millisecondsWaitingForReaderConnection).isNull()
+    }
+
+    @Test
+    fun `given unknown status at start, when reader disconnects and reconnects, then only preparation uses it`() {
+        // GIVEN
+        keeper.startCustomerInteraction(timestamp = 1_000)
+        keeper.orderSyncSuccessTimestamp = 2_000
+        keeper.onReaderConnectionChanged(isConnected = false, timestamp = 2_500)
+
+        // WHEN
+        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 4_000)
+        keeper.readerReadyForAttemptTimestamp = 5_000
+
+        // THEN
+        assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isEqualTo(1_000)
+        assertThat(keeper.readerReadyTimingProperties)
+            .doesNotContainKeys("reader_connected_at_checkout", "milliseconds_waiting_for_reader_connection")
     }
 }

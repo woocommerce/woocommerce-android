@@ -20,12 +20,11 @@ class WooPosPaymentStateAnalyticsTracker @Inject constructor(
                 is CardReaderPaymentState.ProcessingPayment.BuiltInReaderProcessingPayment ->
                     readerReadyForPaymentTracker.track(ReaderReadySignal.COLLECTION_STARTED)
 
-                is CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment,
-
                 is CardReaderPaymentState.PaymentCapturing -> {
                     analyticsData.cardTappedTimestamp = System.currentTimeMillis()
                 }
 
+                is CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment,
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.CollectingInteracRefund,
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.InteracRefundFailure.Cancelable,
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.InteracRefundFailure.NonCancelable,

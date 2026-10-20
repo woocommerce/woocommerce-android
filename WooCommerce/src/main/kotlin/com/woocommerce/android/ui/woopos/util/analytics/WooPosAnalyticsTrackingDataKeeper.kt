@@ -22,6 +22,10 @@ class WooPosAnalyticsTrackingDataKeeper @Inject constructor() {
     var readerConnectedTimestamp: Long? = null
         private set
 
+    // Latest disconnected to connected transition in this interaction. Preparation starts no earlier than this.
+    var latestReaderConnectedTimestamp: Long? = null
+        private set
+
     // Mirrors the live reader status, so reset() leaves it alone. Null until the first status, so unknown is not
     // reported as disconnected.
     private var isReaderConnected: Boolean? = null
@@ -41,7 +45,7 @@ class WooPosAnalyticsTrackingDataKeeper @Inject constructor() {
             val readerReady = readerReadyForAttemptTimestamp ?: return null
             val preparationStart = maxOf(
                 orderSync,
-                readerConnectedTimestamp ?: orderSync,
+                latestReaderConnectedTimestamp ?: orderSync,
                 paymentAttemptStartedTimestamp ?: orderSync,
             )
             return (readerReady - preparationStart).takeIf { it >= 0 }
@@ -69,7 +73,9 @@ class WooPosAnalyticsTrackingDataKeeper @Inject constructor() {
         val wasConnected = isReaderConnected
         isReaderConnected = isConnected
         val isNewConnection = isConnected && wasConnected == false
-        if (isNewConnection && readerConnectedAtCheckout == false && readerConnectedTimestamp == null) {
+        if (!isNewConnection) return
+        latestReaderConnectedTimestamp = timestamp
+        if (readerConnectedAtCheckout == false && readerConnectedTimestamp == null) {
             readerConnectedTimestamp = timestamp
         }
     }
@@ -91,6 +97,7 @@ class WooPosAnalyticsTrackingDataKeeper @Inject constructor() {
         checkoutButtonTapsCount = 0
         readerConnectedAtCheckout = null
         readerConnectedTimestamp = null
+        latestReaderConnectedTimestamp = null
     }
 
     private companion object {
