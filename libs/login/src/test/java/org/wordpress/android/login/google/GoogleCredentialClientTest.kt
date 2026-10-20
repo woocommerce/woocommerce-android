@@ -14,7 +14,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class GoogleCredentialResultMappingTest {
+class GoogleCredentialClientTest {
     @Test
     fun `given Google ID token credential, when mapping, then return success with account details`() {
         val credential = GoogleIdTokenCredential.Builder()
