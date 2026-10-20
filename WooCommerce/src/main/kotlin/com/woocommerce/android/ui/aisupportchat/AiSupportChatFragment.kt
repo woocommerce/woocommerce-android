@@ -137,19 +137,19 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
     private fun handleContactHumanSupport(event: ContactHumanSupport) {
         when (event.mode) {
             HumanSupportContactMode.DIRECT_CREATE -> showTranscriptConsentDialog(event)
-            HumanSupportContactMode.OPEN_FORM -> openSupportRequestForm(event, includeTranscript = false)
+            HumanSupportContactMode.OPEN_FORM -> openSupportRequestForm(event)
         }
     }
 
     private fun showTranscriptConsentDialog(event: ContactHumanSupport) {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.ai_support_chat_escalation_consent_title)
-            .setMessage(R.string.ai_support_chat_escalation_consent_message)
+            .setMessage(R.string.ai_support_chat_escalation_consent_message_v2)
             .setPositiveButton(R.string.ai_support_chat_escalation_consent_send_request) { _, _ ->
                 createTicketDirectly(event)
             }
             .setNeutralButton(R.string.ai_support_chat_escalation_consent_contact_form) { _, _ ->
-                openSupportRequestForm(event, includeTranscript = false)
+                openSupportRequestForm(event)
             }
             .show()
     }
@@ -166,7 +166,8 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
                 description = event.description,
                 extraTags = event.extraTags,
                 siteAddress = event.siteAddress,
-                diagnosticLog = event.diagnosticLog
+                diagnosticLog = event.diagnosticLog,
+                aiChatId = event.chatId
             ).collect { result ->
                 hideProgressDialog()
                 result
@@ -189,13 +190,13 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
                             context = event.ticketAnalyticsContext,
                             error = error
                         )
-                        openSupportRequestForm(event, includeTranscript = true)
+                        openSupportRequestForm(event)
                     }
             }
         }
     }
 
-    private fun openSupportRequestForm(event: ContactHumanSupport, includeTranscript: Boolean) {
+    private fun openSupportRequestForm(event: ContactHumanSupport) {
         supportRequestLauncher.launch(
             SupportRequestFormActivity.createIntent(
                 context = requireContext(),
@@ -203,10 +204,11 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
                 extraTags = ArrayList(event.extraTags),
                 preselectedTicketType = event.ticketType,
                 prefilledSubject = event.subject,
-                prefilledMessage = event.description.takeIf { includeTranscript },
                 prefilledSiteAddress = event.siteAddress,
                 aiSupportChatTicketAnalyticsContext = event.ticketAnalyticsContext,
-                diagnosticLog = event.diagnosticLog
+                diagnosticLog = event.diagnosticLog,
+                aiChatId = event.chatId,
+                aiSupportChatTranscript = event.description.takeIf { event.transcript.isNotBlank() }
             )
         )
     }

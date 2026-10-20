@@ -7,6 +7,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -147,6 +148,12 @@ private fun WooPosPhoneProductsContent(
                         onBackClick = {
                             onItemsUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked)
                         },
+                        submitButtonPadding = PaddingValues(
+                            start = WooPosSpacing.Medium.value,
+                            top = WooPosSpacing.Medium.value,
+                            end = WooPosSpacing.Medium.value,
+                            bottom = WooPosSpacing.Medium.value + WooPosSpacing.Small.value,
+                        ),
                     )
                 },
                 modifier = Modifier.weight(1f),

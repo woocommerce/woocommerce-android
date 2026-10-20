@@ -137,6 +137,7 @@ import com.woocommerce.android.ui.orders.creation.views.ProductAmountEvent
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsFragment.Companion.CUSTOM_AMOUNT
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType
+import com.woocommerce.android.ui.products.GetUnsupportedParentRestriction
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductRestriction
@@ -199,6 +200,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val barcodeScanningTracker: BarcodeScanningTracker,
     private val resourceProvider: ResourceProvider,
     private val productRestrictions: OrderCreationProductRestrictions,
+    private val getUnsupportedParentRestriction: GetUnsupportedParentRestriction,
     private val getTaxRatesInfoDialogState: GetTaxRatesInfoDialogViewState,
     private val getAddressFromTaxRate: GetAddressFromTaxRate,
     private val getAutoTaxRateSetting: GetAutoTaxRateSetting,
@@ -958,14 +960,14 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun handleFetchProductBySKUSuccess(
+    private suspend fun handleFetchProductBySKUSuccess(
         product: com.woocommerce.android.model.Product,
         selectedItems: List<SelectedItem>,
         source: ScanningSource,
         barcodeOptions: BarcodeOptions
     ) {
         viewState = viewState.copy(isUpdatingOrderDraft = false)
-        addScannedProduct(product, selectedItems, source, barcodeOptions.barcodeFormat)
+        addScannedProduct(product, selectedItems, source, barcodeOptions)
     }
 
     private fun handleFetchProductBySKUEmpty(
@@ -995,13 +997,24 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     @Suppress("LongMethod")
-    private fun addScannedProduct(
+    private suspend fun addScannedProduct(
         product: ModelProduct,
         selectedItems: List<SelectedItem>,
         source: ScanningSource,
-        barcodeFormat: BarcodeFormat
+        barcodeOptions: BarcodeOptions
     ) {
-        val restriction = productRestrictions.getRestriction(product)
+        val barcodeFormat = barcodeOptions.barcodeFormat
+        val restriction = productRestrictions.getRestriction(product) ?: when (product.parentId) {
+            0L -> null
+            else -> when (val parentResult = getUnsupportedParentRestriction(product)) {
+                GetUnsupportedParentRestriction.Result.NotRestricted -> null
+                is GetUnsupportedParentRestriction.Result.Restricted -> parentResult.restriction
+                GetUnsupportedParentRestriction.Result.ParentUnavailable -> {
+                    handleFetchProductBySKUFailure(source, barcodeOptions, "Parent of the scanned variation not loaded")
+                    return
+                }
+            }
+        }
         if (restriction != null) {
             handleRestrictedProduct(restriction, source, barcodeFormat)
         } else if (product.isVariable()) {

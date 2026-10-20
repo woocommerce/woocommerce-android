@@ -13,17 +13,20 @@ import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCCustomerStore
 import org.wordpress.android.fluxc.store.WCDataStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
 class CustomerListRepositoryTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val customerStore: WCCustomerStore = mock()
     private val dataStore: WCDataStore = mock()
+    private val wooCommerceStore: WooCommerceStore = mock()
 
     private val repo = CustomerListRepository(
         selectedSite,
         customerStore,
         dataStore,
+        wooCommerceStore,
         coroutinesTestRule.testDispatchers,
     )
 

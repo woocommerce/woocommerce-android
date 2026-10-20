@@ -65,7 +65,8 @@ class ZendeskTicketRepository @Inject constructor(
         description: String,
         extraTags: List<String>,
         siteAddress: String,
-        diagnosticLog: String? = null
+        diagnosticLog: String? = null,
+        aiChatId: Long? = null
     ) = callbackFlow {
         if (zendeskSettings.isIdentitySet.not()) {
             trySend(Result.failure(IdentityNotSetException))
@@ -118,7 +119,8 @@ class ZendeskTicketRepository @Inject constructor(
                 ssr = ssr,
                 siteAddress = siteAddress,
                 deviceLogs = deviceLogs,
-                msr = msr
+                msr = msr,
+                aiChatId = aiChatId
             )
 
             this.customFields = buildZendeskCustomFields(zendeskCustomFieldsParams)
@@ -197,7 +199,7 @@ class ZendeskTicketRepository @Inject constructor(
      * will be used to fill the custom fields we have setup in Zendesk UI for Happiness Engineers.
      */
     private suspend fun buildZendeskCustomFields(params: ZendeskCustomFieldsParams): List<CustomField> {
-        return listOf(
+        return listOfNotNull(
             CustomField(TicketCustomField.appVersion, envDataSource.generateVersionName(params.context)),
             CustomField(TicketCustomField.deviceFreeSpace, envDataSource.totalAvailableMemorySize),
             CustomField(TicketCustomField.networkInformation, envDataSource.generateNetworkInformation(params.context)),
@@ -213,7 +215,8 @@ class ZendeskTicketRepository @Inject constructor(
                 envDataSource.generateCombinedLogInformationOfSites(params.allSites)
             ),
             CustomField(TicketCustomField.siteAddress, params.siteAddress),
-            CustomField(TicketCustomField.msr, params.msr)
+            CustomField(TicketCustomField.msr, params.msr),
+            params.aiChatId?.let { CustomField(TicketCustomField.aiChatId, it.toString()) }
         )
     }
 
@@ -355,6 +358,9 @@ object TicketCustomField {
     const val sourcePlatform = 360009311651L
     const val siteAddress = 22054927L
 
+    // Links escalated AI chats to the webhook that adds their transcripts to Zendesk tickets.
+    const val aiChatId = 33538949515668L
+
     // MSR refers to the Mobile Status Report, the app-level counterpart to the SSR above.
     const val msr = 51884914117268L
 }
@@ -403,5 +409,6 @@ private data class ZendeskCustomFieldsParams(
     val ssr: String?,
     val siteAddress: String,
     val deviceLogs: String,
-    val msr: String
+    val msr: String,
+    val aiChatId: Long?
 )
