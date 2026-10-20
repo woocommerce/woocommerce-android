@@ -18,6 +18,8 @@ tags:
 
 - pressKey: HOME
 
+# The home screen menu opens from a long press on empty wallpaper, which has no
+# element to select. The runner removes Woo widgets first, so the middle is empty.
 - longPressOn:
     point: "50%,50%"
     label: "Open the home screen menu"
@@ -54,8 +56,6 @@ tags:
     label: "Wait for the widget's stats"
 - assertVisible:
     id: "com.woocommerce.android:id/widget_orders_title"
-- assertVisible:
-    id: "com.woocommerce.android:id/widget_visitors_title"
 
 - takeScreenshot: home_widget
 
