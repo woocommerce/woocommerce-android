@@ -7,6 +7,7 @@
 - [*] [Woo POS] On Android 17, POS asks for local network access only when you choose to use a phone as a card reader or have used one before [https://github.com/woocommerce/woocommerce-android/pull/16723]
 - [*] Menu icons now use a dark background in dark mode [https://github.com/woocommerce/woocommerce-android/pull/16672]
 - [*] Order creation no longer adds a variation of a subscription product when its SKU is scanned [https://github.com/woocommerce/woocommerce-android/pull/16713]
+- [*] On tablets, an open order editor no longer closes and loses its text when the app is restored [https://github.com/woocommerce/woocommerce-android/pull/16731]
 
 
 25.9
