@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos.util.analytics
 
 import com.woocommerce.android.analytics.IAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.PaymentFlowTrackerEvent.CardPresentCollectPaymentCancelled
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.PaymentFlowTrackerEvent.CardPresentCollectPaymentFailed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ReaderReadySignal
 import org.assertj.core.api.Assertions.assertThat
 import org.mockito.kotlin.mock
@@ -62,6 +64,21 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
             "milliseconds_since_reader_ready_to_collect_payment",
             "reader_ready_signal",
         )
+    }
+
+    @Test
+    fun `when failure and cancellation events are built, then each call returns a new event with its Tracks name`() {
+        // WHEN
+        val failed = provider.CARD_PRESENT_COLLECT_PAYMENT_FAILED
+        val cancelled = provider.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED
+
+        // THEN
+        assertThat(failed).isInstanceOf(CardPresentCollectPaymentFailed::class.java)
+        assertThat(failed.name).isEqualTo("card_present_collect_payment_failed")
+        assertThat(failed).isNotSameAs(provider.CARD_PRESENT_COLLECT_PAYMENT_FAILED)
+        assertThat(cancelled).isInstanceOf(CardPresentCollectPaymentCancelled::class.java)
+        assertThat(cancelled.name).isEqualTo("card_present_collect_payment_cancelled")
+        assertThat(cancelled).isNotSameAs(provider.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED)
     }
 
     private fun IAnalyticsEvent.wooPosProperties() = (this as WooPosAnalyticsEvent).properties
