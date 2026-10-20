@@ -162,7 +162,7 @@ class WooPosAnalyticsTrackingDataKeeperTest {
     }
 
     @Test
-    fun `given no connection status yet, when interaction starts and the first status arrives, then connection is unknown`() {
+    fun `given no status yet, when interaction starts and first status arrives, then connection is unknown`() {
         // WHEN
         keeper.startCustomerInteraction(timestamp = 1_000)
         keeper.onReaderConnectionChanged(isConnected = true, timestamp = 1_500)
@@ -175,7 +175,7 @@ class WooPosAnalyticsTrackingDataKeeperTest {
     }
 
     @Test
-    fun `given reader was ready in a previous attempt, when a new attempt starts, then preparation and signal are cleared`() {
+    fun `given reader ready in previous attempt, when new attempt starts, then preparation and signal clear`() {
         // GIVEN
         keeper.startCustomerInteraction(timestamp = 1_000)
         keeper.orderSyncSuccessTimestamp = 2_000
