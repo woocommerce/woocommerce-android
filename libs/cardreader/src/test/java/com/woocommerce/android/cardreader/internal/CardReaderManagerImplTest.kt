@@ -18,10 +18,15 @@ import com.woocommerce.android.cardreader.internal.payments.InteracRefundManager
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalApplicationDelegateWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.toList
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIllegalStateException
 import org.junit.Before
@@ -256,6 +261,81 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
             cardReaderManager.collectPayment(mock())
 
             verify(connectionManager).resetBluetoothCardReaderDisplayMessage()
+        }
+
+    @Test
+    fun `given reader asks for card input, when collecting payment, then WaitingForInput is emitted between statuses`() =
+        testBlocking {
+            // GIVEN
+            val inputRequests = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+            whenever(connectionManager.readerInputRequests).thenReturn(inputRequests)
+            whenever(paymentManager.acceptPayment(any())).thenReturn(
+                flow {
+                    emit(CardPaymentStatus.ProcessingPayment)
+                    inputRequests.emit(Unit)
+                    // Lets the forwarded input request reach the collector before the payment moves on
+                    delay(1)
+                    emit(CardPaymentStatus.PaymentCompleted("receiptUrl"))
+                }
+            )
+
+            // WHEN
+            val statuses = cardReaderManager.collectPayment(mock()).toList()
+
+            // THEN
+            assertThat(statuses).containsExactly(
+                CardPaymentStatus.ProcessingPayment,
+                CardPaymentStatus.WaitingForInput,
+                CardPaymentStatus.PaymentCompleted("receiptUrl"),
+            )
+        }
+
+    @Test
+    fun `given reader asked for input before the payment started, when collecting payment, then WaitingForInput is not emitted`() =
+        testBlocking {
+            // GIVEN
+            val inputRequests = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+            inputRequests.tryEmit(Unit)
+            whenever(connectionManager.readerInputRequests).thenReturn(inputRequests)
+            whenever(paymentManager.acceptPayment(any())).thenReturn(
+                flow {
+                    emit(CardPaymentStatus.ProcessingPayment)
+                    emit(CardPaymentStatus.PaymentCompleted("receiptUrl"))
+                }
+            )
+
+            // WHEN
+            val statuses = cardReaderManager.collectPayment(mock()).toList()
+
+            // THEN
+            assertThat(statuses).containsExactly(
+                CardPaymentStatus.ProcessingPayment,
+                CardPaymentStatus.PaymentCompleted("receiptUrl"),
+            )
+        }
+
+    @Test
+    fun `given reader asks for card input, when retrying payment, then WaitingForInput is emitted`() =
+        testBlocking {
+            // GIVEN
+            val inputRequests = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+            whenever(connectionManager.readerInputRequests).thenReturn(inputRequests)
+            whenever(paymentManager.retryPayment(any(), any())).thenReturn(
+                flow {
+                    emit(CardPaymentStatus.ProcessingPayment)
+                    inputRequests.emit(Unit)
+                    // Lets the forwarded input request reach the collector before the payment moves on
+                    delay(1)
+                    emit(CardPaymentStatus.PaymentCompleted("receiptUrl"))
+                }
+            )
+
+            // WHEN
+            val statuses = cardReaderManager.retryCollectPayment(1L, mock()).toList()
+
+            // THEN
+            assertThat(statuses).contains(CardPaymentStatus.WaitingForInput)
+            assertThat(statuses.last()).isEqualTo(CardPaymentStatus.PaymentCompleted("receiptUrl"))
         }
 
     // Interac Refund tests

@@ -752,6 +752,9 @@ class WooPosTotalsViewModel @Inject constructor(
             }
         }
         viewModelScope.launch { totalsAnalyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState) }
+        viewModelScope.launch {
+            totalsAnalyticsTracker.trackReaderReadyForCardInput(cardReaderPaymentController?.readerReadyForCardInput)
+        }
     }
 
     private suspend fun notifyOrderPaidByCard() {

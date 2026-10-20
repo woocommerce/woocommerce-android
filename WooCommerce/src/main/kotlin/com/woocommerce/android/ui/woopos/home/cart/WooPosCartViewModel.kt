@@ -7,6 +7,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatus
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
@@ -78,6 +80,7 @@ class WooPosCartViewModel @Inject constructor(
     private val soundHelper: WooPosSoundHelper,
     private val barcodeEventTracker: WooPosBarcodeEventTracker,
     private val variationMapper: WooPosVariationMapper,
+    private val effectiveReaderStatusProvider: WooPosEffectiveReaderStatusProvider,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -97,6 +100,7 @@ class WooPosCartViewModel @Inject constructor(
 
     init {
         listenEventsFromParent()
+        listenToReaderConnectionForAnalytics()
         viewModelScope.launch {
             soundHelper.preloadBarcodeScanFailure()
         }
@@ -714,8 +718,19 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun updateAnalyticsData(newState: WooPosCartState) {
         if (newState.body == WooPosCartState.Body.Empty) {
-            analyticsTrackingDataKeeper.reset()
-            analyticsTrackingDataKeeper.interactionWithCustomerStartedTimestamp = System.currentTimeMillis()
+            analyticsTrackingDataKeeper.startCustomerInteraction(System.currentTimeMillis())
+        }
+    }
+
+    private fun listenToReaderConnectionForAnalytics() {
+        viewModelScope.launch {
+            effectiveReaderStatusProvider.flow.collect { status ->
+                analyticsTrackingDataKeeper.onReaderConnectionChanged(
+                    isConnected = status == WooPosEffectiveReaderStatus.BluetoothConnected ||
+                        status == WooPosEffectiveReaderStatus.RemoteConnected,
+                    timestamp = System.currentTimeMillis(),
+                )
+            }
         }
     }
 

@@ -6,6 +6,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatus
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
@@ -44,6 +46,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -51,6 +54,7 @@ import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -154,6 +158,40 @@ class WooPosCartViewModelTest {
     private val searchByIdentifier: WooPosSearchByIdentifier = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
     private val barcodeEventTracker: WooPosBarcodeEventTracker = mock()
+    private val readerStatus = MutableStateFlow(WooPosEffectiveReaderStatus.Disconnected)
+    private val effectiveReaderStatusProvider: WooPosEffectiveReaderStatusProvider = mock {
+        on { flow } doReturn readerStatus
+    }
+
+    @Test
+    fun `given reader connected, when the empty cart starts an interaction, then reader is connected at checkout`() =
+        runTest {
+            // GIVEN
+            readerStatus.value = WooPosEffectiveReaderStatus.BluetoothConnected
+            val sut = createSut()
+
+            // WHEN
+            sut.state.captureValues()
+
+            // THEN
+            assertThat(trackerData.readerConnectedAtCheckout).isTrue()
+            assertThat(trackerData.millisecondsWaitingForReaderConnection).isNull()
+        }
+
+    @Test
+    fun `given no reader, when reader connects after the empty cart starts an interaction, then connection waiting is recorded`() =
+        runTest {
+            // GIVEN
+            val sut = createSut()
+            sut.state.captureValues()
+
+            // WHEN
+            readerStatus.value = WooPosEffectiveReaderStatus.BluetoothConnected
+
+            // THEN
+            assertThat(trackerData.readerConnectedAtCheckout).isFalse()
+            assertThat(trackerData.millisecondsWaitingForReaderConnection).isNotNull()
+        }
 
     @Test
     fun `given empty cart, when product clicked in product selector, then should add product to cart`() = runTest {
@@ -1766,6 +1804,7 @@ class WooPosCartViewModelTest {
             soundHelper,
             barcodeEventTracker,
             variationMapper,
+            effectiveReaderStatusProvider,
             savedState,
         )
     }
