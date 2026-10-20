@@ -1,10 +1,13 @@
 package com.woocommerce.android.ui.login.unexpectedresponse
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.woocommerce.android.R
@@ -20,7 +23,12 @@ fun LoginUnexpectedResponseAlert(
 ) {
     AlertDialog(
         title = { Text(text = stringResource(id = R.string.login_unexpected_response_title)) },
-        text = { Text(text = stringResource(id = R.string.login_unexpected_response_message)) },
+        text = {
+            Text(
+                text = stringResource(id = R.string.login_unexpected_response_message),
+                modifier = Modifier.verticalScroll(rememberScrollState())
+            )
+        },
         onDismissRequest = onDismissClick,
         confirmButton = {
             Column(horizontalAlignment = Alignment.End) {
