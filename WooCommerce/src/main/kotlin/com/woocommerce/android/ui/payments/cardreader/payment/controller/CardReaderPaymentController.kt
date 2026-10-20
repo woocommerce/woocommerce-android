@@ -81,6 +81,7 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -149,7 +150,7 @@ class CardReaderPaymentController(
     val event: Flow<CardReaderPaymentEvent> = _event
 
     // Emits once per collection attempt, on the reader's first card input request. Analytics only.
-    private val _readerReadyForCardInput = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    private val _readerReadyForCardInput = MutableSharedFlow<Unit>(extraBufferCapacity = Channel.UNLIMITED)
     val readerReadyForCardInput: Flow<Unit> = _readerReadyForCardInput
     private var hasSignalledReaderReadyForCardInput = false
 
