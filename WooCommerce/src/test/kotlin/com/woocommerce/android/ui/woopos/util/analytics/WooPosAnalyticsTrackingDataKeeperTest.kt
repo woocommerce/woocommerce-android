@@ -8,216 +8,172 @@ class WooPosAnalyticsTrackingDataKeeperTest {
     private val keeper = WooPosAnalyticsTrackingDataKeeper()
 
     @Test
-    fun `given every stamp is set, when reset, then all stamps are cleared`() {
+    fun `given every stamp is set, when a new interaction starts, then stamps clear and the live connection is kept`() {
         // GIVEN
+        disconnect(at = 500)
         keeper.startCustomerInteraction(timestamp = 1_000)
-        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 2_000)
+        connect(at = 2_000)
         keeper.orderSyncSuccessTimestamp = 3_000
         keeper.startPaymentAttempt(timestamp = 3_500)
-        keeper.readerReadyForPaymentTimestamp = 4_000
-        keeper.readerReadyForAttemptTimestamp = 4_000
-        keeper.readerReadySignal = ReaderReadySignal.INPUT_REQUESTED
+        markReaderReady(at = 4_000)
         keeper.cardTappedTimestamp = 5_000
         keeper.checkoutButtonTapsCount = 2
 
         // WHEN
-        keeper.reset()
+        keeper.startCustomerInteraction(timestamp = 6_000)
 
         // THEN
-        assertThat(keeper.interactionWithCustomerStartedTimestamp).isNull()
         assertThat(keeper.orderSyncSuccessTimestamp).isNull()
         assertThat(keeper.readerReadyForPaymentTimestamp).isNull()
-        assertThat(keeper.readerReadyForAttemptTimestamp).isNull()
         assertThat(keeper.paymentAttemptStartedTimestamp).isNull()
-        assertThat(keeper.readerReadySignal).isNull()
         assertThat(keeper.cardTappedTimestamp).isNull()
         assertThat(keeper.checkoutButtonTapsCount).isZero()
-        assertThat(keeper.readerConnectedAtCheckout).isNull()
         assertThat(keeper.readerConnectedTimestamp).isNull()
         assertThat(keeper.latestReaderConnectedTimestamp).isNull()
-        assertThat(keeper.readerReadyTimingProperties).isEmpty()
+        assertThat(keeper.readerReadyTimingProperties).containsExactlyEntriesOf(
+            mapOf("reader_connected_at_checkout" to "true")
+        )
     }
 
     @Test
-    fun `given reader connected, when customer interaction starts, then reader is connected at checkout`() {
+    fun `given reader connected at start, when it reconnects, then no connection waiting is measured`() {
         // GIVEN
-        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 500)
+        connect(at = 500)
+        keeper.startCustomerInteraction(timestamp = 1_000)
 
         // WHEN
-        keeper.startCustomerInteraction(timestamp = 1_000)
+        disconnect(at = 2_000)
+        connect(at = 3_000)
 
         // THEN
         assertThat(keeper.readerConnectedAtCheckout).isTrue()
-        assertThat(keeper.readerReadyTimingProperties["reader_connected_at_checkout"]).isEqualTo("true")
         assertThat(keeper.millisecondsWaitingForReaderConnection).isNull()
     }
 
     @Test
-    fun `given no reader connected, when customer interaction starts, then reader is not connected at checkout`() {
+    fun `given no reader at start, when it connects and reconnects, then waiting runs to the first connection`() {
         // GIVEN
-        keeper.onReaderConnectionChanged(isConnected = false, timestamp = 500)
-
-        // WHEN
-        keeper.startCustomerInteraction(timestamp = 1_000)
-
-        // THEN
-        assertThat(keeper.readerConnectedAtCheckout).isFalse()
-        assertThat(keeper.readerReadyTimingProperties["reader_connected_at_checkout"]).isEqualTo("false")
-    }
-
-    @Test
-    fun `given reader was connected, when a new interaction starts after reset, then the live connection is kept`() {
-        // GIVEN
-        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 500)
-        keeper.reset()
-
-        // WHEN
-        keeper.startCustomerInteraction(timestamp = 1_000)
-
-        // THEN
-        assertThat(keeper.readerConnectedAtCheckout).isTrue()
-    }
-
-    @Test
-    fun `given interaction started without reader, when reader connects, then connection waiting is measured`() {
-        // GIVEN
-        keeper.onReaderConnectionChanged(isConnected = false, timestamp = 500)
+        disconnect(at = 500)
         keeper.startCustomerInteraction(timestamp = 1_000)
 
         // WHEN
-        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 4_250)
+        connect(at = 4_250)
+        disconnect(at = 5_000)
+        connect(at = 6_000)
 
         // THEN
-        assertThat(keeper.millisecondsWaitingForReaderConnection).isEqualTo(3_250)
-        assertThat(keeper.readerReadyTimingProperties["milliseconds_waiting_for_reader_connection"]).isEqualTo("3250")
-    }
-
-    @Test
-    fun `given reader connected at start, when reader reconnects, then no connection waiting is measured`() {
-        // GIVEN
-        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 500)
-        keeper.startCustomerInteraction(timestamp = 1_000)
-
-        // WHEN
-        keeper.onReaderConnectionChanged(isConnected = false, timestamp = 2_000)
-        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 3_000)
-
-        // THEN
-        assertThat(keeper.readerConnectedTimestamp).isNull()
-        assertThat(keeper.millisecondsWaitingForReaderConnection).isNull()
-    }
-
-    @Test
-    fun `given reader connected during interaction, when it reconnects, then the first connection is kept`() {
-        // GIVEN
-        keeper.onReaderConnectionChanged(isConnected = false, timestamp = 500)
-        keeper.startCustomerInteraction(timestamp = 1_000)
-        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 2_000)
-
-        // WHEN
-        keeper.onReaderConnectionChanged(isConnected = false, timestamp = 3_000)
-        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 4_000)
-
-        // THEN
-        assertThat(keeper.millisecondsWaitingForReaderConnection).isEqualTo(1_000)
+        assertThat(keeper.readerReadyTimingProperties)
+            .containsEntry("reader_connected_at_checkout", "false")
+            .containsEntry("milliseconds_waiting_for_reader_connection", "3250")
     }
 
     @Test
     fun `given reader connected after order sync, when reader ready, then preparation starts at the connection`() {
         // GIVEN
-        keeper.onReaderConnectionChanged(isConnected = false, timestamp = 500)
+        disconnect(at = 500)
         keeper.startCustomerInteraction(timestamp = 1_000)
         keeper.orderSyncSuccessTimestamp = 2_000
 
         // WHEN
-        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 4_000)
-        keeper.readerReadyForAttemptTimestamp = 7_000
+        connect(at = 4_000)
+        markReaderReady(at = 7_000)
 
         // THEN
-        assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isEqualTo(3_000)
+        assertThat(keeper.readerReadyTimingProperties)
+            .containsEntry("milliseconds_from_order_sync_to_reader_ready", "3000")
+            .containsEntry("reader_ready_signal", "input_requested")
     }
 
     @Test
     fun `given reader connected before order sync, when reader ready, then preparation starts at order sync`() {
         // GIVEN
-        keeper.onReaderConnectionChanged(isConnected = false, timestamp = 500)
+        disconnect(at = 500)
         keeper.startCustomerInteraction(timestamp = 1_000)
-        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 1_500)
+        connect(at = 1_500)
 
         // WHEN
         keeper.orderSyncSuccessTimestamp = 3_000
-        keeper.readerReadyForAttemptTimestamp = 5_000
+        markReaderReady(at = 5_000)
 
         // THEN
         assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isEqualTo(2_000)
-        assertThat(keeper.readerReadyTimingProperties["milliseconds_from_order_sync_to_reader_ready"]).isEqualTo("2000")
     }
 
     @Test
-    fun `given no reader ready stamp, when building properties, then preparation and signal are omitted`() {
+    fun `given no status yet at start, when reader disconnects and reconnects, then only preparation uses it`() {
         // GIVEN
         keeper.startCustomerInteraction(timestamp = 1_000)
         keeper.orderSyncSuccessTimestamp = 2_000
+        disconnect(at = 2_500)
 
-        // THEN
-        assertThat(keeper.readerReadyTimingProperties)
-            .doesNotContainKeys("milliseconds_from_order_sync_to_reader_ready", "reader_ready_signal")
-    }
-
-    @Test
-    fun `given no status yet, when interaction starts and first status arrives, then connection is unknown`() {
         // WHEN
-        keeper.startCustomerInteraction(timestamp = 1_000)
-        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 1_500)
+        connect(at = 4_000)
+        markReaderReady(at = 5_000)
 
         // THEN
-        assertThat(keeper.readerConnectedAtCheckout).isNull()
-        assertThat(keeper.readerConnectedTimestamp).isNull()
+        assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isEqualTo(1_000)
         assertThat(keeper.readerReadyTimingProperties)
             .doesNotContainKeys("reader_connected_at_checkout", "milliseconds_waiting_for_reader_connection")
     }
 
     @Test
-    fun `given reader ready in previous attempt, when new attempt starts, then preparation and signal clear`() {
+    fun `given reader reconnects during the attempt, when reader ready, then preparation starts at the reconnect`() {
         // GIVEN
+        connect(at = 500)
         keeper.startCustomerInteraction(timestamp = 1_000)
         keeper.orderSyncSuccessTimestamp = 2_000
-        keeper.readerReadyForPaymentTimestamp = 3_000
-        keeper.readerReadyForAttemptTimestamp = 3_000
-        keeper.readerReadySignal = ReaderReadySignal.INPUT_REQUESTED
+        keeper.startPaymentAttempt(timestamp = 2_500)
 
         // WHEN
-        keeper.startPaymentAttempt(timestamp = 4_000)
+        disconnect(at = 3_000)
+        connect(at = 5_000)
+        markReaderReady(at = 6_000)
 
         // THEN
-        assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isNull()
-        assertThat(keeper.readerReadyTimingProperties)
-            .doesNotContainKeys("milliseconds_from_order_sync_to_reader_ready", "reader_ready_signal")
-        assertThat(keeper.readerReadyForPaymentTimestamp).isEqualTo(3_000)
+        assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isEqualTo(1_000)
     }
 
     @Test
-    fun `given a declined attempt, when the retry reader is ready, then preparation starts at the retry`() {
+    fun `given reader ready, when it reconnects before the outcome, then preparation is kept until the next attempt`() {
         // GIVEN
+        connect(at = 500)
         keeper.startCustomerInteraction(timestamp = 1_000)
+        keeper.orderSyncSuccessTimestamp = 2_000
+        keeper.startPaymentAttempt(timestamp = 2_500)
+        markReaderReady(at = 3_000)
+
+        // WHEN
+        disconnect(at = 4_000)
+        connect(at = 5_000)
+
+        // THEN
+        assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isEqualTo(500)
+        keeper.startPaymentAttempt(timestamp = 6_000)
+        markReaderReady(at = 6_750)
+        assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isEqualTo(750)
+    }
+
+    @Test
+    fun `given a declined attempt, when a retry starts and its reader is ready, then only the retry is measured`() {
+        // GIVEN
         keeper.orderSyncSuccessTimestamp = 1_000
         keeper.startPaymentAttempt(timestamp = 1_000)
-        keeper.readerReadyForAttemptTimestamp = 2_000
-        assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isEqualTo(1_000)
+        markReaderReady(at = 2_000)
 
         // WHEN
         keeper.startPaymentAttempt(timestamp = 30_000)
-        keeper.readerReadyForAttemptTimestamp = 32_000
 
         // THEN
+        assertThat(keeper.readerReadyTimingProperties).isEmpty()
+        assertThat(keeper.readerReadyForPaymentTimestamp).isEqualTo(2_000)
+        markReaderReady(at = 32_000)
         assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isEqualTo(2_000)
     }
 
     @Test
     fun `given order synced after the reader was ready, when building properties, then preparation is omitted`() {
         // GIVEN
-        keeper.startCustomerInteraction(timestamp = 1_000)
-        keeper.readerReadyForAttemptTimestamp = 2_000
+        markReaderReady(at = 2_000)
 
         // WHEN
         keeper.orderSyncSuccessTimestamp = 3_000
@@ -226,75 +182,13 @@ class WooPosAnalyticsTrackingDataKeeperTest {
         assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isNull()
     }
 
-    @Test
-    fun `given reader connected at start, when it reconnects during the attempt, then preparation starts at reconnect`() {
-        // GIVEN
-        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 500)
-        keeper.startCustomerInteraction(timestamp = 1_000)
-        keeper.orderSyncSuccessTimestamp = 2_000
-        keeper.startPaymentAttempt(timestamp = 2_500)
+    private fun connect(at: Long) = keeper.onReaderConnectionChanged(isConnected = true, timestamp = at)
 
-        // WHEN
-        keeper.onReaderConnectionChanged(isConnected = false, timestamp = 3_000)
-        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 5_000)
-        keeper.readerReadyForAttemptTimestamp = 6_000
+    private fun disconnect(at: Long) = keeper.onReaderConnectionChanged(isConnected = false, timestamp = at)
 
-        // THEN
-        assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isEqualTo(1_000)
-        assertThat(keeper.millisecondsWaitingForReaderConnection).isNull()
-    }
-
-    @Test
-    fun `given unknown status at start, when reader disconnects and reconnects, then only preparation uses it`() {
-        // GIVEN
-        keeper.startCustomerInteraction(timestamp = 1_000)
-        keeper.orderSyncSuccessTimestamp = 2_000
-        keeper.onReaderConnectionChanged(isConnected = false, timestamp = 2_500)
-
-        // WHEN
-        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 4_000)
-        keeper.readerReadyForAttemptTimestamp = 5_000
-
-        // THEN
-        assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isEqualTo(1_000)
-        assertThat(keeper.readerReadyTimingProperties)
-            .doesNotContainKeys("reader_connected_at_checkout", "milliseconds_waiting_for_reader_connection")
-    }
-
-    @Test
-    fun `given reader ready, when reader reconnects before the outcome, then preparation is kept`() {
-        // GIVEN
-        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 500)
-        keeper.startCustomerInteraction(timestamp = 1_000)
-        keeper.orderSyncSuccessTimestamp = 2_000
-        keeper.startPaymentAttempt(timestamp = 2_500)
-        keeper.readerReadyForAttemptTimestamp = 3_000
-
-        // WHEN
-        keeper.onReaderConnectionChanged(isConnected = false, timestamp = 4_000)
-        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 5_000)
-
-        // THEN
-        assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isEqualTo(500)
-        assertThat(keeper.readerReadyTimingProperties["milliseconds_from_order_sync_to_reader_ready"]).isEqualTo("500")
-    }
-
-    @Test
-    fun `given reconnect after reader ready, when the next attempt starts, then preparation starts at the attempt`() {
-        // GIVEN
-        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 500)
-        keeper.startCustomerInteraction(timestamp = 1_000)
-        keeper.orderSyncSuccessTimestamp = 2_000
-        keeper.startPaymentAttempt(timestamp = 2_500)
-        keeper.readerReadyForAttemptTimestamp = 3_000
-        keeper.onReaderConnectionChanged(isConnected = false, timestamp = 4_000)
-        keeper.onReaderConnectionChanged(isConnected = true, timestamp = 5_000)
-
-        // WHEN
-        keeper.startPaymentAttempt(timestamp = 6_000)
-        keeper.readerReadyForAttemptTimestamp = 6_750
-
-        // THEN
-        assertThat(keeper.millisecondsFromOrderSyncToReaderReady).isEqualTo(750)
+    private fun markReaderReady(at: Long) {
+        keeper.readerReadyForPaymentTimestamp = at
+        keeper.readerReadyForAttemptTimestamp = at
+        keeper.readerReadySignal = ReaderReadySignal.INPUT_REQUESTED
     }
 }
