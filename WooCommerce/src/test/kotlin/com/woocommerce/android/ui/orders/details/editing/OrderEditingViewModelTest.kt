@@ -39,15 +39,19 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
     @Before
     fun setUp() {
-        sut = OrderEditingViewModel(
-            SavedStateHandle().apply { set("orderId", 1L) }.apply { set("allOrderIds", LongArray(0)) },
-            coroutinesTestRule.testDispatchers,
-            orderDetailRepository,
-            orderEditingRepository,
-            networkStatus,
-            crashLogging
+        sut = createViewModel(
+            SavedStateHandle().apply { set("orderId", 1L) }.apply { set("allOrderIds", LongArray(0)) }
         )
     }
+
+    private fun createViewModel(savedState: SavedStateHandle) = OrderEditingViewModel(
+        savedState,
+        coroutinesTestRule.testDispatchers,
+        orderDetailRepository,
+        orderEditingRepository,
+        networkStatus,
+        crashLogging
+    )
 
     @Test
     fun `when started, then order is loaded and OrderLoaded event is emitted`() =
@@ -82,6 +86,20 @@ class OrderEditingViewModelTest : BaseUnitTest() {
             assertThat(orderLoadFailedEmitted).isTrue
             assertThat(sut.isOrderLoaded).isFalse
             verify(crashLogging).sendReport(any(), any(), any())
+        }
+
+    @Test
+    fun `given two pane order id set before process death, when restored and started, then that order is loaded`() =
+        testBlocking {
+            // GIVEN
+            val savedState = SavedStateHandle().apply { set("allOrderIds", LongArray(0)) }
+            createViewModel(savedState).setOrderId(57L)
+
+            // WHEN
+            createViewModel(savedState).start()
+
+            // THEN
+            verify(orderDetailRepository).getOrderById(57L)
         }
 
     @Test
