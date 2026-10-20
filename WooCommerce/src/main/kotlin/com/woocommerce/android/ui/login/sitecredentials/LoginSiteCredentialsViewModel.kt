@@ -451,10 +451,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         hasVerifiedCustomLoginEntry: Boolean
     ) {
         when (authenticationError?.errorType) {
-            CUSTOM_LOGIN_URL -> if (hasVerifiedCustomLoginEntry) {
-                showNativeAuthenticationError(authenticationError.errorMessage)
-            } else {
-                handleEndpointRecovery(EndpointType.LOGIN, retryingEndpoint == EndpointType.LOGIN)
+            CUSTOM_LOGIN_URL -> when {
+                hasVerifiedCustomLoginEntry -> showNativeAuthenticationError(authenticationError.errorMessage)
+                // A redirect the login can't follow, like to another site, can't be fixed by typing an address.
+                pendingUnexpectedResponse != null -> Unit
+                else -> handleEndpointRecovery(EndpointType.LOGIN, retryingEndpoint == EndpointType.LOGIN)
             }
 
             CUSTOM_ADMIN_URL -> handleEndpointRecovery(

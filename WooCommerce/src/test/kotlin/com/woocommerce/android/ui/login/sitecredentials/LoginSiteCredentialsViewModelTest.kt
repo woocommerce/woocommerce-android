@@ -1100,6 +1100,31 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given the login page redirects to another site, when trying again, then retry without the address prompt`() =
+        testBlocking {
+            val redirectError = cookieNonceError(Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL).copy(
+                unexpectedStoreResponse = UNEXPECTED_RESPONSE,
+                step = Nonce.CookieNonceLoginStep.LOGIN_PAGE
+            )
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
+                .thenReturn(Result.failure(redirectError))
+            setup()
+
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+                assertThat(viewModel.viewState.value?.unexpectedResponse).isEqualTo(LOGIN_PAGE_FAILURE)
+                assertThat(viewModel.viewState.value?.endpointRecovery).isNull()
+                viewModel.onUnexpectedResponseRetryClick()
+                advanceUntilIdle()
+            }
+
+            assertThat(viewModel.viewState.value?.endpointRecovery).isNull()
+            verify(repository, times(2)).login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS)
+            verify(unexpectedResponseTracker, times(2)).trackErrorShown(LOGIN_PAGE_FAILURE)
+        }
+
+    @Test
     fun `given custom login recovery gets an unexpected response, when trying again, then reuse the address`() =
         testBlocking {
             whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
