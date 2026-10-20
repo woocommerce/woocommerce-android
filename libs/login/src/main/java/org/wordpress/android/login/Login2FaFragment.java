@@ -199,7 +199,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
 
     @Override
     protected void setupLabel(@NonNull TextView label) {
-        label.setText(mSentSmsCode ? getSmsInstructions() : getInitialInstructions());
+        label.setText(getInstructions());
         mLabel = label;
     }
 
@@ -241,7 +241,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         mBackupCodeButton = rootView.findViewById(R.id.login_backup_code_button);
         mBackupCodeButton.setOnClickListener(view -> {
             mBackupCodeRequested = true;
-            updateSecurityKeyPrimaryViews();
+            update2FaViews();
             EditTextUtils.showSoftInput(m2FaInput.getEditText());
         });
     }
@@ -253,7 +253,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
                 next();
             }
         });
-        updateSecurityKeyPrimaryViews();
+        update2FaViews();
     }
 
     @Override
@@ -628,9 +628,10 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
     }
 
     private void setTextForSms() {
-        mLabel.setText(getSmsInstructions());
-        mOtpButton.setText(getString(R.string.login_text_otp_another));
+        mBackupCodeRequested = false;
         mSentSmsCode = true;
+        mOtpButton.setText(getString(R.string.login_text_otp_another));
+        update2FaViews();
     }
 
     private CharSequence getSmsInstructions() {
@@ -639,13 +640,18 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
                 : getString(R.string.enter_verification_code_sms, mPhoneNumber);
     }
 
+    @NonNull private CharSequence getInstructions() {
+        if (mBackupCodeRequested) {
+            return getString(R.string.enter_verification_code_backup);
+        }
+        return mSentSmsCode ? getSmsInstructions() : getInitialInstructions();
+    }
+
     @NonNull private CharSequence getInitialInstructions() {
         if (mIsSocialLogin) {
             return getString(R.string.enter_verification_code);
         } else if (mIsSecurityKeyPrimary) {
-            return getString(mBackupCodeRequested
-                    ? R.string.enter_verification_code_backup
-                    : R.string.notification_security_key_needed);
+            return getString(R.string.notification_security_key_needed);
         } else if (mSupportedAuthTypes.contains(SupportedAuthTypes.AUTHENTICATOR)) {
             return getString(R.string.enter_verification_code_authenticator);
         } else if (mSupportedAuthTypes.contains(SupportedAuthTypes.SMS)) {
@@ -661,13 +667,14 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         return mIsSecurityKeyPrimary && !mBackupCodeRequested;
     }
 
-    private void updateSecurityKeyPrimaryViews() {
+    private void update2FaViews() {
         boolean securityKeyMode = isSecurityKeyMode();
         if (mSecurityKeyPrimaryButton != null) {
             mSecurityKeyPrimaryButton.setVisibility(securityKeyMode ? View.VISIBLE : View.GONE);
         }
         if (mBackupCodeButton != null) {
-            boolean showBackupCodeButton = securityKeyMode
+            boolean showBackupCodeButton = !mIsSocialLogin
+                    && !mBackupCodeRequested
                     && mSupportedAuthTypes.contains(SupportedAuthTypes.BACKUP);
             mBackupCodeButton.setVisibility(showBackupCodeButton ? View.VISIBLE : View.GONE);
         }
@@ -684,7 +691,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
             bottomButton.setVisibility(securityKeyMode ? View.GONE : View.VISIBLE);
         }
         if (mLabel != null) {
-            mLabel.setText(mSentSmsCode ? getSmsInstructions() : getInitialInstructions());
+            mLabel.setText(getInstructions());
         }
         updateActionButtonsEnabled();
         updateContinueButtonEnabledStatus();
