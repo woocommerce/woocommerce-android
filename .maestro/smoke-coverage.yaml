@@ -311,7 +311,7 @@ items:
     flow: .maestro/flows/other_localization.yaml
   - id: other.home-widget
     title: Home screen widgets
-    manual: "Outside Maestro app surface."
+    flow: .maestro/flows/other_home_widget.yaml
   - id: other.quick-actions
     title: Quick Actions
     flow: .maestro/flows/android_quick_actions.yaml
