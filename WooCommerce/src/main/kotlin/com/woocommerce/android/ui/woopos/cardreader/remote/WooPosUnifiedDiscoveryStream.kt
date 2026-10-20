@@ -62,12 +62,12 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
     fun discover(
         isSimulated: Boolean,
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,
-        includeBluetooth: Boolean,
+        transports: Set<WooPosDiscoveryTransport>,
     ): Flow<WooPosUnifiedDiscoveryEvent> = channelFlow {
         val mutex = Mutex()
         val state = DiscoveryState()
 
-        if (includeBluetooth) {
+        if (WooPosDiscoveryTransport.Bluetooth in transports) {
             launch {
                 // discoverReaders() throws before returning its flow when Terminal is not initialised.
                 flow { emitAll(cardReaderManager.discoverReaders(isSimulated, cardReaderTypesToDiscover)) }
@@ -90,20 +90,22 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
             send(WooPosUnifiedDiscoveryEvent.Started)
         }
 
-        val phoneSource: WooPosPhoneDiscoverySource =
-            if (isSimulated) simulatedRemoteDiscovery else remoteDiscovery
-        launch {
-            phoneSource.discover()
-                // NSD failures must not tear down BT discovery — degrade to BT-only.
-                .catch { throwable -> logger.e("NSD discovery failed, degrading to BT-only", throwable) }
-                .collect { event ->
-                    when (event) {
-                        is WooPosPhoneDiscoveryEvent.Added ->
-                            addPhoneAndSendSnapshot(mutex, state, event.phone)
-                        is WooPosPhoneDiscoveryEvent.Removed ->
-                            removePhoneAndSendSnapshot(mutex, state, event.name)
+        if (WooPosDiscoveryTransport.WifiLan in transports) {
+            val phoneSource: WooPosPhoneDiscoverySource =
+                if (isSimulated) simulatedRemoteDiscovery else remoteDiscovery
+            launch {
+                phoneSource.discover()
+                    // NSD failures must not tear down BT discovery — degrade to BT-only.
+                    .catch { throwable -> logger.e("NSD discovery failed, degrading to BT-only", throwable) }
+                    .collect { event ->
+                        when (event) {
+                            is WooPosPhoneDiscoveryEvent.Added ->
+                                addPhoneAndSendSnapshot(mutex, state, event.phone)
+                            is WooPosPhoneDiscoveryEvent.Removed ->
+                                removePhoneAndSendSnapshot(mutex, state, event.name)
+                        }
                     }
-                }
+            }
         }
     }
 
