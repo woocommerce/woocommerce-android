@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.CancellationSignal;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import org.wordpress.android.fluxc.Dispatcher;
@@ -33,8 +34,7 @@ public abstract class GoogleFragment extends Fragment {
     private boolean mFinished;
     private boolean mFlowStarted;
 
-    private GoogleCredentialClient mGoogleCredentialClient;
-    private CancellationSignal mCredentialRequestCancellationSignal;
+    @Nullable private CancellationSignal mCredentialRequestCancellationSignal;
     protected GoogleListener mGoogleListener;
     protected LoginListener mLoginListener;
     protected String mDisplayName;
@@ -68,9 +68,6 @@ public abstract class GoogleFragment extends Fragment {
             mIdToken = savedInstanceState.getString(STATE_GOOGLE_TOKEN_ID);
             mPhotoUrl = savedInstanceState.getString(STATE_GOOGLE_PHOTO_URL);
         }
-
-        mGoogleCredentialClient = new GoogleCredentialClient(requireContext(),
-                getString(R.string.default_web_client_id));
     }
 
     @Override
@@ -126,11 +123,13 @@ public abstract class GoogleFragment extends Fragment {
     }
 
     protected void requestGoogleCredential() {
+        GoogleCredentialClient client = new GoogleCredentialClient(requireContext(),
+                getString(R.string.default_web_client_id));
         mCredentialRequestCancellationSignal = new CancellationSignal();
-        mGoogleCredentialClient.requestIdToken(requireActivity(), mCredentialRequestCancellationSignal, result -> {
+        client.requestIdToken(requireActivity(), mCredentialRequestCancellationSignal, result -> {
             mCredentialRequestCancellationSignal = null;
             // Google's account picker should be shown again on the next attempt.
-            mGoogleCredentialClient.clearCredentialState();
+            client.clearCredentialState();
             if (isAdded()) {
                 onGoogleCredentialResult(result);
             } else {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -82,7 +83,8 @@ public class LoginGoogleFragment extends GoogleFragment {
         }
     }
 
-    private void trackSocialButtonFailure(@NonNull String source, @NonNull String errorType, String errorMessage) {
+    private void trackSocialButtonFailure(@NonNull String source, @NonNull String errorType,
+                                          @Nullable String errorMessage) {
         AppLog.e(T.NUX, "Google Login Failed: " + source + " - " + errorType + " - " + errorMessage);
         mAnalyticsListener.trackSocialButtonFailure(source, null, errorType, errorMessage);
     }
