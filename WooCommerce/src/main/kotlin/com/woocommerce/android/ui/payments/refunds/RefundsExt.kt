@@ -69,6 +69,46 @@ fun ProductRefundListItem.withRefundQuantity(newQuantity: Int, decimals: Int): P
 }
 
 /**
+ * A refund line: the item sent to WooCommerce and the amounts the refund screens show for it.
+ */
+data class RefundLine(
+    val requestItem: RefundRequestItem,
+    val subtotal: BigDecimal,
+    val tax: BigDecimal,
+) {
+    val total: BigDecimal
+        get() = subtotal + tax
+}
+
+/**
+ * Builds the lines that refund [amount] with these items, in order.
+ *
+ * When less is left to refund on the order than the items are worth, the lines are scaled down to fit [amount] and the
+ * amounts shown follow the scaled lines, so they add up to what is refunded. Tax without a per-rate breakdown isn't
+ * sent on the lines, so it's shown out of what is left of [amount] after the lines.
+ */
+fun List<RefundItem>.toRefundLines(amount: BigDecimal, decimals: Int): List<RefundLine> {
+    val requestItems = map { it.toDataModel() }.scaledToFit(amount, decimals)
+    if (sumOf { it.total } <= amount || amount.signum() <= 0) {
+        return mapIndexed { index, item -> RefundLine(requestItems[index], item.subtotal, item.totalTax) }
+    }
+
+    var amountLeft = amount - requestItems.sumOf { it.total }
+    return mapIndexed { index, item ->
+        val requestItem = requestItems[index]
+        val taxWithoutRate = (item.totalTax - item.taxes.sumOf { it.tax })
+            .min(amountLeft)
+            .coerceAtLeast(BigDecimal.ZERO)
+        amountLeft -= taxWithoutRate
+        RefundLine(
+            requestItem = requestItem,
+            subtotal = requestItem.refundTotal,
+            tax = requestItem.refundTax.sumOf { it.refundTotal } + taxWithoutRate
+        )
+    }
+}
+
+/**
  * Scales the line amounts down so they add up to [amount].
  *
  * WooCommerce rejects refunds whose lines add up to more than the refund amount. That happens when earlier refunds
