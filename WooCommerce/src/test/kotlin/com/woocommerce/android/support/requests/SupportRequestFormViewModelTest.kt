@@ -130,7 +130,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         verify(
             zendeskTicketRepository,
             times(1)
-        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
+        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull())
     }
 
     @Test
@@ -150,7 +150,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         verify(
             zendeskTicketRepository,
             never()
-        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
+        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull())
     }
 
     @Test
@@ -227,7 +227,9 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
                 ticketType = TicketType.Payments,
                 subject = "WooPayments Support Request",
                 siteAddress = "https://example.com",
-                message = "Transcript"
+                message = "Additional details",
+                aiChatId = AI_CHAT_ID,
+                aiSupportChatTranscript = TRANSCRIPT
             )
         )
 
@@ -241,12 +243,45 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
             ticketType = eq(TicketType.Payments),
             selectedSite = any(),
             subject = eq("WooPayments Support Request"),
-            description = eq("Transcript"),
+            description = eq("Additional details\n\n$TRANSCRIPT"),
             extraTags = eq(listOf("in_app_support_escalate")),
             siteAddress = eq("https://example.com"),
-            diagnosticLog = anyOrNull()
+            diagnosticLog = anyOrNull(),
+            aiChatId = eq(AI_CHAT_ID)
         )
     }
+
+    @Test
+    fun `given no AI chat transcript, when submit request is triggered, then only message is submitted`() =
+        testBlocking {
+            // Given
+            val context = mock<android.content.Context>()
+            sut.onPrefillReceived(
+                SupportRequestFormViewModel.Prefill(
+                    ticketType = TicketType.MobileApp,
+                    subject = "Mobile App Support Request",
+                    siteAddress = "https://example.com",
+                    message = "Additional details"
+                )
+            )
+
+            // When
+            sut.submitSupportRequest(context, HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+
+            // Then
+            verify(zendeskTicketRepository).createRequest(
+                context = eq(context),
+                origin = eq(HelpOrigin.LOGIN_HELP_NOTIFICATION),
+                ticketType = eq(TicketType.MobileApp),
+                selectedSite = any(),
+                subject = eq("Mobile App Support Request"),
+                description = eq("Additional details"),
+                extraTags = eq(emptyList()),
+                siteAddress = eq("https://example.com"),
+                diagnosticLog = anyOrNull(),
+                aiChatId = anyOrNull()
+            )
+        }
 
     @Test
     fun `given existing form data, when prefill data is received, then existing values are not overwritten`() =
@@ -264,7 +299,8 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
                     ticketType = TicketType.Payments,
                     subject = "WooPayments Support Request",
                     siteAddress = "https://example.com",
-                    message = "Transcript"
+                    message = "Prefilled message",
+                    aiSupportChatTranscript = TRANSCRIPT
                 )
             )
             sut.submitSupportRequest(context, HelpOrigin.AI_TROUBLESHOOTING, listOf("in_app_support_escalate"))
@@ -276,12 +312,39 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
                 ticketType = eq(TicketType.MobileApp),
                 selectedSite = any(),
                 subject = eq("Edited subject"),
-                description = eq("Edited message"),
+                description = eq("Edited message\n\n$TRANSCRIPT"),
                 extraTags = eq(listOf("in_app_support_escalate")),
                 siteAddress = eq("https://edited.example.com"),
-                diagnosticLog = anyOrNull()
+                diagnosticLog = anyOrNull(),
+                aiChatId = anyOrNull()
             )
         }
+
+    @Test
+    fun `given an AI chat transcript, when prefill is received, then transcript disclosure is shown`() = testBlocking {
+        // Given
+        val shouldShowDisclosure = mutableListOf<Boolean>()
+        sut.shouldShowTranscriptDisclosure.observeForever { shouldShowDisclosure.add(it) }
+
+        // When
+        sut.onPrefillReceived(SupportRequestFormViewModel.Prefill(aiSupportChatTranscript = TRANSCRIPT))
+
+        // Then
+        assertThat(shouldShowDisclosure).containsExactly(false, true)
+    }
+
+    @Test
+    fun `given no AI chat transcript, when prefill is received, then transcript disclosure is hidden`() = testBlocking {
+        // Given
+        val shouldShowDisclosure = mutableListOf<Boolean>()
+        sut.shouldShowTranscriptDisclosure.observeForever { shouldShowDisclosure.add(it) }
+
+        // When
+        sut.onPrefillReceived(SupportRequestFormViewModel.Prefill())
+
+        // Then
+        assertThat(shouldShowDisclosure).containsExactly(false)
+    }
 
     @Test
     fun `when onUserIdentitySet is called, then run the expected actions`() = testBlocking {
@@ -300,7 +363,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         verify(
             zendeskTicketRepository,
             times(1)
-        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
+        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull())
     }
 
     @Test
@@ -376,6 +439,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
                     any(),
                     any(),
                     any(),
+                    anyOrNull(),
                     anyOrNull()
                 )
             } doReturn flowOf(requestResult)
@@ -398,5 +462,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
             supportAreaConfidence = "high",
             chatTopic = "woo_mobile_issue_mobile_app"
         )
+        const val AI_CHAT_ID = 123L
+        const val TRANSCRIPT = "AI support chat transcript"
     }
 }

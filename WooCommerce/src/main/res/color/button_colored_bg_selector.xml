@@ -2,8 +2,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:state_enabled="false"
-        android:alpha="@dimen/alpha_emphasis_disabled"
-        android:color="@color/primary_colored_button_background"/>
+        android:color="@color/woo_ds_color_state_layer_on_surface_opacity10"/>
     <item
         android:color="@color/primary_colored_button_background"/>
 </selector>

@@ -38,8 +38,6 @@ import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.util.getOrAwaitValue
@@ -172,7 +170,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         on { observeDisplayableCustomFields(any()) } doReturn flowOf(emptyList())
     }
     private val canAutoAuthenticateInWebView: CanAutoAuthenticateInWebView = mock()
-    private val featureFlagRepository: FeatureFlagRepository = mock()
 
     private lateinit var viewModel: ProductDetailViewModel
 
@@ -251,6 +248,11 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     DesignSystemR.drawable.woo_ds_ic_regular_truck_24dp,
                     true
                 ),
+                ProductProperty.PropertyGroup(
+                    R.string.product_attributes,
+                    productWithTagsAndCategories.attributes.associate { it.name to it.terms.joinToString() },
+                    DesignSystemR.drawable.woo_ds_ic_regular_screwdriver_wrench_24dp
+                ),
                 ProductProperty.ComplexProperty(
                     R.string.product_categories,
                     productWithTagsAndCategories.categories.joinToString(transform = { it.name }),
@@ -319,7 +321,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 determineProductPasswordApi = determineProductPasswordApi,
                 customFieldsRepository = customFieldsRepository,
                 canAutoAuthenticateInWebView = canAutoAuthenticateInWebView,
-                featureFlagRepository = featureFlagRepository,
             )
         )
 
@@ -1198,10 +1199,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the feature is on and a simple product, when a local attribute is added, then it is not used for variations`() =
+    fun `given a simple product, when a local attribute is added, then it is not used for variations`() =
         testBlocking {
             // GIVEN
-            givenNonVariationAttributesEnabled(true)
             givenStoredProductAttributes(listOf(VARIATION_GLOBAL_ATTRIBUTE))
             viewModel.start()
 
@@ -1215,10 +1215,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the feature is on and a variable product, when a local attribute is added, then it is used for variations`() =
+    fun `given a variable product, when a local attribute is added, then it is used for variations`() =
         testBlocking {
             // GIVEN
-            givenNonVariationAttributesEnabled(true)
             givenStoredProductAttributes(listOf(VARIATION_GLOBAL_ATTRIBUTE), type = ProductType.VARIABLE)
             viewModel.start()
 
@@ -1230,10 +1229,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the feature is on, when a local attribute is added in the variation wizard, then it is used for variations`() =
+    fun `when a local attribute is added in the variation wizard, then it is used for variations`() =
         testBlocking {
             // GIVEN
-            givenNonVariationAttributesEnabled(true)
             givenStoredProductAttributes(emptyList())
             viewModel.start()
 
@@ -1245,25 +1243,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the feature is off and a simple product, when a local attribute is added, then it is used for variations`() =
+    fun `given a simple product, when a term is added to a new global attribute, then it is not used for variations`() =
         testBlocking {
             // GIVEN
-            givenNonVariationAttributesEnabled(false)
-            givenStoredProductAttributes(emptyList())
-            viewModel.start()
-
-            // WHEN
-            viewModel.addLocalAttribute("Material", isVariationCreation = false)
-
-            // THEN
-            Assertions.assertThat(viewModel.productDraftAttributes.last().isVariation).isTrue()
-        }
-
-    @Test
-    fun `given the feature is on and a simple product, when a term is added to a new global attribute, then it is not used for variations`() =
-        testBlocking {
-            // GIVEN
-            givenNonVariationAttributesEnabled(true)
             givenStoredProductAttributes(emptyList())
             viewModel.start()
 
@@ -1277,10 +1259,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the feature is on, when an attribute is tapped outside the variation wizard, then its flags are kept and its options open`() =
+    fun `when an attribute is tapped outside the variation wizard, then its flags are kept and its options open`() =
         testBlocking {
             // GIVEN
-            givenNonVariationAttributesEnabled(true)
             givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
             viewModel.start()
 
@@ -1297,10 +1278,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the feature is on and a simple product, when a term is added to a new global attribute in the variation wizard, then it is used for variations`() =
+    fun `given a simple product, when a term is added to a new global attribute in the variation wizard, then it is used for variations`() =
         testBlocking {
             // GIVEN
-            givenNonVariationAttributesEnabled(true)
             givenStoredProductAttributes(emptyList())
             viewModel.start()
 
@@ -1312,10 +1292,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the feature is on, when an attribute is tapped in the variation wizard, then it is used for variations`() =
+    fun `when an attribute is tapped in the variation wizard, then it is used for variations`() =
         testBlocking {
             // GIVEN
-            givenNonVariationAttributesEnabled(true)
             givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
             viewModel.start()
 
@@ -1359,10 +1338,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given the feature is on, when attributes load outside the variation wizard, then all attributes are listed`() =
+    fun `when attributes load outside the variation wizard, then all attributes are listed`() =
         testBlocking {
             // GIVEN
-            givenNonVariationAttributesEnabled(true)
             givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE, VARIATION_GLOBAL_ATTRIBUTE))
             viewModel.start()
 
@@ -1375,10 +1353,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the feature is on, when attributes load in the variation wizard, then only variation attributes are listed`() =
+    fun `when attributes load in the variation wizard, then only variation attributes are listed`() =
         testBlocking {
             // GIVEN
-            givenNonVariationAttributesEnabled(true)
             givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE, VARIATION_GLOBAL_ATTRIBUTE))
             viewModel.start()
 
@@ -1390,39 +1367,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the feature is off, when attributes load, then only variation attributes are listed`() = testBlocking {
-        // GIVEN
-        givenNonVariationAttributesEnabled(false)
-        givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE, VARIATION_GLOBAL_ATTRIBUTE))
-        viewModel.start()
-
-        // WHEN
-        viewModel.loadProductDraftAttributes(isVariationCreation = false)
-
-        // THEN
-        Assertions.assertThat(viewModel.attributeList.value).containsExactly(VARIATION_GLOBAL_ATTRIBUTE)
-    }
-
-    @Test
-    fun `given the feature is off, when an attribute is tapped outside the variation wizard, then it is used for variations`() =
+    fun `given a variable subscription product, when a local attribute is added, then it is used for variations`() =
         testBlocking {
             // GIVEN
-            givenNonVariationAttributesEnabled(false)
-            givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
-            viewModel.start()
-
-            // WHEN
-            viewModel.onAttributeListItemClick(0L, "Material", isVariationCreation = false)
-
-            // THEN
-            Assertions.assertThat(viewModel.productDraftAttributes.single().isVariation).isTrue()
-        }
-
-    @Test
-    fun `given the feature is on and a variable subscription product, when a local attribute is added, then it is used for variations`() =
-        testBlocking {
-            // GIVEN
-            givenNonVariationAttributesEnabled(true)
             givenStoredProductAttributes(emptyList(), type = ProductType.VARIABLE_SUBSCRIPTION)
             viewModel.start()
 
@@ -1492,7 +1439,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `given a product with variations and a new attribute, when used for variations is turned off, then no confirmation is shown`() =
         testBlocking {
             // GIVEN
-            givenNonVariationAttributesEnabled(true)
             givenStoredProductAttributes(listOf(VARIATION_GLOBAL_ATTRIBUTE), ProductType.VARIABLE, numVariations = 4)
             viewModel.start()
             viewModel.addAttributeTermToDraft(3L, "Size", "S", isVariationCreation = false)
@@ -1542,24 +1488,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the feature is off, when the attribute settings state is read, then it is null`() = testBlocking {
-        // GIVEN
-        givenNonVariationAttributesEnabled(false)
-        givenStoredProductAttributes(listOf(VARIATION_GLOBAL_ATTRIBUTE), ProductType.VARIABLE)
-        viewModel.start()
-
-        // WHEN
-        val state = viewModel.getAttributeSettingsState(VARIATION_GLOBAL_ATTRIBUTE.id, "Color", false)
-
-        // THEN
-        Assertions.assertThat(state).isNull()
-    }
-
-    @Test
-    fun `given the feature is on and a variable product, when the state is read for a draft attribute, then it has the attribute flags`() =
+    fun `given a variable product, when the state is read for a draft attribute, then it has the attribute flags`() =
         testBlocking {
             // GIVEN
-            givenNonVariationAttributesEnabled(true)
             givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE), ProductType.VARIABLE)
             viewModel.start()
 
@@ -1578,10 +1509,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the feature is on and a variable product, when the state is read for an attribute not in the draft, then it is disabled with the new attribute values`() =
+    fun `given a variable product, when the state is read for an attribute not in the draft, then it is disabled with the new attribute values`() =
         testBlocking {
             // GIVEN
-            givenNonVariationAttributesEnabled(true)
             givenStoredProductAttributes(emptyList(), ProductType.VARIABLE)
             viewModel.start()
 
@@ -1600,10 +1530,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the feature is on and a simple product, when the state is read, then used for variations is not shown`() =
+    fun `given a simple product, when the state is read, then used for variations is not shown`() =
         testBlocking {
             // GIVEN
-            givenNonVariationAttributesEnabled(true)
             givenStoredProductAttributes(listOf(DISPLAY_ONLY_LOCAL_ATTRIBUTE))
             viewModel.start()
 
@@ -1611,14 +1540,13 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             val state = viewModel.getAttributeSettingsState(0L, "Material", isVariationCreation = false)
 
             // THEN
-            Assertions.assertThat(state?.isUsedForVariationsShown).isFalse()
+            Assertions.assertThat(state.isUsedForVariationsShown).isFalse()
         }
 
     @Test
-    fun `given the feature is on and a variable product, when the state is read in the variation wizard, then used for variations is not shown`() =
+    fun `given a variable product, when the state is read in the variation wizard, then used for variations is not shown`() =
         testBlocking {
             // GIVEN
-            givenNonVariationAttributesEnabled(true)
             givenStoredProductAttributes(listOf(VARIATION_GLOBAL_ATTRIBUTE), ProductType.VARIABLE)
             viewModel.start()
 
@@ -1630,12 +1558,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             )
 
             // THEN
-            Assertions.assertThat(state?.isUsedForVariationsShown).isFalse()
+            Assertions.assertThat(state.isUsedForVariationsShown).isFalse()
         }
-
-    private fun givenNonVariationAttributesEnabled(isEnabled: Boolean) {
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.NON_VARIATION_PRODUCT_ATTRIBUTES)).thenReturn(isEnabled)
-    }
 
     private suspend fun givenStoredProductAttributes(
         attributes: List<ProductAttribute>,

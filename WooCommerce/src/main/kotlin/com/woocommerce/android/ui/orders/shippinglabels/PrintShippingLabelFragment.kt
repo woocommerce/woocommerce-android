@@ -114,8 +114,10 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
             }
             new.isLabelExpired.takeIfNotEqualTo(old?.isLabelExpired) { isExpired ->
                 binding.expirationWarningBanner.isVisible = isExpired
-                binding.shippingLabelPrintPaperSize.isEnabled = !isExpired
-                binding.shippingLabelPrintBtn.isEnabled = !isExpired
+            }
+            new.isPrintEnabled.takeIfNotEqualTo(old?.isPrintEnabled) { isEnabled ->
+                binding.shippingLabelPrintPaperSize.isEnabled = isEnabled
+                binding.shippingLabelPrintBtn.isEnabled = isEnabled
             }
             new.tempFile?.takeIfNotEqualTo(old?.tempFile) { openShippingLabelPreview(it) }
         }

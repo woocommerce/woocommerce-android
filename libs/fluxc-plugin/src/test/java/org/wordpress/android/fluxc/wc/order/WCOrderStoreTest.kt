@@ -33,6 +33,7 @@ import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.action.ListAction
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder.newFetchedOrderListAction
+import org.wordpress.android.fluxc.logging.FluxCCrashLogger
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -88,6 +89,7 @@ internal class WCOrderStoreTest {
     lateinit var metaDataDao: MetaDataDao
     lateinit var orderStore: WCOrderStore
     private val insertOrder: InsertOrder = mock()
+    private val crashLogger: FluxCCrashLogger = mock()
     private lateinit var dispatcher: Dispatcher
 
     @Before
@@ -109,7 +111,8 @@ internal class WCOrderStoreTest {
             orderShipmentTrackingDao = databaseRule.db.orderShipmentTrackingDao,
             orderStatusDao = databaseRule.db.orderStatusDao,
             orderSummaryDao = databaseRule.db.orderSummaryDao,
-            insertOrder = insertOrder
+            insertOrder = insertOrder,
+            crashLogger = { crashLogger }
         )
     }
 
@@ -548,6 +551,33 @@ internal class WCOrderStoreTest {
         assertThat(ordersDaoDecorator.getOrder(orderModel.orderId, orderModel.localSiteId)?.status)
             .isEqualTo(CoreOrderStatus.PROCESSING.value)
         Unit
+    }
+
+    @Test
+    fun `given order removed locally while its status update fails, when reverting, then error is returned and missing order reported`() = runBlocking {
+        // GIVEN
+        val orderModel = generateSampleOrder(42, orderStatus = CoreOrderStatus.PROCESSING.value)
+            .saveToDb()
+        val site = SiteModel().apply { id = orderModel.localSiteId.value }
+        val error = OrderError()
+        whenever(
+            orderRestClient.updateOrderStatusAndPaymentDetails(any(), any(), any(), anyOrNull())
+        ).thenAnswer {
+            ordersDaoDecorator.deleteOrdersForSite(site.localId())
+            RemoteOrderPayload.Updating(error = error, order = orderModel, site = site)
+        }
+
+        // WHEN
+        val response = orderStore.updateOrderStatus(
+            orderModel.orderId,
+            site,
+            WCOrderStatusModel(statusKey = CoreOrderStatus.COMPLETED.value)
+        ).toList().last()
+
+        // THEN
+        assertThat(response.event.error).isEqualTo(error)
+        assertThat(ordersDaoDecorator.getOrder(orderModel.orderId, orderModel.localSiteId)).isNull()
+        verify(crashLogger).sendReport(any(), eq(mapOf("order_id" to "42")), any())
     }
 
     @Test
