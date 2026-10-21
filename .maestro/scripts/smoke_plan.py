@@ -52,6 +52,7 @@ P2_ORDERED_FLOW_NAMES = (
     "orders_barcode_scanner_opens.yaml",
     "orders_payment_qr_and_share.yaml",
     "orders_refund.yaml",
+    "orders_push_notification.yaml",
     "products_list_and_sort.yaml",
     "products_variations_and_tags.yaml",
     "products_create.yaml",
