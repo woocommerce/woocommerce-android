@@ -10,6 +10,7 @@
 - [*] Order creation no longer adds a variation of a subscription product when its SKU is scanned [https://github.com/woocommerce/woocommerce-android/pull/16713]
 - [*] On tablets, an open order editor no longer closes and loses its text when the app is restored [https://github.com/woocommerce/woocommerce-android/pull/16731]
 - [*] Customer lists now explain when WooCommerce Analytics is unavailable and offer a way to turn it on or retry loading customers [https://github.com/woocommerce/woocommerce-android/pull/16707]
+- [*] When less is left to refund on an order than the selected items are worth, the refund screen's product, shipping and fee totals now show the amount that will be refunded [https://github.com/woocommerce/woocommerce-android/pull/16742]
 
 
 25.9
