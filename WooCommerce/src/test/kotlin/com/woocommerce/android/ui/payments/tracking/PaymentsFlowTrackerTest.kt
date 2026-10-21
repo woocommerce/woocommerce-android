@@ -110,10 +110,9 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
     )
 
     @Test
-    fun `when payment timing lifecycle changes, then the provider receives each boundary`() {
+    fun `when confirmed intent is available, then the provider receives the boundary`() {
         // GIVEN
         val provider = mock<PaymentsFlowTrackerEventProvider>()
-        whenever(provider.forPaymentAttempt()).thenReturn(provider)
         val tracker = PaymentsFlowTracker(
             trackerWrapper,
             appPrefsWrapper,
@@ -123,10 +122,8 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
             provider
         )
         // WHEN
-        tracker.forPaymentAttempt()
         tracker.onConfirmedIntentAvailable()
         // THEN
-        verify(provider).forPaymentAttempt()
         verify(provider).onConfirmedIntentAvailable()
     }
 

@@ -47,9 +47,7 @@ class WooPosRemoteReaderPaymentFlowTest {
     private val orderHelper: CardReaderPaymentOrderHelper = mock {
         on { getPaymentDescription(any()) }.thenReturn("Order")
     }
-    private val tracker: PaymentsFlowTracker = mock<PaymentsFlowTracker>().apply {
-        whenever(forPaymentAttempt()).thenReturn(this)
-    }
+    private val tracker: PaymentsFlowTracker = mock()
     private val trackingInfo = CardReaderTrackingInfoImpl()
     private val appPrefs: AppPrefs = mock()
     private val flow = WooPosRemoteReaderPaymentFlow(
@@ -81,7 +79,6 @@ class WooPosRemoteReaderPaymentFlowTest {
         // WHEN
         flow.collect(order)
         // THEN
-        verify(tracker).forPaymentAttempt()
         verify(tracker, never()).onConfirmedIntentAvailable()
     }
 
@@ -111,7 +108,6 @@ class WooPosRemoteReaderPaymentFlowTest {
         // THEN
         assertThat(result).isEqualTo(WooPosRemoteReaderPaymentFlow.Result.Completed)
         inOrder(store, tracker) {
-            verify(tracker).forPaymentAttempt()
             verify(tracker).onConfirmedIntentAvailable()
             verify(store).capturePaymentIntent(order.id, "pi_123")
             verify(tracker).trackPaymentSucceeded(order)

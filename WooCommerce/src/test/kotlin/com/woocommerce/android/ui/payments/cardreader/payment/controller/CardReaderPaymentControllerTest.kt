@@ -153,7 +153,6 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
     @OptIn(InternalCoroutinesApi::class)
     @Before
     fun setUp() = testBlocking {
-        whenever(tracker.forPaymentAttempt()).thenReturn(tracker)
         createController()
         whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
         whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(mockedOrder)
@@ -657,7 +656,6 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         // WHEN
         controller.start()
         // THEN
-        verify(tracker).forPaymentAttempt()
         verify(tracker).onConfirmedIntentAvailable()
         verify(tracker, never()).trackInteracPaymentSucceeded()
         assertThat(controller.paymentState.value).isInstanceOf(CardReaderPaymentState.LoadingData::class.java)
@@ -1280,7 +1278,6 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), any())
-            verify(tracker, times(2)).forPaymentAttempt()
             verify(tracker).trackPaymentSucceeded(mockedOrder)
         }
 
@@ -1299,7 +1296,6 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), any())
-            verify(tracker, times(2)).forPaymentAttempt()
         }
 
     @Test

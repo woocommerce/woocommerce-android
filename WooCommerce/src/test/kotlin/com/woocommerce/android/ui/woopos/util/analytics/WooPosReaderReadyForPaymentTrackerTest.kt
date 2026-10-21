@@ -12,7 +12,7 @@ import kotlin.test.Test
 
 class WooPosReaderReadyForPaymentTrackerTest {
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
-    private val analyticsData = WooPosAnalyticsTrackingDataKeeper(WooPosCheckoutTiming(mock()))
+    private val analyticsData = WooPosAnalyticsTrackingDataKeeper(mock())
     private val trackingInfoProvider: CardReaderTrackingInfoProvider = mock()
 
     private val tracker = WooPosReaderReadyForPaymentTracker(

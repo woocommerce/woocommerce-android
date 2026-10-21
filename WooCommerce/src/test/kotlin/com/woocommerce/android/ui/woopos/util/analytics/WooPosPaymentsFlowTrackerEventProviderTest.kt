@@ -15,7 +15,7 @@ import kotlin.test.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosPaymentsFlowTrackerEventProviderTest {
     private val provider = WooPosPaymentsFlowTrackerEventProvider(
-        WooPosAnalyticsTrackingDataKeeper(WooPosCheckoutTiming(mock())),
+        WooPosAnalyticsTrackingDataKeeper(mock()),
         mock(),
     )
 
@@ -31,14 +31,19 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
     }
 
     @Test
-    fun `when payment is canceled, then the event keeps sync strategy without a timing version`() {
+    fun `when payment is canceled, then the unchanged event has no new timing properties`() {
         // WHEN
         val event = provider.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED as WooPosAnalyticsEvent
 
         // THEN
         assertThat(event.name).isEqualTo("card_present_collect_payment_cancelled")
-        assertThat(event.properties).doesNotContainKey("pos_timing_version")
-        assertThat(event.properties).containsEntry("sync_strategy", "unknown")
+        assertThat(event.properties).doesNotContainKeys(
+            "pos_timing_version",
+            "sync_strategy",
+            "pos_time_since_checkout_started_ms",
+            "pos_time_since_order_sync_completed_ms",
+            "pos_time_since_payment_confirmed_ms",
+        )
     }
 
     @Test
@@ -46,9 +51,8 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         // GIVEN
         val clock = mock<WooPosElapsedTime>()
         whenever(clock.milliseconds()).thenReturn(100L)
-        val timing = WooPosCheckoutTiming(clock)
-        timing.startCheckout("local_catalog")
-        val keeper = WooPosAnalyticsTrackingDataKeeper(timing).apply {
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock).apply {
+            startCheckoutTiming("local_catalog")
             val now = System.currentTimeMillis()
             interactionWithCustomerStartedTimestamp = now
             orderSyncSuccessTimestamp = now
@@ -94,13 +98,12 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
     fun `when all stages success, then timing properties match the shared contract`() {
         // GIVEN
         val clock = mock<WooPosElapsedTime>()
-        val timing = WooPosCheckoutTiming(clock)
-        val keeper = WooPosAnalyticsTrackingDataKeeper(timing)
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock)
         val events = WooPosPaymentsFlowTrackerEventProvider(keeper, mock())
         whenever(clock.milliseconds()).thenReturn(0L)
-        val generation = timing.startCheckout("local_catalog")
+        val generation = keeper.startCheckoutTiming("local_catalog")
         whenever(clock.milliseconds()).thenReturn(100L)
-        timing.orderSyncCompleted(generation)
+        keeper.orderSyncCompleted(generation)
         whenever(clock.milliseconds()).thenReturn(150L)
         keeper.readerReadyForPaymentTimestamp = 150L
         whenever(clock.milliseconds()).thenReturn(200L)
@@ -125,11 +128,10 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
     fun `when failure before sync, then timing properties match the shared contract`() {
         // GIVEN
         val clock = mock<WooPosElapsedTime>()
-        val timing = WooPosCheckoutTiming(clock)
-        val keeper = WooPosAnalyticsTrackingDataKeeper(timing)
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock)
         val events = WooPosPaymentsFlowTrackerEventProvider(keeper, mock())
         whenever(clock.milliseconds()).thenReturn(0L)
-        timing.startCheckout("remote")
+        keeper.startCheckoutTiming("remote")
         // WHEN
         whenever(clock.milliseconds()).thenReturn(25L)
         val actual = (events.CARD_PRESENT_COLLECT_PAYMENT_FAILED as WooPosAnalyticsEvent).properties
@@ -148,13 +150,12 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
     fun `when immediate event zero is valid, then timing properties match the shared contract`() {
         // GIVEN
         val clock = mock<WooPosElapsedTime>()
-        val timing = WooPosCheckoutTiming(clock)
-        val keeper = WooPosAnalyticsTrackingDataKeeper(timing)
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock)
         val events = WooPosPaymentsFlowTrackerEventProvider(keeper, mock())
         whenever(clock.milliseconds()).thenReturn(0L)
-        val generation = timing.startCheckout("unknown")
+        val generation = keeper.startCheckoutTiming("unknown")
         whenever(clock.milliseconds()).thenReturn(0L)
-        timing.orderSyncCompleted(generation)
+        keeper.orderSyncCompleted(generation)
         whenever(clock.milliseconds()).thenReturn(0L)
         keeper.readerReadyForPaymentTimestamp = 150L
         whenever(clock.milliseconds()).thenReturn(0L)
@@ -179,13 +180,12 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
     fun `when unchanged order new checkout, then timing properties match the shared contract`() {
         // GIVEN
         val clock = mock<WooPosElapsedTime>()
-        val timing = WooPosCheckoutTiming(clock)
-        val keeper = WooPosAnalyticsTrackingDataKeeper(timing)
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock)
         val events = WooPosPaymentsFlowTrackerEventProvider(keeper, mock())
         whenever(clock.milliseconds()).thenReturn(0L)
-        timing.orderSyncCompleted(timing.startCheckout("local_catalog"))
+        keeper.orderSyncCompleted(keeper.startCheckoutTiming("local_catalog"))
         whenever(clock.milliseconds()).thenReturn(500L)
-        timing.startCheckout("local_catalog")
+        keeper.startCheckoutTiming("local_catalog")
         whenever(clock.milliseconds()).thenReturn(510L)
         keeper.readerReadyForPaymentTimestamp = 150L
         whenever(clock.milliseconds()).thenReturn(520L)
@@ -209,17 +209,15 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
     fun `when direct retry before reader, then timing properties match the shared contract`() {
         // GIVEN
         val clock = mock<WooPosElapsedTime>()
-        val timing = WooPosCheckoutTiming(clock)
-        val keeper = WooPosAnalyticsTrackingDataKeeper(timing)
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock)
         val events = WooPosPaymentsFlowTrackerEventProvider(keeper, mock())
         whenever(clock.milliseconds()).thenReturn(0L)
-        val generation = timing.startCheckout("local_catalog")
+        val generation = keeper.startCheckoutTiming("local_catalog")
         whenever(clock.milliseconds()).thenReturn(100L)
-        timing.orderSyncCompleted(generation)
+        keeper.orderSyncCompleted(generation)
 
-        timing.confirmedIntentAvailable()
+        keeper.paymentConfirmed()
         events.CARD_PRESENT_COLLECT_PAYMENT_FAILED
-        events.forPaymentAttempt()
         // WHEN
         whenever(clock.milliseconds()).thenReturn(350L)
         val actual = (events.CARD_PRESENT_COLLECT_PAYMENT_FAILED as WooPosAnalyticsEvent).properties
@@ -239,13 +237,12 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
     fun `when already confirmed intent reused, then timing properties match the shared contract`() {
         // GIVEN
         val clock = mock<WooPosElapsedTime>()
-        val timing = WooPosCheckoutTiming(clock)
-        val keeper = WooPosAnalyticsTrackingDataKeeper(timing)
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock)
         val events = WooPosPaymentsFlowTrackerEventProvider(keeper, mock())
         whenever(clock.milliseconds()).thenReturn(0L)
-        val generation = timing.startCheckout("local_catalog")
+        val generation = keeper.startCheckoutTiming("local_catalog")
         whenever(clock.milliseconds()).thenReturn(100L)
-        timing.orderSyncCompleted(generation)
+        keeper.orderSyncCompleted(generation)
         whenever(clock.milliseconds()).thenReturn(400L)
         events.onConfirmedIntentAvailable()
         // WHEN
@@ -265,16 +262,15 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
     }
 
     @Test
-    fun `when cancel after reader ready, then timing properties match the shared contract`() {
+    fun `given checkout stages, when canceled, then no new timing or strategy properties are added`() {
         // GIVEN
         val clock = mock<WooPosElapsedTime>()
-        val timing = WooPosCheckoutTiming(clock)
-        val keeper = WooPosAnalyticsTrackingDataKeeper(timing)
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock)
         val events = WooPosPaymentsFlowTrackerEventProvider(keeper, mock())
         whenever(clock.milliseconds()).thenReturn(0L)
-        val generation = timing.startCheckout("local_catalog")
+        val generation = keeper.startCheckoutTiming("local_catalog")
         whenever(clock.milliseconds()).thenReturn(100L)
-        timing.orderSyncCompleted(generation)
+        keeper.orderSyncCompleted(generation)
         whenever(clock.milliseconds()).thenReturn(150L)
         keeper.readerReadyForPaymentTimestamp = 150L
         // WHEN
@@ -282,27 +278,19 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         val actual = (events.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED as WooPosAnalyticsEvent).properties
             .filterKeys { it.startsWith("pos_") || it == "sync_strategy" }
         // THEN
-        assertThat(actual).doesNotContainKey("pos_time_since_reader_ready_ms")
-        assertThat(actual).isEqualTo(
-            mapOf(
-                "sync_strategy" to "local_catalog",
-                "pos_time_since_checkout_started_ms" to 200L,
-                "pos_time_since_order_sync_completed_ms" to 100L,
-            )
-        )
+        assertThat(actual).isEmpty()
     }
 
     @Test
     fun `when failure after confirmation, then timing properties match the shared contract`() {
         // GIVEN
         val clock = mock<WooPosElapsedTime>()
-        val timing = WooPosCheckoutTiming(clock)
-        val keeper = WooPosAnalyticsTrackingDataKeeper(timing)
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock)
         val events = WooPosPaymentsFlowTrackerEventProvider(keeper, mock())
         whenever(clock.milliseconds()).thenReturn(0L)
-        val generation = timing.startCheckout("local_catalog")
+        val generation = keeper.startCheckoutTiming("local_catalog")
         whenever(clock.milliseconds()).thenReturn(100L)
-        timing.orderSyncCompleted(generation)
+        keeper.orderSyncCompleted(generation)
         whenever(clock.milliseconds()).thenReturn(150L)
         keeper.readerReadyForPaymentTimestamp = 150L
         whenever(clock.milliseconds()).thenReturn(200L)
@@ -327,18 +315,17 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
     fun `when cash success card stages always absent, then timing properties match the shared contract`() {
         // GIVEN
         val clock = mock<WooPosElapsedTime>()
-        val timing = WooPosCheckoutTiming(clock)
-        val keeper = WooPosAnalyticsTrackingDataKeeper(timing)
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock)
         val events = WooPosPaymentsFlowTrackerEventProvider(keeper, mock())
         whenever(clock.milliseconds()).thenReturn(0L)
-        val generation = timing.startCheckout("remote")
+        val generation = keeper.startCheckoutTiming("remote")
         whenever(clock.milliseconds()).thenReturn(100L)
-        timing.orderSyncCompleted(generation)
+        keeper.orderSyncCompleted(generation)
         keeper.readerReadyForPaymentTimestamp = 150L
         events.onConfirmedIntentAvailable()
         // WHEN
         whenever(clock.milliseconds()).thenReturn(300L)
-        val actual = timing.terminalSnapshot(success = true, includeCardStages = false)
+        val actual = keeper.cashPaymentTiming()
         // THEN
         assertThat(actual).doesNotContainKey("pos_time_since_reader_ready_ms")
         assertThat(actual).isEqualTo(
@@ -354,52 +341,53 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
     fun `when old sync completes after a new checkout, then the new checkout omits sync timing`() {
         // GIVEN
         val clock = mock<WooPosElapsedTime>()
-        val timing = WooPosCheckoutTiming(clock)
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock)
         whenever(clock.milliseconds()).thenReturn(10L)
-        val old = timing.startCheckout("remote")
+        val old = keeper.startCheckoutTiming("remote")
         whenever(clock.milliseconds()).thenReturn(20L)
-        timing.startCheckout("local_catalog")
+        keeper.startCheckoutTiming("local_catalog")
         // WHEN
-        timing.orderSyncCompleted(old)
+        keeper.orderSyncCompleted(old)
         whenever(clock.milliseconds()).thenReturn(30L)
-        val actual = timing.terminalSnapshot(success = true)
+        val actual = keeper.cardPaymentTiming()
         // THEN
         assertThat(actual).containsEntry("pos_time_since_checkout_started_ms", 10L)
             .doesNotContainKey("pos_time_since_order_sync_completed_ms")
     }
 
     @Test
-    fun `when stage repeats, then its first timestamp is retained and success closes the context`() {
+    fun `when confirmation repeats, then its first timestamp is retained and the outcome clears it`() {
         // GIVEN
         val clock = mock<WooPosElapsedTime>()
-        val timing = WooPosCheckoutTiming(clock)
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock)
         whenever(clock.milliseconds()).thenReturn(0L)
-        timing.startCheckout("remote")
+        keeper.startCheckoutTiming("remote")
         whenever(clock.milliseconds()).thenReturn(10L)
 
-        timing.confirmedIntentAvailable()
+        keeper.paymentConfirmed()
         whenever(clock.milliseconds()).thenReturn(20L)
 
-        timing.confirmedIntentAvailable()
+        keeper.paymentConfirmed()
         // WHEN
-        val actual = timing.terminalSnapshot(success = true)
-        val duplicate = timing.terminalSnapshot(success = true)
+        val actual = keeper.cardPaymentTiming()
+        val duplicate = keeper.cardPaymentTiming()
         // THEN
         assertThat(actual).containsEntry("pos_time_since_payment_confirmed_ms", 10L)
-        assertThat(duplicate).isEqualTo(mapOf("sync_strategy" to "remote"))
+        assertThat(duplicate).containsEntry("pos_time_since_checkout_started_ms", 20L)
+            .doesNotContainKey("pos_time_since_payment_confirmed_ms")
     }
 
     @Test
     fun `when elapsed time is negative, then invalid durations are omitted`() {
         // GIVEN
         val clock = mock<WooPosElapsedTime>()
-        val timing = WooPosCheckoutTiming(clock)
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock)
         whenever(clock.milliseconds()).thenReturn(10L)
-        timing.startCheckout("unknown")
+        keeper.startCheckoutTiming("unknown")
 
         // WHEN
         whenever(clock.milliseconds()).thenReturn(5L)
-        val actual = timing.terminalSnapshot(success = false)
+        val actual = keeper.cardPaymentTiming()
         // THEN
         assertThat(actual).isEqualTo(mapOf("sync_strategy" to "unknown"))
     }
@@ -408,30 +396,29 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
     fun `when customer context is reset, then late terminal events omit old checkout timing`() {
         // GIVEN
         val clock = mock<WooPosElapsedTime>()
-        val timing = WooPosCheckoutTiming(clock)
-        val keeper = WooPosAnalyticsTrackingDataKeeper(timing)
-        val oldGeneration = timing.startCheckout("remote")
-        timing.orderSyncCompleted(oldGeneration)
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock)
+        val oldGeneration = keeper.startCheckoutTiming("remote")
+        keeper.orderSyncCompleted(oldGeneration)
 
         // WHEN
         keeper.reset()
-        timing.orderSyncCompleted(oldGeneration)
-        val actual = timing.terminalSnapshot(success = false)
+        keeper.orderSyncCompleted(oldGeneration)
+        val actual = keeper.cardPaymentTiming()
         // THEN
-        assertThat(actual).isEqualTo(mapOf("sync_strategy" to "remote"))
+        assertThat(actual).isEqualTo(mapOf("sync_strategy" to "unknown"))
     }
 
     @Test
     fun `given delayed metadata, when success is tracked, then snapshot includes metadata lookup time`() = runTest {
         // GIVEN
         val clock = mock<WooPosElapsedTime>()
-        val timing = WooPosCheckoutTiming(clock)
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock)
         val properties = mock<WooPosPaymentSuccessProperties>()
         val order = OrderTestUtils.generateTestOrder()
-        timing.startCheckout("remote")
+        keeper.startCheckoutTiming("remote")
         val metadata = CompletableDeferred<Map<String, Any>>()
         whenever(properties(order)).doSuspendableAnswer { metadata.await() }
-        val events = WooPosPaymentsFlowTrackerEventProvider(WooPosAnalyticsTrackingDataKeeper(timing), properties)
+        val events = WooPosPaymentsFlowTrackerEventProvider(keeper, properties)
         // WHEN
         val terminal = async { events.paymentSuccessEvent(order) }
         runCurrent()
@@ -444,88 +431,107 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
     }
 
     @Test
-    fun `given held old success, when a new checkout starts, then old timing keeps its own context`() = runTest {
+    fun `given confirmed card collection, when cash succeeds, then card timing remains available`() {
         // GIVEN
         val clock = mock<WooPosElapsedTime>()
-        val timing = WooPosCheckoutTiming(clock)
-        timing.startCheckout("remote")
-        val properties = mock<WooPosPaymentSuccessProperties>()
-        val order = OrderTestUtils.generateTestOrder()
-        val metadata = CompletableDeferred<Map<String, Any>>()
-        whenever(properties(order)).doSuspendableAnswer { metadata.await() }
-        val events = WooPosPaymentsFlowTrackerEventProvider(WooPosAnalyticsTrackingDataKeeper(timing), properties)
-        val oldSuccess = async { events.paymentSuccessEvent(order) }
-        runCurrent()
-        // WHEN
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock)
+        keeper.startCheckoutTiming("remote")
         whenever(clock.milliseconds()).thenReturn(100L)
-        timing.startCheckout("local_catalog")
+        keeper.paymentConfirmed()
+
+        // WHEN
         whenever(clock.milliseconds()).thenReturn(200L)
-        metadata.complete(emptyMap())
-        val old = oldSuccess.await() as WooPosAnalyticsEvent
-        val current = timing.terminalSnapshot(success = false)
+        val cash = keeper.cashPaymentTiming()
+        whenever(clock.milliseconds()).thenReturn(300L)
+        val card = keeper.cardPaymentTiming()
+
         // THEN
-        assertThat(old.properties).containsEntry("sync_strategy", "remote")
-            .containsEntry("pos_time_since_checkout_started_ms", 200L)
-        assertThat(current).containsEntry("sync_strategy", "local_catalog")
-            .containsEntry("pos_time_since_checkout_started_ms", 100L)
+        assertThat(cash).containsEntry("pos_time_since_checkout_started_ms", 200L)
+            .doesNotContainKey("pos_time_since_payment_confirmed_ms")
+        assertThat(card).containsEntry("pos_time_since_checkout_started_ms", 300L)
+            .containsEntry("pos_time_since_payment_confirmed_ms", 200L)
     }
 
     @Test
-    fun `given old cancel and confirmed callbacks, when another collection starts, then new timings stay unchanged`() {
+    fun `given confirmed collection, when canceled and retried, then confirmation is not reused`() {
         // GIVEN
         val clock = mock<WooPosElapsedTime>()
-        val timing = WooPosCheckoutTiming(clock)
-        timing.startCheckout("remote")
-        val base = WooPosPaymentsFlowTrackerEventProvider(WooPosAnalyticsTrackingDataKeeper(timing), mock())
-        val old = base.forPaymentAttempt() as WooPosPaymentsFlowTrackerEventProvider
-        whenever(clock.milliseconds()).thenReturn(10L)
-        old.onConfirmedIntentAvailable()
-        val delayedCancel = { old.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED as WooPosAnalyticsEvent }
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock)
+        val events = WooPosPaymentsFlowTrackerEventProvider(keeper, mock())
+        keeper.startCheckoutTiming("local_catalog")
         whenever(clock.milliseconds()).thenReturn(100L)
-        val next = base.forPaymentAttempt() as WooPosPaymentsFlowTrackerEventProvider
-        whenever(clock.milliseconds()).thenReturn(120L)
-        next.onConfirmedIntentAvailable()
+        keeper.paymentConfirmed()
+
         // WHEN
-        whenever(clock.milliseconds()).thenReturn(150L)
-        val cancelled = delayedCancel()
-        whenever(clock.milliseconds()).thenReturn(160L)
-        old.onConfirmedIntentAvailable()
+        val canceled = events.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED as WooPosAnalyticsEvent
         whenever(clock.milliseconds()).thenReturn(200L)
-        val succeeded = next.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS as WooPosAnalyticsEvent
+        val retry = events.CARD_PRESENT_COLLECT_PAYMENT_FAILED as WooPosAnalyticsEvent
+
         // THEN
-        assertThat(cancelled.properties).containsEntry("pos_time_since_payment_confirmed_ms", 140L)
-        assertThat(succeeded.properties).containsEntry("pos_time_since_checkout_started_ms", 200L)
-            .containsEntry("pos_time_since_payment_confirmed_ms", 80L)
+        assertThat(canceled.properties).doesNotContainKeys(
+            "sync_strategy",
+            "pos_time_since_checkout_started_ms",
+            "pos_time_since_order_sync_completed_ms",
+            "pos_time_since_payment_confirmed_ms",
+        )
+        assertThat(retry.properties).containsEntry("pos_time_since_checkout_started_ms", 200L)
+            .doesNotContainKey("pos_time_since_payment_confirmed_ms")
     }
 
     @Test
-    fun `given held old success, when a new collection shares checkout, then success closes only its own collection`() = runTest {
+    fun `given previous checkout stages, when checkout restarts, then only the new checkout is timed`() {
         // GIVEN
         val clock = mock<WooPosElapsedTime>()
-        val timing = WooPosCheckoutTiming(clock)
-        timing.startCheckout("remote")
-        val metadata = CompletableDeferred<Map<String, Any>>()
-        val properties = mock<WooPosPaymentSuccessProperties>()
-        val order = OrderTestUtils.generateTestOrder()
-        whenever(properties(order)).doSuspendableAnswer { metadata.await() }
-        val base = WooPosPaymentsFlowTrackerEventProvider(WooPosAnalyticsTrackingDataKeeper(timing), properties)
-        val old = base.forPaymentAttempt() as WooPosPaymentsFlowTrackerEventProvider
-        val delayedSuccess = async { old.paymentSuccessEvent(order) }
-        runCurrent()
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock)
+        keeper.orderSyncCompleted(keeper.startCheckoutTiming("remote"))
+        keeper.paymentConfirmed()
+
         // WHEN
         whenever(clock.milliseconds()).thenReturn(100L)
-        val next = base.forPaymentAttempt() as WooPosPaymentsFlowTrackerEventProvider
-        whenever(clock.milliseconds()).thenReturn(120L)
-        next.onConfirmedIntentAvailable()
+        keeper.startCheckoutTiming("local_catalog")
         whenever(clock.milliseconds()).thenReturn(150L)
-        metadata.complete(emptyMap())
-        delayedSuccess.await()
-        whenever(clock.milliseconds()).thenReturn(200L)
-        val nextSuccess = next.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS as WooPosAnalyticsEvent
-        val duplicate = old.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS as WooPosAnalyticsEvent
+        val actual = keeper.cardPaymentTiming()
+
         // THEN
-        assertThat(nextSuccess.properties).containsEntry("pos_time_since_checkout_started_ms", 200L)
-            .containsEntry("pos_time_since_payment_confirmed_ms", 80L)
-        assertThat(duplicate.properties).doesNotContainKey("pos_time_since_checkout_started_ms")
+        assertThat(actual).isEqualTo(
+            mapOf("sync_strategy" to "local_catalog", "pos_time_since_checkout_started_ms" to 50L)
+        )
+    }
+
+    @Test
+    fun `given no checkout, when confirmation arrives, then no elapsed timing is created`() {
+        // GIVEN
+        val clock = mock<WooPosElapsedTime>()
+        val keeper = WooPosAnalyticsTrackingDataKeeper(clock)
+
+        // WHEN
+        keeper.paymentConfirmed()
+        whenever(clock.milliseconds()).thenReturn(100L)
+        val actual = keeper.cardPaymentTiming()
+
+        // THEN
+        assertThat(actual).isEqualTo(mapOf("sync_strategy" to "unknown"))
+    }
+
+    @Test
+    fun `given legacy state, when reset, then customer timers and checkout counter are cleared`() {
+        // GIVEN
+        val keeper = WooPosAnalyticsTrackingDataKeeper(mock()).apply {
+            interactionWithCustomerStartedTimestamp = 1L
+            orderSyncSuccessTimestamp = 2L
+            readerReadyForPaymentTimestamp = 3L
+            cardTappedTimestamp = 4L
+            checkoutButtonTapsCount = 5
+        }
+
+        // WHEN
+        keeper.reset()
+
+        // THEN
+        assertThat(keeper.interactionWithCustomerStartedTimestamp).isNull()
+        assertThat(keeper.orderSyncSuccessTimestamp).isNull()
+        assertThat(keeper.readerReadyForPaymentTimestamp).isNull()
+        assertThat(keeper.cardTappedTimestamp).isNull()
+        assertThat(keeper.checkoutButtonTapsCount).isZero()
     }
 }

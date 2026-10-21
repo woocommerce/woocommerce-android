@@ -14,7 +14,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashPaymentTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosCheckoutTiming
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosElapsedTime
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosPaymentSuccessProperties
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -61,7 +60,7 @@ class WooPosCashPaymentViewModelTest {
     private val resourceProvider: ResourceProvider = mock()
     private val tracker: WooPosAnalyticsTracker = mock()
     private val timingClock = mock<WooPosElapsedTime>()
-    private val trackerData = WooPosAnalyticsTrackingDataKeeper(WooPosCheckoutTiming(timingClock))
+    private val trackerData = WooPosAnalyticsTrackingDataKeeper(timingClock)
 
     private lateinit var viewModel: WooPosCashPaymentViewModel
 
@@ -104,17 +103,15 @@ class WooPosCashPaymentViewModelTest {
     @Test
     fun `given delayed country lookup, when cash succeeds, then timing includes metadata lookup`() = runTest {
         // GIVEN
-        trackerData.checkoutTiming.startCheckout("remote")
+        trackerData.startCheckoutTiming("remote")
         whenever(repository.completeOrder(any(), any())).thenReturn(Result.success(Unit))
         val country = CompletableDeferred<String?>()
         whenever(wooStore.getStoreCountryCode(any())).doSuspendableAnswer { country.await() }
         // WHEN
         viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked)
         runCurrent()
-        whenever(timingClock.milliseconds()).thenReturn(100L)
-        trackerData.checkoutTiming.startCheckout("local_catalog")
         whenever(timingClock.milliseconds()).thenReturn(120L)
-        trackerData.checkoutTiming.confirmedIntentAvailable()
+        trackerData.paymentConfirmed()
         whenever(timingClock.milliseconds()).thenReturn(350L)
         country.complete("US")
         advanceUntilIdle()
@@ -125,8 +122,8 @@ class WooPosCashPaymentViewModelTest {
             .containsEntry("pos_time_since_checkout_started_ms", 350L)
             .containsEntry("sync_strategy", "remote")
             .doesNotContainKey("pos_time_since_payment_confirmed_ms")
-        assertThat(trackerData.checkoutTiming.terminalSnapshot(success = false))
-            .containsEntry("pos_time_since_checkout_started_ms", 250L)
+        assertThat(trackerData.cardPaymentTiming())
+            .containsEntry("pos_time_since_checkout_started_ms", 350L)
             .containsEntry("pos_time_since_payment_confirmed_ms", 230L)
     }
 

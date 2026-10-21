@@ -53,7 +53,7 @@ class WooPosTotalsAnalyticsTracker @Inject constructor(
         analyticsData.checkoutButtonTapsCount = analyticsData.checkoutButtonTapsCount + 1
     }
 
-    fun startCheckoutTiming(): Long = analyticsData.checkoutTiming.startCheckout(
+    fun startCheckoutTiming(): Long = analyticsData.startCheckoutTiming(
         when (productsDataSource.getCurrentSyncStrategyOrNull()) {
             WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE -> "local_catalog"
             WooPosProductsDataSource.SyncStrategy.REMOTE -> "remote"
@@ -61,7 +61,7 @@ class WooPosTotalsAnalyticsTracker @Inject constructor(
         }
     )
 
-    fun orderSyncCompleted(generation: Long) = analyticsData.checkoutTiming.orderSyncCompleted(generation)
+    fun orderSyncCompleted(generation: Long) = analyticsData.orderSyncCompleted(generation)
 
     suspend fun trackOrderCreationSuccess() {
         analyticsTracker.track(WooPosAnalyticsEvent.Event.OrderCreationSuccess)

@@ -66,7 +66,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.EmailReceiptTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosCheckoutTiming
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosElapsedTime
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.CurrencyFormatter
@@ -122,7 +121,7 @@ class WooPosTotalsViewModelTest {
 
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val timingClock = mock<WooPosElapsedTime>()
-    private val timingData = WooPosAnalyticsTrackingDataKeeper(WooPosCheckoutTiming(timingClock))
+    private val timingData = WooPosAnalyticsTrackingDataKeeper(timingClock)
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) }.thenReturn("")
     }
@@ -248,12 +247,12 @@ class WooPosTotalsViewModelTest {
         events.value = ParentToChildrenEvent.ProductsRemoved(items)
         advanceUntilIdle()
         whenever(timingClock.milliseconds()).thenReturn(130L)
-        val afterProducts = timingData.checkoutTiming.terminalSnapshot(success = false)
+        val afterProducts = timingData.cardPaymentTiming()
         whenever(timingClock.milliseconds()).thenReturn(200L)
         events.value = ParentToChildrenEvent.CouponsRemoved(items)
         advanceUntilIdle()
         whenever(timingClock.milliseconds()).thenReturn(230L)
-        val afterCoupons = timingData.checkoutTiming.terminalSnapshot(success = false)
+        val afterCoupons = timingData.cardPaymentTiming()
         // THEN
         assertThat(afterProducts).containsEntry("pos_time_since_checkout_started_ms", 30L)
         assertThat(afterCoupons).containsEntry("pos_time_since_checkout_started_ms", 30L)
