@@ -96,10 +96,10 @@ items:
 
   - id: orders.push.arrives
     title: New order push notification arrives
-    manual: "Later automation should trigger an order via API and assert push delivery."
+    flow: .maestro/flows/orders_push_notification.yaml
   - id: orders.push.deep-link
     title: Push opens the correct order
-    manual: "Blocked with push delivery automation."
+    flow: .maestro/flows/orders_push_notification.yaml
   - id: orders.list
     title: Orders list loads
     flow: .maestro/flows/orders_list_and_search.yaml

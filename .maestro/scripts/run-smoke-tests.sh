@@ -928,6 +928,21 @@ upgrade_app() {
   python3 "$ENSURE_RELEASE_APP_SCRIPT" --device "$DEVICE_SERIAL" --apk "$APK_PATH" || exit 1
 }
 
+# A push only reaches a signed-in device, so for a flow tagged push_new_order the
+# runner logs in first and then creates an order. The flow finds the order's push
+# by PUSH_ORDER_TOTAL and checks it opens PUSH_ORDER_NUMBER.
+PUSH_ORDER_NUMBER=""
+PUSH_ORDER_TOTAL=""
+create_push_order() {
+  local order
+  log_in_before_flow "$1" || return 0
+  if order="$("$SEED_SCRIPT" push-order --store lab --run-id "$SUITE_RUN_ID" --manifest "$MANIFEST_FILE")"; then
+    read -r PUSH_ORDER_NUMBER PUSH_ORDER_TOTAL <<< "$order"
+  else
+    echo "  creating the order for the push failed"
+  fi
+}
+
 # Maestro cannot remove a home screen widget, so the runner drags any Woo widget
 # to the launcher's Remove target before and after flows tagged home_widget.
 remove_home_widgets() {
@@ -1292,6 +1307,7 @@ run_one_attempt() {
   set +e
   mkdir -p "$attempt_debug_dir"
   "${MAESTRO_PROCESS_ENV_ARGS[@]}" maestro test "${MAESTRO_DEVICE_ARGS[@]}" "${MAESTRO_ENV_ARGS[@]}" -e "APP_UPGRADED=$APP_UPGRADED" \
+    -e "PUSH_ORDER_NUMBER=$PUSH_ORDER_NUMBER" -e "PUSH_ORDER_TOTAL=$PUSH_ORDER_TOTAL" \
     --debug-output "$attempt_debug_dir" --flatten-debug-output "$flow" >"$log_file" 2>&1
   exit_code=$?
   set -e
@@ -1403,6 +1419,11 @@ for repeat_index in $(seq 1 "$REPEAT"); do
     fi
     if flow_has_any_tag "$flow" home_widget; then
       remove_home_widgets
+    fi
+    PUSH_ORDER_NUMBER=""
+    PUSH_ORDER_TOTAL=""
+    if flow_has_any_tag "$flow" push_new_order; then
+      create_push_order "$base"
     fi
 
     first="$(run_one_attempt "$flow" "$base" 1 "$repeat_index")"
