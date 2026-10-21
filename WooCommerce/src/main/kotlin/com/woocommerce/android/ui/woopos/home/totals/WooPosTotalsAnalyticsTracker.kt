@@ -63,6 +63,8 @@ class WooPosTotalsAnalyticsTracker @Inject constructor(
 
     fun orderSyncCompleted(generation: Long) = analyticsData.orderSyncCompleted(generation)
 
+    fun clearPaymentConfirmation() = analyticsData.clearPaymentConfirmation()
+
     suspend fun trackOrderCreationSuccess() {
         analyticsTracker.track(WooPosAnalyticsEvent.Event.OrderCreationSuccess)
         analyticsData.orderSyncSuccessTimestamp = System.currentTimeMillis()

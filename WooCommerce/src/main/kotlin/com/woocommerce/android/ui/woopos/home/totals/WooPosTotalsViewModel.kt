@@ -673,6 +673,9 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun cancelRemotePaymentAction() {
+        if (remotePaymentJob?.isActive == true) {
+            totalsAnalyticsTracker.clearPaymentConfirmation()
+        }
         remotePaymentJob?.cancel()
         remotePaymentJob = null
     }

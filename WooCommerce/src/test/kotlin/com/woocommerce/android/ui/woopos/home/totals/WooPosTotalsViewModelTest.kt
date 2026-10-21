@@ -67,6 +67,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosElapsedTime
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosPaymentsFlowTrackerEventProvider
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -79,8 +80,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -2821,6 +2824,73 @@ class WooPosTotalsViewModelTest {
             // THEN
             verify(remoteReaderPaymentFlow, org.mockito.kotlin.times(2)).collect(any(), any())
         }
+
+    @Test
+    fun `given canceled confirmed remote collection, when reconnect fails before confirmation, then timing is omitted`() =
+        runTest {
+            val event = collectAfterRemoteReconnect(confirmRetry = false)
+
+            assertThat(event.properties).containsEntry("pos_time_since_checkout_started_ms", 2500L)
+                .containsEntry("pos_time_since_order_sync_completed_ms", 2500L)
+                .doesNotContainKey("pos_time_since_payment_confirmed_ms")
+        }
+
+    @Test
+    fun `given canceled confirmed remote collection, when reconnect confirms, then only the new confirmation is timed`() =
+        runTest {
+            val event = collectAfterRemoteReconnect(confirmRetry = true)
+
+            assertThat(event.properties).containsEntry("pos_time_since_checkout_started_ms", 4000L)
+                .containsEntry("pos_time_since_order_sync_completed_ms", 4000L)
+                .containsEntry("pos_time_since_payment_confirmed_ms", 1000L)
+        }
+
+    private suspend fun TestScope.collectAfterRemoteReconnect(confirmRetry: Boolean): WooPosAnalyticsEvent {
+        givenCardReaderConnectedAndNetworkAvailable()
+        whenever(cardReaderFacade.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+        val connected = WooPosRemoteReaderSession.State.Connected(simulatedRemoteReader(), "SIM-1")
+        val remoteState = MutableStateFlow<WooPosRemoteReaderSession.State>(connected)
+        whenever(remoteReaderSession.state).thenReturn(remoteState)
+        val events = WooPosPaymentsFlowTrackerEventProvider(timingData, mock())
+        var collections = 0
+        var outcome: WooPosAnalyticsEvent? = null
+        whenever(remoteReaderPaymentFlow.collect(any(), any())).doSuspendableAnswer { invocation ->
+            collections++
+            val onCaptureStarting = invocation.getArgument<suspend () -> Unit>(1)
+            if (collections == 1) {
+                whenever(timingClock.milliseconds()).thenReturn(1000L)
+                events.onConfirmedIntentAvailable()
+                onCaptureStarting()
+                WooPosRemoteReaderPaymentFlow.Result.Completed
+            } else if (confirmRetry) {
+                whenever(timingClock.milliseconds()).thenReturn(3000L)
+                events.onConfirmedIntentAvailable()
+                onCaptureStarting()
+                whenever(timingClock.milliseconds()).thenReturn(3500L)
+                events.onConfirmedIntentAvailable()
+                whenever(timingClock.milliseconds()).thenReturn(4000L)
+                outcome = events.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS as WooPosAnalyticsEvent
+                WooPosRemoteReaderPaymentFlow.Result.Completed
+            } else {
+                whenever(timingClock.milliseconds()).thenReturn(2500L)
+                outcome = events.CARD_PRESENT_COLLECT_PAYMENT_FAILED as WooPosAnalyticsEvent
+                WooPosRemoteReaderPaymentFlow.Result.Failed("declined")
+            }
+        }
+        val vm = createViewModelAndSetupForSuccessfulOrderCreation()
+        runCurrent()
+        assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.Checkout::class.java)
+        assertThat((vm.state.value as WooPosTotalsViewState.Checkout).totals)
+            .isEqualTo(WooPosTotalsViewState.Totals.Hidden)
+
+        remoteState.value = WooPosRemoteReaderSession.State.Idle
+        runCurrent()
+        remoteState.value = connected
+        advanceUntilIdle()
+
+        assertThat(collections).isEqualTo(2)
+        return checkNotNull(outcome)
+    }
 
     private fun simulatedRemoteReader() =
         com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveredReader.Phone(
