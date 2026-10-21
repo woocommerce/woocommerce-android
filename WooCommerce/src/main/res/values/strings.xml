@@ -2758,7 +2758,6 @@
     <string name="login_error_generic">There was some trouble connecting with the Google account.</string>
     <string name="login_error_sms_throttled">We\'ve made too many attempts to send an SMS verification code — take a break, and request a new one in a minute.</string>
     <string name="login_error_generic_start">Google login could not be started.</string>
-    <string name="login_error_suffix">\nMaybe try a different account?</string>
     <string name="signup_magic_link_error">There was some trouble sending the email. You can retry now or close and try again later.</string>
     <string name="signup_magic_link_error_button_negative">Close</string>
     <string name="signup_magic_link_error_button_positive">Retry</string>
@@ -2778,7 +2777,6 @@
     <string name="login_error_xml_rpc_cannot_read_site_auth_required">XML-RPC calls seem blocked on this site (error code 401). If attempt to login fails tap on help icon to view the FAQ.</string>
     <string name="login_error_xml_rpc_auth_error_communicating">There was a problem communicating with the site. An HTTP error code 401 was returned.</string>
 
-    <string name="google_error_timeout">Google took too long to respond. You may need to wait until you have a stronger internet connection.</string>
 
     <string name="login_invalid_credentials_message">It seems the username or password you entered doesn\'t quite match. Double-check your credentials and try again.</string>
     <string name="username_or_password_incorrect">The username or password you entered is incorrect</string>
