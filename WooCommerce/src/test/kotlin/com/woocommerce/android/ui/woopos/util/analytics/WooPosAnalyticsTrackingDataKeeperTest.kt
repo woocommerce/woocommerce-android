@@ -100,6 +100,19 @@ class WooPosAnalyticsTrackingDataKeeperTest {
     }
 
     @Test
+    fun `given no status yet, when interaction starts and the first status is connected, then connection is unknown`() {
+        // WHEN
+        keeper.startCustomerInteraction(timestamp = 1_000)
+        connect(at = 1_500)
+
+        // THEN
+        assertThat(keeper.readerConnectedAtCheckout).isNull()
+        assertThat(keeper.readerConnectedTimestamp).isNull()
+        assertThat(keeper.latestReaderConnectedTimestamp).isNull()
+        assertThat(keeper.readerReadyTimingProperties).isEmpty()
+    }
+
+    @Test
     fun `given no status yet at start, when reader disconnects and reconnects, then only preparation uses it`() {
         // GIVEN
         keeper.startCustomerInteraction(timestamp = 1_000)
