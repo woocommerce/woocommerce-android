@@ -24,6 +24,7 @@ PLAN_SCRIPT="$REPO_ROOT/.maestro/scripts/smoke_plan.py"
 CHECK_TOOLCHAIN_SCRIPT="$REPO_ROOT/.maestro/scripts/check-toolchain.py"
 CHECK_DEVICE_LOCALE_SCRIPT="$REPO_ROOT/.maestro/scripts/device_locale.py"
 ENSURE_RELEASE_APP_SCRIPT="$REPO_ROOT/.maestro/scripts/ensure_release_app.py"
+JN_SSH_SCRIPT="$REPO_ROOT/.maestro/scripts/jn-ssh.exp"
 APP_ID="com.woocommerce.android"
 
 RUN_STAMP="$(date +%Y%m%d%H%M%S)"
@@ -943,6 +944,28 @@ create_push_order() {
   fi
 }
 
+# The push setup without Jetpack starts from a store that isn't connected to
+# WordPress.com and connects it, so for a flow tagged push_no_jetpack the runner
+# disconnects the store first. Jurassic Ninja keeps the site's token on the
+# platform, so removing the stored site ID is what disconnects it. The flow checks
+# NO_JETPACK_DISCONNECTED first.
+NO_JETPACK_DISCONNECTED="no"
+disconnect_no_jetpack_store() {
+  local site="${MAESTRO_WOO_NO_JETPACK_SITE_URL#*://}" result
+  site="${site%%/*}"
+  # SSH to Jurassic Ninja sometimes drops a session, so try a few times.
+  for _ in 1 2 3; do
+    result="$(JN_SSH_PASS="${MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD:-}" "$JN_SSH_SCRIPT" "$site" \
+      'wp eval '\''$options = get_option( "jetpack_options" ); unset( $options["id"] ); update_option( "jetpack_options", $options ); echo ( new Automattic\Jetpack\Connection\Manager() )->is_connected() ? "CONNECTED" : "DISCONNECTED";'\''' \
+      2>/dev/null | tr -d '\r' || true)"
+    if [[ "$result" == *DISCONNECTED* ]]; then
+      NO_JETPACK_DISCONNECTED="yes"
+      return 0
+    fi
+  done
+  echo "  disconnecting the store without Jetpack from WordPress.com failed"
+}
+
 # Maestro cannot remove a home screen widget, so the runner drags any Woo widget
 # to the launcher's Remove target before and after flows tagged home_widget.
 remove_home_widgets() {
@@ -1308,6 +1331,7 @@ run_one_attempt() {
   mkdir -p "$attempt_debug_dir"
   "${MAESTRO_PROCESS_ENV_ARGS[@]}" maestro test "${MAESTRO_DEVICE_ARGS[@]}" "${MAESTRO_ENV_ARGS[@]}" -e "APP_UPGRADED=$APP_UPGRADED" \
     -e "PUSH_ORDER_NUMBER=$PUSH_ORDER_NUMBER" -e "PUSH_ORDER_TOTAL=$PUSH_ORDER_TOTAL" \
+    -e "NO_JETPACK_DISCONNECTED=$NO_JETPACK_DISCONNECTED" \
     --debug-output "$attempt_debug_dir" --flatten-debug-output "$flow" >"$log_file" 2>&1
   exit_code=$?
   set -e
@@ -1424,6 +1448,10 @@ for repeat_index in $(seq 1 "$REPEAT"); do
     PUSH_ORDER_TOTAL=""
     if flow_has_any_tag "$flow" push_new_order; then
       create_push_order "$base"
+    fi
+    NO_JETPACK_DISCONNECTED="no"
+    if flow_has_any_tag "$flow" push_no_jetpack; then
+      disconnect_no_jetpack_store
     fi
 
     first="$(run_one_attempt "$flow" "$base" 1 "$repeat_index")"
