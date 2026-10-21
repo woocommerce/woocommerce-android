@@ -809,6 +809,15 @@
     <string name="order_creation_fee_percentage_toggle_text">Calculate as percentage</string>
     <string name="order_creation_fee_percentage_calculated_amount">Calculated amount: %s</string>
     <string name="order_creation_customer_search_empty">No customers found</string>
+    <string name="customer_list_analytics_unavailable_title">Customers can\'t be loaded</string>
+    <string name="customer_list_analytics_disabled_message">Customer lists need WooCommerce Analytics, which is turned off for this store. You can enable it here, or in your store admin under WooCommerce › Settings › Advanced › Features and then tap Retry.</string>
+    <string name="customer_list_analytics_permission_denied_message">Customer lists need WooCommerce Analytics, which isn\'t available on this store. Ask a store administrator to turn it on in WooCommerce › Settings › Advanced › Features.</string>
+    <string name="customer_list_analytics_unavailable_message">Customer lists need WooCommerce Analytics, which isn\'t available on this store right now. Ask a store administrator to check that it\'s turned on.</string>
+    <string name="customer_list_enable_analytics">Enable Analytics</string>
+    <string name="customer_list_enable_analytics_confirmation_title">Enable WooCommerce Analytics?</string>
+    <string name="customer_list_enable_analytics_confirmation_message">This changes a setting for your whole store. It stays on until someone turns it off in WooCommerce › Settings › Advanced › Features. Customers from the time Analytics was off may only show up after you import historical data in WooCommerce › Analytics › Settings.</string>
+    <string name="customer_list_enable_analytics_confirmation_action">Enable</string>
+    <string name="customer_list_enable_analytics_error">WooCommerce Analytics couldn\'t be enabled. Please try again.</string>
     <string name="order_creation_customer_search_empty_on_old_version_wcpay">Search for an existing customer or</string>
     <string name="order_creation_customer_search_hint">Search for customers</string>
     <string name="order_creation_customer_search_old_wc_hint">Search for customers by</string>
@@ -2620,7 +2629,7 @@
     <string name="ai_support_chat_mark_resolved_confirmation_title">Mark chat as resolved?</string>
     <string name="ai_support_chat_mark_resolved_confirmation_message">This will close the chat actions for this conversation.</string>
     <string name="ai_support_chat_escalation_consent_title">Send this chat to support?</string>
-    <string name="ai_support_chat_escalation_consent_message">We can create a support request using this chat transcript, or you can open the contact form and enter the details yourself.</string>
+    <string name="ai_support_chat_escalation_consent_message_v2">Both options include this chat transcript. Send the request now, or open the contact form to add more details first.</string>
     <string name="ai_support_chat_escalation_consent_send_request">Send Request</string>
     <string name="ai_support_chat_escalation_consent_contact_form">Contact Form</string>
     <string name="ai_support_chat_escalation_transcript_header">Following is the transcript of an in-app AI support chat session:</string>
@@ -2747,7 +2756,6 @@
     <string name="login_error_generic">There was some trouble connecting with the Google account.</string>
     <string name="login_error_sms_throttled">We\'ve made too many attempts to send an SMS verification code — take a break, and request a new one in a minute.</string>
     <string name="login_error_generic_start">Google login could not be started.</string>
-    <string name="login_error_suffix">\nMaybe try a different account?</string>
     <string name="signup_magic_link_error">There was some trouble sending the email. You can retry now or close and try again later.</string>
     <string name="signup_magic_link_error_button_negative">Close</string>
     <string name="signup_magic_link_error_button_positive">Retry</string>
@@ -2767,7 +2775,6 @@
     <string name="login_error_xml_rpc_cannot_read_site_auth_required">XML-RPC calls seem blocked on this site (error code 401). If attempt to login fails tap on help icon to view the FAQ.</string>
     <string name="login_error_xml_rpc_auth_error_communicating">There was a problem communicating with the site. An HTTP error code 401 was returned.</string>
 
-    <string name="google_error_timeout">Google took too long to respond. You may need to wait until you have a stronger internet connection.</string>
 
     <string name="login_invalid_credentials_message">It seems the username or password you entered doesn\'t quite match. Double-check your credentials and try again.</string>
     <string name="username_or_password_incorrect">The username or password you entered is incorrect</string>
@@ -3344,6 +3351,7 @@
     <string name="support_request_help_title">I need help with</string>
     <string name="support_request_title">Let\'s get this sorted</string>
     <string name="support_request_description">Let us know your site address (URL) and tell us as much as you can about the problem, and we will be in touch soon.</string>
+    <string name="support_request_ai_chat_transcript_disclosure">Your AI support chat transcript will also be included with this request.</string>
     <string name="support_request_subject">Subject</string>
     <string name="support_request_site_address">Site Address</string>
     <string name="support_request_submit">Submit Support Request</string>
@@ -4504,6 +4512,9 @@
     <string name="woopos_remote_ttp_explainer_requirements_heading">Check compatibility</string>
     <string name="woopos_remote_ttp_explainer_requirements_body">Use the same Wi-Fi and sign in to the same store on both devices. Your phone needs Android 13 or newer, NFC, and Tap-to-Pay support.</string>
     <string name="woopos_remote_ttp_explainer_got_it">Got it</string>
+    <string name="woopos_remote_ttp_explainer_allow_local_network">Allow local network access</string>
+    <string name="woopos_remote_ttp_explainer_local_network_heading">Let POS find your phone</string>
+    <string name="woopos_remote_ttp_explainer_local_network_body">Allow local network access so POS can find your phone on the same Wi-Fi.</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>

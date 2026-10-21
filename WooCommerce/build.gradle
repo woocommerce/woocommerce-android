@@ -280,7 +280,6 @@ dependencies {
     implementation(libs.google.firebase.config)
     implementation(libs.google.firebase.analytics)
 
-    implementation(libs.google.play.services.auth)
     implementation libs.google.play.ageSignals
 
     // Support library

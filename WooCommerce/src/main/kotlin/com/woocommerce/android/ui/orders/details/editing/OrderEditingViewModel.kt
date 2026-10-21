@@ -51,18 +51,13 @@ class OrderEditingViewModel @Inject constructor(
     private var viewState by viewStateData
 
     lateinit var order: Order
-    private var orderId: Long = -1L
 
     val isOrderLoaded
         get() = ::order.isInitialized
 
     fun start() {
         launch {
-            val orderId = if (orderId == -1L) {
-                navArgs.orderId
-            } else {
-                orderId
-            }
+            val orderId = savedState.get<Long>(KEY_TWO_PANE_ORDER_ID) ?: navArgs.orderId
             val loadedOrder = orderDetailRepository.getOrderById(orderId)
             if (loadedOrder == null) {
                 val message = "Order $orderId not found in the database."
@@ -80,7 +75,7 @@ class OrderEditingViewModel @Inject constructor(
     }
 
     fun setOrderId(orderId: Long) {
-        this.orderId = orderId
+        savedState[KEY_TWO_PANE_ORDER_ID] = orderId
     }
 
     private fun checkConnectionAndResetState(): Boolean {
@@ -185,4 +180,8 @@ class OrderEditingViewModel @Inject constructor(
     object OrderLoadFailed : MultiLiveEvent.Event()
     object OrderEdited : MultiLiveEvent.Event()
     data class OrderEditFailed(@StringRes val message: Int) : MultiLiveEvent.Event()
+
+    private companion object {
+        const val KEY_TWO_PANE_ORDER_ID = "two_pane_order_id"
+    }
 }

@@ -1,0 +1,70 @@
+# Smoke Test: Android system - Home screen widget
+# p2: other.home-widget
+# P2 ref: Other > Add widget to the home screen and check it works properly
+#
+# Adds the Today stats widget from Pixel Launcher's widget picker, checks that
+# it shows the store's stats and that tapping it opens the app. The runner
+# removes Woo widgets from the home screen before and after this flow.
+#
+# Runs in the full profile and needs an English Pixel Launcher AVD.
+appId: com.woocommerce.android
+name: "Android system - Home screen widget"
+tags:
+  - android_system
+  - home_widget
+---
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+- pressKey: HOME
+
+# The home screen menu opens from a long press on empty wallpaper, which has no
+# element to select. The runner removes Woo widgets first, so the middle is empty.
+- longPressOn:
+    point: "50%,50%"
+    label: "Open the home screen menu"
+
+- tapOn:
+    text: "Widgets"
+    label: "Open the widget picker"
+
+- tapOn:
+    text: "Search"
+    label: "Search the widget picker"
+- inputText: "Woo"
+- hideKeyboard
+
+- tapOn:
+    text: "Today"
+    index: 0
+    label: "Open the Woo widgets"
+
+- tapOn:
+    text: "WooCommerce Stats Today"
+    label: "Add the Today stats widget"
+
+- extendedWaitUntil:
+    visible:
+      id: "com.woocommerce.android:id/widget_title"
+    timeout: 15000
+    label: "Wait for the widget on the home screen"
+
+- extendedWaitUntil:
+    visible:
+      id: "com.woocommerce.android:id/widget_revenue_title"
+    timeout: 30000
+    label: "Wait for the widget's stats"
+- assertVisible:
+    id: "com.woocommerce.android:id/widget_orders_title"
+
+- takeScreenshot: home_widget
+
+- tapOn:
+    id: "com.woocommerce.android:id/widget_revenue_title"
+    label: "Open the app from the widget"
+
+- extendedWaitUntil:
+    visible:
+      id: "products"
+    timeout: 30000
+    label: "The widget opens the app"
