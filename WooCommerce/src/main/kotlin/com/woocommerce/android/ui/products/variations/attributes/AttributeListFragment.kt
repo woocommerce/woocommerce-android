@@ -142,7 +142,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     private fun showAttributes(attributes: List<ProductAttribute>) {
         val adapter: AttributeListAdapter
         if (binding.attributeList.adapter == null) {
-            val showLabels = viewModel.isNonVariationAttributesEnabled && !navArgs.isVariationCreation
+            val showLabels = !navArgs.isVariationCreation
             adapter = AttributeListAdapter(
                 showHiddenLabel = showLabels,
                 showUsedForVariationsLabel = showLabels && viewModel.isDraftVariableProduct
