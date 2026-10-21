@@ -143,6 +143,14 @@ fun LoginSiteCredentialsScreen(
                     text = stringResource(id = R.string.continue_button)
                 )
             }
+            if (viewState.endpointRecovery == null && viewState.offersBrowserLogin) {
+                WCTextButton(
+                    onClick = onUnexpectedResponseBrowserLoginClick,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    Text(text = stringResource(id = R.string.login_site_credentials_use_web_authorization))
+                }
+            }
             if (viewState.endpointRecovery != null) {
                 WCTextButton(
                     onClick = onStartWebAuthorizationClick,
@@ -204,8 +212,7 @@ fun LoginSiteCredentialsScreen(
         if (viewState.unexpectedResponse != null) {
             LoginUnexpectedResponseAlert(
                 onRetryClick = onUnexpectedResponseRetryClick,
-                onDismissClick = onUnexpectedResponseDismissClick,
-                onBrowserLoginClick = onUnexpectedResponseBrowserLoginClick.takeIf { viewState.offersBrowserLogin }
+                onDismissClick = onUnexpectedResponseDismissClick
             )
         }
 

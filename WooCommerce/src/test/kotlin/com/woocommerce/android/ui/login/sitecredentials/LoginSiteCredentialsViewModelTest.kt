@@ -884,7 +884,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given cookie login gets an unexpected response, when tapping the browser login on the alert, then open it`() =
+    fun `given the alert is dismissed after an unexpected response, when tapping the browser login, then open it`() =
         testBlocking {
             whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
                 .thenReturn(Result.failure(unexpectedResponseError()))
@@ -894,14 +894,33 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 enterCredentialsAndContinue()
                 advanceUntilIdle()
                 assertThat(viewModel.viewState.value?.unexpectedResponse).isEqualTo(LOGIN_PAGE_FAILURE)
-                assertThat(viewModel.viewState.value?.offersBrowserLogin).isTrue()
                 assertThat(viewModel.event.value is ShowApplicationPasswordTutorialScreen).isFalse()
+                viewModel.onUnexpectedResponseDismissClick()
+                assertThat(viewModel.viewState.value?.offersBrowserLogin).isTrue()
                 viewModel.onUnexpectedResponseBrowserLoginClick()
             }
 
             assertThat(viewModel.event.value).isInstanceOf(ShowApplicationPasswordTutorialScreen::class.java)
-            assertThat(viewModel.viewState.value?.unexpectedResponse).isNull()
             verify(unexpectedResponseTracker).trackErrorShown(LOGIN_PAGE_FAILURE)
+        }
+
+    @Test
+    fun `given the form offers the browser login, when continuing again, then stop offering it`() =
+        testBlocking {
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
+                .thenReturn(Result.failure(unexpectedResponseError()), Result.success(Unit))
+            setup()
+
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+                viewModel.onUnexpectedResponseDismissClick()
+                viewModel.onContinueClick()
+                advanceUntilIdle()
+            }
+
+            assertThat(viewModel.viewState.value?.offersBrowserLogin).isFalse()
+            assertThat(viewModel.event.value is ShowApplicationPasswordTutorialScreen).isFalse()
         }
 
     @Test
@@ -920,6 +939,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             assertThat(viewModel.event.value is ShowApplicationPasswordTutorialScreen).isFalse()
             assertThat(viewModel.viewState.value?.unexpectedResponse).isNull()
             assertThat(viewModel.viewState.value?.authenticationError).isNull()
+            assertThat(viewModel.viewState.value?.offersBrowserLogin).isTrue()
         }
 
     @Test
@@ -935,6 +955,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 enterCredentialsAndContinue()
                 advanceUntilIdle()
                 assertThat(viewModel.viewState.value?.authenticationError).isNull()
+                viewModel.onUnexpectedResponseDismissClick()
                 assertThat(viewModel.viewState.value?.offersBrowserLogin).isTrue()
                 viewModel.onUnexpectedResponseBrowserLoginClick()
                 advanceUntilIdle()

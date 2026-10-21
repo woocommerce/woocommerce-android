@@ -95,7 +95,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         private const val LOGIN_ENTRY_URL_KEY = "login-entry-url"
         private const val ADMIN_BASE_URL_KEY = "admin-base-url"
         private const val TUTORIAL_AFTER_ALERT_KEY = "tutorial-after-alert"
-        private const val BROWSER_LOGIN_IN_ALERT_KEY = "browser-login-in-alert"
+        private const val BROWSER_LOGIN_ON_FORM_KEY = "browser-login-on-form"
     }
 
     private val wasSiteAddressNormalizedToHttps =
@@ -150,7 +150,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         clazz = LoginUnexpectedResponseFailure::class.java,
         key = "unexpected-response"
     )
-    private val offersBrowserLogin = savedStateHandle.getStateFlow(viewModelScope, false, BROWSER_LOGIN_IN_ALERT_KEY)
+    private val offersBrowserLogin = savedStateHandle.getStateFlow(viewModelScope, false, BROWSER_LOGIN_ON_FORM_KEY)
     private var pendingUnexpectedResponse: LoginUnexpectedResponseFailure? = null
     private var retryingStep: UnexpectedResponseStep? = null
     private var hasPassedRetryingStep = false
@@ -258,6 +258,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     fun onContinueClick() = launch {
+        clearUnexpectedResponseOptions()
         endpointRecovery.value?.let {
             continueEndpointRecovery(it)
             return@launch
@@ -281,9 +282,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         unexpectedResponseTracker.trackActionTapped(failure, Action.RETRY)
         unexpectedResponse.value = null
         authError.value = null
-        if (savedStateHandle.remove<ApplicationPasswordTutorial>(TUTORIAL_AFTER_ALERT_KEY) != null) {
-            fetchedSiteId.value = -1
-        }
+        clearUnexpectedResponseOptions()
         launch {
             unexpectedResponseTracker.trackRetryResult(failure, isSuccess = retryLogin(failure.step))
         }
@@ -293,14 +292,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         val failure = unexpectedResponse.value ?: return
         unexpectedResponseTracker.trackActionTapped(failure, Action.DISMISS)
         unexpectedResponse.value = null
-        if (savedStateHandle.remove<ApplicationPasswordTutorial>(TUTORIAL_AFTER_ALERT_KEY) != null) {
-            fetchedSiteId.value = -1
-        }
     }
 
     fun onUnexpectedResponseBrowserLoginClick() {
-        unexpectedResponse.value ?: return
-        unexpectedResponse.value = null
+        if (!offersBrowserLogin.value) return
         val tutorial = savedStateHandle.remove<ApplicationPasswordTutorial>(TUTORIAL_AFTER_ALERT_KEY)
         if (tutorial != null) triggerEvent(tutorial.toEvent()) else onStartWebAuthorizationClick()
     }
@@ -535,8 +530,15 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         unexpectedResponseTracker.trackErrorShown(failure)
     }
 
+    private fun clearUnexpectedResponseOptions() {
+        offersBrowserLogin.value = false
+        if (savedStateHandle.remove<ApplicationPasswordTutorial>(TUTORIAL_AFTER_ALERT_KEY) != null) {
+            fetchedSiteId.value = -1
+        }
+    }
+
     /**
-     * After an unexpected response, the alert comes first and offers the browser login instead of opening it.
+     * After an unexpected response, the alert comes first and the form offers the browser login instead of opening it.
      */
     private fun showApplicationPasswordTutorial(tutorial: ApplicationPasswordTutorial) {
         val failure = pendingUnexpectedResponse
