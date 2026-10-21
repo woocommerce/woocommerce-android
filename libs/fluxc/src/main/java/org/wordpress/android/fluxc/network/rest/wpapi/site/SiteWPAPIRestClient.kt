@@ -128,7 +128,6 @@ class SiteWPAPIRestClient @Inject constructor(
         }
     }
 
-    @SiteModel.HttpsConfigurationState
     private suspend fun fetchRoot(wpApiUrl: String, payload: FetchWPAPISitePayload) =
         wpapiGsonRequestBuilder.syncGetRequest(
             restClient = this,
@@ -146,6 +145,7 @@ class SiteWPAPIRestClient @Inject constructor(
         return applicationPasswords.endpoints?.authorization?.toHttpUrlOrNull() != null
     }
 
+    @SiteModel.HttpsConfigurationState
     private fun configurationState(serverUrl: HttpsUrlNormalizer.Result?, inputWasUpgraded: Boolean): Int {
         return when {
             serverUrl?.wasUpgraded == true -> SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS
