@@ -4,6 +4,7 @@
 
 26.0
 -----
+- [*] Fixed a crash when choosing a file on a web page inside the app [https://github.com/woocommerce/woocommerce-android/pull/16743]
 - [*] Fixed a crash when an order status update fails while the order list refreshes [https://github.com/woocommerce/woocommerce-android/pull/16728]
 - [*] Disabled filled buttons on screens like refunds, custom amounts and legacy shipping labels now look disabled [https://github.com/woocommerce/woocommerce-android/pull/16732]
 - [*] [Woo POS] On Android 17, POS asks for local network access only when you choose to use a phone as a card reader or have used one before [https://github.com/woocommerce/woocommerce-android/pull/16723]
