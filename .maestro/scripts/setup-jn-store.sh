@@ -153,29 +153,8 @@ if [ -z "$NO_JETPACK_SITE" ]; then
   [ -n "$WPCOM_PASS" ] || die "no WordPress.com password supplied"
 fi
 
-WORK="$(mktemp -d)"
-trap 'rm -rf "$WORK"' EXIT
-chmod 700 "$WORK"
-
-cat > "$WORK/ssh.exp" <<'EXP'
-#!/usr/bin/expect -f
-set timeout 120
-set site [lindex $argv 0]
-set pass $env(JN_SSH_PASS)
-set cmd  [lindex $argv 1]
-log_user 0
-spawn ssh -o StrictHostKeyChecking=accept-new -o PubkeyAuthentication=no \
-          -o NumberOfPasswordPrompts=1 $site@sftp.wp.com $cmd
-expect {
-  -re {[Pp]assword:} { send "$pass\r"; log_user 1; exp_continue }
-  eof
-}
-EXP
-chmod +x "$WORK/ssh.exp"
-
-# The password goes through the environment rather than argv so it never
-# appears in `ps` output.
-remote() { JN_SSH_PASS="$SITE_PASS" "$WORK/ssh.exp" "$SITE" "$1" 2>/dev/null | tr -d '\r'; }
+JN_SSH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/jn-ssh.exp"
+remote() { JN_SSH_PASS="$SITE_PASS" "$JN_SSH" "$SITE" "$1" 2>/dev/null | tr -d '\r'; }
 
 # Run PHP on the site. The source is base64-encoded so quoting survives the
 # shell/ssh/wp-cli layers, and staged as a file because `wp eval-file -` does
