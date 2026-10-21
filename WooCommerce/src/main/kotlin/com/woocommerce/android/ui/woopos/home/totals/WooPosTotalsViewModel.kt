@@ -133,7 +133,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private var cardReaderPaymentController: CardReaderPaymentController? = null
     private var remotePaymentJob: Job? = null
-    private var readerReadyForCardInputJob: Job? = null
+    private var paymentAnalyticsJob: Job? = null
     private var activePaymentMode: PaymentMode? = null
 
     // Persisted ViewModel-side flag covering the entire TTP flow (connect → SDK overlay → terminal).
@@ -752,10 +752,9 @@ class WooPosTotalsViewModel @Inject constructor(
                 }
             }
         }
-        viewModelScope.launch { totalsAnalyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState) }
-        // The controller's SharedFlow never completes, so the previous controller's collector is cancelled here.
-        readerReadyForCardInputJob?.cancel()
-        readerReadyForCardInputJob = viewModelScope.launch {
+        paymentAnalyticsJob?.cancel()
+        paymentAnalyticsJob = viewModelScope.launch {
+            launch { totalsAnalyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState) }
             totalsAnalyticsTracker.trackReaderReadyForCardInput(cardReaderPaymentController?.readerReadyForCardInput)
         }
     }
