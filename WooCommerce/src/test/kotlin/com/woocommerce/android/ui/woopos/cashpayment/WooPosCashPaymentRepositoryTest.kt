@@ -245,7 +245,6 @@ class WooPosCashPaymentRepositoryTest {
         whenever(selectedSite.get()).thenReturn(site)
         whenever(wooCommerceStore.getSiteSettings(site)).thenReturn(siteSettings)
         whenever(wooCommerceStore.getSiteCurrency(site, "USD")).thenReturn(currencySymbol)
-        whenever(wooCommerceStore.getProductSettings(site)).thenReturn(mock())
 
         val result = repository.getCurrencySymbol()
 
