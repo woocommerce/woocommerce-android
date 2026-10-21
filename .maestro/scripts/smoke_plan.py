@@ -67,6 +67,7 @@ P2_ORDERED_FLOW_NAMES = (
     "pos_search_and_coupons.yaml",
     "pos_cash_payment.yaml",
     "android_quick_actions.yaml",
+    "other_home_widget.yaml",
 )
 
 
