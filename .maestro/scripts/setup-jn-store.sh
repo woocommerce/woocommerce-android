@@ -163,6 +163,88 @@ remote_php() {
   remote "echo $b64 | base64 -d > /tmp/.jnsetup.php && wp eval-file /tmp/.jnsetup.php; rm -f /tmp/.jnsetup.php"
 }
 
+# WooCommerce exposes no REST endpoint for API keys, so insert the row the same
+# way its own admin-ajax handler does.
+create_api_keys() {
+  local keys verify
+  keys="$(remote_php '<?php
+$ck = "ck_" . wc_rand_hash();
+$cs = "cs_" . wc_rand_hash();
+global $wpdb;
+$ok = $wpdb->insert( $wpdb->prefix . "woocommerce_api_keys", array(
+  "user_id"         => __ADMIN_ID__,
+  "description"     => "maestro-smoke",
+  "permissions"     => "read_write",
+  "consumer_key"    => wc_api_hash( $ck ),
+  "consumer_secret" => $cs,
+  "truncated_key"   => substr( $ck, -7 ),
+), array( "%d", "%s", "%s", "%s", "%s", "%s" ) );
+if ( ! $ok ) { echo "ERR:insert failed\n"; exit( 1 ); }
+echo "CK:" . $ck . "\n" . "CS:" . $cs . "\n";')"
+  CK="$(printf '%s' "$keys" | sed -n 's/^CK:\(.*\)$/\1/p' | head -1)"
+  CS="$(printf '%s' "$keys" | sed -n 's/^CS:\(.*\)$/\1/p' | head -1)"
+  [ -n "$CK" ] && [ -n "$CS" ] || die "could not create API keys: $(printf '%s' "$keys" | head -3)"
+
+  verify="$(curl -s -o /dev/null -w '%{http_code}' -u "$CK:$CS" "https://$SITE/wp-json/wc/v3/products?per_page=1")"
+  [ "$verify" = "200" ] || die "the API keys do not authenticate (http=$verify)"
+  ok "keys created and verified as read_write"
+}
+
+# Each argument maps an env file name to the shell variable holding its value,
+# for example MAESTRO_WOO_LAB_CONSUMER_KEY=CK. Only the names go on the command
+# line; the values reach Python through the environment.
+write_env() {
+  local pair
+  if [ -f "$ENV_OUT" ]; then
+    BACKUP_DIR="${TMPDIR:-/tmp}"; BACKUP_DIR="${BACKUP_DIR%/}/maestro-env-backups"
+    mkdir -p "$BACKUP_DIR"; chmod 700 "$BACKUP_DIR"
+    BACKUP="$BACKUP_DIR/$(basename "$ENV_OUT").$(date +%Y%m%d-%H%M%S).$$"
+    cp "$ENV_OUT" "$BACKUP" || die "could not back up $ENV_OUT"
+    chmod 600 "$BACKUP"
+    # Deliberately outside the repository: .gitignore matches ".env.local"
+    # only, so a ".env.local.bak" sibling would not be ignored and could be
+    # committed with credentials in it.
+    ok "backed up the previous env file to $BACKUP"
+  fi
+
+  mkdir -p "$(dirname "$ENV_OUT")"
+  for pair in "$@"; do export "${pair#*=}"; done
+  python3 - "$ENV_OUT" "$@" <<'PY' || die "could not write $ENV_OUT${BACKUP:+; the previous copy is $BACKUP}"
+import os, re, sys, pathlib
+
+path = pathlib.Path(sys.argv[1])
+values = {}
+for pair in sys.argv[2:]:
+    name, _, variable = pair.partition("=")
+    values[name] = os.environ[variable]
+
+def quote(value):
+    if re.search(r"[\s()\"'!$&|;<>`\\#]", value):
+        return "'" + value.replace("'", "'\\''") + "'"
+    return value
+
+# Rewrite in place so hand-maintained lines and comments survive.
+lines = path.read_text(encoding="utf-8").splitlines() if path.exists() else []
+seen, out = set(), []
+for line in lines:
+    match = re.match(r"^([A-Z_]+)=", line)
+    if match and match.group(1) in values:
+        out.append(f"{match.group(1)}={quote(values[match.group(1)])}")
+        seen.add(match.group(1))
+    else:
+        out.append(line)
+missing = [k for k in values if k not in seen]
+if missing:
+    if out and out[-1].strip():
+        out.append("")
+    out.append("# Written by .maestro/scripts/setup-jn-store.sh")
+    out.extend(f"{k}={quote(values[k])}" for k in missing)
+path.write_text("\n".join(out).rstrip() + "\n", encoding="utf-8")
+path.chmod(0o600)
+PY
+  ok "wrote $ENV_OUT (mode 600)"
+}
+
 # JN provisions asynchronously and answers HTTP well before its plugins finish
 # installing, so poll for the state actually needed rather than for a 200.
 step "Waiting for $SITE to finish provisioning"
@@ -336,30 +418,8 @@ echo "SEEDED:" . $added_orders . " orders, " . $added_products . " products\n";'
 printf '%s' "$SEED" | grep -q "^SEEDED:" || die "could not add the store data: $(printf '%s' "$SEED" | head -3)"
 ok "$(printf '%s' "$SEED" | sed -n 's/^SEEDED://p') added; the store has 100 of each, 1 customer and the maestro10 coupon"
 
-# WooCommerce exposes no REST endpoint for API keys, so insert the row the same
-# way its own admin-ajax handler does.
 step "Creating WooCommerce API keys and writing $(basename "$ENV_OUT")"
-KEYS="$(remote_php '<?php
-$ck = "ck_" . wc_rand_hash();
-$cs = "cs_" . wc_rand_hash();
-global $wpdb;
-$ok = $wpdb->insert( $wpdb->prefix . "woocommerce_api_keys", array(
-  "user_id"         => __ADMIN_ID__,
-  "description"     => "maestro-smoke",
-  "permissions"     => "read_write",
-  "consumer_key"    => wc_api_hash( $ck ),
-  "consumer_secret" => $cs,
-  "truncated_key"   => substr( $ck, -7 ),
-), array( "%d", "%s", "%s", "%s", "%s", "%s" ) );
-if ( ! $ok ) { echo "ERR:insert failed\n"; exit( 1 ); }
-echo "CK:" . $ck . "\n" . "CS:" . $cs . "\n";')"
-CK="$(printf '%s' "$KEYS" | sed -n 's/^CK:\(.*\)$/\1/p' | head -1)"
-CS="$(printf '%s' "$KEYS" | sed -n 's/^CS:\(.*\)$/\1/p' | head -1)"
-[ -n "$CK" ] && [ -n "$CS" ] || die "could not create API keys: $(printf '%s' "$KEYS" | head -3)"
-
-VERIFY="$(curl -s -o /dev/null -w '%{http_code}' -u "$CK:$CS" "https://$SITE/wp-json/wc/v3/products?per_page=1")"
-[ "$VERIFY" = "200" ] || die "the API keys do not authenticate (http=$VERIFY)"
-ok "keys created and verified as read_write"
+create_api_keys
 
 # WordPress core rejects the WooCommerce keys, so cleanup deletes the images the
 # flows upload with an application password. A re-run replaces the previous one.
@@ -379,62 +439,17 @@ VERIFY="$(curl -s -o /dev/null -w '%{http_code}' -u "$ADMIN_USER:$APP_PASSWORD" 
 [ "$VERIFY" = "200" ] || die "the application password does not authenticate (http=$VERIFY)"
 ok "application password created and verified"
 
-if [ -f "$ENV_OUT" ]; then
-  BACKUP_DIR="${TMPDIR:-/tmp}"; BACKUP_DIR="${BACKUP_DIR%/}/maestro-env-backups"
-  mkdir -p "$BACKUP_DIR"; chmod 700 "$BACKUP_DIR"
-  BACKUP="$BACKUP_DIR/$(basename "$ENV_OUT").$(date +%Y%m%d-%H%M%S).$$"
-  cp "$ENV_OUT" "$BACKUP" || die "could not back up $ENV_OUT"
-  chmod 600 "$BACKUP"
-  # Deliberately outside the repository: .gitignore matches ".env.local"
-  # only, so a ".env.local.bak" sibling would not be ignored and could be
-  # committed with credentials in it.
-  ok "backed up the previous env file to $BACKUP"
-fi
-
-mkdir -p "$(dirname "$ENV_OUT")"
-SITE="$SITE" ADMIN_USER="$ADMIN_USER" WPCOM_USER="$WPCOM_USER" WPCOM_PASS="$WPCOM_PASS" WPCOM_USERNAME="$WPCOM_USERNAME" \
-SITE_PASS="$SITE_PASS" CK="$CK" CS="$CS" APP_PASSWORD="$APP_PASSWORD" \
-python3 - "$ENV_OUT" <<'PY' || die "could not write $ENV_OUT${BACKUP:+; the previous copy is $BACKUP}"
-import os, re, sys, pathlib
-
-path = pathlib.Path(sys.argv[1])
-values = {
-    "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://" + os.environ["SITE"],
-    "MAESTRO_WOO_LAB_WPCOM_EMAIL": os.environ["WPCOM_USER"],
-    "MAESTRO_WOO_LAB_WPCOM_PASSWORD": os.environ["WPCOM_PASS"],
-    "MAESTRO_WOO_LAB_WPCOM_USERNAME": os.environ["WPCOM_USERNAME"],
-    "MAESTRO_WOO_LAB_JETPACK_SITE_ADMIN_USERNAME": os.environ["ADMIN_USER"],
-    "MAESTRO_WOO_LAB_JETPACK_SITE_ADMIN_PASSWORD": os.environ["SITE_PASS"],
-    "MAESTRO_WOO_LAB_CONSUMER_KEY": os.environ["CK"],
-    "MAESTRO_WOO_LAB_CONSUMER_SECRET": os.environ["CS"],
-    "MAESTRO_WOO_LAB_APPLICATION_PASSWORD": os.environ["APP_PASSWORD"],
-}
-
-def quote(value):
-    if re.search(r"[\s()\"'!$&|;<>`\\#]", value):
-        return "'" + value.replace("'", "'\\''") + "'"
-    return value
-
-# Rewrite in place so hand-maintained lines and comments survive.
-lines = path.read_text(encoding="utf-8").splitlines() if path.exists() else []
-seen, out = set(), []
-for line in lines:
-    match = re.match(r"^([A-Z_]+)=", line)
-    if match and match.group(1) in values:
-        out.append(f"{match.group(1)}={quote(values[match.group(1)])}")
-        seen.add(match.group(1))
-    else:
-        out.append(line)
-missing = [k for k in values if k not in seen]
-if missing:
-    if out and out[-1].strip():
-        out.append("")
-    out.append("# Written by .maestro/scripts/setup-jn-store.sh")
-    out.extend(f"{k}={quote(values[k])}" for k in missing)
-path.write_text("\n".join(out).rstrip() + "\n", encoding="utf-8")
-path.chmod(0o600)
-PY
-ok "wrote $ENV_OUT (mode 600)"
+STORE_URL="https://$SITE"
+write_env \
+  MAESTRO_WOO_LAB_JETPACK_STORE_URL=STORE_URL \
+  MAESTRO_WOO_LAB_WPCOM_EMAIL=WPCOM_USER \
+  MAESTRO_WOO_LAB_WPCOM_PASSWORD=WPCOM_PASS \
+  MAESTRO_WOO_LAB_WPCOM_USERNAME=WPCOM_USERNAME \
+  MAESTRO_WOO_LAB_JETPACK_SITE_ADMIN_USERNAME=ADMIN_USER \
+  MAESTRO_WOO_LAB_JETPACK_SITE_ADMIN_PASSWORD=SITE_PASS \
+  MAESTRO_WOO_LAB_CONSUMER_KEY=CK \
+  MAESTRO_WOO_LAB_CONSUMER_SECRET=CS \
+  MAESTRO_WOO_LAB_APPLICATION_PASSWORD=APP_PASSWORD
 
 printf '\n\033[32mDone.\033[0m Lab store ready: https://%s (blogID %s)\n' "$SITE" "$BLOG_ID"
 printf 'Verify with:\n'
