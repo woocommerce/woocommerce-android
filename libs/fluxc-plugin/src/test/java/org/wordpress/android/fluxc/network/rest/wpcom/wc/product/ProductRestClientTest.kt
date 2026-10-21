@@ -275,7 +275,7 @@ class ProductRestClientTest {
     @Test
     fun `when variations are fetched with id sorting, then orderby id is used for network call`() {
         runTest {
-            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductVariationApiResponse>::class.java), any(), any(), any(), any(), any(), any())).thenReturn(WPAPIResponse.Success(emptyArray<ProductVariationApiResponse>(), emptyList()))
+            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductVariationApiResponse>::class.java), any(), any(), any(), any(), any(), any(), anyOrNull())).thenReturn(WPAPIResponse.Success(emptyArray<ProductVariationApiResponse>(), emptyList()))
             sut.fetchProductVariationsWithSyncRequest(
                 site = site,
                 productId = productId,
@@ -293,7 +293,8 @@ class ProductRestClientTest {
                 cacheTimeToLive = any(),
                 forced = any(),
                 requestTimeout = any(),
-                retries = any()
+                retries = any(),
+                readableBodyCheck = anyOrNull()
             )
 
             assertThat(argumentCaptor.firstValue["orderby"]).isEqualTo("id")
