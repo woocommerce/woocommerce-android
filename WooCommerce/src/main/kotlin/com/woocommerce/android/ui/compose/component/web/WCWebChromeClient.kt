@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.compose.component.web
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Message
 import android.webkit.ValueCallback
@@ -7,9 +8,11 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import com.woocommerce.android.extensions.findActivity
+import java.util.UUID
 
 open class WCWebChromeClient : WebChromeClient() {
     var onProgressChanged: (Int) -> Unit = {}
@@ -34,10 +37,12 @@ open class WCWebChromeClient : WebChromeClient() {
         val activity = webView.context.findActivity() as? ComponentActivity ?: return false
 
         val contract = ActivityResultContracts.StartActivityForResult()
-        val launcher = activity.activityResultRegistry.register(
-            "WebViewChooser",
+        lateinit var launcher: ActivityResultLauncher<Intent>
+        launcher = activity.activityResultRegistry.register(
+            "WebViewChooser-${UUID.randomUUID()}",
             contract
         ) { result ->
+            launcher.unregister()
             val uris = FileChooserParams.parseResult(result.resultCode, result.data)
             filePathCallback.onReceiveValue(uris)
         }
