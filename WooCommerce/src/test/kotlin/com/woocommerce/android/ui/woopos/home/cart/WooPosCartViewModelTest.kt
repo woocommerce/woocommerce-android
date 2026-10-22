@@ -269,6 +269,33 @@ class WooPosCartViewModelTest {
             assertThat(trackerData.interactionWithCustomerStartedTimestamp).isNotNull()
         }
 
+    @Test
+    fun `given order response still pending, when the cart is cleared, then the response does not bring items back`() =
+        runTest {
+            // GIVEN
+            val sut = createSut()
+            val states = sut.state.captureValues()
+            addProductToEmptyCart()
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            whenever(cartItemsUpdater(any(), any(), any())).doSuspendableAnswer {
+                delay(1_000)
+                WooPosCartItemsUpdater.CartItemsUpdaterResult(
+                    updatedItems = emptyList(),
+                    productsChanged = false,
+                    couponsChanged = false,
+                )
+            }
+            simulateOrderCreated(wholeCartCouponDiscountApplied = false)
+
+            // WHEN
+            sut.onUIEvent(WooPosCartUIEvent.BackClicked)
+            sut.onUIEvent(WooPosCartUIEvent.ClearAllClicked)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(states.last().body).isEqualTo(WooPosCartState.Body.Empty)
+        }
+
     private suspend fun addProductToEmptyCart(productId: Long = 23L) {
         val product = generateWooPosProduct(productId = productId)
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)

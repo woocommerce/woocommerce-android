@@ -320,6 +320,9 @@ class WooPosCartViewModel @Inject constructor(
             updatedProducts = event.data.updatedProducts,
             updatedCoupons = event.data.updatedCoupons,
         )
+        // The cart may have been cleared while the order was checked. Writing back the stale items would bring them
+        // back and skip the next sale's customer interaction start.
+        if (_state.value.body == WooPosCartState.Body.Empty) return
         // Responses that arrive after the user already left checkout must not store
         // order-derived verdicts, or they would resurface stale on the next checkout.
         val isCheckout = _state.value.cartStatus == CHECKOUT
