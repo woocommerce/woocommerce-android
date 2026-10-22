@@ -1,7 +1,6 @@
 package com.woocommerce.android.cardreader.internal.payments
 
 import com.stripe.stripeterminal.external.models.CardNetworks
-import com.stripe.stripeterminal.external.models.CardPresentDetails
 import com.stripe.stripeterminal.external.models.Charge
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus
@@ -254,7 +253,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given interac payment, when processing payment finishes successfully, then capture payment is emitted`() =
         testBlocking {
-            val succeededInteracIntent = createPaymentIntent(SUCCEEDED, interacPresentDetails = mock())
+            val succeededInteracIntent = createPaymentIntent(SUCCEEDED, interacPresentDetails = CardDetails())
             whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(succeededInteracIntent))
 
@@ -269,7 +268,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         testBlocking {
             val succeededCardPresentIntent = createPaymentIntent(
                 SUCCEEDED,
-                cardPresentDetails = createCardPresentDetails(brand = "eftpos_au")
+                cardPresentDetails = CardDetails(brand = "eftpos_au")
             )
             whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(succeededCardPresentIntent))
@@ -285,7 +284,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         testBlocking {
             val succeededCardPresentIntent = createPaymentIntent(
                 SUCCEEDED,
-                cardPresentDetails = createCardPresentDetails(brand = "visa")
+                cardPresentDetails = CardDetails(brand = "visa")
             )
             whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(succeededCardPresentIntent))
@@ -303,7 +302,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given interac payment, when processing payment finishes with canceled status, then flow terminates`() =
         testBlocking {
-            val canceledInteracIntent = createPaymentIntent(CANCELED, interacPresentDetails = mock())
+            val canceledInteracIntent = createPaymentIntent(CANCELED, interacPresentDetails = CardDetails())
             whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(canceledInteracIntent))
 
@@ -328,8 +327,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
             val charge = mock<Charge> {
                 on { paymentMethodDetails }.thenReturn(paymentsMethodDetails)
             }
-            val charges = listOf(charge)
-            whenever(intent.getCharges()).thenReturn(charges)
+            whenever(intent.latestCharge).thenReturn(charge)
             whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(intent))
 
@@ -349,8 +347,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
             val charge = mock<Charge> {
                 on { paymentMethodDetails }.thenReturn(paymentsMethodDetails)
             }
-            val charges = listOf(charge)
-            whenever(intent.getCharges()).thenReturn(charges)
+            whenever(intent.latestCharge).thenReturn(charge)
             whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(intent))
 
@@ -393,9 +390,9 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given AU terminal payment preparation, when payment method is collected, then payment is prepared before confirmation`() =
         testBlocking {
-            val eftposDetails = createCardPresentDetails(availableNetworks = listOf("eftpos_au"))
+            val eftposDetails = CardDetails(availableNetworks = listOf("eftpos_au"))
             val collectedIntent = createPaymentIntent(REQUIRES_CONFIRMATION, cardPresentDetails = eftposDetails)
-            val confirmedIntent = createPaymentIntent(REQUIRES_CAPTURE, cardPresentDetails = mock())
+            val confirmedIntent = createPaymentIntent(REQUIRES_CAPTURE, cardPresentDetails = CardDetails())
             whenever(processPaymentIntentAction.collectPaymentMethod(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(collectedIntent))
             whenever(processPaymentIntentAction.confirmPaymentIntent(anyOrNull()))
@@ -416,7 +413,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given AU terminal payment preparation, when selected card network is eftpos, then payment is prepared`() =
         testBlocking {
-            val eftposDetails = createCardPresentDetails(brand = "visa", network = "eftpos_au")
+            val eftposDetails = CardDetails(brand = "visa", network = "eftpos_au")
             val collectedIntent = createPaymentIntent(REQUIRES_CONFIRMATION, cardPresentDetails = eftposDetails)
             val confirmedIntent = createPaymentIntent(REQUIRES_CAPTURE, cardPresentDetails = eftposDetails)
             whenever(processPaymentIntentAction.collectPaymentMethod(anyOrNull()))
@@ -437,7 +434,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given AU terminal payment preparation, when visa card present is collected, then prepare is skipped`() =
         testBlocking {
-            val visaDetails = createCardPresentDetails(
+            val visaDetails = CardDetails(
                 brand = "visa",
                 availableNetworks = listOf("visa")
             )
@@ -461,8 +458,8 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given CA interac preparation, when card present is collected, then prepare is skipped`() =
         testBlocking {
-            val collectedIntent = createPaymentIntent(REQUIRES_CONFIRMATION, cardPresentDetails = mock())
-            val confirmedIntent = createPaymentIntent(REQUIRES_CAPTURE, cardPresentDetails = mock())
+            val collectedIntent = createPaymentIntent(REQUIRES_CONFIRMATION, cardPresentDetails = CardDetails())
+            val confirmedIntent = createPaymentIntent(REQUIRES_CAPTURE, cardPresentDetails = CardDetails())
             whenever(processPaymentIntentAction.collectPaymentMethod(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(collectedIntent))
             whenever(processPaymentIntentAction.confirmPaymentIntent(anyOrNull()))
@@ -648,7 +645,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given succeeded interac intent and capture error, when capturing payment, then intent not refreshed`() =
         testBlocking {
-            val intent = createPaymentIntent(SUCCEEDED, interacPresentDetails = mock())
+            val intent = createPaymentIntent(SUCCEEDED, interacPresentDetails = CardDetails())
             whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(intent))
             whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
@@ -801,7 +798,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given remote Interac payment, when collected, then result contains detected method`() = testBlocking {
         // GIVEN
-        val intent = createPaymentIntent(SUCCEEDED, interacPresentDetails = createCardPresentDetails())
+        val intent = createPaymentIntent(SUCCEEDED, interacPresentDetails = CardDetails())
         whenever(terminalWrapper.retrievePaymentIntent("secret")).thenReturn(intent)
         whenever(terminalWrapper.processPaymentIntent(intent)).thenReturn(intent)
 
@@ -817,39 +814,50 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     private fun createPaymentIntent(
         status: PaymentIntentStatus,
         receiptUrl: String? = "test url",
-        interacPresentDetails: CardPresentDetails? = null,
-        cardPresentDetails: CardPresentDetails? = null,
+        interacPresentDetails: CardDetails? = null,
+        cardPresentDetails: CardDetails? = null,
     ): PaymentIntent =
         mock<PaymentIntent>().also {
             whenever(it.status).thenReturn(status)
             whenever(it.id).thenReturn("dummyId")
+            val paymentMethodInteracPresent = interacPresentDetails?.toPaymentMethodCardPresent()
+            val paymentMethodCardPresent = cardPresentDetails?.toPaymentMethodCardPresent()
+            val chargeInteracPresent = interacPresentDetails?.toChargeCardPresent()
+            val chargeCardPresent = cardPresentDetails?.toChargeCardPresent()
             val paymentMethod = mock<PaymentMethod>()
-            whenever(paymentMethod.interacPresentDetails).thenReturn(interacPresentDetails)
-            whenever(paymentMethod.cardPresentDetails).thenReturn(cardPresentDetails)
+            whenever(paymentMethod.interacPresentDetails).thenReturn(paymentMethodInteracPresent)
+            whenever(paymentMethod.cardPresentDetails).thenReturn(paymentMethodCardPresent)
             whenever(it.paymentMethod).thenReturn(paymentMethod)
             val paymentMethodDetails = mock<PaymentMethodDetails>()
-            whenever(paymentMethodDetails.interacPresentDetails).thenReturn(interacPresentDetails)
-            whenever(paymentMethodDetails.cardPresentDetails).thenReturn(cardPresentDetails)
+            whenever(paymentMethodDetails.interacPresentDetails).thenReturn(chargeInteracPresent)
+            whenever(paymentMethodDetails.cardPresentDetails).thenReturn(chargeCardPresent)
             val charge = mock<Charge>()
             whenever(charge.receiptUrl).thenReturn(receiptUrl)
             whenever(charge.paymentMethodDetails).thenReturn(paymentMethodDetails)
-            whenever(it.getCharges()).thenReturn(listOf(charge))
+            whenever(it.latestCharge).thenReturn(charge)
         }
 
-    private fun createCardPresentDetails(
-        brand: String? = null,
-        network: String? = null,
-        availableNetworks: List<String>? = null,
-    ): CardPresentDetails =
-        mock<CardPresentDetails>().also {
-            brand?.let { brand -> whenever(it.brand).thenReturn(brand) }
-            network?.let { network -> whenever(it.network).thenReturn(network) }
-            availableNetworks?.let { networks ->
-                val cardNetworks = mock<CardNetworks>()
-                whenever(cardNetworks.available).thenReturn(networks)
-                whenever(it.networks).thenReturn(cardNetworks)
+    private data class CardDetails(
+        val brand: String? = null,
+        val network: String? = null,
+        val availableNetworks: List<String>? = null,
+    ) {
+        fun toPaymentMethodCardPresent(): PaymentMethod.CardPresent =
+            mock<PaymentMethod.CardPresent>().also {
+                whenever(it.brand).thenReturn(brand)
+                availableNetworks?.let { networks ->
+                    val cardNetworks = mock<CardNetworks>()
+                    whenever(cardNetworks.available).thenReturn(networks)
+                    whenever(it.networks).thenReturn(cardNetworks)
+                }
             }
-        }
+
+        fun toChargeCardPresent(): Charge.CardPresent =
+            mock<Charge.CardPresent>().also {
+                whenever(it.brand).thenReturn(brand)
+                whenever(it.network).thenReturn(network)
+            }
+    }
 
     private fun <T> Flow<T>.takeUntil(untilStatus: KClass<*>): Flow<T> =
         this.take(expectedSequence.indexOf(untilStatus) + 1)

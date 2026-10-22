@@ -1,6 +1,6 @@
 package com.woocommerce.android.cardreader.payments
 
-import com.stripe.stripeterminal.external.models.RefundParameters
+import com.stripe.stripeterminal.external.models.ProcessRefundParameters
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import java.math.BigDecimal
 
@@ -10,8 +10,8 @@ data class RefundParams(
     val currency: String
 )
 
-internal fun RefundParams.toStripeRefundParameters(paymentUtils: PaymentUtils): RefundParameters {
-    return RefundParameters.ByChargeId(
+internal fun RefundParams.toStripeRefundParameters(paymentUtils: PaymentUtils): ProcessRefundParameters {
+    return ProcessRefundParameters.ByChargeId(
         id = this.chargeId,
         amount = paymentUtils.convertToSmallestCurrencyUnit(this.amount, this.currency),
         currency = this.currency

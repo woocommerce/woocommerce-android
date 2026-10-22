@@ -15,11 +15,10 @@ import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
 import com.stripe.stripeterminal.external.models.LocaleConfig
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
+import com.stripe.stripeterminal.external.models.ProcessRefundParameters
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.ReaderSupportResult
 import com.stripe.stripeterminal.external.models.Refund
-import com.stripe.stripeterminal.external.models.RefundParameters
-import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
 import com.stripe.stripeterminal.external.models.SimulatedCard
 import com.stripe.stripeterminal.external.models.SimulatedCardType
 import com.stripe.stripeterminal.external.models.SimulatorConfiguration
@@ -133,7 +132,7 @@ internal class TerminalWrapper {
         Terminal.getInstance().cancelPaymentIntent(paymentIntent)
 
     suspend fun processRefund(
-        refundParameters: RefundParameters,
+        refundParameters: ProcessRefundParameters,
         refundConfiguration: CollectRefundConfiguration
     ): Refund = Terminal.getInstance().processRefund(refundParameters, refundConfiguration)
 
@@ -142,12 +141,10 @@ internal class TerminalWrapper {
     fun getConnectedReader(): CardReader? = Terminal.getInstance().connectedReader?.let { CardReaderImpl(it) }
 
     fun setupSimulator(
-        updateFrequency: CardReaderManager.SimulatorUpdateFrequency,
         useInterac: Boolean,
         useEftpos: Boolean,
     ) {
         Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(
-            update = mapFrequencyOptions(updateFrequency),
             simulatedCard = SimulatedCard(
                 when {
                     useEftpos -> SimulatedCardType.EFTPOS_AU_DEBIT
@@ -158,20 +155,6 @@ internal class TerminalWrapper {
         )
     }
 
-    private fun mapFrequencyOptions(updateFrequency: CardReaderManager.SimulatorUpdateFrequency): SimulateReaderUpdate {
-        return when (updateFrequency) {
-            CardReaderManager.SimulatorUpdateFrequency.NEVER -> SimulateReaderUpdate.NONE
-            CardReaderManager.SimulatorUpdateFrequency.ALWAYS -> SimulateReaderUpdate.REQUIRED
-            CardReaderManager.SimulatorUpdateFrequency.LOW_BATTERY_ERROR -> SimulateReaderUpdate.LOW_BATTERY
-            CardReaderManager.SimulatorUpdateFrequency.LOW_BATTERY_SUCCEED_CONNECT -> {
-                SimulateReaderUpdate.LOW_BATTERY_SUCCEED_CONNECT
-            }
-            CardReaderManager.SimulatorUpdateFrequency.RANDOM -> SimulateReaderUpdate.RANDOM
-            CardReaderManager.SimulatorUpdateFrequency.OPTIONAL_UPDATE_AVAILABLE ->
-                SimulateReaderUpdate.UPDATE_AVAILABLE
-        }
-    }
-
     fun supportsReadersOfType(
         deviceType: DeviceType,
         discoveryConfiguration: DiscoveryConfiguration,
@@ -180,18 +163,18 @@ internal class TerminalWrapper {
     fun setupTapToPayUx(config: CardReaderManager.TapToPayUxConfig) {
         val uxConfig = TapToPayUxConfiguration.Builder()
             .tapZone(TapToPayUxConfiguration.TapZone.Default)
-            .colors(
+            .colorScheme(
                 TapToPayUxConfiguration.ColorScheme.Builder()
                     .primary(Color.Resource(config.primaryColor))
                     .success(Color.Resource(config.successColor))
                     .error(Color.Resource(config.errorColor))
                     .build()
             )
-            .darkMode(
+            .theme(
                 if (config.isDarkMode) {
-                    TapToPayUxConfiguration.DarkMode.DARK
+                    TapToPayUxConfiguration.Theme.DARK
                 } else {
-                    TapToPayUxConfiguration.DarkMode.LIGHT
+                    TapToPayUxConfiguration.Theme.LIGHT
                 }
             )
             .build()

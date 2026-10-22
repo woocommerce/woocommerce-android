@@ -154,6 +154,7 @@ sealed class CardPaymentStatus {
             object NfcDisabled : BuiltInReader()
             object DeviceIsNotSupported : BuiltInReader()
             object InvalidAppSetup : BuiltInReader()
+            object InsecureEnvironment : BuiltInReader()
         }
 
         override fun toString(): String = when (this) {
