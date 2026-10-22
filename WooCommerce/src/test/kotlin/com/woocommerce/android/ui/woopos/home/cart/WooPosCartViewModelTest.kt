@@ -296,6 +296,33 @@ class WooPosCartViewModelTest {
             assertThat(states.last().body).isEqualTo(WooPosCartState.Body.Empty)
         }
 
+    @Test
+    fun `given order response with product changes still pending, when the cart is cleared, then the product list is refreshed`() =
+        runTest {
+            // GIVEN
+            val sut = createSut()
+            sut.state.captureValues()
+            addProductToEmptyCart()
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            whenever(cartItemsUpdater(any(), any(), any())).doSuspendableAnswer {
+                delay(1_000)
+                WooPosCartItemsUpdater.CartItemsUpdaterResult(
+                    updatedItems = emptyList(),
+                    productsChanged = true,
+                    couponsChanged = false,
+                )
+            }
+            simulateOrderCreated(wholeCartCouponDiscountApplied = false)
+
+            // WHEN
+            sut.onUIEvent(WooPosCartUIEvent.BackClicked)
+            sut.onUIEvent(WooPosCartUIEvent.ClearAllClicked)
+            advanceUntilIdle()
+
+            // THEN
+            verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.RefreshProductList)
+        }
+
     private suspend fun addProductToEmptyCart(productId: Long = 23L) {
         val product = generateWooPosProduct(productId = productId)
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
