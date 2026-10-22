@@ -1301,14 +1301,20 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
                 .thenReturn(Result.failure(cookieNonceError(Nonce.CookieNonceErrorType.INVALID_RESPONSE)))
-            whenever(repository.fetchSiteForBrowserLogin(SITE_URL)).thenReturn(Result.failure(siteFetchError()), Result.success(site))
+            whenever(repository.fetchSiteForBrowserLogin(SITE_URL))
+                .thenReturn(Result.failure(siteFetchError()), Result.success(site))
             setup()
 
             viewModel.viewState.observeForTesting {
                 enterCredentialsAndContinue()
                 advanceUntilIdle()
                 assertThat(viewModel.viewState.value?.unexpectedResponse)
-                    .isEqualTo(loginStepFailure(LoginUnexpectedResponseFailure.Step.APP_PASSWORD_AUTHORIZATION_URL, APP_PASSWORD_FLOW))
+                    .isEqualTo(
+                        loginStepFailure(
+                            LoginUnexpectedResponseFailure.Step.APP_PASSWORD_AUTHORIZATION_URL,
+                            APP_PASSWORD_FLOW
+                        )
+                    )
                 assertThat(viewModel.viewState.value?.offersBrowserLogin).isFalse()
                 viewModel.onUnexpectedResponseRetryClick()
                 advanceUntilIdle()
