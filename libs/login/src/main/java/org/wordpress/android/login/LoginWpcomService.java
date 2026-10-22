@@ -105,6 +105,11 @@ public class LoginWpcomService extends AutoForeground<LoginState> {
             return new LoginState(LoginStep.FAILURE_2FA, null, supportedAuthTypes);
         }
 
+        @NonNull
+        static LoginState needsSocial2fa(@NonNull List<String> supportedAuthTypes) {
+            return new LoginState(LoginStep.FAILURE_SOCIAL_2FA, null, supportedAuthTypes);
+        }
+
         public LoginStep getStep() {
             return mStep;
         }
@@ -363,7 +368,7 @@ public class LoginWpcomService extends AutoForeground<LoginState> {
                 signalCredentialsOK();
 
                 if (mIsSocialLogin) {
-                    setState(LoginStep.FAILURE_SOCIAL_2FA);
+                    setState(LoginState.needsSocial2fa(supportedAuthTypes));
                 } else {
                     setState(LoginState.needs2fa(supportedAuthTypes));
                 }

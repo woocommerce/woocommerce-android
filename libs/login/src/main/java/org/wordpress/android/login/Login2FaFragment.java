@@ -127,15 +127,6 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
     private boolean mSentSmsCode;
     private List<SupportedAuthTypes> mSupportedAuthTypes;
 
-    public static Login2FaFragment newInstance(String emailAddress, String password) {
-        Login2FaFragment fragment = new Login2FaFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_EMAIL_ADDRESS, emailAddress);
-        args.putString(ARG_PASSWORD, password);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     public static Login2FaFragment newInstance(String emailAddress, String password,
                                                String userId, String webauthnNonce,
                                                String authenticatorNonce, String backupNonce,
@@ -174,8 +165,10 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         return fragment;
     }
 
-    public static Login2FaFragment newInstanceSocialConnect(String emailAddress, String password,
-                                                            String idToken, String service) {
+    @NonNull
+    public static Login2FaFragment newInstanceSocialConnect(@Nullable String emailAddress, @Nullable String password,
+                                                            @Nullable String idToken, @Nullable String service,
+                                                            @NonNull List<String> authTypes) {
         Login2FaFragment fragment = new Login2FaFragment();
         Bundle args = new Bundle();
         args.putString(ARG_EMAIL_ADDRESS, emailAddress);
@@ -183,6 +176,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         args.putString(ARG_2FA_ID_TOKEN, idToken);
         args.putBoolean(ARG_2FA_IS_SOCIAL_CONNECT, true);
         args.putString(ARG_2FA_SOCIAL_SERVICE, service);
+        args.putStringArrayList(ARG_2FA_SUPPORTED_AUTH_TYPES, new ArrayList<>(authTypes));
         fragment.setArguments(args);
         return fragment;
     }
