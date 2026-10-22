@@ -2859,15 +2859,15 @@ class WooPosTotalsViewModelTest {
             val onCaptureStarting = invocation.getArgument<suspend () -> Unit>(1)
             if (collections == 1) {
                 whenever(timingClock.milliseconds()).thenReturn(1000L)
-                events.onConfirmedIntentAvailable()
+                events.onPaymentCapturing()
                 onCaptureStarting()
                 WooPosRemoteReaderPaymentFlow.Result.Completed
             } else if (confirmRetry) {
                 whenever(timingClock.milliseconds()).thenReturn(3000L)
-                events.onConfirmedIntentAvailable()
+                events.onPaymentCapturing()
                 onCaptureStarting()
                 whenever(timingClock.milliseconds()).thenReturn(3500L)
-                events.onConfirmedIntentAvailable()
+                events.onPaymentCapturing()
                 whenever(timingClock.milliseconds()).thenReturn(4000L)
                 outcome = events.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS as WooPosAnalyticsEvent
                 WooPosRemoteReaderPaymentFlow.Result.Completed

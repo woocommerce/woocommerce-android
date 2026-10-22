@@ -387,9 +387,8 @@ class CardReaderPaymentController(
                 }
             }
 
-            CardPaymentStatus.ConfirmedPaymentIntentAvailable -> tracker.onConfirmedIntentAvailable()
-
             CapturingPayment -> {
+                tracker.onPaymentCapturing()
                 _paymentState.value = paymentStateProvider.provideCapturingPaymentState(
                     cardReaderType,
                     amountLabel

@@ -107,7 +107,7 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         whenever(clock.milliseconds()).thenReturn(150L)
         keeper.readerReadyForPaymentTimestamp = 150L
         whenever(clock.milliseconds()).thenReturn(200L)
-        events.onConfirmedIntentAvailable()
+        events.onPaymentCapturing()
         // WHEN
         whenever(clock.milliseconds()).thenReturn(250L)
         val actual = (events.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS as WooPosAnalyticsEvent).properties
@@ -159,7 +159,7 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         whenever(clock.milliseconds()).thenReturn(0L)
         keeper.readerReadyForPaymentTimestamp = 150L
         whenever(clock.milliseconds()).thenReturn(0L)
-        events.onConfirmedIntentAvailable()
+        events.onPaymentCapturing()
         // WHEN
         whenever(clock.milliseconds()).thenReturn(0L)
         val actual = (events.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS as WooPosAnalyticsEvent).properties
@@ -189,7 +189,7 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         whenever(clock.milliseconds()).thenReturn(510L)
         keeper.readerReadyForPaymentTimestamp = 150L
         whenever(clock.milliseconds()).thenReturn(520L)
-        events.onConfirmedIntentAvailable()
+        events.onPaymentCapturing()
         // WHEN
         whenever(clock.milliseconds()).thenReturn(550L)
         val actual = (events.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS as WooPosAnalyticsEvent).properties
@@ -244,7 +244,7 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         whenever(clock.milliseconds()).thenReturn(100L)
         keeper.orderSyncCompleted(generation)
         whenever(clock.milliseconds()).thenReturn(400L)
-        events.onConfirmedIntentAvailable()
+        events.onPaymentCapturing()
         // WHEN
         whenever(clock.milliseconds()).thenReturn(450L)
         val actual = (events.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS as WooPosAnalyticsEvent).properties
@@ -294,7 +294,7 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         whenever(clock.milliseconds()).thenReturn(150L)
         keeper.readerReadyForPaymentTimestamp = 150L
         whenever(clock.milliseconds()).thenReturn(200L)
-        events.onConfirmedIntentAvailable()
+        events.onPaymentCapturing()
         // WHEN
         whenever(clock.milliseconds()).thenReturn(250L)
         val actual = (events.CARD_PRESENT_COLLECT_PAYMENT_FAILED as WooPosAnalyticsEvent).properties
@@ -322,7 +322,7 @@ class WooPosPaymentsFlowTrackerEventProviderTest {
         whenever(clock.milliseconds()).thenReturn(100L)
         keeper.orderSyncCompleted(generation)
         keeper.readerReadyForPaymentTimestamp = 150L
-        events.onConfirmedIntentAvailable()
+        events.onPaymentCapturing()
         // WHEN
         whenever(clock.milliseconds()).thenReturn(300L)
         val actual = keeper.cashPaymentTiming()

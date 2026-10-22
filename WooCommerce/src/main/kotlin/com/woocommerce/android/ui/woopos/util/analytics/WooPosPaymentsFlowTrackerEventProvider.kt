@@ -9,7 +9,7 @@ class WooPosPaymentsFlowTrackerEventProvider(
     private val analyticsTrackingDataKeeper: WooPosAnalyticsTrackingDataKeeper,
     private val paymentSuccessProperties: WooPosPaymentSuccessProperties,
 ) : PaymentsFlowTrackerEventProvider {
-    override fun onConfirmedIntentAvailable() = analyticsTrackingDataKeeper.paymentConfirmed()
+    override fun onPaymentCapturing() = analyticsTrackingDataKeeper.paymentConfirmed()
 
     override val CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED: IAnalyticsEvent
         get() = PaymentFlowTrackerEvent.CardPresentOnboardingLearnMoreTapped

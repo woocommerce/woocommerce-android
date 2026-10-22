@@ -60,6 +60,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import java.util.Date
@@ -110,7 +111,7 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
     )
 
     @Test
-    fun `when confirmed intent is available, then the provider receives the boundary`() {
+    fun `when payment capturing starts, then the provider receives the boundary`() {
         // GIVEN
         val provider = mock<PaymentsFlowTrackerEventProvider>()
         val tracker = PaymentsFlowTracker(
@@ -122,9 +123,22 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
             provider
         )
         // WHEN
-        tracker.onConfirmedIntentAvailable()
+        tracker.onPaymentCapturing()
         // THEN
-        verify(provider).onConfirmedIntentAvailable()
+        verify(provider).onPaymentCapturing()
+    }
+
+    @Test
+    fun `given store management provider, when capture starts, then existing events stay unchanged`() {
+        val provider = StoreManagementPaymentsFlowTrackerEventProvider()
+
+        provider.onPaymentCapturing()
+        paymentsFlowTracker.onPaymentCapturing()
+
+        verifyNoInteractions(trackerWrapper)
+        assertThat(provider.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS).isSameAs(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+        assertThat(provider.CARD_PRESENT_COLLECT_PAYMENT_FAILED).isSameAs(CARD_PRESENT_COLLECT_PAYMENT_FAILED)
+        assertThat(provider.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED).isSameAs(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED)
     }
 
     @Test

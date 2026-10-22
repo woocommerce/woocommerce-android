@@ -159,7 +159,6 @@ internal class PaymentManager(
             paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE ||
             isSingleStepTerminalPaymentSuccessful(paymentIntent)
         ) {
-            emit(CardPaymentStatus.ConfirmedPaymentIntentAvailable)
             retrieveReceiptUrl(paymentIntent)?.let { receiptUrl ->
                 capturePayment(receiptUrl, orderId, cardReaderStore, paymentIntent)
             }
@@ -183,7 +182,6 @@ internal class PaymentManager(
             paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE ||
             isSingleStepTerminalPaymentSuccessful(paymentIntent)
         ) {
-            emit(CardPaymentStatus.ConfirmedPaymentIntentAvailable)
             retrieveReceiptUrl(paymentIntent)?.let { receiptUrl ->
                 capturePayment(receiptUrl, paymentInfo.orderId, cardReaderStore, paymentIntent)
             }

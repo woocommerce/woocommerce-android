@@ -79,7 +79,7 @@ class WooPosRemoteReaderPaymentFlowTest {
         // WHEN
         flow.collect(order)
         // THEN
-        verify(tracker, never()).onConfirmedIntentAvailable()
+        verify(tracker, never()).onPaymentCapturing()
     }
 
     @Test
@@ -108,7 +108,7 @@ class WooPosRemoteReaderPaymentFlowTest {
         // THEN
         assertThat(result).isEqualTo(WooPosRemoteReaderPaymentFlow.Result.Completed)
         inOrder(store, tracker) {
-            verify(tracker).onConfirmedIntentAvailable()
+            verify(tracker).onPaymentCapturing()
             verify(store).capturePaymentIntent(order.id, "pi_123")
             verify(tracker).trackPaymentSucceeded(order)
         }

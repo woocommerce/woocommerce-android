@@ -114,7 +114,7 @@ to `local_catalog` when comparing event families.
 | --- | --- |
 | `pos_time_since_checkout_started_ms` | Order-draft creation entry, before async work |
 | `pos_time_since_order_sync_completed_ms` | Successful order creation for this checkout |
-| `pos_time_since_payment_confirmed_ms` | Confirmed intent available before receipt lookup/backend capture, including reuse |
+| `pos_time_since_payment_confirmed_ms` | Native/Tap to Pay capture-state entry after local receipt lookup and before backend capture, including confirmed-intent retry |
 
 Durations use `SystemClock.elapsedRealtime()`, including sleep. Zero is valid; missing/negative values are omitted.
 The Android Tracks SDK serializes custom properties as strings. These durations are integer-valued milliseconds;
@@ -126,7 +126,11 @@ Checkout entry resets stage timestamps, and an order-sync generation guard ignor
 Success snapshots follow success-property lookup. Card outcomes clear confirmation; cancellation clears confirmation without emitting it.
 Cash reads checkout/sync timing without clearing card confirmation, so overlapping card completion retains its own start boundary.
 The existing cart reset clears all timestamps. Native retries retain checkout/sync timing; no unique attempt or journey identity is emitted.
-Remote readers confirm only `requires_capture`/`succeeded`; simulation omits confirmation.
+Native and Tap to Pay use the existing `CapturingPayment` status after successful local receipt lookup and before
+backend capture. A missing receipt fails before this status and omits confirmation timing. iOS starts this field
+earlier, when the confirmed intent is available before receipt lookup; this boundary difference applies when
+comparing platforms. Remote readers start it for `requires_capture`/`succeeded` before backend capture;
+simulation omits confirmation.
 Existing wall-clock properties, units, checkout counter and reset behavior remain unchanged. These metrics do not measure first display or card touch.
 
 For timing coverage, select Android and iOS cohorts separately with each platform's app-version/build metadata.

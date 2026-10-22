@@ -5,10 +5,6 @@ sealed class CardPaymentStatus {
     object WaitingForInput : CardPaymentStatus()
     object ProcessingPayment : CardPaymentStatus()
     data class ProcessingPaymentCompleted(val paymentMethodType: PaymentMethodType) : CardPaymentStatus()
-
-    /** Analytics-only notification: a confirmed intent is available before receipt lookup and backend capture. */
-    object ConfirmedPaymentIntentAvailable : CardPaymentStatus()
-
     object CapturingPayment : CardPaymentStatus()
     data class PaymentCompleted(val receiptUrl: String) : CardPaymentStatus()
 
