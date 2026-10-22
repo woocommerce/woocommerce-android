@@ -41,6 +41,7 @@ import org.wordpress.android.fluxc.store.AccountStore.PushSocialSmsPayload;
 import org.wordpress.android.fluxc.store.AccountStore.StartWebauthnChallengePayload;
 import org.wordpress.android.fluxc.store.AccountStore.WebauthnChallengeReceived;
 import org.wordpress.android.fluxc.store.AccountStore.WebauthnPasskeyAuthenticated;
+import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged;
 import org.wordpress.android.login.util.SiteUtils;
 import org.wordpress.android.login.webauthn.PasskeyRequest;
 import org.wordpress.android.login.webauthn.PasskeyRequest.PasskeyRequestData;
@@ -603,6 +604,15 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
                 mAnalyticsListener.trackSocialConnectSuccess();
             }
             doFinishLogin();
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSiteChanged(@NonNull OnSiteChanged event) {
+        if (mAccountStore.hasAccessToken() && mOldSitesIDs != null) {
+            super.onSiteChanged(event);
         }
     }
 
