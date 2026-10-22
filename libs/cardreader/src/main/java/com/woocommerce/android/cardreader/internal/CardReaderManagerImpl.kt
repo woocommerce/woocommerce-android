@@ -180,10 +180,6 @@ internal class CardReaderManagerImpl(
     override suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus> =
         paymentManager.retryPayment(orderId, paymentData).withReaderInputRequests()
 
-    /*
-     * Card input requests arrive on the reader listener, not on the payment flow, so they are merged here.
-     * The rendezvous buffer keeps the payment flow's original backpressure. Tap to Pay has no input request callback.
-     */
     private fun Flow<CardPaymentStatus>.withReaderInputRequests(): Flow<CardPaymentStatus> = channelFlow {
         val inputRequests = launch(start = CoroutineStart.UNDISPATCHED) {
             connectionManager.readerInputRequests.collect { send(CardPaymentStatus.WaitingForInput) }
