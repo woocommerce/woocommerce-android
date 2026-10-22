@@ -80,13 +80,13 @@ class WPComLogin2FAViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given no supported methods, when initialized, then show generic instructions and SMS without backup option`() = testBlocking {
+    fun `given no supported methods, when initialized, then show generic instructions without SMS or backup option`() = testBlocking {
         setup()
 
         val viewState = viewModel.viewState.captureValues().last()
 
         assertThat(viewState.instructions).isEqualTo(R.string.enter_verification_code)
-        assertThat(viewState.isSmsSupported).isTrue()
+        assertThat(viewState.isSmsSupported).isFalse()
         assertThat(viewState.showBackupCodeButton).isFalse()
     }
 
@@ -235,7 +235,7 @@ class WPComLogin2FAViewModelTest : BaseUnitTest() {
         whenever(wpComLoginRepository.requestTwoStepSMS(EMAIL, PASSWORD)).doSuspendableAnswer {
             requestResult.await()
         }
-        setup()
+        setup(supportedAuthTypes = arrayOf("sms"))
         val states = viewModel.viewState.captureValues()
 
         viewModel.onSmsButtonClick()
@@ -279,7 +279,7 @@ class WPComLogin2FAViewModelTest : BaseUnitTest() {
         whenever(wpComLoginRepository.requestTwoStepSMS(EMAIL, PASSWORD)).thenReturn(
             Result.failure(IllegalStateException())
         )
-        setup()
+        setup(supportedAuthTypes = arrayOf("sms"))
         val states = viewModel.viewState.captureValues()
         val events = viewModel.event.captureValues()
 

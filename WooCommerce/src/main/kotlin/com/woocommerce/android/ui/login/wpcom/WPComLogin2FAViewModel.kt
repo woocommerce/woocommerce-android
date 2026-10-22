@@ -56,7 +56,7 @@ class WPComLogin2FAViewModel @Inject constructor(
         initialValue = navArgs.webauthnNonce,
         key = "current-webauthn-nonce"
     )
-    private val isSmsSupported = navArgs.supportedAuthTypes.isEmpty() || "sms" in navArgs.supportedAuthTypes
+    private val isSmsSupported = "sms" in navArgs.supportedAuthTypes
     private val initialInstructions = when {
         isSecurityKeyPrimary -> R.string.notification_security_key_needed
         "authenticator" in navArgs.supportedAuthTypes -> R.string.enter_verification_code_authenticator
