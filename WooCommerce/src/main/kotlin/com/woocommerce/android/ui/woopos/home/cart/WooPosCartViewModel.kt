@@ -91,7 +91,7 @@ class WooPosCartViewModel @Inject constructor(
 
     val state: LiveData<WooPosCartState> = _state
         .asLiveData()
-        .map { updateCartStatusDependingOnItems(it).also { newState -> updateAnalyticsData(newState) } }
+        .map { updateCartStatusDependingOnItems(it) }
         .map { updateToolbarState(it) }
         .map { updateStateDependingOnCartStatus(it) }
         .map { updateCustomAmountDiscountNotAppliedNote(it) }
@@ -448,7 +448,7 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             if (_state.value.body == WooPosCartState.Body.Empty) {
-                analyticsTracker.track(InteractionWithCustomerStarted)
+                startCustomerInteraction()
             }
 
             itemClicked.await()?.let {
@@ -492,7 +492,7 @@ class WooPosCartViewModel @Inject constructor(
     private suspend fun handleNewTransactionIfNeeded() {
         if (_state.value.body == WooPosCartState.Body.Empty) {
             childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
-            analyticsTracker.track(InteractionWithCustomerStarted)
+            startCustomerInteraction()
         }
     }
 
@@ -716,10 +716,10 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
-    private fun updateAnalyticsData(newState: WooPosCartState) {
-        if (newState.body == WooPosCartState.Body.Empty) {
-            analyticsTrackingDataKeeper.startCustomerInteraction(System.currentTimeMillis())
-        }
+    // Starts when the first item goes into an empty cart, like on iOS, so time between sales is not counted.
+    private suspend fun startCustomerInteraction() {
+        analyticsTrackingDataKeeper.startCustomerInteraction(System.currentTimeMillis())
+        analyticsTracker.track(InteractionWithCustomerStarted)
     }
 
     private fun listenToReaderConnectionForAnalytics() {

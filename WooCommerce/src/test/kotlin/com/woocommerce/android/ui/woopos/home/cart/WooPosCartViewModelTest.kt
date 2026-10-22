@@ -164,26 +164,40 @@ class WooPosCartViewModelTest {
     }
 
     @Test
-    fun `given reader connected, when the empty cart starts an interaction, then reader is connected at checkout`() =
+    fun `given empty cart, when no item is added, then no customer interaction starts`() = runTest {
+        // WHEN
+        val sut = createSut()
+        sut.state.captureValues()
+
+        // THEN
+        assertThat(trackerData.interactionWithCustomerStartedTimestamp).isNull()
+        assertThat(trackerData.readerConnectedAtCheckout).isNull()
+    }
+
+    @Test
+    fun `given reader connected while the cart was empty, when the first item is added, then reader is connected at checkout`() =
         runTest {
             // GIVEN
-            readerStatus.value = WooPosEffectiveReaderStatus.BluetoothConnected
             val sut = createSut()
+            sut.state.captureValues()
+            readerStatus.value = WooPosEffectiveReaderStatus.BluetoothConnected
 
             // WHEN
-            sut.state.captureValues()
+            addProductToEmptyCart()
 
             // THEN
+            assertThat(trackerData.interactionWithCustomerStartedTimestamp).isNotNull()
             assertThat(trackerData.readerConnectedAtCheckout).isTrue()
             assertThat(trackerData.millisecondsWaitingForReaderConnection).isNull()
         }
 
     @Test
-    fun `given no reader, when reader connects after the empty cart starts an interaction, then connection waiting is recorded`() =
+    fun `given no reader when the first item is added, when reader connects, then connection waiting is recorded`() =
         runTest {
             // GIVEN
             val sut = createSut()
             sut.state.captureValues()
+            addProductToEmptyCart()
 
             // WHEN
             readerStatus.value = WooPosEffectiveReaderStatus.BluetoothConnected
@@ -192,6 +206,17 @@ class WooPosCartViewModelTest {
             assertThat(trackerData.readerConnectedAtCheckout).isFalse()
             assertThat(trackerData.millisecondsWaitingForReaderConnection).isNotNull()
         }
+
+    private suspend fun addProductToEmptyCart() {
+        val product = generateWooPosProduct(productId = 23L)
+        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.ItemClickedInItemsList(
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = product.remoteId),
+                eventForTracking = mockedEventForTracking
+            )
+        )
+    }
 
     @Test
     fun `given empty cart, when product clicked in product selector, then should add product to cart`() = runTest {
