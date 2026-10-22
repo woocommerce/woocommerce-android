@@ -4,6 +4,10 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
 
 interface WPAPINetwork {
+    /**
+     * [readableBodyCheck] applies only to direct WP REST requests. The Jetpack tunnel reports a store response it
+     * can't read on its own.
+     */
     suspend fun <T : Any> executeGetGsonRequest(
         site: SiteModel,
         path: String,
