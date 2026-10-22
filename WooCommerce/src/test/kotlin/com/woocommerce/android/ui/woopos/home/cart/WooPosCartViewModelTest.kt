@@ -207,8 +207,70 @@ class WooPosCartViewModelTest {
             assertThat(trackerData.millisecondsWaitingForReaderConnection).isNotNull()
         }
 
-    private suspend fun addProductToEmptyCart() {
-        val product = generateWooPosProduct(productId = 23L)
+    @Test
+    fun `given data from the previous sale, when the first item is added, then the interaction starts fresh`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        sut.state.captureValues()
+        trackerData.orderSyncSuccessTimestamp = 1L
+        trackerData.checkoutButtonTapsCount = 3
+
+        // WHEN
+        addProductToEmptyCart()
+
+        // THEN
+        assertThat(trackerData.interactionWithCustomerStartedTimestamp).isNotNull()
+        assertThat(trackerData.orderSyncSuccessTimestamp).isNull()
+        assertThat(trackerData.checkoutButtonTapsCount).isZero()
+    }
+
+    @Test
+    fun `given an item in the cart, when another item is added, then the interaction does not restart`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        sut.state.captureValues()
+        addProductToEmptyCart(productId = 23L)
+        trackerData.orderSyncSuccessTimestamp = 5L
+
+        // WHEN
+        addProductToEmptyCart(productId = 24L)
+
+        // THEN
+        assertThat(trackerData.orderSyncSuccessTimestamp).isEqualTo(5L)
+    }
+
+    @Test
+    fun `given a slow item lookup, when the cart is cleared before the item lands, then a new interaction starts`() =
+        runTest {
+            // GIVEN
+            val sut = createSut()
+            sut.state.captureValues()
+            addProductToEmptyCart(productId = 23L)
+            trackerData.orderSyncSuccessTimestamp = 5L
+            val slowProduct = generateWooPosProduct(productId = 24L)
+            whenever(getProductById(eq(slowProduct.remoteId))).doSuspendableAnswer {
+                delay(1_000)
+                slowProduct
+            }
+            parentToChildrenMutableSharedFlow.emit(
+                ParentToChildrenEvent.ItemClickedInItemsList(
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = slowProduct.remoteId),
+                    eventForTracking = mockedEventForTracking
+                )
+            )
+
+            // WHEN
+            sut.onUIEvent(WooPosCartUIEvent.ClearAllClicked)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(sut.state.value?.body).isInstanceOf(WooPosCartState.Body.WithItems::class.java)
+            assertThat(trackerData.orderSyncSuccessTimestamp).isNull()
+            assertThat(trackerData.interactionWithCustomerStartedTimestamp).isNotNull()
+        }
+
+    private suspend fun addProductToEmptyCart(productId: Long = 23L) {
+        val product = generateWooPosProduct(productId = productId)
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         parentToChildrenMutableSharedFlow.emit(
             ParentToChildrenEvent.ItemClickedInItemsList(

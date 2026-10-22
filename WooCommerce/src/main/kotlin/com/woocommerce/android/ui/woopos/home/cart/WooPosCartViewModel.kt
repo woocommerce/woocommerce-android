@@ -101,6 +101,7 @@ class WooPosCartViewModel @Inject constructor(
     init {
         listenEventsFromParent()
         listenToReaderConnectionForAnalytics()
+        listenToCartForCustomerInteraction()
         viewModelScope.launch {
             soundHelper.preloadBarcodeScanFailure()
         }
@@ -448,7 +449,7 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             if (_state.value.body == WooPosCartState.Body.Empty) {
-                startCustomerInteraction()
+                analyticsTracker.track(InteractionWithCustomerStarted)
             }
 
             itemClicked.await()?.let {
@@ -492,7 +493,7 @@ class WooPosCartViewModel @Inject constructor(
     private suspend fun handleNewTransactionIfNeeded() {
         if (_state.value.body == WooPosCartState.Body.Empty) {
             childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
-            startCustomerInteraction()
+            analyticsTracker.track(InteractionWithCustomerStarted)
         }
     }
 
@@ -716,10 +717,19 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
-    // Starts when the first item goes into an empty cart, like on iOS, so time between sales is not counted.
-    private suspend fun startCustomerInteraction() {
-        analyticsTrackingDataKeeper.startCustomerInteraction(System.currentTimeMillis())
-        analyticsTracker.track(InteractionWithCustomerStarted)
+    // Starts when the cart goes from empty to having items, like on iOS, so time between sales is not counted.
+    // Driven by the cart state, so an item that lands after the cart was cleared still starts a new interaction.
+    private fun listenToCartForCustomerInteraction() {
+        viewModelScope.launch {
+            var wasEmpty: Boolean? = null
+            _state.collect { state ->
+                val isEmpty = state.body == WooPosCartState.Body.Empty
+                if (wasEmpty == true && !isEmpty) {
+                    analyticsTrackingDataKeeper.startCustomerInteraction(System.currentTimeMillis())
+                }
+                wasEmpty = isEmpty
+            }
+        }
     }
 
     private fun listenToReaderConnectionForAnalytics() {
