@@ -301,10 +301,6 @@ class IssueRefundViewModel @Inject constructor(
         )
     }
 
-    /**
-     * Shows the section amounts of the lines that will be refunded, which are scaled down when less is left to refund
-     * on the order than the selected items are worth.
-     */
     private fun IssueRefundViewState.withAmountsOfRefundLines(decimals: Int): IssueRefundViewState {
         val lines = selectedRefundItems.toRefundLines(grandTotalRefund, decimals)
         val productLines = lines.take(productsSection.refundItems.size)
