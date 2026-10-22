@@ -2,10 +2,11 @@ package com.woocommerce.android.ui.woopos.util.analytics
 
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ReaderReadySignal
 import org.assertj.core.api.Assertions.assertThat
+import org.mockito.kotlin.mock
 import kotlin.test.Test
 
 class WooPosAnalyticsTrackingDataKeeperTest {
-    private val keeper = WooPosAnalyticsTrackingDataKeeper()
+    private val keeper = WooPosAnalyticsTrackingDataKeeper(mock())
 
     @Test
     fun `given every stamp is set, when a new interaction starts, then stamps clear and the live connection is kept`() {

@@ -650,6 +650,20 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given receipt lookup fails before capture, when payment fails, then capture timing is not started`() = testBlocking {
+        whenever(errorMapper.mapPaymentErrorToUiError(Generic, false)).thenReturn(PaymentFlowError.Generic)
+        whenever(cardReaderManager.collectPayment(any())).thenReturn(
+            flow { emit(PaymentFailed(Generic, null, "ReceiptUrl not available")) }
+        )
+
+        controller.start()
+
+        verify(tracker, never()).onPaymentCapturing()
+        verify(tracker).trackPaymentFailed("ReceiptUrl not available", Generic)
+        assertThat(controller.paymentState.value).isInstanceOf(ExternalReaderFailedPayment::class.java)
+    }
+
+    @Test
     fun `when processing payment completed with card present, then tracking keeper stores payment type`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -732,6 +746,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
             assertThat(controller.paymentState.value)
                 .isInstanceOf(CardReaderPaymentState.PaymentCapturing.ExternalReaderPaymentCapturing::class.java)
+            verify(tracker).onPaymentCapturing()
         }
 
     @Test
@@ -746,6 +761,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
             assertThat(controller.paymentState.value)
                 .isInstanceOf(CardReaderPaymentState.PaymentCapturing.BuiltInReaderPaymentCapturing::class.java)
+            verify(tracker).onPaymentCapturing()
         }
 
     @Test
@@ -1259,14 +1275,22 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             }
             whenever(
                 cardReaderManager.retryCollectPayment(any(), any())
-            ).thenReturn(flow { emit(PaymentCompleted("")) })
+            ).thenReturn(
+                flow {
+                    emit(CapturingPayment)
+                    emit(PaymentCompleted(""))
+                }
+            )
             controller.start()
 
             (controller.paymentState.value as CardReaderPaymentState.PaymentFailed).onRetry!!()
             advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), any())
-            verify(tracker).trackPaymentSucceeded(mockedOrder)
+            inOrder(tracker) {
+                verify(tracker).onPaymentCapturing()
+                verify(tracker).trackPaymentSucceeded(mockedOrder)
+            }
         }
 
     @Test

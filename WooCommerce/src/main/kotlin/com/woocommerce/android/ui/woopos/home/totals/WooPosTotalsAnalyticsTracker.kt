@@ -63,6 +63,18 @@ class WooPosTotalsAnalyticsTracker @Inject constructor(
         analyticsData.checkoutButtonTapsCount = analyticsData.checkoutButtonTapsCount + 1
     }
 
+    fun startCheckoutTiming(): Long = analyticsData.startCheckoutTiming(
+        when (productsDataSource.getCurrentSyncStrategyOrNull()) {
+            WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE -> "local_catalog"
+            WooPosProductsDataSource.SyncStrategy.REMOTE -> "remote"
+            null -> "unknown"
+        }
+    )
+
+    fun orderSyncCompleted(generation: Long) = analyticsData.orderSyncCompleted(generation)
+
+    fun clearPaymentConfirmation() = analyticsData.clearPaymentConfirmation()
+
     suspend fun trackOrderCreationSuccess() {
         analyticsTracker.track(WooPosAnalyticsEvent.Event.OrderCreationSuccess)
         analyticsData.orderSyncSuccessTimestamp = System.currentTimeMillis()

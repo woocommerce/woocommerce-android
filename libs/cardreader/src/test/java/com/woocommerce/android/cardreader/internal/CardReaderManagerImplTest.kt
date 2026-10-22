@@ -4,7 +4,8 @@ import android.app.Application
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
 import com.stripe.stripeterminal.external.models.ReaderSupportResult
-import com.woocommerce.android.cardreader.CardReaderManager
+import com.stripe.stripeterminal.external.models.TerminalErrorCode
+import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
@@ -64,8 +65,6 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
             listOf(ReaderType.ExternalReader.Chipper2X, ReaderType.ExternalReader.StripeM2)
         )
 
-    private val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
-
     private val locationId = "locationId"
 
     private val useInterac = false
@@ -111,7 +110,11 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     fun `given Stripe reports not supported, when isTapToPaySupportedOnDevice, then NotSupported returned`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
         whenever(terminalWrapper.supportsReadersOfType(any(), any()))
-            .thenReturn(ReaderSupportResult.NotSupported(RuntimeException("no TEE")))
+            .thenReturn(
+                ReaderSupportResult.NotSupported(
+                    TerminalException(TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_DEVICE, "no TEE")
+                )
+            )
 
         val result = cardReaderManager.isTapToPaySupportedOnDevice(false)
 
@@ -138,7 +141,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `given application delegate, when manager gets initialized, then delegate calls on create`() {
-        cardReaderManager.initialize(updateFrequency, useInterac, useEftpos, false)
+        cardReaderManager.initialize(useInterac, useEftpos, false)
 
         verify(terminalApplicationDelegateWrapper).onCreate(application)
     }
@@ -161,7 +164,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     fun `given terminal not initialized, when init() invoked, then Terminal init() invoked`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-        cardReaderManager.initialize(updateFrequency, useInterac, useEftpos, false)
+        cardReaderManager.initialize(useInterac, useEftpos, false)
 
         verify(terminalWrapper).initTerminal(any(), any(), any(), any())
     }
@@ -170,7 +173,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     fun `given terminal initialized, when init() invoked, then Terminal init() not invoked`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
 
-        cardReaderManager.initialize(updateFrequency, useInterac, useEftpos, false)
+        cardReaderManager.initialize(useInterac, useEftpos, false)
 
         verify(terminalWrapper, never()).initTerminal(any(), any(), any(), any())
     }

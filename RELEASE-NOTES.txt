@@ -4,15 +4,25 @@
 
 26.0
 -----
+- [**] Products: Add and edit attributes on all product types. Each attribute has "Visible on product page" and "Used for variations" settings, so you can add attributes that only show on the product page. [https://github.com/woocommerce/woocommerce-android/pull/16727]
+- [*] Fixed a crash when choosing a file on a web page inside the app [https://github.com/woocommerce/woocommerce-android/pull/16743]
+- [*] Fixed a crash when an order status update fails while the order list refreshes [https://github.com/woocommerce/woocommerce-android/pull/16728]
 - [*] Disabled filled buttons on screens like refunds, custom amounts and legacy shipping labels now look disabled [https://github.com/woocommerce/woocommerce-android/pull/16732]
 - [*] [Woo POS] On Android 17, POS asks for local network access only when you choose to use a phone as a card reader or have used one before [https://github.com/woocommerce/woocommerce-android/pull/16723]
 - [*] Menu icons now use a dark background in dark mode [https://github.com/woocommerce/woocommerce-android/pull/16672]
 - [*] Order creation no longer adds a variation of a subscription product when its SKU is scanned [https://github.com/woocommerce/woocommerce-android/pull/16713]
+- [*] On tablets, an open order editor no longer closes and loses its text when the app is restored [https://github.com/woocommerce/woocommerce-android/pull/16731]
 - [*] Customer lists now explain when WooCommerce Analytics is unavailable and offer a way to turn it on or retry loading customers [https://github.com/woocommerce/woocommerce-android/pull/16707]
-
+- [*] When less is left to refund on an order than the selected items are worth, the refund screen's product, shipping and fee totals now show the amount that will be refunded [https://github.com/woocommerce/woocommerce-android/pull/16742]
+- [*] Fixed a crash when creating orders or opening products on stores with no timezone offset set [https://github.com/woocommerce/woocommerce-android/pull/16740]
+- [Internal] Shipping labels and the label eligibility check are no longer read from the database on the main thread [https://github.com/woocommerce/woocommerce-android/pull/16720]
+- [***] [Internal] Migrated Google sign-in from the deprecated Play Services Auth API to Credential Manager [https://github.com/woocommerce/woocommerce-android/pull/16721]
+- [*] Login now shows a clear message with a Try again option when the store returns an unexpected response [https://github.com/woocommerce/woocommerce-android/pull/16685]
 
 25.9
 -----
+- [*****] [Internal] Update Stripe Terminal SDK from 5.8.2 to 6.0.0 [https://github.com/woocommerce/woocommerce-android/pull/16688]
+- [*] Tap to Pay: when a payment is blocked for security reasons (for example an accessibility service is on), the app now says what to check instead of showing a generic error [https://github.com/woocommerce/woocommerce-android/pull/16693]
 - [*] Generate all variations no longer suggests variations that already exist, and bulk update now covers every variation of products with more than 25 variations [https://github.com/woocommerce/woocommerce-android/pull/16691]
 - [*] Fixed item refunds failing on stores with WooCommerce 11.3 when tax doesn't split evenly per unit or less is left to refund on the order than the selected items [https://github.com/woocommerce/woocommerce-android/pull/16711]
 - [**] Card readers WisePad 3, M2 and Chipper 2X can now connect over USB [https://github.com/woocommerce/woocommerce-android/pull/16680]

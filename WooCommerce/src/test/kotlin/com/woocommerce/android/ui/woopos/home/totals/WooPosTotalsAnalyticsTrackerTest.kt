@@ -22,7 +22,7 @@ import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosTotalsAnalyticsTrackerTest {
-    private val analyticsData = WooPosAnalyticsTrackingDataKeeper()
+    private val analyticsData = WooPosAnalyticsTrackingDataKeeper(mock())
     private val readerReadyForPaymentTracker: WooPosReaderReadyForPaymentTracker = mock()
 
     private val tracker = WooPosTotalsAnalyticsTracker(

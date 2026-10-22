@@ -10,9 +10,11 @@ import com.stripe.stripeterminal.external.models.ConnectionConfiguration.TapToPa
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.UsbConnectionConfiguration
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Reader
+import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate.UpdateComponent
 import com.stripe.stripeterminal.external.models.TapUseCase
 import com.stripe.stripeterminal.external.models.TerminalErrorCode
 import com.stripe.stripeterminal.external.models.TerminalException
+import com.stripe.stripeterminal.external.models.TestReaderUpdate
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReader
@@ -47,6 +49,7 @@ internal class ConnectionManager(
     private val terminalListenerImpl: TerminalListenerImpl,
     private val application: Application,
     private val logWrapper: LogWrapper,
+    private val simulatedReaderUpdateFrequency: () -> CardReaderManager.SimulatorUpdateFrequency,
 ) {
     val softwareUpdateStatus = bluetoothReaderListener.updateStatusEvents
     val softwareUpdateAvailability = bluetoothReaderListener.updateAvailabilityEvents
@@ -85,17 +88,7 @@ internal class ConnectionManager(
                     CardReaderDiscoveryEvents.Started
                 }
 
-                is DiscoverReadersStatus.Failure -> {
-                    when (state.exception.errorCode) {
-                        TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_DEVICE,
-                        TerminalErrorCode.TAP_TO_PAY_DEVICE_TAMPERED,
-                        TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_ANDROID_VERSION,
-                        TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_PROCESSOR,
-                        TerminalErrorCode.TAP_TO_PAY_INSECURE_ENVIRONMENT ->
-                            CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported(state.exception.errorMessage)
-                        else -> CardReaderDiscoveryEvents.Failed(state.exception.errorMessage)
-                    }
-                }
+                is DiscoverReadersStatus.Failure -> state.toDiscoveryFailedEvent()
 
                 is DiscoverReadersStatus.FoundReaders -> {
                     val filtering: (Reader) -> Boolean = when (cardReaderTypesToDiscover) {
@@ -113,6 +106,17 @@ internal class ConnectionManager(
                 }
             }
         }
+
+    private fun DiscoverReadersStatus.Failure.toDiscoveryFailedEvent() = when (exception.errorCode) {
+        TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_DEVICE,
+        TerminalErrorCode.TAP_TO_PAY_DEVICE_TAMPERED,
+        TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_ANDROID_VERSION,
+        TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_PROCESSOR ->
+            CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported(exception.errorMessage)
+        TerminalErrorCode.TAP_TO_PAY_INSECURE_ENVIRONMENT ->
+            CardReaderDiscoveryEvents.FailedTapToPayInsecureEnvironment(exception.errorMessage)
+        else -> CardReaderDiscoveryEvents.Failed(exception.errorMessage)
+    }
 
     private fun checkIfNecessaryPermissionsAreGranted() {
         val locationPermission = requiredLocationPermission()
@@ -239,7 +243,15 @@ internal class ConnectionManager(
             cardReader.cardReader,
             when (cardReader.cardReader.usbDevice != null) {
                 true -> UsbConnectionConfiguration(locationId, true, bluetoothReaderListener)
-                false -> BluetoothConnectionConfiguration(locationId, true, bluetoothReaderListener)
+                false -> BluetoothConnectionConfiguration(
+                    locationId = locationId,
+                    autoReconnectOnUnexpectedDisconnect = true,
+                    bluetoothReaderListener = bluetoothReaderListener,
+                    testReaderUpdate = when (cardReader.cardReader.isSimulated) {
+                        true -> simulatedReaderUpdateFrequency().toTestReaderUpdate()
+                        false -> null
+                    },
+                )
             }
         )
     }
@@ -257,6 +269,19 @@ internal class ConnectionManager(
             )
         )
     }
+
+    private fun CardReaderManager.SimulatorUpdateFrequency.toTestReaderUpdate(): TestReaderUpdate? =
+        when (this) {
+            CardReaderManager.SimulatorUpdateFrequency.NEVER -> null
+            CardReaderManager.SimulatorUpdateFrequency.ALWAYS ->
+                TestReaderUpdate.required(setOf(UpdateComponent.FIRMWARE))
+            CardReaderManager.SimulatorUpdateFrequency.LOW_BATTERY_ERROR -> TestReaderUpdate.lowBattery()
+            CardReaderManager.SimulatorUpdateFrequency.LOW_BATTERY_SUCCEED_CONNECT ->
+                TestReaderUpdate.lowBatterySucceedConnect()
+            CardReaderManager.SimulatorUpdateFrequency.RANDOM -> TestReaderUpdate.random()
+            CardReaderManager.SimulatorUpdateFrequency.OPTIONAL_UPDATE_AVAILABLE ->
+                TestReaderUpdate.available(setOf(UpdateComponent.FIRMWARE))
+        }
 
     private fun TerminalErrorCode.toErrorCode(): CardReaderStatus.NotConnected.ErrorCode =
         when (this) {

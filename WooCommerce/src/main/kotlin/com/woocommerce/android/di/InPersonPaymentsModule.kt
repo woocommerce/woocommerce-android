@@ -112,6 +112,14 @@ class CardReaderManagerModule {
     fun provideCardReaderManager(
         application: Application,
         cardReaderStore: CardReaderStore,
-        logWrapper: LogWrapper
-    ) = CardReaderManagerFactory.createCardReaderManager(application, cardReaderStore, logWrapper)
+        logWrapper: LogWrapper,
+        appPrefs: AppPrefs,
+    ) = CardReaderManagerFactory.createCardReaderManager(
+        application = application,
+        cardReaderStore = cardReaderStore,
+        logWrapper = logWrapper,
+        simulatedReaderUpdateFrequency = {
+            CardReaderManager.SimulatorUpdateFrequency.valueOf(appPrefs.updateReaderOptionSelected)
+        },
+    )
 }

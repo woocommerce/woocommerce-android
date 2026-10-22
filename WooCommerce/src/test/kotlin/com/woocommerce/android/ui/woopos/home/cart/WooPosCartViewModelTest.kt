@@ -152,7 +152,7 @@ class WooPosCartViewModelTest {
     }
 
     private val savedState: SavedStateHandle = SavedStateHandle()
-    private val trackerData: WooPosAnalyticsTrackingDataKeeper = WooPosAnalyticsTrackingDataKeeper()
+    private val trackerData = WooPosAnalyticsTrackingDataKeeper(mock())
     private val cartItemsUpdater: WooPosCartItemsUpdater = mock()
     private val customAmountCartHandler: WooPosCustomAmountCartHandler = WooPosCustomAmountCartHandler()
     private val searchByIdentifier: WooPosSearchByIdentifier = mock()

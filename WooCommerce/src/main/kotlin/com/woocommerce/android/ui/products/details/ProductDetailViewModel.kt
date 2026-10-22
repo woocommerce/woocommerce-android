@@ -91,8 +91,6 @@ import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -172,8 +170,7 @@ class ProductDetailViewModel @Inject constructor(
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
     private val determineProductPasswordApi: DetermineProductPasswordApi,
     private val customFieldsRepository: CustomFieldsRepository,
-    private val canAutoAuthenticateInWebView: CanAutoAuthenticateInWebView,
-    private val featureFlagRepository: FeatureFlagRepository
+    private val canAutoAuthenticateInWebView: CanAutoAuthenticateInWebView
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -319,13 +316,9 @@ class ProductDetailViewModel @Inject constructor(
         ProductDetailBottomSheetBuilder(
             resources = resources,
             variationRepository = variationRepository,
-            customFieldsRepository = customFieldsRepository,
-            isNonVariationAttributesEnabled = { isNonVariationAttributesEnabled }
+            customFieldsRepository = customFieldsRepository
         )
     }
-
-    val isNonVariationAttributesEnabled: Boolean
-        get() = featureFlagRepository.isEnabled(FeatureFlag.NON_VARIATION_PRODUCT_ATTRIBUTES)
 
     private val _hasChanges = storedProductAggregate
         .combine(draftChanges) { storedProductAggregate, productAggregateDraft ->
@@ -1686,7 +1679,7 @@ class ProductDetailViewModel @Inject constructor(
      * Loads the attributes assigned to the draft product, used by the attribute list fragment
      */
     fun loadProductDraftAttributes(isVariationCreation: Boolean) {
-        _attributeList.value = if (isNonVariationAttributesEnabled && !isVariationCreation) {
+        _attributeList.value = if (!isVariationCreation) {
             productDraftAttributes
         } else {
             productDraftVariationAttributes
@@ -1703,15 +1696,11 @@ class ProductDetailViewModel @Inject constructor(
     val isDraftVariableProduct: Boolean
         get() = viewState.productDraft?.productType?.isVariableProduct() == true
 
-    /**
-     * Returns null when the non-variation attributes feature is off, so the settings are hidden
-     */
     fun getAttributeSettingsState(
         attributeId: Long,
         attributeName: String,
         isVariationCreation: Boolean
-    ): AttributeSettingsState? {
-        if (!isNonVariationAttributesEnabled) return null
+    ): AttributeSettingsState {
         val attribute = getDraftAttribute(attributeId, attributeName)
         return AttributeSettingsState(
             // a global attribute is only added to the draft with its first option
@@ -1758,7 +1747,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun isNewAttributeUsedForVariations(isVariationCreation: Boolean) =
-        !isNonVariationAttributesEnabled || isVariationCreation || isDraftVariableProduct
+        isVariationCreation || isDraftVariableProduct
 
     /**
      * Swaps two terms for a draft attribute
@@ -1930,7 +1919,7 @@ class ProductDetailViewModel @Inject constructor(
      * User clicked an attribute in the attribute list fragment or the add attribute fragment
      */
     fun onAttributeListItemClick(attributeId: Long, attributeName: String, isVariationCreation: Boolean) {
-        if (isVariationCreation || !isNonVariationAttributesEnabled) {
+        if (isVariationCreation) {
             enableAttributeForVariations(attributeId, attributeName)
         }
         triggerEvent(

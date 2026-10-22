@@ -9,6 +9,8 @@ class WooPosPaymentsFlowTrackerEventProvider(
     private val analyticsTrackingDataKeeper: WooPosAnalyticsTrackingDataKeeper,
     private val paymentSuccessProperties: WooPosPaymentSuccessProperties,
 ) : PaymentsFlowTrackerEventProvider {
+    override fun onPaymentCapturing() = analyticsTrackingDataKeeper.paymentConfirmed()
+
     override val CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED: IAnalyticsEvent
         get() = PaymentFlowTrackerEvent.CardPresentOnboardingLearnMoreTapped
 
@@ -102,15 +104,27 @@ class WooPosPaymentsFlowTrackerEventProvider(
     override val CARD_PRESENT_COLLECT_PAYMENT_FAILED: IAnalyticsEvent
         get() = PaymentFlowTrackerEvent.CardPresentCollectPaymentFailed().apply {
             addProperties(paymentTimingProperties())
+            addProperties(analyticsTrackingDataKeeper.cardPaymentTiming())
         }
 
     override val CARD_PRESENT_COLLECT_PAYMENT_SUCCESS: IAnalyticsEvent
-        get() = PaymentFlowTrackerEvent.CardPresentCollectPaymentSuccess().apply {
+        get() = legacyPaymentSuccessEvent().apply {
+            addProperties(analyticsTrackingDataKeeper.cardPaymentTiming())
+        }
+
+    private fun legacyPaymentSuccessEvent() =
+        PaymentFlowTrackerEvent.CardPresentCollectPaymentSuccess().apply {
             addProperties(paymentTimingProperties())
         }
 
-    override suspend fun paymentSuccessEvent(order: Order): IAnalyticsEvent =
-        CARD_PRESENT_COLLECT_PAYMENT_SUCCESS.apply { addProperties(paymentSuccessProperties(order)) }
+    override suspend fun paymentSuccessEvent(order: Order): IAnalyticsEvent {
+        val event = legacyPaymentSuccessEvent()
+        val properties = paymentSuccessProperties(order)
+        return event.apply {
+            addProperties(properties)
+            addProperties(analyticsTrackingDataKeeper.cardPaymentTiming())
+        }
+    }
 
     override val CARD_PRESENT_COLLECT_INTERAC_PAYMENT_SUCCESS: IAnalyticsEvent
         get() = PaymentFlowTrackerEvent.CardPresentCollectInteracPaymentSuccess
@@ -142,6 +156,7 @@ class WooPosPaymentsFlowTrackerEventProvider(
     override val CARD_PRESENT_COLLECT_PAYMENT_CANCELLED: IAnalyticsEvent
         get() = PaymentFlowTrackerEvent.CardPresentCollectPaymentCancelled().apply {
             addProperties(paymentTimingProperties())
+            analyticsTrackingDataKeeper.clearPaymentConfirmation()
         }
 
     override val PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED: IAnalyticsEvent
