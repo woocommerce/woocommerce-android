@@ -698,6 +698,19 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         }
 
     @Test
+    fun `given confirmed retry intent without receipt, when retrying, then capture stage is omitted`() = testBlocking {
+        val paymentData = PaymentDataImpl(createPaymentIntent(REQUIRES_CAPTURE, receiptUrl = null))
+
+        val result = manager.retryPayment(DUMMY_ORDER_ID, paymentData).toList()
+
+        assertThat(result).hasSize(1)
+        assertThat(result.single()).isInstanceOf(PaymentFailed::class.java)
+        assertThat(result).doesNotContain(CapturingPayment)
+        verify(processPaymentIntentAction, never()).processPaymentIntent(anyOrNull())
+        verify(cardReaderStore, never()).capturePaymentIntent(any(), any())
+    }
+
+    @Test
     fun `given PaymentStatus CANCELED, when retrying payment, then PaymentFailed is emitted`() =
         testBlocking {
             val paymentIntent = createPaymentIntent(CANCELED)

@@ -9,6 +9,8 @@ class WooPosPaymentsFlowTrackerEventProvider(
     private val analyticsTrackingDataKeeper: WooPosAnalyticsTrackingDataKeeper,
     private val paymentSuccessProperties: WooPosPaymentSuccessProperties,
 ) : PaymentsFlowTrackerEventProvider {
+    override fun onPaymentCapturing() = analyticsTrackingDataKeeper.paymentConfirmed()
+
     override val CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED: IAnalyticsEvent
         get() = PaymentFlowTrackerEvent.CardPresentOnboardingLearnMoreTapped
 
@@ -100,10 +102,17 @@ class WooPosPaymentsFlowTrackerEventProvider(
         get() = PaymentFlowTrackerEvent.CardReaderConnectionSuccess
 
     override val CARD_PRESENT_COLLECT_PAYMENT_FAILED: IAnalyticsEvent
-        get() = PaymentFlowTrackerEvent.CardPresentCollectPaymentFailed
+        get() = PaymentFlowTrackerEvent.CardPresentCollectPaymentFailed().apply {
+            addProperties(analyticsTrackingDataKeeper.cardPaymentTiming())
+        }
 
     override val CARD_PRESENT_COLLECT_PAYMENT_SUCCESS: IAnalyticsEvent
-        get() = PaymentFlowTrackerEvent.CardPresentCollectPaymentSuccess().apply {
+        get() = legacyPaymentSuccessEvent().apply {
+            addProperties(analyticsTrackingDataKeeper.cardPaymentTiming())
+        }
+
+    private fun legacyPaymentSuccessEvent() =
+        PaymentFlowTrackerEvent.CardPresentCollectPaymentSuccess().apply {
             val props = mutableMapOf<String, String>()
             analyticsTrackingDataKeeper.interactionWithCustomerStartedTimestamp?.let {
                 props["milliseconds_since_customer_interaction_started"] = "${System.currentTimeMillis() - it}"
@@ -121,8 +130,14 @@ class WooPosPaymentsFlowTrackerEventProvider(
             addProperties(props)
         }
 
-    override suspend fun paymentSuccessEvent(order: Order): IAnalyticsEvent =
-        CARD_PRESENT_COLLECT_PAYMENT_SUCCESS.apply { addProperties(paymentSuccessProperties(order)) }
+    override suspend fun paymentSuccessEvent(order: Order): IAnalyticsEvent {
+        val event = legacyPaymentSuccessEvent()
+        val properties = paymentSuccessProperties(order)
+        return event.apply {
+            addProperties(properties)
+            addProperties(analyticsTrackingDataKeeper.cardPaymentTiming())
+        }
+    }
 
     override val CARD_PRESENT_COLLECT_INTERAC_PAYMENT_SUCCESS: IAnalyticsEvent
         get() = PaymentFlowTrackerEvent.CardPresentCollectInteracPaymentSuccess
@@ -152,7 +167,9 @@ class WooPosPaymentsFlowTrackerEventProvider(
         get() = PaymentFlowTrackerEvent.ReceiptUrlFetchingFails
 
     override val CARD_PRESENT_COLLECT_PAYMENT_CANCELLED: IAnalyticsEvent
-        get() = PaymentFlowTrackerEvent.CardPresentCollectPaymentCancelled
+        get() = PaymentFlowTrackerEvent.CardPresentCollectPaymentCancelled.also {
+            analyticsTrackingDataKeeper.clearPaymentConfirmation()
+        }
 
     override val PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED: IAnalyticsEvent
         get() = PaymentFlowTrackerEvent.PaymentsFlowOrderCollectPaymentTapped
