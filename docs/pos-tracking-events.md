@@ -127,9 +127,9 @@ Success snapshots follow success-property lookup. Card outcomes clear confirmati
 Cash reads checkout/sync timing without clearing card confirmation, so overlapping card completion retains its own start boundary.
 The existing cart reset clears all timestamps. Native retries retain checkout/sync timing; no unique attempt or journey identity is emitted.
 Native and Tap to Pay use the existing `CapturingPayment` status after successful local receipt lookup and before
-backend capture. A missing receipt fails before this status and omits confirmation timing. iOS starts this field
-earlier, when the confirmed intent is available before receipt lookup; this boundary difference applies when
-comparing platforms. Remote readers start it for `requires_capture`/`succeeded` before backend capture;
+backend capture. A missing receipt fails before this status and omits confirmation timing. iOS records confirmed
+processing completion before backend capture, without this receipt-URL requirement. Account for this boundary
+difference when comparing platforms. Remote readers start it for `requires_capture`/`succeeded` before backend capture;
 simulation omits confirmation.
 Existing wall-clock properties, units, checkout counter and reset behavior remain unchanged. These metrics do not measure first display or card touch.
 
