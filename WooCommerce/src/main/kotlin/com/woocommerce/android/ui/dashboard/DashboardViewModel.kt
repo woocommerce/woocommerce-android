@@ -33,12 +33,15 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUi
 import com.woocommerce.android.ui.dashboard.data.AnalyticsScheduledImportRepository
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,6 +52,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -74,9 +78,11 @@ class DashboardViewModel @Inject constructor(
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
     private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi,
     private val feedbackPrefs: FeedbackPrefs,
+    private val featureFlagRepository: FeatureFlagRepository,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
+        private const val JP_BENEFITS_BANNER_DELAY_MS = 500L
         val SUPPORTED_RANGES_ON_MY_STORE_TAB = listOf(
             SelectionType.TODAY,
             SelectionType.WEEK_TO_DATE,
@@ -389,6 +395,12 @@ class DashboardViewModel @Inject constructor(
                     dismissTrigger.tryEmit(Unit)
                 }
             )
+        }.transformLatest { banner ->
+            // Until the remote flag value is known, the push notifications card can still replace the banner.
+            val isRemoteFlagValueKnown = featureFlagRepository
+                .getFlagState(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1).remoteValue != null
+            if (banner.show && !isRemoteFlagValueKnown) delay(JP_BENEFITS_BANNER_DELAY_MS)
+            emit(banner)
         }
     }
 
