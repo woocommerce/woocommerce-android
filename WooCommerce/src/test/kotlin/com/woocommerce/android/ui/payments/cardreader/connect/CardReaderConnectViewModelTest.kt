@@ -100,9 +100,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val reader = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy1") }
     private val reader2 = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy2") }
     private val locationRepository: CardReaderLocationRepository = mock()
-    private val developerOptionsRepository: DeveloperOptionsRepository = mock {
-        on { getUpdateSimulatedReaderOption() } doReturn CardReaderManager.SimulatorUpdateFrequency.RANDOM
-    }
+    private val developerOptionsRepository: DeveloperOptionsRepository = mock()
     private val siteModel: SiteModel = mock()
     private val selectedSite: SelectedSite = mock {
         on { get() }.thenReturn(siteModel)
@@ -112,7 +110,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val locationId = "location_id"
-    private val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
     private val useInterac = false
     private val useEftpos = false
 
@@ -343,7 +340,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(false)
             (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(true)
 
-            verify(cardReaderManager).initialize(updateFrequency, useInterac, useEftpos, BuildConfig.DEBUG)
+            verify(cardReaderManager).initialize(useInterac, useEftpos, BuildConfig.DEBUG)
         }
 
     @Test
@@ -356,7 +353,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .onBluetoothRuntimePermissionsRequestResult(true)
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)
 
-            verify(cardReaderManager).initialize(updateFrequency, useInterac, useEftpos, BuildConfig.DEBUG)
+            verify(cardReaderManager).initialize(useInterac, useEftpos, BuildConfig.DEBUG)
         }
 
     @Test
@@ -368,7 +365,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.event.value as RequestBluetoothRuntimePermissions)
                 .onBluetoothRuntimePermissionsRequestResult(false)
 
-            verify(cardReaderManager, never()).initialize(updateFrequency, useInterac, useEftpos, BuildConfig.DEBUG)
+            verify(cardReaderManager, never()).initialize(useInterac, useEftpos, BuildConfig.DEBUG)
         }
 
     @Test
@@ -382,7 +379,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(true)
 
-            verify(cardReaderManager, never()).initialize(updateFrequency, useInterac, useEftpos, BuildConfig.DEBUG)
+            verify(cardReaderManager, never()).initialize(useInterac, useEftpos, BuildConfig.DEBUG)
         }
 
     @Test

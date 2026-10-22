@@ -348,6 +348,8 @@ sealed class PaymentFlowError(val message: UiString) {
             BuiltInReader(R.string.card_reader_payment_failed_app_setup_is_invalid),
             ContactSupportError
 
+        object InsecureEnvironment : BuiltInReader(R.string.card_reader_payment_failed_insecure_environment)
+
         object AppKilledWhileInBackground :
             BuiltInReader(R.string.card_reader_payment_vm_killed_when_tpp_in_foreground),
             ContactSupportError

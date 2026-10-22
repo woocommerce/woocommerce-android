@@ -17,7 +17,8 @@ internal class RefundErrorMapper {
         val type = when (exception.errorCode) {
             TerminalErrorCode.DECLINED_BY_STRIPE_API -> mapDeclinedByStripeApiError(exception)
             TerminalErrorCode.STRIPE_API_CONNECTION_ERROR -> NoNetwork
-            TerminalErrorCode.CANCELED -> Cancelled
+            TerminalErrorCode.CANCELED,
+            TerminalErrorCode.CANCELED_BY_READER -> Cancelled
             else -> Generic
         }
         return InteracRefundFailure(type, exception.errorMessage, refundParams)

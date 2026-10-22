@@ -388,6 +388,7 @@ class CardReaderPaymentController(
             }
 
             CapturingPayment -> {
+                tracker.onPaymentCapturing()
                 _paymentState.value = paymentStateProvider.provideCapturingPaymentState(
                     cardReaderType,
                     amountLabel

@@ -1236,7 +1236,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "card_present_collect_payment_cancelled"
         }
 
-        data object CardPresentCollectPaymentFailed : PaymentFlowTrackerEvent() {
+        class CardPresentCollectPaymentFailed : PaymentFlowTrackerEvent() {
             override val name: String = "card_present_collect_payment_failed"
         }
 

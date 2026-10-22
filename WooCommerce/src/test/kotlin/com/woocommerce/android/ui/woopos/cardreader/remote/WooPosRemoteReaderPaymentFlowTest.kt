@@ -71,6 +71,18 @@ class WooPosRemoteReaderPaymentFlowTest {
     )
 
     @Test
+    fun `given unconfirmed remote outcome, when collecting payment, then confirmation timing is omitted`() = runTest {
+        // GIVEN
+        whenever(session.sendCollectPayment(any(), any()))
+            .thenReturn(CollectPaymentOutcome.Success("pi_123", "requires_confirmation", null))
+        whenever(store.capturePaymentIntent(order.id, "pi_123")).thenReturn(CapturePaymentResponse.Successful.Success)
+        // WHEN
+        flow.collect(order)
+        // THEN
+        verify(tracker, never()).onPaymentCapturing()
+    }
+
+    @Test
     fun `given remote collection succeeds, when capture succeeds, then checkout tracks success once with current order`() = runTest {
         // GIVEN
         trackingInfo.setCurrency("USD")
@@ -96,6 +108,7 @@ class WooPosRemoteReaderPaymentFlowTest {
         // THEN
         assertThat(result).isEqualTo(WooPosRemoteReaderPaymentFlow.Result.Completed)
         inOrder(store, tracker) {
+            verify(tracker).onPaymentCapturing()
             verify(store).capturePaymentIntent(order.id, "pi_123")
             verify(tracker).trackPaymentSucceeded(order)
         }

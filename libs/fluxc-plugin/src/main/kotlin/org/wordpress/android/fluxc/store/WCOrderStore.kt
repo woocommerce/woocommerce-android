@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.store
 
+import dagger.Lazy
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -11,6 +12,7 @@ import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.generated.ListActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
+import org.wordpress.android.fluxc.logging.FluxCCrashLogger
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -74,7 +76,8 @@ class WCOrderStore @Inject internal constructor(
     private val orderShipmentTrackingDao: OrderShipmentTrackingDao,
     private val orderStatusDao: OrderStatusDao,
     private val orderSummaryDao: OrderSummaryDao,
-    private val insertOrder: InsertOrder
+    private val insertOrder: InsertOrder,
+    private val crashLogger: Lazy<FluxCCrashLogger>
 ) : Store(dispatcher) {
     companion object {
         const val NUM_ORDERS_PER_FETCH = 15
@@ -768,14 +771,22 @@ class WCOrderStore @Inject internal constructor(
         newPaymentMethodTitle: String? = null,
         listUpdateStrategy: OrdersDaoDecorator.ListUpdateStrategy = OrdersDaoDecorator.ListUpdateStrategy.DEFAULT
     ) {
-        val updatedOrder = ordersDaoDecorator.getOrder(orderId, localSiteId)!!.let {
-            it.copy(
-                status = newStatus,
-                paymentMethod = newPaymentMethodId ?: it.paymentMethod,
-                paymentMethodTitle = newPaymentMethodTitle ?: it.paymentMethodTitle
-            )
-        }
+        val currentOrder = ordersDaoDecorator.getOrder(orderId, localSiteId)
+            ?: return reportOrderMissingOnOptimisticUpdate(orderId)
+        val updatedOrder = currentOrder.copy(
+            status = newStatus,
+            paymentMethod = newPaymentMethodId ?: currentOrder.paymentMethod,
+            paymentMethodTitle = newPaymentMethodTitle ?: currentOrder.paymentMethodTitle
+        )
         ordersDaoDecorator.insertOrUpdateOrder(updatedOrder, listUpdateStrategy)
+    }
+
+    private fun reportOrderMissingOnOptimisticUpdate(orderId: Long) {
+        crashLogger.get().sendReport(
+            IllegalStateException("Order missing from the database during an optimistic update"),
+            mapOf("order_id" to orderId.toString()),
+            "Order $orderId missing from the database during an optimistic update."
+        )
     }
 
     @Suppress("SpreadOperator")

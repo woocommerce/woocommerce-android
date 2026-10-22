@@ -1,7 +1,6 @@
 package com.woocommerce.android.di
 
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.CardReaderManager.SimulatorUpdateFrequency
 import com.woocommerce.android.cardreader.CardReaderManager.TapToPayUxConfig
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
@@ -72,14 +71,12 @@ class MockCardReaderManagerModule {
             get() = error("connectionTokenProvider is not used in instrumented tests")
 
         override fun initialize(
-            updateFrequency: SimulatorUpdateFrequency,
             useInterac: Boolean,
             useEftpos: Boolean,
             isDebug: Boolean
         ) {}
 
         override fun reinitializeSimulatedTerminal(
-            updateFrequency: SimulatorUpdateFrequency,
             useInterac: Boolean,
             useEftpos: Boolean,
         ) {}

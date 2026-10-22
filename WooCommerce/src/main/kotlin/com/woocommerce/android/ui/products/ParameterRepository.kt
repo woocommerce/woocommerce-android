@@ -69,7 +69,7 @@ class ParameterRepository @Inject constructor(
         val siteSettings = wooCommerceStore.getSiteSettings(site)
         val currencyCode = siteSettings?.currencyCode
         val currencySymbol = wooCommerceStore.getSiteCurrency(site, currencyCode)
-        val gmtOffset = site.timezone?.toFloat() ?: 0f
+        val gmtOffset = site.timezone?.toFloatOrNull() ?: 0f
         val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(site).let {
             Pair(it?.weightUnit, it?.dimensionUnit)
         }

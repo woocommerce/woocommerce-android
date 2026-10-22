@@ -282,7 +282,7 @@ class OrderDetailRepository @Inject constructor(
     suspend fun getOrderShipmentTrackings(orderId: Long): List<OrderShipmentTracking> =
         orderStore.getShipmentTrackingsForOrder(selectedSite.get(), orderId).map { it.toAppModel() }
 
-    fun getOrderShippingLabels(remoteOrderId: Long) = shippingLabelStore
+    suspend fun getOrderShippingLabels(remoteOrderId: Long): List<ShippingLabel> = shippingLabelStore
         .getShippingLabelsForOrder(selectedSite.get(), remoteOrderId)
         .filter { it.status == LabelItem.STATUS_PURCHASED }
         .map { shippingLabelMapper.toAppModel(it) }
@@ -356,7 +356,7 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    fun isOrderEligibleForSLCreation(orderId: Long): Boolean {
+    suspend fun isOrderEligibleForSLCreation(orderId: Long): Boolean {
         return shippingLabelStore.isOrderEligibleForShippingLabelCreation(
             site = selectedSite.get(),
             orderId = orderId,

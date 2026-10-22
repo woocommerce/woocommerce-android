@@ -113,13 +113,16 @@ class WooPosBuiltInReaderConnector @Inject constructor(
             .first {
                 it is CardReaderDiscoveryEvents.ReadersFound ||
                     it is CardReaderDiscoveryEvents.Failed ||
-                    it is CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported
+                    it is CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported ||
+                    it is CardReaderDiscoveryEvents.FailedTapToPayInsecureEnvironment
             }
         return when (event) {
             is CardReaderDiscoveryEvents.ReadersFound ->
                 event.list.firstOrNull()?.let(BuiltInDiscoveryResult::Found) ?: BuiltInDiscoveryResult.NoReaders
             is CardReaderDiscoveryEvents.Failed -> BuiltInDiscoveryResult.Failed(event.msg)
             is CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported ->
+                BuiltInDiscoveryResult.Failed(event.msg)
+            is CardReaderDiscoveryEvents.FailedTapToPayInsecureEnvironment ->
                 BuiltInDiscoveryResult.Failed(event.msg)
             else -> BuiltInDiscoveryResult.Failed(message = null)
         }
@@ -144,7 +147,6 @@ class WooPosBuiltInReaderConnector @Inject constructor(
         withContext(Dispatchers.Main.immediate) {
             if (!cardReaderManager.initialized) {
                 cardReaderManager.initialize(
-                    updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
                     useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
                     useEftpos = developerOptionsRepository.isEftposPaymentEnabled(),
                     isDebug = BuildConfig.DEBUG,

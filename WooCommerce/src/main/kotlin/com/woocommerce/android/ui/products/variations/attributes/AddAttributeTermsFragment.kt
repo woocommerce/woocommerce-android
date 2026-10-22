@@ -437,8 +437,6 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     private fun updateAttributeSettings() {
         val state = viewModel.getAttributeSettingsState(navArgs.attributeId, attributeName, navArgs.isVariationCreation)
-        binding.attributeSettingsContainer.isVisible = state != null
-        if (state == null) return
 
         with(binding.visibleSwitch) {
             setOnCheckedChangeListener(null)
