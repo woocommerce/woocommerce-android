@@ -82,10 +82,36 @@ class WooPosReaderReadyForPaymentTrackerTest {
     }
 
     @Test
+    fun `given reader connected during the interaction, when tracked, then the event splits connection waiting from preparation`() =
+        runTest {
+            // GIVEN
+            whenever(trackingInfoProvider.trackingInfo).thenReturn(TrackingInfo(transport = "bluetooth"))
+            val now = System.currentTimeMillis()
+            analyticsData.onReaderConnectionChanged(isConnected = false, timestamp = now - 20_000)
+            analyticsData.startCustomerInteraction(timestamp = now - 10_000)
+            analyticsData.orderSyncSuccessTimestamp = now - 9_000
+            analyticsData.onReaderConnectionChanged(isConnected = true, timestamp = now - 8_000)
+
+            // WHEN
+            tracker.track(ReaderReadySignal.INPUT_REQUESTED)
+
+            // THEN
+            val event = argumentCaptor<WooPosAnalyticsEvent.Event.ReaderReadyForCardPayment>()
+            verify(analyticsTracker).track(event.capture())
+            val properties = event.firstValue.properties
+            assertThat(properties["reader_connected_at_checkout"]).isEqualTo("false")
+            assertThat(properties["milliseconds_waiting_for_reader_connection"]).isEqualTo("2000")
+            assertThat((properties["milliseconds_from_order_sync_to_reader_ready"] as String).toLong())
+                .isGreaterThanOrEqualTo(8_000)
+            assertThat(properties["reader_ready_signal"]).isEqualTo("input_requested")
+        }
+
+    @Test
     fun `given Tap to Pay, when tracked at collection start, then the event and keeper carry the collection_started signal`() =
         runTest {
             // GIVEN
             whenever(trackingInfoProvider.trackingInfo).thenReturn(TrackingInfo(transport = "built_in"))
+            analyticsData.startCustomerInteraction(timestamp = System.currentTimeMillis())
 
             // WHEN
             tracker.track(ReaderReadySignal.COLLECTION_STARTED)
