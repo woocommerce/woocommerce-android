@@ -101,7 +101,6 @@ class WooPosCartViewModel @Inject constructor(
     init {
         listenEventsFromParent()
         listenToReaderConnectionForAnalytics()
-        listenToCartForCustomerInteraction()
         viewModelScope.launch {
             soundHelper.preloadBarcodeScanFailure()
         }
@@ -586,6 +585,8 @@ class WooPosCartViewModel @Inject constructor(
 
         _state.value = when (val body = currentState.body) {
             is WooPosCartState.Body.Empty -> {
+                // The only place an empty cart gets items, so the customer interaction starts here, like on iOS.
+                analyticsTrackingDataKeeper.startCustomerInteraction(System.currentTimeMillis())
                 currentState.copy(body = WooPosCartState.Body.WithItems(listOf(newItem)))
             }
 
@@ -714,21 +715,6 @@ class WooPosCartViewModel @Inject constructor(
     private fun sendEventToParent(event: ChildToParentEvent) {
         viewModelScope.launch {
             childrenToParentEventSender.sendToParent(event)
-        }
-    }
-
-    // Starts when the cart goes from empty to having items, like on iOS, so time between sales is not counted.
-    // Driven by the cart state, so an item that lands after the cart was cleared still starts a new interaction.
-    private fun listenToCartForCustomerInteraction() {
-        viewModelScope.launch {
-            var wasEmpty: Boolean? = null
-            _state.collect { state ->
-                val isEmpty = state.body == WooPosCartState.Body.Empty
-                if (wasEmpty == true && !isEmpty) {
-                    analyticsTrackingDataKeeper.startCustomerInteraction(System.currentTimeMillis())
-                }
-                wasEmpty = isEmpty
-            }
         }
     }
 
