@@ -81,6 +81,7 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -147,6 +148,11 @@ class CardReaderPaymentController(
 
     private val _event: MutableSharedFlow<CardReaderPaymentEvent> = MutableSharedFlow()
     val event: Flow<CardReaderPaymentEvent> = _event
+
+    // Emits once per collection attempt, on the reader's first card input request. Analytics only.
+    private val _readerReadyForCardInput = MutableSharedFlow<Unit>(extraBufferCapacity = Channel.UNLIMITED)
+    val readerReadyForCardInput: Flow<Unit> = _readerReadyForCardInput
+    private var hasSignalledReaderReadyForCardInput = false
 
     private fun triggerEvent(event: CardReaderPaymentEvent) = scope.launch {
         _event.emit(event)
@@ -363,6 +369,11 @@ class CardReaderPaymentController(
         amountLabel: String,
         onPaymentSucceeded: suspend () -> Unit,
     ) {
+        // Returns before clearing paymentDataForRetry: an input request must not change how a retry proceeds.
+        if (paymentStatus == WaitingForInput) {
+            signalReaderReadyForCardInput()
+            return
+        }
         paymentDataForRetry = null
         when (paymentStatus) {
             InitializingPayment -> {
@@ -371,6 +382,7 @@ class CardReaderPaymentController(
             }
 
             ProcessingPayment -> {
+                hasSignalledReaderReadyForCardInput = false
                 _paymentState.value = paymentStateProvider.provideProcessingPaymentState(
                     cardReaderType,
                     amountLabel,
@@ -400,9 +412,7 @@ class CardReaderPaymentController(
                 onPaymentCompleted(paymentStatus, orderId, previousStatusKey)
             }
 
-            WaitingForInput -> {
-                // noop
-            }
+            WaitingForInput -> Unit
 
             is PaymentFailed -> {
                 paymentDataForRetry = paymentStatus.paymentDataForRetry
@@ -410,6 +420,12 @@ class CardReaderPaymentController(
                 emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel, onPaymentSucceeded)
             }
         }
+    }
+
+    private fun signalReaderReadyForCardInput() {
+        if (hasSignalledReaderReadyForCardInput) return
+        hasSignalledReaderReadyForCardInput = true
+        _readerReadyForCardInput.tryEmit(Unit)
     }
 
     private suspend fun refundPaymentFlow(
