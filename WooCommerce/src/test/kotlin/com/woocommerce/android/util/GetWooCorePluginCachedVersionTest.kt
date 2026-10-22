@@ -6,6 +6,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -70,5 +72,25 @@ class GetWooCorePluginCachedVersionTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(version)
+    }
+
+    @Test
+    fun `given a site, when invoke is called with that site, then return its version without reading selected site`() {
+        // GIVEN
+        val siteModel = mock<SiteModel>()
+        val version = "1.0.0"
+        whenever(
+            wooCommerceStore.getActiveSitePlugin(
+                siteModel,
+                WooCommerceStore.WooPlugin.WOO_CORE
+            )
+        ).thenReturn(createTestSitePlugin(version = version))
+
+        // WHEN
+        val result = getWooCorePluginCachedVersion(siteModel)
+
+        // THEN
+        assertThat(result).isEqualTo(version)
+        verify(selectedSite, never()).getOrNull()
     }
 }

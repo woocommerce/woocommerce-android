@@ -1,0 +1,12 @@
+Maestro smoke plan
+  profile: pos
+  store:   per flow
+  repeat:  1
+  include: pos_tablet
+  exclude: quarantine
+  seed:    yes
+  flows:   2
+
+Selected flows:
+  - .maestro/flows/pos_search_and_coupons.yaml
+  - .maestro/flows/pos_cash_payment.yaml

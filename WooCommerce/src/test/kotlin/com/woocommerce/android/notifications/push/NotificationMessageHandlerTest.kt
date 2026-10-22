@@ -13,9 +13,6 @@ import com.woocommerce.android.notifications.push.NotificationTestUtils.TEST_ORD
 import com.woocommerce.android.notifications.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_DATA_SITE_2
 import com.woocommerce.android.notifications.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_2
 import com.woocommerce.android.notifications.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_SITE_2
-import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status.REGISTERED_BOTH
-import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY
-import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status.UNREGISTERED
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.sitepicker.sitevisibility.GetWooVisibleSites
 import com.woocommerce.android.util.Base64Decoder
@@ -60,8 +57,8 @@ class NotificationMessageHandlerTest {
     private val accountStore: AccountStore = mock {
         on { account } doReturn accountModel
     }
-    private val registrationStatus: PushNotificationRegistrationStatus = mock {
-        on { invoke(any()) } doReturn UNREGISTERED
+    private val pushNotificationRepository: PushNotificationRepository = mock {
+        on { hasWooPushTokenForSite(any()) } doReturn false
     }
     private val dispatcher: Dispatcher = mock()
     private val actionCaptor: KArgumentCaptor<Action<*>> = argumentCaptor()
@@ -127,7 +124,7 @@ class NotificationMessageHandlerTest {
             notificationBuilder = notificationBuilder,
             analyticsTracker = notificationAnalyticsTracker,
             notificationsParser = notificationsParser,
-            registrationStatus = registrationStatus,
+            pushNotificationRepository = pushNotificationRepository,
             accountStore = accountStore,
             wooLog = wooLog,
             dispatcher = dispatcher,
@@ -392,9 +389,8 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `given site registered in both systems, when wpcom notification received, then skip notification`() = runTest {
-        whenever(registrationStatus.invoke(any()))
-            .thenReturn(REGISTERED_BOTH)
+    fun `given site has woo push token, when wpcom notification received, then skip notification`() = runTest {
+        whenever(pushNotificationRepository.hasWooPushTokenForSite(orderNotification.remoteSiteId)).thenReturn(true)
 
         // WPCOM notifications have remoteNoteId > 0
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
@@ -407,10 +403,9 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `given site registered in both systems and user mismatch, when wpcom notification received, then keep legacy validation`() =
+    fun `given site has woo push token and user mismatch, when wpcom notification received, then keep legacy validation`() =
         runTest {
-            whenever(registrationStatus.invoke(any()))
-                .thenReturn(REGISTERED_BOTH)
+            whenever(pushNotificationRepository.hasWooPushTokenForSite(any())).thenReturn(true)
             val payload = NotificationTestUtils.generateTestNewOrderNotificationPayload(userId = 67890)
 
             notificationMessageHandler.onNewMessageReceived(payload)
@@ -423,30 +418,18 @@ class NotificationMessageHandlerTest {
         }
 
     @Test
-    fun `given site registered only in Woo, when wpcom notification received, then skip notification`() = runTest {
-        whenever(registrationStatus.invoke(any()))
-            .thenReturn(REGISTERED_WOO_ONLY)
+    fun `given only another site has woo push token, when wpcom notification received, then process it`() = runTest {
+        whenever(pushNotificationRepository.hasWooPushTokenForSite(orderNotificationSite2.remoteSiteId))
+            .thenReturn(true)
 
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
-
-        verify(dispatcher, never()).dispatch(any())
-    }
-
-    @Test
-    fun `given woo push registered and site is visible, when woo notification received, then process it`() = runTest {
-        whenever(registrationStatus.invoke(any()))
-            .thenReturn(REGISTERED_WOO_ONLY)
-        createWooNotificationMessageHandler()
-
-        notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
 
         verify(dispatcher, atLeastOnce()).dispatch(any())
     }
 
     @Test
-    fun `given site registered in both systems, when woo notification received, then process it`() = runTest {
-        whenever(registrationStatus.invoke(any()))
-            .thenReturn(REGISTERED_BOTH)
+    fun `given site has woo push token and is visible, when woo notification received, then process it`() = runTest {
+        whenever(pushNotificationRepository.hasWooPushTokenForSite(any())).thenReturn(true)
         createWooNotificationMessageHandler()
 
         notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)

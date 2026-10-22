@@ -49,7 +49,7 @@ class ShippingLabelRefundViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ShippingLabelRefundViewModel
 
     @Before
-    fun setup() {
+    fun setup() = testBlocking {
         doReturn(shippingLabel).whenever(repository).getShippingLabelByOrderIdAndLabelId(any(), any())
         doReturn(true).whenever(networkStatus).isConnected()
 

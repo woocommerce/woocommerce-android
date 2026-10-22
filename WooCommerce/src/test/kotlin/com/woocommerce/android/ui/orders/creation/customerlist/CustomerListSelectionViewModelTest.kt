@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.orders.creation.customerlist
 
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Location
@@ -10,11 +12,13 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -368,8 +372,663 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
         advanceUntilIdle()
 
         // THEN
-        assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Error::class.java)
+        assertThat(states.last().body)
+            .isEqualTo(CustomerListViewState.CustomerList.Error(R.string.error_generic))
+        verify(customerListRepository, never()).fetchAnalyticsEnabled()
+        verify(analyticsTrackerWrapper, never()).track(
+            eq(AnalyticsEvent.CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_ERROR_SHOWN),
+            any(),
+        )
+        verify(analyticsTrackerWrapper, never()).track(
+            eq(AnalyticsEvent.CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_RELOAD_SUCCESS),
+            any(),
+        )
     }
+
+    @Test
+    fun `given generic error and retry succeeds, when Retry is tapped, then reload without Analytics event`() =
+        testBlocking {
+            // GIVEN
+            whenever(customerListRepository.searchCustomerListWithEmail("", "all", 30, 1))
+                .thenReturn(Result.failure(Throwable()), Result.success(listOf(WCCustomerModel())))
+            val viewModel = initViewModel()
+            advanceUntilIdle()
+            val cachedCustomers = CompletableDeferred<List<WCCustomerModel>>()
+            whenever(customerListRepository.getCustomerList(any())).doSuspendableAnswer { cachedCustomers.await() }
+
+            // WHEN
+            viewModel.onRetryClicked()
+            assertThat(viewModel.viewState.value?.body)
+                .isEqualTo(CustomerListViewState.CustomerList.Loading)
+            cachedCustomers.complete(emptyList())
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(viewModel.viewState.value?.body)
+                .isInstanceOf(CustomerListViewState.CustomerList.Loaded::class.java)
+            verify(customerListRepository, times(2)).searchCustomerListWithEmail("", "all", 30, 1)
+            verify(analyticsTrackerWrapper, never()).track(
+                eq(AnalyticsEvent.CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_RELOAD_SUCCESS),
+                any(),
+            )
+        }
+
+    @Test
+    fun `given rest no route and Analytics is disabled, when viewmodel init, then cached customers are replaced`() =
+        testBlocking {
+            // GIVEN
+            val cachedCustomers = CompletableDeferred<List<WCCustomerModel>>()
+            whenever(customerListRepository.getCustomerList(any())).doSuspendableAnswer {
+                cachedCustomers.await()
+            }
+            whenever(
+                customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any())
+            ).thenReturn(restNoRouteFailure())
+            val settingsGate = CompletableDeferred<WooResult<Boolean>>()
+            val settingsStarted = CompletableDeferred<Unit>()
+            whenever(customerListRepository.fetchAnalyticsEnabled()).doSuspendableAnswer {
+                settingsStarted.complete(Unit)
+                settingsGate.await()
+            }
+            val viewModel = initViewModel()
+            val states = viewModel.viewState.captureValues()
+
+            // WHEN
+            cachedCustomers.complete(listOf(WCCustomerModel()))
+            advanceUntilIdle()
+            assertThat(settingsStarted.isCompleted).isTrue()
+
+            // THEN
+            assertThat(states.map { it.body }).anyMatch {
+                it is CustomerListViewState.CustomerList.Loaded
+            }
+            assertThat(viewModel.viewState.value?.body)
+                .isInstanceOf(CustomerListViewState.CustomerList.Loading::class.java)
+            assertThat(states).noneMatch {
+                it.body is CustomerListViewState.CustomerList.AnalyticsUnavailable
+            }
+            verify(analyticsTrackerWrapper, never()).track(
+                eq(AnalyticsEvent.CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_ERROR_SHOWN),
+                any(),
+            )
+
+            settingsGate.complete(WooResult(false))
+            advanceUntilIdle()
+
+            assertThat(states.last().body)
+                .isInstanceOf(CustomerListViewState.CustomerList.AnalyticsUnavailable::class.java)
+            val body = states.last().body as CustomerListViewState.CustomerList.AnalyticsUnavailable
+            assertThat(body.message).isEqualTo(R.string.customer_list_analytics_disabled_message)
+            assertThat(body.canEnableAnalytics).isTrue()
+            assertThat(states.map { it.body }).anyMatch {
+                it is CustomerListViewState.CustomerList.Loaded
+            }
+            verify(customerListRepository).fetchAnalyticsEnabled()
+            assertAnalyticsUnavailableEvent(source = "order_form", cause = "disabled")
+        }
+
+    @Test
+    fun `given another API not found code, when viewmodel init, then generic error is unchanged`() = testBlocking {
+        // GIVEN
+        whenever(
+            customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any())
+        ).thenReturn(apiFailure(apiErrorCode = "other_not_found"))
+
+        // WHEN
+        val viewModel = initViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(viewModel.viewState.value?.body)
+            .isEqualTo(CustomerListViewState.CustomerList.Error(R.string.error_generic))
+        verify(customerListRepository, never()).fetchAnalyticsEnabled()
+    }
+
+    @Test
+    fun `given Analytics permission is denied, when rest no route occurs, then ask admin to enable without Enable`() =
+        testBlocking {
+            // GIVEN
+            givenMissingCustomerRoute(
+                settingsResult = WooResult(
+                    WooError(
+                        type = WooErrorType.AUTHORIZATION_REQUIRED,
+                        original = BaseRequest.GenericErrorType.AUTHORIZATION_REQUIRED,
+                        apiErrorCode = "woocommerce_rest_cannot_view",
+                    )
+                )
+            )
+
+            // WHEN
+            val viewModel = initViewModel()
+            advanceUntilIdle()
+
+            // THEN
+            val body = viewModel.viewState.value?.body as CustomerListViewState.CustomerList.AnalyticsUnavailable
+            assertThat(body.message).isEqualTo(R.string.customer_list_analytics_permission_denied_message)
+            assertThat(body.canEnableAnalytics).isFalse()
+            assertAnalyticsUnavailableEvent(source = "order_form", cause = "unknown")
+        }
+
+    @Test
+    fun `given Analytics setting check fails, when rest no route occurs, then show unavailable with unknown cause`() =
+        testBlocking {
+            // GIVEN
+            givenMissingCustomerRoute(
+                settingsResult = WooResult(
+                    WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR)
+                )
+            )
+
+            // WHEN
+            val viewModel = initViewModel()
+            advanceUntilIdle()
+
+            // THEN
+            val body = viewModel.viewState.value?.body as CustomerListViewState.CustomerList.AnalyticsUnavailable
+            assertThat(body.message).isEqualTo(R.string.customer_list_analytics_unavailable_message)
+            assertThat(body.canEnableAnalytics).isFalse()
+            assertAnalyticsUnavailableEvent(source = "order_form", cause = "unknown")
+        }
+
+    @Test
+    fun `given initial settings check is pending, when query changes, then old classification is discarded`() =
+        testBlocking {
+            // GIVEN
+            val settingsGate = CompletableDeferred<WooResult<Boolean>>()
+            val settingsStarted = CompletableDeferred<Unit>()
+            whenever(customerListRepository.fetchAnalyticsEnabled()).doSuspendableAnswer {
+                settingsStarted.complete(Unit)
+                settingsGate.await()
+            }
+            whenever(
+                customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any())
+            ).thenReturn(restNoRouteFailure(), Result.success(listOf(WCCustomerModel())))
+            val viewModel = initViewModel()
+            val states = viewModel.viewState.captureValues()
+            advanceUntilIdle()
+            assertThat(settingsStarted.isCompleted).isTrue()
+
+            viewModel.onSearchQueryChanged("new customer")
+            advanceUntilIdle()
+
+            // THEN
+            verify(customerListRepository, never()).searchCustomerListWithEmail(
+                eq("new customer"),
+                any(),
+                any(),
+                any(),
+            )
+            assertThat(viewModel.viewState.value?.searchQuery).isEqualTo("new customer")
+
+            settingsGate.complete(WooResult(false))
+            advanceUntilIdle()
+
+            assertThat(viewModel.viewState.value?.body)
+                .isInstanceOf(CustomerListViewState.CustomerList.Loaded::class.java)
+            assertThat(states).noneMatch {
+                it.body is CustomerListViewState.CustomerList.AnalyticsUnavailable
+            }
+            verify(customerListRepository).searchCustomerListWithEmail(
+                eq("new customer"),
+                eq(CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_ALL),
+                any(),
+                eq(1),
+            )
+            verify(analyticsTrackerWrapper, never()).track(
+                eq(AnalyticsEvent.CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_ERROR_SHOWN),
+                any(),
+            )
+        }
+
+    @Test
+    fun `given page two returns rest no route, when Retry is tapped, then replace list and reload page one`() =
+        testBlocking {
+            // GIVEN
+            val retryGate = CompletableDeferred<Result<List<WCCustomerModel>>>()
+            var customerRequestCount = 0
+            whenever(customerListRepository.getCustomerList(any())).thenReturn(listOf(WCCustomerModel()))
+            whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
+                .doSuspendableAnswer {
+                    when (customerRequestCount++) {
+                        0 -> Result.success((1..30).map { WCCustomerModel() })
+                        1 -> restNoRouteFailure()
+                        else -> retryGate.await()
+                    }
+                }
+            whenever(customerListRepository.fetchAnalyticsEnabled()).thenReturn(WooResult(true))
+            val viewModel = initViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onEndOfListReached()
+            advanceUntilIdle()
+
+            // THEN
+            val body = viewModel.viewState.value?.body as CustomerListViewState.CustomerList.AnalyticsUnavailable
+            assertThat(body.message).isEqualTo(R.string.customer_list_analytics_unavailable_message)
+            assertThat(body.canEnableAnalytics).isFalse()
+            assertThat(viewModel.viewState.value?.showFab).isTrue()
+            assertAnalyticsUnavailableEvent(source = "order_form", cause = "other")
+
+            viewModel.onEndOfListReached()
+            advanceUntilIdle()
+            verify(customerListRepository, times(2)).searchCustomerListWithEmail(any(), any(), any(), any())
+
+            viewModel.onRetryClicked()
+            advanceUntilIdle()
+            assertThat(viewModel.viewState.value?.body)
+                .isEqualTo(CustomerListViewState.CustomerList.Loading)
+            verify(analyticsTrackerWrapper, never()).track(
+                eq(AnalyticsEvent.CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_RELOAD_SUCCESS),
+                any(),
+            )
+            verify(customerListRepository, times(2)).searchCustomerListWithEmail(
+                eq(""),
+                eq(CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_ALL),
+                any(),
+                eq(1),
+            )
+            verify(customerListRepository, times(1)).getCustomerList(any())
+
+            retryGate.complete(Result.success(listOf(WCCustomerModel())))
+            advanceUntilIdle()
+            assertThat(viewModel.viewState.value?.body)
+                .isInstanceOf(CustomerListViewState.CustomerList.Loaded::class.java)
+            assertAnalyticsReloadSuccess(source = "order_form", type = "retry")
+        }
+
+    @Test
+    fun `given pagination settings check is pending, when search mode changes, then discard uncanceled classification`() =
+        testBlocking {
+            // GIVEN
+            givenLegacySearchModes()
+            whenever(customerListRepository.searchCustomerListWithEmail("customer", "name", 30, 1))
+                .thenReturn(Result.success((1..30).map { WCCustomerModel() }))
+            whenever(customerListRepository.searchCustomerListWithEmail("customer", "name", 30, 2))
+                .thenReturn(restNoRouteFailure())
+            whenever(customerListRepository.searchCustomerListWithEmail("customer", "email", 30, 1))
+                .thenReturn(Result.success(listOf(WCCustomerModel())))
+            val settingsGate = CompletableDeferred<WooResult<Boolean>>()
+            val settingsStarted = CompletableDeferred<Unit>()
+            var settingsReturned = false
+            whenever(customerListRepository.fetchAnalyticsEnabled()).doSuspendableAnswer {
+                settingsStarted.complete(Unit)
+                settingsGate.await().also { settingsReturned = true }
+            }
+            val viewModel = initViewModel(
+                searchQuery = "customer",
+                searchModeId = R.string.order_creation_customer_search_name,
+            )
+            advanceUntilIdle()
+            viewModel.onSearchQueryChanged("customer")
+            advanceUntilIdle()
+            val states = viewModel.viewState.captureValues()
+
+            // WHEN
+            viewModel.onEndOfListReached()
+            advanceUntilIdle()
+            assertThat(settingsStarted.isCompleted).isTrue()
+            viewModel.onSearchTypeChanged(R.string.order_creation_customer_search_email)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(viewModel.viewState.value?.searchQuery).isEqualTo("customer")
+            assertThat(viewModel.viewState.value?.searchModes?.single { it.isSelected }?.searchParam).isEqualTo("email")
+            verify(customerListRepository, never()).searchCustomerListWithEmail("customer", "email", 30, 1)
+
+            settingsGate.complete(WooResult(true))
+            advanceUntilIdle()
+
+            assertThat(settingsReturned).isTrue()
+            assertThat(states).noneMatch {
+                it.body is CustomerListViewState.CustomerList.AnalyticsUnavailable
+            }
+            assertThat(viewModel.viewState.value?.body)
+                .isInstanceOf(CustomerListViewState.CustomerList.Loaded::class.java)
+            verify(customerListRepository).searchCustomerListWithEmail("customer", "email", 30, 1)
+            verify(analyticsTrackerWrapper, never()).track(
+                eq(AnalyticsEvent.CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_ERROR_SHOWN),
+                any(),
+            )
+        }
+
+    @Test
+    fun `given Retry check is pending, when search mode changes, then cancel Retry before reloading`() =
+        testBlocking {
+            val retrySettingsGate = CompletableDeferred<WooResult<Boolean>>()
+            val retrySettingsStarted = CompletableDeferred<Unit>()
+            var settingsReadCount = 0
+            whenever(customerListRepository.fetchAnalyticsEnabled()).doSuspendableAnswer {
+                when (settingsReadCount++) {
+                    0 -> WooResult(false)
+                    1 -> {
+                        retrySettingsStarted.complete(Unit)
+                        retrySettingsGate.await()
+                    }
+                    else -> WooResult(true)
+                }
+            }
+            whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any())).thenReturn(
+                restNoRouteFailure(),
+                restNoRouteFailure(),
+                restNoRouteFailure(),
+            )
+            givenLegacySearchModes()
+            val viewModel = initViewModel(
+                searchQuery = "customer",
+                searchModeId = R.string.order_creation_customer_search_name,
+            )
+            advanceUntilIdle()
+            viewModel.onSearchQueryChanged("customer")
+            advanceUntilIdle()
+
+            viewModel.onRetryClicked()
+            advanceUntilIdle()
+            assertThat(retrySettingsStarted.isCompleted).isTrue()
+            viewModel.onSearchTypeChanged(R.string.order_creation_customer_search_email)
+            advanceUntilIdle()
+
+            verify(customerListRepository, times(2)).searchCustomerListWithEmail("customer", "name", 30, 1)
+            verify(customerListRepository).searchCustomerListWithEmail("customer", "email", 30, 1)
+            verify(analyticsTrackerWrapper, never()).track(
+                eq(AnalyticsEvent.CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_RELOAD_SUCCESS),
+                any(),
+            )
+            assertAnalyticsUnavailableEvent(source = "order_form", cause = "other")
+        }
+
+    @Test
+    fun `given unavailable customers and nonempty search, when Retry succeeds, then retain query and track reload success`() =
+        testBlocking {
+            // GIVEN
+            givenMissingCustomerRoute(
+                settingsResult = WooResult(false),
+                subsequentCustomerResults = listOf(Result.success(listOf(WCCustomerModel()))),
+            )
+            givenLegacySearchModes()
+            val viewModel = initViewModel(
+                searchQuery = "search customer",
+                searchModeId = R.string.order_creation_customer_search_email,
+            )
+            viewModel.onSearchQueryChanged("search customer")
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onRetryClicked()
+            advanceUntilIdle()
+
+            // THEN
+            verify(customerListRepository, times(2)).searchCustomerListWithEmail(
+                eq("search customer"),
+                eq("email"),
+                any(),
+                eq(1),
+            )
+            assertThat(viewModel.viewState.value?.body)
+                .isInstanceOf(CustomerListViewState.CustomerList.Loaded::class.java)
+            assertAnalyticsReloadSuccess(source = "order_form", type = "retry")
+        }
+
+    @Test
+    fun `given Enable returns false, when confirmation completes, then keep Retry and show an error`() = testBlocking {
+        // GIVEN
+        givenMissingCustomerRoute(settingsResult = WooResult(false))
+        whenever(customerListRepository.enableAnalytics()).thenReturn(WooResult(false))
+        val viewModel = initViewModel()
+        advanceUntilIdle()
+        val originalBody = viewModel.viewState.value?.body as CustomerListViewState.CustomerList.AnalyticsUnavailable
+
+        // WHEN
+        viewModel.onEnableAnalyticsClicked()
+        val dialog = viewModel.event.value as MultiLiveEvent.Event.ShowDialog
+        dialog.positiveBtnAction?.onClick(null, 0)
+        advanceUntilIdle()
+
+        // THEN
+        val body = viewModel.viewState.value?.body as CustomerListViewState.CustomerList.AnalyticsUnavailable
+        assertThat(body.canEnableAnalytics).isTrue()
+        assertThat(body).isEqualTo(originalBody)
+        assertThat(viewModel.event.value)
+            .isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.customer_list_enable_analytics_error))
+        verify(analyticsTrackerWrapper, never()).track(
+            eq(AnalyticsEvent.CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_RELOAD_SUCCESS),
+            any(),
+        )
+    }
+
+    @Test
+    fun `given old WooCommerce and a save in progress, when search is cleared, then preserve loading state and snackbar`() =
+        testBlocking {
+            // GIVEN
+            givenLegacySearchModes()
+            givenMissingCustomerRoute(settingsResult = WooResult(false))
+            val writeGate = CompletableDeferred<WooResult<Boolean>>()
+            whenever(customerListRepository.enableAnalytics()).doSuspendableAnswer { writeGate.await() }
+            val viewModel = initViewModel()
+            viewModel.onSearchQueryChanged("customer")
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onEnableAnalyticsClicked()
+            val dialog = viewModel.event.value as MultiLiveEvent.Event.ShowDialog
+            dialog.positiveBtnAction?.onClick(null, 0)
+            assertThat(viewModel.viewState.value?.body)
+                .isEqualTo(CustomerListViewState.CustomerList.Loading)
+
+            viewModel.onSearchQueryChanged("")
+
+            // THEN
+            assertThat(viewModel.viewState.value?.searchQuery).isEmpty()
+            assertThat(viewModel.viewState.value?.body)
+                .isEqualTo(CustomerListViewState.CustomerList.Loading)
+
+            writeGate.complete(WooResult(false))
+            advanceUntilIdle()
+
+            assertThat(viewModel.event.value)
+                .isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.customer_list_enable_analytics_error))
+            assertThat(viewModel.viewState.value?.searchQuery).isEmpty()
+            verify(customerListRepository, times(1)).searchCustomerListWithEmail(any(), any(), any(), any())
+        }
+
+    @Test
+    fun `given Analytics save is pending and query changes, when save succeeds, then reload latest query`() =
+        testBlocking {
+            givenMissingCustomerRoute(
+                settingsResult = WooResult(false),
+                subsequentCustomerResults = listOf(Result.success(listOf(WCCustomerModel()))),
+            )
+            val writeGate = CompletableDeferred<WooResult<Boolean>>()
+            val writeStarted = CompletableDeferred<Unit>()
+            whenever(customerListRepository.enableAnalytics()).doSuspendableAnswer {
+                writeStarted.complete(Unit)
+                writeGate.await()
+            }
+            val viewModel = initViewModel()
+            advanceUntilIdle()
+
+            viewModel.onEnableAnalyticsClicked()
+            val dialog = viewModel.event.value as MultiLiveEvent.Event.ShowDialog
+            assertThat(dialog.titleId).isEqualTo(R.string.customer_list_enable_analytics_confirmation_title)
+            assertThat(dialog.messageId).isEqualTo(R.string.customer_list_enable_analytics_confirmation_message)
+            assertThat(dialog.positiveButtonId)
+                .isEqualTo(R.string.customer_list_enable_analytics_confirmation_action)
+            assertThat(dialog.negativeButtonId).isEqualTo(R.string.cancel)
+            verify(customerListRepository, never()).enableAnalytics()
+            dialog.positiveBtnAction?.onClick(null, 0)
+            advanceUntilIdle()
+            assertThat(writeStarted.isCompleted).isTrue()
+            assertThat(viewModel.viewState.value?.body)
+                .isEqualTo(CustomerListViewState.CustomerList.Loading)
+            assertThat(viewModel.viewState.value?.showFab).isTrue()
+            viewModel.onRetryClicked()
+            viewModel.onEnableAnalyticsClicked()
+            dialog.positiveBtnAction?.onClick(null, 0)
+            advanceUntilIdle()
+            verify(customerListRepository, times(1)).enableAnalytics()
+
+            viewModel.onSearchQueryChanged("first query")
+            advanceUntilIdle()
+            viewModel.onSearchQueryChanged("latest query")
+            advanceUntilIdle()
+
+            assertThat(viewModel.viewState.value?.searchQuery).isEqualTo("latest query")
+            assertThat(viewModel.viewState.value?.body)
+                .isEqualTo(CustomerListViewState.CustomerList.Loading)
+            verify(customerListRepository, times(1)).searchCustomerListWithEmail("", "all", 30, 1)
+
+            writeGate.complete(WooResult(true))
+            advanceUntilIdle()
+
+            assertThat(viewModel.viewState.value?.body)
+                .isInstanceOf(CustomerListViewState.CustomerList.Loaded::class.java)
+            verify(customerListRepository, times(2)).searchCustomerListWithEmail(any(), any(), any(), any())
+            verify(customerListRepository).searchCustomerListWithEmail("latest query", "all", 30, 1)
+            assertAnalyticsReloadSuccess(source = "order_form", type = "enable_analytics")
+            verify(customerListRepository, times(1)).enableAnalytics()
+        }
+
+    @Test
+    fun `given Analytics save is pending and query is queued, when save fails, then fetch latest query`() =
+        testBlocking {
+            givenMissingCustomerRoute(
+                settingsResult = WooResult(false),
+                subsequentCustomerResults = listOf(Result.success(listOf(WCCustomerModel()))),
+            )
+            val writeGate = CompletableDeferred<WooResult<Boolean>>()
+            val writeStarted = CompletableDeferred<Unit>()
+            whenever(customerListRepository.enableAnalytics()).doSuspendableAnswer {
+                writeStarted.complete(Unit)
+                writeGate.await()
+            }
+            val viewModel = initViewModel()
+            advanceUntilIdle()
+            val states = viewModel.viewState.captureValues()
+
+            viewModel.onEnableAnalyticsClicked()
+            val dialog = viewModel.event.value as MultiLiveEvent.Event.ShowDialog
+            dialog.positiveBtnAction?.onClick(null, 0)
+            advanceUntilIdle()
+            assertThat(writeStarted.isCompleted).isTrue()
+            assertThat(viewModel.viewState.value?.body)
+                .isEqualTo(CustomerListViewState.CustomerList.Loading)
+
+            viewModel.onSearchQueryChanged("first query")
+            advanceUntilIdle()
+            viewModel.onSearchQueryChanged("latest query")
+            advanceUntilIdle()
+            assertThat(viewModel.viewState.value?.body)
+                .isEqualTo(CustomerListViewState.CustomerList.Loading)
+            verify(customerListRepository, times(1)).searchCustomerListWithEmail("", "all", 30, 1)
+
+            writeGate.complete(
+                WooResult(
+                    WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR)
+                )
+            )
+            advanceUntilIdle()
+
+            assertThat(viewModel.event.value)
+                .isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.customer_list_enable_analytics_error))
+            assertThat(
+                states.count { state ->
+                    state.body is CustomerListViewState.CustomerList.AnalyticsUnavailable
+                }
+            ).isGreaterThanOrEqualTo(2)
+            assertThat(viewModel.viewState.value?.body)
+                .isInstanceOf(CustomerListViewState.CustomerList.Loaded::class.java)
+            verify(customerListRepository, times(2)).searchCustomerListWithEmail(any(), any(), any(), any())
+            verify(customerListRepository).searchCustomerListWithEmail("latest query", "all", 30, 1)
+            verify(analyticsTrackerWrapper, never()).track(
+                eq(AnalyticsEvent.CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_RELOAD_SUCCESS),
+                any(),
+            )
+        }
+
+    @Test
+    fun `given enable reload still returns rest no route, when Retry follows, then copy override is request only`() =
+        testBlocking {
+            // GIVEN
+            givenMissingCustomerRoute(
+                settingsResult = WooResult(false),
+                subsequentCustomerResults = listOf(restNoRouteFailure(), restNoRouteFailure()),
+            )
+            whenever(customerListRepository.enableAnalytics()).thenReturn(WooResult(true))
+            val viewModel = initViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onEnableAnalyticsClicked()
+            val dialog = viewModel.event.value as MultiLiveEvent.Event.ShowDialog
+            dialog.positiveBtnAction?.onClick(null, 0)
+            advanceUntilIdle()
+
+            // THEN
+            val immediateBody = viewModel.viewState.value?.body as
+                CustomerListViewState.CustomerList.AnalyticsUnavailable
+            assertThat(immediateBody.message).isEqualTo(R.string.customer_list_analytics_unavailable_message)
+            assertThat(immediateBody.canEnableAnalytics).isFalse()
+            assertAnalyticsUnavailableEvent(source = "order_form", cause = "disabled", count = 2)
+
+            viewModel.onRetryClicked()
+            advanceUntilIdle()
+            val retryBody = viewModel.viewState.value?.body as CustomerListViewState.CustomerList.AnalyticsUnavailable
+            assertThat(retryBody.message).isEqualTo(R.string.customer_list_analytics_disabled_message)
+            assertThat(retryBody.canEnableAnalytics).isTrue()
+            assertAnalyticsUnavailableEvent(source = "order_form", cause = "disabled", count = 3)
+            verify(analyticsTrackerWrapper, never()).track(
+                eq(AnalyticsEvent.CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_RELOAD_SUCCESS),
+                any(),
+            )
+        }
+
+    @Test
+    fun `given repeated route failures, when Retry and search fail, then unavailable events count each result`() =
+        testBlocking {
+            // GIVEN
+            givenMissingCustomerRoute(
+                settingsResult = WooResult(false),
+                subsequentCustomerResults = listOf(
+                    restNoRouteFailure(),
+                    restNoRouteFailure(),
+                    restNoRouteFailure(),
+                    Result.success(emptyList()),
+                ),
+            )
+            val viewModel = initViewModel(allowCustomerCreation = false)
+            advanceUntilIdle()
+            assertAnalyticsUnavailableEvent(source = "order_list_filter", cause = "disabled", count = 1)
+
+            // WHEN
+            viewModel.onRetryClicked()
+            advanceUntilIdle()
+            assertAnalyticsUnavailableEvent(source = "order_list_filter", cause = "disabled", count = 2)
+            viewModel.onRetryClicked()
+            advanceUntilIdle()
+            assertAnalyticsUnavailableEvent(source = "order_list_filter", cause = "disabled", count = 3)
+            viewModel.onSearchQueryChanged("search query")
+            advanceUntilIdle()
+
+            // THEN
+            assertAnalyticsUnavailableEvent(source = "order_list_filter", cause = "disabled", count = 4)
+            assertThat(viewModel.viewState.value?.body).isEqualTo(
+                CustomerListViewState.CustomerList.AnalyticsUnavailable(
+                    message = R.string.customer_list_analytics_disabled_message,
+                    canEnableAnalytics = true,
+                )
+            )
+            verify(customerListRepository).searchCustomerListWithEmail(
+                eq("search query"),
+                eq(CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_ALL),
+                any(),
+                eq(1),
+            )
+            viewModel.onRetryClicked()
+            advanceUntilIdle()
+            assertThat(viewModel.viewState.value?.body)
+                .isInstanceOf(CustomerListViewState.CustomerList.Empty::class.java)
+            assertAnalyticsReloadSuccess(source = "order_list_filter", type = "retry")
+        }
 
     @Test
     fun `given empty list from repo, when viewmodel init, then viewstate is updated with empty state`() = testBlocking {
@@ -1122,16 +1781,78 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
         assertThat(viewModel.event.value).isEqualTo(MultiLiveEvent.Event.Exit)
     }
 
-    private fun initViewModel() = CustomerListSelectionViewModel(
-        savedState = OrderCustomerListFragmentArgs(
-            allowCustomerCreation = true,
-            allowGuests = true
-        ).toSavedStateHandle(),
-        repository = customerListRepository,
-        mapper = customerListViewModelMapper,
-        isAdvancedSearchSupported = isAdvancedSearchSupported,
-        getSupportedSearchModes = getSupportedSearchModes,
-        analyticsTracker = analyticsTrackerWrapper,
-        stringUtils = stringUtils,
+    private fun initViewModel(
+        allowCustomerCreation: Boolean = true,
+        allowGuests: Boolean = true,
+        searchQuery: String? = null,
+        searchModeId: Int? = null,
+    ): CustomerListSelectionViewModel {
+        val savedState = OrderCustomerListFragmentArgs(
+            allowCustomerCreation = allowCustomerCreation,
+            allowGuests = allowGuests
+        ).toSavedStateHandle().apply {
+            searchQuery?.let { this["search_query"] = it }
+            searchModeId?.let { this["search_mode"] = it }
+        }
+        return CustomerListSelectionViewModel(
+            savedState = savedState,
+            repository = customerListRepository,
+            mapper = customerListViewModelMapper,
+            isAdvancedSearchSupported = isAdvancedSearchSupported,
+            getSupportedSearchModes = getSupportedSearchModes,
+            analyticsTracker = analyticsTrackerWrapper,
+            stringUtils = stringUtils,
+        )
+    }
+
+    private suspend fun givenMissingCustomerRoute(
+        settingsResult: WooResult<Boolean>,
+        subsequentCustomerResults: List<Result<List<WCCustomerModel>>> = emptyList(),
+    ) {
+        whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
+            .thenReturn(restNoRouteFailure(), *subsequentCustomerResults.toTypedArray())
+        whenever(customerListRepository.fetchAnalyticsEnabled()).thenReturn(settingsResult)
+    }
+
+    private suspend fun givenLegacySearchModes() {
+        whenever(isAdvancedSearchSupported.invoke()).thenReturn(false)
+        whenever(getSupportedSearchModes.invoke(false))
+            .thenReturn(CustomerListGetSupportedSearchModes()(false))
+    }
+
+    private fun assertAnalyticsUnavailableEvent(
+        source: String,
+        cause: String,
+        count: Int = 1,
+    ) {
+        verify(analyticsTrackerWrapper, times(count)).track(
+            AnalyticsEvent.CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_ERROR_SHOWN,
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to source,
+                AnalyticsTracker.KEY_CAUSE to cause,
+            )
+        )
+    }
+
+    private fun assertAnalyticsReloadSuccess(source: String, type: String) {
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_RELOAD_SUCCESS,
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to source,
+                AnalyticsTracker.KEY_TYPE to type,
+            )
+        )
+    }
+
+    private fun restNoRouteFailure() = apiFailure("rest_no_route")
+
+    private fun apiFailure(apiErrorCode: String) = Result.failure<List<WCCustomerModel>>(
+        WooException(
+            WooError(
+                type = WooErrorType.API_NOT_FOUND,
+                original = BaseRequest.GenericErrorType.NOT_FOUND,
+                apiErrorCode = apiErrorCode,
+            )
+        )
     )
 }

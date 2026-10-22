@@ -1,0 +1,46 @@
+# Smoke Test: Other - Localization
+# p2: other.localization
+# P2 ref: Other > Switch your device to a non-English language and take a look around
+#
+# Verifies:
+#   - With the app language set to German, the tabs and their screens show German text
+#
+# The runner logs in first, then sets the app's language to German before this flow
+# and resets it afterwards, because Maestro cannot change the language itself.
+appId: com.woocommerce.android
+name: "Other - Localization"
+tags:
+  - smoke_extended
+  - other
+  - app_locale_de
+---
+- launchApp:
+    clearState: false
+    stopApp: true
+- extendedWaitUntil:
+    visible: "Mein Shop"
+    timeout: 45000
+    label: "My store tab is in German"
+- assertNotVisible: "My store"
+- takeScreenshot: localization_my_store
+
+- runFlow:
+    file: ../subflows/navigate_to_orders.yaml
+- assertVisible:
+    text: "Bestellungen"
+    label: "Orders tab is in German"
+- takeScreenshot: localization_orders
+
+- runFlow:
+    file: ../subflows/navigate_to_products.yaml
+- assertVisible:
+    text: "Produkte"
+    label: "Products tab is in German"
+- takeScreenshot: localization_products
+
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+- assertVisible:
+    text: "Einstellungen"
+    label: "Settings menu item is in German"
+- takeScreenshot: localization_menu

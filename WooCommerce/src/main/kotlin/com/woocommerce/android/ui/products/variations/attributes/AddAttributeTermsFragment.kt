@@ -24,6 +24,7 @@ import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowStopUsingForVariationsConfirmation
 import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsViewModel.LoadingState.Appending
 import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsViewModel.LoadingState.Loading
 import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermListener
@@ -44,6 +45,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         private const val LIST_STATE_KEY_GLOBAL = "list_state_global"
         private const val KEY_RENAMED_ATTRIBUTE_NAME = "renamed_attribute_name"
         private const val KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING = "is_remove_dialog_showing"
+        private const val KEY_IS_STOP_USING_FOR_VARIATIONS_DIALOG_SHOWING = "is_stop_variations_dialog_showing"
     }
 
     private val termsViewModel: AddAttributeTermsViewModel by viewModels()
@@ -58,6 +60,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private val skeletonView = SkeletonView()
 
     private var isConfirmRemoveDialogShowing = false
+    private var isStopUsingForVariationsDialogShowing = false
     private var renamedAttributeName: String? = null
     private var moveNextMenuItem: MenuItem? = null
 
@@ -142,9 +145,13 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         setupObservers()
         setupResultHandlers()
         getAttributeTerms()
+        updateAttributeSettings()
 
         if (savedInstanceState?.getBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING) == true) {
             confirmRemoveAttribute()
+        }
+        if (savedInstanceState?.getBoolean(KEY_IS_STOP_USING_FOR_VARIATIONS_DIALOG_SHOWING) == true) {
+            confirmStopUsingForVariations()
         }
     }
 
@@ -264,6 +271,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         if (isConfirmRemoveDialogShowing) {
             outState.putBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING, true)
         }
+        if (isStopUsingForVariationsDialogShowing) {
+            outState.putBoolean(KEY_IS_STOP_USING_FOR_VARIATIONS_DIALOG_SHOWING, true)
+        }
         renamedAttributeName?.let {
             outState.putString(KEY_RENAMED_ATTRIBUTE_NAME, it)
         }
@@ -367,6 +377,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ExitProductAddAttributeTerms -> findNavController().navigateUp()
+                is ShowStopUsingForVariationsConfirmation -> confirmStopUsingForVariations()
                 else -> event.isHandled = false
             }
         }
@@ -378,6 +389,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             if (viewModel.renameAttributeInDraft(0L, oldAttributeName = attributeName, newAttributeName = it)) {
                 renamedAttributeName = it
                 requireView().findViewById<Toolbar>(R.id.toolbar)?.title = attributeName
+                updateAttributeSettings()
             }
         }
     }
@@ -420,6 +432,47 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         binding.assignedTermList.isVisible = !assignedTermsAdapter.isEmpty()
         binding.textExistingOption.isVisible = !globalTermsAdapter.isEmpty()
         moveNextMenuItem?.isVisible = !assignedTermsAdapter.isEmpty() && navArgs.isVariationCreation
+        updateAttributeSettings()
+    }
+
+    private fun updateAttributeSettings() {
+        val state = viewModel.getAttributeSettingsState(navArgs.attributeId, attributeName, navArgs.isVariationCreation)
+
+        with(binding.visibleSwitch) {
+            setOnCheckedChangeListener(null)
+            isEnabled = state.isEnabled
+            isChecked = state.isVisible
+            setOnCheckedChangeListener { _, isChecked ->
+                viewModel.onAttributeVisibleToggled(navArgs.attributeId, attributeName, isChecked)
+            }
+        }
+        with(binding.usedForVariationsSwitch) {
+            isVisible = state.isUsedForVariationsShown
+            setOnCheckedChangeListener(null)
+            isEnabled = state.isEnabled
+            isChecked = state.isUsedForVariations
+            setOnCheckedChangeListener { _, isChecked ->
+                viewModel.onAttributeUsedForVariationsToggled(navArgs.attributeId, attributeName, isChecked)
+            }
+        }
+    }
+
+    private fun confirmStopUsingForVariations() {
+        isStopUsingForVariationsDialogShowing = true
+        WooDialog.showDialog(
+            requireActivity(),
+            titleId = R.string.product_attribute_stop_using_for_variations_title,
+            messageId = R.string.product_attribute_stop_using_for_variations_message,
+            positiveButtonId = R.string.product_attribute_stop_using_for_variations_confirm,
+            posBtnAction = { _, _ -> viewModel.onStopUsingForVariationsConfirmed(navArgs.attributeId, attributeName) },
+            negativeButtonId = R.string.cancel,
+            // reset the switch to the draft value, so cancelling turns it back on. The flag is already saved
+            // when onStop dismisses the dialog, so a rotation still restores it.
+            onDismiss = {
+                isStopUsingForVariationsDialogShowing = false
+                if (_binding != null) updateAttributeSettings()
+            }
+        )
     }
 
     /**
@@ -434,7 +487,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             globalTermsAdapter.removeTerm(termName)
         }
 
-        viewModel.addAttributeTermToDraft(navArgs.attributeId, attributeName, termName)
+        viewModel.addAttributeTermToDraft(navArgs.attributeId, attributeName, termName, navArgs.isVariationCreation)
         checkViews()
     }
 

@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-22 17:55:10+0000
+Translation-Revision-Date: 2026-10-08 09:55:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_orders_details_breakdown_custom_amounts_label">Importi personalizzati</string>
+    <string name="woopos_payment_custom_amounts_label">Importi personalizzati</string>
+    <string name="woopos_cart_item_discount_applied">Sconto applicato</string>
+    <string name="more_menu_payments_new_feature_state_description">Nuova funzionalità di pagamento disponibile</string>
+    <string name="more_menu_switch_store">Cambia negozio</string>
+    <string name="logviewer_next_match">Corrispondenza successiva</string>
+    <string name="logviewer_previous_match">Corrispondenza precedente</string>
+    <string name="product_list_deselect_product">Deseleziona %s</string>
+    <string name="product_list_select_product">Seleziona %s</string>
+    <string name="no_filters_applied_state_description">Nessun filtro applicato</string>
+    <string name="product_rating_content_description">%1$.1f su 5</string>
+    <string name="card_reader_mode_intro_not_now">Non ora</string>
+    <string name="variation_list_fetch_error">Errore durante il recupero delle variazioni</string>
+    <string name="card_reader_mode_intro_start">Avvia</string>
+    <string name="card_reader_mode_intro_requirement_nfc">Attiva NFC su questo telefono</string>
+    <string name="card_reader_mode_intro_requirement_pos">Apri Woo POS su un tablet Android connesso allo stesso negozio</string>
+    <string name="card_reader_mode_intro_requirement_wifi">Connetti entrambi i dispositivi alla stessa rete Wi-Fi</string>
+    <string name="card_reader_mode_intro_requirements_heading">Prima di iniziare</string>
+    <string name="card_reader_mode_intro_header">Questo telefono come lettore di carte</string>
+    <string name="orderlist_deselect_order">Deseleziona ordine %1$s</string>
+    <string name="card_reader_mode_intro_subtitle">Questo telefono compare come lettore di carte in Woo POS sul tablet. Al momento del pagamento, il tablet invia l\'importo qui e il cliente avvicina la carta a questo telefono.</string>
+    <string name="dashboard_customize_new_sections_state_description">Nuove sezioni della bacheca disponibili</string>
+    <string name="orderlist_select_order">Seleziona ordine %1$s</string>
     <string name="woopos_eligibility_reason_unsupported_country_generic">Il sistema POS non è disponibile nel Paese in cui si trova il tuo negozio. Controlla le impostazioni dell\'indirizzo del negozio o contatta il supporto per ricevere assistenza.</string>
     <string name="woopos_eligibility_reason_unsupported_country">Il sistema POS non è disponibile in %1$s. Controlla le impostazioni dell\'indirizzo del negozio o contatta il supporto per ricevere assistenza.</string>
     <string name="woo_push_notifications_introduction_error_offline_mode_body">Le notifiche push non possono essere impostate perché il tuo negozio è in Modalità offline. Se hai ancora bisogno di assistenza, contatta il supporto.</string>
@@ -399,6 +422,7 @@ Language: it
     <string name="ai_assistant_confirmation_eyebrow_pending" a8c-src-lib="module:ai-assistant-feature">Modifica in sospeso</string>
     <string name="ai_assistant_confirmation_field_value_updated" a8c-src-lib="module:ai-assistant-feature">Aggiornato</string>
     <string name="ai_assistant_confirmation_field_sku" a8c-src-lib="module:ai-assistant-feature">COD</string>
+    <string name="ai_assistant_confirmation_field_value_off" a8c-src-lib="module:ai-assistant-feature">Disattivato</string>
     <string name="ai_assistant_confirmation_field_stock_status" a8c-src-lib="module:ai-assistant-feature">Stato del magazzino</string>
     <string name="ai_assistant_confirmation_field_stock_quantity" a8c-src-lib="module:ai-assistant-feature">Magazzino</string>
     <string name="ai_assistant_confirmation_field_sale_price" a8c-src-lib="module:ai-assistant-feature">Offerta</string>
@@ -2595,7 +2619,6 @@ Language: it
     <string name="product_search_all">Tutti i prodotti</string>
     <string name="card_reader_upsell_card_reader_banner_cta">Lettore carte di acquisto</string>
     <string name="card_reader_upsell_card_reader_banner_title">Accetta pagamenti facilmente</string>
-    <string name="card_reader_upsell_card_reader_banner_new">NOVITÀ</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">Ignora</string>
     <string name="orderdetail_custom_fields">Campi personalizzati</string>
     <string name="order_sync_failed">Impossibile salvare le modifiche</string>
@@ -4200,6 +4223,18 @@ Language: it
         <item>Pacchetto personalizzato</item>
         <item>Pacchetto del servizio</item>
     </string-array>
+    <plurals name="dashboard_review_rating_content_description">
+        <item quantity="one">Valutazione a %1$d stelle</item>
+        <item quantity="other">Valutazione a %1$d stelle</item>
+    </plurals>
+    <plurals name="filters_applied_state_description">
+        <item quantity="one">%d filtro applicato</item>
+        <item quantity="other">%d filtri applicati</item>
+    </plurals>
+    <plurals name="more_menu_unseen_reviews_state_description">
+        <item quantity="one">%d recensione non vista</item>
+        <item quantity="other">%d recensioni non viste</item>
+    </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Subtotale elementi (%d elemento)</item>
         <item quantity="other">Subtotale elementi: (%d elementi)</item>

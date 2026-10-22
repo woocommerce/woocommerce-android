@@ -97,3 +97,44 @@ When a feature has many tracking calls, extract a dedicated tracker (e.g., `WooP
 | `_success` | Request success |
 | `_selected` | User selected an option |
 | `_shown` | View shown to user |
+
+## Checkout timing
+
+The events `card_present_collect_payment_success`, `card_present_collect_payment_failed`,
+and `cash_collect_payment_success` include the available checkout
+timing properties. Interac payments use the generic timed card-success event after payment is recorded on the store.
+The supplemental `card_present_collect_interac_payment_success` processing event is outside this timing contract;
+it does not consume card-confirmation timing. `card_present_collect_payment_cancelled` keeps its existing
+properties, without the new timing fields or `sync_strategy`.
+`sync_strategy` is the active products source at checkout: `local_catalog`, `remote`, or `unknown`.
+Older loaded and outdated-item events use `local_catalog_file` for the same local source; map that value
+to `local_catalog` when comparing event families.
+
+| Optional integer milliseconds | Start boundary |
+| --- | --- |
+| `pos_time_since_checkout_started_ms` | Order-draft creation entry, before async work |
+| `pos_time_since_order_sync_completed_ms` | Successful order creation for this checkout |
+| `pos_time_since_payment_confirmed_ms` | Native/Tap to Pay capture-state entry after local receipt lookup and before backend capture, including confirmed-intent retry |
+
+Durations use `SystemClock.elapsedRealtime()`, including sleep. Zero is valid; missing/negative values are omitted.
+The Android Tracks SDK serializes custom properties as strings. These durations are integer-valued milliseconds;
+cast them to numbers for analysis or comparison with iOS raw payloads.
+`pos_time_since_reader_ready_ms` is omitted: the SDK input callback has no operation identity, and processing entry does not prove readiness.
+Automatic product/coupon removal re-sync also restarts checkout timing; this measures a synchronization attempt, not a physical press.
+Three shared timestamps live in `WooPosAnalyticsTrackingDataKeeper`; there are no per-attempt timing contexts.
+Checkout entry resets stage timestamps, and an order-sync generation guard ignores results from an earlier checkout.
+Success snapshots follow success-property lookup. Card outcomes clear confirmation; cancellation clears confirmation without emitting it.
+Cash reads checkout/sync timing without clearing card confirmation, so overlapping card completion retains its own start boundary.
+The existing cart reset clears all timestamps. Native retries retain checkout/sync timing; no unique attempt or journey identity is emitted.
+Native and Tap to Pay use the existing `CapturingPayment` status after successful local receipt lookup and before
+backend capture. A missing receipt fails before this status and omits confirmation timing. iOS records confirmed
+processing completion before backend capture, without this receipt-URL requirement. Account for this boundary
+difference when comparing platforms. Remote readers start it for `requires_capture`/`succeeded` before backend capture;
+simulation omits confirmation.
+Existing wall-clock properties, units, checkout counter and reset behavior remain unchanged. These metrics do not measure first display or card touch.
+
+For timing coverage, select Android and iOS cohorts separately with each platform's app-version/build metadata.
+Use the first released version/build that contains these fields as that platform's lower bound; the release
+boundaries can differ. No runtime timing-version property is emitted. Within each cohort, count the eligible
+terminal events and the events with each timing property. A missing property means its start boundary is
+unavailable or its duration is invalid; it does not mean zero. Keep valid zero durations in timing distributions.

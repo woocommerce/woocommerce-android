@@ -7,7 +7,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.CustomsItemDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.InvalidDestinationNameRateException
@@ -106,17 +105,7 @@ class WooShippingRatesRepository @Inject constructor(
                 isReturnToSender = if (customsData.isReturnToSender) "return" else "abandon",
                 itn = customsData.itn,
                 hazmatCategory = hazmatSelection?.toHazmatCategory(),
-                items = customsData.items.map {
-                    CustomsItemDTO(
-                        productId = it.productID,
-                        description = it.description,
-                        quantity = it.quantity,
-                        value = it.value.toDouble(),
-                        weight = it.weight.toDouble(),
-                        hsTariffNumber = it.hsTariffNumber.replace(Regex("""\D"""), ""),
-                        originCountry = it.originCountryCode
-                    )
-                }
+                items = shippingNetworkingMapper.toCustomsItemDTOs(customsData)
             )
         } else {
             CommonPackageDTO(

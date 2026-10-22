@@ -35,9 +35,9 @@
   <h2>Local Runs</h2>
   <pre>cp .maestro/env.example .maestro/.env.local
 .maestro/scripts/run-smoke-tests.sh --store lab
-.maestro/scripts/run-smoke-tests.sh --plan --profile phone-full
+.maestro/scripts/run-smoke-tests.sh --plan --profile full
 .maestro/scripts/run-smoke-tests.sh --device emulator-5554 --store lab
-.maestro/scripts/run-smoke-tests.sh --profile android-system --device Pixel_8_API_35
+.maestro/scripts/run-smoke-tests.sh --profile full --device emulator-5554 --pos-device Pixel_Tablet_API_35
 .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --include-quarantine --seed --store lab
 .maestro/scripts/run-smoke-tests.sh --repeat 3 .maestro/flows/orders_list_and_search.yaml</pre>
 
@@ -55,7 +55,7 @@
       <tr><td><code>android_system</code></td><td>Launcher/system-surface flows on an English Pixel Launcher AVD.</td></tr>
       <tr><td><code>system_surface</code></td><td>Flows that enter Android-owned UI and stop at the documented handoff boundary.</td></tr>
       <tr><td><code>destructive</code></td><td>Mutates store data.</td></tr>
-      <tr><td><code>flaky_quarantine</code></td><td>Excluded unless the profile or <code>--include-quarantine</code> includes it.</td></tr>
+      <tr><td><code>quarantine</code></td><td>Failing flows kept out of runs until they are fixed. Excluded unless <code>--include-quarantine</code> is passed.</td></tr>
     </tbody>
   </table>
 

@@ -2,14 +2,41 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+26.0
+-----
+- [**] Products: Add and edit attributes on all product types. Each attribute has "Visible on product page" and "Used for variations" settings, so you can add attributes that only show on the product page. [https://github.com/woocommerce/woocommerce-android/pull/16727]
+- [*] Fixed a crash when choosing a file on a web page inside the app [https://github.com/woocommerce/woocommerce-android/pull/16743]
+- [*] Fixed a crash when an order status update fails while the order list refreshes [https://github.com/woocommerce/woocommerce-android/pull/16728]
+- [*] Disabled filled buttons on screens like refunds, custom amounts and legacy shipping labels now look disabled [https://github.com/woocommerce/woocommerce-android/pull/16732]
+- [*] [Woo POS] On Android 17, POS asks for local network access only when you choose to use a phone as a card reader or have used one before [https://github.com/woocommerce/woocommerce-android/pull/16723]
+- [*] Menu icons now use a dark background in dark mode [https://github.com/woocommerce/woocommerce-android/pull/16672]
+- [*] Order creation no longer adds a variation of a subscription product when its SKU is scanned [https://github.com/woocommerce/woocommerce-android/pull/16713]
+- [*] On tablets, an open order editor no longer closes and loses its text when the app is restored [https://github.com/woocommerce/woocommerce-android/pull/16731]
+- [*] Customer lists now explain when WooCommerce Analytics is unavailable and offer a way to turn it on or retry loading customers [https://github.com/woocommerce/woocommerce-android/pull/16707]
+- [*] Fixed a crash when creating orders or opening products on stores with no timezone offset set [https://github.com/woocommerce/woocommerce-android/pull/16740]
+- [Internal] Shipping labels and the label eligibility check are no longer read from the database on the main thread [https://github.com/woocommerce/woocommerce-android/pull/16720]
+- [***] [Internal] Migrated Google sign-in from the deprecated Play Services Auth API to Credential Manager [https://github.com/woocommerce/woocommerce-android/pull/16721]
+
 25.9
 -----
 - [*****] [Internal] Update Stripe Terminal SDK from 5.8.2 to 6.0.0 [https://github.com/woocommerce/woocommerce-android/pull/16688]
 - [*] Tap to Pay: when a payment is blocked for security reasons (for example an accessibility service is on), the app now says what to check instead of showing a generic error [https://github.com/woocommerce/woocommerce-android/pull/16693]
+- [*] Generate all variations no longer suggests variations that already exist, and bulk update now covers every variation of products with more than 25 variations [https://github.com/woocommerce/woocommerce-android/pull/16691]
+- [*] Fixed item refunds failing on stores with WooCommerce 11.3 when tax doesn't split evenly per unit or less is left to refund on the order than the selected items [https://github.com/woocommerce/woocommerce-android/pull/16711]
+- [**] Card readers WisePad 3, M2 and Chipper 2X can now connect over USB [https://github.com/woocommerce/woocommerce-android/pull/16680]
+- [*] Fixed duplicate notifications for a store using store push notifications while another store with an older WooCommerce version was selected [https://github.com/woocommerce/woocommerce-android/pull/16654]
+- [*] Editing a product attribute's terms or name no longer moves it to the end of the list or changes the settings of other attributes [https://github.com/woocommerce/woocommerce-android/pull/16671]
+- [*] Undoing a product attribute change in the same session is now saved, and the product form no longer asks to save again after only its attributes were saved [https://github.com/woocommerce/woocommerce-android/pull/16689]
 - [*] Card Reader Mode on the phone now asks to turn on NFC and opens the NFC settings when NFC is off [https://github.com/woocommerce/woocommerce-android/pull/16666]
 - [*] The Blaze campaign list now shows an outstanding balance notice with a Pay button for each unpaid order [https://github.com/woocommerce/woocommerce-android/pull/16612]
 - [*] Shipping Labels: The recipient phone number is now optional for domestic shipments. It's still required for international shipments and FedEx services. [https://github.com/woocommerce/woocommerce-android/pull/16665]
 - [*] Closing the custom date range picker in order filters without saving no longer leaves Custom Range selected [https://github.com/woocommerce/woocommerce-android/pull/16679]
+- [Internal] Logging out while the store is still refreshing after launch no longer reports a SelectedSiteResetException error [https://github.com/woocommerce/woocommerce-android/pull/16692]
+- [*] In-person payment collection and Interac refunds are now hidden for orders sold as a subscription, including plan-based and variable subscriptions the previous check missed [https://github.com/woocommerce/woocommerce-android/pull/16563]
+- [*] [Woo POS] Added a Payments section to POS settings with an option to turn off the payment success sound [https://github.com/woocommerce/woocommerce-android/pull/16701]
+- [*] [Woo POS] On Android 17, the "Choose a device to connect" picker no longer reopens after "Don't connect" when connecting a card reader [https://github.com/woocommerce/woocommerce-android/pull/16702]
+- [*] [Woo POS] The refund reason row on the Review refund screen now has padding around its tap highlight [https://github.com/woocommerce/woocommerce-android/pull/16708]
+- [**] Shipping Labels: For shipments into the EU, the customs form now asks for each item's SKU, manufacturer part number and GTIN/EAN when WooCommerce Shipping requires them [https://github.com/woocommerce/woocommerce-android/pull/16706]
 
 25.8
 -----

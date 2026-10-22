@@ -25,7 +25,7 @@ class RefreshWPSettingsTest : BaseUnitTest() {
     fun `given administrator user, when refreshing wp settings, then settings are fetched`() = testBlocking {
         // GIVEN
         val site = SiteModel()
-        whenever(userEligibilityFetcher.getUser()).thenReturn(userWithRoles(UserRole.Administrator))
+        whenever(userEligibilityFetcher.getUser(site)).thenReturn(userWithRoles(UserRole.Administrator))
 
         // WHEN
         refreshWPSettings(site)
@@ -40,7 +40,7 @@ class RefreshWPSettingsTest : BaseUnitTest() {
     fun `given shop manager user, when refreshing wp settings, then settings are not fetched`() = testBlocking {
         // GIVEN
         val site = SiteModel()
-        whenever(userEligibilityFetcher.getUser()).thenReturn(userWithRoles(UserRole.ShopManager))
+        whenever(userEligibilityFetcher.getUser(site)).thenReturn(userWithRoles(UserRole.ShopManager))
 
         // WHEN
         refreshWPSettings(site)

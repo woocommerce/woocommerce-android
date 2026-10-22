@@ -258,7 +258,10 @@ class CardReaderPaymentController(
             }
             fetchOrder()?.let { order ->
                 if (!interacRefundableChecker.isRefundable(order)) {
-                    exitWithSnackbar(R.string.card_reader_interac_refund_order_refunded_refund_cancelled)
+                    // Covers every non-refundable reason (subscription order, unsupported status/
+                    // currency, or a subscription lookup that couldn't be resolved) without wrongly
+                    // claiming the order was already refunded.
+                    exitWithSnackbar(R.string.card_reader_interac_refund_not_available)
                     return@launch
                 }
                 launch {
@@ -385,6 +388,7 @@ class CardReaderPaymentController(
             }
 
             CapturingPayment -> {
+                tracker.onPaymentCapturing()
                 _paymentState.value = paymentStateProvider.provideCapturingPaymentState(
                     cardReaderType,
                     amountLabel

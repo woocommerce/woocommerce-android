@@ -166,6 +166,7 @@ fun WooPosSettingsCategoriesPaneScreenPreview() {
             scrollableCategories = listOf(
                 WooPosSettingsCategory.STORE,
                 WooPosSettingsCategory.HARDWARE,
+                WooPosSettingsCategory.PAYMENTS,
                 WooPosSettingsCategory.LOCAL_CATALOG,
             ),
             fixedCategories = listOf(WooPosSettingsCategory.HELP),

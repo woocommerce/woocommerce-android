@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/login_epilogue_button_bar"
     android:layout_width="match_parent"
@@ -19,8 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/minor_10"
         android:textAllCaps="false"
-        android:text="@string/login_try_another_account"
-        app:backgroundTint="@color/button_colored_bg_selector" />
+        android:text="@string/login_try_another_account"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_secondary"

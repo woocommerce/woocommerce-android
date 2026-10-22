@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.products.details
 
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.model.ProductAggregate
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -33,6 +35,68 @@ class ProductDetailBottomSheetBuilderTest : BaseUnitTest() {
             variationRepository = variationRepository,
             customFieldsRepository = customFieldsRepository
         )
+    }
+
+    @Test
+    fun `given a product has no attributes, when building the list, then show the attributes item`() =
+        testBlocking {
+            // GIVEN
+            val product = ProductTestUtils.generateProduct(productId = 1L).copy(attributes = emptyList())
+
+            // WHEN
+            val result = sut.buildBottomSheetList(ProductAggregate(product))
+
+            // THEN
+            val attributesItem = result.single {
+                it.type == ProductDetailBottomSheetBuilder.ProductDetailBottomSheetType.PRODUCT_ATTRIBUTES
+            }
+            assertThat(attributesItem.clickEvent).isEqualTo(ProductNavigationTarget.AddProductAttribute())
+        }
+
+    @Test
+    fun `given a product of each type has no attributes, when building the list, then show the attributes item`() =
+        testBlocking {
+            // GIVEN
+            val productTypes = listOf(
+                ProductType.SIMPLE,
+                ProductType.SUBSCRIPTION,
+                ProductType.EXTERNAL,
+                ProductType.GROUPED,
+                ProductType.VARIABLE,
+                ProductType.VARIABLE_SUBSCRIPTION,
+                ProductType.BUNDLE,
+            )
+
+            productTypes.forEach { productType ->
+                val product = ProductTestUtils.generateProduct(productId = 1L)
+                    .copy(type = productType.value, attributes = emptyList())
+
+                // WHEN
+                val result = sut.buildBottomSheetList(ProductAggregate(product))
+
+                // THEN
+                val attributesItem = result.singleOrNull {
+                    it.type == ProductDetailBottomSheetBuilder.ProductDetailBottomSheetType.PRODUCT_ATTRIBUTES
+                }
+                assertThat(attributesItem).describedAs(productType.name).isNotNull
+                assertThat(attributesItem?.stat)
+                    .isEqualTo(AnalyticsEvent.PRODUCT_ATTRIBUTE_ADD_BUTTON_TAPPED)
+            }
+        }
+
+    @Test
+    fun `given the product has attributes, when building the list, then hide the attributes item`() = testBlocking {
+        // GIVEN
+        val product = ProductTestUtils.generateProduct(productId = 1L)
+
+        // WHEN
+        val result = sut.buildBottomSheetList(ProductAggregate(product))
+
+        // THEN
+        assertThat(product.attributes).isNotEmpty
+        assertThat(result).noneMatch {
+            it.type == ProductDetailBottomSheetBuilder.ProductDetailBottomSheetType.PRODUCT_ATTRIBUTES
+        }
     }
 
     @Test

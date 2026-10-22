@@ -1,5 +1,5 @@
-# Smoke Test: Products - Media upload via WordPress media library and device media
-# p2: products.detail.media
+# Smoke Test: Products - Media upload via WordPress media library, device media and camera
+# p2: products.detail.media.device, products.detail.media.wp-library, products.detail.media.camera
 # P2 ref: Products > Media upload
 #
 # Exercises both deterministic gallery upload paths end-to-end:
@@ -49,7 +49,7 @@
 # newer one has no resource IDs and confirms with "Done"; the older one
 # confirms with the button_add ("Add N") button.
 appId: com.woocommerce.android
-name: "Products - Media upload via WP media library and device media"
+name: "Products - Media upload via WP media library, device media and camera"
 tags:
   - smoke_extended
   - products
@@ -397,6 +397,84 @@ tags:
       id: "editText"
     timeout: 10000
     label: "Wait for product detail after device media"
+
+# Add a third image with the camera. The emulator's camera app takes the
+# photo from its virtual scene.
+# The gallery scrolls sideways and the button follows the last image.
+- repeat:
+    while:
+      notVisible:
+        text: "Add image"
+        childOf:
+          id: "productDetailImageGallery"
+    times: 5
+    commands:
+      - swipe:
+          from:
+            id: "productDetailImageGallery"
+          direction: LEFT
+          duration: 400
+
+- tapOn:
+    text: "Add image"
+    childOf:
+      id: "productDetailImageGallery"
+    retryTapIfNoChange: true
+    label: "Tap add image button for the camera"
+
+- extendedWaitUntil:
+    visible: "Select an upload method"
+    timeout: 15000
+    label: "Wait for image source dialog for the camera"
+
+- tapOn:
+    text: "Take a photo"
+    label: "Open the camera"
+
+- extendedWaitUntil:
+    visible:
+      id: ".*shutter_button"
+    timeout: 30000
+    label: "Wait for the camera"
+
+- tapOn:
+    id: ".*shutter_button"
+    label: "Take the photo"
+
+- extendedWaitUntil:
+    visible:
+      id: ".*done_button"
+    timeout: 15000
+    label: "Wait for the photo review"
+
+- tapOn:
+    id: ".*done_button"
+    label: "Use the photo"
+
+- extendedWaitUntil:
+    visible:
+      id: "productImage"
+      index: 2
+    timeout: 45000
+    label: "Wait for the third product image"
+
+- assertVisible:
+    id: "productImage"
+    index: 2
+    label: "Camera photo is displayed as the third product image"
+
+- takeScreenshot: media_upload_camera_image_in_gallery
+
+- tapOn:
+    point: "7%,8%"
+    retryTapIfNoChange: true
+    label: "Return to product detail after the camera"
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+    label: "Wait for product detail after the camera"
 
 # Save the product so the image is persisted on the backend. On an
 # existing product the action is labelled "SAVE"; on a brand-new

@@ -1,14 +1,19 @@
 package com.woocommerce.android.ui.woopos.cardreader.connection
 
+import android.bluetooth.BluetoothAdapter
 import android.content.Context
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderLocationRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveredReader
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveryTransport
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosUnifiedDiscoveryStream
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
@@ -17,14 +22,20 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.LocationUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mockito.mockStatic
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.net.InetAddress
@@ -97,6 +108,128 @@ class WooPosCardReaderConnectionControllerTest {
         verify(cardReaderTrackingInfoKeeper).setTransport(null)
         verify(cardReaderTrackingInfoKeeper).setCardReaderModel(null)
         verify(cardReaderTrackingInfoKeeper).setCardReaderBatteryLevel(null)
+    }
+
+    @Suppress("DEPRECATION")
+    @Test
+    fun `given bluetooth requirement shown and unchanged, when rechecking permissions, then discovery is not restarted`() =
+        runTest {
+            mockStatic(BluetoothAdapter::class.java).use { bluetoothAdapter ->
+                // GIVEN
+                bluetoothAdapter.`when`<BluetoothAdapter?> { BluetoothAdapter.getDefaultAdapter() }.thenReturn(null)
+                whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+                whenever(unifiedDiscoveryStream.discover(any(), any(), any())).thenReturn(emptyFlow())
+                val controller = createController(this)
+                controller.onBluetoothEnabled()
+                advanceUntilIdle()
+
+                // WHEN
+                controller.recheckPermissions()
+                advanceUntilIdle()
+
+                // THEN
+                assertThat(controller.state.value)
+                    .isInstanceOf(WooPosCardReaderConnectionState.BluetoothDisabled::class.java)
+                verify(unifiedDiscoveryStream, times(1)).discover(any(), any(), any())
+            }
+        }
+
+    @Suppress("DEPRECATION")
+    @Test
+    fun `given bluetooth requirement shown and changed, when rechecking permissions, then discovery is restarted`() =
+        runTest {
+            mockStatic(BluetoothAdapter::class.java).use { bluetoothAdapter ->
+                // GIVEN
+                bluetoothAdapter.`when`<BluetoothAdapter?> { BluetoothAdapter.getDefaultAdapter() }.thenReturn(null)
+                whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+                whenever(unifiedDiscoveryStream.discover(any(), any(), any())).thenReturn(emptyFlow())
+                val controller = createController(this)
+                controller.onBluetoothEnabled()
+                advanceUntilIdle()
+                val enabledAdapter: BluetoothAdapter = mock { on { isEnabled } doReturn true }
+                bluetoothAdapter.`when`<BluetoothAdapter?> { BluetoothAdapter.getDefaultAdapter() }
+                    .thenReturn(enabledAdapter)
+
+                mockStatic(ContextCompat::class.java).use { contextCompat ->
+                    contextCompat.`when`<Int> { ContextCompat.checkSelfPermission(any(), any()) }
+                        .thenReturn(PackageManager.PERMISSION_GRANTED)
+
+                    // WHEN
+                    controller.recheckPermissions()
+                    advanceUntilIdle()
+                }
+
+                // THEN
+                assertThat(controller.state.value)
+                    .isInstanceOf(WooPosCardReaderConnectionState.LocationDisabled::class.java)
+                verify(unifiedDiscoveryStream, times(2)).discover(any(), any(), any())
+            }
+        }
+
+    @Suppress("DEPRECATION")
+    @Test
+    fun `given bluetooth is off, when discovery starts, then only wifi lan transport is used`() = runTest {
+        mockStatic(BluetoothAdapter::class.java).use { bluetoothAdapter ->
+            // GIVEN
+            bluetoothAdapter.`when`<BluetoothAdapter?> { BluetoothAdapter.getDefaultAdapter() }.thenReturn(null)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            whenever(unifiedDiscoveryStream.discover(any(), any(), any())).thenReturn(emptyFlow())
+            val controller = createController(this)
+
+            // WHEN
+            controller.onBluetoothEnabled()
+            advanceUntilIdle()
+
+            // THEN
+            verify(unifiedDiscoveryStream).discover(any(), any(), eq(setOf(WooPosDiscoveryTransport.WifiLan)))
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    @Test
+    fun `given explainer shown, when local network permission granted, then discovery is restarted`() = runTest {
+        mockStatic(BluetoothAdapter::class.java).use { bluetoothAdapter ->
+            // GIVEN
+            bluetoothAdapter.`when`<BluetoothAdapter?> { BluetoothAdapter.getDefaultAdapter() }.thenReturn(null)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            whenever(unifiedDiscoveryStream.discover(any(), any(), any())).thenReturn(emptyFlow())
+            val controller = createController(this)
+            controller.showRemoteTapToPayExplainer()
+            advanceUntilIdle()
+
+            // WHEN
+            controller.onLocalNetworkPermissionResult(granted = true, shouldShowRationale = false)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(controller.state.value)
+                .isNotInstanceOf(WooPosCardReaderConnectionState.RemoteTapToPayExplainer::class.java)
+            verify(unifiedDiscoveryStream).discover(any(), any(), any())
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    @Test
+    fun `given scanning, when local network permission granted, then discovery is restarted with wifi lan`() = runTest {
+        mockStatic(BluetoothAdapter::class.java).use { bluetoothAdapter ->
+            // GIVEN
+            bluetoothAdapter.`when`<BluetoothAdapter?> { BluetoothAdapter.getDefaultAdapter() }.thenReturn(null)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            whenever(unifiedDiscoveryStream.discover(any(), any(), any())).thenReturn(emptyFlow())
+            whenever(appPrefsWrapper.getLastConnectedPhoneDeviceId()).thenReturn("phone-device-id")
+            val controller = createController(this)
+            controller.onBluetoothEnabled()
+            advanceUntilIdle()
+
+            // WHEN
+            controller.onLocalNetworkPermissionResult(granted = true, shouldShowRationale = false)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(controller.state.value).isEqualTo(WooPosCardReaderConnectionState.Scanning)
+            verify(unifiedDiscoveryStream, times(2))
+                .discover(any(), any(), eq(setOf(WooPosDiscoveryTransport.WifiLan)))
+        }
     }
 
     @Test

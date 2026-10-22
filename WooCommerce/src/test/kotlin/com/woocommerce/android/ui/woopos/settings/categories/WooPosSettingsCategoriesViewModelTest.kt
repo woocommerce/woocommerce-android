@@ -61,6 +61,7 @@ class WooPosSettingsCategoriesViewModelTest {
             assertThat(sut.state.value.categories).contains(
                 WooPosSettingsCategory.STORE,
                 WooPosSettingsCategory.HARDWARE,
+                WooPosSettingsCategory.PAYMENTS,
                 WooPosSettingsCategory.HELP
             )
         }
@@ -78,6 +79,7 @@ class WooPosSettingsCategoriesViewModelTest {
         assertThat(sut.state.value.categories).containsExactlyInAnyOrder(
             WooPosSettingsCategory.STORE,
             WooPosSettingsCategory.HARDWARE,
+            WooPosSettingsCategory.PAYMENTS,
             WooPosSettingsCategory.LOCAL_CATALOG,
             WooPosSettingsCategory.HELP
         )

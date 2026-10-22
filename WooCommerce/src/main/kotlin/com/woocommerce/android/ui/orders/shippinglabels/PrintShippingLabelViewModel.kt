@@ -38,14 +38,6 @@ class PrintShippingLabelViewModel @Inject constructor(
     private val base64Decoder: Base64Decoder
 ) : ScopedViewModel(savedState) {
     private val arguments: PrintShippingLabelFragmentArgs by savedState.navArgs()
-    private val labels by lazy {
-        arguments.shippingLabelIds.map {
-            repository.getShippingLabelByOrderIdAndLabelId(
-                orderId = arguments.orderId,
-                shippingLabelId = it
-            )
-        }
-    }
 
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
@@ -53,22 +45,29 @@ class PrintShippingLabelViewModel @Inject constructor(
      * with @OptIn(LiveDelegateSavedStateAPI::class).
      */
     @Suppress("OPT_IN_USAGE")
-    val viewStateData = LiveDataDelegate(
-        savedState,
-        PrintShippingLabelViewState(
-            // the case of expiring is possible only during reprinting, and when reprinting we will pass only one label
-            isLabelExpired = labels.first()?.isAnonymized == true ||
-                labels.first()?.expiryDate?.let { Date().after(it) } ?: false
-        )
-    )
+    val viewStateData = LiveDataDelegate(savedState, PrintShippingLabelViewState())
     private var viewState by viewStateData
 
     val screenTitle: Int
-        get() = if (labels.size > 1) {
+        get() = if (arguments.shippingLabelIds.size > 1) {
             R.string.shipping_label_print_multiple_screen_title
         } else {
             R.string.shipping_label_print_screen_title
         }
+
+    init {
+        launch {
+            // Only a reprint can open this screen with an expired label, and a reprint passes a single label,
+            // so checking the first one is enough.
+            val label = getShippingLabel(arguments.shippingLabelIds.first())
+            val isLabelExpired = label?.isAnonymized == true ||
+                label?.expiryDate?.let { Date().after(it) } ?: false
+            viewState = viewState.copy(
+                isLabelExpired = isLabelExpired,
+                isPrintEnabled = !isLabelExpired
+            )
+        }
+    }
 
     fun onPrintShippingLabelInfoSelected() {
         triggerEvent(ViewPrintShippingLabelInfo)
@@ -135,11 +134,20 @@ class PrintShippingLabelViewModel @Inject constructor(
 
     fun onPreviewLabelCompleted() {
         viewState = viewState.copy(tempFile = null, previewShippingLabel = null)
-        labels.filter { it?.hasCommercialInvoice == true }
-            .map { it!!.commercialInvoiceUrl!! }
-            .takeIf { it.isNotEmpty() }
-            ?.let { triggerEvent(ViewPrintCustomsForm(it, arguments.isReprint)) }
+        launch {
+            arguments.shippingLabelIds.map { getShippingLabel(it) }
+                .filter { it?.hasCommercialInvoice == true }
+                .mapNotNull { it?.commercialInvoiceUrl }
+                .takeIf { it.isNotEmpty() }
+                ?.let { triggerEvent(ViewPrintCustomsForm(it, arguments.isReprint)) }
+        }
     }
+
+    private suspend fun getShippingLabel(shippingLabelId: Long) =
+        repository.getShippingLabelByOrderIdAndLabelId(
+            orderId = arguments.orderId,
+            shippingLabelId = shippingLabelId
+        )
 
     private suspend fun handlePreviewError() {
         withContext(dispatchers.main) {
@@ -153,6 +161,7 @@ class PrintShippingLabelViewModel @Inject constructor(
         val isProgressDialogShown: Boolean? = null,
         val previewShippingLabel: String? = null,
         val isLabelExpired: Boolean = false,
+        val isPrintEnabled: Boolean = false,
         val tempFile: File? = null
     ) : Parcelable
 }

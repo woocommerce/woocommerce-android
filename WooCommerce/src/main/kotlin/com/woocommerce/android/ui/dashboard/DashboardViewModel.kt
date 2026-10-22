@@ -368,11 +368,9 @@ class DashboardViewModel @Inject constructor(
         }
 
         val dismissTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
-        val siteId = selectedSite.getIfExists()?.siteId
-
         return combine(
             dismissTrigger.onStart { emit(Unit) },
-            pushNotificationRegistrationStatus.observe(siteId),
+            pushNotificationRegistrationStatus.observe(selectedSite.getIfExists()),
             shouldShowEnablePushNotificationsUi()
         ) { _, registrationStatus, enablePnUiAvailable ->
             val durationSinceDismissal =

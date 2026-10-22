@@ -22,13 +22,13 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
@@ -249,10 +249,16 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    suspend fun hasSubscriptionProducts(remoteProductIds: List<Long>): Boolean {
+    /**
+     * Only detects the legacy subscription product types (subscription / variable-subscription). It
+     * does NOT catch plan-based subscriptions (a subscription plan on any product type), so it isn't
+     * sufficient on its own to decide whether an order is a subscription — use
+     * [com.woocommerce.android.ui.payments.cardreader.payment.OrderSubscriptionChecker] for that.
+     */
+    suspend fun hasLegacySubscriptionProducts(remoteProductIds: List<Long>): Boolean {
         return if (remoteProductIds.isNotEmpty()) {
             productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
-                .any { it.type == PRODUCT_SUBSCRIPTION_TYPE }
+                .any { ProductType.fromString(it.type).isSubscriptionProduct() }
         } else {
             false
         }
@@ -264,22 +270,19 @@ class OrderDetailRepository @Inject constructor(
         .reversed()
         .sortedBy { it.id }
 
-    fun getOrderShipmentTrackingByTrackingNumber(
+    suspend fun getOrderShipmentTrackingByTrackingNumber(
         orderId: Long,
         trackingNumber: String
-    ): OrderShipmentTracking? = runBlocking {
-        orderStore.getShipmentTrackingByTrackingNumber(
-            selectedSite.get(),
-            orderId,
-            trackingNumber
-        )?.toAppModel()
-    }
+    ): OrderShipmentTracking? = orderStore.getShipmentTrackingByTrackingNumber(
+        selectedSite.get(),
+        orderId,
+        trackingNumber
+    )?.toAppModel()
 
-    fun getOrderShipmentTrackings(orderId: Long) = runBlocking {
+    suspend fun getOrderShipmentTrackings(orderId: Long): List<OrderShipmentTracking> =
         orderStore.getShipmentTrackingsForOrder(selectedSite.get(), orderId).map { it.toAppModel() }
-    }
 
-    fun getOrderShippingLabels(remoteOrderId: Long) = shippingLabelStore
+    suspend fun getOrderShippingLabels(remoteOrderId: Long): List<ShippingLabel> = shippingLabelStore
         .getShippingLabelsForOrder(selectedSite.get(), remoteOrderId)
         .filter { it.status == LabelItem.STATUS_PURCHASED }
         .map { shippingLabelMapper.toAppModel(it) }
@@ -353,7 +356,7 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    fun isOrderEligibleForSLCreation(orderId: Long): Boolean {
+    suspend fun isOrderEligibleForSLCreation(orderId: Long): Boolean {
         return shippingLabelStore.isOrderEligibleForShippingLabelCreation(
             site = selectedSite.get(),
             orderId = orderId,
@@ -370,8 +373,4 @@ class OrderDetailRepository @Inject constructor(
     suspend fun getOrderAttributionInfo(orderId: Long) = OrderAttributionInfo(
         orderStore.getOrderMetadata(orderId, selectedSite.get())
     )
-
-    companion object {
-        const val PRODUCT_SUBSCRIPTION_TYPE = "subscription"
-    }
 }

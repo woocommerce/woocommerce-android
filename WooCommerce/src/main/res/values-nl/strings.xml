@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-09-23 11:58:31+0000
+Translation-Revision-Date: 2026-10-07 09:57:49+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_orders_details_breakdown_custom_amounts_label">Aangepaste bedragen</string>
+    <string name="woopos_payment_custom_amounts_label">Aangepaste bedragen</string>
+    <string name="more_menu_payments_new_feature_state_description">Nieuwe betaalfunctie beschikbaar</string>
+    <string name="more_menu_switch_store">Winkel wijzigen</string>
+    <string name="logviewer_next_match">Volgende resultaat</string>
+    <string name="woopos_cart_item_discount_applied">Korting toegepast</string>
+    <string name="logviewer_previous_match">Vorig resultaat</string>
+    <string name="no_filters_applied_state_description">Geen filters toegepast</string>
+    <string name="card_reader_mode_intro_not_now">Niet nu</string>
+    <string name="variation_list_fetch_error">Fout bij ophalen van variaties</string>
+    <string name="product_list_deselect_product">Selectie van %s ongedaan maken</string>
+    <string name="product_list_select_product">%s selecteren</string>
+    <string name="product_rating_content_description">%1$.1f van 5</string>
+    <string name="card_reader_mode_intro_start">Begin</string>
+    <string name="card_reader_mode_intro_requirement_nfc">NFC inschakelen op deze telefoon</string>
+    <string name="card_reader_mode_intro_requirement_wifi">Verbind beide apparaten met dezelfde wifi</string>
+    <string name="card_reader_mode_intro_requirement_pos">Open Woo POS op een Android-tablet die is aangemeld bij dezelfde winkel</string>
+    <string name="card_reader_mode_intro_requirements_heading">Voordat je begint</string>
+    <string name="card_reader_mode_intro_header">Deze telefoon als kaartlezer</string>
+    <string name="card_reader_mode_intro_subtitle">Deze telefoon wordt weergegeven als kaartlezer in Woo POS op je tablet. Bij het afrekenen stuurt de tablet het bedrag hierheen en tikt de klant op zijn/haar kaart op deze telefoon.</string>
+    <string name="orderlist_deselect_order">Bestelling %1$s deselecteren</string>
+    <string name="dashboard_customize_new_sections_state_description">Nieuwe dashboardsecties beschikbaar</string>
+    <string name="orderlist_select_order">Bestelling %1$s selecteren </string>
     <string name="woopos_eligibility_reason_unsupported_country_generic">Het POS-systeem is niet beschikbaar in het land van je winkel. Controleer de adres-instellingen van je winkel of neem contact op met de ondersteuning voor hulp.</string>
     <string name="woopos_eligibility_reason_unsupported_country">Het POS-systeem is niet beschikbaar in %1$s. Controleer de adres-instellingen van je winkel of neem contact op met de ondersteuning voor hulp.</string>
     <string name="woo_push_notifications_introduction_error_offline_mode_body">Pushberichten kunnen niet worden ingesteld omdat je winkel in de offline modus staat. Neem contact op met de ondersteuning als je nog hulp nodig hebt.</string>
@@ -2596,7 +2619,6 @@ Language: nl
     <string name="product_search_all">Alle producten</string>
     <string name="card_reader_upsell_card_reader_banner_cta">Kaartlezer aanschaffen</string>
     <string name="card_reader_upsell_card_reader_banner_title">Eenvoudig betalingen aannemen</string>
-    <string name="card_reader_upsell_card_reader_banner_new">NIEUW</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">Afwijzen</string>
     <string name="orderdetail_custom_fields">Aangepaste velden</string>
     <string name="order_sync_failed">Opslaan van wijzigingen mislukt</string>
@@ -4201,6 +4223,18 @@ Language: nl
         <item>Aangepast pakket</item>
         <item>Servicepakket</item>
     </string-array>
+    <plurals name="dashboard_review_rating_content_description">
+        <item quantity="one">%1$d-sterrenbeoordeling</item>
+        <item quantity="other">%1$d-sterrenbeoordeling</item>
+    </plurals>
+    <plurals name="filters_applied_state_description">
+        <item quantity="one">%d filter toegepast</item>
+        <item quantity="other">%d filters toegepast</item>
+    </plurals>
+    <plurals name="more_menu_unseen_reviews_state_description">
+        <item quantity="one">%d niet-gelezen beoordeling</item>
+        <item quantity="other">%d niet-gelezen beoordelingen</item>
+    </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Subtotaal artikelen (%d artikel)</item>
         <item quantity="other">Subtotaal artikelen (%d artikelen)</item>

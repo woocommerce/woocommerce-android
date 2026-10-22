@@ -13,6 +13,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent.parent
 FLOWS_DIR = REPO_ROOT / ".maestro" / "flows"
 SHARED_STORE_TAG = "store_shared"
+POS_TAG = "pos_tablet"
 
 
 @dataclass(frozen=True)
@@ -22,14 +23,16 @@ class Profile:
 
 
 PROFILES = {
-    "core": Profile(("smoke_core",), ("flaky_quarantine", "android_system")),
-    "phone-full": Profile(
-        ("smoke_core", "smoke_extended"),
-        ("pos_tablet", "android_system"),
+    "core": Profile(("smoke_core",), ("quarantine", "android_system")),
+    "full": Profile(
+        ("smoke_core", "smoke_extended", "android_system", "pos_tablet"),
+        ("quarantine",),
     ),
-    "pos-tablet": Profile(("pos_tablet",), ()),
-    "android-system": Profile(("android_system",), ()),
+    "pos": Profile(("pos_tablet",), ("quarantine",)),
 }
+
+# Profiles that seed fixtures without --seed, because they include destructive flows.
+SEEDING_PROFILES = frozenset({"full", "pos"})
 
 P2_ORDERED_FLOW_NAMES = (
     "login_not_wp_site.yaml",
@@ -37,8 +40,6 @@ P2_ORDERED_FLOW_NAMES = (
     "login_help.yaml",
     "login_not_woo_store.yaml",
     "login_wrong_account.yaml",
-    "login_no_jetpack.yaml",
-    "login_google.yaml",
     "login_successful.yaml",
     "dashboard_stats.yaml",
     "dashboard_view_all_analytics.yaml",
@@ -51,8 +52,8 @@ P2_ORDERED_FLOW_NAMES = (
     "orders_barcode_scanner_opens.yaml",
     "orders_payment_qr_and_share.yaml",
     "orders_refund.yaml",
+    "orders_push_notification.yaml",
     "products_list_and_sort.yaml",
-    "products_detail.yaml",
     "products_variations_and_tags.yaml",
     "products_create.yaml",
     "products_media_upload.yaml",
@@ -60,12 +61,14 @@ P2_ORDERED_FLOW_NAMES = (
     "hub_menu_payments.yaml",
     "hub_menu_coupons.yaml",
     "hub_menu_customers_inbox.yaml",
+    "other_localization.yaml",
+    "install_upgrade.yaml",
     "hub_menu_admin_and_store.yaml",
-    "blaze_campaign.yaml",
     "google_for_woo.yaml",
     "pos_search_and_coupons.yaml",
     "pos_cash_payment.yaml",
     "android_quick_actions.yaml",
+    "other_home_widget.yaml",
 )
 
 
@@ -94,10 +97,20 @@ def flow_store(path: Path, store_override: str | None = None) -> str:
     return "shared" if SHARED_STORE_TAG in flow_tags(path) else "lab"
 
 
+def needs_pos_device(flows: tuple[Path, ...]) -> bool:
+    """POS flows need a tablet, so a selection that also has phone flows runs them on a second device."""
+    pos = [POS_TAG in flow_tags(flow) for flow in flows]
+    return any(pos) and not all(pos)
+
+
 def in_store_order(flows: tuple[Path, ...], store_override: str | None = None) -> tuple[Path, ...]:
-    """Lab flows run first, then the flows that need the shared store."""
-    return tuple(flow for flow in flows if flow_store(flow, store_override) == "lab") + tuple(
-        flow for flow in flows if flow_store(flow, store_override) == "shared"
+    """Lab flows run first, then the flows that need the shared store, then the POS flows on the tablet."""
+    pos_flows = tuple(flow for flow in flows if POS_TAG in flow_tags(flow)) if needs_pos_device(flows) else ()
+    phone_flows = tuple(flow for flow in flows if flow not in pos_flows)
+    return (
+        tuple(flow for flow in phone_flows if flow_store(flow, store_override) == "lab")
+        + tuple(flow for flow in phone_flows if flow_store(flow, store_override) == "shared")
+        + pos_flows
     )
 
 
@@ -124,6 +137,7 @@ def print_profile(name: str) -> None:
     profile = PROFILES[name]
     print(f"include\t{','.join(profile.include)}")
     print(f"exclude\t{','.join(profile.exclude)}")
+    print(f"seed\t{'yes' if name in SEEDING_PROFILES else 'no'}")
 
 
 def print_plan(args: argparse.Namespace) -> int:
@@ -144,8 +158,14 @@ def print_plan(args: argparse.Namespace) -> int:
     print(f"  flows:   {len(flows)}")
     print()
     print("Selected flows:")
+    pos_device = needs_pos_device(flows)
     for flow in flows:
-        suffix = " (shared store)" if not args.store and flow_store(flow) == "shared" else ""
+        if pos_device and POS_TAG in flow_tags(flow):
+            suffix = " (POS device)"
+        elif not args.store and flow_store(flow) == "shared":
+            suffix = " (shared store)"
+        else:
+            suffix = ""
         print(f"  - {flow.relative_to(REPO_ROOT)}{suffix}")
     return 0
 

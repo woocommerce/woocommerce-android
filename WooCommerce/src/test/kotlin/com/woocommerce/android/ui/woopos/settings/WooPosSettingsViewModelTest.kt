@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventReceive
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventSender
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -163,6 +164,22 @@ class WooPosSettingsViewModelTest {
             .isEqualTo(WooPosSettingsDetailDestination.Hardware.Overview)
         assertThat(viewModel.state.value.canGoBack).isFalse()
     }
+
+    @Test
+    fun `when PAYMENTS category selected, then destination is Payments Overview and PaymentsTapped is tracked`() =
+        runTest {
+            // GIVEN
+            val viewModel = createViewModelWithNoEvents()
+
+            // WHEN
+            viewModel.onCategorySelected(WooPosSettingsCategory.PAYMENTS)
+
+            // THEN
+            assertThat(viewModel.state.value.selectedCategory).isEqualTo(WooPosSettingsCategory.PAYMENTS)
+            assertThat(viewModel.state.value.currentDestination)
+                .isEqualTo(WooPosSettingsDetailDestination.Payments.Overview)
+            verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.PaymentsTapped)
+        }
 
     @Test
     fun `when category selected, then showingDetail becomes true`() = runTest {

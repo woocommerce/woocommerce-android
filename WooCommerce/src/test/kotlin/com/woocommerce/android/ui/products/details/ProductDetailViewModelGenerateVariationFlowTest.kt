@@ -159,7 +159,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
         )
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever { event -> events.add(event) }
-        whenever(generateVariationCandidates(product)).thenReturn(variationCandidates)
+        whenever(generateVariationCandidates(product)).thenReturn(Result.success(variationCandidates))
 
         // when
         viewModel.start()
@@ -189,7 +189,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
             }
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever { event -> events.add(event) }
-        whenever(generateVariationCandidates(product)).thenReturn(variationCandidatesAboveLimit)
+        whenever(generateVariationCandidates(product)).thenReturn(Result.success(variationCandidatesAboveLimit))
 
         // when
         viewModel.start()
@@ -282,7 +282,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
             List(GenerateVariationCandidates.VARIATION_CREATION_LIMIT + 1) { id ->
                 listOf(VariantOption(id.toLong(), "Number", id.toString()))
             }
-        whenever(generateVariationCandidates(product)).thenReturn(exceedVariationsLimit)
+        whenever(generateVariationCandidates(product)).thenReturn(Result.success(exceedVariationsLimit))
 
         // When AddAllVariations is Clicked
         viewModel.start()
@@ -304,7 +304,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
             List(GenerateVariationCandidates.VARIATION_CREATION_LIMIT) { id ->
                 listOf(VariantOption(id.toLong(), "Number", id.toString()))
             }
-        whenever(generateVariationCandidates(product)).thenReturn(reachVariationsLimit)
+        whenever(generateVariationCandidates(product)).thenReturn(Result.success(reachVariationsLimit))
 
         // When AddAllVariations is Clicked
         viewModel.start()
@@ -363,7 +363,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
     @Test
     fun `When user requested variation generation but there are no candidates, show error`() = testBlocking {
         // given
-        whenever(generateVariationCandidates(product)).thenReturn(emptyList())
+        whenever(generateVariationCandidates(product)).thenReturn(Result.success(emptyList()))
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever { event -> events.add(event) }
         viewModel.start()
@@ -379,4 +379,27 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
                     .isEqualTo(VariationListViewModel.ShowGenerateVariationsError.NoCandidates)
             }
     }
+
+    @Test
+    fun `given fetching existing variations fails, when generating variations, then network error is shown`() =
+        testBlocking {
+            // GIVEN
+            whenever(generateVariationCandidates(product)).thenReturn(Result.failure(Exception()))
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { event -> events.add(event) }
+            val fetchingStates = mutableListOf<Boolean>()
+            viewModel.attributeListViewStateData.observeForever { _, new ->
+                fetchingStates.add(new.isFetchingVariations)
+            }
+            viewModel.start()
+
+            // WHEN
+            viewModel.onAddAllVariationsClicked()
+
+            // THEN
+            Assertions.assertThat(events.last())
+                .isEqualTo(VariationListViewModel.ShowGenerateVariationsError.NetworkError)
+            Assertions.assertThat(fetchingStates).contains(true)
+            Assertions.assertThat(fetchingStates.last()).isFalse
+        }
 }

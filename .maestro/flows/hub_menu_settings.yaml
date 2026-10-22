@@ -5,7 +5,9 @@
 # Verifies:
 #   - More Menu top-level items are visible (Settings section + Payments)
 #   - Settings screen opens from the More Menu
-#   - Every first-level Settings item is rendered (P2: smoke-test all items)
+#   - Every first-level Settings item opens and returns (P2: smoke-test all
+#     items), except Log out, the Image optimization switch and the account
+#     deletion inside Account Settings
 #   - Log Out button is visible at the bottom of the screen
 appId: com.woocommerce.android
 name: "Hub Menu - Settings"
@@ -41,47 +43,247 @@ tags:
     index: 1
     label: "Open Settings screen"
 
-# ── Smoke-test all first-level Settings items ────────────────────────
-# P2: "Smoke test all items (ignore Delete Account)". We assert each
-# item renders — no need to open each sub-screen for a smoke check.
-# Items are ordered top-to-bottom in fragment_settings_main.xml.
+# ── Open every first-level Settings item ─────────────────────────────
+# P2: "Smoke test all items (ignore Delete Account)". Each item opens and
+# comes back; Settings can return scrolled to the top, so the row is
+# scrolled back into view. Rows whose screen repeats the row's title wait for the row to
+# leave the screen first. Rows shown only in some setups are skipped: Developers
+# (debug builds), Enable push notifications, Install Jetpack, Themes (WPComAtomic
+# sites) and What's New.
 - extendedWaitUntil:
-    visible: "Help & support"
+    visible:
+      id: "option_help_and_support"
     timeout: 15000
-
-- assertVisible: "Help & support"
-- assertVisible: "Troubleshoot Connection"
 
 - takeScreenshot: settings_screen_top
 
-# Scroll to reach items lower on the screen. Settings is a plain
-# ScrollView, so scroll commands move the whole list. "Themes"
-# (option_site_themes) is only visible on WPComAtomic sites, so we
-# skip it — our staging Jetpack store doesn't render it. We scroll
-# straight to Privacy settings, which is always present.
 - scrollUntilVisible:
-    element: "Privacy settings"
+    element:
+      id: "option_help_and_support"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "option_help_and_support"
+- extendedWaitUntil:
+    visible: "How can we help?"
+    timeout: 30000
+- back
+- scrollUntilVisible:
+    element:
+      id: "option_help_and_support"
     direction: DOWN
     timeout: 10000
-    label: "Scroll to Privacy settings"
-
-- assertVisible: "Privacy settings"
 
 - scrollUntilVisible:
-    element: "Experimental features"
+    element:
+      id: "option_troubleshoot_connection"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "option_troubleshoot_connection"
+- extendedWaitUntil:
+    visible: "Internet connection"
+    timeout: 30000
+- back
+- scrollUntilVisible:
+    element:
+      id: "option_troubleshoot_connection"
     direction: DOWN
     timeout: 10000
-    label: "Scroll to Experimental features"
 
-- assertVisible: "Experimental features"
+# The plugin list has a Back button where Settings has Navigate up.
+- scrollUntilVisible:
+    element:
+      id: "option_site_plugins"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "option_site_plugins"
+- extendedWaitUntil:
+    visible: "Back"
+    timeout: 30000
+- back
+- scrollUntilVisible:
+    element:
+      id: "option_site_plugins"
+    direction: DOWN
+    timeout: 10000
 
 - scrollUntilVisible:
-    element: "About the app"
+    element:
+      id: "option_store_name"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "option_store_name"
+- extendedWaitUntil:
+    visible: "Update store name"
+    timeout: 30000
+- tapOn: "Cancel"
+- scrollUntilVisible:
+    element:
+      id: "option_store_name"
     direction: DOWN
     timeout: 10000
-    label: "Scroll to About section"
 
-- assertVisible: "About the app"
+- scrollUntilVisible:
+    element:
+      id: "option_notifications"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "option_notifications"
+- extendedWaitUntil:
+    visible: "Push notifications"
+    timeout: 30000
+- back
+- scrollUntilVisible:
+    element:
+      id: "option_notifications"
+    direction: DOWN
+    timeout: 10000
+
+- scrollUntilVisible:
+    element:
+      id: "option_theme"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "option_theme"
+- extendedWaitUntil:
+    visible: "Light"
+    timeout: 30000
+- back
+- scrollUntilVisible:
+    element:
+      id: "option_theme"
+    direction: DOWN
+    timeout: 10000
+
+# Image optimization is a switch, not a screen, and stays as it is.
+- scrollUntilVisible:
+    element:
+      id: "option_image_optimization"
+    direction: DOWN
+    timeout: 10000
+
+- scrollUntilVisible:
+    element:
+      id: "option_privacy"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "option_privacy"
+- extendedWaitUntil:
+    notVisible:
+      id: "option_privacy"
+    timeout: 15000
+- extendedWaitUntil:
+    visible: "Privacy settings"
+    timeout: 30000
+- back
+- scrollUntilVisible:
+    element:
+      id: "option_privacy"
+    direction: DOWN
+    timeout: 10000
+
+- scrollUntilVisible:
+    element:
+      id: "option_beta_features"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "option_beta_features"
+- extendedWaitUntil:
+    notVisible:
+      id: "option_beta_features"
+    timeout: 15000
+- extendedWaitUntil:
+    visible: "Experimental features"
+    timeout: 30000
+- back
+- scrollUntilVisible:
+    element:
+      id: "option_beta_features"
+    direction: DOWN
+    timeout: 10000
+
+- scrollUntilVisible:
+    element:
+      id: "option_send_feedback"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "option_send_feedback"
+- extendedWaitUntil:
+    visible: "How can we improve?"
+    timeout: 30000
+- back
+- scrollUntilVisible:
+    element:
+      id: "option_send_feedback"
+    direction: DOWN
+    timeout: 10000
+
+- scrollUntilVisible:
+    element:
+      id: "option_about"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "option_about"
+- extendedWaitUntil:
+    visible: "About Woo"
+    timeout: 30000
+- back
+- scrollUntilVisible:
+    element:
+      id: "option_about"
+    direction: DOWN
+    timeout: 10000
+
+- scrollUntilVisible:
+    element:
+      id: "option_licenses"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "option_licenses"
+- extendedWaitUntil:
+    notVisible:
+      id: "option_licenses"
+    timeout: 15000
+- extendedWaitUntil:
+    visible: "Open source licenses"
+    timeout: 30000
+- back
+- scrollUntilVisible:
+    element:
+      id: "option_licenses"
+    direction: DOWN
+    timeout: 10000
+
+- scrollUntilVisible:
+    element:
+      id: "option_account_settings"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "option_account_settings"
+- extendedWaitUntil:
+    notVisible:
+      id: "option_account_settings"
+    timeout: 15000
+- extendedWaitUntil:
+    visible: "Account Settings"
+    timeout: 30000
+- back
+- scrollUntilVisible:
+    element:
+      id: "option_account_settings"
+    direction: DOWN
+    timeout: 10000
 
 - scrollUntilVisible:
     element: "Log out"

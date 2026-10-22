@@ -24,7 +24,7 @@ Use this skill only for repairing existing Maestro smoke flows under `.maestro/f
    - `.maestro/scripts/check-smoke-coverage.py`
    - `source .maestro/scripts/configure-toolchain.sh && maestro check-syntax <flow>`
 3. Reproduce on a device:
-   - `source .maestro/scripts/configure-toolchain.sh && .maestro/scripts/run-smoke-tests.sh --seed --include-tags flaky_quarantine --device <serial> <flow>`
+   - `source .maestro/scripts/configure-toolchain.sh && .maestro/scripts/run-smoke-tests.sh --seed --include-tags quarantine --device <serial> <flow>`
 4. At the failure point, use Maestro MCP `inspect_screen`.
 5. Compare the failing selector with the hierarchy:
    - Prefer `id:` selectors exposed through `testTag`.

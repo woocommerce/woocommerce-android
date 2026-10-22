@@ -41,16 +41,11 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import dagger.android.support.AndroidSupportInjection;
 
 public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> implements TextWatcher,
-        OnEditorCommitListener, ConnectionCallbacks, OnConnectionFailedListener {
+        OnEditorCommitListener {
     private static final String KEY_GOOGLE_EMAIL = "KEY_GOOGLE_EMAIL";
     private static final String KEY_HAS_DISMISSED_EMAIL_HINTS = "KEY_HAS_DISMISSED_EMAIL_HINTS";
     private static final String KEY_IS_DISPLAYING_EMAIL_HINTS = "KEY_IS_DISPLAYING_EMAIL_HINTS";
@@ -58,8 +53,6 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
     private static final String KEY_OLD_SITES_IDS = "KEY_OLD_SITES_IDS";
     private static final String KEY_REQUESTED_EMAIL = "KEY_REQUESTED_EMAIL";
     private static final String KEY_EMAIL_ERROR_RES = "KEY_EMAIL_ERROR_RES";
-    private static final String LOG_TAG = LoginEmailFragment.class.getSimpleName();
-    private static final int GOOGLE_API_CLIENT_ID = 1002;
 
     private static final String ARG_LOGIN_SITE_URL = "ARG_LOGIN_SITE_URL";
     private static final String ARG_SIGNUP_FROM_LOGIN_ENABLED = "ARG_SIGNUP_FROM_LOGIN_ENABLED";
@@ -71,7 +64,6 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
     public static final int MAX_EMAIL_LENGTH = 100;
 
     private ArrayList<Integer> mOldSitesIDs = new ArrayList<>();
-    private GoogleApiClient mGoogleApiClient;
     private String mGoogleEmail;
     private String mRequestedEmail;
     private boolean mIsSocialLogin;
@@ -334,23 +326,7 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
     @Override
     public void onStart() {
         super.onStart();
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                .addConnectionCallbacks(LoginEmailFragment.this)
-                .enableAutoManage(getActivity(), GOOGLE_API_CLIENT_ID, LoginEmailFragment.this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API)
-                .build();
         showEmailError();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.stopAutoManage(getActivity());
-            if (mGoogleApiClient.isConnected()) {
-                mGoogleApiClient.disconnect();
-            }
-        }
     }
 
     @Override
@@ -574,20 +550,5 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
     protected void onLoginFinished() {
         mAnalyticsListener.trackAnalyticsSignIn(true);
         mLoginListener.loggedInViaSocialAccount(mOldSitesIDs, false);
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        AppLog.d(T.NUX, LOG_TAG + ": Google API client connected");
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        AppLog.d(T.NUX, LOG_TAG + ": Google API connection result: " + connectionResult);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        AppLog.d(T.NUX, LOG_TAG + ": Google API client connection suspended");
     }
 }

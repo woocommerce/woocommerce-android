@@ -3,7 +3,9 @@ package com.woocommerce.android.ui.orders.shippinglabels
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.FileUtils
+import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
@@ -13,11 +15,14 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSe
 import com.woocommerce.android.util.Base64Decoder
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
@@ -31,6 +36,7 @@ import kotlin.test.assertNotNull
 class PrintShippingLabelViewModelTest : BaseUnitTest() {
     companion object {
         private const val REMOTE_SHIPPING_LABEL_ID = 1L
+        private const val OTHER_SHIPPING_LABEL_ID = 2L
     }
 
     private val repository: ShippingLabelRepository = mock()
@@ -41,7 +47,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
     private var savedState = PrintShippingLabelFragmentArgs(shippingLabelIds = longArrayOf(REMOTE_SHIPPING_LABEL_ID))
         .toSavedStateHandle()
 
-    private val printShippingLabelViewState = PrintShippingLabelViewState()
+    private val printShippingLabelViewState = PrintShippingLabelViewState(isPrintEnabled = true)
     private lateinit var viewModel: PrintShippingLabelViewModel
 
     private fun initViewModel() {
@@ -208,12 +214,11 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
 
         initViewModel()
 
-        var isLabelExpired: Boolean? = null
-        viewModel.viewStateData.observeForever { _, new ->
-            isLabelExpired = new.isLabelExpired
-        }
+        var viewState: PrintShippingLabelViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
-        assertThat(isLabelExpired).isTrue()
+        assertThat(viewState?.isLabelExpired).isTrue()
+        assertThat(viewState?.isPrintEnabled).isFalse()
     }
 
     @Test
@@ -225,13 +230,74 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
 
         initViewModel()
 
-        var isLabelExpired: Boolean? = null
-        viewModel.viewStateData.observeForever { _, new ->
-            isLabelExpired = new.isLabelExpired
+        var viewState: PrintShippingLabelViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> viewState = new }
+
+        assertThat(viewState?.isLabelExpired).isFalse()
+        assertThat(viewState?.isPrintEnabled).isTrue()
+    }
+
+    @Test
+    fun `given the label is still loading, when the screen opens, then printing is disabled until it loads`() =
+        testBlocking {
+            val label = CompletableDeferred<ShippingLabel?>()
+            whenever(repository.getShippingLabelByOrderIdAndLabelId(any(), any()))
+                .doSuspendableAnswer { label.await() }
+            initViewModel()
+
+            var viewState: PrintShippingLabelViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> viewState = new }
+
+            assertThat(viewState?.isPrintEnabled).isFalse()
+
+            label.complete(OrderTestUtils.generateShippingLabel(shippingLabelId = REMOTE_SHIPPING_LABEL_ID))
+
+            assertThat(viewState?.isPrintEnabled).isTrue()
         }
 
-        assertThat(isLabelExpired).isFalse()
-    }
+    @Test
+    fun `given labels with commercial invoices, when preview is completed, then show the customs forms`() =
+        testBlocking {
+            val invoiceUrl = "https://example.com/invoice.pdf"
+            savedState = PrintShippingLabelFragmentArgs(
+                shippingLabelIds = longArrayOf(REMOTE_SHIPPING_LABEL_ID, OTHER_SHIPPING_LABEL_ID)
+            ).toSavedStateHandle()
+            doReturn(
+                OrderTestUtils.generateShippingLabel(shippingLabelId = REMOTE_SHIPPING_LABEL_ID)
+                    .copy(commercialInvoiceUrl = invoiceUrl)
+            ).whenever(repository).getShippingLabelByOrderIdAndLabelId(any(), eq(REMOTE_SHIPPING_LABEL_ID))
+            doReturn(
+                OrderTestUtils.generateShippingLabel(shippingLabelId = OTHER_SHIPPING_LABEL_ID)
+                    .copy(commercialInvoiceUrl = null)
+            ).whenever(repository).getShippingLabelByOrderIdAndLabelId(any(), eq(OTHER_SHIPPING_LABEL_ID))
+            initViewModel()
+
+            var event: ViewPrintCustomsForm? = null
+            viewModel.event.observeForever {
+                if (it is ViewPrintCustomsForm) event = it
+            }
+
+            viewModel.onPreviewLabelCompleted()
+
+            assertThat(event?.invoices).containsExactly(invoiceUrl)
+        }
+
+    @Test
+    fun `given no label has a commercial invoice, when preview is completed, then don't show customs forms`() =
+        testBlocking {
+            doReturn(OrderTestUtils.generateShippingLabel(shippingLabelId = REMOTE_SHIPPING_LABEL_ID))
+                .whenever(repository).getShippingLabelByOrderIdAndLabelId(any(), any())
+            initViewModel()
+
+            var event: ViewPrintCustomsForm? = null
+            viewModel.event.observeForever {
+                if (it is ViewPrintCustomsForm) event = it
+            }
+
+            viewModel.onPreviewLabelCompleted()
+
+            assertThat(event).isNull()
+        }
 
     @Test
     fun `when printing a single label, then show the correct screen title`() {

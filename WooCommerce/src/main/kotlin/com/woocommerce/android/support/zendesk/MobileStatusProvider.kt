@@ -210,7 +210,7 @@ class MobileStatusProvider @Inject constructor(
     }
 
     private suspend fun storeNotificationsSection(selectedSite: SiteModel) = listOf(
-        entry("Push registration", pushNotificationRegistrationStatus(selectedSite.siteId).name)
+        entry("Push registration", pushNotificationRegistrationStatus(selectedSite).name)
     ) + alertSettings(selectedSite)
 
     private suspend fun alertSettings(selectedSite: SiteModel): List<String> {
@@ -324,6 +324,9 @@ class MobileStatusProvider @Inject constructor(
             // on a device that is rarely on Wi-Fi has a catalog that falls behind without anything failing.
             safeEntry("Full sync on cellular allowed") {
                 posPreferencesRepository.allowCellularDataUpdate.first()
+            },
+            safeEntry("Payment success sound enabled") {
+                posPreferencesRepository.isPaymentSuccessSoundEnabled.first()
             },
             POS_REASON_HINT.takeIf { !tabVisible || !launchable }
         )

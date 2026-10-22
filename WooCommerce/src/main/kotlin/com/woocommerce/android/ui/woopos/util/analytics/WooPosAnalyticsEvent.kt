@@ -666,6 +666,18 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "store_details_tapped"
         }
 
+        data object PaymentsTapped : Event() {
+            override val name: String = "payments_tapped"
+        }
+
+        data class PaymentSuccessSoundToggled(val isEnabled: Boolean) : Event() {
+            override val name: String = "payment_success_sound_toggled"
+
+            init {
+                addProperties(mapOf("enabled" to isEnabled.toString()))
+            }
+        }
+
         data object LocalCatalogTapped : Event() {
             override val name: String = "local_catalog_tapped"
         }
@@ -1224,7 +1236,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "card_present_collect_payment_cancelled"
         }
 
-        data object CardPresentCollectPaymentFailed : PaymentFlowTrackerEvent() {
+        class CardPresentCollectPaymentFailed : PaymentFlowTrackerEvent() {
             override val name: String = "card_present_collect_payment_failed"
         }
 
