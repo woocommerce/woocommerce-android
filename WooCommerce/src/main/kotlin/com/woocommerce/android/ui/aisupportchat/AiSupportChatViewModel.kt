@@ -31,7 +31,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.lastOrNull
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -400,7 +400,7 @@ class AiSupportChatViewModel @Inject constructor(
             it.copy(
                 input = "",
                 messages = listOf(greetingMessage()),
-                loginContext = contextProvider.buildLoginContext(),
+                loginContext = AiSupportChatLoginContext.DuringLogin(contextProvider.buildLoginContext()),
                 hasStartedChat = true,
                 hasProceededToChat = true,
                 canPersistChatHistory = false,
@@ -470,7 +470,7 @@ class AiSupportChatViewModel @Inject constructor(
                 selectedIssueType = SupportIssueType.OTHER,
                 diagnosticResult = result,
                 diagnosticLog = failure.supportDetails,
-                loginContext = contextProvider.buildLoginContext(),
+                loginContext = AiSupportChatLoginContext.DuringLogin(contextProvider.buildLoginContext()),
                 launchExtraTags = listOf(LoginUnexpectedResponseFailure.SUPPORT_TAG),
                 hasProceededToChat = true,
                 hasStartedChat = true,
@@ -607,14 +607,16 @@ class AiSupportChatViewModel @Inject constructor(
         val context = if (chatId == null) {
             val statusReport = initialStatusReport
                 ?: contextProvider.buildStatusReport(state.siteAddress).also { initialStatusReport = it }
-            val loginDiagnosticResult = state.loginContext?.let {
-                diagnosticsService.runLoginDiagnostics().lastOrNull()
+            val (loginDetails, loginDiagnosticResult) = when (val loginContext = state.loginContext) {
+                AiSupportChatLoginContext.NotDuringLogin -> null to null
+                is AiSupportChatLoginContext.DuringLogin ->
+                    loginContext.details to diagnosticsService.runLoginDiagnostics().last()
             }
             contextProvider.buildInitialContext(
                 diagnosticResult = loginDiagnosticResult.withStatusesOf(state.diagnosticResult),
                 siteAddress = state.siteAddress,
                 statusReport = statusReport,
-                loginContext = state.loginContext
+                loginContext = loginDetails
             )
         } else {
             JsonObject()
@@ -1094,7 +1096,7 @@ data class AiSupportChatViewState(
     val selectedIssueLabel: String? = null,
     val launchExtraTags: List<String> = emptyList(),
     val diagnosticResult: DiagnosticResult? = null,
-    val loginContext: String? = null,
+    val loginContext: AiSupportChatLoginContext = AiSupportChatLoginContext.NotDuringLogin,
     val diagnosticLog: String? = null,
     val diagnosticSuggestedActionOverride: SuggestedFixAction? = null,
     val isRunningDiagnostics: Boolean = false,
@@ -1169,6 +1171,11 @@ data class AiSupportChatViewState(
     private companion object {
         const val MIN_BOT_RESPONSES_FOR_RESOLUTION_ACTION = 2
     }
+}
+
+sealed interface AiSupportChatLoginContext {
+    data object NotDuringLogin : AiSupportChatLoginContext
+    data class DuringLogin(val details: String) : AiSupportChatLoginContext
 }
 
 enum class HumanSupportContactSource {

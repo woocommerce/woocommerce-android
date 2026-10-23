@@ -30,15 +30,14 @@ class SupportChatContextProvider @Inject constructor(
         )
     }
 
-    fun buildLoginContext(): String? {
-        val lines = listOfNotNull(
+    fun buildLoginContext(): String =
+        listOfNotNull(
+            "# Login context",
             unifiedLoginTracker.getFlow()?.let { "Login flow: ${it.value}" },
             unifiedLoginTracker.stepBeforeHelp?.let { "Login step: ${it.value}" },
             unifiedLoginTracker.enteredSiteAddress?.let { "Site address entered: ${it.withoutPersonalData()}" },
             unifiedLoginTracker.lastShownError?.let { "Last error shown: ${it.withoutPersonalData()}" }
-        )
-        return lines.takeIf { it.isNotEmpty() }?.let { listOf("# Login context").plus(it).joinToString("\n") }
-    }
+        ).joinToString("\n")
 
     fun buildInitialContext(
         diagnosticResult: DiagnosticResult? = null,

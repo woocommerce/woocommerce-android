@@ -239,10 +239,10 @@ class SupportChatContextProviderTest {
     }
 
     @Test
-    fun `given no login state, when building login context, then it is null`() {
+    fun `given no login state, when building login context, then it has only the header`() {
         val loginContext = contextProvider.buildLoginContext()
 
-        assertThat(loginContext).isNull()
+        assertThat(loginContext).isEqualTo("# Login context")
     }
 
     @Test
