@@ -9,6 +9,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wordpress.android.fluxc.network.UnexpectedStoreResponse;
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseKind;
 import org.wordpress.android.fluxc.network.UnexpectedStoreResponseLogger;
 import org.wordpress.android.fluxc.network.UnexpectedStoreResponseParseError;
 import org.wordpress.android.fluxc.network.rest.GsonRequest;
@@ -23,8 +24,12 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import kotlin.jvm.functions.Function1;
 
 public class WPAPIGsonRequest<T> extends GsonRequest<T> {
+    @Nullable private Function1<T, Boolean> mReadableBodyCheck;
+
     public WPAPIGsonRequest(int method, String url, Map<String, String> params, Map<String, Object> body,
                             Class<T> clazz, Listener<T> listener, OnWPAPIErrorListener errorListener) {
         super(method, params, body, url, clazz, null, listener, new WPAPIErrorListenerWrapper(errorListener));
@@ -43,19 +48,42 @@ public class WPAPIGsonRequest<T> extends GsonRequest<T> {
         addQueryParameters(params);
     }
 
+    /**
+     * With a check, a 2xx body that can't be read into the expected type, or that fails the check, is unexpected
+     * content, even when it's empty or valid JSON.
+     */
+    public void setReadableBodyCheck(@Nullable Function1<T, Boolean> readableBodyCheck) {
+        mReadableBodyCheck = readableBodyCheck;
+    }
+
     @Override
     @NonNull
     protected Response<ResponseWithHeaders<T>> parseNetworkResponse(@NonNull NetworkResponse response) {
         Response<ResponseWithHeaders<T>> result = super.parseNetworkResponse(response);
+        UnexpectedStoreResponse unexpectedStoreResponse = null;
         if (result.error instanceof ParseError) {
-            UnexpectedStoreResponse unexpectedStoreResponse =
-                    UnexpectedStoreResponse.from(response, getMethod(), getUrl());
-            if (unexpectedStoreResponse != null) {
-                return Response.error(
-                        new UnexpectedStoreResponseParseError(result.error.getCause(), unexpectedStoreResponse));
-            }
+            unexpectedStoreResponse = UnexpectedStoreResponse.from(response, getMethod(), getUrl());
+        }
+        if (unexpectedStoreResponse == null && isUnreadable(result)) {
+            unexpectedStoreResponse = UnexpectedStoreResponse.Companion.of(
+                    UnexpectedStoreResponseKind.UNEXPECTED_CONTENT, response, getMethod(), getUrl());
+        }
+        if (unexpectedStoreResponse != null) {
+            Throwable cause = result.error != null ? result.error.getCause() : null;
+            return Response.error(new UnexpectedStoreResponseParseError(cause, unexpectedStoreResponse));
         }
         return result;
+    }
+
+    private boolean isUnreadable(@NonNull Response<ResponseWithHeaders<T>> result) {
+        if (mReadableBodyCheck == null) {
+            return false;
+        }
+        if (!result.isSuccess()) {
+            return result.error instanceof ParseError;
+        }
+        T data = result.result.getData();
+        return data == null || !mReadableBodyCheck.invoke(data);
     }
 
     @Override
