@@ -46,7 +46,7 @@ class SupportChatContextProvider @Inject constructor(
             resolvedSiteAddress?.let { addProperty("site_url", it) }
             listOfNotNull(
                 diagnosticResult?.toTroubleshootingResults(),
-                statusReport?.takeIf { it.isNotBlank() }
+                statusReport
             ).takeIf { it.isNotEmpty() }?.let { sections ->
                 addProperty("troubleshootingResults", sections.joinToString(separator = "\n\n"))
             }
