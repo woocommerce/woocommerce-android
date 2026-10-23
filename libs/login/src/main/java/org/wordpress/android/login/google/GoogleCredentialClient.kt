@@ -77,9 +77,16 @@ internal fun Credential.toGoogleCredentialResult(): GoogleCredentialResult {
 
     return try {
         val credential = GoogleIdTokenCredential.createFrom(data)
+        val email = credential.email
+        if (email.isNullOrBlank()) {
+            return GoogleCredentialResult.Failure(
+                errorType = GoogleCredentialResult.ERROR_TYPE_INVALID_ID_TOKEN,
+                errorMessage = "Google ID token is missing an email address"
+            )
+        }
         GoogleCredentialResult.Success(
             idToken = credential.idToken,
-            email = credential.id,
+            email = email,
             displayName = credential.displayName.orEmpty(),
             photoUrl = credential.profilePictureUri?.toString().orEmpty()
         )
