@@ -897,7 +897,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onHardwareBarcodeScanned(status: CodeScannerStatus.Success) {
         if (viewState.isIdle && viewState.isEditable) {
-            handleBarcodeScannedStatus(status)
+            fetchProductBySKU(BarcodeOptions(sku = status.code, barcodeFormat = status.format))
         }
     }
 

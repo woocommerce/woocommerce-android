@@ -588,7 +588,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list) {
         }
         listenForHardwareBarcodes(hardwareBarcodeScanner, ScanningSource.ORDER_LIST) { status ->
             if (_binding?.orderListComposeContainer?.isVisible == true) {
-                viewModel.handleBarcodeScannedStatus(status)
+                viewModel.onHardwareBarcodeScanned(status)
             }
         }
         handleResult<Long>(KEY_ORDER_ID) {

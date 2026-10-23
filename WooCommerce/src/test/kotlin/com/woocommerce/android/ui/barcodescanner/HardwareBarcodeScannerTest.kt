@@ -83,7 +83,7 @@ class HardwareBarcodeScannerTest : BaseUnitTest() {
     fun `given listening, when a short SKU is typed with enter, then it is scanned`() = testBlocking {
         // GIVEN
         val scanner = createScanner()
-        scanner.startListening(onBarcodeScanned)
+        scanner.startListening(ScanningSource.ORDER_LIST, onBarcodeScanned)
 
         // WHEN
         "123\n".forEach { scanner.onKeyDown(it.code, isTextInputFocused = false) }

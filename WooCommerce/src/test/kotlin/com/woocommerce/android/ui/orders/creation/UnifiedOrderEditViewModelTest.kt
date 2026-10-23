@@ -647,6 +647,19 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when a hardware barcode is scanned, then camera scan success is not tracked`() = testBlocking {
+        // GIVEN
+        createSut()
+
+        // WHEN
+        sut.onHardwareBarcodeScanned(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+
+        // THEN
+        verify(fetchProductByIdentifier).invoke("12345", BarcodeFormat.FormatUPCA)
+        verify(barcodeScanningTracker, never()).trackSuccess(any())
+    }
+
+    @Test
     fun `given a scan is in progress, when a hardware barcode is scanned, then it is ignored`() = testBlocking {
         // GIVEN
         createSut()
