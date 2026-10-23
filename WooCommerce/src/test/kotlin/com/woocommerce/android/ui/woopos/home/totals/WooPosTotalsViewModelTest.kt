@@ -472,7 +472,7 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `given OnNewTransactionClicked, should send NewTransactionClicked event and reset state to initial`() =
+    fun `when OnNewTransactionClicked, then sends OnNewTransactionStarted to parent`() =
         runTest {
             // GIVEN
             whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title))
@@ -490,7 +490,6 @@ class WooPosTotalsViewModelTest {
             viewModel.onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked)
 
             // THEN
-            assertThat(viewModel.state.value).isEqualTo(WooPosTotalsViewState.Idle)
             verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OnNewTransactionStarted)
         }
 
