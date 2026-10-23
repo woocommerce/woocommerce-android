@@ -9,6 +9,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import java.util.Date
 
@@ -17,6 +18,7 @@ class HardwareBarcodeScannerTest : BaseUnitTest() {
     private val currentTimeProvider: CurrentTimeProvider = mock {
         on { currentDate() } doReturn Date(0)
     }
+    private val barcodeScanningTracker: BarcodeScanningTracker = mock()
     private val scans = mutableListOf<CodeScannerStatus.Success>()
     private val onBarcodeScanned: (CodeScannerStatus.Success) -> Unit = { scans.add(it) }
 
@@ -24,6 +26,7 @@ class HardwareBarcodeScannerTest : BaseUnitTest() {
         appCoroutineScope = backgroundScope,
         dispatchers = coroutinesTestRule.testDispatchers,
         currentTimeProvider = currentTimeProvider,
+        barcodeScanningTracker = barcodeScanningTracker,
     )
 
     @Test
@@ -40,6 +43,7 @@ class HardwareBarcodeScannerTest : BaseUnitTest() {
         assertThat(scans).containsExactly(
             CodeScannerStatus.Success(code = "4006381333931", format = BarcodeFormat.FormatEAN13)
         )
+        verify(barcodeScanningTracker).trackHardwareScanSuccess()
     }
 
     @Test

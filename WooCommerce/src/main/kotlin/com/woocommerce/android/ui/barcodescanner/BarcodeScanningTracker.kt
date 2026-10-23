@@ -21,6 +21,10 @@ class BarcodeScanningTracker @Inject constructor(
         )
     }
 
+    fun trackHardwareScanSuccess() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.HARDWARE_BARCODE_SCANNING_SUCCESS)
+    }
+
     fun trackSuccess(source: ScanningSource) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.BARCODE_SCANNING_SUCCESS,

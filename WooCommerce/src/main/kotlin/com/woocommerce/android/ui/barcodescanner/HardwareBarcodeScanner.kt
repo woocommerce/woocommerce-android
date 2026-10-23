@@ -18,6 +18,7 @@ class HardwareBarcodeScanner @Inject constructor(
     @AppCoroutineScope appCoroutineScope: CoroutineScope,
     dispatchers: CoroutineDispatchers,
     currentTimeProvider: CurrentTimeProvider,
+    private val barcodeScanningTracker: BarcodeScanningTracker,
 ) {
     private var onBarcodeScanned: ((CodeScannerStatus.Success) -> Unit)? = null
 
@@ -50,9 +51,12 @@ class HardwareBarcodeScanner @Inject constructor(
 
     private fun onBarcodeEvent(result: BarcodeInputDetector.BarcodeResult) {
         when (result) {
-            is BarcodeInputDetector.BarcodeResult.Success -> onBarcodeScanned?.invoke(
-                CodeScannerStatus.Success(code = result.barcode, format = result.barcode.inferBarcodeFormat())
-            )
+            is BarcodeInputDetector.BarcodeResult.Success -> {
+                barcodeScanningTracker.trackHardwareScanSuccess()
+                onBarcodeScanned?.invoke(
+                    CodeScannerStatus.Success(code = result.barcode, format = result.barcode.inferBarcodeFormat())
+                )
+            }
             is BarcodeInputDetector.BarcodeResult.Error -> Unit
         }
     }

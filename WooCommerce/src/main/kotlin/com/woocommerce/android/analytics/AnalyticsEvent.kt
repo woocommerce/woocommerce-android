@@ -324,6 +324,7 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     // -- Barcode Scanner
     BARCODE_SCANNING_SUCCESS,
     BARCODE_SCANNING_FAILURE,
+    HARDWARE_BARCODE_SCANNING_SUCCESS,
 
     // -- Scan to Update Inventory
     PRODUCT_LIST_PRODUCT_BARCODE_SCANNING_TAPPED,
