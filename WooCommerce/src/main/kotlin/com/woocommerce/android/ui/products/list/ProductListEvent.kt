@@ -32,5 +32,6 @@ sealed class ProductListEvent : MultiLiveEvent.Event() {
 
     data object OpenEmptyProduct : ProductListEvent()
 
-    data class ShowBarcodeScanner(val scannedBarcode: CodeScannerStatus.Success?) : ProductListEvent()
+    data object ShowBarcodeScanner : ProductListEvent()
+    data class ShowScanToUpdateInventory(val scannedBarcode: CodeScannerStatus.Success) : ProductListEvent()
 }
