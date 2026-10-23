@@ -49,9 +49,9 @@ fun Modifier.listenForBarcodes(
             if (!enabled) return@onKeyEvent false
 
             if (keyEvent.type == KeyEventType.KeyDown) {
-                val pressedKey = keyEvent.utf16CodePoint.toBarcodeInputCharOrNull()
-                if (pressedKey != null) {
-                    return@onKeyEvent detector.handleKeyInput(pressedKey)
+                val charCode = keyEvent.utf16CodePoint
+                if (charCode.isBarcodeInputChar()) {
+                    return@onKeyEvent detector.handleKeyInput(charCode.toChar())
                 }
             }
 
@@ -59,15 +59,12 @@ fun Modifier.listenForBarcodes(
         }
 }
 
-fun Int.toBarcodeInputCharOrNull(): Char? {
+fun Int.isBarcodeInputChar(): Boolean {
     val isValidChar = this > 0
     val isPrintableOrNewline = this == '\n'.code ||
         this == '\r'.code ||
         this >= FIRST_PRINTABLE_CHAR_CODE
-    return when (isValidChar && isPrintableOrNewline) {
-        true -> toChar()
-        false -> null
-    }
+    return isValidChar && isPrintableOrNewline
 }
 
 class BarcodeInputDetector(

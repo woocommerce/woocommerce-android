@@ -40,11 +40,10 @@ class HardwareBarcodeScanner @Inject constructor(
     }
 
     fun onKeyDown(unicodeChar: Int, isTextInputFocused: Boolean): Boolean {
-        val char = unicodeChar.toBarcodeInputCharOrNull()
         return when {
-            onBarcodeScanned == null || isTextInputFocused || char == null -> false
-            char.isWhitespace() && !detector.hasPendingInput -> false
-            else -> detector.handleKeyInput(char)
+            onBarcodeScanned == null || isTextInputFocused || !unicodeChar.isBarcodeInputChar() -> false
+            unicodeChar.toChar().isWhitespace() && !detector.hasPendingInput -> false
+            else -> detector.handleKeyInput(unicodeChar.toChar())
         }
     }
 
