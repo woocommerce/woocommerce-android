@@ -289,8 +289,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         mWebauthnNonce = getArguments().getString(ARG_WEBAUTHN_NONCE);
         mSupportedAuthTypes = handleSupportedAuthTypesParameter(
                 getArguments().getStringArrayList(ARG_2FA_SUPPORTED_AUTH_TYPES));
-        mIsSecurityKeyPrimary = !mIsSocialLogin
-                && mSupportedAuthTypes.contains(SupportedAuthTypes.WEBAUTHN)
+        mIsSecurityKeyPrimary = mSupportedAuthTypes.contains(SupportedAuthTypes.WEBAUTHN)
                 && !mSupportedAuthTypes.contains(SupportedAuthTypes.AUTHENTICATOR)
                 && !mSupportedAuthTypes.contains(SupportedAuthTypes.SMS)
                 && !mSupportedAuthTypes.contains(SupportedAuthTypes.EMAIL);
@@ -650,15 +649,13 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
     }
 
     @NonNull private CharSequence getInitialInstructions() {
-        if (mIsSocialLogin) {
-            return getString(R.string.enter_verification_code);
-        } else if (mIsSecurityKeyPrimary) {
+        if (mIsSecurityKeyPrimary) {
             return getString(R.string.notification_security_key_needed);
         } else if (mSupportedAuthTypes.contains(SupportedAuthTypes.AUTHENTICATOR)) {
             return getString(R.string.enter_verification_code_authenticator);
-        } else if (mSupportedAuthTypes.contains(SupportedAuthTypes.SMS)) {
+        } else if (mSupportedAuthTypes.contains(SupportedAuthTypes.SMS) && !mIsSocialLogin) {
             return getSmsInstructions();
-        } else if (mSupportedAuthTypes.contains(SupportedAuthTypes.EMAIL)) {
+        } else if (mSupportedAuthTypes.contains(SupportedAuthTypes.EMAIL) && !mIsSocialLogin) {
             return getString(R.string.enter_verification_code_email);
         } else {
             return getString(R.string.enter_verification_code);
@@ -675,8 +672,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
             mSecurityKeyPrimaryButton.setVisibility(securityKeyMode ? View.VISIBLE : View.GONE);
         }
         if (mBackupCodeButton != null) {
-            boolean showBackupCodeButton = !mIsSocialLogin
-                    && !mBackupCodeRequested
+            boolean showBackupCodeButton = !mBackupCodeRequested
                     && mSupportedAuthTypes.contains(SupportedAuthTypes.BACKUP);
             mBackupCodeButton.setVisibility(showBackupCodeButton ? View.VISIBLE : View.GONE);
         }
@@ -750,7 +746,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
                     return null;
                 },
                 error -> {
-                    if (error instanceof GetCredentialCancellationException && !mIsSocialLogin) {
+                    if (error instanceof GetCredentialCancellationException) {
                         mAnalyticsListener.trackLoginSecurityKeyFailure();
                         endProgress();
                     } else {
