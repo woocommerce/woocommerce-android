@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
@@ -63,7 +65,19 @@ class BarcodeScanningFragment : BaseFragment() {
                             )
                         },
                         shouldRequestCameraPermission = true,
+                        overlayContent = {
+                            DefaultScannerOverlay(
+                                onHardwareScannerInfoClicked = viewModel::onHardwareScannerInfoClicked,
+                            )
+                        },
                     )
+                    val isHardwareScannerInfoVisible by viewModel.isHardwareScannerInfoVisible.collectAsState()
+                    if (isHardwareScannerInfoVisible) {
+                        HardwareBarcodeScannerInfoSheet(
+                            onTestScanSucceeded = viewModel::onHardwareScannerTestScanSucceeded,
+                            onDismissRequest = viewModel::onHardwareScannerInfoDismissed,
+                        )
+                    }
                 }
             }
         }

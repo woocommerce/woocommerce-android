@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.barcodescanner
 
 import android.content.res.Configuration
 import android.util.Size
-import androidx.annotation.StringRes
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageAnalysis
@@ -14,13 +13,18 @@ import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -37,6 +41,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import java.util.concurrent.TimeUnit
 import androidx.camera.core.Preview as CameraPreview
@@ -46,8 +51,7 @@ import androidx.camera.core.Preview as CameraPreview
 fun BarcodeScanner(
     onNewFrame: (ImageProxy) -> Unit,
     onBindingException: (Exception) -> Unit,
-    @StringRes overlayLabel: Int = R.string.barcode_scanning_scan_product_barcode_label,
-    overlayContent: @Composable () -> Unit = { DefaultScannerOverlay(overlayLabel = overlayLabel) },
+    overlayContent: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -140,7 +144,7 @@ fun BarcodeScanner(
 }
 
 @Composable
-internal fun DefaultScannerOverlay(@StringRes overlayLabel: Int) {
+internal fun DefaultScannerOverlay(onHardwareScannerInfoClicked: () -> Unit) {
     Column {
         Box(
             modifier = Modifier
@@ -156,13 +160,45 @@ internal fun DefaultScannerOverlay(@StringRes overlayLabel: Int) {
                 .background(colorResource(id = R.color.color_scrim_background)),
             contentAlignment = Alignment.TopCenter
         ) {
-            Text(
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
-                text = stringResource(overlayLabel)
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(dimensionResource(id = R.dimen.major_100)),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(text = stringResource(R.string.barcode_scanning_scan_product_barcode_label))
+                ScannerOptionsDivider()
+                HardwareBarcodeScannerButton(onClick = onHardwareScannerInfoClicked)
+            }
         }
     }
 }
+
+@Composable
+private fun ScannerOptionsDivider() {
+    val lineColor = LocalContentColor.current.copy(alpha = SCANNER_OPTIONS_DIVIDER_ALPHA)
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        HorizontalDivider(modifier = Modifier.weight(1f), color = lineColor)
+        Text(
+            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.minor_100)),
+            text = stringResource(R.string.barcode_scanning_or).uppercase(),
+            style = MaterialTheme.typography.labelMedium,
+        )
+        HorizontalDivider(modifier = Modifier.weight(1f), color = lineColor)
+    }
+}
+
+@Composable
+private fun HardwareBarcodeScannerButton(onClick: () -> Unit) {
+    WCColoredButton(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+        text = stringResource(R.string.barcode_scanning_hardware_scanner_info_link),
+    )
+}
+
+private const val SCANNER_OPTIONS_DIVIDER_ALPHA = 0.5f
 
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -171,7 +207,8 @@ private fun BarcodeScannerScreenPreview() {
     LegacyWooThemeWithBackground {
         BarcodeScanner(
             onNewFrame = {},
-            onBindingException = {}
+            onBindingException = {},
+            overlayContent = { DefaultScannerOverlay(onHardwareScannerInfoClicked = {}) },
         )
     }
 }
