@@ -742,9 +742,9 @@ class SitePickerViewModel @Inject constructor(
 
     fun onUnexpectedResponseRetryClick() {
         val failure = _unexpectedResponse.value ?: return
+        val site = getSelectedWooSite() ?: return
         unexpectedResponseTracker.trackActionTapped(failure, Action.RETRY)
         _unexpectedResponse.value = null
-        val site = getSelectedWooSite() ?: return
         setContinueInFlight(true)
         launch {
             try {
