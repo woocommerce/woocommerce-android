@@ -73,7 +73,10 @@ class BarcodeScanningFragment : BaseFragment() {
                     )
                     val isHardwareScannerInfoVisible by viewModel.isHardwareScannerInfoVisible.collectAsState()
                     if (isHardwareScannerInfoVisible) {
-                        HardwareBarcodeScannerInfoSheet(onDismissRequest = viewModel::onHardwareScannerInfoDismissed)
+                        HardwareBarcodeScannerInfoSheet(
+                            onTestScanSucceeded = viewModel::onHardwareScannerTestScanSucceeded,
+                            onDismissRequest = viewModel::onHardwareScannerInfoDismissed,
+                        )
                     }
                 }
             }

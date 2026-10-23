@@ -33,6 +33,7 @@ fun ScanToUpdateInventoryScreen(
     onManageStockClicked: () -> Unit,
     isHardwareScannerInfoVisible: State<Boolean>,
     onHardwareScannerInfoClicked: () -> Unit,
+    onHardwareScannerTestScanSucceeded: () -> Unit,
     onHardwareScannerInfoDismissed: () -> Unit,
 ) = LegacyWooThemeWithBackground {
     BarcodeScannerScreen(
@@ -48,7 +49,10 @@ fun ScanToUpdateInventoryScreen(
         },
     )
     if (isHardwareScannerInfoVisible.value) {
-        HardwareBarcodeScannerInfoSheet(onDismissRequest = onHardwareScannerInfoDismissed)
+        HardwareBarcodeScannerInfoSheet(
+            onTestScanSucceeded = onHardwareScannerTestScanSucceeded,
+            onDismissRequest = onHardwareScannerInfoDismissed,
+        )
     }
     if (viewState.value is ScanToUpdateInventoryViewModel.ViewState.Loading) {
         ProgressIndicator(backgroundColor = colorResource(id = R.color.color_scrim_background))

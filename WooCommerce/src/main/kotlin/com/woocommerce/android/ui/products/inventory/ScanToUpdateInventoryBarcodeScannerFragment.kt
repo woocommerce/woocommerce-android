@@ -69,6 +69,7 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
                 onManageStockClicked = viewModel::onManageStockClicked,
                 isHardwareScannerInfoVisible = scannerViewModel.isHardwareScannerInfoVisible.collectAsState(),
                 onHardwareScannerInfoClicked = scannerViewModel::onHardwareScannerInfoClicked,
+                onHardwareScannerTestScanSucceeded = scannerViewModel::onHardwareScannerTestScanSucceeded,
                 onHardwareScannerInfoDismissed = scannerViewModel::onHardwareScannerInfoDismissed,
             )
         }
