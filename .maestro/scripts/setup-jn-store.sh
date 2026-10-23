@@ -10,15 +10,21 @@
 # https://jurassic.ninja/create/?woocommerce&woocommerce-import-sample-data and
 # take the admin password from the wp-admin notice the site displays.
 #
+# With --no-jetpack-site instead of --site, it configures a WooCommerce site
+# without Jetpack for the push setup flow: it only creates the API keys and
+# writes the MAESTRO_WOO_NO_JETPACK_* values.
+#
 # Usage:
 #   setup-jn-store.sh --site <domain> [--site-password <password>] [--wpcom-user <email>]
 #                     [--admin-user <name>] [--admin-id <id>] [--env-out <path>] [--app-creds <path>]
+#   setup-jn-store.sh --no-jetpack-site <domain> [--site-password <password>]
+#                     [--admin-user <name>] [--admin-id <id>] [--env-out <path>]
 #
 # Credentials are resolved in this order, so a second run needs no arguments
-# beyond --site:
+# beyond the site:
 #   1. command-line flags
 #   2. existing values in .maestro/.env.local (the site password only when
-#      --site is the store already written there)
+#      the site is the store already written there)
 #   3. an interactive prompt (never echoed, never in shell history)
 #
 # The WordPress.com account must not have two-factor authentication enabled:
@@ -26,7 +32,7 @@
 
 set -uo pipefail
 
-SITE="" SITE_PASS="" WPCOM_USER="" WPCOM_PASS=""
+SITE="" NO_JETPACK_SITE="" SITE_PASS="" WPCOM_USER="" WPCOM_PASS=""
 ADMIN_USER="demo"
 ADMIN_ID="1"
 ENV_OUT=""
@@ -40,22 +46,30 @@ ok() { printf '  \033[32mok\033[0m %s\n' "$*"; }
 while [ $# -gt 0 ]; do
   case "$1" in
     --site) SITE="$2"; shift 2 ;;
+    --no-jetpack-site) NO_JETPACK_SITE="$2"; shift 2 ;;
     --site-password) SITE_PASS="$2"; shift 2 ;;
     --wpcom-user) WPCOM_USER="$2"; shift 2 ;;
     --admin-user) ADMIN_USER="$2"; shift 2 ;;
     --admin-id) ADMIN_ID="$2"; shift 2 ;;
     --env-out) ENV_OUT="$2"; shift 2 ;;
     --app-creds) APP_CREDS="$2"; shift 2 ;;
-    -h|--help) sed -n '2,25p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,31p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) die "unknown argument: $1" ;;
   esac
 done
 
-[ -n "$SITE" ] || die "--site is required"
-TOTAL_STEPS=7
+if [ -n "$NO_JETPACK_SITE" ]; then
+  [ -z "$SITE" ] || die "--site and --no-jetpack-site configure different stores, run the script once for each"
+  SITE="$NO_JETPACK_SITE"
+  TOTAL_STEPS=3
+else
+  [ -n "$SITE" ] || die "--site or --no-jetpack-site is required"
+  TOTAL_STEPS=7
+fi
 command -v expect >/dev/null || die "expect is required for password-based SSH"
 command -v python3 >/dev/null || die "python3 is required"
-[ -f "$APP_CREDS" ] || die "app credentials not found: $APP_CREDS (see Environment Setup in AGENTS.md)"
+[ -n "$NO_JETPACK_SITE" ] || [ -f "$APP_CREDS" ] \
+  || die "app credentials not found: $APP_CREDS (see Environment Setup in AGENTS.md)"
 
 if [ -z "$ENV_OUT" ]; then
   REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel 2>/dev/null)" || REPO_ROOT=""
@@ -94,24 +108,33 @@ prompt_secret() {
 # Resolution order per value: flag, then environment, then .env.local, then an
 # interactive prompt.
 [ -n "$SITE_PASS" ]   || SITE_PASS="${JN_SSH_PASS:-}"
-# The stored password belongs to the stored site, so a new site is asked for its own.
-if [ -z "$SITE_PASS" ] && [ "$(env_value MAESTRO_WOO_LAB_JETPACK_STORE_URL)" = "https://$SITE" ]; then
-  SITE_PASS="$(env_value MAESTRO_WOO_LAB_JETPACK_SITE_ADMIN_PASSWORD)"
+if [ -n "$NO_JETPACK_SITE" ]; then
+  STORED_URL_KEY=MAESTRO_WOO_NO_JETPACK_SITE_URL
+  STORED_PASS_KEY=MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD
+else
+  STORED_URL_KEY=MAESTRO_WOO_LAB_JETPACK_STORE_URL
+  STORED_PASS_KEY=MAESTRO_WOO_LAB_JETPACK_SITE_ADMIN_PASSWORD
 fi
-[ -n "$WPCOM_USER" ]  || WPCOM_USER="${MAESTRO_WOO_LAB_WPCOM_EMAIL:-}"
-[ -n "$WPCOM_USER" ]  || WPCOM_USER="$(env_value MAESTRO_WOO_LAB_WPCOM_EMAIL)"
-[ -n "$WPCOM_PASS" ]  || WPCOM_PASS="${MAESTRO_WOO_LAB_WPCOM_PASSWORD:-}"
-[ -n "$WPCOM_PASS" ]  || WPCOM_PASS="$(env_value MAESTRO_WOO_LAB_WPCOM_PASSWORD)"
+# The stored password belongs to the stored site, so a new site is asked for its own.
+if [ -z "$SITE_PASS" ] && [ "$(env_value "$STORED_URL_KEY")" = "https://$SITE" ]; then
+  SITE_PASS="$(env_value "$STORED_PASS_KEY")"
+fi
+if [ -z "$NO_JETPACK_SITE" ]; then
+  [ -n "$WPCOM_USER" ]  || WPCOM_USER="${MAESTRO_WOO_LAB_WPCOM_EMAIL:-}"
+  [ -n "$WPCOM_USER" ]  || WPCOM_USER="$(env_value MAESTRO_WOO_LAB_WPCOM_EMAIL)"
+  [ -n "$WPCOM_PASS" ]  || WPCOM_PASS="${MAESTRO_WOO_LAB_WPCOM_PASSWORD:-}"
+  [ -n "$WPCOM_PASS" ]  || WPCOM_PASS="$(env_value MAESTRO_WOO_LAB_WPCOM_PASSWORD)"
+fi
 
 # Prompting needs a terminal. Without one (an agent, a pipeline) the reads would
 # take EOF and fail several steps later with a misleading message, so say
 # exactly what is missing and how to supply it.
-if [ -z "$SITE_PASS" ] || [ -z "$WPCOM_USER" ] || [ -z "$WPCOM_PASS" ]; then
+if [ -z "$SITE_PASS" ] || { [ -z "$NO_JETPACK_SITE" ] && { [ -z "$WPCOM_USER" ] || [ -z "$WPCOM_PASS" ]; }; }; then
   if [ ! -t 0 ]; then
     printf 'error: missing credentials and no terminal to prompt on.\n' >&2
     [ -n "$SITE_PASS" ]  || printf '  site admin password: pass --site-password or set JN_SSH_PASS\n' >&2
-    [ -n "$WPCOM_USER" ] || printf '  WordPress.com account: set MAESTRO_WOO_LAB_WPCOM_EMAIL or add it to %s\n' "$(basename "$ENV_OUT")" >&2
-    [ -n "$WPCOM_PASS" ] || printf '  WordPress.com password: set MAESTRO_WOO_LAB_WPCOM_PASSWORD or add it to %s\n' "$(basename "$ENV_OUT")" >&2
+    [ -n "$NO_JETPACK_SITE" ] || [ -n "$WPCOM_USER" ] || printf '  WordPress.com account: set MAESTRO_WOO_LAB_WPCOM_EMAIL or add it to %s\n' "$(basename "$ENV_OUT")" >&2
+    [ -n "$NO_JETPACK_SITE" ] || [ -n "$WPCOM_PASS" ] || printf '  WordPress.com password: set MAESTRO_WOO_LAB_WPCOM_PASSWORD or add it to %s\n' "$(basename "$ENV_OUT")" >&2
     printf 'Or run this script directly in a terminal and it will prompt.\n' >&2
     exit 1
   fi
@@ -119,39 +142,19 @@ if [ -z "$SITE_PASS" ] || [ -z "$WPCOM_USER" ] || [ -z "$WPCOM_PASS" ]; then
 fi
 
 [ -n "$SITE_PASS" ] || prompt_secret SITE_PASS "site admin password for $SITE"
-if [ -z "$WPCOM_USER" ]; then
-  printf '  WordPress.com test account email: ' >&2
-  read -r WPCOM_USER
+[ -n "$SITE_PASS" ] || die "no site admin password supplied"
+if [ -z "$NO_JETPACK_SITE" ]; then
+  if [ -z "$WPCOM_USER" ]; then
+    printf '  WordPress.com test account email: ' >&2
+    read -r WPCOM_USER
+  fi
+  [ -n "$WPCOM_PASS" ] || prompt_secret WPCOM_PASS "WordPress.com password for $WPCOM_USER"
+  [ -n "$WPCOM_USER" ] || die "no WordPress.com account supplied"
+  [ -n "$WPCOM_PASS" ] || die "no WordPress.com password supplied"
 fi
-[ -n "$WPCOM_PASS" ] || prompt_secret WPCOM_PASS "WordPress.com password for $WPCOM_USER"
 
-[ -n "$SITE_PASS" ]  || die "no site admin password supplied"
-[ -n "$WPCOM_USER" ] || die "no WordPress.com account supplied"
-[ -n "$WPCOM_PASS" ] || die "no WordPress.com password supplied"
-
-WORK="$(mktemp -d)"
-trap 'rm -rf "$WORK"' EXIT
-chmod 700 "$WORK"
-
-cat > "$WORK/ssh.exp" <<'EXP'
-#!/usr/bin/expect -f
-set timeout 120
-set site [lindex $argv 0]
-set pass $env(JN_SSH_PASS)
-set cmd  [lindex $argv 1]
-log_user 0
-spawn ssh -o StrictHostKeyChecking=accept-new -o PubkeyAuthentication=no \
-          -o NumberOfPasswordPrompts=1 $site@sftp.wp.com $cmd
-expect {
-  -re {[Pp]assword:} { send "$pass\r"; log_user 1; exp_continue }
-  eof
-}
-EXP
-chmod +x "$WORK/ssh.exp"
-
-# The password goes through the environment rather than argv so it never
-# appears in `ps` output.
-remote() { JN_SSH_PASS="$SITE_PASS" "$WORK/ssh.exp" "$SITE" "$1" 2>/dev/null | tr -d '\r'; }
+JN_SSH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/jn-ssh.exp"
+remote() { JN_SSH_PASS="$SITE_PASS" "$JN_SSH" "$SITE" "$1" 2>/dev/null | tr -d '\r'; }
 
 # Run PHP on the site. The source is base64-encoded so quoting survives the
 # shell/ssh/wp-cli layers, and staged as a file because `wp eval-file -` does
@@ -161,6 +164,88 @@ remote_php() {
   php="${1//__ADMIN_ID__/$ADMIN_ID}"
   b64="$(printf '%s' "$php" | base64 | tr -d '\n')"
   remote "echo $b64 | base64 -d > /tmp/.jnsetup.php && wp eval-file /tmp/.jnsetup.php; rm -f /tmp/.jnsetup.php"
+}
+
+# WooCommerce exposes no REST endpoint for API keys, so insert the row the same
+# way its own admin-ajax handler does.
+create_api_keys() {
+  local keys verify
+  keys="$(remote_php '<?php
+$ck = "ck_" . wc_rand_hash();
+$cs = "cs_" . wc_rand_hash();
+global $wpdb;
+$ok = $wpdb->insert( $wpdb->prefix . "woocommerce_api_keys", array(
+  "user_id"         => __ADMIN_ID__,
+  "description"     => "maestro-smoke",
+  "permissions"     => "read_write",
+  "consumer_key"    => wc_api_hash( $ck ),
+  "consumer_secret" => $cs,
+  "truncated_key"   => substr( $ck, -7 ),
+), array( "%d", "%s", "%s", "%s", "%s", "%s" ) );
+if ( ! $ok ) { echo "ERR:insert failed\n"; exit( 1 ); }
+echo "CK:" . $ck . "\n" . "CS:" . $cs . "\n";')"
+  CK="$(printf '%s' "$keys" | sed -n 's/^CK:\(.*\)$/\1/p' | head -1)"
+  CS="$(printf '%s' "$keys" | sed -n 's/^CS:\(.*\)$/\1/p' | head -1)"
+  [ -n "$CK" ] && [ -n "$CS" ] || die "could not create API keys: $(printf '%s' "$keys" | head -3)"
+
+  verify="$(curl -s -o /dev/null -w '%{http_code}' -u "$CK:$CS" "https://$SITE/wp-json/wc/v3/products?per_page=1")"
+  [ "$verify" = "200" ] || die "the API keys do not authenticate (http=$verify)"
+  ok "keys created and verified as read_write"
+}
+
+# Each argument maps an env file name to the shell variable holding its value,
+# for example MAESTRO_WOO_LAB_CONSUMER_KEY=CK. Only the names go on the command
+# line; the values reach Python through the environment.
+write_env() {
+  local pair
+  if [ -f "$ENV_OUT" ]; then
+    BACKUP_DIR="${TMPDIR:-/tmp}"; BACKUP_DIR="${BACKUP_DIR%/}/maestro-env-backups"
+    mkdir -p "$BACKUP_DIR"; chmod 700 "$BACKUP_DIR"
+    BACKUP="$BACKUP_DIR/$(basename "$ENV_OUT").$(date +%Y%m%d-%H%M%S).$$"
+    cp "$ENV_OUT" "$BACKUP" || die "could not back up $ENV_OUT"
+    chmod 600 "$BACKUP"
+    # Deliberately outside the repository: .gitignore matches ".env.local"
+    # only, so a ".env.local.bak" sibling would not be ignored and could be
+    # committed with credentials in it.
+    ok "backed up the previous env file to $BACKUP"
+  fi
+
+  mkdir -p "$(dirname "$ENV_OUT")"
+  for pair in "$@"; do export "${pair#*=}"; done
+  python3 - "$ENV_OUT" "$@" <<'PY' || die "could not write $ENV_OUT${BACKUP:+; the previous copy is $BACKUP}"
+import os, re, sys, pathlib
+
+path = pathlib.Path(sys.argv[1])
+values = {}
+for pair in sys.argv[2:]:
+    name, _, variable = pair.partition("=")
+    values[name] = os.environ[variable]
+
+def quote(value):
+    if re.search(r"[\s()\"'!$&|;<>`\\#]", value):
+        return "'" + value.replace("'", "'\\''") + "'"
+    return value
+
+# Rewrite in place so hand-maintained lines and comments survive.
+lines = path.read_text(encoding="utf-8").splitlines() if path.exists() else []
+seen, out = set(), []
+for line in lines:
+    match = re.match(r"^([A-Z_]+)=", line)
+    if match and match.group(1) in values:
+        out.append(f"{match.group(1)}={quote(values[match.group(1)])}")
+        seen.add(match.group(1))
+    else:
+        out.append(line)
+missing = [k for k in values if k not in seen]
+if missing:
+    if out and out[-1].strip():
+        out.append("")
+    out.append("# Written by .maestro/scripts/setup-jn-store.sh")
+    out.extend(f"{k}={quote(values[k])}" for k in missing)
+path.write_text("\n".join(out).rstrip() + "\n", encoding="utf-8")
+path.chmod(0o600)
+PY
+  ok "wrote $ENV_OUT (mode 600)"
 }
 
 # JN provisions asynchronously and answers HTTP well before its plugins finish
@@ -181,7 +266,7 @@ echo "USER:" . ( get_user_by( "id", __ADMIN_ID__ ) ? "ok" : "MISSING" ) . "\n";'
       [ "$ssh_failures" -lt 3 ] || die "could not run wp-cli over SSH. Check the site admin password."
     fi
     printf '%s' "$STATE" | grep -q "WC:active" \
-      && printf '%s' "$STATE" | grep -q "JP:active" && break
+      && { [ -n "$NO_JETPACK_SITE" ] || printf '%s' "$STATE" | grep -q "JP:active"; } && break
   fi
   if [ "$(date +%s)" -ge "$DEADLINE" ]; then
     printf '  last state: http=%s %s\n' "$code" "$(printf '%s' "$STATE" | tr '\n' ' ')" >&2
@@ -190,7 +275,11 @@ echo "USER:" . ( get_user_by( "id", __ADMIN_ID__ ) ? "ok" : "MISSING" ) . "\n";'
   printf '  still provisioning (http=%s), waiting...\n' "$code"
   sleep 15
 done
-ok "site is up, WooCommerce and Jetpack active"
+if [ -n "$NO_JETPACK_SITE" ]; then
+  ok "site is up, WooCommerce active"
+else
+  ok "site is up, WooCommerce and Jetpack active"
+fi
 
 step "Checking SSH and admin user"
 if ! printf '%s' "$STATE" | grep -q "WPCLI:ok"; then
@@ -200,6 +289,21 @@ fi
 printf '%s' "$STATE" | grep -q "USER:ok" || die "no user with id $ADMIN_ID (try --admin-id)"
 ok "ssh and wp-cli working, admin user id $ADMIN_ID present"
 
+# The push setup flow signs in with the site credentials and creates its order
+# with the API keys, so the site needs nothing else.
+if [ -n "$NO_JETPACK_SITE" ]; then
+  step "Creating WooCommerce API keys and writing $(basename "$ENV_OUT")"
+  create_api_keys
+  STORE_URL="https://$SITE"
+  write_env \
+    MAESTRO_WOO_NO_JETPACK_SITE_URL=STORE_URL \
+    MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_USERNAME=ADMIN_USER \
+    MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD=SITE_PASS \
+    MAESTRO_WOO_NO_JETPACK_CONSUMER_KEY=CK \
+    MAESTRO_WOO_NO_JETPACK_CONSUMER_SECRET=CS
+  printf '\n\033[32mDone.\033[0m No-Jetpack store ready: https://%s\n' "$SITE"
+  exit 0
+fi
 
 # rest_do_request runs as an authenticated admin inside wp-cli, so no cookie or
 # REST nonce is needed for the two site-side Jetpack calls.
@@ -336,30 +440,8 @@ echo "SEEDED:" . $added_orders . " orders, " . $added_products . " products\n";'
 printf '%s' "$SEED" | grep -q "^SEEDED:" || die "could not add the store data: $(printf '%s' "$SEED" | head -3)"
 ok "$(printf '%s' "$SEED" | sed -n 's/^SEEDED://p') added; the store has 100 of each, 1 customer and the maestro10 coupon"
 
-# WooCommerce exposes no REST endpoint for API keys, so insert the row the same
-# way its own admin-ajax handler does.
 step "Creating WooCommerce API keys and writing $(basename "$ENV_OUT")"
-KEYS="$(remote_php '<?php
-$ck = "ck_" . wc_rand_hash();
-$cs = "cs_" . wc_rand_hash();
-global $wpdb;
-$ok = $wpdb->insert( $wpdb->prefix . "woocommerce_api_keys", array(
-  "user_id"         => __ADMIN_ID__,
-  "description"     => "maestro-smoke",
-  "permissions"     => "read_write",
-  "consumer_key"    => wc_api_hash( $ck ),
-  "consumer_secret" => $cs,
-  "truncated_key"   => substr( $ck, -7 ),
-), array( "%d", "%s", "%s", "%s", "%s", "%s" ) );
-if ( ! $ok ) { echo "ERR:insert failed\n"; exit( 1 ); }
-echo "CK:" . $ck . "\n" . "CS:" . $cs . "\n";')"
-CK="$(printf '%s' "$KEYS" | sed -n 's/^CK:\(.*\)$/\1/p' | head -1)"
-CS="$(printf '%s' "$KEYS" | sed -n 's/^CS:\(.*\)$/\1/p' | head -1)"
-[ -n "$CK" ] && [ -n "$CS" ] || die "could not create API keys: $(printf '%s' "$KEYS" | head -3)"
-
-VERIFY="$(curl -s -o /dev/null -w '%{http_code}' -u "$CK:$CS" "https://$SITE/wp-json/wc/v3/products?per_page=1")"
-[ "$VERIFY" = "200" ] || die "the API keys do not authenticate (http=$VERIFY)"
-ok "keys created and verified as read_write"
+create_api_keys
 
 # WordPress core rejects the WooCommerce keys, so cleanup deletes the images the
 # flows upload with an application password. A re-run replaces the previous one.
@@ -379,62 +461,17 @@ VERIFY="$(curl -s -o /dev/null -w '%{http_code}' -u "$ADMIN_USER:$APP_PASSWORD" 
 [ "$VERIFY" = "200" ] || die "the application password does not authenticate (http=$VERIFY)"
 ok "application password created and verified"
 
-if [ -f "$ENV_OUT" ]; then
-  BACKUP_DIR="${TMPDIR:-/tmp}"; BACKUP_DIR="${BACKUP_DIR%/}/maestro-env-backups"
-  mkdir -p "$BACKUP_DIR"; chmod 700 "$BACKUP_DIR"
-  BACKUP="$BACKUP_DIR/$(basename "$ENV_OUT").$(date +%Y%m%d-%H%M%S).$$"
-  cp "$ENV_OUT" "$BACKUP" || die "could not back up $ENV_OUT"
-  chmod 600 "$BACKUP"
-  # Deliberately outside the repository: .gitignore matches ".env.local"
-  # only, so a ".env.local.bak" sibling would not be ignored and could be
-  # committed with credentials in it.
-  ok "backed up the previous env file to $BACKUP"
-fi
-
-mkdir -p "$(dirname "$ENV_OUT")"
-SITE="$SITE" ADMIN_USER="$ADMIN_USER" WPCOM_USER="$WPCOM_USER" WPCOM_PASS="$WPCOM_PASS" WPCOM_USERNAME="$WPCOM_USERNAME" \
-SITE_PASS="$SITE_PASS" CK="$CK" CS="$CS" APP_PASSWORD="$APP_PASSWORD" \
-python3 - "$ENV_OUT" <<'PY' || die "could not write $ENV_OUT${BACKUP:+; the previous copy is $BACKUP}"
-import os, re, sys, pathlib
-
-path = pathlib.Path(sys.argv[1])
-values = {
-    "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://" + os.environ["SITE"],
-    "MAESTRO_WOO_LAB_WPCOM_EMAIL": os.environ["WPCOM_USER"],
-    "MAESTRO_WOO_LAB_WPCOM_PASSWORD": os.environ["WPCOM_PASS"],
-    "MAESTRO_WOO_LAB_WPCOM_USERNAME": os.environ["WPCOM_USERNAME"],
-    "MAESTRO_WOO_LAB_JETPACK_SITE_ADMIN_USERNAME": os.environ["ADMIN_USER"],
-    "MAESTRO_WOO_LAB_JETPACK_SITE_ADMIN_PASSWORD": os.environ["SITE_PASS"],
-    "MAESTRO_WOO_LAB_CONSUMER_KEY": os.environ["CK"],
-    "MAESTRO_WOO_LAB_CONSUMER_SECRET": os.environ["CS"],
-    "MAESTRO_WOO_LAB_APPLICATION_PASSWORD": os.environ["APP_PASSWORD"],
-}
-
-def quote(value):
-    if re.search(r"[\s()\"'!$&|;<>`\\#]", value):
-        return "'" + value.replace("'", "'\\''") + "'"
-    return value
-
-# Rewrite in place so hand-maintained lines and comments survive.
-lines = path.read_text(encoding="utf-8").splitlines() if path.exists() else []
-seen, out = set(), []
-for line in lines:
-    match = re.match(r"^([A-Z_]+)=", line)
-    if match and match.group(1) in values:
-        out.append(f"{match.group(1)}={quote(values[match.group(1)])}")
-        seen.add(match.group(1))
-    else:
-        out.append(line)
-missing = [k for k in values if k not in seen]
-if missing:
-    if out and out[-1].strip():
-        out.append("")
-    out.append("# Written by .maestro/scripts/setup-jn-store.sh")
-    out.extend(f"{k}={quote(values[k])}" for k in missing)
-path.write_text("\n".join(out).rstrip() + "\n", encoding="utf-8")
-path.chmod(0o600)
-PY
-ok "wrote $ENV_OUT (mode 600)"
+STORE_URL="https://$SITE"
+write_env \
+  MAESTRO_WOO_LAB_JETPACK_STORE_URL=STORE_URL \
+  MAESTRO_WOO_LAB_WPCOM_EMAIL=WPCOM_USER \
+  MAESTRO_WOO_LAB_WPCOM_PASSWORD=WPCOM_PASS \
+  MAESTRO_WOO_LAB_WPCOM_USERNAME=WPCOM_USERNAME \
+  MAESTRO_WOO_LAB_JETPACK_SITE_ADMIN_USERNAME=ADMIN_USER \
+  MAESTRO_WOO_LAB_JETPACK_SITE_ADMIN_PASSWORD=SITE_PASS \
+  MAESTRO_WOO_LAB_CONSUMER_KEY=CK \
+  MAESTRO_WOO_LAB_CONSUMER_SECRET=CS \
+  MAESTRO_WOO_LAB_APPLICATION_PASSWORD=APP_PASSWORD
 
 printf '\n\033[32mDone.\033[0m Lab store ready: https://%s (blogID %s)\n' "$SITE" "$BLOG_ID"
 printf 'Verify with:\n'

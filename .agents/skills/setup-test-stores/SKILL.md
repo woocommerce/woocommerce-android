@@ -57,15 +57,17 @@ hand against a site created in a browser.
    user passed `--fresh`. Anything else means the store is gone or expired: continue, and
    reuse the existing WP.com account lines rather than asking for them again.
 
-2. **Provision the site.**
+2. **Provision two sites.** The lab store, and a WooCommerce site without Jetpack for
+   `push_no_jetpack.yaml`:
 
    ```
    provision-site  features: {"woocommerce":"true","woocommerce-import-sample-data":"true","jetpack":"true"}
+   provision-site  features: {"woocommerce":"true","jetpack":"false"}
    ```
 
-   Note the returned domain.
+   Note both returned domains.
 
-3. **Fetch its password.**
+3. **Fetch their passwords.** For each site:
 
    ```
    list-sites  domain: <domain>, include_passwords: true, include_config: true
@@ -76,11 +78,12 @@ hand against a site created in a browser.
 
    Do not echo these values in your reply.
 
-4. **Configure the store.** Pass the password through the environment so it never lands
+4. **Configure the stores.** Pass each password through the environment so it never lands
    in `ps` output:
 
    ```bash
-   JN_SSH_PASS='<JN_PASSWORD>' .maestro/scripts/setup-jn-store.sh --site <domain>
+   JN_SSH_PASS='<lab JN_PASSWORD>' .maestro/scripts/setup-jn-store.sh --site <lab domain>
+   JN_SSH_PASS='<no-Jetpack JN_PASSWORD>' .maestro/scripts/setup-jn-store.sh --no-jetpack-site <no-Jetpack domain>
    ```
 
    The script waits for JN to finish provisioning (it answers HTTP before its plugins
@@ -90,7 +93,7 @@ hand against a site created in a browser.
    This assumes `.env.local` already has `MAESTRO_WOO_LAB_WPCOM_EMAIL` and
    `MAESTRO_WOO_LAB_WPCOM_PASSWORD`. If it does not, see step 0.
 
-5. **Report** the store URL and blog ID. Do not print any credential.
+5. **Report** the store URLs and the lab store's blog ID. Do not print any credential.
 
 ## Verifying
 
@@ -103,6 +106,9 @@ hand against a site created in a browser.
 A fresh store has the WooCommerce sample products. The script tops it up to 100 products
 and 100 completed orders, and adds one customer and a `maestro10` coupon, so the product,
 order and dashboard flows run against it.
+
+The site without Jetpack only gets API keys. `push_no_jetpack.yaml` logs in to it with its
+site credentials, and the runner disconnects it from WordPress.com before each run.
 
 The negative-login fixtures (`MAESTRO_WOO_NOT_A_WOO_STORE_*`,
 `MAESTRO_WOO_WRONG_ACCOUNT_STORE_URL`) are shared read-only sites from the smoke testing
