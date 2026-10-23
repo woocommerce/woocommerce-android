@@ -112,6 +112,9 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     ): Result {
         return when (val outcome = remoteReaderSession.sendCollectPayment(paymentInfo)) {
             is CollectPaymentOutcome.Success -> {
+                if (outcome.status == "requires_capture" || outcome.status == "succeeded") {
+                    paymentsFlowTracker.onPaymentCapturing()
+                }
                 trackingInfoKeeper.setPaymentMethodType(
                     (outcome.paymentMethodType ?: PaymentMethodType.UNKNOWN).stringRepresentation
                 )

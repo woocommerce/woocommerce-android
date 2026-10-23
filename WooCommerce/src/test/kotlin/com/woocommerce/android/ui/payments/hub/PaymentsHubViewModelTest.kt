@@ -98,9 +98,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         on { invoke() }.thenReturn(Available)
     }
     private val paymentsHubTapToPayUnavailableHandler: PaymentsHubTapToPayUnavailableHandler = mock()
-    private val developerOptionsRepository: DeveloperOptionsRepository = mock {
-        on { getUpdateSimulatedReaderOption() } doReturn CardReaderManager.SimulatorUpdateFrequency.NEVER
-    }
+    private val developerOptionsRepository: DeveloperOptionsRepository = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
 
     private val softwareUpdateAvailability = MutableStateFlow<SoftwareUpdateAvailability>(
@@ -2057,7 +2055,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             initViewModel()
 
             // THEN
-            verify(cardReaderManager).initialize(any(), any(), any(), any())
+            verify(cardReaderManager).initialize(any(), any(), any())
         }
 
     @Test
@@ -2078,7 +2076,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             initViewModel()
 
             // THEN
-            verify(cardReaderManager, never()).initialize(any(), any(), any(), any())
+            verify(cardReaderManager, never()).initialize(any(), any(), any())
         }
 
     private fun initViewModel(openInHub: OpenInHub = OpenInHub.NONE) {

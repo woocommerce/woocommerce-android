@@ -31,6 +31,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationE
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator.CookieNonceAuthenticationResult.Error
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator.CookieNonceAuthenticationResult.Success
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_NONCE
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.UNKNOWN
@@ -149,13 +150,18 @@ class WPApiSiteRepositoryTest : BaseUnitTest() {
             excerpt = "Access Denied | Blocked by the firewall."
         )
         whenever(authenticator.authenticate(ENDPOINTS, USERNAME, PASSWORD)).thenReturn(
-            Error(type = INVALID_NONCE, unexpectedStoreResponse = unexpectedStoreResponse)
+            Error(
+                type = INVALID_NONCE,
+                unexpectedStoreResponse = unexpectedStoreResponse,
+                step = Nonce.CookieNonceLoginStep.NONCE_RETRIEVAL
+            )
         )
 
         val exception = repository.login(SITE_URL, USERNAME, PASSWORD, ENDPOINTS).exceptionOrNull()
             as WPApiSiteRepository.CookieNonceAuthenticationException
 
         assertThat(exception.unexpectedStoreResponse).isEqualTo(unexpectedStoreResponse)
+        assertThat(exception.step).isEqualTo(Nonce.CookieNonceLoginStep.NONCE_RETRIEVAL)
     }
 
     @Test

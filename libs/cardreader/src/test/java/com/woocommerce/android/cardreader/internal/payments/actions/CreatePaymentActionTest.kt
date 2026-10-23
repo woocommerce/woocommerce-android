@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
+import com.stripe.stripeterminal.external.models.CaptureMethod
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
 import com.stripe.stripeterminal.external.models.PaymentMethodOptionsParameters
@@ -55,6 +56,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
         whenever(intentParametersBuilder.setCurrency(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setDescription(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setMetadata(any())).thenReturn(intentParametersBuilder)
+        whenever(intentParametersBuilder.setCaptureMethod(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setReceiptEmail(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setApplicationFeeAmount(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setPaymentMethodOptionsParameters(any())).thenReturn(intentParametersBuilder)
@@ -213,6 +215,15 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
 
             verify(intentParametersBuilder, never()).setPaymentMethodOptionsParameters(any())
         }
+
+    @Test
+    fun `when creating payment intent, then manual capture is set`() = testBlocking {
+        // WHEN
+        action.createPaymentIntent(createPaymentInfo())
+
+        // THEN
+        verify(intentParametersBuilder).setCaptureMethod(CaptureMethod.Manual)
+    }
 
     @Test
     fun `when creating payment intent, then store name set`() = testBlocking {

@@ -25,8 +25,8 @@ private fun TerminalErrorCode.toCardReaderRemoteError(): CardReaderRemoteError? 
     TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_DEVICE,
     TerminalErrorCode.TAP_TO_PAY_DEVICE_TAMPERED,
     TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_ANDROID_VERSION,
-    TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_PROCESSOR,
-    TerminalErrorCode.TAP_TO_PAY_INSECURE_ENVIRONMENT -> CardReaderRemoteError.PhoneNotEligible
+    TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_PROCESSOR -> CardReaderRemoteError.PhoneNotEligible
+    TerminalErrorCode.TAP_TO_PAY_INSECURE_ENVIRONMENT -> CardReaderRemoteError.InsecureEnvironment
     TerminalErrorCode.TAP_TO_PAY_NFC_DISABLED -> CardReaderRemoteError.NfcDisabled
     TerminalErrorCode.CONNECTION_TOKEN_PROVIDER_ERROR,
     TerminalErrorCode.CONNECTION_TOKEN_PROVIDER_ERROR_WHILE_FORWARDING,

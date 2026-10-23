@@ -68,6 +68,8 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock {
         on { getString(R.string.card_reader_mode_error_phone_not_eligible) }
             .thenReturn("This phone isn't eligible for Tap to Pay. Try a different device.")
+        on { getString(R.string.card_reader_payment_failed_insecure_environment) }
+            .thenReturn("Tap to Pay was blocked for security reasons.")
     }
     private val appPrefsWrapper: AppPrefsWrapper = mock {
         on { wooPosRemoteReaderDeviceUUID }.thenReturn("test-device-id")
@@ -312,6 +314,23 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
         // THEN
         val viewState = viewModel.viewState.value as RemoteTapToPayError
         assertThat(viewState.message).isEqualTo("This phone isn't eligible for Tap to Pay. Try a different device.")
+    }
+
+    @Test
+    fun `given insecure environment error, when emitted, then the security copy is shown`() = testBlocking {
+        // GIVEN
+        viewModel.onPermissionsGranted()
+
+        // WHEN
+        sessionState.value = CardReaderRemoteSessionState.Error(
+            error = CardReaderRemoteError.InsecureEnvironment,
+            message = "insecure environment",
+        )
+        advanceUntilIdle()
+
+        // THEN
+        val viewState = viewModel.viewState.value as RemoteTapToPayError
+        assertThat(viewState.message).isEqualTo("Tap to Pay was blocked for security reasons.")
     }
 
     @Test

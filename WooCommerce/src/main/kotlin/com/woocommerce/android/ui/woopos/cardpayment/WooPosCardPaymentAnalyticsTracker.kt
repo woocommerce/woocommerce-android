@@ -4,6 +4,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosPaymentStateAnalyticsTracker
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
@@ -13,6 +14,10 @@ class WooPosCardPaymentAnalyticsTracker @Inject constructor(
 ) {
     suspend fun trackPaymentStates(paymentState: StateFlow<CardReaderPaymentOrRefundState>?) {
         paymentStateTracker.trackPaymentStates(paymentState)
+    }
+
+    suspend fun trackReaderReadyForCardInput(readerReadyForCardInput: Flow<Unit>?) {
+        paymentStateTracker.trackReaderReadyForCardInput(readerReadyForCardInput)
     }
 
     suspend fun trackEmailReceiptTapped() {

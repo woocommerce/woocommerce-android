@@ -136,6 +136,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
         binding.attributeList.layoutManager = layoutManager
         binding.attributeList.itemAnimator = null
+        binding.variationHelperTextView.isVisible = navArgs.isVariationCreation
 
         binding.attributeEditText.setOnEditorActionListener { _, _, _ ->
             onAttributeNameEntered()

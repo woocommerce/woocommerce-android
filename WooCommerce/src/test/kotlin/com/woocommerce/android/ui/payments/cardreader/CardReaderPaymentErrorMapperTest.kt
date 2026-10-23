@@ -450,6 +450,20 @@ class CardReaderPaymentErrorMapperTest {
     }
 
     @Test
+    fun `given InsecureEnvironment error, when map to ui error, then InsecureEnvironment error returned`() {
+        // GIVEN
+        val error = CardPaymentStatusErrorType.BuiltInReader.InsecureEnvironment
+
+        // WHEN
+        val result = mapper.mapPaymentErrorToUiError(error, false)
+
+        // THEN
+        assertThat(result).isEqualTo(PaymentFlowError.BuiltInReader.InsecureEnvironment)
+        assertThat((result as PaymentFlowError.BuiltInReader.InsecureEnvironment).message)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_insecure_environment))
+    }
+
+    @Test
     fun `given AmountTooSmallStripe error, when map to ui error, then AmountTooSmall error returned with error message`() {
         // GIVEN
         val errorMessage = "Amount must be at least $0.50"

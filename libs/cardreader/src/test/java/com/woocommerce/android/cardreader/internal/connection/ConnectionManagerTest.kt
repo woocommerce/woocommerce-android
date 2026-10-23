@@ -9,6 +9,8 @@ import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.TerminalErrorCode
 import com.stripe.stripeterminal.external.models.TerminalException
+import com.stripe.stripeterminal.external.models.TestReaderUpdate
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
@@ -53,6 +55,8 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
     private val application: Application = mock()
     private val logWrapper: LogWrapper = mock()
 
+    private var simulatedReaderUpdateFrequency = CardReaderManager.SimulatorUpdateFrequency.NEVER
+
     private val supportedReaders =
         CardReaderTypesToDiscover.SpecificReaders.ExternalReaders(
             listOf(ReaderType.ExternalReader.Chipper2X, ReaderType.ExternalReader.StripeM2)
@@ -73,6 +77,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
             terminalListenerImpl,
             application,
             logWrapper,
+            { simulatedReaderUpdateFrequency },
         )
     }
 
@@ -291,6 +296,21 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
         }
 
     @Test
+    fun `given TTP insecure environment error, when discovery fails, then insecure environment event emitted`() =
+        testBlocking {
+            // GIVEN
+            val terminalException = TerminalException(TerminalErrorCode.TAP_TO_PAY_INSECURE_ENVIRONMENT, "insecure")
+            whenever(discoverReadersAction.discoverExternalReaders(anyBoolean()))
+                .thenReturn(flow { emit(Failure(terminalException)) })
+
+            // WHEN
+            val result = connectionManager.discoverReaders(true, supportedReaders).single()
+
+            // THEN
+            assertThat(result).isEqualTo(CardReaderDiscoveryEvents.FailedTapToPayInsecureEnvironment("insecure"))
+        }
+
+    @Test
     fun `given non TTP error code, when discovery fails, then generic Failed event emitted`() = testBlocking {
         val terminalException = TerminalException(TerminalErrorCode.NOT_CONNECTED_TO_READER, "other error")
         whenever(discoverReadersAction.discoverExternalReaders(anyBoolean()))
@@ -448,6 +468,45 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
         }
 
     @Test
+    fun `given simulated reader and always update, when connecting, then required test update is passed`() =
+        testBlocking {
+            // GIVEN
+            simulatedReaderUpdateFrequency = CardReaderManager.SimulatorUpdateFrequency.ALWAYS
+
+            // WHEN
+            val testReaderUpdate = connectAndCaptureTestReaderUpdate(isSimulated = true)
+
+            // THEN
+            assertThat(testReaderUpdate?.updateType).isEqualTo(TestReaderUpdate.TestReaderUpdateType.REQUIRED)
+        }
+
+    @Test
+    fun `given simulated reader and never update, when connecting, then no test update is passed`() =
+        testBlocking {
+            // GIVEN
+            simulatedReaderUpdateFrequency = CardReaderManager.SimulatorUpdateFrequency.NEVER
+
+            // WHEN
+            val testReaderUpdate = connectAndCaptureTestReaderUpdate(isSimulated = true)
+
+            // THEN
+            assertThat(testReaderUpdate).isNull()
+        }
+
+    @Test
+    fun `given real reader and always update, when connecting, then no test update is passed`() =
+        testBlocking {
+            // GIVEN
+            simulatedReaderUpdateFrequency = CardReaderManager.SimulatorUpdateFrequency.ALWAYS
+
+            // WHEN
+            val testReaderUpdate = connectAndCaptureTestReaderUpdate(isSimulated = false)
+
+            // THEN
+            assertThat(testReaderUpdate).isNull()
+        }
+
+    @Test
     fun `when disconnect succeeds, then status updated with not connected`() = testBlocking {
         whenever(terminalWrapper.disconnectReader()).thenReturn(Unit)
 
@@ -481,5 +540,22 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
         connectionManager.disconnectReader()
 
         verify(terminalListenerImpl).updateReaderStatus(CardReaderStatus.NotConnected())
+    }
+
+    private suspend fun connectAndCaptureTestReaderUpdate(isSimulated: Boolean): TestReaderUpdate? {
+        val reader: Reader = mock {
+            on { deviceType }.thenReturn(DeviceType.STRIPE_M2)
+            on { this.isSimulated }.thenReturn(isSimulated)
+        }
+        val cardReader: CardReaderImpl = mock {
+            on { this.cardReader }.thenReturn(reader)
+        }
+        whenever(terminalWrapper.connectToReader(any(), any())).thenReturn(reader)
+
+        connectionManager.startConnectionToReader(cardReader, "location_id")
+
+        val configurationCaptor = argumentCaptor<ConnectionConfiguration.BluetoothConnectionConfiguration>()
+        verify(terminalWrapper).connectToReader(any(), configurationCaptor.capture())
+        return configurationCaptor.firstValue.testReaderUpdate
     }
 }

@@ -275,6 +275,158 @@ class RefundsExtTest {
         }
     }
 
+    @Test
+    fun `given items within the refund amount, when building refund lines, then lines show the item amounts`() {
+        // GIVEN
+        val items = listOf(givenProduct(subtotal = "10.00", rateTax = "0.50"))
+
+        // WHEN
+        val result = items.toRefundLines(BigDecimal("10.50"), decimals = 2)
+
+        // THEN
+        val line = result.single()
+        assertThat(line.subtotal).isEqualByComparingTo("10.00")
+        assertThat(line.tax).isEqualByComparingTo("0.50")
+        assertThat(line.requestItem).isEqualTo(items.single().toDataModel())
+    }
+
+    @Test
+    fun `given a product above the refund amount, when building refund lines, then line shows the scaled amount`() {
+        // GIVEN
+        val items = listOf(givenProduct(subtotal = "100.00"))
+
+        // WHEN
+        val result = items.toRefundLines(BigDecimal("50.00"), decimals = 2)
+
+        // THEN
+        val line = result.single()
+        assertThat(line.total).isEqualByComparingTo("50.00")
+        assertThat(line.requestItem.total).isEqualByComparingTo("50.00")
+    }
+
+    @Test
+    fun `given products, shipping and fees above the refund amount, when building refund lines, then lines match the request`() {
+        // GIVEN
+        val items = listOf(
+            givenProduct(subtotal = "30.00", rateTax = "1.50"),
+            givenShipping(total = "10.00", tax = "0.50"),
+            givenFee(total = "5.00")
+        )
+
+        // WHEN
+        val result = items.toRefundLines(BigDecimal("20.00"), decimals = 2)
+
+        // THEN
+        assertThat(result.sumOf { it.total }).isEqualByComparingTo("20.00")
+        result.forEach { it.assertMatchesRequestItem() }
+    }
+
+    @Test
+    fun `given lines that do not split evenly, when building refund lines, then lines add up to the amount`() {
+        // GIVEN
+        val items = List(3) { givenProduct(subtotal = "10.00", rateTax = "0.50") }
+
+        // WHEN
+        val result = items.toRefundLines(BigDecimal("20.00"), decimals = 2)
+
+        // THEN
+        assertThat(result.sumOf { it.total }).isEqualByComparingTo("20.00")
+        result.forEach { it.assertMatchesRequestItem() }
+    }
+
+    @Test
+    fun `given a negative line, when building refund lines above the refund amount, then lines add up to the amount`() {
+        // GIVEN
+        val items = listOf(givenProduct(subtotal = "100.00"), givenProduct(subtotal = "-10.00"))
+
+        // WHEN
+        val result = items.toRefundLines(BigDecimal("45.00"), decimals = 2)
+
+        // THEN
+        assertThat(result.sumOf { it.total }).isEqualByComparingTo("45.00")
+        assertThat(result[1].total).isNegative()
+        result.forEach { it.assertMatchesRequestItem() }
+    }
+
+    @Test
+    fun `given tax without rate breakdown and less left to refund, when building refund lines, then tax shows what is left`() {
+        // GIVEN
+        val items = listOf(givenProduct(subtotal = "100.00", taxWithoutRate = "10.00"))
+
+        // WHEN
+        val result = items.toRefundLines(BigDecimal("105.00"), decimals = 2)
+
+        // THEN
+        val line = result.single()
+        assertThat(line.subtotal).isEqualByComparingTo("100.00")
+        assertThat(line.tax).isEqualByComparingTo("5.00")
+        assertThat(line.requestItem.total).isEqualByComparingTo("100.00")
+    }
+
+    @Test
+    fun `given tax without rate breakdown and lines above the refund amount, when building refund lines, then tax is not shown`() {
+        // GIVEN
+        val items = listOf(givenProduct(subtotal = "100.00", taxWithoutRate = "10.00"))
+
+        // WHEN
+        val result = items.toRefundLines(BigDecimal("50.00"), decimals = 2)
+
+        // THEN
+        val line = result.single()
+        assertThat(line.subtotal).isEqualByComparingTo("50.00")
+        assertThat(line.tax).isEqualByComparingTo("0.00")
+    }
+
+    @Test
+    fun `given nothing is left to refund, when building refund lines, then lines show the item amounts`() {
+        // GIVEN
+        val items = listOf(givenProduct(subtotal = "100.00"))
+
+        // WHEN
+        val result = items.toRefundLines(BigDecimal.ZERO, decimals = 2)
+
+        // THEN
+        assertThat(result.single().total).isEqualByComparingTo("100.00")
+    }
+
+    private fun RefundLine.assertMatchesRequestItem() {
+        assertThat(subtotal).isEqualByComparingTo(requestItem.refundTotal)
+        assertThat(tax).isEqualByComparingTo(requestItem.refundTax.sumOf { it.refundTotal })
+    }
+
+    private fun givenProduct(
+        subtotal: String,
+        rateTax: String? = null,
+        taxWithoutRate: String = "0"
+    ): ProductRefundListItem {
+        val taxes = listOfNotNull(rateTax?.let { TaxRefund(TAX_RATE_ID, BigDecimal(it)) })
+        return ProductRefundListItem(
+            orderItem = OrderTestUtils.generateTestOrderItems(quantity = 1F).first(),
+            maxQuantity = 1F,
+            quantity = 1,
+            subtotal = BigDecimal(subtotal),
+            totalTax = taxes.sumOf { it.tax } + BigDecimal(taxWithoutRate),
+            taxes = taxes
+        )
+    }
+
+    private fun givenShipping(total: String, tax: String) = ShippingRefundListItem(
+        shippingLine = Order.ShippingLine(
+            itemId = 2L,
+            methodId = "flat_rate",
+            methodTitle = "Flat rate",
+            totalTax = BigDecimal(tax),
+            total = BigDecimal(total),
+            taxes = listOf(Order.LineTaxEntry(TAX_RATE_ID, BigDecimal(tax)))
+        ),
+        isSelected = true
+    )
+
+    private fun givenFee(total: String) = FeeRefundListItem(
+        feeLine = Order.FeeLine.EMPTY.copy(id = 3L, total = BigDecimal(total)),
+        isSelected = true
+    )
+
     private fun givenRefundListItem(
         quantity: Float,
         total: String,
