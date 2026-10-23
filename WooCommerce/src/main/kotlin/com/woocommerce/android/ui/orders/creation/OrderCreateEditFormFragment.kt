@@ -1186,9 +1186,7 @@ class OrderCreateEditFormFragment :
         handleResult<CodeScannerStatus>(BarcodeScanningFragment.KEY_BARCODE_SCANNING_SCAN_STATUS) { status ->
             viewModel.handleBarcodeScannedStatus(status)
         }
-        listenForHardwareBarcodes(hardwareBarcodeScanner) { status ->
-            viewModel.handleBarcodeScannedStatus(status)
-        }
+        listenForHardwareBarcodes(hardwareBarcodeScanner, viewModel::onHardwareBarcodeScanned)
         handleResult<EditProductConfigurationResult>(
             ProductConfigurationFragment.PRODUCT_CONFIGURATION_EDITED_RESULT
         ) { result ->

@@ -895,6 +895,12 @@ class OrderCreateEditViewModel @Inject constructor(
         )
     }
 
+    fun onHardwareBarcodeScanned(status: CodeScannerStatus.Success) {
+        if (viewState.isIdle && viewState.isEditable) {
+            handleBarcodeScannedStatus(status)
+        }
+    }
+
     fun handleBarcodeScannedStatus(status: CodeScannerStatus) {
         when (status) {
             is CodeScannerStatus.Failure -> {
