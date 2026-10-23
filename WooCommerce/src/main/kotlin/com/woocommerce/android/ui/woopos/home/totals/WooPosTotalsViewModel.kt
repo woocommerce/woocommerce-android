@@ -101,7 +101,7 @@ class WooPosTotalsViewModel @Inject constructor(
         private const val KEY_STATE = "woo_pos_totals_data_state"
         private const val KEY_IS_TAP_TO_PAY_PAYMENT = "woo_pos_is_tap_to_pay_payment"
         private const val TAP_TO_PAY_SOURCE = "woo_pos_checkout"
-        private val InitialState = WooPosTotalsViewState.Loading
+        private val InitialState = WooPosTotalsViewState.Idle
         private val DISCOUNTED_LINE_TOLERANCE = BigDecimal("0.005")
     }
 
