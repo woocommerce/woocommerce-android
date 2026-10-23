@@ -5,8 +5,12 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -36,8 +40,8 @@ class ShouldShowEnablePushNotificationsUiTest : BaseUnitTest() {
 
     @Test
     fun `given M1 flag is disabled, when invoked, then returns false without observing site`() = testBlocking {
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
-            .thenReturn(false)
+        whenever(featureFlagRepository.observeIsEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+            .thenReturn(flowOf(false))
 
         val result = sut().first()
 
@@ -47,8 +51,8 @@ class ShouldShowEnablePushNotificationsUiTest : BaseUnitTest() {
 
     @Test
     fun `given M1 flag is enabled and no site selected, when invoked, then returns false`() = testBlocking {
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
-            .thenReturn(true)
+        whenever(featureFlagRepository.observeIsEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+            .thenReturn(flowOf(true))
         whenever(selectedSite.observe()).thenReturn(flowOf(null))
 
         val result = sut().first()
@@ -58,8 +62,8 @@ class ShouldShowEnablePushNotificationsUiTest : BaseUnitTest() {
 
     @Test
     fun `given M1 flag is enabled and Jetpack site selected, when invoked, then returns false`() = testBlocking {
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
-            .thenReturn(true)
+        whenever(featureFlagRepository.observeIsEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+            .thenReturn(flowOf(true))
         val jetpackSite: SiteModel = mock {
             on { origin } doReturn SiteModel.ORIGIN_WPCOM_REST
             on { isJetpackConnected } doReturn true
@@ -74,8 +78,8 @@ class ShouldShowEnablePushNotificationsUiTest : BaseUnitTest() {
     @Test
     fun `given M1 flag is enabled and non-Jetpack site is already Woo-registered, when invoked, then returns false`() =
         testBlocking {
-            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
-                .thenReturn(true)
+            whenever(featureFlagRepository.observeIsEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+                .thenReturn(flowOf(true))
             val appPasswordsSite: SiteModel = mock {
                 on { origin } doReturn 0 // != ORIGIN_WPCOM_REST(1) → ApplicationPasswords
             }
@@ -91,8 +95,8 @@ class ShouldShowEnablePushNotificationsUiTest : BaseUnitTest() {
     @Test
     fun `given M1 flag is enabled and non-Jetpack site is not Woo-registered, when invoked, then returns true`() =
         testBlocking {
-            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
-                .thenReturn(true)
+            whenever(featureFlagRepository.observeIsEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+                .thenReturn(flowOf(true))
             val appPasswordsSite: SiteModel = mock {
                 on { origin } doReturn 0 // != ORIGIN_WPCOM_REST(1) → ApplicationPasswords
             }
@@ -104,4 +108,25 @@ class ShouldShowEnablePushNotificationsUiTest : BaseUnitTest() {
 
             assertThat(result).isTrue()
         }
+
+    @Test
+    fun `given M1 flag turns on after login, when observed, then emits true`() = testBlocking {
+        val isFlagEnabled = MutableStateFlow(false)
+        whenever(featureFlagRepository.observeIsEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+            .thenReturn(isFlagEnabled)
+        val appPasswordsSite: SiteModel = mock {
+            on { origin } doReturn 0 // != ORIGIN_WPCOM_REST(1) → ApplicationPasswords
+        }
+        whenever(selectedSite.observe()).thenReturn(flowOf(appPasswordsSite))
+        whenever(pushNotificationRegistrationStatus.observe(appPasswordsSite))
+            .thenReturn(flowOf(PushNotificationRegistrationStatus.Status.UNREGISTERED))
+        val results = mutableListOf<Boolean>()
+        val job = sut().onEach { results.add(it) }.launchIn(this)
+
+        isFlagEnabled.value = true
+        advanceUntilIdle()
+
+        assertThat(results).containsExactly(false, true)
+        job.cancel()
+    }
 }
