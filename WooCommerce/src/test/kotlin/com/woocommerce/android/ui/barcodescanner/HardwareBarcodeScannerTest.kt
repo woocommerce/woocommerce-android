@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.barcodescanner
 
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
@@ -9,6 +10,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import java.util.Date
 
@@ -17,6 +19,7 @@ class HardwareBarcodeScannerTest : BaseUnitTest() {
     private val currentTimeProvider: CurrentTimeProvider = mock {
         on { currentDate() } doReturn Date(0)
     }
+    private val barcodeScanningTracker: BarcodeScanningTracker = mock()
     private val scans = mutableListOf<CodeScannerStatus.Success>()
     private val onBarcodeScanned: (CodeScannerStatus.Success) -> Unit = { scans.add(it) }
 
@@ -24,13 +27,14 @@ class HardwareBarcodeScannerTest : BaseUnitTest() {
         appCoroutineScope = backgroundScope,
         dispatchers = coroutinesTestRule.testDispatchers,
         currentTimeProvider = currentTimeProvider,
+        barcodeScanningTracker = barcodeScanningTracker,
     )
 
     @Test
     fun `given listening, when an EAN-13 code is typed with enter, then it is scanned as EAN-13`() = testBlocking {
         // GIVEN
         val scanner = createScanner()
-        scanner.startListening(onBarcodeScanned)
+        scanner.startListening(ScanningSource.ORDER_LIST, onBarcodeScanned)
 
         // WHEN
         val consumed = "4006381333931\n".map { scanner.onKeyDown(it.code, isTextInputFocused = false) }
@@ -40,6 +44,7 @@ class HardwareBarcodeScannerTest : BaseUnitTest() {
         assertThat(scans).containsExactly(
             CodeScannerStatus.Success(code = "4006381333931", format = BarcodeFormat.FormatEAN13)
         )
+        verify(barcodeScanningTracker).trackHardwareScanSuccess(ScanningSource.ORDER_LIST)
     }
 
     @Test
@@ -47,7 +52,7 @@ class HardwareBarcodeScannerTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val scanner = createScanner()
-            scanner.startListening(onBarcodeScanned)
+            scanner.startListening(ScanningSource.ORDER_LIST, onBarcodeScanned)
 
             // WHEN
             "SKU-RED-01\n".forEach { scanner.onKeyDown(it.code, isTextInputFocused = false) }
@@ -63,7 +68,7 @@ class HardwareBarcodeScannerTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val scanner = createScanner()
-            scanner.startListening(onBarcodeScanned)
+            scanner.startListening(ScanningSource.ORDER_LIST, onBarcodeScanned)
 
             // WHEN
             "12345678\n".forEach { scanner.onKeyDown(it.code, isTextInputFocused = false) }
@@ -78,7 +83,7 @@ class HardwareBarcodeScannerTest : BaseUnitTest() {
     fun `given listening, when a short SKU is typed with enter, then it is scanned`() = testBlocking {
         // GIVEN
         val scanner = createScanner()
-        scanner.startListening(onBarcodeScanned)
+        scanner.startListening(ScanningSource.ORDER_LIST, onBarcodeScanned)
 
         // WHEN
         "123\n".forEach { scanner.onKeyDown(it.code, isTextInputFocused = false) }
@@ -91,7 +96,7 @@ class HardwareBarcodeScannerTest : BaseUnitTest() {
     fun `given a text input is focused, when a code is typed, then input is not consumed`() = testBlocking {
         // GIVEN
         val scanner = createScanner()
-        scanner.startListening(onBarcodeScanned)
+        scanner.startListening(ScanningSource.ORDER_LIST, onBarcodeScanned)
 
         // WHEN
         val consumed = "4006381333931\n".map { scanner.onKeyDown(it.code, isTextInputFocused = true) }
@@ -105,7 +110,7 @@ class HardwareBarcodeScannerTest : BaseUnitTest() {
     fun `given listening stopped, when a code is typed, then input is not consumed`() = testBlocking {
         // GIVEN
         val scanner = createScanner()
-        scanner.startListening(onBarcodeScanned)
+        scanner.startListening(ScanningSource.ORDER_LIST, onBarcodeScanned)
         scanner.stopListening(onBarcodeScanned)
 
         // WHEN
@@ -121,7 +126,7 @@ class HardwareBarcodeScannerTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val scanner = createScanner()
-            scanner.startListening(onBarcodeScanned)
+            scanner.startListening(ScanningSource.ORDER_LIST, onBarcodeScanned)
 
             // WHEN
             val consumed = listOf('\n', ' ').map { scanner.onKeyDown(it.code, isTextInputFocused = false) }

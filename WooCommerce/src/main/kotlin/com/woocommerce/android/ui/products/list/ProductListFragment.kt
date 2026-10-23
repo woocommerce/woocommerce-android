@@ -26,6 +26,8 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.showKeyboardWithDelay
+import com.woocommerce.android.ui.barcodescanner.HardwareBarcodeScanner
+import com.woocommerce.android.ui.barcodescanner.listenForHardwareBarcodes
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.setDesignSystemContent
@@ -34,6 +36,8 @@ import com.woocommerce.android.ui.main.BackPressTracker
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.ui.products.AddProductNavigator
 import com.woocommerce.android.ui.products.ProductSortingFragment
 import com.woocommerce.android.ui.products.ProductStatus
@@ -71,6 +75,9 @@ class ProductListFragment :
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    lateinit var hardwareBarcodeScanner: HardwareBarcodeScanner
 
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
@@ -159,6 +166,11 @@ class ProductListFragment :
         postponeEnterTransition()
         _binding = FragmentProductListBinding.bind(view)
         uiMessageResolver.anchorViewId = null
+        listenForHardwareBarcodes(hardwareBarcodeScanner, ScanningSource.PRODUCT_LIST) { status ->
+            if (_binding?.productsComposeContainer?.isVisible == true) {
+                productListViewModel.onHardwareBarcodeScanned(status)
+            }
+        }
         ViewGroupCompat.setTransitionGroup(binding.productsComposeContainer, true)
         binding.productsComposeContainer.setDesignSystemContent {
             ProductListScreen(
@@ -243,9 +255,7 @@ class ProductListFragment :
                 is ShowAddProductBottomSheet -> showAddProductBottomSheet()
                 is ShowProductFilterScreen -> showProductFilterScreen(event)
                 is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
-                is ShowBarcodeScanner -> findNavController().navigateSafely(
-                    ProductListFragmentDirections.actionProductListFragmentToScanToUpdateInventory()
-                )
+                is ShowBarcodeScanner -> showScanToUpdateInventory(event.scannedBarcode)
                 is ShowUpdateDialog -> handleUpdateDialogs(event)
                 is OpenProduct -> openProduct(event)
                 is OpenEmptyProduct -> openEmptyProduct()
@@ -536,6 +546,12 @@ class ProductListFragment :
             event.productStatusFilter,
             event.productCategoryFilter,
             event.selectedCategoryName,
+        )
+    }
+
+    private fun showScanToUpdateInventory(scannedBarcode: CodeScannerStatus.Success?) {
+        findNavController().navigateSafely(
+            ProductListFragmentDirections.actionProductListFragmentToScanToUpdateInventory(scannedBarcode)
         )
     }
 

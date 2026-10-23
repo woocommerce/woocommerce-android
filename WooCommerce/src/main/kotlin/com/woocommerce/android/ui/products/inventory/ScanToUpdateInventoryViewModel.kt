@@ -44,6 +44,10 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     private val scanToUpdateInventoryState: MutableStateFlow<ScanToUpdateInventoryState> =
         savedState.getStateFlow(this, ScanToUpdateInventoryState.Idle, "productSearchState")
 
+    init {
+        savedState.remove<CodeScannerStatus.Success>(KEY_SCANNED_BARCODE)?.let(::onBarcodeScanningResult)
+    }
+
     fun onBarcodeScanningResult(status: CodeScannerStatus) {
         if (scanToUpdateInventoryState.value != ScanToUpdateInventoryState.Idle) return
 
@@ -369,5 +373,6 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
     companion object {
         private const val SCANNER_RESTART_DEBOUNCE_MS = 3500L
+        private const val KEY_SCANNED_BARCODE = "scannedBarcode"
     }
 }
