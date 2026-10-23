@@ -582,7 +582,8 @@ class AiSupportChatViewModel @Inject constructor(
         val state = _viewState.value
         if (message.isBlank() || state.isSending || !state.canSendMessages) return
         val chatId = state.chatId
-        val hasDiagnosticsContext = chatId == null && state.diagnosticResult != null
+        val hasDiagnosticsContext = chatId == null &&
+            (state.diagnosticResult != null || state.loginContext is AiSupportChatLoginContext.DuringLogin)
         analyticsTracker.trackMessageSent(
             entryPoint = state.entryPoint,
             isFirstMessage = chatId == null,
