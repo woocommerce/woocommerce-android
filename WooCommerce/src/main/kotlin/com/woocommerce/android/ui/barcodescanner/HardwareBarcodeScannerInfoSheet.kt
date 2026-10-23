@@ -53,7 +53,10 @@ private const val TEST_SCAN_SUCCESS_DISPLAY_MS = 3000L
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HardwareBarcodeScannerInfoSheet(onDismissRequest: () -> Unit) {
+fun HardwareBarcodeScannerInfoSheet(
+    onTestScanSucceeded: () -> Unit,
+    onDismissRequest: () -> Unit,
+) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
     var isTestScanSuccessful by rememberSaveable { mutableStateOf(false) }
@@ -71,8 +74,9 @@ fun HardwareBarcodeScannerInfoSheet(onDismissRequest: () -> Unit) {
             isTestScanSuccessful = isTestScanSuccessful,
             modifier = Modifier.listenForBarcodes(
                 onBarcodeEvent = { result ->
-                    if (result is BarcodeInputDetector.BarcodeResult.Success) {
+                    if (result is BarcodeInputDetector.BarcodeResult.Success && !isTestScanSuccessful) {
                         isTestScanSuccessful = true
+                        onTestScanSucceeded()
                     }
                 },
             ),

@@ -53,6 +53,15 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when hardware scanner test scan succeeds, then it is tracked`() {
+        // WHEN
+        barcodeScanningViewModel.onHardwareScannerTestScanSucceeded()
+
+        // THEN
+        verify(barcodeScanningTracker).trackHardwareScannerTestScanSuccess()
+    }
+
+    @Test
     fun `when view model init, then permission state is unknown`() {
         assertThat(barcodeScanningViewModel.permissionState.value).isEqualTo(PermissionState.Unknown)
     }

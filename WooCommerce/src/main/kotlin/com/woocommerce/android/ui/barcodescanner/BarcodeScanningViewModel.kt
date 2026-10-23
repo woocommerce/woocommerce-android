@@ -73,6 +73,10 @@ class BarcodeScanningViewModel @Inject constructor(
         _isHardwareScannerInfoVisible.value = true
     }
 
+    fun onHardwareScannerTestScanSucceeded() {
+        barcodeScanningTracker.trackHardwareScannerTestScanSuccess()
+    }
+
     fun onHardwareScannerInfoDismissed() {
         _isHardwareScannerInfoVisible.value = false
     }
