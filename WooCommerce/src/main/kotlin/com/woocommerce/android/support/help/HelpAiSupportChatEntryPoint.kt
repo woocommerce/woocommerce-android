@@ -5,5 +5,5 @@ object HelpAiSupportChatEntryPoint {
 
     fun shouldOpenAiSupportChatFromContactSupport(aiSupportChatAvailable: Boolean): Boolean = aiSupportChatAvailable
 
-    fun shouldUsePreLoginLaunchMode(isUserLoggedIn: Boolean): Boolean = !isUserLoggedIn
+    fun shouldUsePreLoginLaunchMode(hasSelectedSite: Boolean): Boolean = !hasSelectedSite
 }
