@@ -10,6 +10,8 @@ import androidx.compose.ui.res.colorResource
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
+import com.woocommerce.android.ui.barcodescanner.DefaultScannerOverlay
+import com.woocommerce.android.ui.barcodescanner.HardwareBarcodeScannerInfoSheet
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
@@ -29,6 +31,9 @@ fun ScanToUpdateInventoryScreen(
     onViewProductDetailsClicked: () -> Unit,
     onManualQuantityEntered: (String) -> Unit,
     onManageStockClicked: () -> Unit,
+    isHardwareScannerInfoVisible: State<Boolean>,
+    onHardwareScannerInfoClicked: () -> Unit,
+    onHardwareScannerInfoDismissed: () -> Unit,
 ) = LegacyWooThemeWithBackground {
     BarcodeScannerScreen(
         onNewFrame = onNewFrame,
@@ -36,7 +41,15 @@ fun ScanToUpdateInventoryScreen(
         permissionState = permissionState,
         onResult = onCameraPermissionResult,
         shouldRequestCameraPermission = shouldRequestCameraPermission,
+        overlayContent = {
+            DefaultScannerOverlay(
+                onHardwareScannerInfoClicked = onHardwareScannerInfoClicked,
+            )
+        },
     )
+    if (isHardwareScannerInfoVisible.value) {
+        HardwareBarcodeScannerInfoSheet(onDismissRequest = onHardwareScannerInfoDismissed)
+    }
     if (viewState.value is ScanToUpdateInventoryViewModel.ViewState.Loading) {
         ProgressIndicator(backgroundColor = colorResource(id = R.color.color_scrim_background))
     }

@@ -53,7 +53,6 @@ fun QrLoginScannerScreen(
                 permissionState = permissionState,
                 onResult = onPermissionResult,
                 shouldRequestCameraPermission = true,
-                overlayLabel = R.string.login_qr_scanner_hint,
                 overlayContent = { QrLoginViewfinder() }
             )
         }
