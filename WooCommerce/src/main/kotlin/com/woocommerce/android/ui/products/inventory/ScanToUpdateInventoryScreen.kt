@@ -21,6 +21,7 @@ fun ScanToUpdateInventoryScreen(
     onBindingException: (Exception) -> Unit,
     permissionState: State<BarcodeScanningViewModel.PermissionState>,
     onCameraPermissionResult: (Boolean) -> Unit,
+    shouldRequestCameraPermission: Boolean,
     viewState: State<ScanToUpdateInventoryViewModel.ViewState>,
     onBottomSheetDismissed: () -> Unit,
     onIncrementQuantityClicked: () -> Unit,
@@ -34,6 +35,7 @@ fun ScanToUpdateInventoryScreen(
         onBindingException = onBindingException,
         permissionState = permissionState,
         onResult = onCameraPermissionResult,
+        shouldRequestCameraPermission = shouldRequestCameraPermission,
     )
     if (viewState.value is ScanToUpdateInventoryViewModel.ViewState.Loading) {
         ProgressIndicator(backgroundColor = colorResource(id = R.color.color_scrim_background))

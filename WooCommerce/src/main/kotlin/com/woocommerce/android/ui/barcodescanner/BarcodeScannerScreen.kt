@@ -26,6 +26,7 @@ fun BarcodeScannerScreen(
     onBindingException: (Exception) -> Unit,
     permissionState: State<BarcodeScanningViewModel.PermissionState>,
     onResult: (Boolean) -> Unit,
+    shouldRequestCameraPermission: Boolean,
     @StringRes overlayLabel: Int = R.string.barcode_scanning_scan_product_barcode_label,
     overlayContent: @Composable () -> Unit = { DefaultScannerOverlay(overlayLabel = overlayLabel) },
 ) = BarcodeScannerScreen(
@@ -33,6 +34,7 @@ fun BarcodeScannerScreen(
     onBindingException = onBindingException,
     permissionState = permissionState.value,
     onResult = onResult,
+    shouldRequestCameraPermission = shouldRequestCameraPermission,
     overlayLabel = overlayLabel,
     overlayContent = overlayContent,
 )
@@ -43,6 +45,7 @@ fun BarcodeScannerScreen(
     onBindingException: (Exception) -> Unit,
     permissionState: BarcodeScanningViewModel.PermissionState,
     onResult: (Boolean) -> Unit,
+    shouldRequestCameraPermission: Boolean,
     @StringRes overlayLabel: Int = R.string.barcode_scanning_scan_product_barcode_label,
     overlayContent: @Composable () -> Unit = { DefaultScannerOverlay(overlayLabel = overlayLabel) },
 ) {
@@ -53,7 +56,9 @@ fun BarcodeScannerScreen(
         },
     )
     LaunchedEffect(key1 = Unit) {
-        cameraPermissionLauncher.launch(BarcodeScanningFragment.KEY_CAMERA_PERMISSION)
+        if (shouldRequestCameraPermission) {
+            cameraPermissionLauncher.launch(BarcodeScanningFragment.KEY_CAMERA_PERMISSION)
+        }
     }
     when (permissionState) {
         BarcodeScanningViewModel.PermissionState.Granted -> {
