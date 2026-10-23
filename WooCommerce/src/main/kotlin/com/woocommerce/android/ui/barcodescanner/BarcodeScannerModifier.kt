@@ -49,20 +49,25 @@ fun Modifier.listenForBarcodes(
             if (!enabled) return@onKeyEvent false
 
             if (keyEvent.type == KeyEventType.KeyDown) {
-                val charCode = keyEvent.utf16CodePoint
-                val isValidChar = charCode > 0
-                val isPrintableOrNewline = charCode == '\n'.code ||
-                    charCode == '\r'.code ||
-                    charCode >= FIRST_PRINTABLE_CHAR_CODE
-
-                if (isValidChar && isPrintableOrNewline) {
-                    val pressedKey = charCode.toChar()
+                val pressedKey = keyEvent.utf16CodePoint.toBarcodeInputCharOrNull()
+                if (pressedKey != null) {
                     return@onKeyEvent detector.handleKeyInput(pressedKey)
                 }
             }
 
             false
         }
+}
+
+fun Int.toBarcodeInputCharOrNull(): Char? {
+    val isValidChar = this > 0
+    val isPrintableOrNewline = this == '\n'.code ||
+        this == '\r'.code ||
+        this >= FIRST_PRINTABLE_CHAR_CODE
+    return when (isValidChar && isPrintableOrNewline) {
+        true -> toChar()
+        false -> null
+    }
 }
 
 class BarcodeInputDetector(
@@ -80,6 +85,9 @@ class BarcodeInputDetector(
     private var lastCharTime: Long = -1L
     private var scanStartTime: Long = -1L
     private var timeoutJob: Job? = null
+
+    val hasPendingInput: Boolean
+        get() = barcodeBuffer.isNotEmpty()
 
     fun handleKeyInput(char: Char): Boolean {
         val currentTime = currentTimeProvider.currentDate().time
