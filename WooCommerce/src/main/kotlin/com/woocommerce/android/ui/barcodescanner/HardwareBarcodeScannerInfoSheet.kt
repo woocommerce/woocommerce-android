@@ -9,7 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -158,19 +158,22 @@ private fun TestScanSuccess() {
 
 @Composable
 private fun TestBarcode() {
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxWidth()
             .background(
                 color = colorResource(id = R.color.woo_white),
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)),
             )
-            .padding(dimensionResource(id = R.dimen.major_100)),
+            .padding(
+                horizontal = dimensionResource(id = R.dimen.major_150),
+                vertical = dimensionResource(id = R.dimen.major_100),
+            ),
         contentAlignment = Alignment.Center,
     ) {
         BarcodeEAN13Code(
             content = TEST_BARCODE_EAN13,
-            widthDp = TEST_BARCODE_WIDTH,
+            widthDp = maxWidth,
             heightDp = TEST_BARCODE_HEIGHT,
         )
     }
@@ -194,7 +197,6 @@ private fun HardwareBarcodeScannerInfoContentSuccessPreview() {
     }
 }
 
-private val TEST_AREA_HEIGHT = 172.dp
-private val TEST_BARCODE_WIDTH = 280.dp
-private val TEST_BARCODE_HEIGHT = 140.dp
-private val TEST_SUCCESS_ICON_SIZE = 88.dp
+private val TEST_AREA_HEIGHT = 120.dp
+private val TEST_BARCODE_HEIGHT = 88.dp
+private val TEST_SUCCESS_ICON_SIZE = 64.dp
