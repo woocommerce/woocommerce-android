@@ -15,6 +15,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState.Unknown
+import com.woocommerce.android.ui.barcodescanner.HardwareBarcodeScanner
+import com.woocommerce.android.ui.barcodescanner.listenForHardwareBarcodes
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -30,6 +32,9 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    lateinit var hardwareBarcodeScanner: HardwareBarcodeScanner
     private var undoSnackbar: Snackbar? = null
 
     override fun onCreateView(
@@ -62,6 +67,7 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         observeViewModelEvents()
+        listenForHardwareBarcodes(hardwareBarcodeScanner, viewModel::onBarcodeScanningResult)
     }
 
     override fun onResume() {

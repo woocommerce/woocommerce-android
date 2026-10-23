@@ -37,6 +37,8 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment.Companion.KEY_BARCODE_SCANNING_SCAN_STATUS
+import com.woocommerce.android.ui.barcodescanner.HardwareBarcodeScanner
+import com.woocommerce.android.ui.barcodescanner.listenForHardwareBarcodes
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.setDesignSystemContent
@@ -79,6 +81,9 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list) {
 
     @Inject
     internal lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    internal lateinit var hardwareBarcodeScanner: HardwareBarcodeScanner
 
     @Inject
     internal lateinit var currencyFormatter: CurrencyFormatter
@@ -578,6 +583,9 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list) {
             viewModel.loadOrders()
         }
         handleResult<CodeScannerStatus>(KEY_BARCODE_SCANNING_SCAN_STATUS) { status ->
+            viewModel.handleBarcodeScannedStatus(status)
+        }
+        listenForHardwareBarcodes(hardwareBarcodeScanner) { status ->
             viewModel.handleBarcodeScannedStatus(status)
         }
         handleResult<Long>(KEY_ORDER_ID) {
