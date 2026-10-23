@@ -153,7 +153,7 @@ fun LoginSiteCredentialsScreen(
                         .fillMaxWidth()
                         .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 ) {
-                    Text(text = stringResource(id = R.string.login_unexpected_response_contact_support))
+                    Text(text = stringResource(id = R.string.support_contact))
                 }
             }
             if (viewState.endpointRecovery == null && viewState.offersBrowserLogin) {

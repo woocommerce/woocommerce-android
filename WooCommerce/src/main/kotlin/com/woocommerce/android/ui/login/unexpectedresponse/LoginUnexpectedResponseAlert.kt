@@ -51,7 +51,7 @@ fun LoginUnexpectedResponseAlertWithSupport(
                     Text(text = stringResource(id = R.string.try_again))
                 }
                 WCTextButton(onClick = onContactSupportClick) {
-                    Text(text = stringResource(id = R.string.login_unexpected_response_contact_support))
+                    Text(text = stringResource(id = R.string.support_contact))
                 }
                 WCTextButton(onClick = onDismissClick) {
                     Text(text = stringResource(id = R.string.dismiss))
