@@ -14,6 +14,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,7 +35,7 @@ class BarcodeScanningFragment : BaseFragment() {
         view.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         observeCameraPermissionState(view)
         observeViewModelEvents()
-        listenForHardwareBarcodes(hardwareBarcodeScanner, ::navigateToNextScreen)
+        listenForHardwareBarcodes(hardwareBarcodeScanner, ScanningSource.BARCODE_SCANNER, ::navigateToNextScreen)
     }
 
     override fun onResume() {

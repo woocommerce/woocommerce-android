@@ -2212,7 +2212,10 @@ data class CustomAmountUIModel(
 
 enum class ScanningSource(val source: String) {
     ORDER_CREATION("order_creation"),
-    ORDER_LIST("order_list")
+    ORDER_LIST("order_list"),
+    PRODUCT_LIST("product_list"),
+    BARCODE_SCANNER("barcode_scanner"),
+    SCAN_TO_UPDATE_INVENTORY("scan_to_update_inventory")
 }
 
 enum class ProductAddedVia(val addedVia: String) {

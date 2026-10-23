@@ -6,6 +6,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.plus
@@ -20,7 +21,7 @@ class HardwareBarcodeScanner @Inject constructor(
     currentTimeProvider: CurrentTimeProvider,
     private val barcodeScanningTracker: BarcodeScanningTracker,
 ) {
-    private var onBarcodeScanned: ((CodeScannerStatus.Success) -> Unit)? = null
+    private var listener: Listener? = null
 
     private val detector = BarcodeInputDetector(
         onBarcodeEvent = ::onBarcodeEvent,
@@ -29,21 +30,21 @@ class HardwareBarcodeScanner @Inject constructor(
         minBarcodeLength = MIN_SKU_LENGTH,
     )
 
-    fun startListening(onBarcodeScanned: (CodeScannerStatus.Success) -> Unit) {
+    fun startListening(source: ScanningSource, onBarcodeScanned: (CodeScannerStatus.Success) -> Unit) {
         detector.clear()
-        this.onBarcodeScanned = onBarcodeScanned
+        listener = Listener(source, onBarcodeScanned)
     }
 
     fun stopListening(onBarcodeScanned: (CodeScannerStatus.Success) -> Unit) {
-        if (this.onBarcodeScanned === onBarcodeScanned) {
+        if (listener?.onBarcodeScanned === onBarcodeScanned) {
             detector.clear()
-            this.onBarcodeScanned = null
+            listener = null
         }
     }
 
     fun onKeyDown(unicodeChar: Int, isTextInputFocused: Boolean): Boolean {
         return when {
-            onBarcodeScanned == null || isTextInputFocused || !unicodeChar.isBarcodeInputChar() -> false
+            listener == null || isTextInputFocused || !unicodeChar.isBarcodeInputChar() -> false
             unicodeChar.toChar().isWhitespace() && !detector.hasPendingInput -> false
             else -> detector.handleKeyInput(unicodeChar.toChar())
         }
@@ -51,9 +52,9 @@ class HardwareBarcodeScanner @Inject constructor(
 
     private fun onBarcodeEvent(result: BarcodeInputDetector.BarcodeResult) {
         when (result) {
-            is BarcodeInputDetector.BarcodeResult.Success -> {
-                barcodeScanningTracker.trackHardwareScanSuccess()
-                onBarcodeScanned?.invoke(
+            is BarcodeInputDetector.BarcodeResult.Success -> listener?.let { listener ->
+                barcodeScanningTracker.trackHardwareScanSuccess(listener.source)
+                listener.onBarcodeScanned(
                     CodeScannerStatus.Success(code = result.barcode, format = result.barcode.inferBarcodeFormat())
                 )
             }
@@ -80,6 +81,11 @@ class HardwareBarcodeScanner @Inject constructor(
         return (GS1_MODULO - weightedSum % GS1_MODULO) % GS1_MODULO == last().digitToInt()
     }
 
+    private data class Listener(
+        val source: ScanningSource,
+        val onBarcodeScanned: (CodeScannerStatus.Success) -> Unit,
+    )
+
     private companion object {
         const val MIN_SKU_LENGTH = 3
         const val EAN_8_LENGTH = 8
@@ -92,12 +98,13 @@ class HardwareBarcodeScanner @Inject constructor(
 
 fun Fragment.listenForHardwareBarcodes(
     hardwareBarcodeScanner: HardwareBarcodeScanner,
+    source: ScanningSource,
     onBarcodeScanned: (CodeScannerStatus.Success) -> Unit,
 ) {
     viewLifecycleOwner.lifecycle.addObserver(
         object : DefaultLifecycleObserver {
             override fun onResume(owner: LifecycleOwner) {
-                hardwareBarcodeScanner.startListening(onBarcodeScanned)
+                hardwareBarcodeScanner.startListening(source, onBarcodeScanned)
             }
 
             override fun onPause(owner: LifecycleOwner) {

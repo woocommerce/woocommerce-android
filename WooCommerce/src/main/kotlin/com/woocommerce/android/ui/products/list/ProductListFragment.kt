@@ -37,6 +37,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.ui.products.AddProductNavigator
 import com.woocommerce.android.ui.products.ProductSortingFragment
 import com.woocommerce.android.ui.products.ProductStatus
@@ -165,7 +166,7 @@ class ProductListFragment :
         postponeEnterTransition()
         _binding = FragmentProductListBinding.bind(view)
         uiMessageResolver.anchorViewId = null
-        listenForHardwareBarcodes(hardwareBarcodeScanner) { status ->
+        listenForHardwareBarcodes(hardwareBarcodeScanner, ScanningSource.PRODUCT_LIST) { status ->
             if (_binding?.productsComposeContainer?.isVisible == true) {
                 productListViewModel.onHardwareBarcodeScanned(status)
             }

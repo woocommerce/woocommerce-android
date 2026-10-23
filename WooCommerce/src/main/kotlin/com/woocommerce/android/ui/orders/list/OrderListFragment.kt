@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
@@ -585,7 +586,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list) {
         handleResult<CodeScannerStatus>(KEY_BARCODE_SCANNING_SCAN_STATUS) { status ->
             viewModel.handleBarcodeScannedStatus(status)
         }
-        listenForHardwareBarcodes(hardwareBarcodeScanner) { status ->
+        listenForHardwareBarcodes(hardwareBarcodeScanner, ScanningSource.ORDER_LIST) { status ->
             if (_binding?.orderListComposeContainer?.isVisible == true) {
                 viewModel.handleBarcodeScannedStatus(status)
             }

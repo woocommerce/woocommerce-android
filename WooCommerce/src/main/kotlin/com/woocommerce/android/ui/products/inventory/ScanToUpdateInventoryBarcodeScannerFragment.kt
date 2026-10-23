@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.barcodescanner.listenForHardwareBarcodes
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -67,7 +68,11 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         observeViewModelEvents()
-        listenForHardwareBarcodes(hardwareBarcodeScanner, viewModel::onBarcodeScanningResult)
+        listenForHardwareBarcodes(
+            hardwareBarcodeScanner = hardwareBarcodeScanner,
+            source = ScanningSource.SCAN_TO_UPDATE_INVENTORY,
+            onBarcodeScanned = viewModel::onBarcodeScanningResult,
+        )
     }
 
     override fun onResume() {
