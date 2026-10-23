@@ -5,10 +5,10 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.barcodescanner.BarcodeInputDetector
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatus
 import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById

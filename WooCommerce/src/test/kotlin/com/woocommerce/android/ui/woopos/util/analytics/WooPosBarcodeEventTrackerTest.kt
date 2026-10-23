@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.util.analytics
 
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
+import com.woocommerce.android.ui.barcodescanner.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.common.util.WooPosScannerDetectionUtil
 import kotlinx.coroutines.test.runTest
 import org.junit.Test

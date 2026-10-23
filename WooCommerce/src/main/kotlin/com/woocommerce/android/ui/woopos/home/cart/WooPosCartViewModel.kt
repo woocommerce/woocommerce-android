@@ -7,9 +7,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.barcodescanner.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatus
 import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
