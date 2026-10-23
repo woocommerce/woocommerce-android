@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
 import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
+import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.Reusable
@@ -18,7 +19,8 @@ class SupportChatContextProvider @Inject constructor(
     private val selectedSite: SelectedSite,
     private val buildConfigWrapper: BuildConfigWrapper,
     private val mobileStatusProvider: MobileStatusProvider,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val unifiedLoginTracker: UnifiedLoginTracker
 ) {
     suspend fun buildStatusReport(siteAddress: String?): String = withContext(dispatchers.io) {
         val site = selectedSite.getIfExists()
@@ -28,10 +30,21 @@ class SupportChatContextProvider @Inject constructor(
         )
     }
 
+    fun buildLoginContext(): String? {
+        val lines = listOfNotNull(
+            unifiedLoginTracker.getFlow()?.let { "Login flow: ${it.value}" },
+            unifiedLoginTracker.stepBeforeHelp?.let { "Login step: ${it.value}" },
+            unifiedLoginTracker.enteredSiteAddress?.let { "Site address entered: ${it.withoutPersonalData()}" },
+            unifiedLoginTracker.lastShownError?.let { "Last error shown: ${it.withoutPersonalData()}" }
+        )
+        return lines.takeIf { it.isNotEmpty() }?.let { listOf("# Login context").plus(it).joinToString("\n") }
+    }
+
     fun buildInitialContext(
         diagnosticResult: DiagnosticResult? = null,
         siteAddress: String? = null,
-        statusReport: String? = null
+        statusReport: String? = null,
+        loginContext: String? = null
     ): JsonObject {
         val site = selectedSite.getIfExists()
         val resolvedSiteAddress = siteAddress?.takeIf { it.isNotBlank() } ?: site?.url
@@ -45,6 +58,7 @@ class SupportChatContextProvider @Inject constructor(
             }
             resolvedSiteAddress?.let { addProperty("site_url", it) }
             listOfNotNull(
+                loginContext,
                 diagnosticResult?.toTroubleshootingResults(),
                 statusReport?.takeIf { it.isNotBlank() }
             ).takeIf { it.isNotEmpty() }?.let { sections ->
@@ -98,4 +112,17 @@ class SupportChatContextProvider @Inject constructor(
             DiagnosticTest.PUSH_NOTIFICATION_TOKEN -> "Checking push notification token"
             DiagnosticTest.PUSH_NOTIFICATION_REGISTRATION -> "Checking push registration"
         }
+
+    private fun String.withoutPersonalData(): String =
+        replace(EMAIL_PATTERN, "[email]")
+            .replace(QUERY_PATTERN, "?[redacted]")
+            .replace(SECRET_PATTERN, "[redacted]")
+            .take(MAX_ERROR_LENGTH)
+
+    private companion object {
+        val EMAIL_PATTERN = Regex("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}")
+        val QUERY_PATTERN = Regex("\\?[^\\s=]+=\\S*")
+        val SECRET_PATTERN = Regex("[A-Za-z0-9_\\-]{32,}")
+        const val MAX_ERROR_LENGTH = 300
+    }
 }

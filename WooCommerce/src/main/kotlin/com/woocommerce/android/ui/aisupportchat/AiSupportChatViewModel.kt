@@ -28,11 +28,15 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import javax.inject.Inject
 
@@ -61,6 +65,7 @@ class AiSupportChatViewModel @Inject constructor(
     private val trackedEscalationButtonTriggers = mutableSetOf<AiSupportChatEscalationTrigger>()
     private var didTrackResolutionButtonShown = false
     private var initialStatusReport: String? = null
+    private var loginDiagnostics: Deferred<DiagnosticResult?>? = null
 
     fun onLaunchModeLoaded(launchMode: AiSupportChatLaunchMode) {
         if (launchModeLoaded) return
@@ -399,12 +404,18 @@ class AiSupportChatViewModel @Inject constructor(
             it.copy(
                 input = "",
                 messages = listOf(greetingMessage()),
+                loginContext = contextProvider.buildLoginContext(),
                 hasStartedChat = true,
                 hasProceededToChat = true,
                 canPersistChatHistory = false,
                 showSendError = false
             )
         }
+        startLoginDiagnostics()
+    }
+
+    private fun startLoginDiagnostics() {
+        loginDiagnostics = async { diagnosticsService.runLoginDiagnostics().lastOrNull() }
     }
 
     private fun startFromConnectivityTool(checks: List<ConnectivityCheckCardData>) {
@@ -468,6 +479,7 @@ class AiSupportChatViewModel @Inject constructor(
                 selectedIssueType = SupportIssueType.OTHER,
                 diagnosticResult = result,
                 diagnosticLog = failure.supportDetails,
+                loginContext = contextProvider.buildLoginContext(),
                 launchExtraTags = listOf(LoginUnexpectedResponseFailure.SUPPORT_TAG),
                 hasProceededToChat = true,
                 hasStartedChat = true,
@@ -475,6 +487,7 @@ class AiSupportChatViewModel @Inject constructor(
                 showSendError = false
             )
         }
+        startLoginDiagnostics()
     }
 
     private fun resumeChat(launchMode: AiSupportChatLaunchMode.Resume) {
@@ -604,10 +617,12 @@ class AiSupportChatViewModel @Inject constructor(
         val context = if (chatId == null) {
             val statusReport = initialStatusReport
                 ?: contextProvider.buildStatusReport(state.siteAddress).also { initialStatusReport = it }
+            val loginDiagnosticResult = withTimeoutOrNull(LOGIN_DIAGNOSTICS_TIMEOUT_MS) { loginDiagnostics?.await() }
             contextProvider.buildInitialContext(
-                diagnosticResult = state.diagnosticResult,
+                diagnosticResult = loginDiagnosticResult.withStatusesOf(state.diagnosticResult),
                 siteAddress = state.siteAddress,
-                statusReport = statusReport
+                statusReport = statusReport,
+                loginContext = state.loginContext
             )
         } else {
             JsonObject()
@@ -1067,6 +1082,7 @@ class AiSupportChatViewModel @Inject constructor(
         private const val SELECTED_ISSUE_MESSAGE_ID = "selected-issue"
         private const val RESOLVED_PROMPT_MESSAGE_ID = "resolved-prompt"
         private const val MAX_TRANSCRIPT_MESSAGES = 20
+        private const val LOGIN_DIAGNOSTICS_TIMEOUT_MS = 5_000L
         private const val SOURCE_TAG = "in_app_support_escalate"
         private const val AI_SKIP_TAG = "ai_skip"
         private const val STORE_CONNECTION_ERROR_DETAIL = WooError.REST_INVALID_SIGNATURE_CODE
@@ -1087,6 +1103,7 @@ data class AiSupportChatViewState(
     val selectedIssueLabel: String? = null,
     val launchExtraTags: List<String> = emptyList(),
     val diagnosticResult: DiagnosticResult? = null,
+    val loginContext: String? = null,
     val diagnosticLog: String? = null,
     val diagnosticSuggestedActionOverride: SuggestedFixAction? = null,
     val isRunningDiagnostics: Boolean = false,
@@ -1295,3 +1312,9 @@ private fun ConnectivityCheckStatus.toTestStatus(): TestStatus =
             durationMs = durationMs
         )
     }
+
+private fun DiagnosticResult?.withStatusesOf(other: DiagnosticResult?): DiagnosticResult? = when {
+    this == null -> other
+    other == null -> this
+    else -> other.copy(statuses = statuses + other.statuses)
+}

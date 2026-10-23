@@ -341,6 +341,7 @@ class LoginActivity :
         super.onDestroy()
 
         dispatcher.unregister(this)
+        if (isFinishing) unifiedLoginTracker.clearSupportDetails()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -837,6 +838,7 @@ class LoginActivity :
     }
 
     override fun helpSiteAddress(url: String?) {
+        url?.takeIf { it.isNotBlank() }?.let { unifiedLoginTracker.onSiteAddressEntered(it) }
         viewHelpAndSupport(HelpOrigin.LOGIN_SITE_ADDRESS)
     }
 
@@ -1079,6 +1081,7 @@ class LoginActivity :
      */
     override fun handleSiteAddressError(siteInfo: ConnectSiteInfoPayload) {
         org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
+        unifiedLoginTracker.onSiteAddressEntered(siteInfo.url)
         if (siteInfo.error?.wpApiDiscovery?.wpApiBaseUrl != null) {
             pendingSiteAddressWasNormalizedToHttps = siteInfo.wasUrlNormalizedToHttps
             LoginSiteInfoFallbackDialogFragment.newInstance(siteInfo.url)

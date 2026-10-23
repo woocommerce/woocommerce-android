@@ -7,6 +7,9 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportIssueType
 import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
+import com.woocommerce.android.ui.login.UnifiedLoginTracker
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +28,7 @@ class SupportChatContextProviderTest {
     private val selectedSite: SelectedSite = mock()
     private val buildConfigWrapper: BuildConfigWrapper = mock()
     private val mobileStatusProvider: MobileStatusProvider = mock()
+    private val unifiedLoginTracker: UnifiedLoginTracker = mock()
 
     private val contextProvider = SupportChatContextProvider(
         selectedSite = selectedSite,
@@ -34,7 +38,8 @@ class SupportChatContextProviderTest {
             main = Dispatchers.Unconfined,
             computation = Dispatchers.Unconfined,
             io = Dispatchers.Unconfined
-        )
+        ),
+        unifiedLoginTracker = unifiedLoginTracker
     )
 
     @Test
@@ -215,7 +220,42 @@ class SupportChatContextProviderTest {
             verify(mobileStatusProvider).invoke(selectedSite = site, siteAddress = OTHER_SITE_URL)
         }
 
+    @Test
+    fun `given login details with email and token, when building login context, then they are removed`() {
+        whenever(unifiedLoginTracker.getFlow()).thenReturn(Flow.LOGIN_SITE_ADDRESS)
+        whenever(unifiedLoginTracker.stepBeforeHelp).thenReturn(Step.ENTER_SITE_ADDRESS)
+        whenever(unifiedLoginTracker.lastShownError).thenReturn("No account for jane@example.com")
+        whenever(unifiedLoginTracker.enteredSiteAddress).thenReturn("https://shop.example/?token=abc")
+
+        val loginContext = contextProvider.buildLoginContext()
+
+        assertThat(loginContext).isEqualTo(
+            "# Login context\n" +
+                "Login flow: login_site_address\n" +
+                "Login step: enter_site_address\n" +
+                "Site address entered: https://shop.example/?[redacted]\n" +
+                "Last error shown: No account for [email]"
+        )
+    }
+
+    @Test
+    fun `given no login state, when building login context, then it is null`() {
+        val loginContext = contextProvider.buildLoginContext()
+
+        assertThat(loginContext).isNull()
+    }
+
+    @Test
+    fun `given login context, when building context, then it goes before the status report`() {
+        whenever(buildConfigWrapper.versionName).thenReturn(APP_VERSION)
+
+        val context = contextProvider.buildInitialContext(statusReport = STATUS_REPORT, loginContext = LOGIN_CONTEXT)
+
+        assertThat(context["troubleshootingResults"].asString).isEqualTo("$LOGIN_CONTEXT\n\n$STATUS_REPORT")
+    }
+
     private companion object {
+        const val LOGIN_CONTEXT = "# Login context\nLogin step: enter_site_address"
         const val APP_VERSION = "1.2.3"
         const val SITE_ID = 20L
         const val LOCAL_SITE_ID = 456
