@@ -59,6 +59,22 @@ class HardwareBarcodeScannerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given listening, when a numeric code with an invalid check digit is typed, then format is unknown`() =
+        testBlocking {
+            // GIVEN
+            val scanner = createScanner()
+            scanner.startListening(onBarcodeScanned)
+
+            // WHEN
+            "12345678\n".forEach { scanner.onKeyDown(it.code, isTextInputFocused = false) }
+
+            // THEN
+            assertThat(scans).containsExactly(
+                CodeScannerStatus.Success(code = "12345678", format = BarcodeFormat.FormatUnknown)
+            )
+        }
+
+    @Test
     fun `given a text input is focused, when a code is typed, then input is not consumed`() = testBlocking {
         // GIVEN
         val scanner = createScanner()
@@ -88,15 +104,16 @@ class HardwareBarcodeScannerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given listening and nothing typed, when enter is pressed, then input is not consumed`() = testBlocking {
-        // GIVEN
-        val scanner = createScanner()
-        scanner.startListening(onBarcodeScanned)
+    fun `given listening and nothing typed, when enter or space is pressed, then input is not consumed`() =
+        testBlocking {
+            // GIVEN
+            val scanner = createScanner()
+            scanner.startListening(onBarcodeScanned)
 
-        // WHEN
-        val consumed = scanner.onKeyDown('\n'.code, isTextInputFocused = false)
+            // WHEN
+            val consumed = listOf('\n', ' ').map { scanner.onKeyDown(it.code, isTextInputFocused = false) }
 
-        // THEN
-        assertThat(consumed).isFalse()
-    }
+            // THEN
+            assertThat(consumed).containsOnly(false)
+        }
 }

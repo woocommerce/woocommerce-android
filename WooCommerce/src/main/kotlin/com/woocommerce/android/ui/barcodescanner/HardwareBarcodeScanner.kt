@@ -43,7 +43,7 @@ class HardwareBarcodeScanner @Inject constructor(
         val char = unicodeChar.toBarcodeInputCharOrNull()
         return when {
             onBarcodeScanned == null || isTextInputFocused || char == null -> false
-            char.isTerminator() && !detector.hasPendingInput -> false
+            char.isWhitespace() && !detector.hasPendingInput -> false
             else -> detector.handleKeyInput(char)
         }
     }
@@ -57,20 +57,31 @@ class HardwareBarcodeScanner @Inject constructor(
         }
     }
 
-    private fun Char.isTerminator() = this == '\n' || this == '\r'
-
     private fun String.inferBarcodeFormat(): BarcodeFormat = when {
-        !all { it.isDigit() } -> BarcodeFormat.FormatUnknown
+        !all { it.isDigit() } || !hasValidGs1CheckDigit() -> BarcodeFormat.FormatUnknown
         length == EAN_8_LENGTH -> BarcodeFormat.FormatEAN8
         length == UPC_A_LENGTH -> BarcodeFormat.FormatUPCA
         length == EAN_13_LENGTH -> BarcodeFormat.FormatEAN13
         else -> BarcodeFormat.FormatUnknown
     }
 
+    private fun String.hasValidGs1CheckDigit(): Boolean {
+        val weightedSum = dropLast(1).reversed().withIndex().sumOf { (index, char) ->
+            val weight = when (index % 2 == 0) {
+                true -> GS1_ODD_POSITION_WEIGHT
+                false -> 1
+            }
+            char.digitToInt() * weight
+        }
+        return (GS1_MODULO - weightedSum % GS1_MODULO) % GS1_MODULO == last().digitToInt()
+    }
+
     private companion object {
         const val EAN_8_LENGTH = 8
         const val UPC_A_LENGTH = 12
         const val EAN_13_LENGTH = 13
+        const val GS1_ODD_POSITION_WEIGHT = 3
+        const val GS1_MODULO = 10
     }
 }
 
