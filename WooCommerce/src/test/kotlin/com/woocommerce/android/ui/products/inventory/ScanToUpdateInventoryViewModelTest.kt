@@ -67,6 +67,25 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given a scanned barcode in arguments, when screen opened, then the product is fetched`() = testBlocking {
+        // GIVEN
+        val scannedBarcode = CodeScannerStatus.Success("123", GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8)
+
+        // WHEN
+        ScanToUpdateInventoryViewModel(
+            fetchProductByIdentifier = fetchProductByIdentifier,
+            savedState = SavedStateHandle(mapOf("scannedBarcode" to scannedBarcode)),
+            resourceProvider = resourceProvider,
+            productRepository = productRepo,
+            variationRepository = variationRepo,
+            tracker = tracker
+        )
+
+        // THEN
+        verify(fetchProductByIdentifier).invoke("123", GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8)
+    }
+
+    @Test
     fun `when barcode successfully scanned, then should stop accepting new barcodes`() = testBlocking {
         sut.onBarcodeScanningResult(
             CodeScannerStatus.Success(
