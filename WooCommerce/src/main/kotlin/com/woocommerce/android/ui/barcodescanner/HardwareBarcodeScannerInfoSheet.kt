@@ -75,7 +75,6 @@ fun HardwareBarcodeScannerInfoSheet(onDismissRequest: () -> Unit) {
                         isTestScanSuccessful = true
                     }
                 },
-                enabled = !isTestScanSuccessful,
             ),
         )
     }
