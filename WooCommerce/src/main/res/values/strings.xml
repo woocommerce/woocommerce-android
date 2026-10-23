@@ -2607,6 +2607,7 @@
     <string name="ai_support_chat_screen_title">Contact Support</string>
     <string name="ai_support_chat_store_connection_error_message">My store can\'t be reached. The app detected a connection error when trying to reach my store. How can I fix this?</string>
     <string name="ai_support_chat_history_row_title">Chat history</string>
+    <string name="ai_support_chat_login_unexpected_response_message">I can\'t log in to my store. The app says my store returned an unexpected response. How can I fix this?</string>
     <string name="ai_support_chat_history_row_subtitle">Revisit past support conversations</string>
     <string name="ai_support_chat_history_title">Chat history</string>
     <string name="ai_support_chat_history_empty">You haven\'t chatted with support yet.</string>
