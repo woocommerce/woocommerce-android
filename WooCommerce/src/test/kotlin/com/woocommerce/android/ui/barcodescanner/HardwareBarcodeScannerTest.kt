@@ -75,6 +75,19 @@ class HardwareBarcodeScannerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given listening, when a short SKU is typed with enter, then it is scanned`() = testBlocking {
+        // GIVEN
+        val scanner = createScanner()
+        scanner.startListening(onBarcodeScanned)
+
+        // WHEN
+        "123\n".forEach { scanner.onKeyDown(it.code, isTextInputFocused = false) }
+
+        // THEN
+        assertThat(scans).containsExactly(CodeScannerStatus.Success(code = "123", format = BarcodeFormat.FormatUnknown))
+    }
+
+    @Test
     fun `given a text input is focused, when a code is typed, then input is not consumed`() = testBlocking {
         // GIVEN
         val scanner = createScanner()

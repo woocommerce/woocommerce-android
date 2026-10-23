@@ -25,6 +25,7 @@ class HardwareBarcodeScanner @Inject constructor(
         onBarcodeEvent = ::onBarcodeEvent,
         currentTimeProvider = currentTimeProvider,
         coroutineScope = appCoroutineScope + dispatchers.main,
+        minBarcodeLength = MIN_SKU_LENGTH,
     )
 
     fun startListening(onBarcodeScanned: (CodeScannerStatus.Success) -> Unit) {
@@ -76,6 +77,7 @@ class HardwareBarcodeScanner @Inject constructor(
     }
 
     private companion object {
+        const val MIN_SKU_LENGTH = 3
         const val EAN_8_LENGTH = 8
         const val UPC_A_LENGTH = 12
         const val EAN_13_LENGTH = 13

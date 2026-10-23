@@ -25,7 +25,7 @@ class BarcodeInputDetectorTest {
     private fun setupDetector(testScope: TestScope): BarcodeInputDetector {
         currentTime = 10000L
         whenever(timeProvider.currentDate()).thenReturn(Date(currentTime))
-        return BarcodeInputDetector(onBarcodeEvent, timeProvider, testScope)
+        return BarcodeInputDetector(onBarcodeEvent, timeProvider, testScope, minBarcodeLength = 6)
     }
 
     private fun advanceTestTimeBy(milliseconds: Long) {

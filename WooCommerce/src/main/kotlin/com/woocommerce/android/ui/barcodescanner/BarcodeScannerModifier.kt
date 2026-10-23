@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 
 private const val FIRST_PRINTABLE_CHAR_CODE = 32
+private const val MIN_BARCODE_LENGTH = 6
 
 fun Modifier.listenForBarcodes(
     onBarcodeEvent: (BarcodeInputDetector.BarcodeResult) -> Unit,
@@ -28,7 +29,9 @@ fun Modifier.listenForBarcodes(
 ): Modifier = composed {
     val focusRequester = remember { FocusRequester() }
     val coroutineScope = rememberCoroutineScope()
-    val detector = remember { BarcodeInputDetector(onBarcodeEvent, CurrentTimeProvider(), coroutineScope) }
+    val detector = remember {
+        BarcodeInputDetector(onBarcodeEvent, CurrentTimeProvider(), coroutineScope, MIN_BARCODE_LENGTH)
+    }
 
     LaunchedEffect(enabled) {
         if (enabled) {
@@ -71,11 +74,11 @@ class BarcodeInputDetector(
     private val onBarcodeEvent: (BarcodeResult) -> Unit,
     private val currentTimeProvider: CurrentTimeProvider,
     private val coroutineScope: CoroutineScope,
+    private val minBarcodeLength: Int,
 ) {
 
     private companion object {
         const val MAX_SCANNER_INTER_CHAR_DELAY_MS = 200L
-        const val MIN_BARCODE_LENGTH = 6
     }
 
     private val barcodeBuffer = StringBuilder()
@@ -112,7 +115,7 @@ class BarcodeInputDetector(
         val currentTime = currentTimeProvider.currentDate().time
         val scanDuration = if (scanStartTime != -1L) currentTime - scanStartTime else 0L
 
-        val event = if (scannedBarcode.length >= MIN_BARCODE_LENGTH) {
+        val event = if (scannedBarcode.length >= minBarcodeLength) {
             BarcodeResult.Success(
                 barcode = scannedBarcode,
                 scanDurationMs = scanDuration
