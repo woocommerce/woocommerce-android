@@ -864,6 +864,12 @@
     <string name="barcode_scanning_alert_dialog_dismiss_label">Cancel</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Go to settings</string>
     <string name="barcode_scanning_scan_product_barcode_label">Scan Product Barcode</string>
+    <string name="barcode_scanning_hardware_scanner_info_title">Use a Bluetooth or USB scanner</string>
+    <string name="barcode_scanning_hardware_scanner_info_setup">Pair your scanner in your device\'s Bluetooth settings, or connect it with USB. Set it to keyboard (HID) mode.</string>
+    <string name="barcode_scanning_hardware_scanner_info_usage">Scan on the Orders and Products screens, or while creating an order. You don\'t need to open the camera.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_title">Test your scanner</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_success">Your scanner works</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_instruction">Scan this barcode with your scanner.</string>
 
     <!--
         Order Editing

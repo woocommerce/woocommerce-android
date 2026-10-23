@@ -26,6 +26,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
@@ -33,11 +34,31 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
     private lateinit var barcodeScanningViewModel: BarcodeScanningViewModel
     private lateinit var savedStateHandle: SavedStateHandle
     private val codeScanner: GoogleMLKitCodeScanner = mock()
+    private val barcodeScanningTracker: BarcodeScanningTracker = mock()
 
     @Before
     fun setup() {
         savedStateHandle = mock()
-        barcodeScanningViewModel = BarcodeScanningViewModel(codeScanner, savedStateHandle)
+        barcodeScanningViewModel = BarcodeScanningViewModel(codeScanner, barcodeScanningTracker, savedStateHandle)
+    }
+
+    @Test
+    fun `when hardware scanner info is clicked, then info is shown and tracked`() {
+        // WHEN
+        barcodeScanningViewModel.onHardwareScannerInfoClicked()
+
+        // THEN
+        assertThat(barcodeScanningViewModel.isHardwareScannerInfoVisible.value).isTrue()
+        verify(barcodeScanningTracker).trackHardwareScannerInfoTapped()
+    }
+
+    @Test
+    fun `when hardware scanner test scan succeeds, then it is tracked`() {
+        // WHEN
+        barcodeScanningViewModel.onHardwareScannerTestScanSucceeded()
+
+        // THEN
+        verify(barcodeScanningTracker).trackHardwareScannerTestScanSuccess()
     }
 
     @Test
@@ -255,6 +276,24 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
                         codeScannerStatus
                     )
                 )
+        }
+
+    @Test
+    fun `given hardware scanner info visible, when a code is recognised, then nothing is emitted`() =
+        runTest {
+            // GIVEN
+            val imageProxy: ImageProxy = mock()
+            whenever(codeScanner.recogniseCode(imageProxy)).thenReturn(
+                CodeScannerStatus.Success("4006381333931", GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN13)
+            )
+            barcodeScanningViewModel.onHardwareScannerInfoClicked()
+            barcodeScanningViewModel.startCodesRecognition()
+
+            // WHEN
+            barcodeScanningViewModel.onNewFrame(imageProxy)
+
+            // THEN
+            assertThat(barcodeScanningViewModel.event.value).isNull()
         }
 
     @Test
