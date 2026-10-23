@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.common.composeui.modifier
+package com.woocommerce.android.ui.barcodescanner
 
 import androidx.compose.foundation.focusable
 import androidx.compose.runtime.DisposableEffect
@@ -13,7 +13,7 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
-import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -124,7 +124,7 @@ class BarcodeInputDetector(
 
         event?.let {
             onBarcodeEvent(it)
-            WooPosLogWrapper.d("Barcode event: $it")
+            WooLog.d(WooLog.T.BARCODE_SCANNER, "Barcode event: $it")
         }
 
         clear()
@@ -150,7 +150,7 @@ class BarcodeInputDetector(
                     failureReason = FailureReason.NO_TERMINATOR,
                 )
                 onBarcodeEvent(event)
-                WooPosLogWrapper.d("Barcode scanning failed: $event")
+                WooLog.d(WooLog.T.BARCODE_SCANNER, "Barcode scanning failed: $event")
                 clear()
             }
         }

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.common.composeui.modifier
+package com.woocommerce.android.ui.barcodescanner
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
