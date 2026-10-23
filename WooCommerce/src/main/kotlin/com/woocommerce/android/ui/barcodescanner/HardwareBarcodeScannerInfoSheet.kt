@@ -38,6 +38,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -110,12 +111,12 @@ private fun HardwareBarcodeScannerInfoContent(
         Text(
             text = stringResource(R.string.barcode_scanning_hardware_scanner_info_test_title),
             style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
         Text(
             text = stringResource(R.string.barcode_scanning_hardware_scanner_info_test_instruction),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         AnimatedContent(
