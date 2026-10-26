@@ -1,11 +1,14 @@
 def secretProperties = gradle.ext.secretProperties
+def uploadKeystore = new File(gradle.ext.decryptedSecretsDir, "upload.jks")
+def uploadCredentials = ["uploadStorePassword", "uploadKeyAlias", "uploadKeyPassword"]
+def uploadKeyAvailable = uploadKeystore.exists() && uploadCredentials.every { secretProperties.containsKey(it) }
 
 android {
     signingConfigs {
-        if (["uploadStoreFile", "uploadStorePassword", "uploadKeyAlias", "uploadKeyPassword"].count { !secretProperties.containsKey(it) } == 0) {
-            logger.info("App signing properties found in secrets.properties, configuring signing for release builds.")
+        if (uploadKeyAvailable) {
+            logger.info("Upload keystore found, configuring signing for release builds.")
             release {
-                storeFile = rootProject.file(secretProperties.get("uploadStoreFile"))
+                storeFile = uploadKeystore
                 storePassword = secretProperties.get("uploadStorePassword")
                 keyAlias = secretProperties.get("uploadKeyAlias")
                 keyPassword = secretProperties.get("uploadKeyPassword")
@@ -13,13 +16,11 @@ android {
             android.buildTypes.release.signingConfig = android.signingConfigs.release
         }
 
-        if (secretProperties.containsKey("debugStoreFile")) {
-            logger.info("Debug signing properties found in secrets.properties, configuring signing for debug builds.")
-            def sharedDebugStore = file(secretProperties.get("debugStoreFile").replaceFirst("^~", System.getProperty("user.home")))
-            if (sharedDebugStore.exists()) {
-                debug {
-                    storeFile sharedDebugStore
-                }
+        def debugKeystore = new File(gradle.ext.decryptedSecretsDir, "debug.keystore")
+        if (debugKeystore.exists()) {
+            logger.info("Shared debug keystore found, configuring signing for debug builds.")
+            debug {
+                storeFile debugKeystore
             }
         }
     }
