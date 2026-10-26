@@ -951,19 +951,25 @@ create_push_order() {
 # NO_JETPACK_DISCONNECTED first.
 NO_JETPACK_DISCONNECTED="no"
 disconnect_no_jetpack_store() {
-  local site="${MAESTRO_WOO_NO_JETPACK_SITE_URL#*://}" result
+  if disconnect_jn_site "${MAESTRO_WOO_NO_JETPACK_SITE_URL:-}" "${MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD:-}" \
+    'wp eval '\''$options = get_option( "jetpack_options" ); unset( $options["id"] ); update_option( "jetpack_options", $options ); echo ( new Automattic\Jetpack\Connection\Manager() )->is_connected() ? "CONNECTED" : "DISCONNECTED";'\'''; then
+    NO_JETPACK_DISCONNECTED="yes"
+  else
+    echo "  disconnecting the store without Jetpack from WordPress.com failed"
+  fi
+}
+
+# Runs a wp-cli command on a Jurassic Ninja site that prints DISCONNECTED once the
+# site has no WordPress.com connection left. SSH to Jurassic Ninja sometimes drops
+# a session, so it tries a few times.
+disconnect_jn_site() {
+  local site="${1#*://}" password="$2" command="$3" result
   site="${site%%/*}"
-  # SSH to Jurassic Ninja sometimes drops a session, so try a few times.
   for _ in 1 2 3; do
-    result="$(JN_SSH_PASS="${MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD:-}" "$JN_SSH_SCRIPT" "$site" \
-      'wp eval '\''$options = get_option( "jetpack_options" ); unset( $options["id"] ); update_option( "jetpack_options", $options ); echo ( new Automattic\Jetpack\Connection\Manager() )->is_connected() ? "CONNECTED" : "DISCONNECTED";'\''' \
-      2>/dev/null | tr -d '\r' || true)"
-    if [[ "$result" == *DISCONNECTED* ]]; then
-      NO_JETPACK_DISCONNECTED="yes"
-      return 0
-    fi
+    result="$(JN_SSH_PASS="$password" "$JN_SSH_SCRIPT" "$site" "$command" 2>/dev/null | tr -d '\r' || true)"
+    [[ "$result" == *DISCONNECTED* ]] && return 0
   done
-  echo "  disconnecting the store without Jetpack from WordPress.com failed"
+  return 1
 }
 
 # Maestro cannot remove a home screen widget, so the runner drags any Woo widget
