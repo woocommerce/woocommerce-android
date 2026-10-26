@@ -25,7 +25,10 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.connection.event.toLocalBatteryStatus
 import com.woocommerce.android.cardreader.internal.LOG_TAG
 import com.woocommerce.android.cardreader.internal.payments.AdditionalInfoMapper
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 internal class BluetoothReaderListenerImpl(
@@ -46,6 +49,13 @@ internal class BluetoothReaderListenerImpl(
 
     private val _batteryStatusEvents = MutableStateFlow<CardReaderBatteryStatus>(Unknown)
     val batteryStatusEvents = _batteryStatusEvents.asStateFlow()
+
+    // No replay, unlike displayMessagesEvents, so a new payment never sees an earlier payment's request.
+    private val _readerInputRequests = MutableSharedFlow<Unit>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+    val readerInputRequests = _readerInputRequests.asSharedFlow()
 
     var cancelUpdateAction: Cancelable? = null
     var cancelReconnectAction: Cancelable? = null
@@ -109,6 +119,7 @@ internal class BluetoothReaderListenerImpl(
     override fun onRequestReaderInput(options: ReaderInputOptions) {
         logWrapper.d(LOG_TAG, "onRequestReaderInput: $options")
         _displayMessagesEvents.value = BluetoothCardReaderMessages.CardReaderInputMessage(options.toString())
+        _readerInputRequests.tryEmit(Unit)
     }
 
     override fun onDisconnect(reason: DisconnectReason) {

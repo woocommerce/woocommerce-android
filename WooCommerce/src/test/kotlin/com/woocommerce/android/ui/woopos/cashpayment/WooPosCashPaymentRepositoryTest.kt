@@ -232,4 +232,22 @@ class WooPosCashPaymentRepositoryTest {
 
         assertThat(result).isEqualTo(currencySymbol)
     }
+
+    @Test
+    fun `given site timezone is not a number, when getCurrencySymbol, then load and return currency symbol`() = runTest {
+        val site: SiteModel = SiteModel().apply {
+            id = 1
+            timezone = "false"
+        }
+        val siteSettings = generateSettings(LocalId(1))
+        val currencySymbol = "$"
+
+        whenever(selectedSite.get()).thenReturn(site)
+        whenever(wooCommerceStore.getSiteSettings(site)).thenReturn(siteSettings)
+        whenever(wooCommerceStore.getSiteCurrency(site, "USD")).thenReturn(currencySymbol)
+
+        val result = repository.getCurrencySymbol()
+
+        assertThat(result).isEqualTo(currencySymbol)
+    }
 }

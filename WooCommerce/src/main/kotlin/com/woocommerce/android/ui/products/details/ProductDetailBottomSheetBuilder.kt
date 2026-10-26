@@ -28,8 +28,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 class ProductDetailBottomSheetBuilder(
     private val resources: ResourceProvider,
     private val variationRepository: VariationRepository,
-    private val customFieldsRepository: CustomFieldsRepository,
-    private val isNonVariationAttributesEnabled: () -> Boolean
+    private val customFieldsRepository: CustomFieldsRepository
 ) {
     enum class ProductDetailBottomSheetType(
         @StringRes val titleResource: Int,
@@ -211,7 +210,7 @@ class ProductDetailBottomSheetBuilder(
     }
 
     private fun Product.getAttributes(): ProductDetailBottomSheetUiItem? {
-        if (!isNonVariationAttributesEnabled() || attributes.isNotEmpty()) return null
+        if (attributes.isNotEmpty()) return null
 
         return ProductDetailBottomSheetUiItem(
             ProductDetailBottomSheetType.PRODUCT_ATTRIBUTES,

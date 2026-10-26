@@ -7,18 +7,23 @@ import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import com.woocommerce.android.util.GetAppVersionName
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.wear.WearableConnectionRepository
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.plugin.SitePluginModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
@@ -36,7 +41,7 @@ class SiteObserverTest : BaseUnitTest() {
     private val dispatcher: FakeDispatcher = FakeDispatcher()
     private val appVersionName: GetAppVersionName = mock()
     private val isEligibleForSubscriptions: IsEligibleForSubscriptions = mock {
-        on { invoke() } doReturn false
+        on { invoke(any()) } doReturn false
     }
 
     private val siteObserver = SiteObserver(
@@ -138,7 +143,7 @@ class SiteObserverTest : BaseUnitTest() {
             whenever(selectedSite.observe()).thenReturn(flowOf(site))
             whenever(siteStore.fetchConnectSiteInfoSync(site.url))
                 .thenReturn(SiteStore.ConnectSiteInfoPayload(url = site.url))
-            whenever(isEligibleForSubscriptions()).thenReturn(true)
+            whenever(isEligibleForSubscriptions(site)).thenReturn(true)
 
             // WHEN
             val job = launch {
@@ -148,6 +153,37 @@ class SiteObserverTest : BaseUnitTest() {
 
             // THEN
             verify(wooCommerceStore).fetchSubscriptionProductCreationSettings(site)
+
+            job.cancel()
+        }
+
+    @Test
+    fun `given plugins fetch in flight, when site is reset, then subscriptions eligibility is not checked`() =
+        testBlocking {
+            // GIVEN
+            val site = SiteModel().apply {
+                url = "https://example.com"
+                origin = SiteModel.ORIGIN_WPAPI
+            }
+            val selectedSiteFlow = MutableStateFlow<SiteModel?>(site)
+            val pluginsResponse = CompletableDeferred<WooResult<List<SitePluginModel>>>()
+            whenever(selectedSite.observe()).thenReturn(selectedSiteFlow)
+            whenever(siteStore.fetchConnectSiteInfoSync(site.url))
+                .thenReturn(SiteStore.ConnectSiteInfoPayload(url = site.url))
+            whenever(wooCommerceStore.fetchSitePlugins(site)).doSuspendableAnswer { pluginsResponse.await() }
+            val job = launch {
+                siteObserver.observeAndUpdateSelectedSiteData()
+            }
+            advanceUntilIdle()
+
+            // WHEN
+            selectedSiteFlow.value = null
+            advanceUntilIdle()
+            pluginsResponse.complete(WooResult(emptyList()))
+            advanceUntilIdle()
+
+            // THEN
+            verify(isEligibleForSubscriptions, never()).invoke(any())
 
             job.cancel()
         }
@@ -163,7 +199,7 @@ class SiteObserverTest : BaseUnitTest() {
             whenever(selectedSite.observe()).thenReturn(flowOf(site))
             whenever(siteStore.fetchConnectSiteInfoSync(site.url))
                 .thenReturn(SiteStore.ConnectSiteInfoPayload(url = site.url))
-            whenever(isEligibleForSubscriptions()).thenReturn(false)
+            whenever(isEligibleForSubscriptions(site)).thenReturn(false)
 
             // WHEN
             val job = launch {

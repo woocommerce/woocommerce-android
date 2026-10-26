@@ -46,8 +46,6 @@ dependencies {
     implementation libs.androidx.constraintlayout.main
     implementation libs.google.material
 
-    api libs.google.play.services.auth
-
     api project(":libs:fluxc")
 
     implementation libs.bumptech.glide.main
@@ -55,6 +53,7 @@ dependencies {
 
     implementation libs.androidx.credentials.main
     runtimeOnly libs.androidx.credentials.play.service.auth
+    implementation libs.google.identity.googleid
 
     // Dagger
     api libs.google.dagger

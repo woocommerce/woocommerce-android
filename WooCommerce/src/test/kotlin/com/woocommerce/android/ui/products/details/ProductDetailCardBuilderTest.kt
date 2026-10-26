@@ -110,8 +110,8 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
                 propertyGroup.properties.toList()
                     .find { it.first == "Color" } != null
             }?.properties?.toList()?.let {
-                Assertions.assertThat(it.first()).isEqualTo(Pair("Color", "3"))
-            } ?: Assertions.fail("Expected a Product card with a single Attribute named Color with value 3 selected")
+                Assertions.assertThat(it.first()).isEqualTo(Pair("Color", "Blue, Green, Red"))
+            } ?: Assertions.fail("Expected a Product card with a single Attribute named Color with its options listed")
     }
 
     @Test
@@ -144,10 +144,9 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given the feature is on, when a simple product has attributes, then show an Attributes row with terms`() =
+    fun `when a simple product has attributes, then show an Attributes row with terms`() =
         testBlocking {
             // GIVEN
-            whenever(viewModel.isNonVariationAttributesEnabled).thenReturn(true)
             productStub = ProductTestUtils.generateProduct(productType = ProductType.SIMPLE.value)
                 .copy(attributes = listOf(DISPLAY_ONLY_ATTRIBUTE))
 
@@ -161,10 +160,9 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the feature is on, when an attribute has no options, then the Attributes row says it has no options`() =
+    fun `when an attribute has no options, then the Attributes row says it has no options`() =
         testBlocking {
             // GIVEN
-            whenever(viewModel.isNonVariationAttributesEnabled).thenReturn(true)
             productStub = ProductTestUtils.generateProduct(productType = ProductType.SIMPLE.value)
                 .copy(attributes = listOf(DISPLAY_ONLY_ATTRIBUTE.copy(terms = emptyList())))
 
@@ -178,10 +176,9 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the feature is on, when a global and a local attribute have the same name, then the row lists both options`() =
+    fun `when a global and a local attribute have the same name, then the row lists both options`() =
         testBlocking {
             // GIVEN
-            whenever(viewModel.isNonVariationAttributesEnabled).thenReturn(true)
             productStub = ProductTestUtils.generateProduct(productType = ProductType.SIMPLE.value)
                 .copy(
                     attributes = listOf(VARIATION_ATTRIBUTE, VARIATION_ATTRIBUTE.copy(id = 0L, terms = listOf("Green")))
@@ -197,10 +194,9 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the feature is on, when a variable product has only display-only attributes, then show an Attributes row`() =
+    fun `when a variable product has only display-only attributes, then show an Attributes row`() =
         testBlocking {
             // GIVEN
-            whenever(viewModel.isNonVariationAttributesEnabled).thenReturn(true)
             productStub = ProductTestUtils.generateProduct(isVariable = true)
                 .copy(attributes = listOf(DISPLAY_ONLY_ATTRIBUTE))
 
@@ -209,46 +205,12 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
 
             // THEN
             Assertions.assertThat(cards.propertyGroupWithTitle(R.string.product_attributes)).isNotNull
-            Assertions.assertThat(cards.propertyGroupWithTitle(R.string.variable_product_attributes)).isNull()
         }
 
     @Test
-    fun `given the feature is off, when a simple product has attributes, then show no Attributes row`() =
+    fun `when a variable product has attributes, then one Attributes row lists all terms`() =
         testBlocking {
             // GIVEN
-            whenever(viewModel.isNonVariationAttributesEnabled).thenReturn(false)
-            productStub = ProductTestUtils.generateProduct(productType = ProductType.SIMPLE.value)
-                .copy(attributes = listOf(DISPLAY_ONLY_ATTRIBUTE))
-
-            // WHEN
-            val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
-
-            // THEN
-            Assertions.assertThat(cards.propertyGroupWithTitle(R.string.product_attributes)).isNull()
-        }
-
-    @Test
-    fun `given the feature is off, when a variable product has display-only and variation attributes, then only variation attributes are listed`() =
-        testBlocking {
-            // GIVEN
-            whenever(viewModel.isNonVariationAttributesEnabled).thenReturn(false)
-            productStub = ProductTestUtils.generateProduct(isVariable = true)
-                .copy(attributes = listOf(DISPLAY_ONLY_ATTRIBUTE, VARIATION_ATTRIBUTE))
-
-            // WHEN
-            val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
-
-            // THEN
-            Assertions.assertThat(cards.propertyGroupWithTitle(R.string.variable_product_attributes)?.properties)
-                .containsOnlyKeys("Color")
-            Assertions.assertThat(cards.propertyGroupWithTitle(R.string.product_attributes)).isNull()
-        }
-
-    @Test
-    fun `given the feature is on, when a variable product has attributes, then one Attributes row lists all terms`() =
-        testBlocking {
-            // GIVEN
-            whenever(viewModel.isNonVariationAttributesEnabled).thenReturn(true)
             productStub = ProductTestUtils.generateProduct(isVariable = true)
                 .copy(attributes = listOf(DISPLAY_ONLY_ATTRIBUTE, VARIATION_ATTRIBUTE))
 
@@ -261,14 +223,12 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
                 Assertions.entry("Material", "Cotton, Wool"),
                 Assertions.entry("Color", "Red, Blue")
             )
-            Assertions.assertThat(cards.propertyGroupWithTitle(R.string.variable_product_attributes)).isNull()
         }
 
     @Test
-    fun `given the feature is on, when building cards for each product type with attributes, then each shows an Attributes row`() =
+    fun `when building cards for each product type with attributes, then each shows an Attributes row`() =
         testBlocking {
             // GIVEN
-            whenever(viewModel.isNonVariationAttributesEnabled).thenReturn(true)
             doReturn(0).whenever(viewModel).getBundledProductsSize(any())
             doReturn(emptyList<Component>()).whenever(viewModel).getComponents(any())
             val productTypes = listOf(
@@ -586,7 +546,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
                 ""
             )
 
-            Assertions.assertThat(populatedVariationCards.iconFor(R.string.variable_product_attributes))
+            Assertions.assertThat(populatedVariationCards.iconFor(R.string.product_attributes))
                 .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_screwdriver_wrench_24dp)
             Assertions.assertThat(groupedCards.iconFor(R.string.grouped_products))
                 .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_layer_group_24dp)

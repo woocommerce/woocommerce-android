@@ -305,7 +305,10 @@ class RefundSummaryViewModel @Inject constructor(
 
     private suspend fun initiateRefund(order: Order): WooResult<WCRefundModel> {
         val amount = refundSummaryState.refundAmount
-        val items = navArgs.refundItems.map { it.toDataModel() }
+        val items = navArgs.refundItems.toList()
+        val requestItems = amount?.let { items.toRefundLines(it, parameterRepository.getCurrencyDecimals()) }
+            ?.map { it.requestItem }
+            ?: items.map { it.toDataModel() }
         return refundStore.createItemsRefund(
             site = selectedSite.get(),
             orderId = order.id,
@@ -313,7 +316,7 @@ class RefundSummaryViewModel @Inject constructor(
             reason = refundSummaryState.refundReason ?: "",
             restockItems = true,
             autoRefund = gateway.await().supportsRefunds,
-            items = amount?.let { items.scaledToFit(it, parameterRepository.getCurrencyDecimals()) } ?: items
+            items = requestItems
         )
     }
 
