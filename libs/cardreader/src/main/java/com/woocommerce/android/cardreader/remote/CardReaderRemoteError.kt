@@ -5,6 +5,8 @@ sealed class CardReaderRemoteError(val code: String) {
 
     data object NfcDisabled : CardReaderRemoteError(CODE_NFC_DISABLED)
 
+    data object InsecureEnvironment : CardReaderRemoteError(CODE_INSECURE_ENVIRONMENT)
+
     data object TokenInvalid : CardReaderRemoteError(CODE_TOKEN_INVALID)
 
     data object ConnectFailed : CardReaderRemoteError(CODE_CONNECT_FAILED)
@@ -20,6 +22,7 @@ sealed class CardReaderRemoteError(val code: String) {
     companion object {
         private const val CODE_PHONE_NOT_ELIGIBLE = "phone_not_eligible"
         private const val CODE_NFC_DISABLED = "nfc_disabled"
+        private const val CODE_INSECURE_ENVIRONMENT = "insecure_environment"
         private const val CODE_TOKEN_INVALID = "token_invalid"
         private const val CODE_CONNECT_FAILED = "connect_failed"
         private const val CODE_COLLECT_FAILED = "collect_failed"
@@ -29,6 +32,7 @@ sealed class CardReaderRemoteError(val code: String) {
         fun fromCode(code: String): CardReaderRemoteError = when (code) {
             CODE_PHONE_NOT_ELIGIBLE -> PhoneNotEligible
             CODE_NFC_DISABLED -> NfcDisabled
+            CODE_INSECURE_ENVIRONMENT -> InsecureEnvironment
             CODE_TOKEN_INVALID -> TokenInvalid
             CODE_CONNECT_FAILED -> ConnectFailed
             CODE_COLLECT_FAILED -> CollectFailed

@@ -590,6 +590,18 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
     }
 
     @Test
+    fun `given tap to pay insecure environment, when terminal exception thrown, then insecure environment returned`() {
+        // GIVEN
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.TAP_TO_PAY_INSECURE_ENVIRONMENT)
+
+        // WHEN
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        // THEN
+        assertThat(result.type).isEqualTo(BuiltInReader.InsecureEnvironment)
+    }
+
+    @Test
     fun `given local_mobile_unsupported_device, when terminal exception thrown, then device unsupported returned`() {
         whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_DEVICE)
 
@@ -622,6 +634,18 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
+        assertThat(result.type).isEqualTo(Canceled)
+    }
+
+    @Test
+    fun `given canceled by reader, when terminal exception thrown, then canceled returned`() {
+        // GIVEN
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.CANCELED_BY_READER)
+
+        // WHEN
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        // THEN
         assertThat(result.type).isEqualTo(Canceled)
     }
 

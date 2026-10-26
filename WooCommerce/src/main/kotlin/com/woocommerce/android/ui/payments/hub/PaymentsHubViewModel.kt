@@ -179,7 +179,6 @@ class PaymentsHubViewModel @Inject constructor(
     private fun initializeCardReaderManagerIfNeeded() {
         if (cardReaderManager.initialized) return
         cardReaderManager.initialize(
-            updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
             useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
             useEftpos = developerOptionsRepository.isEftposPaymentEnabled(),
             isDebug = BuildConfig.DEBUG,

@@ -4,7 +4,8 @@ import android.app.Application
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
 import com.stripe.stripeterminal.external.models.ReaderSupportResult
-import com.woocommerce.android.cardreader.CardReaderManager
+import com.stripe.stripeterminal.external.models.TerminalErrorCode
+import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
@@ -18,10 +19,15 @@ import com.woocommerce.android.cardreader.internal.payments.InteracRefundManager
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalApplicationDelegateWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.toList
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIllegalStateException
 import org.junit.Before
@@ -58,8 +64,6 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
         CardReaderTypesToDiscover.SpecificReaders.ExternalReaders(
             listOf(ReaderType.ExternalReader.Chipper2X, ReaderType.ExternalReader.StripeM2)
         )
-
-    private val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
 
     private val locationId = "locationId"
 
@@ -106,7 +110,11 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     fun `given Stripe reports not supported, when isTapToPaySupportedOnDevice, then NotSupported returned`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
         whenever(terminalWrapper.supportsReadersOfType(any(), any()))
-            .thenReturn(ReaderSupportResult.NotSupported(RuntimeException("no TEE")))
+            .thenReturn(
+                ReaderSupportResult.NotSupported(
+                    TerminalException(TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_DEVICE, "no TEE")
+                )
+            )
 
         val result = cardReaderManager.isTapToPaySupportedOnDevice(false)
 
@@ -133,7 +141,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `given application delegate, when manager gets initialized, then delegate calls on create`() {
-        cardReaderManager.initialize(updateFrequency, useInterac, useEftpos, false)
+        cardReaderManager.initialize(useInterac, useEftpos, false)
 
         verify(terminalApplicationDelegateWrapper).onCreate(application)
     }
@@ -156,7 +164,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     fun `given terminal not initialized, when init() invoked, then Terminal init() invoked`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-        cardReaderManager.initialize(updateFrequency, useInterac, useEftpos, false)
+        cardReaderManager.initialize(useInterac, useEftpos, false)
 
         verify(terminalWrapper).initTerminal(any(), any(), any(), any())
     }
@@ -165,7 +173,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     fun `given terminal initialized, when init() invoked, then Terminal init() not invoked`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
 
-        cardReaderManager.initialize(updateFrequency, useInterac, useEftpos, false)
+        cardReaderManager.initialize(useInterac, useEftpos, false)
 
         verify(terminalWrapper, never()).initTerminal(any(), any(), any(), any())
     }
@@ -256,6 +264,81 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
             cardReaderManager.collectPayment(mock())
 
             verify(connectionManager).resetBluetoothCardReaderDisplayMessage()
+        }
+
+    @Test
+    fun `given reader asks for card input, when collecting payment, then WaitingForInput is emitted between statuses`() =
+        testBlocking {
+            // GIVEN
+            val inputRequests = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+            whenever(connectionManager.readerInputRequests).thenReturn(inputRequests)
+            whenever(paymentManager.acceptPayment(any())).thenReturn(
+                flow {
+                    emit(CardPaymentStatus.ProcessingPayment)
+                    inputRequests.emit(Unit)
+                    // Lets the forwarded input request reach the collector before the payment moves on
+                    delay(1)
+                    emit(CardPaymentStatus.PaymentCompleted("receiptUrl"))
+                }
+            )
+
+            // WHEN
+            val statuses = cardReaderManager.collectPayment(mock()).toList()
+
+            // THEN
+            assertThat(statuses).containsExactly(
+                CardPaymentStatus.ProcessingPayment,
+                CardPaymentStatus.WaitingForInput,
+                CardPaymentStatus.PaymentCompleted("receiptUrl"),
+            )
+        }
+
+    @Test
+    fun `given reader asked for input before the payment started, when collecting payment, then WaitingForInput is not emitted`() =
+        testBlocking {
+            // GIVEN
+            val inputRequests = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+            inputRequests.tryEmit(Unit)
+            whenever(connectionManager.readerInputRequests).thenReturn(inputRequests)
+            whenever(paymentManager.acceptPayment(any())).thenReturn(
+                flow {
+                    emit(CardPaymentStatus.ProcessingPayment)
+                    emit(CardPaymentStatus.PaymentCompleted("receiptUrl"))
+                }
+            )
+
+            // WHEN
+            val statuses = cardReaderManager.collectPayment(mock()).toList()
+
+            // THEN
+            assertThat(statuses).containsExactly(
+                CardPaymentStatus.ProcessingPayment,
+                CardPaymentStatus.PaymentCompleted("receiptUrl"),
+            )
+        }
+
+    @Test
+    fun `given reader asks for card input, when retrying payment, then WaitingForInput is emitted`() =
+        testBlocking {
+            // GIVEN
+            val inputRequests = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+            whenever(connectionManager.readerInputRequests).thenReturn(inputRequests)
+            whenever(paymentManager.retryPayment(any(), any())).thenReturn(
+                flow {
+                    emit(CardPaymentStatus.ProcessingPayment)
+                    inputRequests.emit(Unit)
+                    // Lets the forwarded input request reach the collector before the payment moves on
+                    delay(1)
+                    emit(CardPaymentStatus.PaymentCompleted("receiptUrl"))
+                }
+            )
+
+            // WHEN
+            val statuses = cardReaderManager.retryCollectPayment(1L, mock()).toList()
+
+            // THEN
+            assertThat(statuses).contains(CardPaymentStatus.WaitingForInput)
+            assertThat(statuses.last()).isEqualTo(CardPaymentStatus.PaymentCompleted("receiptUrl"))
         }
 
     // Interac Refund tests

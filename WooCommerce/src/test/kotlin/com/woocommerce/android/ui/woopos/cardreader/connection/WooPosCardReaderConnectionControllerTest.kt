@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveredReader
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveryTransport
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosUnifiedDiscoveryStream
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
@@ -164,6 +165,72 @@ class WooPosCardReaderConnectionControllerTest {
                 verify(unifiedDiscoveryStream, times(2)).discover(any(), any(), any())
             }
         }
+
+    @Suppress("DEPRECATION")
+    @Test
+    fun `given bluetooth is off, when discovery starts, then only wifi lan transport is used`() = runTest {
+        mockStatic(BluetoothAdapter::class.java).use { bluetoothAdapter ->
+            // GIVEN
+            bluetoothAdapter.`when`<BluetoothAdapter?> { BluetoothAdapter.getDefaultAdapter() }.thenReturn(null)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            whenever(unifiedDiscoveryStream.discover(any(), any(), any())).thenReturn(emptyFlow())
+            val controller = createController(this)
+
+            // WHEN
+            controller.onBluetoothEnabled()
+            advanceUntilIdle()
+
+            // THEN
+            verify(unifiedDiscoveryStream).discover(any(), any(), eq(setOf(WooPosDiscoveryTransport.WifiLan)))
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    @Test
+    fun `given explainer shown, when local network permission granted, then discovery is restarted`() = runTest {
+        mockStatic(BluetoothAdapter::class.java).use { bluetoothAdapter ->
+            // GIVEN
+            bluetoothAdapter.`when`<BluetoothAdapter?> { BluetoothAdapter.getDefaultAdapter() }.thenReturn(null)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            whenever(unifiedDiscoveryStream.discover(any(), any(), any())).thenReturn(emptyFlow())
+            val controller = createController(this)
+            controller.showRemoteTapToPayExplainer()
+            advanceUntilIdle()
+
+            // WHEN
+            controller.onLocalNetworkPermissionResult(granted = true, shouldShowRationale = false)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(controller.state.value)
+                .isNotInstanceOf(WooPosCardReaderConnectionState.RemoteTapToPayExplainer::class.java)
+            verify(unifiedDiscoveryStream).discover(any(), any(), any())
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    @Test
+    fun `given scanning, when local network permission granted, then discovery is restarted with wifi lan`() = runTest {
+        mockStatic(BluetoothAdapter::class.java).use { bluetoothAdapter ->
+            // GIVEN
+            bluetoothAdapter.`when`<BluetoothAdapter?> { BluetoothAdapter.getDefaultAdapter() }.thenReturn(null)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            whenever(unifiedDiscoveryStream.discover(any(), any(), any())).thenReturn(emptyFlow())
+            whenever(appPrefsWrapper.getLastConnectedPhoneDeviceId()).thenReturn("phone-device-id")
+            val controller = createController(this)
+            controller.onBluetoothEnabled()
+            advanceUntilIdle()
+
+            // WHEN
+            controller.onLocalNetworkPermissionResult(granted = true, shouldShowRationale = false)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(controller.state.value).isEqualTo(WooPosCardReaderConnectionState.Scanning)
+            verify(unifiedDiscoveryStream, times(2))
+                .discover(any(), any(), eq(setOf(WooPosDiscoveryTransport.WifiLan)))
+        }
+    }
 
     @Test
     fun `given the phone was re-advertised on a new port, when refreshing its address, then the new entry is used`() {
