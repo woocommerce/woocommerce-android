@@ -6,8 +6,8 @@
 #
 # Logs in to a WooCommerce site without Jetpack with its site credentials, sets up
 # push notifications from the dashboard card, then creates an order through the
-# REST API and opens its real push. The runner disconnects the store from
-# WordPress.com first, so the setup connects it again on every run.
+# REST API and opens its real push. The runner resets the store first, so the
+# setup connects it again on every run.
 #
 # Required env vars, written by setup-jn-store.sh --no-jetpack-site:
 #   MAESTRO_WOO_NO_JETPACK_SITE_URL
@@ -21,7 +21,7 @@ tags:
   - smoke_extended
   - push
   - destructive
-  - push_no_jetpack
+  - no_jetpack_store
 env:
   NO_JETPACK_SITE_URL: ${MAESTRO_WOO_NO_JETPACK_SITE_URL}
   NO_JETPACK_CONSUMER_KEY: ${MAESTRO_WOO_NO_JETPACK_CONSUMER_KEY}

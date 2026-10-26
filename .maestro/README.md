@@ -234,7 +234,7 @@ The runner:
 - `app_locale_de`: the runner logs in and sets the app language to German first.
 - `home_widget`: the runner removes Woo widgets from the home screen before and after the flow.
 - `push_new_order`: the runner logs in and creates an order first, and passes its number and total to the flow. Needs `--seed`.
-- `push_no_jetpack`: the runner disconnects the store without Jetpack from WordPress.com first, over SSH.
+- `no_jetpack_store`: the runner resets the store without Jetpack first, over SSH: it uninstalls Jetpack and removes the WordPress.com connection.
 - `jetpack_not_connected`: the runner disconnects Jetpack on the store with Jetpack not connected first, over SSH.
 - `system_surface`: flow enters Android-owned UI; assertions stop at the documented handoff boundary.
 - `destructive`: mutates store data.
