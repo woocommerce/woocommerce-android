@@ -1610,8 +1610,13 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     @Test
     fun `given login unexpected response launch mode, when sending the message, then send the error details`() =
         testBlocking {
-            whenever(contextProvider.buildInitialContext(diagnosticResult = any(), siteAddress = anyOrNull()))
-                .thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(
+                    diagnosticResult = any(),
+                    siteAddress = anyOrNull(),
+                    statusReport = anyOrNull()
+                )
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, LOGIN_UNEXPECTED_RESPONSE_MESSAGE, CONTEXT, null, null))
                 .thenReturn(Result.success(createResponse()))
             viewModel.onLaunchModeLoaded(
@@ -1623,7 +1628,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             val diagnosticResultCaptor = argumentCaptor<DiagnosticResult>()
             verify(contextProvider).buildInitialContext(
                 diagnosticResult = diagnosticResultCaptor.capture(),
-                siteAddress = anyOrNull()
+                siteAddress = anyOrNull(),
+                statusReport = eq(STATUS_REPORT)
             )
             assertThat(diagnosticResultCaptor.firstValue.statuses.single().status).isEqualTo(
                 TestStatus.Failed(technicalDetails = LOGIN_UNEXPECTED_RESPONSE_FAILURE.supportDetails)
