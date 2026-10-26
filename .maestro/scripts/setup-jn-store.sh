@@ -12,12 +12,16 @@
 #
 # With --no-jetpack-site instead of --site, it configures a WooCommerce site
 # without Jetpack for the push setup flow: it only creates the API keys and
-# writes the MAESTRO_WOO_NO_JETPACK_* values.
+# writes the MAESTRO_WOO_NO_JETPACK_* values. --jetpack-not-connected-site does
+# the same for a site with Jetpack installed but not connected, and writes the
+# MAESTRO_WOO_JETPACK_NOT_CONNECTED_* values.
 #
 # Usage:
 #   setup-jn-store.sh --site <domain> [--site-password <password>] [--wpcom-user <email>]
 #                     [--admin-user <name>] [--admin-id <id>] [--env-out <path>] [--app-creds <path>]
 #   setup-jn-store.sh --no-jetpack-site <domain> [--site-password <password>]
+#                     [--admin-user <name>] [--admin-id <id>] [--env-out <path>]
+#   setup-jn-store.sh --jetpack-not-connected-site <domain> [--site-password <password>]
 #                     [--admin-user <name>] [--admin-id <id>] [--env-out <path>]
 #
 # Credentials are resolved in this order, so a second run needs no arguments
@@ -32,7 +36,7 @@
 
 set -uo pipefail
 
-SITE="" KEYS_ONLY_SITE="" KEYS_ONLY_PREFIX="" KEYS_ONLY_NAME="" SITE_PASS="" WPCOM_USER="" WPCOM_PASS=""
+SITE="" KEYS_ONLY_SITE="" KEYS_ONLY_PREFIX="" KEYS_ONLY_NAME="" REQUIRE_JETPACK="yes" SITE_PASS="" WPCOM_USER="" WPCOM_PASS=""
 ADMIN_USER="demo"
 ADMIN_ID="1"
 ENV_OUT=""
@@ -48,6 +52,11 @@ while [ $# -gt 0 ]; do
     --site) SITE="$2"; shift 2 ;;
     --no-jetpack-site)
       KEYS_ONLY_SITE="$2" KEYS_ONLY_PREFIX=MAESTRO_WOO_NO_JETPACK KEYS_ONLY_NAME="No-Jetpack store"
+      REQUIRE_JETPACK="no"
+      shift 2 ;;
+    --jetpack-not-connected-site)
+      KEYS_ONLY_SITE="$2" KEYS_ONLY_PREFIX=MAESTRO_WOO_JETPACK_NOT_CONNECTED
+      KEYS_ONLY_NAME="Store with Jetpack not connected"
       shift 2 ;;
     --site-password) SITE_PASS="$2"; shift 2 ;;
     --wpcom-user) WPCOM_USER="$2"; shift 2 ;;
@@ -55,17 +64,17 @@ while [ $# -gt 0 ]; do
     --admin-id) ADMIN_ID="$2"; shift 2 ;;
     --env-out) ENV_OUT="$2"; shift 2 ;;
     --app-creds) APP_CREDS="$2"; shift 2 ;;
-    -h|--help) sed -n '2,31p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,35p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) die "unknown argument: $1" ;;
   esac
 done
 
 if [ -n "$KEYS_ONLY_SITE" ]; then
-  [ -z "$SITE" ] || die "--site and --no-jetpack-site configure different stores, run the script once for each"
+  [ -z "$SITE" ] || die "each run configures one store: pass only one of --site, --no-jetpack-site and --jetpack-not-connected-site"
   SITE="$KEYS_ONLY_SITE"
   TOTAL_STEPS=3
 else
-  [ -n "$SITE" ] || die "--site or --no-jetpack-site is required"
+  [ -n "$SITE" ] || die "--site, --no-jetpack-site or --jetpack-not-connected-site is required"
   TOTAL_STEPS=7
 fi
 command -v expect >/dev/null || die "expect is required for password-based SSH"
@@ -268,7 +277,7 @@ echo "USER:" . ( get_user_by( "id", __ADMIN_ID__ ) ? "ok" : "MISSING" ) . "\n";'
       [ "$ssh_failures" -lt 3 ] || die "could not run wp-cli over SSH. Check the site admin password."
     fi
     printf '%s' "$STATE" | grep -q "WC:active" \
-      && { [ -n "$KEYS_ONLY_SITE" ] || printf '%s' "$STATE" | grep -q "JP:active"; } && break
+      && { [ "$REQUIRE_JETPACK" = "no" ] || printf '%s' "$STATE" | grep -q "JP:active"; } && break
   fi
   if [ "$(date +%s)" -ge "$DEADLINE" ]; then
     printf '  last state: http=%s %s\n' "$code" "$(printf '%s' "$STATE" | tr '\n' ' ')" >&2
@@ -277,7 +286,7 @@ echo "USER:" . ( get_user_by( "id", __ADMIN_ID__ ) ? "ok" : "MISSING" ) . "\n";'
   printf '  still provisioning (http=%s), waiting...\n' "$code"
   sleep 15
 done
-if [ -n "$KEYS_ONLY_SITE" ]; then
+if [ "$REQUIRE_JETPACK" = "no" ]; then
   ok "site is up, WooCommerce active"
 else
   ok "site is up, WooCommerce and Jetpack active"
@@ -291,8 +300,8 @@ fi
 printf '%s' "$STATE" | grep -q "USER:ok" || die "no user with id $ADMIN_ID (try --admin-id)"
 ok "ssh and wp-cli working, admin user id $ADMIN_ID present"
 
-# The push setup flow signs in with the site credentials and creates its order
-# with the API keys, so the site needs nothing else.
+# The flows for these stores sign in with the site credentials and create their
+# orders with the API keys, so the site needs nothing else.
 if [ -n "$KEYS_ONLY_SITE" ]; then
   step "Creating WooCommerce API keys and writing $(basename "$ENV_OUT")"
   create_api_keys
