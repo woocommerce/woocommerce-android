@@ -41,6 +41,7 @@ P2_ORDERED_FLOW_NAMES = (
     "login_not_woo_store.yaml",
     "login_wrong_account.yaml",
     "push_no_jetpack.yaml",
+    "jetpack_not_connected.yaml",
     "login_successful.yaml",
     "dashboard_stats.yaml",
     "dashboard_view_all_analytics.yaml",

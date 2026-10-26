@@ -30,7 +30,7 @@ items:
     manual: "Installing Jetpack from the app permanently changes the site, and the manual test needs the site-credential login first, so the whole scenario is one manual test."
   - id: login.jetpack-not-connected
     title: Login with Jetpack installed but not connected
-    manual: "Requires manually disconnecting Jetpack on a disposable Jurassic Ninja site."
+    flow: .maestro/flows/jetpack_not_connected.yaml
   - id: login.jetpack
     title: Login to Jetpack-connected WooCommerce store
     flow: .maestro/flows/login_successful.yaml
