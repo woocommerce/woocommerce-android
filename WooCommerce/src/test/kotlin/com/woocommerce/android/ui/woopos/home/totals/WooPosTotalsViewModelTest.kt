@@ -263,7 +263,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `initial state is loading`() = runTest {
+    fun `given back from checkout event, when vm created, then state is idle`() = runTest {
         // GIVEN
         val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
             on { events }.thenReturn(MutableStateFlow(ParentToChildrenEvent.BackFromCheckoutToCartClicked))
@@ -277,7 +277,30 @@ class WooPosTotalsViewModelTest {
         )
 
         // THEN
-        assertThat(viewModel.state.value).isEqualTo(WooPosTotalsViewState.Loading)
+        assertThat(viewModel.state.value).isEqualTo(WooPosTotalsViewState.Idle)
+    }
+
+    @Test
+    fun `given checkout state, when BackFromCheckoutToCartClicked, then state is idle`() = runTest {
+        // GIVEN
+        val events = MutableStateFlow<ParentToChildrenEvent>(
+            ParentToChildrenEvent.CheckoutClicked(
+                listOf(
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                )
+            )
+        )
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(parentToChildrenEventFlow = events)
+        assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Checkout::class.java)
+
+        // WHEN
+        events.value = ParentToChildrenEvent.BackFromCheckoutToCartClicked
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(viewModel.state.value).isEqualTo(WooPosTotalsViewState.Idle)
     }
 
     @Test
@@ -449,7 +472,7 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `given OnNewTransactionClicked, should send NewTransactionClicked event and reset state to initial`() =
+    fun `when OnNewTransactionClicked, then sends OnNewTransactionStarted to parent`() =
         runTest {
             // GIVEN
             whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title))
@@ -467,7 +490,6 @@ class WooPosTotalsViewModelTest {
             viewModel.onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked)
 
             // THEN
-            assertThat(viewModel.state.value).isEqualTo(WooPosTotalsViewState.Loading)
             verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OnNewTransactionStarted)
         }
 
