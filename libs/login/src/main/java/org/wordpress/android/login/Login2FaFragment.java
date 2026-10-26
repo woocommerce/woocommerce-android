@@ -23,6 +23,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.credentials.exceptions.GetCredentialCancellationException;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -40,6 +41,7 @@ import org.wordpress.android.fluxc.store.AccountStore.PushSocialSmsPayload;
 import org.wordpress.android.fluxc.store.AccountStore.StartWebauthnChallengePayload;
 import org.wordpress.android.fluxc.store.AccountStore.WebauthnChallengeReceived;
 import org.wordpress.android.fluxc.store.AccountStore.WebauthnPasskeyAuthenticated;
+import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged;
 import org.wordpress.android.login.util.SiteUtils;
 import org.wordpress.android.login.webauthn.PasskeyRequest;
 import org.wordpress.android.login.webauthn.PasskeyRequest.PasskeyRequestData;
@@ -47,6 +49,7 @@ import org.wordpress.android.login.widgets.WPLoginInputRow;
 import org.wordpress.android.login.widgets.WPLoginInputRow.OnEditorCommitListener;
 import org.wordpress.android.util.AppLog;
 import org.wordpress.android.util.AppLog.T;
+import org.wordpress.android.util.EditTextUtils;
 import org.wordpress.android.util.NetworkUtils;
 import org.wordpress.android.util.ToastUtils;
 
@@ -64,7 +67,9 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
     private static final String KEY_NONCE_AUTHENTICATOR = "KEY_NONCE_AUTHENTICATOR";
     private static final String KEY_NONCE_BACKUP = "KEY_NONCE_BACKUP";
     private static final String KEY_NONCE_SMS = "KEY_NONCE_SMS";
+    private static final String KEY_NONCE_WEBAUTHN = "KEY_NONCE_WEBAUTHN";
     private static final String KEY_OLD_SITES_IDS = "KEY_OLD_SITES_IDS";
+    private static final String KEY_BACKUP_CODE_REQUESTED = "KEY_BACKUP_CODE_REQUESTED";
     private static final String KEY_SMS_NUMBER = "KEY_SMS_NUMBER";
     private static final String KEY_SMS_SENT = "KEY_SMS_SENT";
 
@@ -100,6 +105,8 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
     ArrayList<Integer> mOldSitesIDs;
 
     private Button mOtpButton;
+    @Nullable private Button mBackupCodeButton;
+    @Nullable private Button mSecurityKeyPrimaryButton;
     private Button mSecurityKeyButton;
     private String mEmailAddress;
     private String mIdToken;
@@ -116,17 +123,10 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
     private TextView mLabel;
     private boolean mIsSocialLogin;
     private boolean mIsSocialLoginConnect;
+    private boolean mIsSecurityKeyPrimary;
+    private boolean mBackupCodeRequested;
     private boolean mSentSmsCode;
     private List<SupportedAuthTypes> mSupportedAuthTypes;
-
-    public static Login2FaFragment newInstance(String emailAddress, String password) {
-        Login2FaFragment fragment = new Login2FaFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_EMAIL_ADDRESS, emailAddress);
-        args.putString(ARG_PASSWORD, password);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     public static Login2FaFragment newInstance(String emailAddress, String password,
                                                String userId, String webauthnNonce,
@@ -166,8 +166,10 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         return fragment;
     }
 
-    public static Login2FaFragment newInstanceSocialConnect(String emailAddress, String password,
-                                                            String idToken, String service) {
+    @NonNull
+    public static Login2FaFragment newInstanceSocialConnect(@Nullable String emailAddress, @Nullable String password,
+                                                            @Nullable String idToken, @Nullable String service,
+                                                            @NonNull List<String> authTypes) {
         Login2FaFragment fragment = new Login2FaFragment();
         Bundle args = new Bundle();
         args.putString(ARG_EMAIL_ADDRESS, emailAddress);
@@ -175,6 +177,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         args.putString(ARG_2FA_ID_TOKEN, idToken);
         args.putBoolean(ARG_2FA_IS_SOCIAL_CONNECT, true);
         args.putString(ARG_2FA_SOCIAL_SERVICE, service);
+        args.putStringArrayList(ARG_2FA_SUPPORTED_AUTH_TYPES, new ArrayList<>(authTypes));
         fragment.setArguments(args);
         return fragment;
     }
@@ -191,7 +194,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
 
     @Override
     protected void setupLabel(@NonNull TextView label) {
-        label.setText(mSentSmsCode ? getSmsInstructions() : getString(R.string.enter_verification_code));
+        label.setText(getInstructions());
         mLabel = label;
     }
 
@@ -206,9 +209,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         // restrict the allowed input chars to just numbers
         m2FaInput.getEditText().setKeyListener(DigitsKeyListener.getInstance("0123456789"));
 
-        // The legacy token endpoint omits supported auth types, so keep SMS available when the list is empty.
-        boolean isSmsEnabled = mSupportedAuthTypes.isEmpty() ||
-                mSupportedAuthTypes.contains(SupportedAuthTypes.SMS);
+        boolean isSmsEnabled = mSupportedAuthTypes.contains(SupportedAuthTypes.SMS);
         mOtpButton = rootView.findViewById(R.id.login_otp_button);
         mOtpButton.setVisibility(isSmsEnabled ? View.VISIBLE : View.GONE);
         mOtpButton.setText(mSentSmsCode ? R.string.login_text_otp_another : R.string.login_text_otp);
@@ -226,6 +227,16 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         mSecurityKeyButton = rootView.findViewById(R.id.login_security_key_button);
         mSecurityKeyButton.setVisibility(isSecurityKeyEnabled ? View.VISIBLE : View.GONE);
         mSecurityKeyButton.setOnClickListener(view -> doAuthWithSecurityKeyAction());
+
+        mSecurityKeyPrimaryButton = rootView.findViewById(R.id.login_security_key_primary_button);
+        mSecurityKeyPrimaryButton.setOnClickListener(view -> doAuthWithSecurityKeyAction());
+
+        mBackupCodeButton = rootView.findViewById(R.id.login_backup_code_button);
+        mBackupCodeButton.setOnClickListener(view -> {
+            mBackupCodeRequested = true;
+            update2FaViews();
+            EditTextUtils.showSoftInput(m2FaInput.getEditText());
+        });
     }
 
     @Override
@@ -235,6 +246,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
                 next();
             }
         });
+        update2FaViews();
     }
 
     @Override
@@ -244,7 +256,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
 
     @Override
     protected EditText getEditTextToFocusOnStart() {
-        return m2FaInput.getEditText();
+        return isSecurityKeyMode() ? null : m2FaInput.getEditText();
     }
 
     @Override
@@ -277,16 +289,22 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         mWebauthnNonce = getArguments().getString(ARG_WEBAUTHN_NONCE);
         mSupportedAuthTypes = handleSupportedAuthTypesParameter(
                 getArguments().getStringArrayList(ARG_2FA_SUPPORTED_AUTH_TYPES));
+        mIsSecurityKeyPrimary = mSupportedAuthTypes.contains(SupportedAuthTypes.WEBAUTHN)
+                && !mSupportedAuthTypes.contains(SupportedAuthTypes.AUTHENTICATOR)
+                && !mSupportedAuthTypes.contains(SupportedAuthTypes.SMS)
+                && !mSupportedAuthTypes.contains(SupportedAuthTypes.EMAIL);
 
         if (savedInstanceState != null) {
             // Overwrite argument nonce values with saved state values on device rotation.
             mNonceAuthenticator = savedInstanceState.getString(KEY_NONCE_AUTHENTICATOR);
             mNonceBackup = savedInstanceState.getString(KEY_NONCE_BACKUP);
             mNonceSms = savedInstanceState.getString(KEY_NONCE_SMS);
+            mWebauthnNonce = savedInstanceState.getString(KEY_NONCE_WEBAUTHN);
             // Restore set two-factor authentication type value on device rotation.
             mType = savedInstanceState.getString(KEY_2FA_TYPE);
             mPhoneNumber = savedInstanceState.getString(KEY_SMS_NUMBER);
             mSentSmsCode = savedInstanceState.getBoolean(KEY_SMS_SENT);
+            mBackupCodeRequested = savedInstanceState.getBoolean(KEY_BACKUP_CODE_REQUESTED);
         }
     }
 
@@ -312,9 +330,11 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         outState.putString(KEY_NONCE_AUTHENTICATOR, mNonceAuthenticator);
         outState.putString(KEY_NONCE_BACKUP, mNonceBackup);
         outState.putString(KEY_NONCE_SMS, mNonceSms);
+        outState.putString(KEY_NONCE_WEBAUTHN, mWebauthnNonce);
         outState.putString(KEY_2FA_TYPE, mType);
         outState.putString(KEY_SMS_NUMBER, mPhoneNumber);
         outState.putBoolean(KEY_SMS_SENT, mSentSmsCode);
+        outState.putBoolean(KEY_BACKUP_CODE_REQUESTED, mBackupCodeRequested);
     }
 
     @Override
@@ -322,7 +342,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         super.onResume();
 
         // Insert authentication code if copied to clipboard
-        if (TextUtils.isEmpty(m2FaInput.getEditText().getText())) {
+        if (!mIsSecurityKeyPrimary && TextUtils.isEmpty(m2FaInput.getEditText().getText())) {
             m2FaInput.setText(getAuthCodeFromClipboard());
         }
 
@@ -429,14 +449,26 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
     }
 
     private void updateContinueButtonEnabledStatus() {
+        Button bottomButton = getBottomButton();
+        if (bottomButton == null || m2FaInput == null) {
+            return;
+        }
         String currentVerificationCode = m2FaInput.getEditText().getText().toString();
-        getBottomButton().setEnabled(!currentVerificationCode.trim().isEmpty());
+        bottomButton.setEnabled(!isInProgress() && !currentVerificationCode.trim().isEmpty());
     }
 
     @Override
     protected void endProgress() {
         super.endProgress();
         mInProgressMessageId = DEFAULT_PROGRESS_MESSAGE_ID;
+        updateActionButtonsEnabled();
+        updateContinueButtonEnabledStatus();
+    }
+
+    @Override
+    protected void startProgress() {
+        super.startProgress();
+        updateActionButtonsEnabled();
     }
 
     private void handleAuthError(AuthenticationErrorType error, String errorMessage) {
@@ -575,6 +607,15 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
     }
 
     @Override
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSiteChanged(@NonNull OnSiteChanged event) {
+        if (mAccountStore.hasAccessToken() && mOldSitesIDs != null) {
+            super.onSiteChanged(event);
+        }
+    }
+
+    @Override
     protected void onLoginFinished() {
         mAnalyticsListener.trackAnalyticsSignIn(true);
 
@@ -588,15 +629,83 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
     }
 
     private void setTextForSms() {
-        mLabel.setText(getSmsInstructions());
-        mOtpButton.setText(getString(R.string.login_text_otp_another));
+        mBackupCodeRequested = false;
         mSentSmsCode = true;
+        mOtpButton.setText(getString(R.string.login_text_otp_another));
+        update2FaViews();
     }
 
     private CharSequence getSmsInstructions() {
         return TextUtils.isEmpty(mPhoneNumber)
                 ? getString(R.string.enter_verification_code_sms_generic)
                 : getString(R.string.enter_verification_code_sms, mPhoneNumber);
+    }
+
+    @NonNull private CharSequence getInstructions() {
+        if (mBackupCodeRequested) {
+            return getString(R.string.enter_verification_code_backup);
+        }
+        return mSentSmsCode ? getSmsInstructions() : getInitialInstructions();
+    }
+
+    @NonNull private CharSequence getInitialInstructions() {
+        if (mIsSecurityKeyPrimary) {
+            return getString(R.string.notification_security_key_needed);
+        } else if (mSupportedAuthTypes.contains(SupportedAuthTypes.AUTHENTICATOR)) {
+            return getString(R.string.enter_verification_code_authenticator);
+        } else if (mSupportedAuthTypes.contains(SupportedAuthTypes.SMS) && !mIsSocialLogin) {
+            return getSmsInstructions();
+        } else if (mSupportedAuthTypes.contains(SupportedAuthTypes.EMAIL) && !mIsSocialLogin) {
+            return getString(R.string.enter_verification_code_email);
+        } else {
+            return getString(R.string.enter_verification_code);
+        }
+    }
+
+    private boolean isSecurityKeyMode() {
+        return mIsSecurityKeyPrimary && !mBackupCodeRequested;
+    }
+
+    private void update2FaViews() {
+        boolean securityKeyMode = isSecurityKeyMode();
+        if (mSecurityKeyPrimaryButton != null) {
+            mSecurityKeyPrimaryButton.setVisibility(securityKeyMode ? View.VISIBLE : View.GONE);
+        }
+        if (mBackupCodeButton != null) {
+            boolean showBackupCodeButton = !mBackupCodeRequested
+                    && mSupportedAuthTypes.contains(SupportedAuthTypes.BACKUP);
+            mBackupCodeButton.setVisibility(showBackupCodeButton ? View.VISIBLE : View.GONE);
+        }
+        if (m2FaInput != null) {
+            m2FaInput.setVisibility(securityKeyMode ? View.GONE : View.VISIBLE);
+        }
+        if (mSecurityKeyButton != null) {
+            boolean showSecurityKeyButton = !securityKeyMode
+                    && mSupportedAuthTypes.contains(SupportedAuthTypes.WEBAUTHN);
+            mSecurityKeyButton.setVisibility(showSecurityKeyButton ? View.VISIBLE : View.GONE);
+        }
+        Button bottomButton = getBottomButton();
+        if (bottomButton != null) {
+            bottomButton.setVisibility(securityKeyMode ? View.GONE : View.VISIBLE);
+        }
+        if (mLabel != null) {
+            mLabel.setText(getInstructions());
+        }
+        updateActionButtonsEnabled();
+        updateContinueButtonEnabledStatus();
+    }
+
+    private void updateActionButtonsEnabled() {
+        boolean enabled = !isInProgress();
+        if (mSecurityKeyPrimaryButton != null) {
+            mSecurityKeyPrimaryButton.setEnabled(enabled);
+        }
+        if (mBackupCodeButton != null) {
+            mBackupCodeButton.setEnabled(enabled);
+        }
+        if (mSecurityKeyButton != null) {
+            mSecurityKeyButton.setEnabled(enabled);
+        }
     }
 
     private void doAuthWithSecurityKeyAction() {
@@ -621,9 +730,11 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
             return;
         }
 
+        String webauthnNonce = event.getWebauthnNonce();
+        mWebauthnNonce = webauthnNonce;
         PasskeyRequestData passkeyRequestData = new PasskeyRequestData(
                 event.mUserId,
-                event.getWebauthnNonce(),
+                webauthnNonce,
                 event.mJsonResponse.toString()
         );
 
@@ -635,8 +746,13 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
                     return null;
                 },
                 error -> {
-                    String errorMessage = getString(R.string.login_error_security_key);
-                    handleWebauthnError(AuthenticationErrorType.WEBAUTHN_FAILED, errorMessage);
+                    if (error instanceof GetCredentialCancellationException) {
+                        mAnalyticsListener.trackLoginSecurityKeyFailure();
+                        endProgress();
+                    } else {
+                        String errorMessage = getString(R.string.login_error_security_key);
+                        handleWebauthnError(AuthenticationErrorType.WEBAUTHN_FAILED, errorMessage);
+                    }
                     return null;
                 }
         );
@@ -679,6 +795,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         AUTHENTICATOR,
         PUSH,
         SMS,
+        EMAIL,
         UNKNOWN;
 
         static SupportedAuthTypes fromString(String value) {
@@ -693,6 +810,8 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
                     return PUSH;
                 case "sms":
                     return SMS;
+                case "email":
+                    return EMAIL;
                 default:
                     return UNKNOWN;
             }
