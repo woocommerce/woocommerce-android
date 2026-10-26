@@ -58,20 +58,20 @@ class CardReaderPaymentOrderHelperTest {
     }
 
     @Test
-    fun `given order, when getAmountLabel, then return amount formatted with store currency settings`() {
+    fun `given order, when getAmountLabel, then return order total formatted by formatCurrency`() {
         // GIVEN
         val order: Order = mock {
             on { total }.thenReturn(BigDecimal("46.35"))
             on { currency }.thenReturn("USD")
         }
         whenever(currencyFormatter.formatCurrency(BigDecimal("46.35"), "USD"))
-            .thenReturn("$46,35")
+            .thenReturn("formatted total")
 
         // WHEN
         val result = helper.getAmountLabel(order)
 
         // THEN
-        assertThat(result).isEqualTo("$46,35")
+        assertThat(result).isEqualTo("formatted total")
     }
 
     @Test
