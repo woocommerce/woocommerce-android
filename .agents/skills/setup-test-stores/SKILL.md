@@ -58,7 +58,7 @@ hand against a site created in a browser.
    reuse the existing WP.com account lines rather than asking for them again.
 
 2. **Provision three sites.** The lab store, a WooCommerce site without Jetpack for
-   `push_no_jetpack.yaml`, and a WooCommerce site with Jetpack, left unconnected, for
+   `no_jetpack.yaml` and `push_no_jetpack.yaml`, and a WooCommerce site with Jetpack, left unconnected, for
    `jetpack_not_connected.yaml`:
 
    ```
@@ -110,9 +110,9 @@ A fresh store has the WooCommerce sample products. The script tops it up to 100 
 and 100 completed orders, and adds one customer and a `maestro10` coupon, so the product,
 order and dashboard flows run against it.
 
-The site without Jetpack and the site with Jetpack not connected only get API keys. Their
-flows log in with the site credentials, and the runner disconnects each one from
-WordPress.com before its flow runs.
+The site without Jetpack gets the same orders and products as the lab store, and the site
+with Jetpack not connected only gets API keys. Their flows log in with the site credentials,
+and the runner resets each one before its flow runs.
 
 The negative-login fixtures (`MAESTRO_WOO_NOT_A_WOO_STORE_*`,
 `MAESTRO_WOO_WRONG_ACCOUNT_STORE_URL`) are shared read-only sites from the smoke testing

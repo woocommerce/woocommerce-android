@@ -40,6 +40,7 @@ P2_ORDERED_FLOW_NAMES = (
     "login_help.yaml",
     "login_not_woo_store.yaml",
     "login_wrong_account.yaml",
+    "no_jetpack.yaml",
     "push_no_jetpack.yaml",
     "jetpack_not_connected.yaml",
     "login_successful.yaml",

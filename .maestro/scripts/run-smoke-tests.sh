@@ -944,18 +944,19 @@ create_push_order() {
   fi
 }
 
-# The push setup without Jetpack starts from a store that isn't connected to
-# WordPress.com and connects it, so for a flow tagged push_no_jetpack the runner
-# disconnects the store first. Jurassic Ninja keeps the site's token on the
-# platform, so removing the stored site ID is what disconnects it. The flow checks
-# NO_JETPACK_DISCONNECTED first.
+# The flows on the store without Jetpack connect it to WordPress.com or install
+# Jetpack, so for a flow tagged no_jetpack_store the runner resets the store first.
+# If Jetpack is active, wp-cli deregisters the site on WordPress.com, then Jetpack
+# is uninstalled and the site's own connection is removed, as Jurassic Ninja keeps
+# the site ID. The check runs in a separate wp-cli call, as the previous one still
+# holds the removed tokens. The flow checks NO_JETPACK_DISCONNECTED first.
 NO_JETPACK_DISCONNECTED="no"
-disconnect_no_jetpack_store() {
+reset_no_jetpack_store() {
   if disconnect_jn_site "${MAESTRO_WOO_NO_JETPACK_SITE_URL:-}" "${MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD:-}" \
-    'wp eval '\''$options = get_option( "jetpack_options" ); unset( $options["id"] ); update_option( "jetpack_options", $options ); echo ( new Automattic\Jetpack\Connection\Manager() )->is_connected() ? "CONNECTED" : "DISCONNECTED";'\'''; then
+    'wp plugin is-active jetpack >/dev/null 2>&1 && wp jetpack disconnect blog >/dev/null 2>&1; wp plugin uninstall jetpack --deactivate >/dev/null 2>&1; wp eval '\''$options = get_option( "jetpack_options" ); unset( $options["id"], $options["master_user"] ); update_option( "jetpack_options", $options ); $tokens = get_option( "jetpack_private_options" ); unset( $tokens["blog_token"], $tokens["user_tokens"] ); update_option( "jetpack_private_options", $tokens );'\'' && wp eval '\''$manager = new Automattic\Jetpack\Connection\Manager(); echo $manager->is_connected() || $manager->has_connected_owner() ? "CONNECTED" : "DISCONNECTED";'\'''; then
     NO_JETPACK_DISCONNECTED="yes"
   else
-    echo "  disconnecting the store without Jetpack from WordPress.com failed"
+    echo "  resetting the store without Jetpack failed"
   fi
 }
 
@@ -1473,8 +1474,8 @@ for repeat_index in $(seq 1 "$REPEAT"); do
       create_push_order "$base"
     fi
     NO_JETPACK_DISCONNECTED="no"
-    if flow_has_any_tag "$flow" push_no_jetpack; then
-      disconnect_no_jetpack_store
+    if flow_has_any_tag "$flow" no_jetpack_store; then
+      reset_no_jetpack_store
     fi
     JETPACK_DISCONNECTED="no"
     if flow_has_any_tag "$flow" jetpack_not_connected; then

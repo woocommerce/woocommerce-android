@@ -11,10 +11,10 @@
 # take the admin password from the wp-admin notice the site displays.
 #
 # With --no-jetpack-site instead of --site, it configures a WooCommerce site
-# without Jetpack for the push setup flow: it only creates the API keys and
-# writes the MAESTRO_WOO_NO_JETPACK_* values. --jetpack-not-connected-site does
-# the same for a site with Jetpack installed but not connected, and writes the
-# MAESTRO_WOO_JETPACK_NOT_CONNECTED_* values.
+# without Jetpack for the no-Jetpack flows: it adds the same orders and products,
+# creates the API keys and writes the MAESTRO_WOO_NO_JETPACK_* values.
+# --jetpack-not-connected-site only creates the API keys for a site with Jetpack
+# installed but not connected, and writes the MAESTRO_WOO_JETPACK_NOT_CONNECTED_* values.
 #
 # Usage:
 #   setup-jn-store.sh --site <domain> [--site-password <password>] [--wpcom-user <email>]
@@ -36,11 +36,12 @@
 
 set -uo pipefail
 
-SITE="" KEYS_ONLY_SITE="" KEYS_ONLY_PREFIX="" KEYS_ONLY_NAME="" REQUIRE_JETPACK="yes" SITE_PASS="" WPCOM_USER="" WPCOM_PASS=""
+SITE="" KEYS_ONLY_SITE="" KEYS_ONLY_PREFIX="" KEYS_ONLY_NAME="" REQUIRE_JETPACK="yes" SEED_KEYS_ONLY_SITE="no" SITE_PASS="" WPCOM_USER="" WPCOM_PASS=""
 ADMIN_USER="demo"
 ADMIN_ID="1"
 ENV_OUT=""
 APP_CREDS="$HOME/.configure/woocommerce-android/secrets/secrets.properties"
+ONE_STORE="each run configures one store: pass only one of --site, --no-jetpack-site and --jetpack-not-connected-site"
 
 die() { printf '\033[31merror:\033[0m %s\n' "$*" >&2; exit 1; }
 STEP=0
@@ -51,10 +52,12 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --site) SITE="$2"; shift 2 ;;
     --no-jetpack-site)
+      [ -z "$KEYS_ONLY_SITE" ] || die "$ONE_STORE"
       KEYS_ONLY_SITE="$2" KEYS_ONLY_PREFIX=MAESTRO_WOO_NO_JETPACK KEYS_ONLY_NAME="No-Jetpack store"
-      REQUIRE_JETPACK="no"
+      REQUIRE_JETPACK="no" SEED_KEYS_ONLY_SITE="yes"
       shift 2 ;;
     --jetpack-not-connected-site)
+      [ -z "$KEYS_ONLY_SITE" ] || die "$ONE_STORE"
       KEYS_ONLY_SITE="$2" KEYS_ONLY_PREFIX=MAESTRO_WOO_JETPACK_NOT_CONNECTED
       KEYS_ONLY_NAME="Store with Jetpack not connected"
       shift 2 ;;
@@ -70,9 +73,10 @@ while [ $# -gt 0 ]; do
 done
 
 if [ -n "$KEYS_ONLY_SITE" ]; then
-  [ -z "$SITE" ] || die "each run configures one store: pass only one of --site, --no-jetpack-site and --jetpack-not-connected-site"
+  [ -z "$SITE" ] || die "$ONE_STORE"
   SITE="$KEYS_ONLY_SITE"
   TOTAL_STEPS=3
+  [ "$SEED_KEYS_ONLY_SITE" = "no" ] || TOTAL_STEPS=4
 else
   [ -n "$SITE" ] || die "--site, --no-jetpack-site or --jetpack-not-connected-site is required"
   TOTAL_STEPS=7
@@ -204,6 +208,59 @@ echo "CK:" . $ck . "\n" . "CS:" . $cs . "\n";')"
   ok "keys created and verified as read_write"
 }
 
+seed_store_data() {
+  local SEED
+  SEED="$(remote_php '<?php
+wp_set_current_user( __ADMIN_ID__ );
+$target = 100;
+$product_ids = wc_get_products( array( "limit" => -1, "status" => "publish", "return" => "ids" ) );
+$added_products = 0;
+for ( $i = count( $product_ids ); $i < $target; $i++ ) {
+  $product = new WC_Product_Simple();
+  $product->set_name( sprintf( "Maestro Product %03d", $i + 1 ) );
+  $product->set_regular_price( (string) ( 5 + $i % 20 ) );
+  $product->set_status( "publish" );
+  $product->save();
+  $added_products++;
+}
+$products = wc_get_products( array( "limit" => 10, "status" => "publish", "type" => "simple" ) );
+if ( ! $products ) { echo "ERR:no published simple products\n"; return; }
+$email = "maestro.customer@example.com";
+$user = get_user_by( "email", $email );
+$customer_id = $user ? $user->ID : wc_create_new_customer( $email, "", wp_generate_password(), array( "first_name" => "Maestro", "last_name" => "Customer" ) );
+if ( is_wp_error( $customer_id ) ) { echo "ERR:" . $customer_id->get_error_message() . "\n"; return; }
+$billing = array( "first_name" => "Maestro", "last_name" => "Customer", "email" => $email );
+if ( ! $user ) {
+  $customer = new WC_Customer( $customer_id );
+  $customer->set_billing_first_name( $billing["first_name"] );
+  $customer->set_billing_last_name( $billing["last_name"] );
+  $customer->set_billing_email( $email );
+  $customer->save();
+  \Automattic\WooCommerce\Internal\Admin\Schedulers\CustomersScheduler::import( $customer_id );
+}
+if ( ! wc_get_coupon_id_by_code( "maestro10" ) ) {
+  $coupon = new WC_Coupon();
+  $coupon->set_code( "maestro10" );
+  $coupon->set_discount_type( "percent" );
+  $coupon->set_amount( 10 );
+  $coupon->save();
+}
+$order_ids = wc_get_orders( array( "limit" => -1, "status" => array_keys( wc_get_order_statuses() ), "return" => "ids" ) );
+$added_orders = 0;
+for ( $i = count( $order_ids ); $i < $target; $i++ ) {
+  $order = wc_create_order( array( "customer_id" => $customer_id ) );
+  $order->add_product( $products[ $i % count( $products ) ], 1 + $i % 3 );
+  $order->set_address( array_merge( $billing, array( "last_name" => sprintf( "Order %03d", $i + 1 ) ) ), "billing" );
+  $order->calculate_totals();
+  $order->update_status( "completed" );
+  \Automattic\WooCommerce\Internal\Admin\Schedulers\OrdersScheduler::import( $order->get_id() );
+  $added_orders++;
+}
+echo "SEEDED:" . $added_orders . " orders, " . $added_products . " products\n";')"
+  printf '%s' "$SEED" | grep -q "^SEEDED:" || die "could not add the store data: $(printf '%s' "$SEED" | head -3)"
+  ok "$(printf '%s' "$SEED" | sed -n 's/^SEEDED://p') added; the store has 100 of each, 1 customer and the maestro10 coupon"
+}
+
 # Each argument maps an env file name to the shell variable holding its value,
 # for example MAESTRO_WOO_LAB_CONSUMER_KEY=CK. Only the names go on the command
 # line; the values reach Python through the environment.
@@ -301,8 +358,13 @@ printf '%s' "$STATE" | grep -q "USER:ok" || die "no user with id $ADMIN_ID (try 
 ok "ssh and wp-cli working, admin user id $ADMIN_ID present"
 
 # The flows for these stores sign in with the site credentials and create their
-# orders with the API keys, so the site needs nothing else.
+# orders with the API keys. The no-Jetpack flows also check the order and product
+# lists, so that store gets the same data as the lab store.
 if [ -n "$KEYS_ONLY_SITE" ]; then
+  if [ "$SEED_KEYS_ONLY_SITE" = "yes" ]; then
+    step "Adding orders, products, a customer and a coupon"
+    seed_store_data
+  fi
   step "Creating WooCommerce API keys and writing $(basename "$ENV_OUT")"
   create_api_keys
   STORE_URL="https://$SITE"
@@ -401,55 +463,7 @@ ok "isUserConnected=yes, hasConnectedOwner=yes"
 # The app reads customers and stats from the Analytics tables, which WooCommerce
 # fills in a scheduled batch, so import the new rows right away.
 step "Adding orders, products, a customer and a coupon"
-SEED="$(remote_php '<?php
-wp_set_current_user( __ADMIN_ID__ );
-$target = 100;
-$product_ids = wc_get_products( array( "limit" => -1, "status" => "publish", "return" => "ids" ) );
-$added_products = 0;
-for ( $i = count( $product_ids ); $i < $target; $i++ ) {
-  $product = new WC_Product_Simple();
-  $product->set_name( sprintf( "Maestro Product %03d", $i + 1 ) );
-  $product->set_regular_price( (string) ( 5 + $i % 20 ) );
-  $product->set_status( "publish" );
-  $product->save();
-  $added_products++;
-}
-$products = wc_get_products( array( "limit" => 10, "status" => "publish", "type" => "simple" ) );
-if ( ! $products ) { echo "ERR:no published simple products\n"; return; }
-$email = "maestro.customer@example.com";
-$user = get_user_by( "email", $email );
-$customer_id = $user ? $user->ID : wc_create_new_customer( $email, "", wp_generate_password(), array( "first_name" => "Maestro", "last_name" => "Customer" ) );
-if ( is_wp_error( $customer_id ) ) { echo "ERR:" . $customer_id->get_error_message() . "\n"; return; }
-$billing = array( "first_name" => "Maestro", "last_name" => "Customer", "email" => $email );
-if ( ! $user ) {
-  $customer = new WC_Customer( $customer_id );
-  $customer->set_billing_first_name( $billing["first_name"] );
-  $customer->set_billing_last_name( $billing["last_name"] );
-  $customer->set_billing_email( $email );
-  $customer->save();
-  \Automattic\WooCommerce\Internal\Admin\Schedulers\CustomersScheduler::import( $customer_id );
-}
-if ( ! wc_get_coupon_id_by_code( "maestro10" ) ) {
-  $coupon = new WC_Coupon();
-  $coupon->set_code( "maestro10" );
-  $coupon->set_discount_type( "percent" );
-  $coupon->set_amount( 10 );
-  $coupon->save();
-}
-$order_ids = wc_get_orders( array( "limit" => -1, "status" => array_keys( wc_get_order_statuses() ), "return" => "ids" ) );
-$added_orders = 0;
-for ( $i = count( $order_ids ); $i < $target; $i++ ) {
-  $order = wc_create_order( array( "customer_id" => $customer_id ) );
-  $order->add_product( $products[ $i % count( $products ) ], 1 + $i % 3 );
-  $order->set_address( array_merge( $billing, array( "last_name" => sprintf( "Order %03d", $i + 1 ) ) ), "billing" );
-  $order->calculate_totals();
-  $order->update_status( "completed" );
-  \Automattic\WooCommerce\Internal\Admin\Schedulers\OrdersScheduler::import( $order->get_id() );
-  $added_orders++;
-}
-echo "SEEDED:" . $added_orders . " orders, " . $added_products . " products\n";')"
-printf '%s' "$SEED" | grep -q "^SEEDED:" || die "could not add the store data: $(printf '%s' "$SEED" | head -3)"
-ok "$(printf '%s' "$SEED" | sed -n 's/^SEEDED://p') added; the store has 100 of each, 1 customer and the maestro10 coupon"
+seed_store_data
 
 step "Creating WooCommerce API keys and writing $(basename "$ENV_OUT")"
 create_api_keys
