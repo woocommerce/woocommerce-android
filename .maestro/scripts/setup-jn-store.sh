@@ -32,7 +32,7 @@
 
 set -uo pipefail
 
-SITE="" NO_JETPACK_SITE="" SITE_PASS="" WPCOM_USER="" WPCOM_PASS=""
+SITE="" KEYS_ONLY_SITE="" KEYS_ONLY_PREFIX="" KEYS_ONLY_NAME="" SITE_PASS="" WPCOM_USER="" WPCOM_PASS=""
 ADMIN_USER="demo"
 ADMIN_ID="1"
 ENV_OUT=""
@@ -46,7 +46,9 @@ ok() { printf '  \033[32mok\033[0m %s\n' "$*"; }
 while [ $# -gt 0 ]; do
   case "$1" in
     --site) SITE="$2"; shift 2 ;;
-    --no-jetpack-site) NO_JETPACK_SITE="$2"; shift 2 ;;
+    --no-jetpack-site)
+      KEYS_ONLY_SITE="$2" KEYS_ONLY_PREFIX=MAESTRO_WOO_NO_JETPACK KEYS_ONLY_NAME="No-Jetpack store"
+      shift 2 ;;
     --site-password) SITE_PASS="$2"; shift 2 ;;
     --wpcom-user) WPCOM_USER="$2"; shift 2 ;;
     --admin-user) ADMIN_USER="$2"; shift 2 ;;
@@ -58,9 +60,9 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-if [ -n "$NO_JETPACK_SITE" ]; then
+if [ -n "$KEYS_ONLY_SITE" ]; then
   [ -z "$SITE" ] || die "--site and --no-jetpack-site configure different stores, run the script once for each"
-  SITE="$NO_JETPACK_SITE"
+  SITE="$KEYS_ONLY_SITE"
   TOTAL_STEPS=3
 else
   [ -n "$SITE" ] || die "--site or --no-jetpack-site is required"
@@ -68,7 +70,7 @@ else
 fi
 command -v expect >/dev/null || die "expect is required for password-based SSH"
 command -v python3 >/dev/null || die "python3 is required"
-[ -n "$NO_JETPACK_SITE" ] || [ -f "$APP_CREDS" ] \
+[ -n "$KEYS_ONLY_SITE" ] || [ -f "$APP_CREDS" ] \
   || die "app credentials not found: $APP_CREDS (see Environment Setup in AGENTS.md)"
 
 if [ -z "$ENV_OUT" ]; then
@@ -108,9 +110,9 @@ prompt_secret() {
 # Resolution order per value: flag, then environment, then .env.local, then an
 # interactive prompt.
 [ -n "$SITE_PASS" ]   || SITE_PASS="${JN_SSH_PASS:-}"
-if [ -n "$NO_JETPACK_SITE" ]; then
-  STORED_URL_KEY=MAESTRO_WOO_NO_JETPACK_SITE_URL
-  STORED_PASS_KEY=MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD
+if [ -n "$KEYS_ONLY_SITE" ]; then
+  STORED_URL_KEY="${KEYS_ONLY_PREFIX}_SITE_URL"
+  STORED_PASS_KEY="${KEYS_ONLY_PREFIX}_SITE_ADMIN_PASSWORD"
 else
   STORED_URL_KEY=MAESTRO_WOO_LAB_JETPACK_STORE_URL
   STORED_PASS_KEY=MAESTRO_WOO_LAB_JETPACK_SITE_ADMIN_PASSWORD
@@ -119,7 +121,7 @@ fi
 if [ -z "$SITE_PASS" ] && [ "$(env_value "$STORED_URL_KEY")" = "https://$SITE" ]; then
   SITE_PASS="$(env_value "$STORED_PASS_KEY")"
 fi
-if [ -z "$NO_JETPACK_SITE" ]; then
+if [ -z "$KEYS_ONLY_SITE" ]; then
   [ -n "$WPCOM_USER" ]  || WPCOM_USER="${MAESTRO_WOO_LAB_WPCOM_EMAIL:-}"
   [ -n "$WPCOM_USER" ]  || WPCOM_USER="$(env_value MAESTRO_WOO_LAB_WPCOM_EMAIL)"
   [ -n "$WPCOM_PASS" ]  || WPCOM_PASS="${MAESTRO_WOO_LAB_WPCOM_PASSWORD:-}"
@@ -129,12 +131,12 @@ fi
 # Prompting needs a terminal. Without one (an agent, a pipeline) the reads would
 # take EOF and fail several steps later with a misleading message, so say
 # exactly what is missing and how to supply it.
-if [ -z "$SITE_PASS" ] || { [ -z "$NO_JETPACK_SITE" ] && { [ -z "$WPCOM_USER" ] || [ -z "$WPCOM_PASS" ]; }; }; then
+if [ -z "$SITE_PASS" ] || { [ -z "$KEYS_ONLY_SITE" ] && { [ -z "$WPCOM_USER" ] || [ -z "$WPCOM_PASS" ]; }; }; then
   if [ ! -t 0 ]; then
     printf 'error: missing credentials and no terminal to prompt on.\n' >&2
     [ -n "$SITE_PASS" ]  || printf '  site admin password: pass --site-password or set JN_SSH_PASS\n' >&2
-    [ -n "$NO_JETPACK_SITE" ] || [ -n "$WPCOM_USER" ] || printf '  WordPress.com account: set MAESTRO_WOO_LAB_WPCOM_EMAIL or add it to %s\n' "$(basename "$ENV_OUT")" >&2
-    [ -n "$NO_JETPACK_SITE" ] || [ -n "$WPCOM_PASS" ] || printf '  WordPress.com password: set MAESTRO_WOO_LAB_WPCOM_PASSWORD or add it to %s\n' "$(basename "$ENV_OUT")" >&2
+    [ -n "$KEYS_ONLY_SITE" ] || [ -n "$WPCOM_USER" ] || printf '  WordPress.com account: set MAESTRO_WOO_LAB_WPCOM_EMAIL or add it to %s\n' "$(basename "$ENV_OUT")" >&2
+    [ -n "$KEYS_ONLY_SITE" ] || [ -n "$WPCOM_PASS" ] || printf '  WordPress.com password: set MAESTRO_WOO_LAB_WPCOM_PASSWORD or add it to %s\n' "$(basename "$ENV_OUT")" >&2
     printf 'Or run this script directly in a terminal and it will prompt.\n' >&2
     exit 1
   fi
@@ -143,7 +145,7 @@ fi
 
 [ -n "$SITE_PASS" ] || prompt_secret SITE_PASS "site admin password for $SITE"
 [ -n "$SITE_PASS" ] || die "no site admin password supplied"
-if [ -z "$NO_JETPACK_SITE" ]; then
+if [ -z "$KEYS_ONLY_SITE" ]; then
   if [ -z "$WPCOM_USER" ]; then
     printf '  WordPress.com test account email: ' >&2
     read -r WPCOM_USER
@@ -266,7 +268,7 @@ echo "USER:" . ( get_user_by( "id", __ADMIN_ID__ ) ? "ok" : "MISSING" ) . "\n";'
       [ "$ssh_failures" -lt 3 ] || die "could not run wp-cli over SSH. Check the site admin password."
     fi
     printf '%s' "$STATE" | grep -q "WC:active" \
-      && { [ -n "$NO_JETPACK_SITE" ] || printf '%s' "$STATE" | grep -q "JP:active"; } && break
+      && { [ -n "$KEYS_ONLY_SITE" ] || printf '%s' "$STATE" | grep -q "JP:active"; } && break
   fi
   if [ "$(date +%s)" -ge "$DEADLINE" ]; then
     printf '  last state: http=%s %s\n' "$code" "$(printf '%s' "$STATE" | tr '\n' ' ')" >&2
@@ -275,7 +277,7 @@ echo "USER:" . ( get_user_by( "id", __ADMIN_ID__ ) ? "ok" : "MISSING" ) . "\n";'
   printf '  still provisioning (http=%s), waiting...\n' "$code"
   sleep 15
 done
-if [ -n "$NO_JETPACK_SITE" ]; then
+if [ -n "$KEYS_ONLY_SITE" ]; then
   ok "site is up, WooCommerce active"
 else
   ok "site is up, WooCommerce and Jetpack active"
@@ -291,17 +293,17 @@ ok "ssh and wp-cli working, admin user id $ADMIN_ID present"
 
 # The push setup flow signs in with the site credentials and creates its order
 # with the API keys, so the site needs nothing else.
-if [ -n "$NO_JETPACK_SITE" ]; then
+if [ -n "$KEYS_ONLY_SITE" ]; then
   step "Creating WooCommerce API keys and writing $(basename "$ENV_OUT")"
   create_api_keys
   STORE_URL="https://$SITE"
   write_env \
-    MAESTRO_WOO_NO_JETPACK_SITE_URL=STORE_URL \
-    MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_USERNAME=ADMIN_USER \
-    MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD=SITE_PASS \
-    MAESTRO_WOO_NO_JETPACK_CONSUMER_KEY=CK \
-    MAESTRO_WOO_NO_JETPACK_CONSUMER_SECRET=CS
-  printf '\n\033[32mDone.\033[0m No-Jetpack store ready: https://%s\n' "$SITE"
+    "${KEYS_ONLY_PREFIX}_SITE_URL=STORE_URL" \
+    "${KEYS_ONLY_PREFIX}_SITE_ADMIN_USERNAME=ADMIN_USER" \
+    "${KEYS_ONLY_PREFIX}_SITE_ADMIN_PASSWORD=SITE_PASS" \
+    "${KEYS_ONLY_PREFIX}_CONSUMER_KEY=CK" \
+    "${KEYS_ONLY_PREFIX}_CONSUMER_SECRET=CS"
+  printf '\n\033[32mDone.\033[0m %s ready: https://%s\n' "$KEYS_ONLY_NAME" "$SITE"
   exit 0
 fi
 
