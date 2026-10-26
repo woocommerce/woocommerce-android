@@ -41,6 +41,7 @@ ADMIN_USER="demo"
 ADMIN_ID="1"
 ENV_OUT=""
 APP_CREDS="$HOME/.configure/woocommerce-android/secrets/secrets.properties"
+ONE_STORE="each run configures one store: pass only one of --site, --no-jetpack-site and --jetpack-not-connected-site"
 
 die() { printf '\033[31merror:\033[0m %s\n' "$*" >&2; exit 1; }
 STEP=0
@@ -51,10 +52,12 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --site) SITE="$2"; shift 2 ;;
     --no-jetpack-site)
+      [ -z "$KEYS_ONLY_SITE" ] || die "$ONE_STORE"
       KEYS_ONLY_SITE="$2" KEYS_ONLY_PREFIX=MAESTRO_WOO_NO_JETPACK KEYS_ONLY_NAME="No-Jetpack store"
       REQUIRE_JETPACK="no" SEED_KEYS_ONLY_SITE="yes"
       shift 2 ;;
     --jetpack-not-connected-site)
+      [ -z "$KEYS_ONLY_SITE" ] || die "$ONE_STORE"
       KEYS_ONLY_SITE="$2" KEYS_ONLY_PREFIX=MAESTRO_WOO_JETPACK_NOT_CONNECTED
       KEYS_ONLY_NAME="Store with Jetpack not connected"
       shift 2 ;;
@@ -70,7 +73,7 @@ while [ $# -gt 0 ]; do
 done
 
 if [ -n "$KEYS_ONLY_SITE" ]; then
-  [ -z "$SITE" ] || die "each run configures one store: pass only one of --site, --no-jetpack-site and --jetpack-not-connected-site"
+  [ -z "$SITE" ] || die "$ONE_STORE"
   SITE="$KEYS_ONLY_SITE"
   TOTAL_STEPS=3
   [ "$SEED_KEYS_ONLY_SITE" = "no" ] || TOTAL_STEPS=4
