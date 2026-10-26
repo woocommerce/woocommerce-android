@@ -960,14 +960,16 @@ disconnect_no_jetpack_store() {
 }
 
 # The Jetpack-not-connected login flow connects Jetpack from the app, so for a flow
-# tagged jetpack_not_connected the runner removes the site and user connection
-# first. The check runs in a second wp-cli call, as the first one still holds the
-# removed tokens. The flow checks JETPACK_DISCONNECTED first.
+# tagged jetpack_not_connected the runner disconnects Jetpack first: wp-cli
+# deregisters the site on WordPress.com, then the site's own connection is removed,
+# as Jurassic Ninja keeps the site ID. The check runs in a separate wp-cli call, as
+# the previous one still holds the removed tokens. The flow checks
+# JETPACK_DISCONNECTED first.
 JETPACK_DISCONNECTED="no"
 disconnect_jetpack_not_connected_store() {
   if disconnect_jn_site "${MAESTRO_WOO_JETPACK_NOT_CONNECTED_SITE_URL:-}" \
     "${MAESTRO_WOO_JETPACK_NOT_CONNECTED_SITE_ADMIN_PASSWORD:-}" \
-    'wp eval '\''$options = get_option( "jetpack_options" ); unset( $options["id"], $options["master_user"] ); update_option( "jetpack_options", $options ); $tokens = get_option( "jetpack_private_options" ); unset( $tokens["blog_token"], $tokens["user_tokens"] ); update_option( "jetpack_private_options", $tokens );'\'' && wp eval '\''$manager = new Automattic\Jetpack\Connection\Manager(); echo $manager->is_connected() || $manager->has_connected_owner() ? "CONNECTED" : "DISCONNECTED";'\'''; then
+    'wp jetpack disconnect blog >/dev/null 2>&1; wp eval '\''$options = get_option( "jetpack_options" ); unset( $options["id"], $options["master_user"] ); update_option( "jetpack_options", $options ); $tokens = get_option( "jetpack_private_options" ); unset( $tokens["blog_token"], $tokens["user_tokens"] ); update_option( "jetpack_private_options", $tokens );'\'' && wp eval '\''$manager = new Automattic\Jetpack\Connection\Manager(); echo $manager->is_connected() || $manager->has_connected_owner() ? "CONNECTED" : "DISCONNECTED";'\'''; then
     JETPACK_DISCONNECTED="yes"
   else
     echo "  disconnecting Jetpack on the store with Jetpack not connected failed"

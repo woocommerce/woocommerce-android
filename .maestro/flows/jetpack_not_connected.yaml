@@ -56,33 +56,48 @@ onFlowComplete:
     id: "bottom_button"
     retryTapIfNoChange: true
 
-# WordPress.com still lists the store as connected after the runner removes the
-# connection, so from the second run on the app asks for a WordPress.com email first.
 - extendedWaitUntil:
-    visible: "Username|Email address"
+    visible: "Username"
     timeout: 30000
-- waitForAnimationToEnd
-- runFlow:
-    when:
-      visible:
-        id: "login_with_site_credentials"
-    commands:
-      - tapOn:
-          id: "login_with_site_credentials"
-      - extendedWaitUntil:
-          visible: "Username"
-          timeout: 15000
-
 - tapOn: "Username"
 - inputText: ${MAESTRO_WOO_JETPACK_NOT_CONNECTED_SITE_ADMIN_USERNAME}
 - tapOn: "Password"
 - inputText: ${MAESTRO_WOO_JETPACK_NOT_CONNECTED_SITE_ADMIN_PASSWORD}
 - tapOn: "Continue"
 
+# The site credentials login can fail with a redirect, and the app then logs in
+# through wp-admin in a web view to create an application password.
+- extendedWaitUntil:
+    visible: "${STRING_MY_STORE}|.*couldn't log in.*"
+    timeout: 60000
+- runFlow:
+    when:
+      visible: ".*couldn't log in.*"
+    commands:
+      - tapOn: "Continue"
+      - extendedWaitUntil:
+          visible:
+            id: "user_login"
+          timeout: 30000
+      - tapOn:
+          id: "user_login"
+      - inputText: ${MAESTRO_WOO_JETPACK_NOT_CONNECTED_SITE_ADMIN_USERNAME}
+      - tapOn:
+          id: "user_pass"
+      - inputText: ${MAESTRO_WOO_JETPACK_NOT_CONNECTED_SITE_ADMIN_PASSWORD}
+      - tapOn:
+          id: "wp-submit"
+      - extendedWaitUntil:
+          visible: ".*approve of this connection.*"
+          timeout: 60000
+      - tapOn:
+          text: ".*approve of this connection.*"
+          retryTapIfNoChange: true
+
 - extendedWaitUntil:
     visible:
       id: "dashboard_container"
-    timeout: 60000
+    timeout: 120000
     label: "Logged in with the site credentials"
 
 - runFlow:
