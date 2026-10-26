@@ -13,6 +13,7 @@ import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Failed
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported
+import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.FailedTapToPayInsecureEnvironment
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Succeeded
@@ -59,6 +60,7 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MultipleExternalReadersFoundState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.TapToPayDeviceUnsupportedState
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.TapToPayInsecureEnvironmentState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
@@ -245,7 +247,6 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onReadyToStartScanning() {
         if (!cardReaderManager.initialized) {
             cardReaderManager.initialize(
-                updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
                 useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
                 useEftpos = developerOptionsRepository.isEftposPaymentEnabled(),
                 isDebug = BuildConfig.DEBUG,
@@ -350,6 +351,12 @@ class CardReaderConnectViewModel @Inject constructor(
                     onPrimaryActionClicked = ::onTapToPayRequirementsClicked,
                     onSecondaryActionClicked = ::onCancelClicked,
                 )
+            }
+
+            is FailedTapToPayInsecureEnvironment -> {
+                tracker.trackReaderDiscoveryFailed(discoveryEvent.msg)
+                WooLog.e(WooLog.T.CARD_READER, "Scanning failed: ${discoveryEvent.msg}")
+                viewState.value = TapToPayInsecureEnvironmentState(::restartFlow, ::onCancelClicked)
             }
         }
     }

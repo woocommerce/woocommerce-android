@@ -14,18 +14,24 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashPaymentTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosElapsedTime
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosPaymentSuccessProperties
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.check
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -53,7 +59,8 @@ class WooPosCashPaymentViewModelTest {
     private val priceFormat: WooPosFormatPrice = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val tracker: WooPosAnalyticsTracker = mock()
-    private val trackerData: WooPosAnalyticsTrackingDataKeeper = WooPosAnalyticsTrackingDataKeeper()
+    private val timingClock = mock<WooPosElapsedTime>()
+    private val trackerData = WooPosAnalyticsTrackingDataKeeper(timingClock)
 
     private lateinit var viewModel: WooPosCashPaymentViewModel
 
@@ -91,6 +98,33 @@ class WooPosCashPaymentViewModelTest {
             analyticsData = trackerData,
             savedState = savedStateHandle,
         )
+    }
+
+    @Test
+    fun `given delayed country lookup, when cash succeeds, then timing includes metadata lookup`() = runTest {
+        // GIVEN
+        trackerData.startCheckoutTiming("remote")
+        whenever(repository.completeOrder(any(), any())).thenReturn(Result.success(Unit))
+        val country = CompletableDeferred<String?>()
+        whenever(wooStore.getStoreCountryCode(any())).doSuspendableAnswer { country.await() }
+        // WHEN
+        viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked)
+        runCurrent()
+        whenever(timingClock.milliseconds()).thenReturn(120L)
+        trackerData.paymentConfirmed()
+        whenever(timingClock.milliseconds()).thenReturn(350L)
+        country.complete("US")
+        advanceUntilIdle()
+        // THEN
+        val success = argumentCaptor<CashCollectPaymentSuccess>()
+        verify(tracker).track(success.capture())
+        assertThat(success.firstValue.properties)
+            .containsEntry("pos_time_since_checkout_started_ms", 350L)
+            .containsEntry("sync_strategy", "remote")
+            .doesNotContainKey("pos_time_since_payment_confirmed_ms")
+        assertThat(trackerData.cardPaymentTiming())
+            .containsEntry("pos_time_since_checkout_started_ms", 350L)
+            .containsEntry("pos_time_since_payment_confirmed_ms", 230L)
     }
 
     @Test

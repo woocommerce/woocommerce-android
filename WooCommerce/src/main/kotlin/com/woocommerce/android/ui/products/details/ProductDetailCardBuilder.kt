@@ -258,7 +258,7 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 productAggregate.product.warning(),
                 productAggregate.product.variations(),
-                productAggregate.product.variableProductAttributes(),
+                productAggregate.product.attributes(),
                 if (viewModel.isProductUnderCreation) null else productAggregate.product.productReviews(),
                 productAggregate.product.inventory(VARIABLE),
                 productAggregate.product.addons(),
@@ -304,7 +304,7 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 productAggregate.product.warning(),
                 productAggregate.product.variations(),
-                productAggregate.product.variableProductAttributes(),
+                productAggregate.product.attributes(),
                 if (viewModel.isProductUnderCreation) null else productAggregate.product.productReviews(),
                 productAggregate.product.inventory(VARIABLE),
                 productAggregate.product.addons(),
@@ -848,11 +848,8 @@ class ProductDetailCardBuilder(
             }
         )
 
-    private fun Product.variableProductAttributes() =
-        if (viewModel.isNonVariationAttributesEnabled) attributes() else variationAttributes()
-
     private fun Product.attributes(): ProductProperty? {
-        if (!viewModel.isNonVariationAttributesEnabled || attributes.isEmpty()) return null
+        if (attributes.isEmpty()) return null
 
         val noOptions = resources.getString(string.product_attribute_no_options)
         return PropertyGroup(
@@ -869,26 +866,6 @@ class ProductDetailCardBuilder(
             )
         }
     }
-
-    private fun Product.variationAttributes() =
-        takeIf { this.variationEnabledAttributes.isNotEmpty() }?.let {
-            val properties = mutableMapOf<String, String>()
-            for (attribute in this.variationEnabledAttributes) {
-                properties[attribute.name] = attribute.terms.size.toString()
-            }
-
-            PropertyGroup(
-                string.variable_product_attributes,
-                properties,
-                DesignSystemR.drawable.woo_ds_ic_regular_screwdriver_wrench_24dp,
-                propertyFormat = string.product_variation_options
-            ) {
-                viewModel.onEditProductCardClicked(
-                    ViewProductAttributes,
-                    PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED
-                )
-            }
-        }
 
     private fun Product.categories(): ProductProperty? {
         return if (hasCategories) {

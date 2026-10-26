@@ -69,6 +69,12 @@ class WooPosProductsDataSource @Inject constructor(
 
     private var activeSource: WooPosProductsDataSourceInterface? = null
 
+    fun getCurrentSyncStrategyOrNull(): SyncStrategy? = when (activeSource) {
+        localDbDataSource -> SyncStrategy.LOCAL_CATALOG_FILE
+        remoteDataSource -> SyncStrategy.REMOTE
+        else -> null
+    }
+
     fun getCurrentSyncStrategy(): SyncStrategy {
         return when (activeSource) {
             localDbDataSource -> SyncStrategy.LOCAL_CATALOG_FILE

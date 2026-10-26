@@ -1,8 +1,8 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
 import com.stripe.stripeterminal.external.models.CollectRefundConfiguration
+import com.stripe.stripeterminal.external.models.ProcessRefundParameters
 import com.stripe.stripeterminal.external.models.Refund
-import com.stripe.stripeterminal.external.models.RefundParameters
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 
@@ -13,7 +13,7 @@ internal class ProcessRefundAction(private val terminal: TerminalWrapper) {
     }
 
     suspend fun processRefund(
-        refundParameters: RefundParameters,
+        refundParameters: ProcessRefundParameters,
         refundConfiguration: CollectRefundConfiguration
     ): ProcessRefundStatus {
         return try {

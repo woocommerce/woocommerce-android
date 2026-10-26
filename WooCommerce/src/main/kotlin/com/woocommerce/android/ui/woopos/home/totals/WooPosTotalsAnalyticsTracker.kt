@@ -7,9 +7,11 @@ import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataS
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CreateNewOrderTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.EmailReceiptTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ReaderReadySignal
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosReaderReadyForPaymentTracker
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
@@ -23,7 +25,12 @@ class WooPosTotalsAnalyticsTracker @Inject constructor(
     suspend fun trackPaymentStates(paymentState: StateFlow<CardReaderPaymentOrRefundState>?) {
         paymentState?.distinctUntilChanged { old, new -> old::class == new::class }?.collect {
             when (it) {
-                is CardReaderPaymentState.ProcessingPayment -> readerReadyForPaymentTracker.track()
+                is CardReaderPaymentState.LoadingData -> analyticsData.startPaymentAttempt(System.currentTimeMillis())
+
+                is CardReaderPaymentState.ProcessingPayment.BuiltInReaderProcessingPayment ->
+                    readerReadyForPaymentTracker.track(ReaderReadySignal.COLLECTION_STARTED)
+
+                is CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment,
 
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.CollectingInteracRefund,
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.InteracRefundFailure.Cancelable,
@@ -31,7 +38,6 @@ class WooPosTotalsAnalyticsTracker @Inject constructor(
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.InteracRefundSuccessful,
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.LoadingData,
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.ProcessingInteracRefund,
-                is CardReaderPaymentState.LoadingData,
                 is CardReaderPaymentState.PaymentCapturing.BuiltInReaderPaymentCapturing,
                 is CardReaderPaymentState.PaymentCapturing.ExternalReaderPaymentCapturing,
                 is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.Cancelable,
@@ -49,9 +55,25 @@ class WooPosTotalsAnalyticsTracker @Inject constructor(
         }
     }
 
+    suspend fun trackReaderReadyForCardInput(readerReadyForCardInput: Flow<Unit>?) {
+        readerReadyForCardInput?.collect { readerReadyForPaymentTracker.track(ReaderReadySignal.INPUT_REQUESTED) }
+    }
+
     fun incrementCheckoutButtonTaps() {
         analyticsData.checkoutButtonTapsCount = analyticsData.checkoutButtonTapsCount + 1
     }
+
+    fun startCheckoutTiming(): Long = analyticsData.startCheckoutTiming(
+        when (productsDataSource.getCurrentSyncStrategyOrNull()) {
+            WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE -> "local_catalog"
+            WooPosProductsDataSource.SyncStrategy.REMOTE -> "remote"
+            null -> "unknown"
+        }
+    )
+
+    fun orderSyncCompleted(generation: Long) = analyticsData.orderSyncCompleted(generation)
+
+    fun clearPaymentConfirmation() = analyticsData.clearPaymentConfirmation()
 
     suspend fun trackOrderCreationSuccess() {
         analyticsTracker.track(WooPosAnalyticsEvent.Event.OrderCreationSuccess)

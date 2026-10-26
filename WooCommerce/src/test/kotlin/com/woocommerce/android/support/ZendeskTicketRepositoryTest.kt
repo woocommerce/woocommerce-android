@@ -233,6 +233,56 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given an AI chat ID, when creating a request, then include the AI chat ID custom field`() = testBlocking {
+        // Given
+        val captor = argumentCaptor<CreateRequest>()
+
+        // When
+        sut.createRequest(
+            context = mock(),
+            origin = HelpOrigin.AI_TROUBLESHOOTING,
+            ticketType = TicketType.MobileApp,
+            selectedSite = null,
+            subject = "subject",
+            description = "description",
+            extraTags = emptyList(),
+            siteAddress = "siteAddress",
+            aiChatId = AI_CHAT_ID
+        ).first()
+
+        // Then
+        verify(requestProvider).createRequest(captor.capture(), any())
+        assertThat(captor.firstValue.customFields).anySatisfy {
+            assertThat(it.id).isEqualTo(TicketCustomField.aiChatId)
+            assertThat(it.valueString).isEqualTo(AI_CHAT_ID.toString())
+        }
+    }
+
+    @Test
+    fun `given no AI chat ID, when creating a request, then omit the AI chat ID custom field`() = testBlocking {
+        // Given
+        val captor = argumentCaptor<CreateRequest>()
+
+        // When
+        sut.createRequest(
+            context = mock(),
+            origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+            ticketType = TicketType.MobileApp,
+            selectedSite = null,
+            subject = "subject",
+            description = "description",
+            extraTags = emptyList(),
+            siteAddress = "siteAddress"
+        ).first()
+
+        // Then
+        verify(requestProvider).createRequest(captor.capture(), any())
+        assertThat(captor.firstValue.customFields).noneSatisfy {
+            assertThat(it.id).isEqualTo(TicketCustomField.aiChatId)
+        }
+    }
+
+    @Test
     fun `when createRequest is called using MobileApp as ticketType, then the request is created with the expected tags`() =
         testBlocking {
             // Given
@@ -1107,5 +1157,6 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
 
     private companion object {
         const val MSR_REPORT = "mobile app status report"
+        const val AI_CHAT_ID = 123L
     }
 }

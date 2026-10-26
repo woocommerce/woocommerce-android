@@ -39,9 +39,12 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -67,6 +70,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     @Before
     fun setUp() {
         whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+        contextProvider.stub { on { buildStatusReport(anyOrNull()) } doReturn STATUS_REPORT }
         createViewModel()
     }
 
@@ -135,7 +139,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     @Test
     fun `given pre-login launch mode, when message sent, then chat starts with generic context`() =
         testBlocking {
-            whenever(contextProvider.buildInitialContext()).thenReturn(CONTEXT)
+            whenever(contextProvider.buildInitialContext(statusReport = STATUS_REPORT)).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
                 .thenReturn(Result.success(createResponse(messages = listOf(createMessage(2L, SupportChatRole.BOT)))))
 
@@ -149,7 +153,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.showSendError).isFalse()
             assertThat(state.selectedIssueType).isNull()
             assertThat(state.diagnosticResult).isNull()
-            verify(contextProvider).buildInitialContext()
+            verify(contextProvider).buildInitialContext(statusReport = STATUS_REPORT)
             verify(repository, never()).registerChat(any(), any(), any(), any(), any())
             verify(repository, never()).markChatAsUpdated(any(), any())
         }
@@ -157,7 +161,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     @Test
     fun `given pre-login launch mode with site address, when message sent, then context includes site address`() =
         testBlocking {
-            whenever(contextProvider.buildInitialContext(siteAddress = SITE_URL)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(siteAddress = SITE_URL, statusReport = STATUS_REPORT)
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
                 .thenReturn(Result.success(createResponse(messages = listOf(createMessage(2L, SupportChatRole.BOT)))))
 
@@ -165,14 +171,15 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
             viewModel.onSendClicked()
 
-            verify(contextProvider).buildInitialContext(siteAddress = SITE_URL)
+            verify(contextProvider).buildStatusReport(SITE_URL)
+            verify(contextProvider).buildInitialContext(siteAddress = SITE_URL, statusReport = STATUS_REPORT)
             verify(repository).sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null)
         }
 
     @Test
     fun `given pre-login chat exists, when follow up message sent, then bookmark is not touched`() =
         testBlocking {
-            whenever(contextProvider.buildInitialContext()).thenReturn(CONTEXT)
+            whenever(contextProvider.buildInitialContext(statusReport = STATUS_REPORT)).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
                 .thenReturn(Result.success(createResponse()))
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, BOT_RESPONSE, JsonObject(), CHAT_ID, SESSION_ID))
@@ -187,6 +194,45 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             verify(repository, never()).registerChat(any(), any(), any(), any(), any())
             verify(repository, never()).markChatAsUpdated(any(), any())
         }
+
+    @Test
+    fun `given first message fails, when sent again, then the first status report is reused`() =
+        testBlocking {
+            contextProvider.stub {
+                on { buildStatusReport(anyOrNull()) }.doReturn(STATUS_REPORT, CHANGED_STATUS_REPORT)
+            }
+            whenever(contextProvider.buildInitialContext(statusReport = STATUS_REPORT)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
+                .thenReturn(Result.failure(Exception()), Result.success(createResponse()))
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin())
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+            viewModel.onSendClicked()
+            viewModel.onSendErrorDismissed()
+            viewModel.onSendClicked()
+
+            verify(contextProvider, times(1)).buildStatusReport(anyOrNull())
+            verify(contextProvider, times(2)).buildInitialContext(statusReport = STATUS_REPORT)
+            assertThat(viewModel.viewState.value.chatId).isEqualTo(CHAT_ID)
+            verify(repository, times(2)).sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null)
+        }
+
+    @Test
+    fun `given resumed chat, when message sent, then status report is not built`() = testBlocking {
+        whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID))
+            .thenReturn(Result.success(createResponse()))
+        whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID, SESSION_ID))
+            .thenReturn(Result.success(createResponse()))
+
+        viewModel.onLaunchModeLoaded(
+            AiSupportChatLaunchMode.Resume(chatId = CHAT_ID, botSlug = DEFAULT_BOT_SLUG, sessionId = SESSION_ID)
+        )
+        viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+        viewModel.onSendClicked()
+
+        verify(repository).sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID, SESSION_ID)
+        verify(contextProvider, never()).buildStatusReport(anyOrNull())
+    }
 
     @Test
     fun `given diagnostics pass, when issue selected, then success is shown and chat does not start`() =
@@ -480,7 +526,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 )
             )
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
-            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(diagnosticResult = result, statusReport = STATUS_REPORT)
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.success(response))
 
@@ -521,7 +569,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 )
             )
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
-            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(diagnosticResult = result, statusReport = STATUS_REPORT)
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.success(response))
 
@@ -545,7 +595,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 )
             )
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
-            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(diagnosticResult = result, statusReport = STATUS_REPORT)
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.success(response))
             whenever(repository.registerChat(CHAT_ID, DEFAULT_BOT_SLUG, SESSION_ID, ISSUE_DETAILS, emptyList()))
@@ -635,7 +687,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 )
             )
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
-            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(diagnosticResult = result, statusReport = STATUS_REPORT)
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.success(response))
 
@@ -663,7 +717,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 )
             )
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
-            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(diagnosticResult = result, statusReport = STATUS_REPORT)
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.success(response))
 
@@ -688,7 +744,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 )
             )
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
-            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(diagnosticResult = result, statusReport = STATUS_REPORT)
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.success(response))
 
@@ -789,7 +847,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 )
             )
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
-            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(diagnosticResult = result, statusReport = STATUS_REPORT)
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.success(response))
 
@@ -891,7 +951,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         testBlocking {
             val result = createSuccessDiagnosticResult()
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
-            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(diagnosticResult = result, statusReport = STATUS_REPORT)
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(
                     Result.success(
@@ -935,7 +997,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         testBlocking {
             val result = createSuccessDiagnosticResult()
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
-            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(diagnosticResult = result, statusReport = STATUS_REPORT)
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(
                     Result.success(
@@ -1025,7 +1089,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         testBlocking {
             val result = createFailedDiagnosticResult()
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
-            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(diagnosticResult = result, statusReport = STATUS_REPORT)
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.failure(Exception()))
             val events = mutableListOf<MultiLiveEvent.Event>()
@@ -1052,7 +1118,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         testBlocking {
             val result = createSuccessDiagnosticResult()
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
-            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(diagnosticResult = result, statusReport = STATUS_REPORT)
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(
                     Result.success(
@@ -1098,7 +1166,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 }
             )
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
-            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(diagnosticResult = result, statusReport = STATUS_REPORT)
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.success(response))
             val events = mutableListOf<MultiLiveEvent.Event>()
@@ -1356,7 +1426,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             whenever(
                 contextProvider.buildInitialContext(
                     diagnosticResult = any(),
-                    siteAddress = anyOrNull()
+                    siteAddress = anyOrNull(),
+                    statusReport = anyOrNull()
                 )
             ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
@@ -1379,7 +1450,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             )
             verify(contextProvider, never()).buildInitialContext(
                 diagnosticResult = any(),
-                siteAddress = anyOrNull()
+                siteAddress = anyOrNull(),
+                statusReport = anyOrNull()
             )
             verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
 
@@ -1392,7 +1464,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             val diagnosticResultCaptor = argumentCaptor<DiagnosticResult>()
             verify(contextProvider).buildInitialContext(
                 diagnosticResult = diagnosticResultCaptor.capture(),
-                siteAddress = anyOrNull()
+                siteAddress = anyOrNull(),
+                statusReport = anyOrNull()
             )
             assertThat(diagnosticResultCaptor.firstValue.statuses.map { it.status }).containsExactly(
                 TestStatus.Passed,
@@ -1460,7 +1533,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             whenever(
                 contextProvider.buildInitialContext(
                     diagnosticResult = any(),
-                    siteAddress = anyOrNull()
+                    siteAddress = anyOrNull(),
+                    statusReport = anyOrNull()
                 )
             ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
@@ -1480,7 +1554,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             val diagnosticResultCaptor = argumentCaptor<DiagnosticResult>()
             verify(contextProvider).buildInitialContext(
                 diagnosticResult = diagnosticResultCaptor.capture(),
-                siteAddress = anyOrNull()
+                siteAddress = anyOrNull(),
+                statusReport = eq(STATUS_REPORT)
             )
             assertThat(diagnosticResultCaptor.firstValue.statuses.map { it.status }).containsExactly(
                 TestStatus.Failed(technicalDetails = "rest_invalid_signature")
@@ -1494,7 +1569,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             whenever(
                 contextProvider.buildInitialContext(
                     diagnosticResult = any(),
-                    siteAddress = anyOrNull()
+                    siteAddress = anyOrNull(),
+                    statusReport = anyOrNull()
                 )
             ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
@@ -1579,7 +1655,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             whenever(
                 contextProvider.buildInitialContext(
                     diagnosticResult = any(),
-                    siteAddress = anyOrNull()
+                    siteAddress = anyOrNull(),
+                    statusReport = anyOrNull()
                 )
             ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
@@ -1600,7 +1677,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             whenever(
                 contextProvider.buildInitialContext(
                     diagnosticResult = any(),
-                    siteAddress = anyOrNull()
+                    siteAddress = anyOrNull(),
+                    statusReport = anyOrNull()
                 )
             ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
@@ -1964,7 +2042,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         testBlocking {
             val result = createFailedDiagnosticResult()
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
-            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(diagnosticResult = result, statusReport = STATUS_REPORT)
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.failure(Exception()))
 
@@ -2123,7 +2203,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         testBlocking {
             val result = createFailedDiagnosticResult()
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
-            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(diagnosticResult = result, statusReport = STATUS_REPORT)
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.failure(Exception()))
 
@@ -2246,7 +2328,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
 
     private suspend fun startChat(result: DiagnosticResult) {
         whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
-        whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+        whenever(
+            contextProvider.buildInitialContext(diagnosticResult = result, statusReport = STATUS_REPORT)
+        ).thenReturn(CONTEXT)
         whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
             .thenReturn(Result.success(createResponse()))
 
@@ -2258,7 +2342,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     private suspend fun startChatWithBotResponse() {
         val result = createSuccessDiagnosticResult()
         whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
-        whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+        whenever(
+            contextProvider.buildInitialContext(diagnosticResult = result, statusReport = STATUS_REPORT)
+        ).thenReturn(CONTEXT)
         whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
             .thenReturn(
                 Result.success(
@@ -2291,11 +2377,14 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             whenever(
                 contextProvider.buildInitialContext(
                     diagnosticResult = result,
-                    siteAddress = siteAddress
+                    siteAddress = siteAddress,
+                    statusReport = STATUS_REPORT
                 )
             ).thenReturn(CONTEXT)
         } else {
-            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(diagnosticResult = result, statusReport = STATUS_REPORT)
+            ).thenReturn(CONTEXT)
         }
         whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
             .thenReturn(
@@ -2460,6 +2549,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         const val BOT_RESPONSE = "Let's troubleshoot orders."
         const val FOLLOW_UP_BOT_RESPONSE = "Let's keep troubleshooting."
         const val SITE_URL = "https://example.com"
+        const val STATUS_REPORT = "### Mobile Status Report ###"
+        const val CHANGED_STATUS_REPORT = "### Changed Mobile Status Report ###"
 
         val CONTEXT = JsonObject().apply {
             addProperty("selectedSiteId", 20L)

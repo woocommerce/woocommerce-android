@@ -135,26 +135,22 @@ class IssueRefundViewModel @Inject constructor(
     private val refundNotice = combine(orderFlow, refundsFlow) { order, refunds -> prepareRefundNotice(order, refunds) }
 
     val viewState = combine(
-        orderFlow,
+        combine(orderFlow, currencyDecimalsFlow, ::Pair),
         productsRefundSection,
         shippingRefundSection,
         feesRefundSection,
         refundNotice
-    ) { order, productsSection, shippingSection, feesSection, refundNotice ->
+    ) { (order, decimals), productsSection, shippingSection, feesSection, refundNotice ->
+        val selectedTotal = productsSection.productsRefund + shippingSection.shippingRefund + feesSection.feesRefund
         IssueRefundViewState(
             currency = order.currency,
             productsSection = productsSection,
             feesSection = feesSection,
             shippingSection = shippingSection,
             refundNotice = refundNotice,
-            maxRefund = order.maxRefund,
-            refundCapNotice = prepareRefundCapNotice(
-                selectedTotal = productsSection.productsRefund +
-                    shippingSection.shippingRefund +
-                    feesSection.feesRefund,
-                maxRefund = order.maxRefund
-            )
-        )
+            grandTotalRefund = min(max(selectedTotal, BigDecimal.ZERO), order.maxRefund),
+            refundCapNotice = prepareRefundCapNotice(selectedTotal = selectedTotal, maxRefund = order.maxRefund)
+        ).withAmountsOfRefundLines(decimals)
     }.asLiveData()
 
     private val order: Order
@@ -305,6 +301,32 @@ class IssueRefundViewModel @Inject constructor(
         )
     }
 
+    private fun IssueRefundViewState.withAmountsOfRefundLines(decimals: Int): IssueRefundViewState {
+        val lines = selectedRefundItems.toRefundLines(grandTotalRefund, decimals)
+        val productLines = lines.take(productsSection.refundItems.size)
+        val shippingLines = lines.drop(productLines.size).take(shippingSection.selectedShippingLines.size)
+        val feeLines = lines.drop(productLines.size + shippingLines.size)
+
+        return copy(
+            productsSection = productsSection.copy(
+                productsRefund = productLines.sumOf { it.total },
+                formattedProductsRefund = formatCurrency(productLines.sumOf { it.total })
+            ),
+            shippingSection = shippingSection.copy(
+                shippingRefund = shippingLines.sumOf { it.total },
+                shippingSubtotalFormatted = formatCurrency(shippingLines.sumOf { it.subtotal }),
+                shippingTaxesFormatted = formatCurrency(shippingLines.sumOf { it.tax }),
+                shippingRefundTotalFormatted = formatCurrency(shippingLines.sumOf { it.total })
+            ),
+            feesSection = feesSection.copy(
+                feesRefund = feeLines.sumOf { it.total },
+                feesSubtotalFormatted = formatCurrency(feeLines.sumOf { it.subtotal }),
+                feesTaxesFormatted = formatCurrency(feeLines.sumOf { it.tax }),
+                feesRefundTotalFormatted = formatCurrency(feeLines.sumOf { it.total })
+            )
+        )
+    }
+
     private fun prepareRefundNotice(order: Order, refunds: List<Refund>): String? {
         return if (order.refundableShippingLineIds(refunds).size > 1) {
             resourceProvider.getString(
@@ -332,17 +354,13 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     private fun showRefundSummary() {
-        val productItems = refundItems.value.orEmpty()
-        val shippingLines = refundShippingLines.value.takeIf { isShippingMainSwitchChecked.value }.orEmpty()
-            .filter { it.isSelected }
-        val feeLines = refundFeeLines.value.takeIf { isFeesMainSwitchChecked.value }.orEmpty()
-            .filter { it.isSelected }
+        val state = requireNotNull(viewState.value) { "View state is not ready yet" }
 
         triggerEvent(
             IssueRefundEvent.ShowRefundSummary(
                 orderId = arguments.orderId,
-                refundAmount = viewState.value!!.grandTotalRefund,
-                refundItems = productItems + shippingLines + feeLines
+                refundAmount = state.grandTotalRefund,
+                refundItems = state.selectedRefundItems
             )
         )
     }
@@ -428,17 +446,13 @@ class IssueRefundViewModel @Inject constructor(
         val feesSection: FeesRefundSection,
         val shippingSection: ShippingRefundSection,
         val refundNotice: String?,
-        val maxRefund: BigDecimal,
+        val grandTotalRefund: BigDecimal,
         val refundCapNotice: String?,
     ) {
-        val grandTotalRefund: BigDecimal
-            get() {
-                val refundTotal = max(
-                    productsSection.productsRefund + shippingSection.shippingRefund + feesSection.feesRefund,
-                    BigDecimal.ZERO
-                )
-                return min(refundTotal, maxRefund)
-            }
+        val selectedRefundItems: List<RefundItem>
+            get() = productsSection.refundItems +
+                shippingSection.selectedShippingLines +
+                feesSection.selectedFeeLines
 
         val isNextButtonEnabled: Boolean
             get() = grandTotalRefund > BigDecimal.ZERO
@@ -466,7 +480,10 @@ class IssueRefundViewModel @Inject constructor(
         val feesSubtotalFormatted: String,
         val feesTaxesFormatted: String,
         val feesRefundTotalFormatted: String,
-    )
+    ) {
+        val selectedFeeLines: List<FeeRefundListItem>
+            get() = feeRefundLines.takeIf { isFeesMainSwitchChecked }.orEmpty().filter { it.isSelected }
+    }
 
     data class ShippingRefundSection(
         val shippingRefundLines: List<ShippingRefundListItem>,
@@ -476,7 +493,10 @@ class IssueRefundViewModel @Inject constructor(
         val shippingSubtotalFormatted: String,
         val shippingTaxesFormatted: String,
         val shippingRefundTotalFormatted: String,
-    )
+    ) {
+        val selectedShippingLines: List<ShippingRefundListItem>
+            get() = shippingRefundLines.takeIf { isShippingMainSwitchChecked }.orEmpty().filter { it.isSelected }
+    }
 
     sealed class IssueRefundEvent : Event() {
         data class ShowNumberPicker(val refundItem: ProductRefundListItem) : IssueRefundEvent()
