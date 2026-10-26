@@ -22,6 +22,7 @@
 - [***] [Internal] Migrated Google sign-in from the deprecated Play Services Auth API to Credential Manager [https://github.com/woocommerce/woocommerce-android/pull/16721]
 - [*] Login now shows a clear message with a Try again option when the store returns an unexpected response [https://github.com/woocommerce/woocommerce-android/pull/16685]
 - [*] AI support chat now receives the Mobile Status Report, so it can help without asking for app and device details [https://github.com/woocommerce/woocommerce-android/pull/16733]
+- [*] Card payment dialogs now show the amount in the store's currency format, matching the rest of the order [https://github.com/woocommerce/woocommerce-android/pull/16771]
 - [*] The "Generate all variations?" confirmation now stays open when you rotate the device [https://github.com/woocommerce/woocommerce-android/pull/16770]
 - [*] Refunds: the item count now says "1 item selected" instead of "1 items selected" [https://github.com/woocommerce/woocommerce-android/pull/16769]
 - [*] The "Never miss a new order" card now shows on My Store right after logging in to a store without Jetpack [https://github.com/woocommerce/woocommerce-android/pull/16747]
