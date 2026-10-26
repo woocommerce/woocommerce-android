@@ -107,7 +107,7 @@ The store ships with the WooCommerce sample products. The script tops it up to 1
 and 100 completed orders, and adds one customer and a `maestro10` coupon. The negative-login
 fixtures are filled in by hand.
 
-`push_no_jetpack.yaml` needs a second site, with WooCommerce and without Jetpack. The skill
+`no_jetpack.yaml` and `push_no_jetpack.yaml` need a second site, with WooCommerce and without Jetpack. The skill
 creates it too. For one you created yourself, run:
 
 ```bash

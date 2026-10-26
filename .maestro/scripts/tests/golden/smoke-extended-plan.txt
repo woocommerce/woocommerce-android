@@ -5,9 +5,10 @@ Maestro smoke plan
   include: smoke_extended
   exclude: <none>
   seed:    no
-  flows:   23
+  flows:   24
 
 Selected flows:
+  - .maestro/flows/no_jetpack.yaml
   - .maestro/flows/push_no_jetpack.yaml
   - .maestro/flows/jetpack_not_connected.yaml
   - .maestro/flows/dashboard_view_all_analytics.yaml

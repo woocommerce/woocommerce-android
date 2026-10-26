@@ -1,0 +1,189 @@
+# Smoke Test: Login - WooCommerce site without Jetpack
+# p2: login.no-jetpack
+# P2 ref: Login > No Jetpack
+#
+# Logs in with the site credentials to a WooCommerce site without Jetpack, opens
+# the onboarding tasks, installs Jetpack from Settings with the lab WordPress.com
+# account, then checks the order and product lists load. The runner resets the
+# store first, so every run starts from a store without Jetpack.
+#
+# Required env vars, written by setup-jn-store.sh --no-jetpack-site:
+#   MAESTRO_WOO_NO_JETPACK_SITE_URL
+#   MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_USERNAME
+#   MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD
+# and the lab WordPress.com account:
+#   MAESTRO_WOO_LAB_WPCOM_USERNAME
+#   MAESTRO_WOO_LAB_WPCOM_PASSWORD
+appId: com.woocommerce.android
+name: "Login - WooCommerce site without Jetpack"
+tags:
+  - smoke_extended
+  - login
+  - destructive
+  - no_jetpack_store
+# The next flows sign in to the lab store, which this session can't switch to.
+onFlowComplete:
+  - clearState
+---
+- assertTrue:
+    condition: ${NO_JETPACK_DISCONNECTED == "yes"}
+    label: "The runner reset the store without Jetpack"
+
+- launchApp:
+    clearState: true
+
+- runFlow:
+    file: ../subflows/dismiss_login_carousel.yaml
+
+- runFlow:
+    file: ../subflows/open_site_address_login.yaml
+
+- tapOn:
+    id: "input"
+- inputText: ${MAESTRO_WOO_NO_JETPACK_SITE_URL}
+- runFlow:
+    file: ../subflows/hide_keyboard.yaml
+    env:
+      KEYBOARD_TARGET_ID: "bottom_button"
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+- extendedWaitUntil:
+    visible: "Username"
+    timeout: 30000
+- tapOn: "Username"
+- inputText: ${MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_USERNAME}
+- tapOn: "Password"
+- inputText: ${MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD}
+- tapOn: "Continue"
+
+# The site credentials login can fail with a redirect, and the app then logs in
+# through wp-admin in a web view to create an application password.
+- extendedWaitUntil:
+    visible: "${STRING_MY_STORE}|.*couldn't log in.*"
+    timeout: 60000
+- runFlow:
+    when:
+      visible: ".*couldn't log in.*"
+    commands:
+      - tapOn: "Continue"
+      - extendedWaitUntil:
+          visible:
+            id: "user_login"
+          timeout: 30000
+      - tapOn:
+          id: "user_login"
+      - inputText: ${MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_USERNAME}
+      - tapOn:
+          id: "user_pass"
+      - inputText: ${MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD}
+      - tapOn:
+          id: "wp-submit"
+      - extendedWaitUntil:
+          visible: ".*approve of this connection.*"
+          timeout: 60000
+      - tapOn:
+          text: ".*approve of this connection.*"
+          retryTapIfNoChange: true
+
+- extendedWaitUntil:
+    visible:
+      id: "dashboard_container"
+    timeout: 120000
+    label: "Logged in with the site credentials"
+
+- scrollUntilVisible:
+    element: ${STRING_STORE_ONBOARDING_TASK_VIEW_ALL_TASKS}
+    direction: DOWN
+    timeout: 15000
+- tapOn: ${STRING_STORE_ONBOARDING_TASK_VIEW_ALL_TASKS}
+- extendedWaitUntil:
+    visible: ${STRING_STORE_ONBOARDING_TITLE}
+    timeout: 15000
+    label: "The onboarding tasks open"
+- takeScreenshot: no_jetpack_onboarding_tasks
+- back
+
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+
+# The first "Settings" is the section title, the second one the row.
+- tapOn:
+    text: ${STRING_MORE_MENU_BUTTON_SETTINGS}
+    index: 1
+- scrollUntilVisible:
+    element: ${STRING_SETTINGS_INSTALL_JETPACK}
+    direction: DOWN
+    timeout: 15000
+- tapOn: ${STRING_SETTINGS_INSTALL_JETPACK}
+
+- tapOn: ${STRING_JETPACK_BENEFITS_MODAL_LOGIN}
+
+# The first "Install Jetpack" is the screen title, the second one the button.
+- extendedWaitUntil:
+    visible: ${STRING_LOGIN_JETPACK_INSTALLATION_ENTER_WPCOM_EMAIL}
+    timeout: 15000
+- tapOn: ${STRING_EMAIL_OR_USERNAME}
+- inputText: ${MAESTRO_WOO_LAB_WPCOM_USERNAME}
+- hideKeyboard
+- tapOn:
+    text: ${STRING_LOGIN_JETPACK_INSTALL}
+    index: 1
+
+- extendedWaitUntil:
+    visible: "${STRING_PASSWORD}|${STRING_LOGIN_USE_WPCOM_USERNAME_INSTEAD}"
+    timeout: 30000
+# WordPress.com sometimes sends a magic link instead of asking for the password.
+- runFlow:
+    when:
+      visible: ${STRING_LOGIN_USE_WPCOM_USERNAME_INSTEAD}
+    commands:
+      - tapOn: ${STRING_LOGIN_USE_WPCOM_USERNAME_INSTEAD}
+      - tapOn: "Username"
+      - inputText: ${MAESTRO_WOO_LAB_WPCOM_USERNAME}
+      - hideKeyboard
+      - tapOn:
+          text: ${STRING_LOGIN_JETPACK_INSTALL}
+          index: 1
+
+- tapOn: ${STRING_PASSWORD}
+- inputText: ${MAESTRO_WOO_LAB_WPCOM_PASSWORD}
+- hideKeyboard
+- tapOn:
+    text: ${STRING_LOGIN_JETPACK_INSTALL}
+    index: 1
+
+- extendedWaitUntil:
+    visible: ${STRING_LOGIN_JETPACK_INSTALLATION_GO_TO_STORE_BUTTON}
+    timeout: 180000
+    label: "Jetpack installs and connects"
+- assertVisible: ${STRING_LOGIN_JETPACK_INSTALLATION_STEPS_SCREEN_TITLE_DONE}
+
+- takeScreenshot: no_jetpack_installed
+
+- tapOn: ${STRING_LOGIN_JETPACK_INSTALLATION_GO_TO_STORE_BUTTON}
+
+- extendedWaitUntil:
+    visible:
+      id: "dashboard_container"
+    timeout: 60000
+
+- runFlow:
+    file: ../subflows/navigate_to_orders.yaml
+- extendedWaitUntil:
+    visible:
+      text: "#\\d+"
+      childOf:
+        id: "order_list"
+    timeout: 30000
+    label: "The order list loads"
+- takeScreenshot: no_jetpack_orders
+
+- runFlow:
+    file: ../subflows/navigate_to_products.yaml
+- extendedWaitUntil:
+    visible: ".*Maestro Product.*"
+    timeout: 30000
+    label: "The product list loads"
+- takeScreenshot: no_jetpack_products
