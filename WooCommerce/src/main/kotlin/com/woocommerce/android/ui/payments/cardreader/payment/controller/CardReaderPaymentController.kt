@@ -450,10 +450,7 @@ class CardReaderPaymentController(
             ).collect { refundStatus ->
                 onRefundStatusChanged(
                     refundStatus,
-                    currencyFormatter.formatAmountWithCurrency(
-                        refundAmount.toDouble(),
-                        order.currency
-                    )
+                    currencyFormatter.formatCurrency(refundAmount, order.currency)
                 )
             }
         } ?: run {
@@ -463,10 +460,7 @@ class CardReaderPaymentController(
                 errorType = CardInteracRefundStatus.RefundStatusErrorType.NonRetryable,
             )
             emitFailedInteracRefundState(
-                currencyFormatter.formatAmountWithCurrency(
-                    refundAmount.toDouble(),
-                    order.currency
-                ),
+                currencyFormatter.formatCurrency(refundAmount, order.currency),
                 InteracRefundFailure(
                     type = CardInteracRefundStatus.RefundStatusErrorType.NonRetryable,
                     errorMessage = "Charge id is null for the order.",
