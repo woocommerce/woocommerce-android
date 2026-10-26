@@ -25,3 +25,16 @@ android {
         }
     }
 }
+
+// AGP only creates `validateSigning*` for already-signed variants, so the guard hangs off the packaging tasks.
+// `package*ReleaseResources` is excluded because compiling and linting release variants depends on it.
+tasks.matching { it.name ==~ /package\w+Release(Bundle|UniversalApk)?/ }.configureEach {
+    doFirst {
+        if (!uploadKeyAvailable) {
+            throw new GradleException(
+                "The upload keystore is missing, so this release build would not be signed. " +
+                    "Please run `bundle exec fastlane run configure_apply` to apply secrets."
+            )
+        }
+    }
+}
