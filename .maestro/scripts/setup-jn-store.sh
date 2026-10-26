@@ -11,10 +11,10 @@
 # take the admin password from the wp-admin notice the site displays.
 #
 # With --no-jetpack-site instead of --site, it configures a WooCommerce site
-# without Jetpack for the push setup flow: it only creates the API keys and
-# writes the MAESTRO_WOO_NO_JETPACK_* values. --jetpack-not-connected-site does
-# the same for a site with Jetpack installed but not connected, and writes the
-# MAESTRO_WOO_JETPACK_NOT_CONNECTED_* values.
+# without Jetpack for the no-Jetpack flows: it adds the same orders and products,
+# creates the API keys and writes the MAESTRO_WOO_NO_JETPACK_* values.
+# --jetpack-not-connected-site only creates the API keys for a site with Jetpack
+# installed but not connected, and writes the MAESTRO_WOO_JETPACK_NOT_CONNECTED_* values.
 #
 # Usage:
 #   setup-jn-store.sh --site <domain> [--site-password <password>] [--wpcom-user <email>]
@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-SITE="" KEYS_ONLY_SITE="" KEYS_ONLY_PREFIX="" KEYS_ONLY_NAME="" REQUIRE_JETPACK="yes" SITE_PASS="" WPCOM_USER="" WPCOM_PASS=""
+SITE="" KEYS_ONLY_SITE="" KEYS_ONLY_PREFIX="" KEYS_ONLY_NAME="" REQUIRE_JETPACK="yes" SEED_KEYS_ONLY_SITE="no" SITE_PASS="" WPCOM_USER="" WPCOM_PASS=""
 ADMIN_USER="demo"
 ADMIN_ID="1"
 ENV_OUT=""
@@ -52,7 +52,7 @@ while [ $# -gt 0 ]; do
     --site) SITE="$2"; shift 2 ;;
     --no-jetpack-site)
       KEYS_ONLY_SITE="$2" KEYS_ONLY_PREFIX=MAESTRO_WOO_NO_JETPACK KEYS_ONLY_NAME="No-Jetpack store"
-      REQUIRE_JETPACK="no"
+      REQUIRE_JETPACK="no" SEED_KEYS_ONLY_SITE="yes"
       shift 2 ;;
     --jetpack-not-connected-site)
       KEYS_ONLY_SITE="$2" KEYS_ONLY_PREFIX=MAESTRO_WOO_JETPACK_NOT_CONNECTED
@@ -73,6 +73,7 @@ if [ -n "$KEYS_ONLY_SITE" ]; then
   [ -z "$SITE" ] || die "each run configures one store: pass only one of --site, --no-jetpack-site and --jetpack-not-connected-site"
   SITE="$KEYS_ONLY_SITE"
   TOTAL_STEPS=3
+  [ "$SEED_KEYS_ONLY_SITE" = "no" ] || TOTAL_STEPS=4
 else
   [ -n "$SITE" ] || die "--site, --no-jetpack-site or --jetpack-not-connected-site is required"
   TOTAL_STEPS=7
@@ -354,8 +355,13 @@ printf '%s' "$STATE" | grep -q "USER:ok" || die "no user with id $ADMIN_ID (try 
 ok "ssh and wp-cli working, admin user id $ADMIN_ID present"
 
 # The flows for these stores sign in with the site credentials and create their
-# orders with the API keys, so the site needs nothing else.
+# orders with the API keys. The no-Jetpack flows also check the order and product
+# lists, so that store gets the same data as the lab store.
 if [ -n "$KEYS_ONLY_SITE" ]; then
+  if [ "$SEED_KEYS_ONLY_SITE" = "yes" ]; then
+    step "Adding orders, products, a customer and a coupon"
+    seed_store_data
+  fi
   step "Creating WooCommerce API keys and writing $(basename "$ENV_OUT")"
   create_api_keys
   STORE_URL="https://$SITE"
