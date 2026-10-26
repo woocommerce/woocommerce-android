@@ -1,0 +1,183 @@
+# Smoke Test: Login - Jetpack installed but not connected
+# p2: login.jetpack-not-connected
+# P2 ref: Login > Jetpack but not connected
+#
+# Logs in with the site credentials to a WooCommerce site that has Jetpack installed
+# but not connected, connects Jetpack from Settings with the lab WordPress.com
+# account, then creates an order through the REST API and opens its real push.
+# The runner removes the Jetpack connection first, so every run starts from a
+# store with Jetpack not connected.
+#
+# Required env vars, written by setup-jn-store.sh --jetpack-not-connected-site:
+#   MAESTRO_WOO_JETPACK_NOT_CONNECTED_SITE_URL
+#   MAESTRO_WOO_JETPACK_NOT_CONNECTED_SITE_ADMIN_USERNAME
+#   MAESTRO_WOO_JETPACK_NOT_CONNECTED_SITE_ADMIN_PASSWORD
+#   MAESTRO_WOO_JETPACK_NOT_CONNECTED_CONSUMER_KEY
+#   MAESTRO_WOO_JETPACK_NOT_CONNECTED_CONSUMER_SECRET
+# and the lab WordPress.com account:
+#   MAESTRO_WOO_LAB_WPCOM_USERNAME
+#   MAESTRO_WOO_LAB_WPCOM_PASSWORD
+appId: com.woocommerce.android
+name: "Login - Jetpack installed but not connected"
+tags:
+  - smoke_extended
+  - login
+  - destructive
+  - jetpack_not_connected
+env:
+  JETPACK_NOT_CONNECTED_SITE_URL: ${MAESTRO_WOO_JETPACK_NOT_CONNECTED_SITE_URL}
+  JETPACK_NOT_CONNECTED_CONSUMER_KEY: ${MAESTRO_WOO_JETPACK_NOT_CONNECTED_CONSUMER_KEY}
+  JETPACK_NOT_CONNECTED_CONSUMER_SECRET: ${MAESTRO_WOO_JETPACK_NOT_CONNECTED_CONSUMER_SECRET}
+# The next flows sign in to the lab store, which this session can't switch to.
+onFlowComplete:
+  - clearState
+---
+- assertTrue:
+    condition: ${JETPACK_DISCONNECTED == "yes"}
+    label: "The runner disconnected Jetpack on the store"
+
+- launchApp:
+    clearState: true
+
+- runFlow:
+    file: ../subflows/dismiss_login_carousel.yaml
+
+- runFlow:
+    file: ../subflows/open_site_address_login.yaml
+
+- tapOn:
+    id: "input"
+- inputText: ${MAESTRO_WOO_JETPACK_NOT_CONNECTED_SITE_URL}
+- runFlow:
+    file: ../subflows/hide_keyboard.yaml
+    env:
+      KEYBOARD_TARGET_ID: "bottom_button"
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+# WordPress.com still lists the store as connected after the runner removes the
+# connection, so from the second run on the app asks for a WordPress.com email first.
+- extendedWaitUntil:
+    visible: "Username|Email address"
+    timeout: 30000
+- waitForAnimationToEnd
+- runFlow:
+    when:
+      visible:
+        id: "login_with_site_credentials"
+    commands:
+      - tapOn:
+          id: "login_with_site_credentials"
+      - extendedWaitUntil:
+          visible: "Username"
+          timeout: 15000
+
+- tapOn: "Username"
+- inputText: ${MAESTRO_WOO_JETPACK_NOT_CONNECTED_SITE_ADMIN_USERNAME}
+- tapOn: "Password"
+- inputText: ${MAESTRO_WOO_JETPACK_NOT_CONNECTED_SITE_ADMIN_PASSWORD}
+- tapOn: "Continue"
+
+- extendedWaitUntil:
+    visible:
+      id: "dashboard_container"
+    timeout: 60000
+    label: "Logged in with the site credentials"
+
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+
+# The first "Settings" is the section title, the second one the row.
+- tapOn:
+    text: ${STRING_MORE_MENU_BUTTON_SETTINGS}
+    index: 1
+- scrollUntilVisible:
+    element: ${STRING_SETTINGS_INSTALL_JETPACK}
+    direction: DOWN
+    timeout: 15000
+- tapOn: ${STRING_SETTINGS_INSTALL_JETPACK}
+
+- tapOn: ${STRING_JETPACK_BENEFITS_MODAL_LOGIN}
+
+# The first "Connect Jetpack" is the screen title, the second one the button.
+- tapOn: ${STRING_EMAIL_OR_USERNAME}
+- inputText: ${MAESTRO_WOO_LAB_WPCOM_USERNAME}
+- hideKeyboard
+- tapOn:
+    text: ${STRING_LOGIN_JETPACK_CONNECT}
+    index: 1
+
+- extendedWaitUntil:
+    visible: "${STRING_PASSWORD}|${STRING_LOGIN_USE_WPCOM_USERNAME_INSTEAD}"
+    timeout: 30000
+# WordPress.com sometimes sends a magic link instead of asking for the password.
+- runFlow:
+    when:
+      visible: ${STRING_LOGIN_USE_WPCOM_USERNAME_INSTEAD}
+    commands:
+      - tapOn: ${STRING_LOGIN_USE_WPCOM_USERNAME_INSTEAD}
+      - tapOn: "Username"
+      - inputText: ${MAESTRO_WOO_LAB_WPCOM_USERNAME}
+      - hideKeyboard
+      - tapOn:
+          text: ${STRING_LOGIN_JETPACK_CONNECT}
+          index: 1
+
+- tapOn: ${STRING_PASSWORD}
+- inputText: ${MAESTRO_WOO_LAB_WPCOM_PASSWORD}
+- hideKeyboard
+- tapOn:
+    text: ${STRING_LOGIN_JETPACK_CONNECT}
+    index: 1
+
+- extendedWaitUntil:
+    visible: ${STRING_LOGIN_JETPACK_INSTALLATION_GO_TO_STORE_BUTTON}
+    timeout: 120000
+    label: "Jetpack connects"
+- assertVisible: ${STRING_LOGIN_JETPACK_CONNECTION_STEPS_SCREEN_TITLE_DONE}
+
+- takeScreenshot: jetpack_not_connected_connected
+
+- tapOn: ${STRING_LOGIN_JETPACK_INSTALLATION_GO_TO_STORE_BUTTON}
+
+- extendedWaitUntil:
+    visible:
+      id: "dashboard_container"
+    timeout: 60000
+
+# A total no other order has lets the flow pick this order's notification.
+- evalScript: "${output.pushOrder = json(http.post(JETPACK_NOT_CONNECTED_SITE_URL + '/wp-json/wc/v3/orders?consumer_key=' + JETPACK_NOT_CONNECTED_CONSUMER_KEY + '&consumer_secret=' + JETPACK_NOT_CONNECTED_CONSUMER_SECRET, {headers: {'Content-Type': 'application/json'}, body: JSON.stringify({status: 'processing', fee_lines: [{name: 'Maestro push', total: (10 + Math.random() * 89.99).toFixed(2)}]})}).body)}"
+- assertTrue:
+    condition: ${output.pushOrder.number != null}
+    label: "The order for the push was created"
+
+- pressKey: HOME
+
+- swipe:
+    start: "50%,1%"
+    end: "50%,70%"
+    duration: 600
+    label: "Open the notification shade"
+
+# "." stands for the currency symbol, which a ${...} script can't contain.
+- extendedWaitUntil:
+    visible: ".*New order for .${output.pushOrder.total} on .*"
+    timeout: 90000
+    label: "Wait for this order's push notification"
+
+- takeScreenshot: jetpack_not_connected_notification
+
+- tapOn:
+    text: ".*New order for .${output.pushOrder.total} on .*"
+    label: "Open the push notification"
+
+- extendedWaitUntil:
+    visible: "Order #${output.pushOrder.number}"
+    timeout: 30000
+    label: "The push opens this order"
+
+- assertVisible:
+    id: "orderDetail_container"
+
+- takeScreenshot: jetpack_not_connected_order

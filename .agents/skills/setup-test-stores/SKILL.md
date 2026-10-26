@@ -57,15 +57,17 @@ hand against a site created in a browser.
    user passed `--fresh`. Anything else means the store is gone or expired: continue, and
    reuse the existing WP.com account lines rather than asking for them again.
 
-2. **Provision two sites.** The lab store, and a WooCommerce site without Jetpack for
-   `push_no_jetpack.yaml`:
+2. **Provision three sites.** The lab store, a WooCommerce site without Jetpack for
+   `push_no_jetpack.yaml`, and a WooCommerce site with Jetpack, left unconnected, for
+   `jetpack_not_connected.yaml`:
 
    ```
    provision-site  features: {"woocommerce":"true","woocommerce-import-sample-data":"true","jetpack":"true"}
    provision-site  features: {"woocommerce":"true","jetpack":"false"}
+   provision-site  features: {"woocommerce":"true","jetpack":"true"}
    ```
 
-   Note both returned domains.
+   Note all three returned domains.
 
 3. **Fetch their passwords.** For each site:
 
@@ -84,6 +86,7 @@ hand against a site created in a browser.
    ```bash
    JN_SSH_PASS='<lab JN_PASSWORD>' .maestro/scripts/setup-jn-store.sh --site <lab domain>
    JN_SSH_PASS='<no-Jetpack JN_PASSWORD>' .maestro/scripts/setup-jn-store.sh --no-jetpack-site <no-Jetpack domain>
+   JN_SSH_PASS='<third JN_PASSWORD>' .maestro/scripts/setup-jn-store.sh --jetpack-not-connected-site <third domain>
    ```
 
    The script waits for JN to finish provisioning (it answers HTTP before its plugins
@@ -107,8 +110,9 @@ A fresh store has the WooCommerce sample products. The script tops it up to 100 
 and 100 completed orders, and adds one customer and a `maestro10` coupon, so the product,
 order and dashboard flows run against it.
 
-The site without Jetpack only gets API keys. `push_no_jetpack.yaml` logs in to it with its
-site credentials, and the runner disconnects it from WordPress.com before each run.
+The site without Jetpack and the site with Jetpack not connected only get API keys. Their
+flows log in with the site credentials, and the runner disconnects each one from
+WordPress.com before its flow runs.
 
 The negative-login fixtures (`MAESTRO_WOO_NOT_A_WOO_STORE_*`,
 `MAESTRO_WOO_WRONG_ACCOUNT_STORE_URL`) are shared read-only sites from the smoke testing

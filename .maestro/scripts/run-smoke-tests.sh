@@ -959,6 +959,21 @@ disconnect_no_jetpack_store() {
   fi
 }
 
+# The Jetpack-not-connected login flow connects Jetpack from the app, so for a flow
+# tagged jetpack_not_connected the runner removes the site and user connection
+# first. The check runs in a second wp-cli call, as the first one still holds the
+# removed tokens. The flow checks JETPACK_DISCONNECTED first.
+JETPACK_DISCONNECTED="no"
+disconnect_jetpack_not_connected_store() {
+  if disconnect_jn_site "${MAESTRO_WOO_JETPACK_NOT_CONNECTED_SITE_URL:-}" \
+    "${MAESTRO_WOO_JETPACK_NOT_CONNECTED_SITE_ADMIN_PASSWORD:-}" \
+    'wp eval '\''$options = get_option( "jetpack_options" ); unset( $options["id"], $options["master_user"] ); update_option( "jetpack_options", $options ); $tokens = get_option( "jetpack_private_options" ); unset( $tokens["blog_token"], $tokens["user_tokens"] ); update_option( "jetpack_private_options", $tokens );'\'' && wp eval '\''$manager = new Automattic\Jetpack\Connection\Manager(); echo $manager->is_connected() || $manager->has_connected_owner() ? "CONNECTED" : "DISCONNECTED";'\'''; then
+    JETPACK_DISCONNECTED="yes"
+  else
+    echo "  disconnecting Jetpack on the store with Jetpack not connected failed"
+  fi
+}
+
 # Runs a wp-cli command on a Jurassic Ninja site that prints DISCONNECTED once the
 # site has no WordPress.com connection left. SSH to Jurassic Ninja sometimes drops
 # a session, so it tries a few times.
@@ -1337,7 +1352,7 @@ run_one_attempt() {
   mkdir -p "$attempt_debug_dir"
   "${MAESTRO_PROCESS_ENV_ARGS[@]}" maestro test "${MAESTRO_DEVICE_ARGS[@]}" "${MAESTRO_ENV_ARGS[@]}" -e "APP_UPGRADED=$APP_UPGRADED" \
     -e "PUSH_ORDER_NUMBER=$PUSH_ORDER_NUMBER" -e "PUSH_ORDER_TOTAL=$PUSH_ORDER_TOTAL" \
-    -e "NO_JETPACK_DISCONNECTED=$NO_JETPACK_DISCONNECTED" \
+    -e "NO_JETPACK_DISCONNECTED=$NO_JETPACK_DISCONNECTED" -e "JETPACK_DISCONNECTED=$JETPACK_DISCONNECTED" \
     --debug-output "$attempt_debug_dir" --flatten-debug-output "$flow" >"$log_file" 2>&1
   exit_code=$?
   set -e
@@ -1458,6 +1473,10 @@ for repeat_index in $(seq 1 "$REPEAT"); do
     NO_JETPACK_DISCONNECTED="no"
     if flow_has_any_tag "$flow" push_no_jetpack; then
       disconnect_no_jetpack_store
+    fi
+    JETPACK_DISCONNECTED="no"
+    if flow_has_any_tag "$flow" jetpack_not_connected; then
+      disconnect_jetpack_not_connected_store
     fi
 
     first="$(run_one_attempt "$flow" "$base" 1 "$repeat_index")"
