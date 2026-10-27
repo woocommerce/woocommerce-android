@@ -15,7 +15,6 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.automattic.android.experimentation.VariationsRepository
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -32,7 +31,6 @@ import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.push.FCMRefreshWorker
 import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.notifications.push.RegisterDevice.Trigger.APP_FOREGROUND
-import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
@@ -72,7 +70,6 @@ import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.util.crashlogging.UploadEncryptedLogs
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.Lazy
-import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -116,8 +113,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var fluxCCrashLogger: FluxCCrashLogger
 
-    @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
-
     @Inject lateinit var dispatcher: Dispatcher
 
     @Inject lateinit var accountStore: AccountStore
@@ -134,11 +129,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var networkStatus: NetworkStatus
 
-    @Inject lateinit var zendeskSettings: ZendeskSettings
+    @Inject lateinit var userEligibilityFetcher: Lazy<UserEligibilityFetcher>
 
-    @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
-
-    @Inject lateinit var refreshWPSettings: RefreshWPSettings
+    @Inject lateinit var refreshWPSettings: Lazy<RefreshWPSettings>
 
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
 
@@ -147,13 +140,13 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     // Required to ensure feature flags are initialized
     @Inject lateinit var featureFlagRepository: FeatureFlagRepository
 
-    @Inject lateinit var siteObserver: SiteObserver
+    @Inject lateinit var siteObserver: Lazy<SiteObserver>
 
     @Inject lateinit var blazeCampaignsObserver: BlazeCampaignsObserver
 
     @Inject lateinit var wooLog: WooLog
 
-    @Inject lateinit var registerDevice: RegisterDevice
+    @Inject lateinit var registerDevice: Lazy<RegisterDevice>
 
     @Inject lateinit var applicationPasswordsNotifier: ApplicationPasswordsNotifier
 
@@ -161,30 +154,28 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var analyticsTracker: AnalyticsTrackerWrapper
 
-    @Inject lateinit var variationsRepository: VariationsRepository
-
     // Listens for changes in device connectivity
-    @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
+    @Inject lateinit var connectionReceiver: Lazy<ConnectionChangeReceiver>
 
     @Inject lateinit var prefs: AppPrefs
 
     @Inject lateinit var getWooVersion: GetWooCorePluginCachedVersion
 
-    @Inject lateinit var ageEligibilityChecker: AgeEligibilityChecker
+    @Inject lateinit var ageEligibilityChecker: Lazy<AgeEligibilityChecker>
 
     @Inject
     @AppCoroutineScope
     lateinit var appCoroutineScope: CoroutineScope
 
-    @Inject lateinit var cardReaderOnboardingChecker: CardReaderOnboardingChecker
+    @Inject lateinit var cardReaderOnboardingChecker: Lazy<CardReaderOnboardingChecker>
 
-    @Inject lateinit var jitmStoreInMemoryCache: JitmStoreInMemoryCache
+    @Inject lateinit var jitmStoreInMemoryCache: Lazy<JitmStoreInMemoryCache>
 
-    @Inject lateinit var trackStoreSnapshot: TrackStoreSnapshot
+    @Inject lateinit var trackStoreSnapshot: Lazy<TrackStoreSnapshot>
 
     @Inject lateinit var notificationChannelsHandler: NotificationChannelsHandler
 
-    @Inject lateinit var backgroundUpdatesDisabled: BackgroundUpdatesDisabled
+    @Inject lateinit var backgroundUpdatesDisabled: Lazy<BackgroundUpdatesDisabled>
 
     @Inject lateinit var edgeToEdgeEnabler: ApplicationEdgeToEdgeEnabler
 
@@ -194,7 +185,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var appShortcutsHandler: AppShortcutsHandler
 
-    @Inject lateinit var crashReportingSettingSync: CrashReportingSettingSync
+    @Inject lateinit var crashReportingSettingSync: Lazy<CrashReportingSettingSync>
 
     private var connectionReceiverRegistered = false
 
@@ -206,6 +197,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     private val updateSelectedSite: RateLimitedTask = object : RateLimitedTask(SECONDS_BETWEEN_SITE_UPDATE) {
         override fun run(): Boolean {
             selectedSite.getIfExists()?.let { site ->
+                val refreshWPSettings = refreshWPSettings.get()
                 appCoroutineScope.launch {
                     wooCommerceStore.fetchWooCommerceSite(site).model?.let {
                         val current = selectedSite.getOrNull()
@@ -275,7 +267,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             }
         }
         appCoroutineScope.launch {
-            siteObserver.observeAndUpdateSelectedSiteData()
+            siteObserver.get().observeAndUpdateSelectedSiteData()
         }
         appCoroutineScope.launch { currencyFormatter.observeSiteSettings() }
         appCoroutineScope.launch { blazeCampaignsObserver.observeAndScheduleNotifications() }
@@ -301,17 +293,20 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         trackApplicationOpened()
 
         clearRefreshDataPeriodically()
-        backgroundUpdatesDisabled()
+        backgroundUpdatesDisabled.get()()
 
         if (!connectionReceiverRegistered) {
             connectionReceiverRegistered = true
-            application.registerReceiver(connectionReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+            application.registerReceiver(
+                connectionReceiver.get(),
+                IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+            )
         }
 
         if (networkStatus.isConnected()) {
             updateSelectedSite.runIfNotLimited()
 
-            registerDevice.kickoff(APP_FOREGROUND)
+            registerDevice.get().kickoff(APP_FOREGROUND)
         }
     }
 
@@ -340,6 +335,10 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             }
 
             if (selectedSite.exists()) {
+                val userEligibilityFetcher = userEligibilityFetcher.get()
+                val cardReaderOnboardingChecker = cardReaderOnboardingChecker.get()
+                val jitmStoreInMemoryCache = jitmStoreInMemoryCache.get()
+                val trackStoreSnapshot = trackStoreSnapshot.get()
                 appCoroutineScope.launch {
                     userEligibilityFetcher.fetchUserInfo().onSuccess {
                         if (!it.isEligible) {
@@ -373,8 +372,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     override fun onActivityResumed(activity: Activity) {
         (activity as? LifecycleOwner)?.lifecycleScope?.launch {
-            ageEligibilityChecker.checkAgeOnStartup(activity)
-            ageEligibilityChecker.retryAfterReturningFromPlayStore(activity)
+            ageEligibilityChecker.get().checkAgeOnStartup(activity)
+            ageEligibilityChecker.get().retryAfterReturningFromPlayStore(activity)
         }
     }
 
@@ -384,7 +383,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         if (connectionReceiverRegistered) {
             connectionReceiverRegistered = false
-            application.unregisterReceiver(connectionReceiver)
+            application.unregisterReceiver(connectionReceiver.get())
         }
     }
 
@@ -518,6 +517,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     fun onAccountChanged(event: OnAccountChanged) {
         if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
             analyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
+            val crashReportingSettingSync = crashReportingSettingSync.get()
             appCoroutineScope.launch { crashReportingSettingSync() }
         }
     }

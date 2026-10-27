@@ -21,7 +21,7 @@ class FCMMessageService : FirebaseMessagingService() {
 
     @Inject lateinit var appPrefsWrapper: AppPrefsWrapper
 
-    @Inject lateinit var registerDevice: RegisterDevice
+    @Inject lateinit var registerDevice: Lazy<RegisterDevice>
 
     @Inject lateinit var invalidateDeviceRegistration: InvalidateDeviceRegistration
 
@@ -32,7 +32,7 @@ class FCMMessageService : FirebaseMessagingService() {
         appPrefsWrapper.setFCMToken(newToken)
         serviceScope.launch {
             invalidateDeviceRegistration()
-            registerDevice(TOKEN_REFRESH)
+            registerDevice.get()(TOKEN_REFRESH)
         }
     }
 

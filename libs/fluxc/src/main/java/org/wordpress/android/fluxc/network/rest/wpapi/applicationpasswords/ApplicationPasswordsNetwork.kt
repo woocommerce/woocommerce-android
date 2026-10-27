@@ -53,7 +53,8 @@ class ApplicationPasswordsNetwork @Inject constructor(
         forced: Boolean = false,
         requestTimeout: Int = BaseRequest.DEFAULT_REQUEST_TIMEOUT,
         retries: Int = BaseRequest.DEFAULT_MAX_RETRIES,
-        isRegeneratingApplicationPassword: Boolean = false
+        isRegeneratingApplicationPassword: Boolean = false,
+        readableBodyCheck: ((T) -> Boolean)? = null
     ): WPAPIResponse<T> {
         fun buildRequest(
             continuation: Continuation<WPAPIResponse<T>>,
@@ -75,6 +76,7 @@ class ApplicationPasswordsNetwork @Inject constructor(
 
             request.addHeader(AUTHORIZATION_HEADER, authorizationHeader)
             request.setUserAgent(userAgent.apiUserAgent)
+            request.setReadableBodyCheck(readableBodyCheck)
 
             if (enableCaching) {
                 request.enableCaching(cacheTimeToLive)
@@ -135,7 +137,16 @@ class ApplicationPasswordsNetwork @Inject constructor(
                 "The application password was revoked, delete the saved one then retry"
             )
             mApplicationPasswordsManager.deleteLocalApplicationPassword(site, credentials)
-            executeGsonRequest(site, method, path, clazz, params, body, isRegeneratingApplicationPassword = true)
+            executeGsonRequest(
+                site,
+                method,
+                path,
+                clazz,
+                params,
+                body,
+                isRegeneratingApplicationPassword = true,
+                readableBodyCheck = readableBodyCheck
+            )
         } else {
             response
         }
@@ -171,7 +182,8 @@ class ApplicationPasswordsNetwork @Inject constructor(
         cacheTimeToLive: Int,
         forced: Boolean,
         requestTimeout: Int,
-        retries: Int
+        retries: Int,
+        readableBodyCheck: ((T) -> Boolean)?
     ) = executeGsonRequest(
         site = site,
         method = HttpMethod.GET,
@@ -182,7 +194,8 @@ class ApplicationPasswordsNetwork @Inject constructor(
         cacheTimeToLive = cacheTimeToLive,
         forced = forced,
         requestTimeout = requestTimeout,
-        retries = retries
+        retries = retries,
+        readableBodyCheck = readableBodyCheck
     )
 
     override suspend fun <T : Any> executePostGsonRequest(
