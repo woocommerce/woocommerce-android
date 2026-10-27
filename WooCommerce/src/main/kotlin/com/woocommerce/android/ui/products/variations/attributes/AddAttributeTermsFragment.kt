@@ -86,7 +86,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             override fun onTermMoved(fromTermName: String, toTermName: String) {
                 viewModel.swapProductDraftAttributeTerms(
                     navArgs.attributeId,
-                    navArgs.attributeName,
+                    attributeName,
                     fromTermName,
                     toTermName
                 )
