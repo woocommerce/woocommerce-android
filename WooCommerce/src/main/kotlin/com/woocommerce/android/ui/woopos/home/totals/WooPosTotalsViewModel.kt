@@ -232,6 +232,10 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun cancelPaymentAction() {
         cardReaderPaymentController?.onBackPressed()
+        stopPaymentCollection()
+    }
+
+    private fun stopPaymentCollection() {
         cardReaderPaymentController?.stop()
         if (isTapToPayPayment) {
             isTTPPaymentInProgress = false
@@ -314,7 +318,7 @@ class WooPosTotalsViewModel @Inject constructor(
             return@launch
         }
         // The card reader must not take a card while the order is being paid another way.
-        cancelPaymentAction()
+        stopPaymentCollection()
         when (method) {
             OtherPaymentMethod.CASH -> {
                 totalsAnalyticsTracker.trackCashPaymentTapped()
