@@ -35,8 +35,12 @@ class SupportChatContextProvider @Inject constructor(
             "# Login context",
             unifiedLoginTracker.getFlow()?.let { "Login flow: ${it.value}" },
             unifiedLoginTracker.stepBeforeHelp?.let { "Login step: ${it.value}" },
-            unifiedLoginTracker.enteredSiteAddress?.let { "Site address entered: ${it.withoutPersonalData()}" },
-            unifiedLoginTracker.lastShownError?.let { "Last error shown: ${it.withoutPersonalData()}" }
+            unifiedLoginTracker.enteredSiteAddress?.let {
+                "Site address entered: ${it.withoutPersonalData().take(MAX_ERROR_LENGTH)}"
+            },
+            unifiedLoginTracker.lastShownError?.let {
+                "Last error shown: ${it.withoutPersonalData().take(MAX_ERROR_LENGTH)}"
+            }
         ).joinToString("\n")
 
     fun buildInitialContext(
@@ -116,7 +120,6 @@ class SupportChatContextProvider @Inject constructor(
         replace(EMAIL_PATTERN, "[email]")
             .replace(QUERY_PATTERN, "?[redacted]")
             .replace(SECRET_PATTERN, "[redacted]")
-            .take(MAX_ERROR_LENGTH)
 
     private companion object {
         val EMAIL_PATTERN = Regex("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}")
