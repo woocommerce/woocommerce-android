@@ -1078,6 +1078,89 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
+    fun `given card collection started, when OnCashPaymentClicked, then stop card collection`() = runTest {
+        // GIVEN
+        givenCardReaderConnectedAndNetworkAvailable()
+        val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
+        whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked)
+
+        // THEN
+        verify(mockCardReaderPaymentController).stop()
+    }
+
+    @Test
+    fun `given card collection started, when OnScanToPayClicked, then stop card collection`() = runTest {
+        // GIVEN
+        givenCardReaderConnectedAndNetworkAvailable()
+        val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
+        whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnScanToPayClicked)
+
+        // THEN
+        verify(mockCardReaderPaymentController).stop()
+    }
+
+    @Test
+    fun `given card collection started, when OnMarkOrderAsPaidClicked, then stop card collection`() = runTest {
+        // GIVEN
+        givenCardReaderConnectedAndNetworkAvailable()
+        val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
+        whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked)
+
+        // THEN
+        verify(mockCardReaderPaymentController).stop()
+    }
+
+    @Test
+    fun `given card collection cancelled by cash payment, when OnScreenResumed, then restart card collection`() = runTest {
+        // GIVEN
+        givenCardReaderConnectedAndNetworkAvailable()
+        val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
+        whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked)
+        clearInvocations(mockCardReaderPaymentController)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnScreenResumed)
+
+        // THEN
+        verify(mockCardReaderPaymentController).start()
+    }
+
+    @Test
+    fun `given card collection in progress, when OnScreenResumed, then do not restart card collection`() = runTest {
+        // GIVEN
+        givenCardReaderConnectedAndNetworkAvailable()
+        val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
+        whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+        clearInvocations(mockCardReaderPaymentController)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnScreenResumed)
+
+        // THEN
+        verify(mockCardReaderPaymentController, never()).start()
+    }
+
+    @Test
     fun `given order draft created and reader connected, when card tapped, should show payment processing screen`() =
         runTest {
             // GIVEN
