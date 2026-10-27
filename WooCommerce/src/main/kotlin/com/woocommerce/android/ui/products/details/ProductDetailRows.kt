@@ -61,6 +61,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.component.WooBadge
@@ -170,7 +171,7 @@ private fun ProductDetailComplexPropertyRow(
     modifier: Modifier,
 ) {
     val title = property.title?.let { stringResource(it) }.orEmpty()
-    val value = AnnotatedString.fromHtml(property.value)
+    val value = remember(property.value) { productDetailHtmlValue(property.value) }
     Column {
         ProductDetailPropertyCell(
             title = if (property.showTitle && property.title != null) title else value.text,
@@ -684,6 +685,13 @@ private fun ProductDetailOptionalDivider(
         }
         WooDivider(modifier = Modifier.padding(start = startPadding))
     }
+}
+
+internal fun productDetailHtmlValue(html: String): AnnotatedString = try {
+    AnnotatedString.fromHtml(html)
+} catch (_: IllegalArgumentException) {
+    // Compose rejects overlapping paragraph styles, e.g. a list item that starts with an aligned block
+    AnnotatedString(HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_COMPACT).toString())
 }
 
 internal fun productDetailAiAttributionText(
