@@ -98,6 +98,7 @@ import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.isA
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -1140,6 +1141,43 @@ class WooPosTotalsViewModelTest {
 
         // THEN
         verify(mockCardReaderPaymentController).stop()
+    }
+
+    @Test
+    fun `given card collection started, when paid by cash, then card payment is cancelled only once order is paid`() = runTest {
+        // GIVEN
+        givenCardReaderConnectedAndNetworkAvailable()
+        whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_cash, "5.00$"))
+            .thenReturn("Paid 5.00$ in Cash")
+        val parentToChildrenEventFlow = MutableStateFlow<ParentToChildrenEvent>(
+            ParentToChildrenEvent.CheckoutClicked(
+                listOf(
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                )
+            )
+        )
+        val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
+        whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(
+            controllerFactory = factory,
+            parentToChildrenEventFlow = parentToChildrenEventFlow,
+        )
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked)
+
+        // THEN
+        verify(mockCardReaderPaymentController).stop()
+        verify(mockCardReaderPaymentController, never()).onBackPressed()
+
+        // WHEN
+        parentToChildrenEventFlow.value = ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CASH)
+
+        // THEN
+        verify(mockCardReaderPaymentController, times(1)).onBackPressed()
     }
 
     @Test
