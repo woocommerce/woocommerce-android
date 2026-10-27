@@ -20,7 +20,7 @@
     },
     {
       "file": "android/automattic_upload.jks",
-      "destination": "WooCommerce/upload.jks",
+      "destination": "~/.configure/woocommerce-android/secrets/upload.jks",
       "encrypt": true
     },
     {
