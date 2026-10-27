@@ -58,7 +58,7 @@ class HardwareBarcodeScanner @Inject constructor(
     }
 
     private fun String.inferBarcodeFormat(): BarcodeFormat = when {
-        !all { it.isDigit() } || !hasValidGs1CheckDigit() -> BarcodeFormat.FormatUnknown
+        !all { it in '0'..'9' } || !hasValidGs1CheckDigit() -> BarcodeFormat.FormatUnknown
         length == EAN_8_LENGTH -> BarcodeFormat.FormatEAN8
         length == UPC_A_LENGTH -> BarcodeFormat.FormatUPCA
         length == EAN_13_LENGTH -> BarcodeFormat.FormatEAN13
