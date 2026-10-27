@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -14,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CARRIER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SERVICE_STATUS_NOTICE_SHOWN
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -69,6 +71,9 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.CarrierUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOption
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingSortOption
+import com.woocommerce.android.ui.orders.wooshippinglabels.servicestatus.FetchServiceStatusNotices
+import com.woocommerce.android.ui.orders.wooshippinglabels.servicestatus.IsServiceOutageError
+import com.woocommerce.android.ui.orders.wooshippinglabels.servicestatus.ServiceStatusNotice
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -99,11 +104,13 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.parcelize.Parcelize
 import java.io.File
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @SuppressWarnings("LargeClass")
@@ -130,6 +137,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val fetchShippingLabelFile: FetchShippingLabelFile,
     private val observeShippingLabelStatus: ObserveShippingLabelStatus,
     private val downloadAndPrintInvoiceUseCase: DownloadAndPrintInvoiceUseCase,
+    private val fetchServiceStatusNotices: FetchServiceStatusNotices,
+    private val isServiceOutageError: IsServiceOutageError,
     private val analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingLabelCreationFragmentArgs by savedState.navArgs()
@@ -187,6 +196,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val selectedShipmentIndex: Int
         get() = uiState.value.selectedIndex
 
+    private val dismissedServiceStatusNoticeIds = MutableStateFlow<Set<String>>(emptySet())
+    private var serviceStatusRefreshJob: Job? = null
+
     val viewState: MutableStateFlow<WooShippingViewState> = MutableStateFlow(
         WooShippingViewState.Loading(R.string.shipping_label_create_title)
     )
@@ -209,6 +221,40 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         launch { observeCustomsDataChanges() }
         launch { observeNotices() }
         launch { observeShippingLabelAsyncPurchaseStatus() }
+        refreshServiceStatusNotices()
+    }
+
+    private fun refreshServiceStatusNotices(): Job =
+        serviceStatusRefreshJob?.takeIf { it.isActive } ?: launch {
+            fetchServiceStatusNotices().fold(
+                onSuccess = { notices ->
+                    val dismissedIds = dismissedServiceStatusNoticeIds.value
+                    uiState.update { state ->
+                        state.copy(serviceStatusNotices = notices.filterNot { it.id in dismissedIds })
+                    }
+                },
+                onFailure = {
+                    WooLog.w(WooLog.T.SHIPPING_LABELS, "Fetching service status failed: ${it.message}")
+                }
+            )
+        }.also { serviceStatusRefreshJob = it }
+
+    private suspend fun fetchActiveServiceStatusIncident(): ServiceStatusNotice? {
+        withTimeoutOrNull(SERVICE_STATUS_REFRESH_TIMEOUT) { refreshServiceStatusNotices().join() }
+        return uiState.value.serviceStatusNotices
+            .filter { it.severity != ServiceStatusNotice.Severity.INFO }
+            .maxByOrNull { it.severity }
+    }
+
+    fun onServiceStatusNoticeDismissed(noticeId: String) {
+        dismissedServiceStatusNoticeIds.update { it + noticeId }
+        uiState.update { state ->
+            state.copy(serviceStatusNotices = state.serviceStatusNotices.filterNot { it.id == noticeId })
+        }
+    }
+
+    fun onServiceStatusActionClicked(url: String) {
+        triggerEvent(OpenUrl(url))
     }
 
     private suspend fun trackScreenShownEvent() {
@@ -789,6 +835,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
                         updateState(ShippingRatesState.Error(errorMessage))
                         trackShippingRatesLoading(isSuccess = false, error = exception.message)
+                        if (isServiceOutageError(exception)) refreshServiceStatusNotices()
                     }
                 )
             }
@@ -1160,15 +1207,18 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
-    private fun handlePurchaseFailure(
+    private suspend fun handlePurchaseFailure(
         exception: Throwable,
         selectedShipmentIndex: Int,
         selectedAddress: WooShippingAddresses
     ) {
-        updateShipment(
-            selectedShipmentIndex,
-            shipments.value[selectedShipmentIndex].copy(isPurchaseAPILoading = false)
-        )
+        val serviceStatusIncident = try {
+            if (isServiceOutageError(exception)) fetchActiveServiceStatusIncident() else null
+        } finally {
+            shipments.value.getOrNull(selectedShipmentIndex)?.let { shipment ->
+                updateShipment(selectedShipmentIndex, shipment.copy(isPurchaseAPILoading = false))
+            }
+        }
         when (exception) {
             is WooException if exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE -> {
                 analyticsTracker.track(
@@ -1196,17 +1246,34 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 showPurchasePhoneErrorSnackbar(selectedAddress.shipTo)
             }
 
-            else -> {
-                analyticsTracker.track(
-                    AnalyticsEvent.WCS_PURCHASE_STEP,
-                    mapOf(KEY_STATE to "purchase_failed", KEY_ERROR to exception.message)
-                )
-                snackbarData = ShippingLabelsSnackbarData(
-                    message = R.string.woo_shipping_labels_purchase_error,
-                    actionLabel = R.string.retry,
-                ) {
-                    onPurchaseShippingLabel()
-                }
+            else -> showGenericPurchaseFailure(exception, serviceStatusIncident)
+        }
+    }
+
+    private fun showGenericPurchaseFailure(exception: Throwable, serviceStatusIncident: ServiceStatusNotice?) {
+        analyticsTracker.track(
+            AnalyticsEvent.WCS_PURCHASE_STEP,
+            buildMap {
+                put(KEY_STATE, "purchase_failed")
+                put(KEY_ERROR, exception.message)
+                if (serviceStatusIncident != null) put(KEY_SERVICE_STATUS_NOTICE_SHOWN, true)
+            }
+        )
+        snackbarData = if (serviceStatusIncident != null) {
+            ShippingLabelsSnackbarData(
+                message = R.string.woo_shipping_labels_purchase_service_status_error,
+                messageParameters = listOf(serviceStatusIncident.message),
+                duration = SnackbarDuration.Long,
+                actionLabel = R.string.retry,
+            ) {
+                onPurchaseShippingLabel()
+            }
+        } else {
+            ShippingLabelsSnackbarData(
+                message = R.string.woo_shipping_labels_purchase_error,
+                actionLabel = R.string.retry,
+            ) {
+                onPurchaseShippingLabel()
             }
         }
     }
@@ -1539,6 +1606,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val selectedIndex: Int = 0,
         val noticeBannerUiState: NoticeBannerUiState? = null,
         val paperSizeOption: WooShippingLabelPaperSize,
+        val serviceStatusNotices: List<ServiceStatusNotice> = emptyList(),
     )
 
     data class ShippingRatesInfo(
@@ -1616,6 +1684,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         private const val CARRIER_FEDEX = "fedex"
         private const val TOS_STATE_SHOWN = "shown"
         private const val TOS_STATE_ACCEPTED = "accepted"
+        private val SERVICE_STATUS_REFRESH_TIMEOUT = 5.seconds
     }
 }
 
