@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.aisupportchat
 
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
 
 sealed interface AiSupportChatLaunchMode {
@@ -19,6 +20,11 @@ sealed interface AiSupportChatLaunchMode {
     ) : AiSupportChatLaunchMode
 
     data class StoreConnectionError(
+        override val siteAddress: String? = null
+    ) : AiSupportChatLaunchMode
+
+    data class LoginUnexpectedResponse(
+        val failure: LoginUnexpectedResponseFailure,
         override val siteAddress: String? = null
     ) : AiSupportChatLaunchMode
 

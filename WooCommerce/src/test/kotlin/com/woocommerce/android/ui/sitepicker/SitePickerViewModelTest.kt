@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.CONNECT_JETPACK
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseSupport
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker.Action
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
@@ -106,6 +107,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     private val visibleWooSitesDataStore: VisibleWooSitesDataStore = mock()
     private val registerDevice: RegisterDevice = mock()
     private val unexpectedResponseTracker: LoginUnexpectedResponseTracker = mock()
+    private val unexpectedResponseSupport: LoginUnexpectedResponseSupport = mock()
 
     private lateinit var viewModel: SitePickerViewModel
     private lateinit var savedState: SavedStateHandle
@@ -191,6 +193,27 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given the store picker alert, when contacting support, then open support for the selected store`() =
+        testBlocking {
+            val failure = storePickerFailure(LoginUnexpectedResponseFailure.Step.WOO_PLUGIN_CHECK)
+            val site = defaultExpectedSiteList[1]
+            val supportEvent = LoginUnexpectedResponseSupport.OpenAiSupportChat(failure, site.url)
+            whenever(unexpectedResponseSupport.contactSupportEvent(failure, site.url, HelpOrigin.LOGIN_EPILOGUE))
+                .thenReturn(supportEvent)
+            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(WooResult(UNEXPECTED_RESPONSE_ERROR))
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            viewModel.onSiteSelected(site)
+            viewModel.onContinueButtonClick()
+            viewModel.onUnexpectedResponseContactSupportClick()
+
+            assertThat(viewModel.unexpectedResponse.value).isNull()
+            assertThat(viewModel.event.value).isEqualTo(supportEvent)
+            verify(unexpectedResponseTracker).trackActionTapped(failure, Action.CONTACT_SUPPORT)
+        }
+
+    @Test
     fun `given the store picker alert, when dismissing it, then close it and track it`() = testBlocking {
         whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(WooResult(UNEXPECTED_RESPONSE_ERROR))
         whenSitesAreFetched()
@@ -243,7 +266,8 @@ class SitePickerViewModelTest : BaseUnitTest() {
             getWooVisibleSites = getWooVisibleSites,
             visibleWooSitesDataStore = visibleWooSitesDataStore,
             registerDevice = registerDevice,
-            unexpectedResponseTracker = unexpectedResponseTracker
+            unexpectedResponseTracker = unexpectedResponseTracker,
+            unexpectedResponseSupport = unexpectedResponseSupport
         )
     }
 
