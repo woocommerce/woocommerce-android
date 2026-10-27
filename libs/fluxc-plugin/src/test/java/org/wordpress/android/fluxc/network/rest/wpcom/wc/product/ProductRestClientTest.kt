@@ -298,6 +298,67 @@ class ProductRestClientTest {
             )
 
             assertThat(argumentCaptor.firstValue["orderby"]).isEqualTo("id")
+            assertThat(argumentCaptor.firstValue["order"]).isEqualTo("asc")
+        }
+    }
+
+    @Test
+    fun `when variations are fetched with menu order sorting, then orderby menu_order and order asc are used for network call`() {
+        runTest {
+            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductVariationApiResponse>::class.java), any(), any(), any(), any(), any(), any(), anyOrNull())).thenReturn(WPAPIResponse.Success(emptyArray<ProductVariationApiResponse>(), emptyList()))
+            sut.fetchProductVariationsWithSyncRequest(
+                site = site,
+                productId = productId,
+                pageSize = 25,
+                offset = 0,
+                sorting = WCProductStore.VariationSorting.MENU_ORDER
+            )
+            val argumentCaptor = argumentCaptor<MutableMap<String, String>>()
+            verify(wooNetwork).executeGetGsonRequest(
+                any(),
+                any(),
+                clazz = eq(Array<ProductVariationApiResponse>::class.java),
+                params = argumentCaptor.capture(),
+                enableCaching = any(),
+                cacheTimeToLive = any(),
+                forced = any(),
+                requestTimeout = any(),
+                retries = any(),
+                readableBodyCheck = anyOrNull()
+            )
+
+            assertThat(argumentCaptor.firstValue["orderby"]).isEqualTo("menu_order")
+            assertThat(argumentCaptor.firstValue["order"]).isEqualTo("asc")
+        }
+    }
+
+    @Test
+    fun `when variations are fetched newest first, then orderby id and order desc are used for network call`() {
+        runTest {
+            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductVariationApiResponse>::class.java), any(), any(), any(), any(), any(), any(), anyOrNull())).thenReturn(WPAPIResponse.Success(emptyArray<ProductVariationApiResponse>(), emptyList()))
+            sut.fetchProductVariationsWithSyncRequest(
+                site = site,
+                productId = productId,
+                pageSize = 25,
+                offset = 0,
+                sorting = WCProductStore.VariationSorting.ID_DESC
+            )
+            val argumentCaptor = argumentCaptor<MutableMap<String, String>>()
+            verify(wooNetwork).executeGetGsonRequest(
+                any(),
+                any(),
+                clazz = eq(Array<ProductVariationApiResponse>::class.java),
+                params = argumentCaptor.capture(),
+                enableCaching = any(),
+                cacheTimeToLive = any(),
+                forced = any(),
+                requestTimeout = any(),
+                retries = any(),
+                readableBodyCheck = anyOrNull()
+            )
+
+            assertThat(argumentCaptor.firstValue["orderby"]).isEqualTo("id")
+            assertThat(argumentCaptor.firstValue["order"]).isEqualTo("desc")
         }
     }
 
