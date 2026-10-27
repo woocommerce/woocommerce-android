@@ -3,10 +3,12 @@ package com.woocommerce.android.ui.login.sitecredentials
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.WooException
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.applicationpasswords.ApplicationPasswordGenerationException
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -45,6 +47,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
 import org.wordpress.android.fluxc.network.UnexpectedStoreResponseKind
@@ -52,6 +55,8 @@ import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationE
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
@@ -77,6 +82,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         on { login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS) } doReturn Result.success(Unit)
         on { fetchSite(SITE_URL, USERNAME, PASSWORD) } doReturn Result.success(site)
         on { fetchSite(SITE_URL) } doReturn Result.success(site)
+        on { fetchSiteForBrowserLogin(SITE_URL) } doReturn Result.success(site)
         on { getSiteByLocalId(SITE_ID) } doReturn site
         on { checkIfUserIsEligible(site) } doReturn Result.success(true)
         on { checkIfUserIsEligible(persistedSite) } doReturn Result.success(true)
@@ -323,7 +329,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             assertThat(state?.authenticationError?.showWpAdminFallbackOption).isFalse()
             verify(repository).login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS)
             verify(repository, never()).login(eq(originalSiteUrl), any(), any(), any())
-            verify(repository, never()).fetchSite(SITE_URL)
+            verify(repository, never()).fetchSiteForBrowserLogin(SITE_URL)
             verify(repository, never()).fetchSite(SITE_URL, USERNAME, PASSWORD)
             verify(selectedSite, never()).set(any())
             assertThat(viewModel.event.value).isNull()
@@ -807,7 +813,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             }
 
             verify(repository, never()).saveAuthenticationEndpoints(any(), any())
-            verify(repository, times(2)).fetchSite(SITE_URL)
+            verify(repository, times(2)).fetchSiteForBrowserLogin(SITE_URL)
         }
 
     @Test
@@ -821,7 +827,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 hasWooCommerce = true
                 applicationPasswordsAuthorizeUrl = customAuthorizationUrl
             }
-            whenever(repository.fetchSite(SITE_URL)).thenReturn(Result.success(fetchedSite))
+            whenever(repository.fetchSiteForBrowserLogin(SITE_URL)).thenReturn(Result.success(fetchedSite))
             setup(
                 credentialsState().apply {
                     this[LOGIN_ENTRY_URL_STATE_KEY] = loginUrl
@@ -947,7 +953,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
                 .thenReturn(Result.failure(unexpectedResponseError()))
-            whenever(repository.fetchSite(SITE_URL))
+            whenever(repository.fetchSiteForBrowserLogin(SITE_URL))
                 .thenReturn(Result.failure(Exception("503")), Result.success(site))
             setup()
 
@@ -962,7 +968,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             }
 
             assertThat(viewModel.event.value).isInstanceOf(ShowApplicationPasswordTutorialScreen::class.java)
-            verify(repository, times(2)).fetchSite(SITE_URL)
+            verify(repository, times(2)).fetchSiteForBrowserLogin(SITE_URL)
         }
 
     @Test
@@ -970,7 +976,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
                 .thenReturn(Result.failure(unexpectedResponseError()))
-            whenever(repository.fetchSite(SITE_URL)).thenReturn(Result.success(siteWithUrl(SITE_URL)))
+            whenever(repository.fetchSiteForBrowserLogin(SITE_URL)).thenReturn(Result.success(siteWithUrl(SITE_URL)))
             setup()
 
             viewModel.viewState.observeForTesting {
@@ -1171,6 +1177,153 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             )
         }
 
+    @Test
+    fun `given the site check gets an unexpected response, when logging in, then show the alert`() = testBlocking {
+        whenever(repository.fetchSite(SITE_URL, USERNAME, PASSWORD)).thenReturn(Result.failure(siteFetchError()))
+        setup()
+
+        viewModel.viewState.observeForTesting {
+            enterCredentialsAndContinue()
+            advanceUntilIdle()
+        }
+
+        assertThat(viewModel.viewState.value?.unexpectedResponse)
+            .isEqualTo(loginStepFailure(LoginUnexpectedResponseFailure.Step.WOO_PLUGIN_CHECK))
+        assertThat(viewModel.viewState.value?.authenticationError).isNull()
+    }
+
+    @Test
+    fun `given the site check alert, when trying again successfully, then log in and track it`() = testBlocking {
+        whenever(repository.fetchSite(SITE_URL, USERNAME, PASSWORD))
+            .thenReturn(Result.failure(siteFetchError()), Result.success(site))
+        setup()
+
+        viewModel.viewState.observeForTesting {
+            enterCredentialsAndContinue()
+            advanceUntilIdle()
+            viewModel.onUnexpectedResponseRetryClick()
+            advanceUntilIdle()
+        }
+
+        assertThat(viewModel.event.value).isEqualTo(LoggedIn(0))
+        verify(repository, times(1)).login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS)
+        verify(unexpectedResponseTracker).trackRetryResult(
+            loginStepFailure(LoginUnexpectedResponseFailure.Step.WOO_PLUGIN_CHECK),
+            isSuccess = true
+        )
+    }
+
+    @Test
+    fun `given app password generation gets an unexpected response, when logging in, then show the alert`() =
+        testBlocking {
+            val networkError = WPAPINetworkError(BaseNetworkError(GenericErrorType.UNKNOWN)).apply {
+                unexpectedStoreResponse = UNEXPECTED_RESPONSE
+            }
+            whenever(repository.checkIfUserIsEligible(site))
+                .thenReturn(Result.failure(ApplicationPasswordGenerationException(networkError)))
+            setup()
+
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+            }
+
+            assertThat(viewModel.viewState.value?.unexpectedResponse)
+                .isEqualTo(loginStepFailure(LoginUnexpectedResponseFailure.Step.APP_PASSWORD_GENERATION))
+            assertThat(viewModel.event.value).isNull()
+        }
+
+    @Test
+    fun `given the app password alert, when trying again creates the password but the user check fails, then track a success`() =
+        testBlocking {
+            val networkError = WPAPINetworkError(BaseNetworkError(GenericErrorType.UNKNOWN)).apply {
+                unexpectedStoreResponse = UNEXPECTED_RESPONSE
+            }
+            whenever(repository.checkIfUserIsEligible(site)).thenReturn(
+                Result.failure(ApplicationPasswordGenerationException(networkError)),
+                Result.failure(WooException(wooError()))
+            )
+            setup()
+
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+                viewModel.onUnexpectedResponseRetryClick()
+                advanceUntilIdle()
+            }
+
+            verify(unexpectedResponseTracker).trackRetryResult(
+                loginStepFailure(LoginUnexpectedResponseFailure.Step.APP_PASSWORD_GENERATION),
+                isSuccess = true
+            )
+        }
+
+    @Test
+    fun `given the user check gets an unexpected response, when trying again, then check the user again`() =
+        testBlocking {
+            whenever(repository.checkIfUserIsEligible(site))
+                .thenReturn(Result.failure(WooException(wooError())), Result.success(true))
+            setup()
+
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+                assertThat(viewModel.viewState.value?.unexpectedResponse)
+                    .isEqualTo(loginStepFailure(LoginUnexpectedResponseFailure.Step.USER_ROLE_CHECK))
+                viewModel.onUnexpectedResponseRetryClick()
+                advanceUntilIdle()
+            }
+
+            assertThat(viewModel.event.value).isEqualTo(LoggedIn(0))
+            verify(repository, times(2)).checkIfUserIsEligible(site)
+        }
+
+    @Test
+    fun `given browser login, when the user check gets an unexpected response, then show it for the app password flow`() =
+        testBlocking {
+            whenever(repository.checkIfUserIsEligible(site)).thenReturn(Result.failure(WooException(wooError())))
+            setup()
+
+            viewModel.viewState.observeForTesting {
+                viewModel.onStartWebAuthorizationClick()
+                advanceUntilIdle()
+                viewModel.onWebAuthorizationUrlLoaded(WEB_SUCCESS_URL)
+                advanceUntilIdle()
+            }
+
+            assertThat(viewModel.viewState.value?.unexpectedResponse).isEqualTo(
+                loginStepFailure(LoginUnexpectedResponseFailure.Step.USER_ROLE_CHECK, APP_PASSWORD_FLOW)
+            )
+        }
+
+    @Test
+    fun `given the browser login site check fails, when trying again, then open the browser login with the login error`() =
+        testBlocking {
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
+                .thenReturn(Result.failure(cookieNonceError(Nonce.CookieNonceErrorType.INVALID_RESPONSE)))
+            whenever(repository.fetchSiteForBrowserLogin(SITE_URL))
+                .thenReturn(Result.failure(siteFetchError()), Result.success(site))
+            setup()
+
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+                assertThat(viewModel.viewState.value?.unexpectedResponse)
+                    .isEqualTo(
+                        loginStepFailure(
+                            LoginUnexpectedResponseFailure.Step.APP_PASSWORD_AUTHORIZATION_URL,
+                            APP_PASSWORD_FLOW
+                        )
+                    )
+                assertThat(viewModel.viewState.value?.offersBrowserLogin).isFalse()
+                viewModel.onUnexpectedResponseRetryClick()
+                advanceUntilIdle()
+            }
+
+            val event = viewModel.event.value as ShowApplicationPasswordTutorialScreen
+            assertThat(event.errorMessage).isEqualTo(Nonce.CookieNonceErrorType.INVALID_RESPONSE.name)
+        }
+
     private suspend fun setup(
         restoredState: SavedStateHandle? = null,
         siteAddress: String = SITE_URL
@@ -1273,6 +1426,22 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         step = step
     )
 
+    private fun siteFetchError() = OnChangedException(
+        SiteError(type = SiteErrorType.GENERIC_ERROR, unexpectedStoreResponse = UNEXPECTED_RESPONSE)
+    )
+
+    private fun wooError(apiErrorCode: String? = null) = WooError(
+        type = WooErrorType.GENERIC_ERROR,
+        original = GenericErrorType.UNKNOWN,
+        apiErrorCode = apiErrorCode,
+        unexpectedStoreResponse = UNEXPECTED_RESPONSE
+    )
+
+    private fun loginStepFailure(
+        step: LoginUnexpectedResponseFailure.Step,
+        flow: LoginUnexpectedResponseFailure.Flow = LoginUnexpectedResponseFailure.Flow.SITE_CREDENTIALS
+    ) = LoginUnexpectedResponseFailure(flow = flow, step = step, response = UNEXPECTED_RESPONSE)
+
     private companion object {
         const val SITE_ID = 7
         const val SITE_URL = "https://site.example"
@@ -1299,6 +1468,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             CookieNonceAuthenticationEndpoints.AdminBaseVerification.AUTHENTICATED_DASHBOARD
         )
         val PROVEN_ENDPOINTS = CookieNonceAuthenticationEndpoints(SITE_URL, LOGIN_URL, ADMIN_URL)
+        val APP_PASSWORD_FLOW = LoginUnexpectedResponseFailure.Flow.APP_PASSWORD
         val UNEXPECTED_RESPONSE = UnexpectedStoreResponse(
             kind = UnexpectedStoreResponseKind.UNEXPECTED_CONTENT,
             statusCode = 202,

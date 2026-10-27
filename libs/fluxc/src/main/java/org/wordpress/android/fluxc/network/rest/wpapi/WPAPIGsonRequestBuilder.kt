@@ -10,6 +10,10 @@ import java.lang.reflect.Type
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
+/**
+ * With a `readableBodyCheck`, a 2xx body that can't be read into [T], or that fails the check, is an unexpected
+ * store response. Pass `{ true }` to only require a readable body.
+ */
 class WPAPIGsonRequestBuilder @Inject constructor(
     private val httpsUrlNormalizer: HttpsUrlNormalizer,
 ) {
@@ -21,9 +25,13 @@ class WPAPIGsonRequestBuilder @Inject constructor(
         clazz: Class<T>,
         enableCaching: Boolean = false,
         cacheTimeToLive: Int = BaseRequest.DEFAULT_CACHE_LIFETIME,
-        nonce: String? = null
+        nonce: String? = null,
+        readableBodyCheck: ((T) -> Boolean)? = null
     ) = suspendCancellableCoroutine<WPAPIResponse<T>> { cont ->
-        callMethod(Method.GET, url, params, body, clazz, cont, enableCaching, cacheTimeToLive, nonce, restClient)
+        callMethod(
+            Method.GET, url, params, body, clazz, cont, enableCaching, cacheTimeToLive, nonce, restClient,
+            readableBodyCheck
+        )
     }
     suspend fun <T> syncGetRequest(
         restClient: BaseWPAPIRestClient,
@@ -43,9 +51,10 @@ class WPAPIGsonRequestBuilder @Inject constructor(
         url: String,
         body: Map<String, Any> = emptyMap(),
         clazz: Class<T>,
-        nonce: String? = null
+        nonce: String? = null,
+        readableBodyCheck: ((T) -> Boolean)? = null
     ) = suspendCancellableCoroutine<WPAPIResponse<T>> { cont ->
-        callMethod(Method.POST, url, null, body, clazz, cont, false, 0, nonce, restClient)
+        callMethod(Method.POST, url, null, body, clazz, cont, false, 0, nonce, restClient, readableBodyCheck)
     }
 
     suspend fun <T> syncPutRequest(
@@ -80,7 +89,8 @@ class WPAPIGsonRequestBuilder @Inject constructor(
         enableCaching: Boolean,
         cacheTimeToLive: Int,
         nonce: String?,
-        restClient: BaseWPAPIRestClient
+        restClient: BaseWPAPIRestClient,
+        readableBodyCheck: ((T) -> Boolean)? = null
     ) {
         val normalizedUrl = httpsUrlNormalizer.normalize(url).normalizedUrl
         val request = WPAPIGsonRequest(method, normalizedUrl, params, body, clazz, wpApiSuccessListener {
@@ -88,6 +98,7 @@ class WPAPIGsonRequestBuilder @Inject constructor(
         }, { error ->
             cont.resume(Error(error))
         })
+        request.setReadableBodyCheck(readableBodyCheck)
 
         cont.invokeOnCancellation {
             request.cancel()

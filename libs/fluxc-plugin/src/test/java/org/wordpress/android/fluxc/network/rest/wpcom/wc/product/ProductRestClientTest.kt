@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
@@ -274,7 +275,7 @@ class ProductRestClientTest {
     @Test
     fun `when variations are fetched with id sorting, then orderby id is used for network call`() {
         runTest {
-            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductVariationApiResponse>::class.java), any(), any(), any(), any(), any(), any())).thenReturn(WPAPIResponse.Success(emptyArray<ProductVariationApiResponse>(), emptyList()))
+            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductVariationApiResponse>::class.java), any(), any(), any(), any(), any(), any(), anyOrNull())).thenReturn(WPAPIResponse.Success(emptyArray<ProductVariationApiResponse>(), emptyList()))
             sut.fetchProductVariationsWithSyncRequest(
                 site = site,
                 productId = productId,
@@ -292,7 +293,8 @@ class ProductRestClientTest {
                 cacheTimeToLive = any(),
                 forced = any(),
                 requestTimeout = any(),
-                retries = any()
+                retries = any(),
+                readableBodyCheck = anyOrNull()
             )
 
             assertThat(argumentCaptor.firstValue["orderby"]).isEqualTo("id")
@@ -302,7 +304,7 @@ class ProductRestClientTest {
     @Test
     fun `when fetch products called with exact sku search, then correct params is used for network call`() {
         runTest {
-            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductApiResponse>::class.java), any(), any(), any(), any(), any(), any())).thenReturn(WPAPIResponse.Success(null, emptyList()))
+            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductApiResponse>::class.java), any(), any(), any(), any(), any(), any(), anyOrNull())).thenReturn(WPAPIResponse.Success(null, emptyList()))
             sut.fetchProducts(
                 site = site,
                 searchQuery = "test query",
@@ -318,7 +320,8 @@ class ProductRestClientTest {
                 cacheTimeToLive = any(),
                 forced = any(),
                 requestTimeout = any(),
-                retries = any()
+                retries = any(),
+                readableBodyCheck = anyOrNull()
             )
 
             assertThat(argumentCaptor.firstValue.getOrDefault("sku", null)).isEqualTo(
@@ -331,7 +334,7 @@ class ProductRestClientTest {
     @Test
     fun `when fetch products called with partial sku search, then correct params is used for network call`() {
         runTest {
-            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductApiResponse>::class.java), any(), any(), any(), any(), any(), any())).thenReturn(WPAPIResponse.Success(null, emptyList()))
+            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductApiResponse>::class.java), any(), any(), any(), any(), any(), any(), anyOrNull())).thenReturn(WPAPIResponse.Success(null, emptyList()))
             sut.fetchProducts(
                 site = site,
                 searchQuery = "test query",
@@ -347,7 +350,8 @@ class ProductRestClientTest {
                 cacheTimeToLive = any(),
                 forced = any(),
                 requestTimeout = any(),
-                retries = any()
+                retries = any(),
+                readableBodyCheck = anyOrNull()
             )
 
             assertThat(argumentCaptor.firstValue.getOrDefault("search_sku", null)).isEqualTo(
@@ -359,7 +363,7 @@ class ProductRestClientTest {
     @Test
     fun `when fetch products called with the global unique id, then correct params is used for network call`() {
         runTest {
-            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductApiResponse>::class.java), any(), any(), any(), any(), any(), any())).thenReturn(WPAPIResponse.Success(null, emptyList()))
+            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductApiResponse>::class.java), any(), any(), any(), any(), any(), any(), anyOrNull())).thenReturn(WPAPIResponse.Success(null, emptyList()))
             val globalUniqueIdSearchQuery = "test global unique id"
             sut.fetchProducts(
                 site = site,
@@ -375,7 +379,8 @@ class ProductRestClientTest {
                 cacheTimeToLive = any(),
                 forced = any(),
                 requestTimeout = any(),
-                retries = any()
+                retries = any(),
+                readableBodyCheck = anyOrNull()
             )
 
             assertThat(argumentCaptor.firstValue.getOrDefault("global_unique_id", null)).isEqualTo(

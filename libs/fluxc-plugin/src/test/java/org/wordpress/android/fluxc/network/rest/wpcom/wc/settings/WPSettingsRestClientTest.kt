@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -42,7 +43,8 @@ class WPSettingsRestClientTest {
             cacheTimeToLive = any(),
             forced = any(),
             requestTimeout = any(),
-            retries = any()
+            retries = any(),
+            readableBodyCheck = anyOrNull()
         )
     }
 
@@ -67,7 +69,8 @@ class WPSettingsRestClientTest {
                 cacheTimeToLive = any(),
                 forced = any(),
                 requestTimeout = any(),
-                retries = any()
+                retries = any(),
+                readableBodyCheck = anyOrNull()
             )
         ).thenReturn(response)
     }
