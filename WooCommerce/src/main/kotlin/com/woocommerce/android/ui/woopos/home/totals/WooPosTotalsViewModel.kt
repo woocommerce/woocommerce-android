@@ -283,6 +283,8 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.OnBackClicked -> handleBackPress()
 
+            WooPosTotalsUIEvent.OnScreenResumed -> handleScreenResumed()
+
             WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedCouponValidation -> handleEditOrderClicked()
 
             WooPosTotalsUIEvent.OnRemoveCouponsClicked -> handleRemoveCouponsClicked()
@@ -304,6 +306,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun handleCashPaymentClicked() = viewModelScope.launch {
         totalsAnalyticsTracker.trackCashPaymentTapped()
+        cancelPaymentAction()
         childrenToParentEventSender.sendToParent(
             ToCashPayment(dataState.value.orderId)
         )
@@ -316,6 +319,7 @@ class WooPosTotalsViewModel @Inject constructor(
             return@launch
         }
         totalsAnalyticsTracker.trackCheckoutMarkAsPaidTapped()
+        cancelPaymentAction()
         childrenToParentEventSender.sendToParent(ToMarkOrderAsPaid(orderId))
     }
 
@@ -326,7 +330,23 @@ class WooPosTotalsViewModel @Inject constructor(
             return@launch
         }
         totalsAnalyticsTracker.trackCheckoutScanToPayPaymentTapped()
+        cancelPaymentAction()
         childrenToParentEventSender.sendToParent(ToScanToPay(orderId))
+    }
+
+    private fun handleScreenResumed() {
+        if (activePaymentMode != null || isTapToPayPayment) return
+        val state = uiState.value as? WooPosTotalsViewState.Checkout ?: return
+        if (!state.isCardPaymentEnabledForCountry) return
+        viewModelScope.launch {
+            when (effectiveReaderStatusProvider.current()) {
+                WooPosEffectiveReaderStatus.RemoteConnected -> handleRemoteConnected(state, dataState.value)
+                WooPosEffectiveReaderStatus.BluetoothConnected -> handleBluetoothConnected(state, dataState.value)
+                WooPosEffectiveReaderStatus.Connecting,
+                WooPosEffectiveReaderStatus.Reconnecting,
+                WooPosEffectiveReaderStatus.Disconnected -> Unit
+            }
+        }
     }
 
     private fun handleAllPaymentMethodsVisibilityChanged(isVisible: Boolean) {
