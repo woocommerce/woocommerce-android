@@ -487,11 +487,13 @@ class SitePickerViewModel @Inject constructor(
         // Make sure installation is enabled only for selfhosted and atomic sites
         // TODO remove this when we handle non-atomic sites
         val isWooInstallationEnabled = site.isJetpackConnected
+        val errorMessage = resourceProvider.getString(string.login_not_woo_store, site.url)
+        recordShownError(errorMessage)
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = isWooInstallationEnabled,
             primaryBtnText = resourceProvider.getString(string.login_install_woo),
-            noStoresLabelText = resourceProvider.getString(string.login_not_woo_store, site.url),
+            noStoresLabelText = errorMessage,
             noStoresSubText = null,
             isNoStoresBtnVisible = true,
             noStoresBtnText = resourceProvider.getString(string.login_view_connected_stores),
@@ -501,11 +503,13 @@ class SitePickerViewModel @Inject constructor(
 
     private fun loadSimpleWPComView(site: SiteModel) {
         trackNotWooStore(site)
+        val errorMessage = resourceProvider.getString(string.login_simple_wpcom_site, site.url)
+        recordShownError(errorMessage)
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true,
             primaryBtnText = resourceProvider.getString(string.login_view_connected_stores),
-            noStoresLabelText = resourceProvider.getString(string.login_simple_wpcom_site, site.url),
+            noStoresLabelText = errorMessage,
             noStoresSubText = null,
             isNoStoresBtnVisible = false,
             currentSitePickerState = SitePickerState.SimpleWPComState
@@ -721,6 +725,7 @@ class SitePickerViewModel @Inject constructor(
             }
 
             else -> {
+                recordShownError(resourceProvider.getString(string.login_update_required_desc))
                 _isWooUpgradeDialogVisible.value = true
                 UnexpectedResponseStep.WOO_PLUGIN_CHECK
             }
@@ -832,6 +837,9 @@ class SitePickerViewModel @Inject constructor(
             WooErrorType.TIMEOUT -> {
                 analyticsTrackerWrapper.track(
                     stat = AnalyticsEvent.SITE_PICKER_JETPACK_TIMEOUT_ERROR_SHOWN
+                )
+                recordShownError(
+                    resourceProvider.getString(string.login_verifying_site_jetpack_timeout_error_description)
                 )
                 getJetpackTimeoutDialogEvent()
             }
