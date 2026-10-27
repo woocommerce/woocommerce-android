@@ -6,23 +6,7 @@ import org.junit.Test
 
 class ProductVariationTest {
     @Test
-    fun `given different menu orders, when sorting, then variations are sorted by menu order`() {
-        // GIVEN
-        val variations = listOf(
-            variation(variationId = 1, menuOrder = 2),
-            variation(variationId = 2, menuOrder = 0),
-            variation(variationId = 3, menuOrder = 1),
-        )
-
-        // WHEN
-        val sorted = variations.sorted()
-
-        // THEN
-        assertThat(sorted.map { it.remoteVariationId }).containsExactly(2L, 3L, 1L)
-    }
-
-    @Test
-    fun `given variations sharing menu orders, when sorting, then ties are sorted newest first`() {
+    fun `given mixed menu orders, when sorting, then variations are sorted by menu order with ties newest first`() {
         // GIVEN
         val variations = listOf(
             variation(variationId = 1, menuOrder = 1),
