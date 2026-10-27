@@ -4,6 +4,7 @@
 
 26.0
 -----
+- [*] Shipping labels: carrier outage notices from WooCommerce Shipping now show on the label creation screen, and a purchase that fails during an outage explains the incident instead of showing a generic error [https://github.com/woocommerce/woocommerce-android/pull/16778]
 - [*] Fixed a crash on order details that could happen after changing the status of an order paid with a gift card [https://github.com/woocommerce/woocommerce-android/pull/16766]
 - [*] Push notifications for new orders now arrive right after connecting Jetpack from the app [https://github.com/woocommerce/woocommerce-android/pull/16763]
 - [**] Products: Add and edit attributes on all product types. Each attribute has "Visible on product page" and "Used for variations" settings, so you can add attributes that only show on the product page. [https://github.com/woocommerce/woocommerce-android/pull/16727]
