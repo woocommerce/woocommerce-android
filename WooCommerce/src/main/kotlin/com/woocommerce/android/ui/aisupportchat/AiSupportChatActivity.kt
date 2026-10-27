@@ -10,7 +10,9 @@ import androidx.core.view.updatePadding
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActivityAiSupportChatBinding
 import com.woocommerce.android.extensions.doOnApplyWindowInsets
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.parcelableArrayList
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -94,14 +96,28 @@ class AiSupportChatActivity : AppCompatActivity() {
             putSiteAddressExtra(siteAddress)
         }
 
+        fun createLoginUnexpectedResponseIntent(
+            context: Context,
+            failure: LoginUnexpectedResponseFailure,
+            siteAddress: String? = null
+        ): Intent = Intent(context, AiSupportChatActivity::class.java).apply {
+            putExtra(EXTRA_LOGIN_UNEXPECTED_RESPONSE, failure)
+            putSiteAddressExtra(siteAddress)
+        }
+
         fun launchModeFrom(intent: Intent): AiSupportChatLaunchMode {
             val extras = intent.extras ?: return AiSupportChatLaunchMode.Help()
             val checks = extras.parcelableArrayList<ConnectivityCheckCardData>(EXTRA_CONNECTIVITY_CHECKS)
             val siteAddress = extras.getString(EXTRA_SITE_ADDRESS)?.takeIf { it.isNotBlank() }
+            val loginUnexpectedResponse = extras.parcelable<LoginUnexpectedResponseFailure>(
+                EXTRA_LOGIN_UNEXPECTED_RESPONSE
+            )
             return when {
                 !checks.isNullOrEmpty() -> AiSupportChatLaunchMode.ConnectivityTool(checks, siteAddress)
                 extras.getBoolean(EXTRA_STORE_CONNECTION_ERROR, false) ->
                     AiSupportChatLaunchMode.StoreConnectionError(siteAddress)
+                loginUnexpectedResponse != null ->
+                    AiSupportChatLaunchMode.LoginUnexpectedResponse(loginUnexpectedResponse, siteAddress)
                 extras.getBoolean(EXTRA_PRE_LOGIN, false) -> AiSupportChatLaunchMode.PreLogin(siteAddress)
                 extras.containsKey(EXTRA_CHAT_ID) -> AiSupportChatLaunchMode.Resume(
                     chatId = extras.getLong(EXTRA_CHAT_ID),
@@ -122,6 +138,7 @@ class AiSupportChatActivity : AppCompatActivity() {
 
         private const val EXTRA_CONNECTIVITY_CHECKS = "extra_connectivity_checks"
         private const val EXTRA_STORE_CONNECTION_ERROR = "extra_store_connection_error"
+        private const val EXTRA_LOGIN_UNEXPECTED_RESPONSE = "extra_login_unexpected_response"
         private const val EXTRA_PRE_LOGIN = "extra_pre_login"
         private const val EXTRA_CHAT_ID = "extra_chat_id"
         private const val EXTRA_BOT_SLUG = "extra_bot_slug"

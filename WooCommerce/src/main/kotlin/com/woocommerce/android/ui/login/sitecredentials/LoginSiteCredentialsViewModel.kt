@@ -20,11 +20,13 @@ import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseSupport
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure.Flow as UnexpectedResponseFlow
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure.Step as UnexpectedResponseStep
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker
@@ -82,7 +84,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private val appPrefs: AppPrefsWrapper,
     private val resourceProvider: ResourceProvider,
     private val applicationPasswordsConfiguration: ApplicationPasswordsConfiguration,
-    private val unexpectedResponseTracker: LoginUnexpectedResponseTracker
+    private val unexpectedResponseTracker: LoginUnexpectedResponseTracker,
+    private val unexpectedResponseSupport: LoginUnexpectedResponseSupport
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val SITE_ADDRESS_KEY = "site-address"
@@ -154,6 +157,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         key = "unexpected-response"
     )
     private val offersBrowserLogin = savedStateHandle.getStateFlow(viewModelScope, false, BROWSER_LOGIN_ON_FORM_KEY)
+    private val formUnexpectedResponse = savedStateHandle.getNullableStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = LoginUnexpectedResponseFailure::class.java,
+        key = "form-unexpected-response"
+    )
     private val tutorialErrorMessage = savedStateHandle.getNullableStateFlow(
         scope = viewModelScope,
         initialValue = null,
@@ -189,9 +198,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         authError,
         endpointRecovery,
         unexpectedResponse,
-        offersBrowserLogin
+        offersBrowserLogin,
+        formUnexpectedResponse
     ) { siteAddress, username, password, loadingMessage, authenticationError, endpointRecovery, unexpectedResponse,
-        offersBrowserLogin ->
+        offersBrowserLogin, formUnexpectedResponse ->
         ViewState(
             siteUrl = siteAddress,
             username = username,
@@ -200,7 +210,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             authenticationError = authenticationError,
             endpointRecovery = endpointRecovery,
             unexpectedResponse = unexpectedResponse,
-            offersBrowserLogin = offersBrowserLogin
+            offersBrowserLogin = offersBrowserLogin,
+            formUnexpectedResponse = formUnexpectedResponse
         )
     }.asLiveData()
 
@@ -300,6 +311,14 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         launch {
             unexpectedResponseTracker.trackRetryResult(failure, isSuccess = retry(failure.step))
         }
+    }
+
+    fun onUnexpectedResponseContactSupportClick() {
+        val failure = formUnexpectedResponse.value ?: return
+        unexpectedResponseTracker.trackActionTapped(failure, Action.CONTACT_SUPPORT)
+        triggerEvent(
+            unexpectedResponseSupport.contactSupportEvent(failure, siteAddress, HelpOrigin.LOGIN_USERNAME_PASSWORD)
+        )
     }
 
     fun onUnexpectedResponseDismissClick() {
@@ -555,11 +574,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             savedStateHandle.contains(TUTORIAL_AFTER_ALERT_KEY)
         authError.value = null
         unexpectedResponse.value = failure
+        formUnexpectedResponse.value = failure
         unexpectedResponseTracker.trackErrorShown(failure)
     }
 
     private fun clearUnexpectedResponseOptions() {
         offersBrowserLogin.value = false
+        formUnexpectedResponse.value = null
         if (savedStateHandle.remove<ApplicationPasswordTutorial>(TUTORIAL_AFTER_ALERT_KEY) != null) {
             fetchedSiteId.value = -1
         }
@@ -963,7 +984,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         val authenticationError: AuthenticationError? = null,
         val endpointRecovery: EndpointRecovery? = null,
         val unexpectedResponse: LoginUnexpectedResponseFailure? = null,
-        val offersBrowserLogin: Boolean = false
+        val offersBrowserLogin: Boolean = false,
+        val formUnexpectedResponse: LoginUnexpectedResponseFailure? = null
     ) {
         val isValid = username.isNotBlank() && password.isNotBlank()
     }

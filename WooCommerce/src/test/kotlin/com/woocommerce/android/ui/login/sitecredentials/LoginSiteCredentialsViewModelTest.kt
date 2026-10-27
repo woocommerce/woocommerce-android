@@ -13,6 +13,7 @@ import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.WPApiSiteRepository
@@ -21,6 +22,7 @@ import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsView
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.LoggedIn
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowApplicationPasswordsUnavailableScreen
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseSupport
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker.Action
 import com.woocommerce.android.util.getOrAwaitValue
@@ -100,6 +102,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         on { getString(R.string.error_generic) } doReturn "error"
     }
     private val unexpectedResponseTracker: LoginUnexpectedResponseTracker = mock()
+    private val unexpectedResponseSupport: LoginUnexpectedResponseSupport = mock()
     private lateinit var savedState: SavedStateHandle
     private lateinit var viewModel: LoginSiteCredentialsViewModel
 
@@ -990,6 +993,37 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given an unexpected response at the login address recovery, when contacting support, then open support`() =
+        testBlocking {
+            val failure = LOGIN_PAGE_FAILURE.copy(step = LoginUnexpectedResponseFailure.Step.CREDENTIALS_SUBMISSION)
+            val supportEvent = LoginUnexpectedResponseSupport.OpenAiSupportChat(failure, SITE_URL)
+            whenever(
+                unexpectedResponseSupport.contactSupportEvent(failure, SITE_URL, HelpOrigin.LOGIN_USERNAME_PASSWORD)
+            ).thenReturn(supportEvent)
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
+                .thenReturn(Result.failure(cookieNonceError(Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL)))
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, LOGIN_ENDPOINTS)).thenReturn(
+                Result.failure(unexpectedResponseError(step = Nonce.CookieNonceLoginStep.CREDENTIALS_SUBMISSION))
+            )
+            setup()
+
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+                viewModel.onEndpointUrlChanged(LOGIN_URL)
+                viewModel.onContinueClick()
+                advanceUntilIdle()
+                viewModel.onUnexpectedResponseDismissClick()
+                assertThat(viewModel.viewState.value?.formUnexpectedResponse).isEqualTo(failure)
+                viewModel.onUnexpectedResponseContactSupportClick()
+                advanceUntilIdle()
+            }
+
+            assertThat(viewModel.event.value).isEqualTo(supportEvent)
+            verify(unexpectedResponseTracker).trackActionTapped(failure, Action.CONTACT_SUPPORT)
+        }
+
+    @Test
     fun `given the login alert, when trying again successfully, then log in and track it`() =
         testBlocking {
             whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
@@ -1349,7 +1383,8 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 override val applicationName = "woo_android"
                 override suspend fun isEnabledForJetpackAccess() = true
             },
-            unexpectedResponseTracker
+            unexpectedResponseTracker,
+            unexpectedResponseSupport
         )
     }
 
