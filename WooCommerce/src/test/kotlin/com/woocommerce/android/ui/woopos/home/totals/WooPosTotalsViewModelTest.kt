@@ -982,6 +982,23 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
+    fun `given no order draft, when OnCashPaymentClicked, then do not emit navigation event`() = runTest {
+        // GIVEN
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(MutableStateFlow(ParentToChildrenEvent.BackFromCheckoutToCartClicked))
+        }
+        val viewModel = createViewModel(parentToChildrenEventReceiver = parentToChildrenEventReceiver)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked)
+
+        // THEN
+        verify(childrenToParentEventSender, never()).sendToParent(
+            isA<ChildToParentEvent.NavigationEvent.ToCashPayment>(),
+        )
+    }
+
+    @Test
     fun `given order draft created, when OnScanToPayClicked, then track analytic and emit ToScanToPay`() = runTest {
         // GIVEN
         val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
