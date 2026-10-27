@@ -1,9 +1,10 @@
 package com.woocommerce.android.cardreader.internal.payments
 
-import com.stripe.stripeterminal.external.models.CardPresentDetails
+import com.stripe.stripeterminal.external.models.Charge
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.CANCELED
+import com.stripe.stripeterminal.external.models.PaymentMethod
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.CardReaderStore.PreparePaymentResponse
@@ -191,7 +192,7 @@ internal class PaymentManager(
     private suspend fun FlowCollector<CardPaymentStatus>.retrieveReceiptUrl(
         paymentIntent: PaymentIntent
     ): String? {
-        return paymentIntent.getCharges().takeIf { it.isNotEmpty() }?.get(0)?.receiptUrl ?: run {
+        return paymentIntent.latestCharge?.receiptUrl ?: run {
             emit(PaymentFailed(Generic, null, "ReceiptUrl not available"))
             null
         }
@@ -362,22 +363,26 @@ internal class PaymentManager(
 
     private fun isInteracPayment(paymentIntent: PaymentIntent): Boolean {
         return paymentIntent.paymentMethod?.interacPresentDetails != null ||
-            paymentIntent.getCharges().firstOrNull()?.paymentMethodDetails?.interacPresentDetails != null
+            paymentIntent.latestCharge?.paymentMethodDetails?.interacPresentDetails != null
     }
 
     private fun isEftposAuPayment(paymentIntent: PaymentIntent): Boolean {
         return paymentIntent.paymentMethod?.cardPresentDetails?.canProcessAsEftposAu() == true ||
-            paymentIntent.getCharges().firstOrNull()
+            paymentIntent.latestCharge
                 ?.paymentMethodDetails
                 ?.cardPresentDetails
                 ?.canProcessAsEftposAu() == true
     }
 
-    private fun CardPresentDetails.canProcessAsEftposAu(): Boolean {
-        return brand?.equals(EFTPOS_AU_NETWORK, ignoreCase = true) == true ||
-            network?.equals(EFTPOS_AU_NETWORK, ignoreCase = true) == true ||
-            networks?.available?.any { it.equals(EFTPOS_AU_NETWORK, ignoreCase = true) } == true
+    private fun PaymentMethod.CardPresent.canProcessAsEftposAu(): Boolean {
+        return brand.isEftposAuNetwork() || networks?.available?.any { it.isEftposAuNetwork() } == true
     }
+
+    private fun Charge.CardPresent.canProcessAsEftposAu(): Boolean {
+        return brand.isEftposAuNetwork() || network.isEftposAuNetwork()
+    }
+
+    private fun String?.isEftposAuNetwork() = this?.equals(EFTPOS_AU_NETWORK, ignoreCase = true) == true
 
     private fun isSingleStepTerminalPaymentSuccessful(paymentIntent: PaymentIntent): Boolean {
         return paymentIntent.status == PaymentIntentStatus.SUCCEEDED &&
@@ -385,7 +390,7 @@ internal class PaymentManager(
     }
 
     private fun determinePaymentMethodType(paymentIntent: PaymentIntent): PaymentMethodType {
-        val charge = paymentIntent.getCharges().firstOrNull()
+        val charge = paymentIntent.latestCharge
         return when {
             paymentIntent.paymentMethod?.interacPresentDetails != null -> PaymentMethodType.INTERAC_PRESENT
             paymentIntent.paymentMethod?.cardPresentDetails != null -> PaymentMethodType.CARD_PRESENT

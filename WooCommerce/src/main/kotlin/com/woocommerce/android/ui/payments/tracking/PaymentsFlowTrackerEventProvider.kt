@@ -5,6 +5,8 @@ import com.woocommerce.android.model.Order
 
 @Suppress("VariableNaming")
 interface PaymentsFlowTrackerEventProvider {
+    fun onPaymentCapturing() = Unit
+
     val CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED: IAnalyticsEvent
     val CARD_PRESENT_ONBOARDING_COMPLETED: IAnalyticsEvent
     val CARD_PRESENT_ONBOARDING_NOT_COMPLETED: IAnalyticsEvent

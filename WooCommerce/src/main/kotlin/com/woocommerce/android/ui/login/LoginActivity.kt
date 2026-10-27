@@ -695,12 +695,6 @@ class LoginActivity :
         ChromeCustomTabUtils.launchUrl(this, url.slashJoin(FORGOT_PASSWORD_URL_SUFFIX))
     }
 
-    override fun needs2fa(email: String?, password: String?) {
-        loginAnalyticsListener.trackLogin2faNeeded()
-        val login2FaFragment = Login2FaFragment.newInstance(email, password)
-        changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
-    }
-
     override fun needs2fa(
         email: String?,
         password: String?,
@@ -747,9 +741,21 @@ class LoginActivity :
         changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
-    override fun needs2faSocialConnect(email: String?, password: String?, idToken: String?, service: String?) {
+    override fun needs2faSocialConnect(
+        email: String?,
+        password: String?,
+        idToken: String?,
+        service: String?,
+        supportedAuthTypes: List<String>
+    ) {
         loginAnalyticsListener.trackLoginSocial2faNeeded()
-        val login2FaFragment = Login2FaFragment.newInstanceSocialConnect(email, password, idToken, service)
+        val login2FaFragment = Login2FaFragment.newInstanceSocialConnect(
+            email,
+            password,
+            idToken,
+            service,
+            supportedAuthTypes
+        )
         changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 

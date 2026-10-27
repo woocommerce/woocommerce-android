@@ -239,6 +239,9 @@ class WooPosCardPaymentViewModel @Inject constructor(
         }
         analyticsTrackerJob?.cancel()
         analyticsTrackerJob = viewModelScope.launch {
+            launch {
+                analyticsTracker.trackReaderReadyForCardInput(cardReaderPaymentController?.readerReadyForCardInput)
+            }
             analyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState)
         }
     }

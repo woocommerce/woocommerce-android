@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
+import com.stripe.stripeterminal.external.models.CaptureMethod
 import com.stripe.stripeterminal.external.models.CardPresentParameters
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
@@ -54,6 +55,7 @@ internal class CreatePaymentAction(
             .setAmount(amountInSmallestCurrencyUnit)
             .setCurrency(paymentInfo.currency)
             .setMetadata(createMetaData(paymentInfo))
+            .setCaptureMethod(CaptureMethod.Manual)
         with(paymentInfo) {
             customerEmail?.takeIf { it.isNotEmpty() }?.let {
                 if (!isPluginCanSendReceipt) builder.setReceiptEmail(it)

@@ -573,6 +573,17 @@
         "Dark": "{Colors.White}"
       },
       "$type": "color"
+    },
+    "Color": {
+      "Icon-Container": {
+        "Sandstone": {
+          "$value": {
+            "Light": "{Colors.Sandstone.Sandstone 10}",
+            "Dark": "{Colors.Sandstone.Sandstone 80}"
+          },
+          "$type": "color"
+        }
+      }
     }
   },
   "Spacing": {
@@ -1407,6 +1418,14 @@
       },
       "Sandstone-5": {
         "$value": "#fbf9f6",
+        "$type": "color"
+      },
+      "Sandstone-80": {
+        "$value": "#3d3c39",
+        "$type": "color"
+      },
+      "Sandstone-90": {
+        "$value": "#2a2926",
         "$type": "color"
       }
     },

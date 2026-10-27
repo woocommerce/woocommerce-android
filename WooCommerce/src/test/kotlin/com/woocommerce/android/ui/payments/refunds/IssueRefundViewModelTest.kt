@@ -50,6 +50,8 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         private const val OTHER_ORDER_ITEM_ID = 7L
         private const val PRODUCT_ID = 11L
         private const val TAX_RATE_ID = 1L
+        private const val SHIPPING_LINE_ID = 8L
+        private const val FEE_LINE_ID = 9L
     }
 
     private val orderStore: WCOrderStore = mock()
@@ -655,9 +657,93 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             assertThat(item.totalTax).isEqualByComparingTo("0.17")
         }
 
-    private suspend fun givenOrder(items: List<Order.Item>, maxRefund: BigDecimal): OrderMapper {
+    @Test
+    fun `given less is left to refund than the selected items, when selecting all, then products refund shows what is left`() =
+        testBlocking {
+            // GIVEN
+            val orderMapper = givenOrder(items = listOf(givenOrderItem()), maxRefund = BigDecimal("5.00"))
+
+            // WHEN
+            initViewModel(orderMapper)
+            viewModel.viewState.getOrAwaitValue()
+            viewModel.onSelectButtonTapped()
+
+            // THEN
+            val viewState = viewModel.viewState.getOrAwaitValue()
+            assertThat(viewState.productsSection.productsRefund).isEqualByComparingTo("5.00")
+            assertThat(viewState.grandTotalRefund).isEqualByComparingTo("5.00")
+        }
+
+    @Test
+    fun `given less is left to refund than products, shipping and fees, when selecting all, then sections add up to the title`() =
+        testBlocking {
+            // GIVEN
+            val orderMapper = givenOrder(
+                items = listOf(givenOrderItem()),
+                maxRefund = BigDecimal("8.00"),
+                shippingLines = listOf(givenShippingLine()),
+                feesLines = listOf(givenFeeLine())
+            )
+
+            // WHEN
+            initViewModel(orderMapper)
+            viewModel.viewState.getOrAwaitValue()
+            viewModel.onShippingRefundMainSwitchChanged(true)
+            viewModel.onFeesRefundMainSwitchChanged(true)
+            viewModel.onSelectButtonTapped()
+
+            // THEN
+            val viewState = viewModel.viewState.getOrAwaitValue()
+            val sectionsTotal = viewState.productsSection.productsRefund +
+                viewState.shippingSection.shippingRefund +
+                viewState.feesSection.feesRefund
+            assertThat(viewState.grandTotalRefund).isEqualByComparingTo("8.00")
+            assertThat(sectionsTotal).isEqualByComparingTo("8.00")
+            assertThat(viewState.shippingSection.shippingRefund).isLessThan(BigDecimal("5.25"))
+            assertThat(viewState.feesSection.feesRefund).isLessThan(BigDecimal("2.00"))
+        }
+
+    @Test
+    fun `given less is left to refund than the selected items, when next is tapped, then summary refunds the lines shown`() =
+        testBlocking {
+            // GIVEN
+            val orderMapper = givenOrder(
+                items = listOf(givenOrderItem()),
+                maxRefund = BigDecimal("8.00"),
+                shippingLines = listOf(givenShippingLine()),
+                feesLines = listOf(givenFeeLine())
+            )
+            initViewModel(orderMapper)
+            viewModel.viewState.getOrAwaitValue()
+            viewModel.onShippingRefundMainSwitchChanged(true)
+            viewModel.onFeesRefundMainSwitchChanged(true)
+            viewModel.onSelectButtonTapped()
+            val viewState = viewModel.viewState.getOrAwaitValue()
+
+            // WHEN
+            viewModel.onNextButtonTappedFromItems()
+
+            // THEN
+            val event = viewModel.event.getOrAwaitValue() as IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
+            val lines = event.refundItems.toRefundLines(event.refundAmount, decimals = 2)
+            assertThat(event.refundAmount).isEqualByComparingTo(viewState.grandTotalRefund)
+            assertThat(lines.map { it.total }).usingElementComparator(BigDecimal::compareTo).containsExactly(
+                viewState.productsSection.productsRefund,
+                viewState.shippingSection.shippingRefund,
+                viewState.feesSection.feesRefund
+            )
+        }
+
+    private suspend fun givenOrder(
+        items: List<Order.Item>,
+        maxRefund: BigDecimal,
+        shippingLines: List<Order.ShippingLine> = emptyList(),
+        feesLines: List<Order.FeeLine> = emptyList()
+    ): OrderMapper {
         val order = OrderTestUtils.generateTestOrder(refundTotal = BigDecimal.ZERO).copy(
             items = items,
+            shippingLines = shippingLines,
+            feesLines = feesLines,
             total = maxRefund
         )
         val orderEntity = OrderTestUtils.generateOrder()
@@ -675,6 +761,17 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         totalTax = BigDecimal("0.50"),
         taxes = listOf(Order.LineTaxEntry(rateId = TAX_RATE_ID, taxAmount = BigDecimal("0.50")))
     )
+
+    private fun givenShippingLine() = Order.ShippingLine(
+        itemId = SHIPPING_LINE_ID,
+        methodId = "flat_rate",
+        methodTitle = "Flat rate",
+        totalTax = BigDecimal("0.25"),
+        total = BigDecimal("5.00"),
+        taxes = listOf(Order.LineTaxEntry(rateId = TAX_RATE_ID, taxAmount = BigDecimal("0.25")))
+    )
+
+    private fun givenFeeLine() = Order.FeeLine.EMPTY.copy(id = FEE_LINE_ID, total = BigDecimal("2.00"))
 
     private fun givenUnitRefund(refundId: Long, orderItemId: Long = ORDER_ITEM_ID) = WCRefundModel(
         id = refundId,

@@ -1,0 +1,48 @@
+# Smoke Test: Orders - New order push notification
+# p2: orders.push.arrives, orders.push.deep-link
+# P2 ref: Orders > Verify Push notification arrives, opening it opens the correct order
+#
+# The runner logs in, then creates an order through the REST API and passes its
+# number and total. The real push from WordPress.com names the total, which no
+# other order in the run has, so the flow can pick this order's notification.
+appId: com.woocommerce.android
+name: "Orders - New order push notification"
+tags:
+  - smoke_extended
+  - orders
+  - destructive
+  - push_new_order
+---
+- assertTrue:
+    condition: ${PUSH_ORDER_NUMBER != ""}
+    label: "The runner created the order for the push"
+
+- pressKey: HOME
+
+- swipe:
+    start: "50%,1%"
+    end: "50%,70%"
+    duration: 600
+    label: "Open the notification shade"
+
+# "." stands for the currency symbol, which a ${...} script can't contain.
+- extendedWaitUntil:
+    visible: ".*New order for .${PUSH_ORDER_TOTAL} on .*"
+    timeout: 90000
+    label: "Wait for this order's push notification"
+
+- takeScreenshot: orders_push_notification
+
+- tapOn:
+    text: ".*New order for .${PUSH_ORDER_TOTAL} on .*"
+    label: "Open the push notification"
+
+- extendedWaitUntil:
+    visible: "Order #${PUSH_ORDER_NUMBER}"
+    timeout: 30000
+    label: "The push opens this order"
+
+- assertVisible:
+    id: "orderDetail_container"
+
+- takeScreenshot: orders_push_notification_order

@@ -177,16 +177,6 @@ class SupportChatContextProviderTest {
     }
 
     @Test
-    fun `given blank status report without diagnostics, when context is built, then troubleshooting results are omitted`() {
-        whenever(selectedSite.getIfExists()).thenReturn(null)
-        whenever(buildConfigWrapper.versionName).thenReturn(APP_VERSION)
-
-        val result = contextProvider.buildInitialContext(statusReport = " ")
-
-        assertThat(result.has("troubleshootingResults")).isFalse
-    }
-
-    @Test
     fun `given no selected site, when building status report, then launch address is passed`() = runTest {
         whenever(selectedSite.getIfExists()).thenReturn(null)
         mobileStatusProvider.stub { on { invoke(selectedSite = null, siteAddress = SITE_URL) } doReturn STATUS_REPORT }

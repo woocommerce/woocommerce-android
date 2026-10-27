@@ -36,14 +36,12 @@ interface CardReaderManager {
     val connectionTokenProvider: CompositeConnectionTokenProvider
 
     fun initialize(
-        updateFrequency: SimulatorUpdateFrequency,
         useInterac: Boolean,
         useEftpos: Boolean,
         isDebug: Boolean,
     )
 
     fun reinitializeSimulatedTerminal(
-        updateFrequency: SimulatorUpdateFrequency,
         useInterac: Boolean,
         useEftpos: Boolean,
     )

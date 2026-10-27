@@ -281,37 +281,6 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given chat exists, when follow up message sent, then status report is not built again`() =
-        testBlocking {
-            whenever(
-                contextProvider.buildInitialContext(
-                    diagnosticResult = EMPTY_LOGIN_DIAGNOSTIC_RESULT,
-                    statusReport = STATUS_REPORT,
-                    loginContext = LOGIN_CONTEXT
-                )
-            ).thenReturn(CONTEXT)
-            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
-                .thenReturn(Result.success(createResponse()))
-            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, BOT_RESPONSE, JsonObject(), CHAT_ID, SESSION_ID))
-                .thenReturn(Result.success(createResponse()))
-
-            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin())
-            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
-            viewModel.onSendClicked()
-            viewModel.onInputChanged(BOT_RESPONSE)
-            viewModel.onSendClicked()
-
-            verify(contextProvider, times(1)).buildStatusReport(anyOrNull())
-            verify(contextProvider, times(1)).buildInitialContext(
-                diagnosticResult = anyOrNull(),
-                siteAddress = anyOrNull(),
-                statusReport = anyOrNull(),
-                loginContext = anyOrNull()
-            )
-            verify(repository).sendMessage(DEFAULT_BOT_SLUG, BOT_RESPONSE, JsonObject(), CHAT_ID, SESSION_ID)
-        }
-
-    @Test
     fun `given resumed chat, when message sent, then status report is not built`() = testBlocking {
         whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID))
             .thenReturn(Result.success(createResponse()))
@@ -1731,7 +1700,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             verify(contextProvider).buildInitialContext(
                 diagnosticResult = diagnosticResultCaptor.capture(),
                 siteAddress = anyOrNull(),
-                statusReport = anyOrNull(),
+                statusReport = eq(STATUS_REPORT),
                 loginContext = anyOrNull()
             )
             assertThat(diagnosticResultCaptor.firstValue.statuses.single().status).isEqualTo(

@@ -38,6 +38,9 @@ class CardReaderPaymentErrorMapper @Inject constructor(
 
             CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.InvalidAppSetup ->
                 PaymentFlowError.BuiltInReader.InvalidAppSetup
+
+            CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.InsecureEnvironment ->
+                PaymentFlowError.BuiltInReader.InsecureEnvironment
         }
 
     @Suppress("ComplexMethod")

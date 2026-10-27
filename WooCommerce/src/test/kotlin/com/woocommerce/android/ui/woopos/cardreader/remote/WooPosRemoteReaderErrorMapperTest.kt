@@ -29,6 +29,22 @@ class WooPosRemoteReaderErrorMapperTest {
     }
 
     @Test
+    fun `given an insecure environment error, when mapping, then the phone settings copy is used`() {
+        // GIVEN
+        whenever(resourceProvider.getString(R.string.woopos_remote_reader_failed_insecure_environment))
+            .thenReturn("turn off phone settings")
+
+        // WHEN
+        val message = mapper.toUserMessage(
+            error = CardReaderRemoteError.InsecureEnvironment,
+            fallback = R.string.woopos_remote_payment_failed_generic,
+        )
+
+        // THEN
+        assertThat(message).isEqualTo("turn off phone settings")
+    }
+
+    @Test
     fun `given an nfc disabled error, when mapping, then the actionable copy is used`() {
         // GIVEN
         whenever(resourceProvider.getString(R.string.woopos_remote_reader_failed_nfc_disabled))
