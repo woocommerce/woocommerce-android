@@ -2779,6 +2779,19 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given the only incident banner was dismissed, when purchase fails with an outage error, then still show the incident`() =
+        testBlocking {
+            whenever(fetchServiceStatusNotices()) doReturn Result.success(listOf(upsDegradedNotice))
+
+            whenPurchaseFailsWith(WooException(outageError)) {
+                sut.onServiceStatusNoticeDismissed(upsDegradedNotice.id)
+            }
+
+            assertThat(serviceStatusNotices).isEmpty()
+            assertThat(sut.snackbarData?.messageParameters).containsExactly(upsDegradedNotice.message)
+        }
+
+    @Test
     fun `given active incidents, when the connect server is unreachable, then show the incident in the snackbar`() =
         testBlocking {
             whenever(fetchServiceStatusNotices()) doReturn Result.success(listOf(uspsOutageNotice))

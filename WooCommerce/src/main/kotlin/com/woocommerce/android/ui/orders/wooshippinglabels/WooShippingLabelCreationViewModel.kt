@@ -196,6 +196,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val selectedShipmentIndex: Int
         get() = uiState.value.selectedIndex
 
+    private val fetchedServiceStatusNotices = MutableStateFlow<List<ServiceStatusNotice>>(emptyList())
     private val dismissedServiceStatusNoticeIds = MutableStateFlow<Set<String>>(emptySet())
     private var serviceStatusRefreshJob: Job? = null
 
@@ -228,6 +229,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         serviceStatusRefreshJob?.takeIf { it.isActive } ?: launch {
             fetchServiceStatusNotices().fold(
                 onSuccess = { notices ->
+                    fetchedServiceStatusNotices.value = notices
                     val dismissedIds = dismissedServiceStatusNoticeIds.value
                     uiState.update { state ->
                         state.copy(serviceStatusNotices = notices.filterNot { it.id in dismissedIds })
@@ -241,7 +243,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     private suspend fun fetchActiveServiceStatusIncident(): ServiceStatusNotice? {
         withTimeoutOrNull(SERVICE_STATUS_REFRESH_TIMEOUT) { refreshServiceStatusNotices().join() }
-        return uiState.value.serviceStatusNotices
+        return fetchedServiceStatusNotices.value
             .filter { it.severity != ServiceStatusNotice.Severity.INFO }
             .maxByOrNull { it.severity }
     }
