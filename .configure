@@ -15,7 +15,7 @@
     },
     {
       "file": "android/debug.keystore",
-      "destination": "~/.configure/woocommerce-android/secrets/debug_a8c.keystore",
+      "destination": "~/.configure/woocommerce-android/secrets/debug.keystore",
       "encrypt": true
     },
     {
