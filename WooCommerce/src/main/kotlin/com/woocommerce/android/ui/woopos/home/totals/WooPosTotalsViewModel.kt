@@ -181,18 +181,20 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             effectiveReaderStatusProvider.flow
                 .combine(dataState) { effective, data -> effective to data }
-                .collect { (effective, data) ->
-                    if (isTapToPayPayment) return@collect
-                    val state = uiState.value as? WooPosTotalsViewState.Checkout ?: return@collect
-                    if (!state.isCardPaymentEnabledForCountry) return@collect
-                    when (effective) {
-                        WooPosEffectiveReaderStatus.RemoteConnected -> handleRemoteConnected(state, data)
-                        WooPosEffectiveReaderStatus.BluetoothConnected -> handleBluetoothConnected(state, data)
-                        WooPosEffectiveReaderStatus.Connecting,
-                        WooPosEffectiveReaderStatus.Disconnected -> handleReaderDisconnected(state)
-                        WooPosEffectiveReaderStatus.Reconnecting -> Unit
-                    }
-                }
+                .collect { (effective, data) -> handleReaderStatus(effective, data) }
+        }
+    }
+
+    private suspend fun handleReaderStatus(effective: WooPosEffectiveReaderStatus, data: TotalsDataState) {
+        if (isTapToPayPayment) return
+        val state = uiState.value as? WooPosTotalsViewState.Checkout ?: return
+        if (!state.isCardPaymentEnabledForCountry) return
+        when (effective) {
+            WooPosEffectiveReaderStatus.RemoteConnected -> handleRemoteConnected(state, data)
+            WooPosEffectiveReaderStatus.BluetoothConnected -> handleBluetoothConnected(state, data)
+            WooPosEffectiveReaderStatus.Connecting,
+            WooPosEffectiveReaderStatus.Disconnected -> handleReaderDisconnected(state)
+            WooPosEffectiveReaderStatus.Reconnecting -> Unit
         }
     }
 
@@ -330,18 +332,8 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun handleScreenResumed() {
-        if (activePaymentMode != null || isTapToPayPayment) return
-        val state = uiState.value as? WooPosTotalsViewState.Checkout ?: return
-        if (!state.isCardPaymentEnabledForCountry) return
-        viewModelScope.launch {
-            when (effectiveReaderStatusProvider.current()) {
-                WooPosEffectiveReaderStatus.RemoteConnected -> handleRemoteConnected(state, dataState.value)
-                WooPosEffectiveReaderStatus.BluetoothConnected -> handleBluetoothConnected(state, dataState.value)
-                WooPosEffectiveReaderStatus.Connecting,
-                WooPosEffectiveReaderStatus.Reconnecting,
-                WooPosEffectiveReaderStatus.Disconnected -> Unit
-            }
-        }
+        if (activePaymentMode != null) return
+        viewModelScope.launch { handleReaderStatus(effectiveReaderStatusProvider.current(), dataState.value) }
     }
 
     private fun handleAllPaymentMethodsVisibilityChanged(isVisible: Boolean) {
