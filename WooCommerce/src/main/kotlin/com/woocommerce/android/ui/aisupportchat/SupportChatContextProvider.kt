@@ -56,8 +56,9 @@ class SupportChatContextProvider @Inject constructor(
     suspend fun buildRecentAppLogs(keepStoreResponseExcerpts: Boolean): String? = withContext(dispatchers.io) {
         val now = clock.millis()
         val since = Date(now - RECENT_LOGS_PERIOD_MS)
+        val year = Calendar.getInstance().apply { timeInMillis = now }.get(Calendar.YEAR)
         val lines = wooLog.getCurrentLogEntries()
-            .filter { it.level in RECENT_LOG_LEVELS && !it.dateInYearOf(now).before(since) }
+            .filter { it.level in RECENT_LOG_LEVELS && !it.dateInYear(year).before(since) }
             .takeLast(MAX_RECENT_LOG_LINES)
             .map { it.toCleanedLine(keepStoreResponseExcerpts) }
             .newestWithin(MAX_RECENT_LOGS_LENGTH)
@@ -147,13 +148,11 @@ class SupportChatContextProvider @Inject constructor(
             .replace(SECRET_PATTERN, "[redacted]")
 
     // The log file doesn't store the year, so entries read back from today's file are dated 1970.
-    private fun LogEntry.dateInYearOf(now: Long): Date {
-        val year = Calendar.getInstance().apply { timeInMillis = now }.get(Calendar.YEAR)
-        return Calendar.getInstance().apply {
+    private fun LogEntry.dateInYear(year: Int): Date =
+        Calendar.getInstance().apply {
             time = logDate
             set(Calendar.YEAR, year)
         }.time
-    }
 
     // Multi-line entries are stack traces; their first line names the exception.
     private fun LogEntry.toCleanedLine(keepStoreResponseExcerpts: Boolean): String {
