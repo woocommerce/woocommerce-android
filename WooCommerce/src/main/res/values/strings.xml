@@ -857,6 +857,7 @@
          Barcode Scanning
     -->
     <string name="barcode_scanning_title">Scan Barcode</string>
+    <string name="barcode_scanning_hardware_scanner_no_enter_suffix">Scan not finished. Set your scanner to send Enter after each barcode.</string>
     <string name="barcode_scanning_alert_dialog_title">Grant Camera Permission</string>
     <string name="barcode_scanning_alert_dialog_rationale_message">Camera permission is required in order to scan the barcode</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_message">You have permanently denied Camera permission. It is required in order to scan the barcode. Please enable it from the app settings</string>

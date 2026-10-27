@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
+import com.woocommerce.android.ui.barcodescanner.BarcodeInputDetector
 
 sealed class WooPosCartUIEvent {
     data object CheckoutClicked : WooPosCartUIEvent()

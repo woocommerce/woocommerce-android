@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.scanningsetup
 import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
+import com.woocommerce.android.ui.barcodescanner.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupState.Companion.TEST_BARCODE_EAN13
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupState.ScanningSetupStep

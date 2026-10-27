@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
+import com.woocommerce.android.ui.barcodescanner.listenForBarcodes
 
 /**
  * Root modifier for the POS home screen (both tablet and phone layouts).
