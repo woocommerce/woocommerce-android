@@ -8,6 +8,9 @@ import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.plus
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import javax.inject.Inject
@@ -20,6 +23,9 @@ class HardwareBarcodeScanner @Inject constructor(
     currentTimeProvider: CurrentTimeProvider,
 ) {
     private var onBarcodeScanned: ((CodeScannerStatus.Success) -> Unit)? = null
+
+    private val _scansWithoutEnterSuffix = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val scansWithoutEnterSuffix: SharedFlow<Unit> = _scansWithoutEnterSuffix.asSharedFlow()
 
     private val detector = BarcodeInputDetector(
         onBarcodeEvent = ::onBarcodeEvent,
@@ -53,7 +59,16 @@ class HardwareBarcodeScanner @Inject constructor(
             is BarcodeInputDetector.BarcodeResult.Success -> onBarcodeScanned?.invoke(
                 CodeScannerStatus.Success(code = result.barcode, format = result.barcode.inferBarcodeFormat())
             )
-            is BarcodeInputDetector.BarcodeResult.Error -> Unit
+            is BarcodeInputDetector.BarcodeResult.Error -> onBarcodeError(result)
+        }
+    }
+
+    private fun onBarcodeError(error: BarcodeInputDetector.BarcodeResult.Error) {
+        when (error.failureReason) {
+            BarcodeInputDetector.FailureReason.NO_TERMINATOR -> if (error.barcode.length >= MIN_SKU_LENGTH) {
+                _scansWithoutEnterSuffix.tryEmit(Unit)
+            }
+            BarcodeInputDetector.FailureReason.TOO_SHORT -> Unit
         }
     }
 
