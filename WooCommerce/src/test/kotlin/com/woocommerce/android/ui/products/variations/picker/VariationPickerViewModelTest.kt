@@ -59,13 +59,14 @@ class VariationPickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when view model is initiated, then variations are fetched with the variation list paging`() = testBlocking {
+    fun `when view model is initiated, then only allowed variations are fetched with the variation list paging`() = testBlocking {
         // THEN
         verify(variationListHandler).fetchVariations(
             productId = navArgs.productId,
             forceRefresh = true,
             sorting = VariationListPaging.SORTING,
-            pageSize = VariationListPaging.PAGE_SIZE
+            pageSize = VariationListPaging.PAGE_SIZE,
+            includedVariationIds = listOf(34L, 56L)
         )
     }
 

@@ -64,7 +64,8 @@ class VariationPickerViewModel @Inject constructor(
                 productId = navArgs.productId,
                 forceRefresh = true,
                 sorting = VariationListPaging.SORTING,
-                pageSize = VariationListPaging.PAGE_SIZE
+                pageSize = VariationListPaging.PAGE_SIZE,
+                includedVariationIds = allowedVariations.toList()
             )
             loadingState.value = LoadingState.IDLE
         }

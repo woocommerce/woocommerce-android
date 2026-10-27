@@ -34,12 +34,14 @@ class VariationSelectorRepository @Inject constructor(
         filterOptions: Map<VariationFilterOption, String>? = null,
         orderCurrency: String? = null,
         sorting: VariationSorting,
+        includedVariationIds: List<Long> = emptyList(),
     ): Result<Boolean> {
         return productStore.fetchProductVariations(
             selectedSite.get(),
             productId,
             offset,
             pageSize,
+            includedVariationIds = includedVariationIds,
             filterOptions = filterOptions,
             orderCurrency = orderCurrency,
             sorting = sorting

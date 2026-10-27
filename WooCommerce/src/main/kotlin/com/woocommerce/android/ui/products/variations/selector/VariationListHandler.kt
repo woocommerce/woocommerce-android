@@ -16,6 +16,7 @@ class VariationListHandler @Inject constructor(private val repository: Variation
     private var canLoadMore = false
     private var pageSize = DEFAULT_PAGE_SIZE
     private var sorting = VariationSorting.MENU_ORDER
+    private var includedVariationIds = emptyList<Long>()
 
     fun getVariationsFlow(productId: Long) = repository.observeVariations(productId)
 
@@ -37,11 +38,13 @@ class VariationListHandler @Inject constructor(private val repository: Variation
         orderCurrency: String? = null,
         sorting: VariationSorting = VariationSorting.MENU_ORDER,
         pageSize: Int = DEFAULT_PAGE_SIZE,
+        includedVariationIds: List<Long> = emptyList(),
     ): Result<Unit> = mutex.withLock {
         // Reset the offset
         offset = 0
         this.sorting = sorting
         this.pageSize = pageSize
+        this.includedVariationIds = includedVariationIds
 
         if (forceRefresh) {
             loadVariations(productId, filterOptions, orderCurrency)
@@ -70,7 +73,8 @@ class VariationListHandler @Inject constructor(private val repository: Variation
             pageSize,
             filterOptions,
             orderCurrency = orderCurrency,
-            sorting = sorting
+            sorting = sorting,
+            includedVariationIds = includedVariationIds
         ).onSuccess {
             canLoadMore = it
             offset += pageSize

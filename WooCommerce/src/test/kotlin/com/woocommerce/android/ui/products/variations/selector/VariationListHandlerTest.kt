@@ -10,6 +10,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.WCProductStore.VariationSorting
@@ -36,7 +37,8 @@ class VariationListHandlerTest : BaseUnitTest() {
                 pageSize = eq(DEFAULT_PAGE_SIZE),
                 filterOptions = anyOrNull(),
                 orderCurrency = anyOrNull(),
-                sorting = eq(VariationSorting.MENU_ORDER)
+                sorting = eq(VariationSorting.MENU_ORDER),
+                includedVariationIds = eq(emptyList())
             )
         }
 
@@ -61,7 +63,8 @@ class VariationListHandlerTest : BaseUnitTest() {
                 pageSize = eq(PAGE_SIZE),
                 filterOptions = anyOrNull(),
                 orderCurrency = anyOrNull(),
-                sorting = eq(VariationSorting.ID_DESC)
+                sorting = eq(VariationSorting.ID_DESC),
+                includedVariationIds = eq(emptyList())
             )
         }
 
@@ -87,9 +90,38 @@ class VariationListHandlerTest : BaseUnitTest() {
                 pageSize = eq(PAGE_SIZE),
                 filterOptions = anyOrNull(),
                 orderCurrency = anyOrNull(),
-                sorting = eq(VariationSorting.ID_DESC)
+                sorting = eq(VariationSorting.ID_DESC),
+                includedVariationIds = eq(emptyList())
             )
         }
+
+    @Test
+    fun `given included variation ids, when loading more, then every page is limited to them`() = testBlocking {
+        // GIVEN
+        givenPageResults(listOf(PAGE_WITH_MORE, LAST_PAGE))
+        sut.fetchVariations(
+            PRODUCT_ID,
+            forceRefresh = true,
+            pageSize = PAGE_SIZE,
+            includedVariationIds = INCLUDED_VARIATION_IDS
+        )
+
+        // WHEN
+        sut.loadMore(PRODUCT_ID)
+
+        // THEN
+        val captor = argumentCaptor<List<Long>>()
+        verify(repository, times(2)).fetchVariations(
+            any(),
+            any(),
+            any(),
+            anyOrNull(),
+            anyOrNull(),
+            any(),
+            captor.capture()
+        )
+        assertThat(captor.allValues).containsOnly(INCLUDED_VARIATION_IDS)
+    }
 
     @Test
     fun `given the last page was loaded, when loading more, then no page is requested`() = testBlocking {
@@ -134,7 +166,7 @@ class VariationListHandlerTest : BaseUnitTest() {
     }
 
     private suspend fun givenPageResults(results: List<Result<Boolean>>) {
-        whenever(repository.fetchVariations(any(), any(), any(), anyOrNull(), anyOrNull(), any()))
+        whenever(repository.fetchVariations(any(), any(), any(), anyOrNull(), anyOrNull(), any(), any()))
             .thenReturn(results.first(), *results.drop(1).toTypedArray())
     }
 
@@ -146,6 +178,7 @@ class VariationListHandlerTest : BaseUnitTest() {
             any(),
             anyOrNull(),
             anyOrNull(),
+            any(),
             any()
         )
         return captor.allValues
@@ -158,5 +191,6 @@ class VariationListHandlerTest : BaseUnitTest() {
         val PAGE_WITH_MORE = Result.success(true)
         val LAST_PAGE = Result.success(false)
         val FAILED_PAGE = Result.failure<Boolean>(Exception())
+        val INCLUDED_VARIATION_IDS = listOf(1L, 2L)
     }
 }
