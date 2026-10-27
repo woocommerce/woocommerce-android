@@ -14,6 +14,15 @@ class SensitiveDataSanitizerTest {
     }
 
     @Test
+    fun `given secrets with spaces around the equals sign, after punctuation or with commas, when sanitizing, then their values are redacted`() {
+        val text = "password = hunter2 Credentials(token=abc123) secret=abc,def"
+
+        val result = SensitiveDataSanitizer.sanitize(text)
+
+        assertThat(result).isEqualTo("password = [redacted] Credentials(token=[redacted] secret=[redacted]")
+    }
+
+    @Test
     fun `given secrets after a colon, when sanitizing, then their values are redacted`() {
         val text = "password: hunter2, API Key: \"abc def\", access_token:xyz"
 

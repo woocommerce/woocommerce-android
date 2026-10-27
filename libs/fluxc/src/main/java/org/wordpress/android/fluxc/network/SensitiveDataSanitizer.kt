@@ -12,10 +12,7 @@ object SensitiveDataSanitizer {
             .replace(JSON_SECRET_REGEX) { matchResult ->
                 "${matchResult.groupValues[1]}[redacted]${matchResult.groupValues[2]}"
             }
-            .replace(KEY_VALUE_SECRET_REGEX) { matchResult ->
-                "${matchResult.groupValues[1]}${matchResult.groupValues[2]}[redacted]"
-            }
-            .replace(COLON_SECRET_REGEX) { matchResult ->
+            .replace(SECRET_VALUE_REGEX) { matchResult ->
                 "${matchResult.groupValues[1]}[redacted]"
             }
             // PHP prints the arguments of each call in a stack trace, like the password passed to a login hook.
@@ -36,10 +33,7 @@ object SensitiveDataSanitizer {
         """("(?:$SECRET_KEYS)"\s*:\s*")[^"]*(")""",
         RegexOption.IGNORE_CASE
     )
-    private val KEY_VALUE_SECRET_REGEX = Regex(
-        """(?i)(^|[?&;\s])((?:$SECRET_KEYS)=)[^&;\s,"'}]+"""
-    )
-    private val COLON_SECRET_REGEX = Regex("""(?i)\b((?:$SECRET_KEYS)\s*:\s*)(?:"[^"]*"|\S+)""")
+    private val SECRET_VALUE_REGEX = Regex("""(?i)\b((?:$SECRET_KEYS)\s*[:=]\s*)(?:"[^"]*"|\S+)""")
     private val STACK_TRACE_REGEX = Regex("""Stack trace:.*""", RegexOption.DOT_MATCHES_ALL)
     private val QUOTED_ARGUMENT_REGEX = Regex("""'(?:[^'\\]|\\.)*'""")
 }
