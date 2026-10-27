@@ -257,13 +257,14 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.OnStartReceiptFlowClicked -> handleEmailReceiptClicked()
 
-            WooPosTotalsUIEvent.OnCashPaymentClicked -> handleCashPaymentClicked()
+            WooPosTotalsUIEvent.OnCashPaymentClicked -> handleOtherPaymentMethodClicked(OtherPaymentMethod.CASH)
 
             WooPosTotalsUIEvent.OnTapToPayClicked -> startTapToPayPayment()
 
-            WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked -> handleMarkOrderAsPaidClicked()
+            WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked ->
+                handleOtherPaymentMethodClicked(OtherPaymentMethod.MARK_ORDER_AS_PAID)
 
-            WooPosTotalsUIEvent.OnScanToPayClicked -> handleScanToPayClicked()
+            WooPosTotalsUIEvent.OnScanToPayClicked -> handleOtherPaymentMethodClicked(OtherPaymentMethod.SCAN_TO_PAY)
 
             is WooPosTotalsUIEvent.OnFineLocationPermissionResult ->
                 onFineLocationPermissionResult(event.granted)
@@ -304,34 +305,28 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
-    private fun handleCashPaymentClicked() = viewModelScope.launch {
-        totalsAnalyticsTracker.trackCashPaymentTapped()
-        cancelPaymentAction()
-        childrenToParentEventSender.sendToParent(
-            ToCashPayment(dataState.value.orderId)
-        )
-    }
-
-    private fun handleMarkOrderAsPaidClicked() = viewModelScope.launch {
+    private fun handleOtherPaymentMethodClicked(method: OtherPaymentMethod) = viewModelScope.launch {
         val orderId = dataState.value.orderId
         if (orderId == EMPTY_ORDER_ID) {
-            wooPosLogWrapper.e("Mark order as complete tapped before order draft was created")
+            wooPosLogWrapper.e("$method tapped before order draft was created")
             return@launch
         }
-        totalsAnalyticsTracker.trackCheckoutMarkAsPaidTapped()
+        // The card reader must not take a card while the order is being paid another way.
         cancelPaymentAction()
-        childrenToParentEventSender.sendToParent(ToMarkOrderAsPaid(orderId))
-    }
-
-    private fun handleScanToPayClicked() = viewModelScope.launch {
-        val orderId = dataState.value.orderId
-        if (orderId == EMPTY_ORDER_ID) {
-            wooPosLogWrapper.e("Scan to pay tapped before order draft was created")
-            return@launch
+        when (method) {
+            OtherPaymentMethod.CASH -> {
+                totalsAnalyticsTracker.trackCashPaymentTapped()
+                childrenToParentEventSender.sendToParent(ToCashPayment(orderId))
+            }
+            OtherPaymentMethod.SCAN_TO_PAY -> {
+                totalsAnalyticsTracker.trackCheckoutScanToPayPaymentTapped()
+                childrenToParentEventSender.sendToParent(ToScanToPay(orderId))
+            }
+            OtherPaymentMethod.MARK_ORDER_AS_PAID -> {
+                totalsAnalyticsTracker.trackCheckoutMarkAsPaidTapped()
+                childrenToParentEventSender.sendToParent(ToMarkOrderAsPaid(orderId))
+            }
         }
-        totalsAnalyticsTracker.trackCheckoutScanToPayPaymentTapped()
-        cancelPaymentAction()
-        childrenToParentEventSender.sendToParent(ToScanToPay(orderId))
     }
 
     private fun handleScreenResumed() {
@@ -1248,5 +1243,11 @@ class WooPosTotalsViewModel @Inject constructor(
     private enum class PaymentMode {
         BLUETOOTH,
         REMOTE,
+    }
+
+    private enum class OtherPaymentMethod {
+        CASH,
+        SCAN_TO_PAY,
+        MARK_ORDER_AS_PAID,
     }
 }
