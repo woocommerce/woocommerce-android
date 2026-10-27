@@ -687,7 +687,7 @@ private fun ProductDetailOptionalDivider(
     }
 }
 
-internal fun productDetailHtmlValue(html: String): AnnotatedString = try {
+private fun productDetailHtmlValue(html: String): AnnotatedString = try {
     AnnotatedString.fromHtml(html)
 } catch (_: IllegalArgumentException) {
     // Compose rejects overlapping paragraph styles, e.g. a list item that starts with an aligned block
