@@ -239,6 +239,15 @@ class SupportChatContextProviderTest {
     }
 
     @Test
+    fun `given an error with a password and a line break, when building login context, then it is cleaned`() {
+        whenever(unifiedLoginTracker.lastShownError).thenReturn("Wrong password=hunter2\nTry again")
+
+        val loginContext = contextProvider.buildLoginContext()
+
+        assertThat(loginContext.lines().last()).isEqualTo("Last error shown: Wrong password=[redacted] Try again")
+    }
+
+    @Test
     fun `given no login state, when building login context, then it has only the header`() {
         val loginContext = contextProvider.buildLoginContext()
 

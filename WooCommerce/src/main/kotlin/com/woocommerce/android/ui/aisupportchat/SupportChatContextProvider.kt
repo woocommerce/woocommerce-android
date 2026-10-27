@@ -44,12 +44,8 @@ class SupportChatContextProvider @Inject constructor(
             "# Login context",
             unifiedLoginTracker.getFlow()?.let { "Login flow: ${it.value}" },
             unifiedLoginTracker.stepBeforeHelp?.let { "Login step: ${it.value}" },
-            unifiedLoginTracker.enteredSiteAddress?.let {
-                "Site address entered: ${it.withoutPersonalData().take(MAX_ERROR_LENGTH)}"
-            },
-            unifiedLoginTracker.lastShownError?.let {
-                "Last error shown: ${it.withoutPersonalData().take(MAX_ERROR_LENGTH)}"
-            }
+            unifiedLoginTracker.enteredSiteAddress?.let { "Site address entered: ${it.toCleanedLoginValue()}" },
+            unifiedLoginTracker.lastShownError?.let { "Last error shown: ${it.toCleanedLoginValue()}" }
         ).joinToString("\n")
 
     // The unexpected response chat already sends the store response excerpt with its details.
@@ -146,6 +142,9 @@ class SupportChatContextProvider @Inject constructor(
         replace(EMAIL_PATTERN, "[email]")
             .replace(QUERY_PATTERN, "?[redacted]")
             .replace(SECRET_PATTERN, "[redacted]")
+
+    private fun String.toCleanedLoginValue(): String =
+        SensitiveDataSanitizer.sanitize(this).withoutPersonalData().take(MAX_ERROR_LENGTH)
 
     // The log file doesn't store the year, so entries read back from today's file are dated 1970.
     private fun LogEntry.dateInYear(year: Int): Date =
