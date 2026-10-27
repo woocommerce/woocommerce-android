@@ -1,6 +1,6 @@
 package org.wordpress.android.fluxc.network
 
-internal object SensitiveDataSanitizer {
+object SensitiveDataSanitizer {
     fun sanitize(value: String?): String {
         return value.orEmpty()
             .replace(BEARER_TOKEN_REGEX, "Bearer [redacted]")
