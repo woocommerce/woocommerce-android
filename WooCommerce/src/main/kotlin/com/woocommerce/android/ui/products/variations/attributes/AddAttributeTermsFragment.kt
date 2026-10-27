@@ -491,7 +491,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         checkViews()
 
         // the term is added at the end, matching the draft, so scroll to it to keep it in view
-        binding.assignedTermList.scrollToPosition(assignedTermsAdapter.itemCount - 1)
+        binding.assignedTermList.smoothScrollToPosition(assignedTermsAdapter.itemCount - 1)
     }
 
     private fun showSkeleton(show: Boolean) {
