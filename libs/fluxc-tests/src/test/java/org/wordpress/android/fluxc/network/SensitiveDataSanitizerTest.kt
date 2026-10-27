@@ -41,6 +41,15 @@ class SensitiveDataSanitizerTest {
     }
 
     @Test
+    fun `given an invisible character inside a secret key, when sanitizing, then the value is redacted`() {
+        val text = "pass​word=hunter2"
+
+        val result = SensitiveDataSanitizer.sanitize(text)
+
+        assertThat(result).isEqualTo("password=[redacted]")
+    }
+
+    @Test
     fun `given text without secrets, when sanitizing, then it is kept`() {
         val text = "Checking WooCommerce API version failed for site 257941494"
 
