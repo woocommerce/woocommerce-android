@@ -63,7 +63,6 @@ class UnifiedLoginTracker
     }
 
     fun trackFailure(error: String?) {
-        error?.let { onErrorShown(it) }
         if (currentFlow != null && currentStep != null) {
             currentFlow.let {
                 analyticsTracker.track(
