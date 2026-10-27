@@ -171,7 +171,7 @@ class SitePickerViewModel @Inject constructor(
 
     private fun showPendingErrorMessageIfNeeded() {
         if (pendingErrorMessage != 0) {
-            triggerEvent(ShowSnackbar(pendingErrorMessage))
+            showErrorSnackbar(pendingErrorMessage)
         }
     }
 
@@ -188,7 +188,7 @@ class SitePickerViewModel @Inject constructor(
                     sitePickerViewState = sitePickerViewState.copy(userInfo = getUserInfo())
                 },
                 onFailure = {
-                    triggerEvent(ShowSnackbar(string.error_fetch_my_profile))
+                    showErrorSnackbar(string.error_fetch_my_profile)
                 }
             )
         }
@@ -225,7 +225,7 @@ class SitePickerViewModel @Inject constructor(
         sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
 
         when {
-            result.isError -> triggerEvent(ShowSnackbar(string.site_picker_error))
+            result.isError -> showErrorSnackbar(string.site_picker_error)
             result.model != null -> {
                 if (result.model!!.any { it.isJetpackCPConnected }) {
                     analyticsTrackerWrapper.track(
@@ -463,7 +463,7 @@ class SitePickerViewModel @Inject constructor(
                 }
             },
             onFailure = {
-                triggerEvent(ShowSnackbar(string.site_picker_error))
+                showErrorSnackbar(string.site_picker_error)
                 loginSiteAddress = null
                 loadAndDisplaySites()
             }
@@ -713,7 +713,7 @@ class SitePickerViewModel @Inject constructor(
                         if (navArgs.openedFromLogin && unexpectedStoreResponse != null) {
                             showUnexpectedResponse(UnexpectedResponseStep.USER_ROLE_CHECK, unexpectedStoreResponse)
                         } else {
-                            triggerEvent(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
+                            showErrorSnackbar(R.string.user_role_access_error_fetch_failed)
                         }
                     }
                 )
@@ -785,6 +785,16 @@ class SitePickerViewModel @Inject constructor(
         )
         _unexpectedResponse.value = failure
         unexpectedResponseTracker.trackErrorShown(failure)
+        recordShownError(resourceProvider.getString(R.string.login_unexpected_response_title))
+    }
+
+    private fun showErrorSnackbar(@StringRes message: Int) {
+        recordShownError(resourceProvider.getString(message))
+        triggerEvent(ShowSnackbar(message))
+    }
+
+    private fun recordShownError(message: String) {
+        if (navArgs.openedFromLogin) unifiedLoginTracker.onErrorShown(message)
     }
 
     private fun getSelectedWooSite(): SiteModel? {
@@ -826,10 +836,13 @@ class SitePickerViewModel @Inject constructor(
                 getJetpackTimeoutDialogEvent()
             }
 
-            else -> ShowSnackbar(
-                message = string.login_verifying_site_error,
-                args = arrayOf(site.getSiteName())
-            )
+            else -> {
+                recordShownError(resourceProvider.getString(string.login_verifying_site_error, site.getSiteName()))
+                ShowSnackbar(
+                    message = string.login_verifying_site_error,
+                    args = arrayOf(site.getSiteName())
+                )
+            }
         }
         triggerEvent(event)
     }
@@ -913,7 +926,7 @@ class SitePickerViewModel @Inject constructor(
                     onSitesLoaded(repository.getSites(), isApiResponse = false)
                 },
                 onFailure = {
-                    triggerEvent(ShowSnackbar(string.site_picker_error))
+                    showErrorSnackbar(string.site_picker_error)
                     // This would lead to the [WooNotFoundState] again
                     // The chance of getting this state is small, because of the retry mechanism above
                     onSitesLoaded(repository.getSites(), isApiResponse = false)
