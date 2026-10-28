@@ -135,6 +135,21 @@ class CookieNonceAuthenticatorTest {
     }
 
     @Test
+    fun `given invalid credentials, when making a protected request, then preserve the invalid credentials code`() = test {
+        val site = site()
+        whenever(nonceClient.getNonce(SITE_URL, USERNAME)).thenReturn(null)
+        whenever(nonceClient.requestNonce(CookieNonceAuthenticationEndpoints.from(site), USERNAME, PASSWORD))
+            .thenReturn(nonceFailure(type = Nonce.CookieNonceErrorType.INVALID_CREDENTIALS))
+
+        val actual = subject.makeAuthenticatedWPAPIRequest(site) {
+            WPAPIResponse.Success("unexpected", emptyList())
+        }
+
+        val error = assertIs<WPAPIResponse.Error<*>>(actual).error
+        assertEquals(CookieNonceAuthenticator.INVALID_CREDENTIALS_ERROR_CODE, error.errorCode)
+    }
+
+    @Test
     fun `given cached nonce gets 401 and refresh fails, when making a protected request, then call REST once`() = test {
         val site = site()
         whenever(nonceClient.getNonce(SITE_URL, USERNAME)).thenReturn(Nonce.Available(OLD_NONCE, USERNAME))
@@ -178,13 +193,14 @@ class CookieNonceAuthenticatorTest {
 
     private fun nonceFailure(
         loginEntryVerified: Boolean = false,
+        type: Nonce.CookieNonceErrorType = Nonce.CookieNonceErrorType.CUSTOM_ADMIN_URL,
         networkError: WPAPINetworkError = WPAPINetworkError(
             BaseNetworkError(VolleyError(NetworkResponse(404, byteArrayOf(), true, 0, emptyList())))
         )
     ) = Nonce.FailedRequest(
         timeOfResponse = 1L,
         username = USERNAME,
-        type = Nonce.CookieNonceErrorType.CUSTOM_ADMIN_URL,
+        type = type,
         networkError = networkError,
         loginEntryVerified = loginEntryVerified
     )
