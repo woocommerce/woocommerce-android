@@ -2,8 +2,6 @@
 
 During development, adding a string in the [`values/strings.xml`](../WooCommerce/src/main/res/values/strings.xml) resource and using it in the code or layout file should be enough.
 
-**Important:** `plurals` are not supported at the moment. Use `StringUtils::getQuantityString` method.
-
 ```xml
 <!-- strings.xml -->
 <string name="orderdetail_shipping_details">Shipping details</string>
@@ -84,20 +82,19 @@ Also consider adding information about what the placeholders are in the `name`.
 
 ## Pluralization
 
-GlotPress currently does not support pluralization using [Quantity strings](https://developer.android.com/guide/topics/resources/string-resource.html#Plurals). So, right now, you have to support plurals manually by creating separate strings.
+Use [Quantity strings](https://developer.android.com/guide/topics/resources/string-resource.html#Plurals) (`plurals`) for text that depends on a count. GlotPress translates them with each language's own plural forms.
 
 ```xml
-<string name="product_downloadable_files_value_multiple">%1$d files</string>
-    <string name="product_downloadable_files_value_single">1 file</string>
+<plurals name="order_refunds_items_selected_count">
+    <item quantity="one">%d item selected</item>
+    <item quantity="other">%d items selected</item>
+</plurals>
 ```
 
 ```kotlin
-val message = if (downloadableFileCount == 1) {
-    context.getString(string.product_downloadable_files_value_single)
-} else {
-    String.format(
-            context.getString(string.product_downloadable_files_value_multiple),
-            downloadableFileCount
-    )
-}
+// Compose
+pluralStringResource(R.plurals.order_refunds_items_selected_count, count, count)
+
+// ViewModel
+resourceProvider.getPluralString(R.plurals.order_refunds_items_selected_count, count, count)
 ```
