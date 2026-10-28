@@ -2,8 +2,6 @@ package com.woocommerce.android.ui.products.variations
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import org.wordpress.android.fluxc.store.WCProductStore
-import org.wordpress.android.fluxc.store.WCProductStore.VariationSorting
 import javax.inject.Inject
 
 class VariationListPaginationHandler @Inject constructor(private val repository: VariationRepository) {
@@ -26,15 +24,11 @@ class VariationListPaginationHandler @Inject constructor(private val repository:
         return repository.fetchProductVariationsPage(
             remoteProductId = remoteProductId,
             offset = offset,
-            pageSize = PAGE_SIZE,
-            sorting = VariationSorting.MENU_ORDER
+            pageSize = VariationListPaging.PAGE_SIZE,
+            sorting = VariationListPaging.SORTING
         ).onSuccess {
             canLoadMore = it
-            nextOffset = offset + PAGE_SIZE
+            nextOffset = offset + VariationListPaging.PAGE_SIZE
         }.map { }
-    }
-
-    private companion object {
-        const val PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_VARIATIONS_PAGE_SIZE
     }
 }

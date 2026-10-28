@@ -20,6 +20,8 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseKind
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import java.util.Date
@@ -226,6 +228,35 @@ class ApplicationPasswordManagerTests {
             )
 
             Assert.assertEquals(ApplicationPasswordCreationResult.NotSupported(networkError), result)
+        }
+
+    @Test
+    fun `when a non-jetpack site returns a 404 page, then return failure`() =
+        runTest {
+            val site = testSite.apply {
+                origin = SiteModel.ORIGIN_XMLRPC
+                username = testCredentials.userName
+                password = "password"
+            }
+            val networkError = BaseNetworkError(VolleyError(NetworkResponse(404, null, true, 0, emptyList()))).apply {
+                unexpectedStoreResponse = UnexpectedStoreResponse(
+                    kind = UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE,
+                    statusCode = 404,
+                    contentType = "text/html",
+                    requestType = "POST /wp-json/wp/v2/users/me/application-passwords",
+                    excerpt = null
+                )
+            }
+
+            whenever(applicationPasswordsStore.getCredentials(testSite)).thenReturn(null)
+            whenever(mWpApiApplicationPasswordsRestClient.createApplicationPassword(site, applicationName))
+                .thenReturn(ApplicationPasswordCreationPayload(networkError))
+
+            val result = mApplicationPasswordsManager.getApplicationCredentials(
+                testSite
+            )
+
+            assertEquals(ApplicationPasswordCreationResult.Failure(networkError), result)
         }
 
     @Test

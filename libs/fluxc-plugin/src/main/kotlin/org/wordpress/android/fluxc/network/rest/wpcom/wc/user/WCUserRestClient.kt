@@ -22,7 +22,8 @@ class WCUserRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
             site = site,
             path = url,
             params = params,
-            clazz = UserApiResponse::class.java
+            clazz = UserApiResponse::class.java,
+            readableBodyCheck = { it.roles != null }
         ).toWooPayload()
     }
 

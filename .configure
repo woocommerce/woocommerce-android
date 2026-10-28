@@ -15,12 +15,12 @@
     },
     {
       "file": "android/debug.keystore",
-      "destination": "~/.configure/woocommerce-android/secrets/debug_a8c.keystore",
+      "destination": "~/.configure/woocommerce-android/secrets/debug.keystore",
       "encrypt": true
     },
     {
       "file": "android/automattic_upload.jks",
-      "destination": "WooCommerce/upload.jks",
+      "destination": "~/.configure/woocommerce-android/secrets/upload.jks",
       "encrypt": true
     },
     {

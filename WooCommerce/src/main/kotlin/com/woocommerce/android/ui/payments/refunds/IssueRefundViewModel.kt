@@ -249,10 +249,9 @@ class IssueRefundViewModel @Inject constructor(
             refundItems = items,
             productsRefund = totalRefund,
             formattedProductsRefund = formatCurrency(totalRefund),
-            selectedItemsHeader = resourceProvider.getString(
-                R.string.order_refunds_items_selected,
-                items.sumOf { it.quantity }
-            ),
+            selectedItemsHeader = items.sumOf { it.quantity }.let { quantity ->
+                resourceProvider.getPluralString(R.plurals.order_refunds_items_selected_count, quantity, quantity)
+            },
             selectButtonTitle = if (items.areAllItemsSelected()) {
                 resourceProvider.getString(R.string.order_refunds_items_select_none)
             } else {

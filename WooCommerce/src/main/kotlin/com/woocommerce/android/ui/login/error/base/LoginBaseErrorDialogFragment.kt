@@ -56,6 +56,7 @@ abstract class LoginBaseErrorDialogFragment : DialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        unifiedLoginTracker.onErrorShown(text.toString())
         return ComposeView(requireActivity()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 

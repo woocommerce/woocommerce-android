@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResp
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatSupportArea
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
@@ -30,6 +31,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -82,6 +84,7 @@ class AiSupportChatViewModel @Inject constructor(
             is AiSupportChatLaunchMode.PreLogin -> startFromPreLogin()
             is AiSupportChatLaunchMode.ConnectivityTool -> startFromConnectivityTool(launchMode.checks)
             is AiSupportChatLaunchMode.StoreConnectionError -> startFromStoreConnectionError()
+            is AiSupportChatLaunchMode.LoginUnexpectedResponse -> startFromLoginUnexpectedResponse(launchMode.failure)
             is AiSupportChatLaunchMode.Resume -> resumeChat(launchMode)
         }
     }
@@ -397,6 +400,7 @@ class AiSupportChatViewModel @Inject constructor(
             it.copy(
                 input = "",
                 messages = listOf(greetingMessage()),
+                loginContext = AiSupportChatLoginContext.DuringLogin(contextProvider.buildLoginContext()),
                 hasStartedChat = true,
                 hasProceededToChat = true,
                 canPersistChatHistory = false,
@@ -413,7 +417,7 @@ class AiSupportChatViewModel @Inject constructor(
                 messages = listOf(greetingMessage()),
                 selectedIssueType = SupportIssueType.OTHER,
                 diagnosticResult = result,
-                connectivityDiagnosticLog = checks.toConnectivityDiagnosticLog(),
+                diagnosticLog = checks.toConnectivityDiagnosticLog(),
                 hasProceededToChat = true,
                 canPersistChatHistory = accountRepository.isUserLoggedIn(),
                 showSendError = false
@@ -446,6 +450,33 @@ class AiSupportChatViewModel @Inject constructor(
         }
         launch {
             sendMessage(resourceProvider.getString(R.string.ai_support_chat_store_connection_error_message))
+        }
+    }
+
+    private fun startFromLoginUnexpectedResponse(failure: LoginUnexpectedResponseFailure) {
+        val result = DiagnosticResult(
+            issueType = SupportIssueType.OTHER,
+            statuses = listOf(
+                DiagnosticStatus(
+                    test = DiagnosticTest.STORE_CONNECTION,
+                    status = TestStatus.Failed(technicalDetails = failure.supportDetails)
+                )
+            )
+        )
+        _viewState.update {
+            it.copy(
+                input = resourceProvider.getString(R.string.ai_support_chat_login_unexpected_response_message),
+                messages = listOf(greetingMessage()),
+                selectedIssueType = SupportIssueType.OTHER,
+                diagnosticResult = result,
+                diagnosticLog = failure.supportDetails,
+                loginContext = AiSupportChatLoginContext.DuringLogin(contextProvider.buildLoginContext()),
+                launchExtraTags = listOf(LoginUnexpectedResponseFailure.SUPPORT_TAG),
+                hasProceededToChat = true,
+                hasStartedChat = true,
+                canPersistChatHistory = accountRepository.isUserLoggedIn(),
+                showSendError = false
+            )
         }
     }
 
@@ -551,7 +582,8 @@ class AiSupportChatViewModel @Inject constructor(
         val state = _viewState.value
         if (message.isBlank() || state.isSending || !state.canSendMessages) return
         val chatId = state.chatId
-        val hasDiagnosticsContext = chatId == null && state.diagnosticResult != null
+        val hasDiagnosticsContext = chatId == null &&
+            (state.diagnosticResult != null || state.loginContext is AiSupportChatLoginContext.DuringLogin)
         analyticsTracker.trackMessageSent(
             entryPoint = state.entryPoint,
             isFirstMessage = chatId == null,
@@ -576,10 +608,16 @@ class AiSupportChatViewModel @Inject constructor(
         val context = if (chatId == null) {
             val statusReport = initialStatusReport
                 ?: contextProvider.buildStatusReport(state.siteAddress).also { initialStatusReport = it }
+            val (loginDetails, loginDiagnosticResult) = when (val loginContext = state.loginContext) {
+                AiSupportChatLoginContext.NotDuringLogin -> null to null
+                is AiSupportChatLoginContext.DuringLogin ->
+                    loginContext.details to diagnosticsService.runLoginDiagnostics().last()
+            }
             contextProvider.buildInitialContext(
-                diagnosticResult = state.diagnosticResult,
+                diagnosticResult = loginDiagnosticResult.withStatusesOf(state.diagnosticResult),
                 siteAddress = state.siteAddress,
-                statusReport = statusReport
+                statusReport = statusReport,
+                loginContext = loginDetails
             )
         } else {
             JsonObject()
@@ -953,7 +991,7 @@ class AiSupportChatViewModel @Inject constructor(
             siteAddress = siteAddress,
             hasReceivedBotResponse = _viewState.value.hasReceivedBotResponse,
             ticketAnalyticsContext = supportArea.toTicketAnalyticsContext(_viewState.value.entryPoint),
-            diagnosticLog = _viewState.value.connectivityDiagnosticLog
+            diagnosticLog = _viewState.value.diagnosticLog
         )
     }
 
@@ -1059,7 +1097,8 @@ data class AiSupportChatViewState(
     val selectedIssueLabel: String? = null,
     val launchExtraTags: List<String> = emptyList(),
     val diagnosticResult: DiagnosticResult? = null,
-    val connectivityDiagnosticLog: String? = null,
+    val loginContext: AiSupportChatLoginContext = AiSupportChatLoginContext.NotDuringLogin,
+    val diagnosticLog: String? = null,
     val diagnosticSuggestedActionOverride: SuggestedFixAction? = null,
     val isRunningDiagnostics: Boolean = false,
     val isLoadingHistory: Boolean = false,
@@ -1133,6 +1172,11 @@ data class AiSupportChatViewState(
     private companion object {
         const val MIN_BOT_RESPONSES_FOR_RESOLUTION_ACTION = 2
     }
+}
+
+sealed interface AiSupportChatLoginContext {
+    data object NotDuringLogin : AiSupportChatLoginContext
+    data class DuringLogin(val details: String) : AiSupportChatLoginContext
 }
 
 enum class HumanSupportContactSource {
@@ -1221,6 +1265,7 @@ private val AiSupportChatLaunchMode.entryPoint: AiSupportChatEntryPoint
         is AiSupportChatLaunchMode.PreLogin -> AiSupportChatEntryPoint.PRE_LOGIN
         is AiSupportChatLaunchMode.ConnectivityTool -> AiSupportChatEntryPoint.CONNECTIVITY_TOOL
         is AiSupportChatLaunchMode.StoreConnectionError -> AiSupportChatEntryPoint.STORE_CONNECTION_ERROR
+        is AiSupportChatLaunchMode.LoginUnexpectedResponse -> AiSupportChatEntryPoint.LOGIN_UNEXPECTED_RESPONSE
         is AiSupportChatLaunchMode.Resume -> AiSupportChatEntryPoint.CHAT_HISTORY
     }
 
@@ -1266,3 +1311,9 @@ private fun ConnectivityCheckStatus.toTestStatus(): TestStatus =
             durationMs = durationMs
         )
     }
+
+private fun DiagnosticResult?.withStatusesOf(other: DiagnosticResult?): DiagnosticResult? = when {
+    this == null -> other
+    other == null -> this
+    else -> other.copy(statuses = statuses + other.statuses)
+}
