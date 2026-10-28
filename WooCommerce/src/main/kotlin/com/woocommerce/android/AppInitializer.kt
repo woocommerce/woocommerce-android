@@ -87,6 +87,7 @@ import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.logging.FluxCCrashLogger
 import org.wordpress.android.fluxc.logging.FluxCCrashLoggerProvider
+import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WPComSiteInvalidationReason
 import org.wordpress.android.fluxc.store.AccountStore
@@ -414,13 +415,25 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                     }
                 }.launchIn(this)
 
-            // Log user out if the Application Passwords generation fails due to a 401 error
+            // Log user out if the saved site credentials or application password are rejected
             applicationPasswordsNotifier.passwordGenerationFailures
-                .filter { it.networkError.volleyError?.networkResponse?.statusCode == UNAUTHORIZED_STATUS_CODE }
-                .onEach {
-                    if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
-                        WooLog.w(T.LOGIN, "Use is unauthorized to generate a new application password")
-                        logUserOut(InvoluntaryLogoutReason.APPLICATION_PASSWORD_UNAUTHORIZED)
+                .onEach { failure ->
+                    val reason = when {
+                        failure.networkError.errorCode ==
+                            CookieNonceAuthenticator.INVALID_CREDENTIALS_ERROR_CODE ->
+                            InvoluntaryLogoutReason.SITE_CREDENTIALS_REJECTED
+
+                        failure.networkError.volleyError?.networkResponse?.statusCode == UNAUTHORIZED_STATUS_CODE ->
+                            InvoluntaryLogoutReason.APPLICATION_PASSWORD_UNAUTHORIZED
+
+                        else -> null
+                    }
+                    if (reason != null && selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
+                        WooLog.w(
+                            T.LOGIN,
+                            "Logging out because application password generation failed: ${reason.trackingValue}"
+                        )
+                        logUserOut(reason)
                     }
                 }.launchIn(this)
         }
