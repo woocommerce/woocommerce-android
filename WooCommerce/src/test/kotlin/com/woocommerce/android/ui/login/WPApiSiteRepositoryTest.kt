@@ -67,7 +67,7 @@ class WPApiSiteRepositoryTest : BaseUnitTest() {
         }
     }
     private val userEligibilityFetcher: UserEligibilityFetcher = mock()
-    private val applicationPasswordsNotifier = ApplicationPasswordsNotifier(mock(), mock())
+    private val applicationPasswordsNotifier = ApplicationPasswordsNotifier(mock())
     private val repository = WPApiSiteRepository(
         dispatcher,
         siteStore,
