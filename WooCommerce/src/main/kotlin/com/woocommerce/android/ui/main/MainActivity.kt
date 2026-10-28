@@ -390,6 +390,7 @@ class MainActivity :
 
         setupStoreConnectionErrorDialog()
         setupHttpsConfigurationWarning()
+        observeHardwareScansWithoutEnterSuffix()
 
         edgeToEdgeHelper.applyEdgeToEdgeSettings(binding)
 
@@ -956,6 +957,16 @@ class MainActivity :
                 viewModel.httpsConfigurationWarningVisible.collect { isVisible ->
                     httpsConfigurationWarningRequired = isVisible
                     updateHttpsConfigurationWarningVisibility()
+                }
+            }
+        }
+    }
+
+    private fun observeHardwareScansWithoutEnterSuffix() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                hardwareBarcodeScanner.scansWithoutEnterSuffix.collect {
+                    uiMessageResolver.showSnack(R.string.barcode_scanning_hardware_scanner_no_enter_suffix)
                 }
             }
         }

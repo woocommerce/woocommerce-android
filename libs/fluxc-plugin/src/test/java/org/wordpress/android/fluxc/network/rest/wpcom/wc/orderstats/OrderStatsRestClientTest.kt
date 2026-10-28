@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.eq
@@ -186,7 +187,8 @@ class OrderStatsRestClientTest {
                 cacheTimeToLive = any(),
                 forced = any(),
                 requestTimeout = any(),
-                retries = any()
+                retries = any(),
+                readableBodyCheck = anyOrNull()
             )
         ).thenReturn(WPAPIResponse.Success(null, emptyList()))
     }
@@ -202,7 +204,8 @@ class OrderStatsRestClientTest {
             cacheTimeToLive = any(),
             forced = any(),
             requestTimeout = any(),
-            retries = any()
+            retries = any(),
+            readableBodyCheck = anyOrNull()
         )
         return paramsCaptor.firstValue
     }

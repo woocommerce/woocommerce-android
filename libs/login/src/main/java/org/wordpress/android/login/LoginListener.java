@@ -49,13 +49,13 @@ public interface LoginListener {
     void forgotPassword(String url);
     void useMagicLinkInstead(String email, boolean verifyEmail,
                              boolean requestAtStart, MagicLinkFallbackButton fallbackButton);
-    void needs2fa(String email, String password);
     void needs2fa(String email, String password, String userId, String webauthnNonce,
                   String nonceAuthenticator, String nonceBackup, String noncePush,
                   List<String> supportedAuthTypes);
     void needs2faSocial(String email, String userId, String nonceAuthenticator, String nonceBackup,
                         String nonceSms, String nonceWebauthn, List<String> supportedAuthTypes);
-    void needs2faSocialConnect(String email, String password, String idToken, String service);
+    void needs2faSocialConnect(@Nullable String email, @Nullable String password, @Nullable String idToken,
+                               @Nullable String service, @NonNull List<String> supportedAuthTypes);
     void loggedInViaPassword(ArrayList<Integer> oldSitesIds);
     void helpEmailPasswordScreen(String email);
 

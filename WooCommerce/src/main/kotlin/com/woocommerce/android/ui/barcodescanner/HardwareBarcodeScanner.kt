@@ -9,6 +9,9 @@ import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.Barc
 import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.plus
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import javax.inject.Inject
@@ -22,6 +25,9 @@ class HardwareBarcodeScanner @Inject constructor(
     private val barcodeScanningTracker: BarcodeScanningTracker,
 ) {
     private var listener: Listener? = null
+
+    private val _scansWithoutEnterSuffix = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val scansWithoutEnterSuffix: SharedFlow<Unit> = _scansWithoutEnterSuffix.asSharedFlow()
 
     private val detector = BarcodeInputDetector(
         onBarcodeEvent = ::onBarcodeEvent,
@@ -58,12 +64,21 @@ class HardwareBarcodeScanner @Inject constructor(
                     CodeScannerStatus.Success(code = result.barcode, format = result.barcode.inferBarcodeFormat())
                 )
             }
-            is BarcodeInputDetector.BarcodeResult.Error -> Unit
+            is BarcodeInputDetector.BarcodeResult.Error -> onBarcodeError(result)
+        }
+    }
+
+    private fun onBarcodeError(error: BarcodeInputDetector.BarcodeResult.Error) {
+        when (error.failureReason) {
+            BarcodeInputDetector.FailureReason.NO_TERMINATOR -> if (error.barcode.length >= MIN_SKU_LENGTH) {
+                _scansWithoutEnterSuffix.tryEmit(Unit)
+            }
+            BarcodeInputDetector.FailureReason.TOO_SHORT -> Unit
         }
     }
 
     private fun String.inferBarcodeFormat(): BarcodeFormat = when {
-        !all { it.isDigit() } || !hasValidGs1CheckDigit() -> BarcodeFormat.FormatUnknown
+        !all { it in '0'..'9' } || !hasValidGs1CheckDigit() -> BarcodeFormat.FormatUnknown
         length == EAN_8_LENGTH -> BarcodeFormat.FormatEAN8
         length == UPC_A_LENGTH -> BarcodeFormat.FormatUPCA
         length == EAN_13_LENGTH -> BarcodeFormat.FormatEAN13
