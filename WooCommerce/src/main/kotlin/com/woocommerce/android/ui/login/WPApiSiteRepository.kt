@@ -148,6 +148,7 @@ class WPApiSiteRepository @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun checkIfUserIsEligible(site: SiteModel): Result<Boolean> = coroutineScope {
+        siteStore.clearApplicationPasswordCreationCooldown(site)
         WooLog.d(WooLog.T.LOGIN, "Fetch user info to check if user is eligible for using the API")
 
         val applicationPasswordErrorTask = async {

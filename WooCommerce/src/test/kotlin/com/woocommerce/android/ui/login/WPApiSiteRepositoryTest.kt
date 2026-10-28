@@ -6,6 +6,7 @@ import com.woocommerce.android.FakeDispatcher
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
+import com.woocommerce.android.model.User
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
@@ -17,6 +18,8 @@ import kotlinx.coroutines.yield
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -63,12 +66,14 @@ class WPApiSiteRepositoryTest : BaseUnitTest() {
             }
         }
     }
+    private val userEligibilityFetcher: UserEligibilityFetcher = mock()
+    private val applicationPasswordsNotifier = ApplicationPasswordsNotifier(mock(), mock())
     private val repository = WPApiSiteRepository(
         dispatcher,
         siteStore,
         authenticator,
-        mock<UserEligibilityFetcher>(),
-        mock<ApplicationPasswordsNotifier>(),
+        userEligibilityFetcher,
+        applicationPasswordsNotifier,
         CookieManager(),
         mock<ApplicationPasswordsStore>()
     )
@@ -138,6 +143,22 @@ class WPApiSiteRepositoryTest : BaseUnitTest() {
 
             assertThat(exception.errorMessage).isEqualTo(UiStringRes(R.string.error_generic))
             assertThat(exception.message).isNull()
+        }
+
+    @Test
+    fun `given a site, when checking eligibility, then clear password creation cooldown before fetching user`() =
+        testBlocking {
+            whenever(userEligibilityFetcher.fetchUserInfo(site)).doSuspendableAnswer {
+                Result.success(User(1L, "", "", USERNAME, "merchant@example.com", emptyList()))
+            }
+
+            val result = repository.checkIfUserIsEligible(site)
+
+            assertThat(result.isSuccess).isTrue()
+            inOrder(siteStore, userEligibilityFetcher) {
+                verify(siteStore).clearApplicationPasswordCreationCooldown(site)
+                verify(userEligibilityFetcher).fetchUserInfo(site)
+            }
         }
 
     @Test

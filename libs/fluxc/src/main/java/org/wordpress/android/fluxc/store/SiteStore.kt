@@ -675,6 +675,9 @@ open class SiteStore @Inject constructor(
             }
         }
 
+    suspend fun clearApplicationPasswordCreationCooldown(site: SiteModel) =
+        applicationPasswordsManagerProvider.get().clearCreationCooldown(site)
+
     suspend fun fetchSitePlans(siteModel: SiteModel): FetchedPlansPayload {
         return if (siteModel.isUsingWpComRestApi) {
             coroutineEngine.withDefaultContext(T.API, this, "Fetch site plans") {
