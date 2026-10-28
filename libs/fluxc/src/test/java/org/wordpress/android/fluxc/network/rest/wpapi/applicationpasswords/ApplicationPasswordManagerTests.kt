@@ -695,16 +695,20 @@ class ApplicationPasswordManagerTests {
     }
 
     @Test
-    fun `given cooldown is cleared, when credentials are requested, then attempt creation again`() = runTest {
+    fun `given an active cooldown, when login ensures a password, then attempt creation and report login path`() = runTest {
         givenCreationFailure(testSite, serverError())
         mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
-        mApplicationPasswordsManager.clearCreationCooldown(testSite)
 
-        val result = mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        val result = mApplicationPasswordsManager.ensureApplicationPassword(testSite)
 
         assertIs<ApplicationPasswordCreationResult.Failure>(result)
         verify(mWpApiApplicationPasswordsRestClient, times(2))
             .createApplicationPassword(testSite, applicationName)
+        verify(listener).onPasswordGenerationFailed(
+            any(),
+            eq("login"),
+            eq(ApplicationPasswordGenerationScenario.GENERATION)
+        )
     }
 
     @Test
