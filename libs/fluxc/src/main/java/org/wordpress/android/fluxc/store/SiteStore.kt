@@ -31,9 +31,11 @@ import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordCreationResult
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordDeletionResult
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsManager
 import org.wordpress.android.fluxc.network.rest.wpapi.site.SiteWPAPIRestClient
+import org.wordpress.android.fluxc.network.rest.wpapi.toWPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Error
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Success
@@ -249,6 +251,11 @@ open class SiteStore @Inject constructor(
         constructor(site: SiteModel, error: BaseNetworkError) : this(site) {
             this.error = OnApplicationPasswordDeleteError(error)
         }
+    }
+
+    sealed interface EnsureApplicationPasswordResult {
+        object Available : EnsureApplicationPasswordResult
+        data class Failed(val error: WPAPINetworkError) : EnsureApplicationPasswordResult
     }
 
     class OnSiteLaunched() : OnChanged<LaunchSiteError>() {
@@ -675,8 +682,17 @@ open class SiteStore @Inject constructor(
             }
         }
 
-    suspend fun clearApplicationPasswordCreationCooldown(site: SiteModel) =
-        applicationPasswordsManagerProvider.get().clearCreationCooldown(site)
+    suspend fun ensureApplicationPassword(site: SiteModel): EnsureApplicationPasswordResult =
+        coroutineEngine.withDefaultContext(T.API, this, "Ensure Application Password") {
+            when (val result = applicationPasswordsManagerProvider.get().ensureApplicationPassword(site)) {
+                is ApplicationPasswordCreationResult.Existing,
+                is ApplicationPasswordCreationResult.Created -> EnsureApplicationPasswordResult.Available
+                is ApplicationPasswordCreationResult.Failure ->
+                    EnsureApplicationPasswordResult.Failed(result.error.toWPAPINetworkError())
+                is ApplicationPasswordCreationResult.NotSupported ->
+                    EnsureApplicationPasswordResult.Failed(result.originalError.toWPAPINetworkError())
+            }
+        }
 
     suspend fun fetchSitePlans(siteModel: SiteModel): FetchedPlansPayload {
         return if (siteModel.isUsingWpComRestApi) {

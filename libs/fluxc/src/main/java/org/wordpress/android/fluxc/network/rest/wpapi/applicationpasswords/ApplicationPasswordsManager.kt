@@ -21,6 +21,7 @@ import javax.inject.Singleton
 private const val UNAUTHORIZED = 401
 private const val CONFLICT = 409
 private const val NOT_FOUND = 404
+private const val LOGIN_REQUEST_PATH = "login"
 
 @Singleton
 internal class ApplicationPasswordsManager @Inject constructor(
@@ -110,7 +111,12 @@ internal class ApplicationPasswordsManager @Inject constructor(
         }
     }
 
-    suspend fun clearCreationCooldown(site: SiteModel) {
+    suspend fun ensureApplicationPassword(site: SiteModel): ApplicationPasswordCreationResult {
+        clearCreationCooldown(site)
+        return getApplicationCredentials(site, LOGIN_REQUEST_PATH)
+    }
+
+    private suspend fun clearCreationCooldown(site: SiteModel) {
         mutexLock.withLock {
             failedCreations.remove(site.id)
         }
