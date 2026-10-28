@@ -4,6 +4,7 @@
 
 26.0
 -----
+- [*] The app no longer keeps retrying in the background when it can't create an application password for a store, and logs you out if the store rejects your saved username or password [https://github.com/woocommerce/woocommerce-android/pull/16783]
 - [*] The gaps between sections on product details are no longer pure black in dark mode [https://github.com/woocommerce/woocommerce-android/pull/16781]
 - [*] Fixed a crash on order details that could happen after changing the status of an order paid with a gift card [https://github.com/woocommerce/woocommerce-android/pull/16766]
 - [*] Push notifications for new orders now arrive right after connecting Jetpack from the app [https://github.com/woocommerce/woocommerce-android/pull/16763]
