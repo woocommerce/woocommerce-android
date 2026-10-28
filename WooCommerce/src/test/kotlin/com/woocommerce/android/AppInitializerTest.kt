@@ -7,15 +7,19 @@ import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.impl.WorkManagerImpl
+import com.android.volley.NetworkResponse
+import com.android.volley.VolleyError
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.background.BackgroundUpdatesDisabled
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.WPComSiteInvalidationNotifier
 import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.common.RefreshWPSettings
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.InvoluntaryLogoutReason
@@ -42,6 +46,11 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordGenerationScenario
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WPComSiteInvalidationEvent
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WPComSiteInvalidationReason
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -53,6 +62,7 @@ class AppInitializerTest : BaseUnitTest() {
 
     private val accountStoreMock: AccountStore = mock()
     private val analyticsTrackerMock: AnalyticsTrackerWrapper = mock()
+    private val applicationPasswordsNotifier = ApplicationPasswordsNotifier(analyticsTrackerMock)
     private val application: Application = mock()
     private val networkStatusMock: NetworkStatus = mock()
     private val registerDeviceMock: RegisterDevice = mock()
@@ -81,6 +91,7 @@ class AppInitializerTest : BaseUnitTest() {
         sut = AppInitializer().apply {
             this.accountStore = accountStoreMock
             this.analyticsTracker = analyticsTrackerMock
+            this.applicationPasswordsNotifier = this@AppInitializerTest.applicationPasswordsNotifier
             this.networkStatus = networkStatusMock
             this.registerDevice = Lazy { registerDeviceMock }
             this.backgroundUpdatesDisabled = Lazy { backgroundUpdatesDisabledMock }
@@ -306,6 +317,95 @@ class AppInitializerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given rejected site credentials, when password generation fails, then log out with site reason`() = testBlocking {
+        givenSiteCredentialsStore()
+        sut.startApplicationPasswordsStatusMonitor()
+
+        applicationPasswordsNotifier.onPasswordGenerationFailed(
+            WPAPINetworkError(
+                BaseNetworkError(GenericErrorType.NOT_AUTHENTICATED, "Site credentials rejected"),
+                CookieNonceAuthenticator.INVALID_CREDENTIALS_ERROR_CODE
+            ),
+            path = "wp-json/wc/v3/products",
+            scenario = ApplicationPasswordGenerationScenario.GENERATION
+        )
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+        verify(accountRepositoryMock).logoutInvoluntarily(InvoluntaryLogoutReason.SITE_CREDENTIALS_REJECTED)
+    }
+
+    @Test
+    fun `given HTTP 401, when password generation fails, then log out with app password reason`() = testBlocking {
+        givenSiteCredentialsStore()
+        sut.startApplicationPasswordsStatusMonitor()
+
+        applicationPasswordsNotifier.onPasswordGenerationFailed(
+            WPAPINetworkError(
+                BaseNetworkError(
+                    GenericErrorType.NOT_AUTHENTICATED,
+                    "Unauthorized",
+                    VolleyError(NetworkResponse(401, null, true, 0, emptyList()))
+                )
+            ),
+            path = "wp-json/wc/v3/products",
+            scenario = ApplicationPasswordGenerationScenario.REGENERATION
+        )
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+        verify(accountRepositoryMock).logoutInvoluntarily(InvoluntaryLogoutReason.APPLICATION_PASSWORD_UNAUTHORIZED)
+    }
+
+    @Test
+    fun `given another generation error, when received, then do not log out`() = testBlocking {
+        givenSiteCredentialsStore()
+        sut.startApplicationPasswordsStatusMonitor()
+
+        applicationPasswordsNotifier.onPasswordGenerationFailed(
+            WPAPINetworkError(BaseNetworkError(GenericErrorType.SERVER_ERROR, "Server error")),
+            path = "wp-json/wc/v3/products",
+            scenario = ApplicationPasswordGenerationScenario.GENERATION
+        )
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+        verify(accountRepositoryMock, never()).logoutInvoluntarily(any())
+    }
+
+    @Test
+    fun `given a jetpack store, when site credentials are rejected, then do not log out`() = testBlocking {
+        whenever(selectedSiteMock.connectionType).thenReturn(SiteConnectionType.Jetpack)
+        sut.startApplicationPasswordsStatusMonitor()
+
+        applicationPasswordsNotifier.onPasswordGenerationFailed(
+            WPAPINetworkError(
+                BaseNetworkError(GenericErrorType.NOT_AUTHENTICATED, "Site credentials rejected"),
+                CookieNonceAuthenticator.INVALID_CREDENTIALS_ERROR_CODE
+            ),
+            path = "wp-json/wc/v3/products",
+            scenario = ApplicationPasswordGenerationScenario.GENERATION
+        )
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+        verify(accountRepositoryMock, never()).logoutInvoluntarily(any())
+    }
+
+    @Test
+    fun `given no selected site, when site credentials are rejected, then do not log out`() = testBlocking {
+        sut.startApplicationPasswordsStatusMonitor()
+
+        applicationPasswordsNotifier.onPasswordGenerationFailed(
+            WPAPINetworkError(
+                BaseNetworkError(GenericErrorType.NOT_AUTHENTICATED, "Site credentials rejected"),
+                CookieNonceAuthenticator.INVALID_CREDENTIALS_ERROR_CODE
+            ),
+            path = "wp-json/wc/v3/products",
+            scenario = ApplicationPasswordGenerationScenario.GENERATION
+        )
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+        verify(accountRepositoryMock, never()).logoutInvoluntarily(any())
+    }
+
+    @Test
     fun `given the same store is still selected, when the fetched site changed, then the selected site is updated`() =
         testBlocking {
             // GIVEN
@@ -456,6 +556,18 @@ class AppInitializerTest : BaseUnitTest() {
             isAccessible = true
             invoke(this@startWPComSiteInvalidationMonitor)
         }
+    }
+
+    private fun AppInitializer.startApplicationPasswordsStatusMonitor() {
+        AppInitializer::class.java.getDeclaredMethod("monitorApplicationPasswordsStatus").apply {
+            isAccessible = true
+            invoke(this@startApplicationPasswordsStatusMonitor)
+        }
+        coroutinesTestRule.testDispatcher.scheduler.runCurrent()
+    }
+
+    private fun givenSiteCredentialsStore() {
+        whenever(selectedSiteMock.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
     }
 
     private companion object {
