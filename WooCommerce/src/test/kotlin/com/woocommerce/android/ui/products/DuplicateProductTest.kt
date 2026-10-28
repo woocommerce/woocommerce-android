@@ -271,6 +271,31 @@ class DuplicateProductTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given variations listed newest first, when duplicating a variable product, then they are created oldest first`() =
+        testBlocking {
+            // GIVEN
+            val productToDuplicate = ProductAggregate(ProductTestUtils.generateProduct().copy(numVariations = 3))
+            val sourceVariations = listOf(3L, 2L, 1L).map {
+                ProductTestUtils.generateProductVariation(productToDuplicate.remoteId, it)
+            }
+            productDetailRepository.stub {
+                on { addProduct(any<ProductAggregate>()) } doReturn Pair(true, DUPLICATED_PRODUCT_ID)
+            }
+            variationRepository.stub {
+                on { getAllVariations(productToDuplicate.remoteId) } doReturn Result.success(sourceVariations)
+                on { createVariations(any(), any()) } doReturn Result.success(Unit)
+            }
+
+            // WHEN
+            sut.invoke(productToDuplicate)
+
+            // THEN
+            val createdVariations = argumentCaptor<List<ProductVariation>>()
+            verify(variationRepository).createVariations(eq(DUPLICATED_PRODUCT_ID), createdVariations.capture())
+            assertThat(createdVariations.firstValue.map { it.remoteVariationId }).containsExactly(1L, 2L, 3L)
+        }
+
+    @Test
     fun `given fetching variations fails, when duplicating a variable product, then duplication fails`() =
         testBlocking {
             // GIVEN

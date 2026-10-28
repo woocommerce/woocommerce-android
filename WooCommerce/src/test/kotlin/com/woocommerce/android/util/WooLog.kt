@@ -29,6 +29,7 @@ object WooLog {
         SITE_PICKER,
         BLAZE,
         AI,
+        BARCODE_SCANNER,
         POS,
         SHIPPING_LABELS
     }

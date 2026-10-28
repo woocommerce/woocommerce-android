@@ -277,10 +277,14 @@ class LoginActivity :
             }
         }
 
-        savedInstanceState?.let { ss ->
-            unifiedLoginTracker.setSource(ss.getString(KEY_UNIFIED_TRACKER_SOURCE, Source.DEFAULT.value))
-            unifiedLoginTracker.setFlow(ss.getString(KEY_UNIFIED_TRACKER_FLOW))
-            connectSiteInfo = ss.parcelable(KEY_CONNECT_SITE_INFO)
+        if (savedInstanceState == null) {
+            unifiedLoginTracker.clearSupportDetails()
+        } else {
+            unifiedLoginTracker.setSource(
+                savedInstanceState.getString(KEY_UNIFIED_TRACKER_SOURCE, Source.DEFAULT.value)
+            )
+            unifiedLoginTracker.setFlow(savedInstanceState.getString(KEY_UNIFIED_TRACKER_FLOW))
+            connectSiteInfo = savedInstanceState.parcelable(KEY_CONNECT_SITE_INFO)
         }
 
         keepTrackOfAgeEligibility()
