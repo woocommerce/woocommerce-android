@@ -19,6 +19,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackb
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,8 +45,10 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     private val scanToUpdateInventoryState: MutableStateFlow<ScanToUpdateInventoryState> =
         savedState.getStateFlow(this, ScanToUpdateInventoryState.Idle, "productSearchState")
 
+    private val navArgs: ScanToUpdateInventoryBarcodeScannerFragmentArgs by savedState.navArgs()
+
     init {
-        savedState.remove<CodeScannerStatus.Success>(KEY_SCANNED_BARCODE)?.let(::onBarcodeScanningResult)
+        navArgs.scannedBarcode?.let(::onBarcodeScanningResult)
     }
 
     fun onBarcodeScanningResult(status: CodeScannerStatus) {
@@ -373,6 +376,5 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
     companion object {
         private const val SCANNER_RESTART_DEBOUNCE_MS = 3500L
-        private const val KEY_SCANNED_BARCODE = "scannedBarcode"
     }
 }

@@ -56,6 +56,7 @@ import com.woocommerce.android.ui.products.list.ProductListEvent.ShowDiscardProd
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductUpdateStockStatusScreen
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowScanToUpdateInventory
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
@@ -255,7 +256,8 @@ class ProductListFragment :
                 is ShowAddProductBottomSheet -> showAddProductBottomSheet()
                 is ShowProductFilterScreen -> showProductFilterScreen(event)
                 is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
-                is ShowBarcodeScanner -> showScanToUpdateInventory(event.scannedBarcode)
+                is ShowBarcodeScanner -> showScanToUpdateInventory(scannedBarcode = null)
+                is ShowScanToUpdateInventory -> showScanToUpdateInventory(event.scannedBarcode)
                 is ShowUpdateDialog -> handleUpdateDialogs(event)
                 is OpenProduct -> openProduct(event)
                 is OpenEmptyProduct -> openEmptyProduct()
