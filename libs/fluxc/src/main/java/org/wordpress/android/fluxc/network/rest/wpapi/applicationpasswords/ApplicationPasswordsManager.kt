@@ -110,6 +110,12 @@ internal class ApplicationPasswordsManager @Inject constructor(
         }
     }
 
+    suspend fun clearCreationCooldown(site: SiteModel) {
+        mutexLock.withLock {
+            failedCreations.remove(site.id)
+        }
+    }
+
     private fun recordFailure(site: SiteModel, error: BaseNetworkError, previousFailure: FailedCreation?) {
         val cooldownMs = if (previousFailure == null || error.type.isConnectionFailure()) {
             INITIAL_COOLDOWN_MS

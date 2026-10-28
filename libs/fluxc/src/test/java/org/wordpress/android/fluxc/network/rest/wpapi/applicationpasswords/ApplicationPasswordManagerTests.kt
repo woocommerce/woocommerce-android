@@ -694,6 +694,18 @@ class ApplicationPasswordManagerTests {
         verify(listener).onNewPasswordCreated(ApplicationPasswordGenerationScenario.GENERATION)
     }
 
+    @Test
+    fun `given cooldown is cleared, when credentials are requested, then attempt creation again`() = runTest {
+        givenCreationFailure(testSite, serverError())
+        mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        mApplicationPasswordsManager.clearCreationCooldown(testSite)
+
+        val result = mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+
+        assertIs<ApplicationPasswordCreationResult.Failure>(result)
+        verify(mWpApiApplicationPasswordsRestClient, times(2))
+            .createApplicationPassword(testSite, applicationName)
+    }
 
     @Test
     fun `given requests queued behind a failing attempt, when the first completes, then skip the second`() = runTest {
