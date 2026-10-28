@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.scanningsetup
 
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
+import com.woocommerce.android.ui.barcodescanner.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 
 sealed class WooPosScanningSetupUiEvent {

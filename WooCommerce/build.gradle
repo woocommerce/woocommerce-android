@@ -239,29 +239,6 @@ android {
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
         unitTests.includeAndroidResources = true
     }
-
-    signingConfigs {
-        if (["uploadStoreFile", "uploadStorePassword", "uploadKeyAlias", "uploadKeyPassword"].count { !secretProperties.containsKey(it) } == 0) {
-            logger.info("App signing properties found in secrets.properties, configuring signing for release builds.")
-            release {
-                storeFile = rootProject.file(secretProperties.get("uploadStoreFile"))
-                storePassword = secretProperties.get("uploadStorePassword")
-                keyAlias = secretProperties.get("uploadKeyAlias")
-                keyPassword = secretProperties.get("uploadKeyPassword")
-            }
-            android.buildTypes.release.signingConfig = android.signingConfigs.release
-        }
-
-        if (secretProperties.containsKey("debugStoreFile")) {
-            logger.info("Debug signing properties found in secrets.properties, configuring signing for debug builds.")
-            def sharedDebugStore = file(secretProperties.get("debugStoreFile").replaceFirst("^~", System.getProperty("user.home")))
-            if (sharedDebugStore.exists()) {
-                debug {
-                    storeFile sharedDebugStore
-                }
-            }
-        }
-    }
 }
 
 dependencies {
@@ -615,3 +592,4 @@ dependencyAnalysis {
 }
 
 apply from: '../config/gradle/build_optimization.gradle'
+apply from: '../config/gradle/signing.gradle'

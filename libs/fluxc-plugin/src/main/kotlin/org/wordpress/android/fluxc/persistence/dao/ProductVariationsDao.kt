@@ -16,7 +16,7 @@ internal abstract class ProductVariationsDao {
                 SELECT * FROM ProductVariationEntity
                 WHERE remoteProductId = :remoteProductId
                 AND localSiteId = :localSiteId
-                ORDER BY menuOrder ASC
+                ORDER BY menuOrder ASC, remoteVariationId DESC
         """
     }
 

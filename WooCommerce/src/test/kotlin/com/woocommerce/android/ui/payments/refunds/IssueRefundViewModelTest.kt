@@ -22,6 +22,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyVararg
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -82,6 +83,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         on { getString(any(), any()) } doAnswer { i ->
             "You can refund " + i.arguments[1].toString()
         }
+        on { getPluralString(any(), any(), anyVararg()) } doReturn ""
     }
     private val orderMapper = OrderMapper(
         getLocations = mock {
@@ -732,6 +734,44 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 viewState.shippingSection.shippingRefund,
                 viewState.feesSection.feesRefund
             )
+        }
+
+    @Test
+    fun `when one item is selected, then selected items header uses the plural resource with quantity one`() =
+        testBlocking {
+            // GIVEN
+            val orderMapper = givenOrder(items = listOf(givenOrderItem()), maxRefund = BigDecimal("10.49"))
+            whenever(
+                resourceProvider.getPluralString(R.plurals.order_refunds_items_selected_count, 1, 1)
+            ).thenReturn("1 item selected")
+
+            // WHEN
+            initViewModel(orderMapper)
+            viewModel.viewState.getOrAwaitValue()
+            viewModel.onRefundQuantityChanged(ORDER_ITEM_ID, 1)
+
+            // THEN
+            assertThat(viewModel.viewState.getOrAwaitValue().productsSection.selectedItemsHeader)
+                .isEqualTo("1 item selected")
+        }
+
+    @Test
+    fun `when all items are selected, then selected items header uses the plural resource with the total quantity`() =
+        testBlocking {
+            // GIVEN
+            val orderMapper = givenOrder(items = listOf(givenOrderItem()), maxRefund = BigDecimal("10.49"))
+            whenever(
+                resourceProvider.getPluralString(R.plurals.order_refunds_items_selected_count, 3, 3)
+            ).thenReturn("3 items selected")
+
+            // WHEN
+            initViewModel(orderMapper)
+            viewModel.viewState.getOrAwaitValue()
+            viewModel.onSelectButtonTapped()
+
+            // THEN
+            assertThat(viewModel.viewState.getOrAwaitValue().productsSection.selectedItemsHeader)
+                .isEqualTo("3 items selected")
         }
 
     private suspend fun givenOrder(

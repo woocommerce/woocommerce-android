@@ -14,6 +14,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Parcelable
 import android.text.method.LinkMovementMethod
+import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -79,6 +80,7 @@ import com.woocommerce.android.ui.ageeligibility.AgeVerificationRequiredDialogFr
 import com.woocommerce.android.ui.ageeligibility.dismissAgeVerificationRequiredDialog
 import com.woocommerce.android.ui.ageeligibility.showAgeVerificationRequiredDialog
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
+import com.woocommerce.android.ui.barcodescanner.HardwareBarcodeScanner
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -224,6 +226,9 @@ class MainActivity :
 
     @Inject
     lateinit var posTabController: WooPosTabController
+
+    @Inject
+    lateinit var hardwareBarcodeScanner: HardwareBarcodeScanner
 
     @Inject
     override lateinit var backPressTracker: BackPressTracker
@@ -385,6 +390,7 @@ class MainActivity :
 
         setupStoreConnectionErrorDialog()
         setupHttpsConfigurationWarning()
+        observeHardwareScansWithoutEnterSuffix()
 
         edgeToEdgeHelper.applyEdgeToEdgeSettings(binding)
 
@@ -486,6 +492,15 @@ class MainActivity :
         }
 
         checkConnection()
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        val isHardwareBarcodeInput = event.action == KeyEvent.ACTION_DOWN &&
+            hardwareBarcodeScanner.onKeyDown(
+                unicodeChar = event.unicodeChar,
+                isTextInputFocused = currentFocus?.onCheckIsTextEditor() == true,
+            )
+        return isHardwareBarcodeInput || super.dispatchKeyEvent(event)
     }
 
     override fun onPause() {
@@ -942,6 +957,16 @@ class MainActivity :
                 viewModel.httpsConfigurationWarningVisible.collect { isVisible ->
                     httpsConfigurationWarningRequired = isVisible
                     updateHttpsConfigurationWarningVisibility()
+                }
+            }
+        }
+    }
+
+    private fun observeHardwareScansWithoutEnterSuffix() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                hardwareBarcodeScanner.scansWithoutEnterSuffix.collect {
+                    uiMessageResolver.showSnack(R.string.barcode_scanning_hardware_scanner_no_enter_suffix)
                 }
             }
         }

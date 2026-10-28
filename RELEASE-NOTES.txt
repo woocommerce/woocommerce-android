@@ -4,6 +4,8 @@
 
 26.0
 -----
+- [*] The gaps between sections on product details are no longer pure black in dark mode [https://github.com/woocommerce/woocommerce-android/pull/16781]
+- [*] Fixed a crash on order details that could happen after changing the status of an order paid with a gift card [https://github.com/woocommerce/woocommerce-android/pull/16766]
 - [*] Push notifications for new orders now arrive right after connecting Jetpack from the app [https://github.com/woocommerce/woocommerce-android/pull/16763]
 - [**] Products: Add and edit attributes on all product types. Each attribute has "Visible on product page" and "Used for variations" settings, so you can add attributes that only show on the product page. [https://github.com/woocommerce/woocommerce-android/pull/16727]
 - [*] Fixed a crash when choosing a file on a web page inside the app [https://github.com/woocommerce/woocommerce-android/pull/16743]
@@ -11,6 +13,7 @@
 - [*] Disabled filled buttons on screens like refunds, custom amounts and legacy shipping labels now look disabled [https://github.com/woocommerce/woocommerce-android/pull/16732]
 - [*] [Woo POS] On Android 17, POS asks for local network access only when you choose to use a phone as a card reader or have used one before [https://github.com/woocommerce/woocommerce-android/pull/16723]
 - [*] Menu icons now use a dark background in dark mode [https://github.com/woocommerce/woocommerce-android/pull/16672]
+- [Internal] The app now builds fewer dependencies on the main thread when it starts, which should lower the chance of background ANRs when a push or a background job starts the app [https://github.com/woocommerce/woocommerce-android/pull/16764]
 - [*] Order creation no longer adds a variation of a subscription product when its SKU is scanned [https://github.com/woocommerce/woocommerce-android/pull/16713]
 - [*] On tablets, an open order editor no longer closes and loses its text when the app is restored [https://github.com/woocommerce/woocommerce-android/pull/16731]
 - [*] Customer lists now explain when WooCommerce Analytics is unavailable and offer a way to turn it on or retry loading customers [https://github.com/woocommerce/woocommerce-android/pull/16707]
@@ -21,10 +24,16 @@
 - [***] [Internal] Migrated Google sign-in from the deprecated Play Services Auth API to Credential Manager [https://github.com/woocommerce/woocommerce-android/pull/16721]
 - [*] Login now shows a clear message with a Try again option when the store returns an unexpected response [https://github.com/woocommerce/woocommerce-android/pull/16685]
 - [*] Login errors from an unexpected store response now offer Contact Support [https://github.com/woocommerce/woocommerce-android/pull/16750]
-- [*] AI support chat now receives the Mobile Status Report, so it can help without asking for app and device details [https://github.com/woocommerce/woocommerce-android/pull/16733]
 - [*] [Internal] AI support chats started during login now send the login step, last error and connectivity checks [https://github.com/woocommerce/woocommerce-android/pull/16752]
+- [*] Fixed variations missing from the variations list and the order creation variation picker on products with more than 25 variations [https://github.com/woocommerce/woocommerce-android/pull/16725]
 
 - [*] AI support chat now receives the Mobile Status Report, so it can help without asking for app and device details [https://github.com/woocommerce/woocommerce-android/pull/16733]
+- [*] Card payment dialogs now show the amount in the store's currency format, matching the rest of the order [https://github.com/woocommerce/woocommerce-android/pull/16771]
+- [*] The "Generate all variations?" confirmation now stays open when you rotate the device [https://github.com/woocommerce/woocommerce-android/pull/16770]
+- [*] Refunds: the item count now says "1 item selected" instead of "1 items selected" [https://github.com/woocommerce/woocommerce-android/pull/16769]
+- [*] The "Never miss a new order" card now shows on My Store right after logging in to a store without Jetpack [https://github.com/woocommerce/woocommerce-android/pull/16747]
+- [*] Products: Attribute options now keep their order after rotating the device, and new options are added at the end of the list [https://github.com/woocommerce/woocommerce-android/pull/16777]
+- [*] Fixed a crash when opening a product whose short description has a heading or aligned paragraph inside a list [https://github.com/woocommerce/woocommerce-android/pull/16776]
 
 25.9
 -----
