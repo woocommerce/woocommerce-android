@@ -614,6 +614,9 @@ class AnalyticsTracker private constructor(
         // -- App links
         const val KEY_PATH = "path"
 
+        // -- Application passwords
+        const val KEY_IS_APP_IN_FOREGROUND = "is_app_in_foreground"
+
         const val VALUE_OTHER = "other"
         const val VALUE_STEP_WEB_CHECKOUT = "web_checkout"
 
