@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordGenerationScenario
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsListener
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackSiteFlaggedAsUnsupported
 import javax.inject.Inject
@@ -31,7 +32,12 @@ class ApplicationPasswordsNotifier @Inject constructor(
     val passwordGenerationFailures: Flow<ApplicationPasswordGenerationException> =
         _passwordGenerationFailures.asSharedFlow()
 
-    override fun onFeatureUnavailable(siteModel: SiteModel, networkError: WPAPINetworkError) {
+    override fun onFeatureUnavailable(
+        siteModel: SiteModel,
+        networkError: WPAPINetworkError,
+        path: String,
+        scenario: ApplicationPasswordGenerationScenario
+    ) {
         trackGenerationFailure(
             cause = GenerationFailureCause.FEATURE_DISABLED,
             networkError = networkError,
@@ -42,7 +48,11 @@ class ApplicationPasswordsNotifier @Inject constructor(
         _featureUnavailableEvents.tryEmit(networkError)
     }
 
-    override fun onPasswordGenerationFailed(networkError: WPAPINetworkError) {
+    override fun onPasswordGenerationFailed(
+        networkError: WPAPINetworkError,
+        path: String,
+        scenario: ApplicationPasswordGenerationScenario
+    ) {
         val statusCode = networkError.volleyError?.networkResponse?.statusCode
         trackGenerationFailure(
             cause = if (statusCode == UNAUTHORIZED_STATUS_CODE) {
@@ -55,12 +65,7 @@ class ApplicationPasswordsNotifier @Inject constructor(
         _passwordGenerationFailures.tryEmit(ApplicationPasswordGenerationException(networkError))
     }
 
-    override fun onNewPasswordCreated(isPasswordRegenerated: Boolean) {
-        val scenario = if (isPasswordRegenerated) {
-            GenerationFailureScenario.REGENERATION
-        } else {
-            GenerationFailureScenario.GENERATION
-        }
+    override fun onNewPasswordCreated(scenario: ApplicationPasswordGenerationScenario) {
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.APPLICATION_PASSWORDS_NEW_PASSWORD_CREATED,
             properties = mapOf(AnalyticsTracker.KEY_SCENARIO to scenario.name.lowercase())
