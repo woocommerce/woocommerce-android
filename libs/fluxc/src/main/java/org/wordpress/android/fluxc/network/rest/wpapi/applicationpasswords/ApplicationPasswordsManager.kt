@@ -8,11 +8,13 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
+import org.wordpress.android.fluxc.network.rest.wpapi.toWPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.MAIN
+import java.util.Optional
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,11 +29,13 @@ internal class ApplicationPasswordsManager @Inject constructor(
     private val wpApiApplicationPasswordsRestClient: WPApiApplicationPasswordsRestClient,
     private val configuration: ApplicationPasswordsConfiguration,
     private val currentTimeProvider: CurrentTimeProvider,
-    private val appLogWrapper: AppLogWrapper
+    private val appLogWrapper: AppLogWrapper,
+    private val listener: Optional<ApplicationPasswordsListener>
 ) {
     private val mutexLock = Mutex()
     private val validationMutex = Mutex()
     private var lastValidation: CachedValidation? = null
+    private val failedCreations: MutableMap<Int, FailedCreation> = mutableMapOf()
 
     private val applicationName
         get() = configuration.applicationName
@@ -48,35 +52,100 @@ internal class ApplicationPasswordsManager @Inject constructor(
             (!username.isNullOrEmpty() && !password.isNullOrEmpty())
 
     suspend fun getApplicationCredentials(
-        site: SiteModel
+        site: SiteModel,
+        requestPath: String,
+        scenario: ApplicationPasswordGenerationScenario = ApplicationPasswordGenerationScenario.GENERATION
     ): ApplicationPasswordCreationResult = mutexLock.withLock {
-        if (site.isWPCom) return ApplicationPasswordCreationResult.NotSupported(
-            WPAPINetworkError(
+        if (site.isWPCom) {
+            val error = WPAPINetworkError(
                 BaseNetworkError(
                     GenericErrorType.UNKNOWN,
                     "Simple WPCom sites don't support application passwords"
                 )
             )
-        )
+            notifyFeatureUnavailable(site, error, requestPath, scenario)
+            return ApplicationPasswordCreationResult.NotSupported(error)
+        }
         val existingPassword = applicationPasswordsStore.getCredentials(site)
         if (existingPassword != null) {
             return ApplicationPasswordCreationResult.Existing(existingPassword)
         }
 
+        val previousFailure = failedCreations[site.id]
+        val now = nowMillis()
+        previousFailure
+            ?.takeIf { now - it.failedAt in 0 until it.cooldownMs }
+            ?.let {
+                appLogWrapper.d(
+                    MAIN,
+                    "Skipping application password creation, the last attempt failed ${now - it.failedAt} ms ago"
+                )
+                return ApplicationPasswordCreationResult.Failure(it.error)
+            }
+
         val usernamePayload = getOrFetchUsername(site)
-        return if (usernamePayload.isError) {
-            ApplicationPasswordCreationResult.Failure(usernamePayload.error)
-        } else {
-            createApplicationPassword(site, usernamePayload.userName).also {
-                if (it is ApplicationPasswordCreationResult.Created) {
-                    applicationPasswordsStore.saveCredentials(
-                        site,
-                        it.credentials
-                    )
+        return when {
+            usernamePayload.isError -> ApplicationPasswordCreationResult.Failure(usernamePayload.error)
+            else -> createApplicationPassword(site, usernamePayload.userName)
+        }.also { result ->
+            when (result) {
+                is ApplicationPasswordCreationResult.Created -> {
+                    applicationPasswordsStore.saveCredentials(site, result.credentials)
+                    failedCreations.remove(site.id)
+                    notifyPasswordCreated(scenario)
                 }
+
+                is ApplicationPasswordCreationResult.Failure -> {
+                    recordFailure(site, result.error, previousFailure)
+                    notifyPasswordGenerationFailed(result.error, requestPath, scenario)
+                }
+
+                is ApplicationPasswordCreationResult.NotSupported -> {
+                    recordFailure(site, result.originalError, previousFailure)
+                    notifyFeatureUnavailable(site, result.originalError, requestPath, scenario)
+                }
+
+                is ApplicationPasswordCreationResult.Existing -> Unit
             }
         }
     }
+
+    private fun recordFailure(site: SiteModel, error: BaseNetworkError, previousFailure: FailedCreation?) {
+        val cooldownMs = if (previousFailure == null || error.type.isConnectionFailure()) {
+            INITIAL_COOLDOWN_MS
+        } else {
+            minOf(previousFailure.cooldownMs * 2, MAX_COOLDOWN_MS)
+        }
+        failedCreations[site.id] = FailedCreation(error, nowMillis(), cooldownMs)
+    }
+
+    private fun notifyPasswordCreated(scenario: ApplicationPasswordGenerationScenario) {
+        if (listener.isPresent) listener.get().onNewPasswordCreated(scenario)
+    }
+
+    private fun notifyPasswordGenerationFailed(
+        error: BaseNetworkError,
+        path: String,
+        scenario: ApplicationPasswordGenerationScenario
+    ) {
+        if (listener.isPresent) {
+            listener.get().onPasswordGenerationFailed(error.toWPAPINetworkError(), path, scenario)
+        }
+    }
+
+    private fun notifyFeatureUnavailable(
+        site: SiteModel,
+        error: BaseNetworkError,
+        path: String,
+        scenario: ApplicationPasswordGenerationScenario
+    ) {
+        if (listener.isPresent) {
+            listener.get().onFeatureUnavailable(site, error.toWPAPINetworkError(), path, scenario)
+        }
+    }
+
+    private fun GenericErrorType.isConnectionFailure() = this == GenericErrorType.NO_CONNECTION ||
+        this == GenericErrorType.NETWORK_ERROR || this == GenericErrorType.TIMEOUT
 
     /**
      * Decides whether a 401 received from an API endpoint means the saved application password has to be
@@ -360,8 +429,16 @@ internal class ApplicationPasswordsManager @Inject constructor(
             localSiteId == site.id && this.credentials == credentials
     }
 
+    private data class FailedCreation(
+        val error: BaseNetworkError,
+        val failedAt: Long,
+        val cooldownMs: Long
+    )
+
     companion object {
         private const val VALIDATION_RESULT_TTL_MS = 10_000L
+        private const val INITIAL_COOLDOWN_MS = 10_000L
+        private const val MAX_COOLDOWN_MS = 60 * 60 * 1_000L
         const val APPLICATION_PASSWORDS_DISABLED_ERROR_CODE = "application_passwords_disabled"
         const val APPLICATION_PASSWORDS_DISABLED_USER_ERROR_CODE = "application_passwords_disabled_for_user"
     }

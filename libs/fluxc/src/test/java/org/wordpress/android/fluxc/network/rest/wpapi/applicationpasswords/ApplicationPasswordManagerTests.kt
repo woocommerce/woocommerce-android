@@ -13,7 +13,9 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -25,6 +27,7 @@ import org.wordpress.android.fluxc.network.UnexpectedStoreResponseKind
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import java.util.Date
+import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
@@ -36,6 +39,7 @@ class ApplicationPasswordManagerTests {
     private val uuid = "uuid"
     private val testSite = SiteModel().apply {
         username = "username"
+        password = "site-password"
         url = "http://test-site.com"
     }
     private val testCredentials = ApplicationPasswordCredentials(
@@ -44,6 +48,7 @@ class ApplicationPasswordManagerTests {
         uuid = "uuid"
     )
     private val applicationPasswordsStore: ApplicationPasswordsStore = mock()
+    private val listener: ApplicationPasswordsListener = mock()
     private val mJetpackApplicationPasswordsRestClient: JetpackApplicationPasswordsRestClient = mock()
     private val mWpApiApplicationPasswordsRestClient: WPApiApplicationPasswordsRestClient = mock()
 
@@ -67,7 +72,8 @@ class ApplicationPasswordManagerTests {
             wpApiApplicationPasswordsRestClient = mWpApiApplicationPasswordsRestClient,
             configuration = applicationPasswordsConfiguration,
             currentTimeProvider = currentTimeProvider,
-            appLogWrapper = mock()
+            appLogWrapper = mock(),
+            listener = Optional.of(listener)
         )
     }
 
@@ -75,7 +81,8 @@ class ApplicationPasswordManagerTests {
     fun `given a local password exists, when we ask for a password, then return it`() = runTest {
         whenever(applicationPasswordsStore.getCredentials(testSite)).thenReturn(testCredentials)
         val result = mApplicationPasswordsManager.getApplicationCredentials(
-            testSite
+            testSite,
+            REQUEST_PATH
         )
 
         assertEquals(ApplicationPasswordCreationResult.Existing(testCredentials), result)
@@ -105,7 +112,8 @@ class ApplicationPasswordManagerTests {
                 )
 
             val result = mApplicationPasswordsManager.getApplicationCredentials(
-                testSite
+                testSite,
+                REQUEST_PATH
             )
 
             assertEquals(ApplicationPasswordCreationResult.Created(testCredentials), result)
@@ -136,7 +144,8 @@ class ApplicationPasswordManagerTests {
                 )
 
             val result = mApplicationPasswordsManager.getApplicationCredentials(
-                testSite
+                testSite,
+                REQUEST_PATH
             )
 
             assertEquals(ApplicationPasswordCreationResult.Created(testCredentials), result)
@@ -157,11 +166,27 @@ class ApplicationPasswordManagerTests {
                 .thenReturn(ApplicationPasswordCreationPayload(networkError))
 
             val result = mApplicationPasswordsManager.getApplicationCredentials(
-                testSite
+                testSite,
+                REQUEST_PATH
             )
 
             assertEquals(ApplicationPasswordCreationResult.NotSupported(networkError), result)
         }
+
+    @Test
+    fun `given a simple wpcom site, when requesting credentials, then return unsupported and notify`() = runTest {
+        val site = SiteModel().apply { setIsWPCom(true) }
+
+        val result = mApplicationPasswordsManager.getApplicationCredentials(site, REQUEST_PATH)
+
+        assertIs<ApplicationPasswordCreationResult.NotSupported>(result)
+        verify(listener).onFeatureUnavailable(
+            eq(site),
+            any(),
+            eq(REQUEST_PATH),
+            eq(ApplicationPasswordGenerationScenario.GENERATION)
+        )
+    }
 
     @Test
     fun `when a jetpack site returns application_passwords_disabled, then return feature not available`() =
@@ -180,7 +205,8 @@ class ApplicationPasswordManagerTests {
                 .thenReturn(ApplicationPasswordCreationPayload(networkError))
 
             val result = mApplicationPasswordsManager.getApplicationCredentials(
-                testSite
+                testSite,
+                REQUEST_PATH
             )
 
             assertEquals(ApplicationPasswordCreationResult.NotSupported(networkError), result)
@@ -203,7 +229,8 @@ class ApplicationPasswordManagerTests {
                 .thenReturn(ApplicationPasswordCreationPayload(networkError))
 
             val result = mApplicationPasswordsManager.getApplicationCredentials(
-                testSite
+                testSite,
+                REQUEST_PATH
             )
 
             assertEquals(ApplicationPasswordCreationResult.NotSupported(networkError), result)
@@ -224,7 +251,8 @@ class ApplicationPasswordManagerTests {
                 .thenReturn(ApplicationPasswordCreationPayload(networkError))
 
             val result = mApplicationPasswordsManager.getApplicationCredentials(
-                testSite
+                testSite,
+                REQUEST_PATH
             )
 
             Assert.assertEquals(ApplicationPasswordCreationResult.NotSupported(networkError), result)
@@ -253,7 +281,8 @@ class ApplicationPasswordManagerTests {
                 .thenReturn(ApplicationPasswordCreationPayload(networkError))
 
             val result = mApplicationPasswordsManager.getApplicationCredentials(
-                testSite
+                testSite,
+                REQUEST_PATH
             )
 
             assertEquals(ApplicationPasswordCreationResult.Failure(networkError), result)
@@ -276,7 +305,8 @@ class ApplicationPasswordManagerTests {
                 .thenReturn(ApplicationPasswordCreationPayload(networkError))
 
             val result = mApplicationPasswordsManager.getApplicationCredentials(
-                testSite
+                testSite,
+                REQUEST_PATH
             )
 
             assertEquals(ApplicationPasswordCreationResult.NotSupported(networkError), result)
@@ -300,7 +330,7 @@ class ApplicationPasswordManagerTests {
             whenever(mWpApiApplicationPasswordsRestClient.deleteApplicationPassword(site, uuid))
                 .thenReturn(ApplicationPasswordDeletionPayload(isDeleted = true))
 
-            val result = mApplicationPasswordsManager.getApplicationCredentials(site)
+            val result = mApplicationPasswordsManager.getApplicationCredentials(site, REQUEST_PATH)
 
             assertEquals(ApplicationPasswordCreationResult.Created(testCredentials), result)
             verify(mWpApiApplicationPasswordsRestClient).fetchApplicationPasswordUUID(site, applicationName)
@@ -392,12 +422,309 @@ class ApplicationPasswordManagerTests {
             val site = webFlowSite()
             whenever(applicationPasswordsStore.getCredentials(site)).thenReturn(null)
 
-            val result = mApplicationPasswordsManager.getApplicationCredentials(site)
+            val result = mApplicationPasswordsManager.getApplicationCredentials(site, REQUEST_PATH)
 
             val failure = assertIs<ApplicationPasswordCreationResult.Failure>(result)
             assertEquals(GenericErrorType.NOT_AUTHENTICATED, failure.error.type)
             assertEquals(401, failure.error.volleyError?.networkResponse?.statusCode)
         }
+
+    @Test
+    fun `given a recent failure, when requesting credentials within cooldown, then skip the API call`() = runTest {
+        val error = serverError()
+        givenCreationFailure(testSite, error)
+
+        assertIs<ApplicationPasswordCreationResult.Failure>(
+            mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        )
+        now = INITIAL_COOLDOWN_MS - 1
+
+        val result = mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+
+        assertEquals(ApplicationPasswordCreationResult.Failure(error), result)
+        verify(mWpApiApplicationPasswordsRestClient, times(1))
+            .createApplicationPassword(testSite, applicationName)
+        verify(listener).onPasswordGenerationFailed(
+            any(),
+            eq(REQUEST_PATH),
+            eq(ApplicationPasswordGenerationScenario.GENERATION)
+        )
+    }
+
+    @Test
+    fun `given repeated failures, when each cooldown expires, then double up to one hour`() = runTest {
+        val error = serverError()
+        givenCreationFailure(testSite, error)
+        val cooldowns = listOf(
+            10_000L,
+            20_000L,
+            40_000L,
+            80_000L,
+            160_000L,
+            320_000L,
+            640_000L,
+            1_280_000L,
+            2_560_000L,
+            5_120_000L,
+            10_240_000L,
+            20_480_000L
+        )
+
+        cooldowns.forEach { cooldown ->
+            assertIs<ApplicationPasswordCreationResult.Failure>(
+                mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+            )
+            now += cooldown
+        }
+        assertIs<ApplicationPasswordCreationResult.Failure>(
+            mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        )
+        now += MAX_COOLDOWN_MS - 1
+
+        assertEquals(
+            ApplicationPasswordCreationResult.Failure(error),
+            mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        )
+        now += 1
+
+        assertIs<ApplicationPasswordCreationResult.Failure>(
+            mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        )
+        now += MAX_COOLDOWN_MS - 1
+        assertEquals(
+            ApplicationPasswordCreationResult.Failure(error),
+            mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        )
+
+        verify(mWpApiApplicationPasswordsRestClient, times(14))
+            .createApplicationPassword(testSite, applicationName)
+        verify(listener, times(14)).onPasswordGenerationFailed(
+            any(),
+            eq(REQUEST_PATH),
+            eq(ApplicationPasswordGenerationScenario.GENERATION)
+        )
+    }
+
+    @Test
+    fun `given connection failures, when retries fail, then use ten seconds and double the next cooldown`() = runTest {
+        val connectionError = BaseNetworkError(GenericErrorType.NETWORK_ERROR, "offline")
+        val serverError = serverError()
+        whenever(applicationPasswordsStore.getCredentials(testSite)).thenReturn(null)
+        whenever(mWpApiApplicationPasswordsRestClient.createApplicationPassword(testSite, applicationName))
+            .thenReturn(
+                ApplicationPasswordCreationPayload(connectionError),
+                ApplicationPasswordCreationPayload(connectionError),
+                ApplicationPasswordCreationPayload(serverError),
+                ApplicationPasswordCreationPayload(serverError)
+            )
+
+        assertIs<ApplicationPasswordCreationResult.Failure>(
+            mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        )
+        now = INITIAL_COOLDOWN_MS - 1
+        assertEquals(
+            ApplicationPasswordCreationResult.Failure(connectionError),
+            mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        )
+        now += 1
+        assertIs<ApplicationPasswordCreationResult.Failure>(
+            mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        )
+        now += INITIAL_COOLDOWN_MS - 1
+        assertEquals(
+            ApplicationPasswordCreationResult.Failure(connectionError),
+            mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        )
+        now += 1
+        assertIs<ApplicationPasswordCreationResult.Failure>(
+            mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        )
+        now += INITIAL_COOLDOWN_MS * 2 - 1
+        assertEquals(
+            ApplicationPasswordCreationResult.Failure(serverError),
+            mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        )
+        now += 1
+        assertIs<ApplicationPasswordCreationResult.Failure>(
+            mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        )
+
+        verify(mWpApiApplicationPasswordsRestClient, times(4))
+            .createApplicationPassword(testSite, applicationName)
+        verify(listener, times(4)).onPasswordGenerationFailed(
+            any(),
+            eq(REQUEST_PATH),
+            eq(ApplicationPasswordGenerationScenario.GENERATION)
+        )
+    }
+
+    @Test
+    fun `given an unsupported response, when requesting credentials again, then cooldown and notify once`() = runTest {
+        val site = nativeCredentialsSite()
+        val error = BaseNetworkError(VolleyError(NetworkResponse(404, null, true, 0, emptyList())))
+        whenever(applicationPasswordsStore.getCredentials(site)).thenReturn(null)
+        whenever(mWpApiApplicationPasswordsRestClient.createApplicationPassword(site, applicationName))
+            .thenReturn(ApplicationPasswordCreationPayload(error))
+
+        assertIs<ApplicationPasswordCreationResult.NotSupported>(
+            mApplicationPasswordsManager.getApplicationCredentials(
+                site,
+                REQUEST_PATH,
+                scenario = ApplicationPasswordGenerationScenario.REGENERATION
+            )
+        )
+        val result = mApplicationPasswordsManager.getApplicationCredentials(
+            site,
+            REQUEST_PATH,
+            scenario = ApplicationPasswordGenerationScenario.REGENERATION
+        )
+
+        assertEquals(ApplicationPasswordCreationResult.Failure(error), result)
+        verify(mWpApiApplicationPasswordsRestClient, times(1)).createApplicationPassword(site, applicationName)
+        verify(listener).onFeatureUnavailable(
+            eq(site),
+            any(),
+            eq(REQUEST_PATH),
+            eq(ApplicationPasswordGenerationScenario.REGENERATION)
+        )
+    }
+
+    @Test
+    fun `given username fetch fails, when requesting credentials again, then cooldown without creating`() = runTest {
+        val site = webFlowSite().apply { username = null }
+        whenever(applicationPasswordsStore.getCredentials(site)).thenReturn(null)
+
+        val failure = assertIs<ApplicationPasswordCreationResult.Failure>(
+            mApplicationPasswordsManager.getApplicationCredentials(site, REQUEST_PATH)
+        )
+        assertEquals(
+            failure,
+            mApplicationPasswordsManager.getApplicationCredentials(site, REQUEST_PATH)
+        )
+
+        verify(mWpApiApplicationPasswordsRestClient, never()).createApplicationPassword(site, applicationName)
+        verify(listener).onPasswordGenerationFailed(
+            any(),
+            eq(REQUEST_PATH),
+            eq(ApplicationPasswordGenerationScenario.GENERATION)
+        )
+    }
+
+    @Test
+    fun `given a backwards clock step, when requesting credentials, then retry immediately`() = runTest {
+        givenCreationFailure(testSite, serverError())
+        now = INITIAL_COOLDOWN_MS
+        mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        now = 5_000L
+
+        val result = mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+
+        assertIs<ApplicationPasswordCreationResult.Failure>(result)
+        verify(mWpApiApplicationPasswordsRestClient, times(2))
+            .createApplicationPassword(testSite, applicationName)
+    }
+
+    @Test
+    fun `given a password is saved during cooldown, when requesting credentials, then return it`() = runTest {
+        givenCreationFailure(testSite, serverError())
+        whenever(applicationPasswordsStore.getCredentials(testSite)).thenReturn(null, testCredentials)
+        mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+
+        val result = mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+
+        assertEquals(ApplicationPasswordCreationResult.Existing(testCredentials), result)
+        verify(mWpApiApplicationPasswordsRestClient, times(1))
+            .createApplicationPassword(testSite, applicationName)
+    }
+
+    @Test
+    fun `given one site is cooling down, when another site requests credentials, then attempt creation`() = runTest {
+        val otherSite = nativeCredentialsSite().apply { id = testSite.id + 1 }
+        val error = serverError()
+        whenever(applicationPasswordsStore.getCredentials(any())).thenReturn(null)
+        whenever(mWpApiApplicationPasswordsRestClient.createApplicationPassword(any(), eq(applicationName)))
+            .thenReturn(ApplicationPasswordCreationPayload(error))
+        mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+
+        val result = mApplicationPasswordsManager.getApplicationCredentials(otherSite, REQUEST_PATH)
+
+        assertIs<ApplicationPasswordCreationResult.Failure>(result)
+        verify(mWpApiApplicationPasswordsRestClient, times(2)).createApplicationPassword(any(), eq(applicationName))
+    }
+
+    @Test
+    fun `given creation succeeds after cooldown, when it fails again, then start a fresh cooldown`() = runTest {
+        val error = serverError()
+        whenever(applicationPasswordsStore.getCredentials(testSite)).thenReturn(null)
+        whenever(mWpApiApplicationPasswordsRestClient.createApplicationPassword(testSite, applicationName))
+            .thenReturn(
+                ApplicationPasswordCreationPayload(error),
+                ApplicationPasswordCreationPayload(testCredentials.password, testCredentials.uuid!!),
+                ApplicationPasswordCreationPayload(error),
+                ApplicationPasswordCreationPayload(error)
+            )
+        assertIs<ApplicationPasswordCreationResult.Failure>(
+            mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        )
+        now = INITIAL_COOLDOWN_MS
+        assertIs<ApplicationPasswordCreationResult.Created>(
+            mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        )
+
+        assertIs<ApplicationPasswordCreationResult.Failure>(
+            mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        )
+        now += INITIAL_COOLDOWN_MS - 1
+        assertEquals(
+            ApplicationPasswordCreationResult.Failure(error),
+            mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        )
+        now += 1
+
+        assertIs<ApplicationPasswordCreationResult.Failure>(
+            mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH)
+        )
+        verify(mWpApiApplicationPasswordsRestClient, times(4))
+            .createApplicationPassword(testSite, applicationName)
+        verify(listener, times(3)).onPasswordGenerationFailed(
+            any(),
+            eq(REQUEST_PATH),
+            eq(ApplicationPasswordGenerationScenario.GENERATION)
+        )
+        verify(listener).onNewPasswordCreated(ApplicationPasswordGenerationScenario.GENERATION)
+    }
+
+
+    @Test
+    fun `given requests queued behind a failing attempt, when the first completes, then skip the second`() = runTest {
+        val error = serverError()
+        whenever(applicationPasswordsStore.getCredentials(testSite)).thenReturn(null)
+        val attemptStarted = CompletableDeferred<Unit>()
+        val attemptCanFinish = CompletableDeferred<Unit>()
+        whenever(mWpApiApplicationPasswordsRestClient.createApplicationPassword(testSite, applicationName))
+            .doSuspendableAnswer {
+                attemptStarted.complete(Unit)
+                attemptCanFinish.await()
+                ApplicationPasswordCreationPayload(error)
+            }
+        val first = async { mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH) }
+        attemptStarted.await()
+        val second = async { mApplicationPasswordsManager.getApplicationCredentials(testSite, REQUEST_PATH) }
+        runCurrent()
+        assertTrue(second.isActive)
+
+        attemptCanFinish.complete(Unit)
+
+        assertIs<ApplicationPasswordCreationResult.Failure>(first.await())
+        assertEquals(ApplicationPasswordCreationResult.Failure(error), second.await())
+        verify(mWpApiApplicationPasswordsRestClient, times(1))
+            .createApplicationPassword(testSite, applicationName)
+        verify(listener, times(1)).onPasswordGenerationFailed(
+            any(),
+            eq(REQUEST_PATH),
+            eq(ApplicationPasswordGenerationScenario.GENERATION)
+        )
+    }
 
     @Test
     fun `given parallel checks for the same password, when deciding whether to regenerate, then probe once`() =
@@ -545,7 +872,18 @@ class ApplicationPasswordManagerTests {
         password = "site-password"
     }
 
+    private fun serverError() = BaseNetworkError(GenericErrorType.SERVER_ERROR, "server failure")
+
+    private suspend fun givenCreationFailure(site: SiteModel, error: BaseNetworkError) {
+        whenever(applicationPasswordsStore.getCredentials(site)).thenReturn(null)
+        whenever(mWpApiApplicationPasswordsRestClient.createApplicationPassword(site, applicationName))
+            .thenReturn(ApplicationPasswordCreationPayload(error))
+    }
+
     companion object {
+        private const val REQUEST_PATH = "products"
         private const val VALIDATION_TTL_MS = 10_000L
+        private const val INITIAL_COOLDOWN_MS = 10_000L
+        private const val MAX_COOLDOWN_MS = 60 * 60 * 1_000L
     }
 }

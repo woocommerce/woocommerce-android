@@ -15,7 +15,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
@@ -25,7 +24,6 @@ import org.wordpress.android.fluxc.network.rest.ResponseWithHeaders
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
-import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
@@ -43,7 +41,6 @@ class ApplicationPasswordsNetworkTests {
 
     private val requestQueue: RequestQueue = mock()
     private val userAgent: UserAgent = mock()
-    private val listener: ApplicationPasswordsListener = mock()
     private val mApplicationPasswordsManager: ApplicationPasswordsManager = mock()
     private var lastRequestUrl: String? = null
     private lateinit var network: ApplicationPasswordsNetwork
@@ -53,7 +50,6 @@ class ApplicationPasswordsNetworkTests {
         network = ApplicationPasswordsNetwork(
             requestQueue = requestQueue,
             userAgent = userAgent,
-            listener = Optional.of(listener),
             httpsUrlNormalizer = HttpsUrlNormalizer(),
         ).apply {
             mApplicationPasswordsManager = this@ApplicationPasswordsNetworkTests.mApplicationPasswordsManager
@@ -63,18 +59,18 @@ class ApplicationPasswordsNetworkTests {
     @Test
     fun `when sending a new request, then fetch the application password`() = runTest {
         givenSuccessResponse()
-        whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite))
+        whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite, "path"))
             .thenReturn(ApplicationPasswordCreationResult.Created(testCredentials))
 
         network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
 
-        verify(mApplicationPasswordsManager).getApplicationCredentials(testSite)
+        verify(mApplicationPasswordsManager).getApplicationCredentials(testSite, "path")
     }
 
     @Test
     fun `given HTTP site, when sending request, then use HTTPS`() = runTest {
         givenSuccessResponse()
-        whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite))
+        whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite, "path"))
             .thenReturn(ApplicationPasswordCreationResult.Existing(testCredentials))
 
         network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
@@ -84,8 +80,15 @@ class ApplicationPasswordsNetworkTests {
 
     @Test
     fun `given a locally existing password, when password is revoked, then regenerate a new one`() = runTest {
-        whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite))
+        whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite, "path"))
             .thenReturn(ApplicationPasswordCreationResult.Existing(testCredentials))
+        whenever(
+            mApplicationPasswordsManager.getApplicationCredentials(
+                testSite,
+                "path",
+                ApplicationPasswordGenerationScenario.REGENERATION
+            )
+        )
             .thenReturn(ApplicationPasswordCreationResult.Created(testCredentials))
         givenPasswordIsRevoked()
         val networkError = VolleyError(NetworkResponse(401, byteArrayOf(), true, 0, emptyList()))
@@ -94,14 +97,19 @@ class ApplicationPasswordsNetworkTests {
         network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
 
         verify(mApplicationPasswordsManager).deleteLocalApplicationPassword(testSite, testCredentials)
-        verify(mApplicationPasswordsManager, times(2)).getApplicationCredentials(testSite)
+        verify(mApplicationPasswordsManager).getApplicationCredentials(testSite, "path")
+        verify(mApplicationPasswordsManager).getApplicationCredentials(
+            testSite,
+            "path",
+            ApplicationPasswordGenerationScenario.REGENERATION
+        )
     }
 
     @Test
     fun `given request succeeds, when request is executed, then return the response`() = runTest {
         val expectedResponse = TestResponse("value")
         givenSuccessResponse(expectedResponse)
-        whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite))
+        whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite, "path"))
             .thenReturn(ApplicationPasswordCreationResult.Existing(testCredentials))
 
         val response = network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
@@ -114,7 +122,7 @@ class ApplicationPasswordsNetworkTests {
     fun `given request fails, when request is executed, then return the error`() = runTest {
         val networkError = VolleyError(NetworkResponse(500, byteArrayOf(), true, 0, emptyList()))
         givenErrorResponse(networkError)
-        whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite))
+        whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite, "path"))
             .thenReturn(ApplicationPasswordCreationResult.Existing(testCredentials))
 
         val response = network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
@@ -125,48 +133,25 @@ class ApplicationPasswordsNetworkTests {
     }
 
     @Test
-    fun `given site doesn't support application passwords, when a new request, then notify listener`() =
+    fun `given site doesn't support application passwords, when a new request, then return the prefixed error`() =
         runTest {
             val networkError = BaseNetworkError(VolleyError(NetworkResponse(501, byteArrayOf(), true, 0, emptyList())))
-            whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite))
+            whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite, "path"))
                 .thenReturn(ApplicationPasswordCreationResult.NotSupported(BaseNetworkError(networkError)))
 
-            network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
+            val response = network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
 
-            verify(listener).onFeatureUnavailable(eq(testSite), any())
-        }
-
-    @Test
-    fun `when a new password is created, then notify listener`() =
-        runTest {
-            givenSuccessResponse()
-            whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite))
-                .thenReturn(ApplicationPasswordCreationResult.Created(testCredentials))
-
-            network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
-
-            verify(listener).onNewPasswordCreated(isPasswordRegenerated = false)
-        }
-
-    @Test
-    fun `given a revoked local password, when a new password is created, then notify listener`() =
-        runTest {
-            whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite))
-                .thenReturn(ApplicationPasswordCreationResult.Existing(testCredentials))
-                .thenReturn(ApplicationPasswordCreationResult.Created(testCredentials))
-            givenPasswordIsRevoked()
-            val networkError = VolleyError(NetworkResponse(401, byteArrayOf(), true, 0, emptyList()))
-            givenErrorResponse(networkError)
-
-            network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
-
-            verify(listener).onNewPasswordCreated(isPasswordRegenerated = true)
+            assertIs<WPAPIResponse.Error<TestResponse>>(response)
+            assertEquals(
+                ApplicationPasswordsNetwork.APP_PASSWORDS_GENERATION_FAILURE_ERROR_CODE_PREFIX,
+                response.error.errorCode
+            )
         }
 
     @Test
     fun `given the password is still valid, when an endpoint returns 401, then keep it and return the error`() =
         runTest {
-            whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite))
+            whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite, "path"))
                 .thenReturn(ApplicationPasswordCreationResult.Existing(testCredentials))
             whenever(mApplicationPasswordsManager.shouldRegenerateApplicationPassword(testSite, testCredentials))
                 .thenReturn(false)
@@ -177,9 +162,7 @@ class ApplicationPasswordsNetworkTests {
 
             verify(mApplicationPasswordsManager).shouldRegenerateApplicationPassword(testSite, testCredentials)
             verify(mApplicationPasswordsManager, never()).deleteLocalApplicationPassword(any(), any())
-            verify(mApplicationPasswordsManager, times(1)).getApplicationCredentials(testSite)
-            // Both of these are what the app turns into a sign-out
-            verifyNoInteractions(listener)
+            verify(mApplicationPasswordsManager, times(1)).getApplicationCredentials(testSite, "path")
             assertIs<WPAPIResponse.Error<TestResponse>>(response)
             assertEquals(networkError, response.error.volleyError)
         }
@@ -187,7 +170,7 @@ class ApplicationPasswordsNetworkTests {
     @Test
     fun `given a freshly created password, when an endpoint returns 401, then don't verify it or regenerate`() =
         runTest {
-            whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite))
+            whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite, "path"))
                 .thenReturn(ApplicationPasswordCreationResult.Created(testCredentials))
             givenErrorResponse(VolleyError(NetworkResponse(401, byteArrayOf(), true, 0, emptyList())))
 
@@ -195,7 +178,7 @@ class ApplicationPasswordsNetworkTests {
 
             verify(mApplicationPasswordsManager, never()).shouldRegenerateApplicationPassword(any(), any())
             verify(mApplicationPasswordsManager, never()).deleteLocalApplicationPassword(any(), any())
-            verify(mApplicationPasswordsManager, times(1)).getApplicationCredentials(testSite)
+            verify(mApplicationPasswordsManager, times(1)).getApplicationCredentials(testSite, "path")
         }
 
     private suspend fun givenPasswordIsRevoked() {
