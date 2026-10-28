@@ -5,10 +5,12 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.JetpackStatus
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.common.PluginRepository
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.jetpack.GoToStore
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
 import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewViewModel
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ConnectionStep
@@ -64,6 +66,7 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
     }
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val selectedSite: SelectedSite = mock()
+    private val registerDevice: RegisterDevice = mock()
 
     suspend fun setup(
         jetpackStatus: JetpackStatus,
@@ -81,6 +84,7 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
             accountRepository = accountRepository,
             appPrefsWrapper = appPrefsWrapper,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
+            registerDevice = registerDevice,
             selectedSite = selectedSite
         )
     }
@@ -361,6 +365,26 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
 
             // Restore the original handler
             Thread.setDefaultUncaughtExceptionHandler(originalHandler)
+        }
+
+    @Test
+    fun `given the logged-in account connected Jetpack, when going to the store, then register the device for push notifications`() =
+        testBlocking {
+            setup(createJetpackStatus(isJetpackInstalled = true, supportsConnectionApi = true)) {
+                whenever(jetpackActivationRepository.connectJetpackAccount(any(), any(), any()))
+                    .thenReturn(Result.success(Unit))
+                whenever(jetpackActivationRepository.getSiteByUrl(siteUrl))
+                    .thenReturn(site.apply { hasWooCommerce = true })
+            }
+            viewModel.viewState.runAndCaptureValues { advanceUntilIdle() }
+
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onContinueClick()
+                advanceUntilIdle()
+            }.last()
+
+            verify(registerDevice).kickoff(RegisterDevice.Trigger.LOGIN_SUCCESS)
+            assertThat(event).isEqualTo(GoToStore)
         }
 
     private fun createJetpackStatus(

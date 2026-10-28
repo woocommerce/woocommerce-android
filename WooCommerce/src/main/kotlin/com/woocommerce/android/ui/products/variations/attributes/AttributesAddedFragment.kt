@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.variations.attributes
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -10,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentAttributesAddedBinding
 import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
@@ -25,6 +27,7 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Sho
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError.NoCandidates
 import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
 import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
+import com.woocommerce.android.ui.products.variations.domain.VariationCandidates
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -36,11 +39,15 @@ class AttributesAddedFragment :
     BaseProductFragment(R.layout.fragment_attributes_added) {
     companion object {
         const val TAG: String = "AttributesAddedFragment"
+        private const val KEY_GENERATE_VARIATIONS_CANDIDATES = "generate_variations_candidates"
     }
 
     private var progressDialog: CustomProgressDialog? = null
 
     private var generateVariationPickerDialog: GenerateVariationBottomSheetFragment? = null
+
+    private var generateVariationsDialog: AlertDialog? = null
+    private var generateVariationsCandidates: List<VariationCandidate>? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -60,6 +67,23 @@ class AttributesAddedFragment :
                 }
             }
         )
+
+        savedInstanceState?.parcelable<VariationCandidates>(KEY_GENERATE_VARIATIONS_CANDIDATES)?.let {
+            showGenerateVariationConfirmation(it.candidates)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        generateVariationsCandidates?.let {
+            outState.putParcelable(KEY_GENERATE_VARIATIONS_CANDIDATES, VariationCandidates(it))
+        }
+    }
+
+    override fun onDestroyView() {
+        generateVariationsDialog?.dismiss()
+        generateVariationsDialog = null
+        super.onDestroyView()
     }
 
     private fun setupObservers() {
@@ -155,14 +179,17 @@ class AttributesAddedFragment :
     }
 
     private fun showGenerateVariationConfirmation(variationCandidatesSize: List<VariationCandidate>) {
-        MaterialAlertDialogBuilder(requireActivity()).setTitle(R.string.variations_bulk_creation_confirmation_title)
+        generateVariationsCandidates = variationCandidatesSize
+        generateVariationsDialog = MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(R.string.variations_bulk_creation_confirmation_title)
             .setMessage(getString(R.string.variations_bulk_creation_confirmation_message, variationCandidatesSize.size))
             .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
                 viewModel.onGenerateVariationsConfirmed(variationCandidatesSize)
                 dialogInterface.dismiss()
             }.setNegativeButton(android.R.string.cancel) { dialogInterface, _ ->
                 dialogInterface.dismiss()
-            }.show()
+            }.setOnDismissListener { generateVariationsCandidates = null }
+            .show()
     }
 
     private fun showNoVariationCandidatesError() {

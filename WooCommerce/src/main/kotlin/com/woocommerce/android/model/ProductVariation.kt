@@ -114,7 +114,7 @@ open class ProductVariation(
     override fun compareTo(other: ProductVariation): Int {
         val menuOrdering = menuOrder.compareTo(other.menuOrder)
         if (menuOrdering != 0) return menuOrdering
-        return getName().compareTo(other.getName())
+        return other.remoteVariationId.compareTo(remoteVariationId)
     }
 
     override fun hashCode(): Int {

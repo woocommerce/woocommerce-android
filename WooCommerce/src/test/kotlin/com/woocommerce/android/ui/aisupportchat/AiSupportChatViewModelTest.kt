@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResp
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatSupportArea
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
@@ -47,6 +48,8 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseKind
 
 @ExperimentalCoroutinesApi
 class AiSupportChatViewModelTest : BaseUnitTest() {
@@ -58,6 +61,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock {
         on { getString(R.string.ai_support_chat_store_connection_error_message) }
             .thenReturn(STORE_CONNECTION_ERROR_MESSAGE)
+        on { getString(R.string.ai_support_chat_login_unexpected_response_message) }
+            .thenReturn(LOGIN_UNEXPECTED_RESPONSE_MESSAGE)
     }
 
     private lateinit var viewModel: AiSupportChatViewModel
@@ -66,6 +71,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     fun setUp() {
         whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
         contextProvider.stub { on { buildStatusReport(anyOrNull()) } doReturn STATUS_REPORT }
+        contextProvider.stub { on { buildLoginContext() } doReturn LOGIN_CONTEXT }
+        diagnosticsService.stub { on { runLoginDiagnostics() } doReturn flowOf(EMPTY_LOGIN_DIAGNOSTIC_RESULT) }
         createViewModel()
     }
 
@@ -134,7 +141,13 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     @Test
     fun `given pre-login launch mode, when message sent, then chat starts with generic context`() =
         testBlocking {
-            whenever(contextProvider.buildInitialContext(statusReport = STATUS_REPORT)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(
+                    diagnosticResult = EMPTY_LOGIN_DIAGNOSTIC_RESULT,
+                    statusReport = STATUS_REPORT,
+                    loginContext = LOGIN_CONTEXT
+                )
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
                 .thenReturn(Result.success(createResponse(messages = listOf(createMessage(2L, SupportChatRole.BOT)))))
 
@@ -148,16 +161,50 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.showSendError).isFalse()
             assertThat(state.selectedIssueType).isNull()
             assertThat(state.diagnosticResult).isNull()
-            verify(contextProvider).buildInitialContext(statusReport = STATUS_REPORT)
+            verify(contextProvider).buildInitialContext(
+                diagnosticResult = EMPTY_LOGIN_DIAGNOSTIC_RESULT,
+                statusReport = STATUS_REPORT,
+                loginContext = LOGIN_CONTEXT
+            )
             verify(repository, never()).registerChat(any(), any(), any(), any(), any())
             verify(repository, never()).markChatAsUpdated(any(), any())
+        }
+
+    @Test
+    fun `given pre-login launch mode, when message sent, then context includes login context and checks`() =
+        testBlocking {
+            val result = DiagnosticResult(
+                issueType = SupportIssueType.OTHER,
+                statuses = listOf(DiagnosticStatus(DiagnosticTest.INTERNET_CONNECTION, TestStatus.Passed))
+            )
+            diagnosticsService.stub { on { runLoginDiagnostics() } doReturn flowOf(result) }
+            whenever(
+                contextProvider.buildInitialContext(
+                    diagnosticResult = result,
+                    statusReport = STATUS_REPORT,
+                    loginContext = LOGIN_CONTEXT
+                )
+            ).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
+                .thenReturn(Result.success(createResponse()))
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin())
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+            viewModel.onSendClicked()
+
+            verify(repository).sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null)
         }
 
     @Test
     fun `given pre-login launch mode with site address, when message sent, then context includes site address`() =
         testBlocking {
             whenever(
-                contextProvider.buildInitialContext(siteAddress = SITE_URL, statusReport = STATUS_REPORT)
+                contextProvider.buildInitialContext(
+                    diagnosticResult = EMPTY_LOGIN_DIAGNOSTIC_RESULT,
+                    siteAddress = SITE_URL,
+                    statusReport = STATUS_REPORT,
+                    loginContext = LOGIN_CONTEXT
+                )
             ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
                 .thenReturn(Result.success(createResponse(messages = listOf(createMessage(2L, SupportChatRole.BOT)))))
@@ -167,14 +214,25 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             viewModel.onSendClicked()
 
             verify(contextProvider).buildStatusReport(SITE_URL)
-            verify(contextProvider).buildInitialContext(siteAddress = SITE_URL, statusReport = STATUS_REPORT)
+            verify(contextProvider).buildInitialContext(
+                diagnosticResult = EMPTY_LOGIN_DIAGNOSTIC_RESULT,
+                siteAddress = SITE_URL,
+                statusReport = STATUS_REPORT,
+                loginContext = LOGIN_CONTEXT
+            )
             verify(repository).sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null)
         }
 
     @Test
     fun `given pre-login chat exists, when follow up message sent, then bookmark is not touched`() =
         testBlocking {
-            whenever(contextProvider.buildInitialContext(statusReport = STATUS_REPORT)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(
+                    diagnosticResult = EMPTY_LOGIN_DIAGNOSTIC_RESULT,
+                    statusReport = STATUS_REPORT,
+                    loginContext = LOGIN_CONTEXT
+                )
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
                 .thenReturn(Result.success(createResponse()))
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, BOT_RESPONSE, JsonObject(), CHAT_ID, SESSION_ID))
@@ -196,7 +254,13 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             contextProvider.stub {
                 on { buildStatusReport(anyOrNull()) }.doReturn(STATUS_REPORT, CHANGED_STATUS_REPORT)
             }
-            whenever(contextProvider.buildInitialContext(statusReport = STATUS_REPORT)).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(
+                    diagnosticResult = EMPTY_LOGIN_DIAGNOSTIC_RESULT,
+                    statusReport = STATUS_REPORT,
+                    loginContext = LOGIN_CONTEXT
+                )
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
                 .thenReturn(Result.failure(Exception()), Result.success(createResponse()))
 
@@ -207,7 +271,11 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             viewModel.onSendClicked()
 
             verify(contextProvider, times(1)).buildStatusReport(anyOrNull())
-            verify(contextProvider, times(2)).buildInitialContext(statusReport = STATUS_REPORT)
+            verify(contextProvider, times(2)).buildInitialContext(
+                diagnosticResult = EMPTY_LOGIN_DIAGNOSTIC_RESULT,
+                statusReport = STATUS_REPORT,
+                loginContext = LOGIN_CONTEXT
+            )
             assertThat(viewModel.viewState.value.chatId).isEqualTo(CHAT_ID)
             verify(repository, times(2)).sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null)
         }
@@ -1422,7 +1490,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 contextProvider.buildInitialContext(
                     diagnosticResult = any(),
                     siteAddress = anyOrNull(),
-                    statusReport = anyOrNull()
+                    statusReport = anyOrNull(),
+                    loginContext = anyOrNull()
                 )
             ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
@@ -1446,7 +1515,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             verify(contextProvider, never()).buildInitialContext(
                 diagnosticResult = any(),
                 siteAddress = anyOrNull(),
-                statusReport = anyOrNull()
+                statusReport = anyOrNull(),
+                loginContext = anyOrNull()
             )
             verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
 
@@ -1460,7 +1530,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             verify(contextProvider).buildInitialContext(
                 diagnosticResult = diagnosticResultCaptor.capture(),
                 siteAddress = anyOrNull(),
-                statusReport = anyOrNull()
+                statusReport = anyOrNull(),
+                loginContext = anyOrNull()
             )
             assertThat(diagnosticResultCaptor.firstValue.statuses.map { it.status }).containsExactly(
                 TestStatus.Passed,
@@ -1529,7 +1600,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 contextProvider.buildInitialContext(
                     diagnosticResult = any(),
                     siteAddress = anyOrNull(),
-                    statusReport = anyOrNull()
+                    statusReport = anyOrNull(),
+                    loginContext = anyOrNull()
                 )
             ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
@@ -1550,7 +1622,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             verify(contextProvider).buildInitialContext(
                 diagnosticResult = diagnosticResultCaptor.capture(),
                 siteAddress = anyOrNull(),
-                statusReport = eq(STATUS_REPORT)
+                statusReport = eq(STATUS_REPORT),
+                loginContext = anyOrNull()
             )
             assertThat(diagnosticResultCaptor.firstValue.statuses.map { it.status }).containsExactly(
                 TestStatus.Failed(technicalDetails = "rest_invalid_signature")
@@ -1565,7 +1638,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 contextProvider.buildInitialContext(
                     diagnosticResult = any(),
                     siteAddress = anyOrNull(),
-                    statusReport = anyOrNull()
+                    statusReport = anyOrNull(),
+                    loginContext = anyOrNull()
                 )
             ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
@@ -1581,13 +1655,87 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given login unexpected response launch mode, when loaded, then prefill the message without sending it`() =
+        testBlocking {
+            viewModel.onLaunchModeLoaded(
+                AiSupportChatLaunchMode.LoginUnexpectedResponse(LOGIN_UNEXPECTED_RESPONSE_FAILURE, SITE_URL)
+            )
+
+            val state = viewModel.viewState.value
+            assertThat(state.input).isEqualTo(LOGIN_UNEXPECTED_RESPONSE_MESSAGE)
+            assertThat(state.hasProceededToChat).isTrue()
+            assertThat(state.launchExtraTags).containsExactly("login_unexpected_response")
+            assertThat(state.diagnosticResult?.statuses?.single()?.status).isEqualTo(
+                TestStatus.Failed(technicalDetails = LOGIN_UNEXPECTED_RESPONSE_FAILURE.supportDetails)
+            )
+            verify(repository, never()).sendMessage(any(), any(), any(), anyOrNull(), anyOrNull())
+            verify(analyticsTracker).trackEntryPointTapped(
+                entryPoint = AiSupportChatEntryPoint.LOGIN_UNEXPECTED_RESPONSE,
+                isAuthenticated = true,
+                isResumedChat = false
+            )
+        }
+
+    @Test
+    fun `given login unexpected response launch mode, when sending the message, then send the error details`() =
+        testBlocking {
+            whenever(
+                contextProvider.buildInitialContext(
+                    diagnosticResult = any(),
+                    siteAddress = anyOrNull(),
+                    statusReport = anyOrNull(),
+                    loginContext = anyOrNull()
+                )
+            )
+                .thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, LOGIN_UNEXPECTED_RESPONSE_MESSAGE, CONTEXT, null, null))
+                .thenReturn(Result.success(createResponse()))
+            viewModel.onLaunchModeLoaded(
+                AiSupportChatLaunchMode.LoginUnexpectedResponse(LOGIN_UNEXPECTED_RESPONSE_FAILURE, SITE_URL)
+            )
+
+            viewModel.onSendClicked()
+
+            val diagnosticResultCaptor = argumentCaptor<DiagnosticResult>()
+            verify(contextProvider).buildInitialContext(
+                diagnosticResult = diagnosticResultCaptor.capture(),
+                siteAddress = anyOrNull(),
+                statusReport = eq(STATUS_REPORT),
+                loginContext = anyOrNull()
+            )
+            assertThat(diagnosticResultCaptor.firstValue.statuses.single().status).isEqualTo(
+                TestStatus.Failed(technicalDetails = LOGIN_UNEXPECTED_RESPONSE_FAILURE.supportDetails)
+            )
+            verify(repository).sendMessage(DEFAULT_BOT_SLUG, LOGIN_UNEXPECTED_RESPONSE_MESSAGE, CONTEXT, null, null)
+        }
+
+    @Test
+    fun `given login unexpected response launch mode, when contact support is clicked, then event carries the details`() {
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever { events.add(it) }
+        viewModel.onLaunchModeLoaded(
+            AiSupportChatLaunchMode.LoginUnexpectedResponse(LOGIN_UNEXPECTED_RESPONSE_FAILURE, SITE_URL)
+        )
+
+        viewModel.onContactSupportClicked(
+            source = HumanSupportContactSource.TOOLBAR,
+            canCreateTicketDirectly = false
+        )
+
+        val event = events.filterIsInstance<ContactHumanSupport>().last()
+        assertThat(event.diagnosticLog).isEqualTo(LOGIN_UNEXPECTED_RESPONSE_FAILURE.supportDetails)
+        assertThat(event.extraTags).contains("login_unexpected_response")
+    }
+
+    @Test
     fun `given store connection error launch mode, when loaded, then entry point analytics are tracked`() =
         testBlocking {
             whenever(
                 contextProvider.buildInitialContext(
                     diagnosticResult = any(),
                     siteAddress = anyOrNull(),
-                    statusReport = anyOrNull()
+                    statusReport = anyOrNull(),
+                    loginContext = anyOrNull()
                 )
             ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
@@ -1609,7 +1757,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 contextProvider.buildInitialContext(
                     diagnosticResult = any(),
                     siteAddress = anyOrNull(),
-                    statusReport = anyOrNull()
+                    statusReport = anyOrNull(),
+                    loginContext = anyOrNull()
                 )
             ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
@@ -2475,15 +2624,29 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         const val ISSUE_DETAILS = "My latest orders are missing"
         const val FOLLOW_UP_MESSAGE = "Still broken"
         const val STORE_CONNECTION_ERROR_MESSAGE = "My store can't be reached."
+        const val LOGIN_UNEXPECTED_RESPONSE_MESSAGE = "I can't log in to my store."
         const val BOT_MESSAGE_ID = 2L
         const val BOT_RESPONSE = "Let's troubleshoot orders."
         const val FOLLOW_UP_BOT_RESPONSE = "Let's keep troubleshooting."
         const val SITE_URL = "https://example.com"
         const val STATUS_REPORT = "### Mobile Status Report ###"
+        const val LOGIN_CONTEXT = "# Login context"
+        val EMPTY_LOGIN_DIAGNOSTIC_RESULT = DiagnosticResult(issueType = SupportIssueType.OTHER, statuses = emptyList())
         const val CHANGED_STATUS_REPORT = "### Changed Mobile Status Report ###"
 
         val CONTEXT = JsonObject().apply {
             addProperty("selectedSiteId", 20L)
         }
+        val LOGIN_UNEXPECTED_RESPONSE_FAILURE = LoginUnexpectedResponseFailure(
+            flow = LoginUnexpectedResponseFailure.Flow.SITE_CREDENTIALS,
+            step = LoginUnexpectedResponseFailure.Step.NONCE_RETRIEVAL,
+            response = UnexpectedStoreResponse(
+                kind = UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE,
+                statusCode = 400,
+                contentType = "text/html",
+                requestType = "GET /wp-admin/admin-ajax.php",
+                excerpt = "0"
+            )
+        )
     }
 }

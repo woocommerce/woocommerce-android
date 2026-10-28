@@ -5,7 +5,10 @@ import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.Barc
 import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
@@ -134,4 +137,28 @@ class HardwareBarcodeScannerTest : BaseUnitTest() {
             // THEN
             assertThat(consumed).containsOnly(false)
         }
+
+    @Test
+    fun `given listening, when a code is typed without enter, then a scan without enter suffix is emitted`() =
+        testBlocking {
+            // GIVEN
+            val scanner = createScanner()
+            scanner.startListening(ScanningSource.ORDER_LIST, onBarcodeScanned)
+            val scansWithoutEnterSuffix = mutableListOf<Unit>()
+            backgroundScope.launch { scanner.scansWithoutEnterSuffix.collect { scansWithoutEnterSuffix.add(it) } }
+            runCurrent()
+
+            // WHEN
+            "4006381333931".forEach { scanner.onKeyDown(it.code, isTextInputFocused = false) }
+            advanceTimeBy(SCANNER_TIMEOUT_MS)
+            runCurrent()
+
+            // THEN
+            assertThat(scansWithoutEnterSuffix).hasSize(1)
+            assertThat(scans).isEmpty()
+        }
+
+    private companion object {
+        const val SCANNER_TIMEOUT_MS = 300L
+    }
 }

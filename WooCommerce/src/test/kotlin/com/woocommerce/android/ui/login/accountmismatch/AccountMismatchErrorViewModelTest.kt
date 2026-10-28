@@ -4,6 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.CONNECT_JETPACK
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE
@@ -32,6 +33,7 @@ class AccountMismatchErrorViewModelTest : BaseUnitTest() {
         on { getString(R.string.login_wpcom_account_mismatch, SITE_URL) } doReturn "WPCom account mismatch"
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val unifiedLoginTracker: UnifiedLoginTracker = mock()
     private val webViewAuthenticator: WebViewAuthenticator = mock()
     private val userAgent: UserAgent = mock()
 
@@ -85,6 +87,16 @@ class AccountMismatchErrorViewModelTest : BaseUnitTest() {
             assertThat(viewState.message).isEqualTo("Jetpack not connected")
         }
 
+    @Test
+    fun `given self-hosted site, when screen is shown, then its message is recorded as the shown error`() =
+        testBlocking {
+            // WHEN
+            setup(isUserLoggedIn = true, primaryButton = CONNECT_JETPACK)
+
+            // THEN
+            verify(unifiedLoginTracker).onErrorShown("Jetpack not connected")
+        }
+
     private suspend fun setup(
         isUserLoggedIn: Boolean,
         logoutResult: Boolean = false,
@@ -101,6 +113,7 @@ class AccountMismatchErrorViewModelTest : BaseUnitTest() {
             accountRepository = accountRepository,
             resourceProvider = resourceProvider,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
+            unifiedLoginTracker = unifiedLoginTracker,
             webViewAuthenticator = webViewAuthenticator,
             userAgent = userAgent
         )
