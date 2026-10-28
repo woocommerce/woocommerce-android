@@ -305,11 +305,11 @@ class ProductListViewModel @Inject constructor(
 
     fun onBarcodeScannerClicked() {
         analyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
-        triggerEvent(ProductListEvent.ShowBarcodeScanner(scannedBarcode = null))
+        triggerEvent(ProductListEvent.ShowBarcodeScanner)
     }
 
     fun onHardwareBarcodeScanned(status: CodeScannerStatus.Success) {
-        triggerEvent(ProductListEvent.ShowBarcodeScanner(scannedBarcode = status))
+        triggerEvent(ProductListEvent.ShowScanToUpdateInventory(scannedBarcode = status))
     }
 
     fun reloadProductsFromDb(excludeProductId: Long? = null) {
