@@ -82,11 +82,16 @@ open class SiteStore @Inject constructor(
     @Inject internal lateinit var applicationPasswordsManagerProvider: Provider<ApplicationPasswordsManager>
 
     // Payloads
+    /**
+     * With [checksAuthorizationUrl], an application password authorization address that the site advertises but that
+     * isn't a web address makes the response unexpected.
+     */
     data class FetchWPAPISitePayload(
         val url: String,
         val username: String? = null,
         val password: String? = null,
         val wasUrlNormalizedToHttps: Boolean = false,
+        val checksAuthorizationUrl: Boolean = false,
     ) : Payload<BaseNetworkError>()
 
     data class FetchSitesPayload @JvmOverloads constructor(

@@ -53,7 +53,8 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
                 url = site.buildUrl(path),
                 body = mapOf("name" to applicationName),
                 clazz = ApplicationPasswordCreationResponse::class.java,
-                nonce = nonce.value
+                nonce = nonce.value,
+                readableBodyCheck = { it.password != null }
             )
         }
 
