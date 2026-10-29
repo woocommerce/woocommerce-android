@@ -484,7 +484,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 val onRetry = paymentState.onRetry
                 when {
                     onRetry != null -> {
-                        uiState.value = buildPaymentInProgressState()
+                        showProgressIfRecheckingCapture(paymentState.errorType)
                         onRetry()
                     }
                     else -> {
@@ -500,7 +500,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 val sdkRetry = paymentState.onRetry
                 if (sdkRetry != null) {
                     isTapToPayPayment = true
-                    uiState.value = buildPaymentInProgressState()
+                    showProgressIfRecheckingCapture(paymentState.errorType)
                     sdkRetry.invoke()
                 } else {
                     returnToCheckoutAfterTapToPayFailed()
@@ -508,6 +508,14 @@ class WooPosTotalsViewModel @Inject constructor(
             }
 
             else -> wooPosLogWrapper.e("Retry failed transaction clicked but payment state is not PaymentFailed")
+        }
+    }
+
+    // Re-checking an unconfirmed capture goes straight to capturing, so progress is shown right away instead of
+    // flashing the checkout and its payment methods. Other retries go back to the checkout to collect a card.
+    private fun showProgressIfRecheckingCapture(errorType: PaymentFlowError) {
+        if (errorType == PaymentFlowError.CaptureOutcomeUnknown) {
+            uiState.value = buildPaymentInProgressState()
         }
     }
 
@@ -875,7 +883,6 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private suspend fun handleReaderLoadingPaymentState() {
         val totalsState = uiState.value
-        // A retry keeps showing progress instead of flashing the checkout and its payment methods.
         if (totalsState is PaymentInProgress) return
         if (totalsState is WooPosTotalsViewState.Checkout) {
             uiState.value = totalsState.copy(
