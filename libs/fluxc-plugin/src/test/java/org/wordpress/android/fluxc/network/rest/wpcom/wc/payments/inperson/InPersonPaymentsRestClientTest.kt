@@ -131,7 +131,11 @@ class InPersonPaymentsRestClientTest {
     @Test
     fun `given stripe extension capture error with 502, when capturePayment, then generic error is returned`() =
         runTest {
-            givenCaptureFailsWith(statusCode = 502, type = GenericErrorType.UNKNOWN, errorCode = "wc_stripe_capture_error")
+            givenCaptureFailsWith(
+                statusCode = 502,
+                type = GenericErrorType.UNKNOWN,
+                errorCode = "wc_stripe_capture_error"
+            )
 
             val result = capture()
 
