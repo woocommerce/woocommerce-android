@@ -913,9 +913,14 @@ class WooPosTotalsViewModel @Inject constructor(
         } else {
             resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title)
         }
+        val subtitle = if (isOutcomeUnknown) {
+            resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_message)
+        } else {
+            uiStringParser.asString(errorType.message)
+        }
         return PaymentFailed(
             title = title,
-            subtitle = uiStringParser.asString(errorType.message),
+            subtitle = subtitle,
             retryPaymentButtonLabel = retryButtonLabel,
             isReturnToCheckoutButtonVisible = isRetryAvailable
         )
