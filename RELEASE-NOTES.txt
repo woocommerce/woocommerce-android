@@ -8,6 +8,7 @@
 
 25.9
 -----
+- [*] Swiping an order in the Orders list marks it completed only after dragging it past halfway again, so a quick flick while scrolling no longer completes it [https://github.com/woocommerce/woocommerce-android/pull/16790]
 - [*] Fixed an occasional crash on the product list [https://github.com/woocommerce/woocommerce-android/pull/16761]
 - [*] Generate all variations no longer suggests variations that already exist, and bulk update now covers every variation of products with more than 25 variations [https://github.com/woocommerce/woocommerce-android/pull/16691]
 - [*] Fixed item refunds failing on stores with WooCommerce 11.3 when tax doesn't split evenly per unit or less is left to refund on the order than the selected items [https://github.com/woocommerce/woocommerce-android/pull/16711]
