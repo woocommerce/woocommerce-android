@@ -894,7 +894,7 @@ class WooPosTotalsViewModel @Inject constructor(
     ): PaymentFailed = buildPaymentFailedState(state.errorType, isRetryAvailable = state.onRetry != null)
 
     private fun buildPaymentFailedState(errorType: PaymentFlowError, isRetryAvailable: Boolean): PaymentFailed {
-        // Retrying re-captures the same payment, so it can complete or confirm the charge but never charge twice.
+        // Retrying an unconfirmed payment re-captures it: it can confirm the charge but never charge twice.
         val isOutcomeUnknown = errorType == PaymentFlowError.CaptureOutcomeUnknown
         val retryButtonLabel = when {
             !isRetryAvailable -> resourceProvider.getString(R.string.woo_pos_payment_failed_try_another_payment_method)
