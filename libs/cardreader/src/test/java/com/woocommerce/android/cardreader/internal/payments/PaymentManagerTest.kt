@@ -656,6 +656,42 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         }
 
     @Test
+    fun `given ambiguous capture error and refreshed intent requires payment method, when capturing payment, then error emitted`() =
+        testBlocking {
+            val intent = createPaymentIntent(REQUIRES_CAPTURE)
+            whenever(intent.clientSecret).thenReturn("secret")
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(intent))
+            whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
+                .thenReturn(CapturePaymentResponse.Error.NetworkError(""))
+            val refreshedIntent = createPaymentIntent(REQUIRES_PAYMENT_METHOD)
+            whenever(terminalWrapper.retrievePaymentIntent("secret")).thenReturn(refreshedIntent)
+
+            val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+            assertThat((result.last() as PaymentFailed).type).isEqualTo(CardPaymentStatusErrorType.Generic)
+            verify(paymentErrorMapper).mapCapturePaymentError(anyOrNull(), anyOrNull())
+        }
+
+    @Test
+    fun `given ambiguous capture error and refreshed intent without status, when capturing payment, then outcome unknown emitted`() =
+        testBlocking {
+            val intent = createPaymentIntent(REQUIRES_CAPTURE)
+            whenever(intent.clientSecret).thenReturn("secret")
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(intent))
+            whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
+                .thenReturn(CapturePaymentResponse.Error.ServerError(""))
+            val refreshedIntent = mock<PaymentIntent>()
+            whenever(terminalWrapper.retrievePaymentIntent("secret")).thenReturn(refreshedIntent)
+
+            val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+            assertThat((result.last() as PaymentFailed).type)
+                .isEqualTo(CardPaymentStatusErrorType.CaptureOutcomeUnknown)
+        }
+
+    @Test
     fun `given ambiguous capture error and refreshed intent processing, when capturing payment, then outcome unknown emitted`() =
         testBlocking {
             val intent = createPaymentIntent(REQUIRES_CAPTURE)
