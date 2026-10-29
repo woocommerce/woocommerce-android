@@ -22,6 +22,8 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseKind
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -100,22 +102,100 @@ class InPersonPaymentsRestClientTest {
     fun `given gateway timeout response, when capturePayment, then gateway error is returned`() = runTest {
         givenCaptureFailsWith(statusCode = 504, type = GenericErrorType.UNKNOWN)
 
-        val result = sut.capturePayment(WOOCOMMERCE_PAYMENTS, site, paymentId = "pi_test", orderId = 123L)
+        val result = capture()
 
         assertThat(result.error?.type).isEqualTo(WCCapturePaymentErrorType.GATEWAY_ERROR)
     }
 
     @Test
+    fun `given bad gateway and service unavailable responses, when capturePayment, then gateway error is returned`() =
+        runTest {
+            listOf(502, 503).forEach { statusCode ->
+                givenCaptureFailsWith(statusCode = statusCode, type = GenericErrorType.UNKNOWN)
+
+                val result = capture()
+
+                assertThat(result.error?.type).isEqualTo(WCCapturePaymentErrorType.GATEWAY_ERROR)
+            }
+        }
+
+    @Test
     fun `given internal server error response, when capturePayment, then generic error is returned`() = runTest {
         givenCaptureFailsWith(statusCode = 500, type = GenericErrorType.SERVER_ERROR)
 
-        val result = sut.capturePayment(WOOCOMMERCE_PAYMENTS, site, paymentId = "pi_test", orderId = 123L)
+        val result = capture()
 
         assertThat(result.error?.type).isEqualTo(WCCapturePaymentErrorType.GENERIC_ERROR)
     }
 
-    private suspend fun givenCaptureFailsWith(statusCode: Int, type: GenericErrorType) {
+    @Test
+    fun `given stripe extension capture error with 502, when capturePayment, then generic error is returned`() =
+        runTest {
+            givenCaptureFailsWith(statusCode = 502, type = GenericErrorType.UNKNOWN, errorCode = "wc_stripe_capture_error")
+
+            val result = capture()
+
+            assertThat(result.error?.type).isEqualTo(WCCapturePaymentErrorType.GENERIC_ERROR)
+        }
+
+    @Test
+    fun `given WooPayments capture error with 502, when capturePayment, then capture error is returned`() = runTest {
+        givenCaptureFailsWith(statusCode = 502, type = GenericErrorType.UNKNOWN, errorCode = "wcpay_capture_error")
+
+        val result = capture()
+
+        assertThat(result.error?.type).isEqualTo(WCCapturePaymentErrorType.CAPTURE_ERROR)
+    }
+
+    @Test
+    fun `given tunnel wraps a store gateway timeout, when capturePayment, then gateway error is returned`() = runTest {
+        givenCaptureFailsWith(
+            statusCode = 502,
+            type = GenericErrorType.UNKNOWN,
+            errorCode = "no_response_body",
+            storeStatusCode = 504
+        )
+
+        val result = capture()
+
+        assertThat(result.error?.type).isEqualTo(WCCapturePaymentErrorType.GATEWAY_ERROR)
+    }
+
+    @Test
+    fun `given tunnel wraps a store fatal error, when capturePayment, then generic error is returned`() = runTest {
+        givenCaptureFailsWith(
+            statusCode = 502,
+            type = GenericErrorType.UNKNOWN,
+            errorCode = "no_response_body",
+            storeStatusCode = 500
+        )
+
+        val result = capture()
+
+        assertThat(result.error?.type).isEqualTo(WCCapturePaymentErrorType.GENERIC_ERROR)
+    }
+
+    private suspend fun capture() =
+        sut.capturePayment(WOOCOMMERCE_PAYMENTS, site, paymentId = "pi_test", orderId = 123L)
+
+    private suspend fun givenCaptureFailsWith(
+        statusCode: Int,
+        type: GenericErrorType,
+        errorCode: String? = null,
+        storeStatusCode: Int? = null,
+    ) {
         val volleyError = VolleyError(NetworkResponse(statusCode, ByteArray(0), false, 0, emptyList()))
+        val baseError = BaseNetworkError(type, volleyError).apply {
+            unexpectedStoreResponse = storeStatusCode?.let {
+                UnexpectedStoreResponse(
+                    kind = UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE,
+                    statusCode = it,
+                    contentType = null,
+                    requestType = "POST capture_terminal_payment",
+                    excerpt = null
+                )
+            }
+        }
         whenever(
             wooNetwork.executePostGsonRequest(
                 site = any(),
@@ -123,6 +203,6 @@ class InPersonPaymentsRestClientTest {
                 clazz = eq(CapturePaymentApiResponse::class.java),
                 body = any()
             )
-        ).thenReturn(WPAPIResponse.Error(WPAPINetworkError(BaseNetworkError(type, volleyError))))
+        ).thenReturn(WPAPIResponse.Error(WPAPINetworkError(baseError, errorCode = errorCode)))
     }
 }
