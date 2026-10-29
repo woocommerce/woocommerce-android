@@ -1291,6 +1291,35 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
+    fun `given payment failed with retry action, when retry clicked and loading starts, then progress stays shown`() =
+        runTest {
+            // GIVEN
+            mockPaymentFailedTexts()
+            givenCardReaderConnectedAndNetworkAvailable()
+            val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+            val factory: WooPosCardReaderPaymentControllerFactory = mock()
+            whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+            val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
+                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
+            )
+            whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
+            val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+            paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.NonCancelable(
+                errorType = PaymentFlowError.CaptureOutcomeUnknown, onRetry = {}
+            )
+            advanceUntilIdle()
+
+            // WHEN
+            vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
+            advanceUntilIdle()
+            paymentState.value = CardReaderPaymentState.LoadingData {}
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.PaymentInProgress::class.java)
+        }
+
+    @Test
     fun `given retryable payment error, when payment fails, then payment failed state with go back to checkout shown`() =
         runTest {
             // GIVEN
@@ -2847,6 +2876,8 @@ class WooPosTotalsViewModelTest {
         paymentState.value = failedState
         advanceUntilIdle()
         vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
+        advanceUntilIdle()
+        assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.PaymentInProgress::class.java)
         clearInvocations(childrenToParentEventSender)
 
         // WHEN
