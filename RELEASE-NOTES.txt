@@ -34,6 +34,7 @@
 - [*] The "Never miss a new order" card now shows on My Store right after logging in to a store without Jetpack [https://github.com/woocommerce/woocommerce-android/pull/16747]
 - [*] Products: Attribute options now keep their order after rotating the device, and new options are added at the end of the list [https://github.com/woocommerce/woocommerce-android/pull/16777]
 - [*] Fixed a crash when opening a product whose short description has a heading or aligned paragraph inside a list [https://github.com/woocommerce/woocommerce-android/pull/16776]
+- [*] [POS] A card payment no longer gets stuck on "Processing payment" when the card reader disconnects just as the payment completes [https://github.com/woocommerce/woocommerce-android/pull/16785]
 
 25.9
 -----
