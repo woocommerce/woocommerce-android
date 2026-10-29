@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -179,6 +180,21 @@ class InPersonPaymentsRestClientTest {
         assertThat(result.error?.type).isEqualTo(WCCapturePaymentErrorType.GENERIC_ERROR)
     }
 
+    @Test
+    fun `given tunnel reports a store gateway timeout without a body, when capturePayment, then gateway error is returned`() =
+        runTest {
+            givenCaptureFailsWith(
+                statusCode = 502,
+                type = GenericErrorType.UNKNOWN,
+                errorCode = "no_response_body",
+                errorData = JSONObject().put("status", 504)
+            )
+
+            val result = capture()
+
+            assertThat(result.error?.type).isEqualTo(WCCapturePaymentErrorType.GATEWAY_ERROR)
+        }
+
     private suspend fun capture() =
         sut.capturePayment(WOOCOMMERCE_PAYMENTS, site, paymentId = "pi_test", orderId = 123L)
 
@@ -187,6 +203,7 @@ class InPersonPaymentsRestClientTest {
         type: GenericErrorType,
         errorCode: String? = null,
         storeStatusCode: Int? = null,
+        errorData: JSONObject? = null,
     ) {
         val volleyError = VolleyError(NetworkResponse(statusCode, ByteArray(0), false, 0, emptyList()))
         val baseError = BaseNetworkError(type, volleyError).apply {
@@ -207,6 +224,6 @@ class InPersonPaymentsRestClientTest {
                 clazz = eq(CapturePaymentApiResponse::class.java),
                 body = any()
             )
-        ).thenReturn(WPAPIResponse.Error(WPAPINetworkError(baseError, errorCode = errorCode)))
+        ).thenReturn(WPAPIResponse.Error(WPAPINetworkError(baseError, errorCode = errorCode, errorData = errorData)))
     }
 }
