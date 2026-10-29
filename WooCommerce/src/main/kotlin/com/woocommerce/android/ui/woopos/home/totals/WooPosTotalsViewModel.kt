@@ -495,6 +495,7 @@ class WooPosTotalsViewModel @Inject constructor(
             is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment -> {
                 val sdkRetry = paymentState.onRetry
                 if (sdkRetry != null) {
+                    isTapToPayPayment = true
                     sdkRetry.invoke()
                 } else {
                     returnToCheckoutAfterTapToPayFailed()
