@@ -886,35 +886,28 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun buildPaymentFailedState(
         state: CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment
-    ): PaymentFailed {
-        val isRetryAvailable = state.onRetry != null
-        val retryButtonLabel = if (isRetryAvailable) {
-            resourceProvider.getString(R.string.woo_pos_payment_failed_try_again)
-        } else {
-            resourceProvider.getString(R.string.woo_pos_payment_failed_try_another_payment_method)
-        }
-        return PaymentFailed(
-            title = resourceProvider.getString(
-                R.string.woopos_success_totals_payment_failed_title
-            ),
-            subtitle = uiStringParser.asString(state.errorType.message),
-            retryPaymentButtonLabel = retryButtonLabel,
-            isReturnToCheckoutButtonVisible = isRetryAvailable
-        )
-    }
+    ): PaymentFailed = buildPaymentFailedState(state.errorType, isRetryAvailable = state.onRetry != null)
 
     private fun buildBuiltInPaymentFailedState(
         state: CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment
-    ): PaymentFailed {
-        val isRetryAvailable = state.onRetry != null
-        val retryButtonLabel = if (isRetryAvailable) {
-            resourceProvider.getString(R.string.woo_pos_payment_failed_try_again)
+    ): PaymentFailed = buildPaymentFailedState(state.errorType, isRetryAvailable = state.onRetry != null)
+
+    private fun buildPaymentFailedState(errorType: PaymentFlowError, isRetryAvailable: Boolean): PaymentFailed {
+        // Retrying re-captures the same payment, so it can complete or confirm the charge but never charge twice.
+        val isOutcomeUnknown = errorType == PaymentFlowError.CaptureOutcomeUnknown
+        val retryButtonLabel = when {
+            !isRetryAvailable -> resourceProvider.getString(R.string.woo_pos_payment_failed_try_another_payment_method)
+            isOutcomeUnknown -> resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_check_status)
+            else -> resourceProvider.getString(R.string.woo_pos_payment_failed_try_again)
+        }
+        val title = if (isOutcomeUnknown) {
+            resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_title)
         } else {
-            resourceProvider.getString(R.string.woo_pos_payment_failed_try_another_payment_method)
+            resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title)
         }
         return PaymentFailed(
-            title = resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title),
-            subtitle = uiStringParser.asString(state.errorType.message),
+            title = title,
+            subtitle = uiStringParser.asString(errorType.message),
             retryPaymentButtonLabel = retryButtonLabel,
             isReturnToCheckoutButtonVisible = isRetryAvailable
         )
