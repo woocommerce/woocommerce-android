@@ -171,7 +171,7 @@ class SitePickerViewModel @Inject constructor(
 
     private fun showPendingErrorMessageIfNeeded() {
         if (pendingErrorMessage != 0) {
-            triggerEvent(ShowSnackbar(pendingErrorMessage))
+            showErrorSnackbar(pendingErrorMessage)
         }
     }
 
@@ -188,7 +188,7 @@ class SitePickerViewModel @Inject constructor(
                     sitePickerViewState = sitePickerViewState.copy(userInfo = getUserInfo())
                 },
                 onFailure = {
-                    triggerEvent(ShowSnackbar(string.error_fetch_my_profile))
+                    showErrorSnackbar(string.error_fetch_my_profile)
                 }
             )
         }
@@ -225,7 +225,7 @@ class SitePickerViewModel @Inject constructor(
         sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
 
         when {
-            result.isError -> triggerEvent(ShowSnackbar(string.site_picker_error))
+            result.isError -> showErrorSnackbar(string.site_picker_error)
             result.model != null -> {
                 if (result.model!!.any { it.isJetpackCPConnected }) {
                     analyticsTrackerWrapper.track(
@@ -463,7 +463,7 @@ class SitePickerViewModel @Inject constructor(
                 }
             },
             onFailure = {
-                triggerEvent(ShowSnackbar(string.site_picker_error))
+                showErrorSnackbar(string.site_picker_error)
                 loginSiteAddress = null
                 loadAndDisplaySites()
             }
@@ -487,11 +487,13 @@ class SitePickerViewModel @Inject constructor(
         // Make sure installation is enabled only for selfhosted and atomic sites
         // TODO remove this when we handle non-atomic sites
         val isWooInstallationEnabled = site.isJetpackConnected
+        val errorMessage = resourceProvider.getString(string.login_not_woo_store, site.url)
+        recordShownError(errorMessage)
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = isWooInstallationEnabled,
             primaryBtnText = resourceProvider.getString(string.login_install_woo),
-            noStoresLabelText = resourceProvider.getString(string.login_not_woo_store, site.url),
+            noStoresLabelText = errorMessage,
             noStoresSubText = null,
             isNoStoresBtnVisible = true,
             noStoresBtnText = resourceProvider.getString(string.login_view_connected_stores),
@@ -501,11 +503,13 @@ class SitePickerViewModel @Inject constructor(
 
     private fun loadSimpleWPComView(site: SiteModel) {
         trackNotWooStore(site)
+        val errorMessage = resourceProvider.getString(string.login_simple_wpcom_site, site.url)
+        recordShownError(errorMessage)
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true,
             primaryBtnText = resourceProvider.getString(string.login_view_connected_stores),
-            noStoresLabelText = resourceProvider.getString(string.login_simple_wpcom_site, site.url),
+            noStoresLabelText = errorMessage,
             noStoresSubText = null,
             isNoStoresBtnVisible = false,
             currentSitePickerState = SitePickerState.SimpleWPComState
@@ -713,7 +717,7 @@ class SitePickerViewModel @Inject constructor(
                         if (navArgs.openedFromLogin && unexpectedStoreResponse != null) {
                             showUnexpectedResponse(UnexpectedResponseStep.USER_ROLE_CHECK, unexpectedStoreResponse)
                         } else {
-                            triggerEvent(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
+                            showErrorSnackbar(R.string.user_role_access_error_fetch_failed)
                         }
                     }
                 )
@@ -721,6 +725,7 @@ class SitePickerViewModel @Inject constructor(
             }
 
             else -> {
+                recordShownError(resourceProvider.getString(string.login_update_required_desc))
                 _isWooUpgradeDialogVisible.value = true
                 UnexpectedResponseStep.WOO_PLUGIN_CHECK
             }
@@ -785,6 +790,16 @@ class SitePickerViewModel @Inject constructor(
         )
         _unexpectedResponse.value = failure
         unexpectedResponseTracker.trackErrorShown(failure)
+        recordShownError(resourceProvider.getString(R.string.login_unexpected_response_title))
+    }
+
+    private fun showErrorSnackbar(@StringRes message: Int) {
+        recordShownError(resourceProvider.getString(message))
+        triggerEvent(ShowSnackbar(message))
+    }
+
+    private fun recordShownError(message: String) {
+        if (navArgs.openedFromLogin) unifiedLoginTracker.onErrorShown(message)
     }
 
     private fun getSelectedWooSite(): SiteModel? {
@@ -823,13 +838,19 @@ class SitePickerViewModel @Inject constructor(
                 analyticsTrackerWrapper.track(
                     stat = AnalyticsEvent.SITE_PICKER_JETPACK_TIMEOUT_ERROR_SHOWN
                 )
+                recordShownError(
+                    resourceProvider.getString(string.login_verifying_site_jetpack_timeout_error_description)
+                )
                 getJetpackTimeoutDialogEvent()
             }
 
-            else -> ShowSnackbar(
-                message = string.login_verifying_site_error,
-                args = arrayOf(site.getSiteName())
-            )
+            else -> {
+                recordShownError(resourceProvider.getString(string.login_verifying_site_error, site.getSiteName()))
+                ShowSnackbar(
+                    message = string.login_verifying_site_error,
+                    args = arrayOf(site.getSiteName())
+                )
+            }
         }
         triggerEvent(event)
     }
@@ -913,7 +934,7 @@ class SitePickerViewModel @Inject constructor(
                     onSitesLoaded(repository.getSites(), isApiResponse = false)
                 },
                 onFailure = {
-                    triggerEvent(ShowSnackbar(string.site_picker_error))
+                    showErrorSnackbar(string.site_picker_error)
                     // This would lead to the [WooNotFoundState] again
                     // The chance of getting this state is small, because of the retry mechanism above
                     onSitesLoaded(repository.getSites(), isApiResponse = false)

@@ -290,7 +290,7 @@ class HelpActivity : AppCompatActivity() {
 
     private fun shouldUsePreLoginAiSupportChat(): Boolean =
         HelpAiSupportChatEntryPoint.shouldUsePreLoginLaunchMode(
-            isUserLoggedIn = userIsLoggedIn()
+            hasSelectedSite = selectedSite.exists()
         )
 
     private fun showFeatureFlagsOverride() {

@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.products.selector.ProductSourceForTracking
 import com.woocommerce.android.ui.products.selector.SelectionState
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
+import com.woocommerce.android.ui.products.variations.VariationListPaging
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.LoadingState.LOADING
@@ -106,7 +107,9 @@ class VariationSelectorViewModel @Inject constructor(
             variationListHandler.fetchVariations(
                 productId = navArgs.productId,
                 forceRefresh = true,
-                orderCurrency = navArgs.orderCurrency
+                orderCurrency = navArgs.orderCurrency,
+                sorting = VariationListPaging.SORTING,
+                pageSize = VariationListPaging.PAGE_SIZE
             )
             loadingState.value = IDLE
         }
