@@ -15,11 +15,13 @@ import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalContentColor
@@ -145,24 +147,21 @@ fun BarcodeScanner(
 
 @Composable
 internal fun DefaultScannerOverlay(onHardwareScannerInfoClicked: () -> Unit) {
-    Column {
-        Box(
-            modifier = Modifier
-                .weight(0.24F)
-                .fillMaxWidth()
-                .background(colorResource(id = R.color.color_scrim_background))
-        )
-        Spacer(modifier = Modifier.weight(0.52F))
-        Box(
-            modifier = Modifier
-                .weight(0.24F)
-                .fillMaxWidth()
-                .background(colorResource(id = R.color.color_scrim_background)),
-            contentAlignment = Alignment.TopCenter
-        ) {
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val minBottomScrimHeight = maxHeight * SCRIM_HEIGHT_FRACTION
+        Column(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .weight(SCRIM_HEIGHT_FRACTION)
+                    .fillMaxWidth()
+                    .background(colorResource(id = R.color.color_scrim_background))
+            )
+            Spacer(modifier = Modifier.weight(SCANNING_WINDOW_HEIGHT_FRACTION))
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
+                    .heightIn(min = minBottomScrimHeight)
+                    .background(colorResource(id = R.color.color_scrim_background))
                     .padding(dimensionResource(id = R.dimen.major_100)),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween,
@@ -178,7 +177,10 @@ internal fun DefaultScannerOverlay(onHardwareScannerInfoClicked: () -> Unit) {
 @Composable
 private fun ScannerOptionsDivider() {
     val lineColor = LocalContentColor.current.copy(alpha = SCANNER_OPTIONS_DIVIDER_ALPHA)
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100)),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         HorizontalDivider(modifier = Modifier.weight(1f), color = lineColor)
         Text(
             modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.minor_100)),
@@ -199,9 +201,12 @@ private fun HardwareBarcodeScannerButton(onClick: () -> Unit) {
 }
 
 private const val SCANNER_OPTIONS_DIVIDER_ALPHA = 0.5f
+private const val SCRIM_HEIGHT_FRACTION = 0.24f
+private const val SCANNING_WINDOW_HEIGHT_FRACTION = 0.52f
 
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Landscape phone", widthDp = 800, heightDp = 360)
 @Composable
 private fun BarcodeScannerScreenPreview() {
     LegacyWooThemeWithBackground {
