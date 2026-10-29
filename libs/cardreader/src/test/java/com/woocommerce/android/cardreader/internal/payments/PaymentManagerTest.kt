@@ -620,6 +620,24 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         }
 
     @Test
+    fun `given gateway capture error and refreshed intent still requires capture, when capturing payment, then outcome unknown emitted`() =
+        testBlocking {
+            val intent = createPaymentIntent(REQUIRES_CAPTURE)
+            whenever(intent.clientSecret).thenReturn("secret")
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(intent))
+            whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
+                .thenReturn(CapturePaymentResponse.Error.GatewayError(""))
+            val refreshedIntent = createPaymentIntent(REQUIRES_CAPTURE)
+            whenever(terminalWrapper.retrievePaymentIntent("secret")).thenReturn(refreshedIntent)
+
+            val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+            assertThat((result.last() as PaymentFailed).type)
+                .isEqualTo(CardPaymentStatusErrorType.CaptureOutcomeUnknown)
+        }
+
+    @Test
     fun `given generic capture error and refreshed intent still requires capture, when capturing payment, then error emitted`() =
         testBlocking {
             val intent = createPaymentIntent(REQUIRES_CAPTURE)
