@@ -37,8 +37,8 @@ enum class WCCapturePaymentErrorType {
     NETWORK_ERROR,
 
     /**
-     * A gateway in front of the site answered 502, 503 or 504 before the site finished handling the request,
-     * so the capture may still be running.
+     * A gateway answered 502, 503 or 504 without a REST error from the site, so the site may not have finished
+     * handling the request and the capture may still be running.
      */
     GATEWAY_ERROR
 }
