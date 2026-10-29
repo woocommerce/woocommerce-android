@@ -8,6 +8,7 @@ import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Canceled
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.CaptureOutcomeUnknown
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
@@ -149,6 +150,21 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
 
         assertThat(result.type).isEqualTo(Server("error message"))
         assertThat(result.errorMessage).isEqualTo("Capturing payment failed: ServerError(message=error message)")
+    }
+
+    @Test
+    fun `when mapping unknown capture outcome, then CaptureOutcomeUnknown type with retry data returned`() {
+        val paymentIntent = mock<PaymentIntent>()
+
+        val result = mapper.mapUnknownCaptureOutcomeError(
+            paymentIntent,
+            CapturePaymentResponse.Error.NetworkError("error message")
+        )
+
+        assertThat(result.type).isEqualTo(CaptureOutcomeUnknown)
+        assertThat((result.paymentDataForRetry as PaymentDataImpl).paymentIntent).isEqualTo(paymentIntent)
+        assertThat(result.errorMessage)
+            .isEqualTo("Capturing payment outcome unknown: NetworkError(message=error message)")
     }
 
     @Test
