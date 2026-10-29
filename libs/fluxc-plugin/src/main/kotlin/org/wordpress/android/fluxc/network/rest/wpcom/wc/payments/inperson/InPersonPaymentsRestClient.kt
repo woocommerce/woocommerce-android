@@ -251,7 +251,7 @@ class InPersonPaymentsRestClient @Inject constructor(
             error.errorCode == "wcpay_capture_error" -> CAPTURE_ERROR
             error.errorCode == "wcpay_server_error" -> SERVER_ERROR
             error.errorCode == "wcpay_capture_error_amount_too_small" -> AMOUNT_TOO_SMALL
-            error.volleyError?.networkResponse?.statusCode in GATEWAY_ERROR_STATUS_CODES -> GATEWAY_ERROR
+            error.isGatewayError() -> GATEWAY_ERROR
             error.type == GenericErrorType.TIMEOUT -> NETWORK_ERROR
             error.type == GenericErrorType.NO_CONNECTION -> NETWORK_ERROR
             error.type == GenericErrorType.NETWORK_ERROR -> NETWORK_ERROR
@@ -262,6 +262,14 @@ class InPersonPaymentsRestClient @Inject constructor(
             message,
             extraData = message.getExtraData()
         )
+    }
+
+    // A coded 502 (e.g. wc_stripe_capture_error) is a definite answer from the site, so only a response without a REST
+    // error code counts. On the Jetpack tunnel the store's own status is in the unexpected store response.
+    private fun WPAPINetworkError.isGatewayError(): Boolean {
+        val storeStatusCode = unexpectedStoreResponse?.statusCode
+            ?: volleyError?.networkResponse?.statusCode?.takeIf { errorCode.isNullOrEmpty() }
+        return storeStatusCode in GATEWAY_ERROR_STATUS_CODES
     }
 
     @Suppress("TooGenericExceptionCaught")
