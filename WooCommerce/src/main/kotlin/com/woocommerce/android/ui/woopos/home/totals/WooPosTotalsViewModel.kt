@@ -181,18 +181,20 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             effectiveReaderStatusProvider.flow
                 .combine(dataState) { effective, data -> effective to data }
-                .collect { (effective, data) ->
-                    if (isTapToPayPayment) return@collect
-                    val state = uiState.value as? WooPosTotalsViewState.Checkout ?: return@collect
-                    if (!state.isCardPaymentEnabledForCountry) return@collect
-                    when (effective) {
-                        WooPosEffectiveReaderStatus.RemoteConnected -> handleRemoteConnected(state, data)
-                        WooPosEffectiveReaderStatus.BluetoothConnected -> handleBluetoothConnected(state, data)
-                        WooPosEffectiveReaderStatus.Connecting,
-                        WooPosEffectiveReaderStatus.Disconnected -> handleReaderDisconnected(state)
-                        WooPosEffectiveReaderStatus.Reconnecting -> Unit
-                    }
-                }
+                .collect { (effective, data) -> handleReaderStatus(effective, data) }
+        }
+    }
+
+    private suspend fun handleReaderStatus(effective: WooPosEffectiveReaderStatus, data: TotalsDataState) {
+        if (isTapToPayPayment) return
+        val state = uiState.value as? WooPosTotalsViewState.Checkout ?: return
+        if (!state.isCardPaymentEnabledForCountry) return
+        when (effective) {
+            WooPosEffectiveReaderStatus.RemoteConnected -> handleRemoteConnected(state, data)
+            WooPosEffectiveReaderStatus.BluetoothConnected -> handleBluetoothConnected(state, data)
+            WooPosEffectiveReaderStatus.Connecting,
+            WooPosEffectiveReaderStatus.Disconnected -> handleReaderDisconnected(state)
+            WooPosEffectiveReaderStatus.Reconnecting -> Unit
         }
     }
 
@@ -230,6 +232,10 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun cancelPaymentAction() {
         cardReaderPaymentController?.onBackPressed()
+        stopPaymentCollection()
+    }
+
+    private fun stopPaymentCollection() {
         cardReaderPaymentController?.stop()
         if (isTapToPayPayment) {
             isTTPPaymentInProgress = false
@@ -257,13 +263,14 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.OnStartReceiptFlowClicked -> handleEmailReceiptClicked()
 
-            WooPosTotalsUIEvent.OnCashPaymentClicked -> handleCashPaymentClicked()
+            WooPosTotalsUIEvent.OnCashPaymentClicked -> handleOtherPaymentMethodClicked(OtherPaymentMethod.CASH)
 
             WooPosTotalsUIEvent.OnTapToPayClicked -> startTapToPayPayment()
 
-            WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked -> handleMarkOrderAsPaidClicked()
+            WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked ->
+                handleOtherPaymentMethodClicked(OtherPaymentMethod.MARK_ORDER_AS_PAID)
 
-            WooPosTotalsUIEvent.OnScanToPayClicked -> handleScanToPayClicked()
+            WooPosTotalsUIEvent.OnScanToPayClicked -> handleOtherPaymentMethodClicked(OtherPaymentMethod.SCAN_TO_PAY)
 
             is WooPosTotalsUIEvent.OnFineLocationPermissionResult ->
                 onFineLocationPermissionResult(event.granted)
@@ -282,6 +289,8 @@ class WooPosTotalsViewModel @Inject constructor(
             }
 
             WooPosTotalsUIEvent.OnBackClicked -> handleBackPress()
+
+            WooPosTotalsUIEvent.OnScreenResumed -> handleScreenResumed()
 
             WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedCouponValidation -> handleEditOrderClicked()
 
@@ -302,31 +311,33 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
-    private fun handleCashPaymentClicked() = viewModelScope.launch {
-        totalsAnalyticsTracker.trackCashPaymentTapped()
-        childrenToParentEventSender.sendToParent(
-            ToCashPayment(dataState.value.orderId)
-        )
-    }
-
-    private fun handleMarkOrderAsPaidClicked() = viewModelScope.launch {
+    private fun handleOtherPaymentMethodClicked(method: OtherPaymentMethod) = viewModelScope.launch {
         val orderId = dataState.value.orderId
         if (orderId == EMPTY_ORDER_ID) {
-            wooPosLogWrapper.e("Mark order as complete tapped before order draft was created")
+            wooPosLogWrapper.e("$method tapped before order draft was created")
             return@launch
         }
-        totalsAnalyticsTracker.trackCheckoutMarkAsPaidTapped()
-        childrenToParentEventSender.sendToParent(ToMarkOrderAsPaid(orderId))
+        // The card reader must not take a card while the order is being paid another way.
+        stopPaymentCollection()
+        when (method) {
+            OtherPaymentMethod.CASH -> {
+                totalsAnalyticsTracker.trackCashPaymentTapped()
+                childrenToParentEventSender.sendToParent(ToCashPayment(orderId))
+            }
+            OtherPaymentMethod.SCAN_TO_PAY -> {
+                totalsAnalyticsTracker.trackCheckoutScanToPayPaymentTapped()
+                childrenToParentEventSender.sendToParent(ToScanToPay(orderId))
+            }
+            OtherPaymentMethod.MARK_ORDER_AS_PAID -> {
+                totalsAnalyticsTracker.trackCheckoutMarkAsPaidTapped()
+                childrenToParentEventSender.sendToParent(ToMarkOrderAsPaid(orderId))
+            }
+        }
     }
 
-    private fun handleScanToPayClicked() = viewModelScope.launch {
-        val orderId = dataState.value.orderId
-        if (orderId == EMPTY_ORDER_ID) {
-            wooPosLogWrapper.e("Scan to pay tapped before order draft was created")
-            return@launch
-        }
-        totalsAnalyticsTracker.trackCheckoutScanToPayPaymentTapped()
-        childrenToParentEventSender.sendToParent(ToScanToPay(orderId))
+    private fun handleScreenResumed() {
+        if (activePaymentMode != null) return
+        viewModelScope.launch { handleReaderStatus(effectiveReaderStatusProvider.current(), dataState.value) }
     }
 
     private fun handleAllPaymentMethodsVisibilityChanged(isVisible: Boolean) {
@@ -1228,5 +1239,11 @@ class WooPosTotalsViewModel @Inject constructor(
     private enum class PaymentMode {
         BLUETOOTH,
         REMOTE,
+    }
+
+    private enum class OtherPaymentMethod {
+        CASH,
+        SCAN_TO_PAY,
+        MARK_ORDER_AS_PAID,
     }
 }

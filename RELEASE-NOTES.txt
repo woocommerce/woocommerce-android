@@ -33,6 +33,7 @@
 - [*] The "Generate all variations?" confirmation now stays open when you rotate the device [https://github.com/woocommerce/woocommerce-android/pull/16770]
 - [*] Refunds: the item count now says "1 item selected" instead of "1 items selected" [https://github.com/woocommerce/woocommerce-android/pull/16769]
 - [*] The "Never miss a new order" card now shows on My Store right after logging in to a store without Jetpack [https://github.com/woocommerce/woocommerce-android/pull/16747]
+- [*] POS: The card reader stops waiting for a card while you take cash, scan to pay or mark the order as paid, so a customer can't be charged twice [https://github.com/woocommerce/woocommerce-android/pull/16779]
 - [*] Products: Attribute options now keep their order after rotating the device, and new options are added at the end of the list [https://github.com/woocommerce/woocommerce-android/pull/16777]
 - [*] Fixed a crash when opening a product whose short description has a heading or aligned paragraph inside a list [https://github.com/woocommerce/woocommerce-android/pull/16776]
 
