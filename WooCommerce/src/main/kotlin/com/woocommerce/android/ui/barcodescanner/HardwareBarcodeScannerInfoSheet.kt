@@ -59,9 +59,9 @@ fun HardwareBarcodeScannerInfoSheet(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
-    var isTestScanSuccessful by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(isTestScanSuccessful) {
-        if (isTestScanSuccessful) {
+    var testScanState by rememberSaveable { mutableStateOf(TestScanState.WAITING) }
+    LaunchedEffect(testScanState) {
+        if (testScanState == TestScanState.SUCCESS) {
             delay(TEST_SCAN_SUCCESS_DISPLAY_MS)
             dismissWCModalBottomSheet(coroutineScope, sheetState, onDismissRequest)
         }
@@ -71,12 +71,12 @@ fun HardwareBarcodeScannerInfoSheet(
         onDismissRequest = onDismissRequest,
     ) {
         HardwareBarcodeScannerInfoContent(
-            isTestScanSuccessful = isTestScanSuccessful,
+            testScanState = testScanState,
             modifier = Modifier.listenForBarcodes(
                 onBarcodeEvent = { result ->
-                    if (result is BarcodeInputDetector.BarcodeResult.Success && !isTestScanSuccessful) {
-                        isTestScanSuccessful = true
-                        onTestScanSucceeded()
+                    if (testScanState != TestScanState.SUCCESS) {
+                        testScanState = result.toTestScanState(testScanState)
+                        if (testScanState == TestScanState.SUCCESS) onTestScanSucceeded()
                     }
                 },
             ),
@@ -84,9 +84,25 @@ fun HardwareBarcodeScannerInfoSheet(
     }
 }
 
+private enum class TestScanState { WAITING, MISSING_ENTER_SUFFIX, SUCCESS }
+
+private fun BarcodeInputDetector.BarcodeResult.toTestScanState(current: TestScanState): TestScanState =
+    when (this) {
+        is BarcodeInputDetector.BarcodeResult.Success -> TestScanState.SUCCESS
+        is BarcodeInputDetector.BarcodeResult.Error -> when (isMissingEnterSuffix()) {
+            true -> TestScanState.MISSING_ENTER_SUFFIX
+            false -> current
+        }
+    }
+
+private fun BarcodeInputDetector.BarcodeResult.Error.isMissingEnterSuffix(): Boolean = when (failureReason) {
+    BarcodeInputDetector.FailureReason.NO_TERMINATOR -> barcode.length >= HardwareBarcodeScanner.MIN_SKU_LENGTH
+    BarcodeInputDetector.FailureReason.TOO_SHORT -> false
+}
+
 @Composable
 private fun HardwareBarcodeScannerInfoContent(
-    isTestScanSuccessful: Boolean,
+    testScanState: TestScanState,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -126,7 +142,7 @@ private fun HardwareBarcodeScannerInfoContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(TEST_AREA_HEIGHT),
-            targetState = isTestScanSuccessful,
+            targetState = testScanState == TestScanState.SUCCESS,
             transitionSpec = {
                 (fadeIn() + scaleIn(spring(dampingRatio = Spring.DampingRatioMediumBouncy)))
                     .togetherWith(fadeOut())
@@ -138,6 +154,14 @@ private fun HardwareBarcodeScannerInfoContent(
                 true -> TestScanSuccess()
                 false -> TestBarcode()
             }
+        }
+        if (testScanState == TestScanState.MISSING_ENTER_SUFFIX) {
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+            Text(
+                text = stringResource(R.string.barcode_scanning_hardware_scanner_no_enter_suffix),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error,
+            )
         }
     }
 }
@@ -187,7 +211,16 @@ private fun TestBarcode() {
 @Composable
 private fun HardwareBarcodeScannerInfoContentPreview() {
     WooTheme {
-        HardwareBarcodeScannerInfoContent(isTestScanSuccessful = false)
+        HardwareBarcodeScannerInfoContent(testScanState = TestScanState.WAITING)
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun HardwareBarcodeScannerInfoContentMissingEnterSuffixPreview() {
+    WooTheme {
+        HardwareBarcodeScannerInfoContent(testScanState = TestScanState.MISSING_ENTER_SUFFIX)
     }
 }
 
@@ -196,7 +229,7 @@ private fun HardwareBarcodeScannerInfoContentPreview() {
 @Composable
 private fun HardwareBarcodeScannerInfoContentSuccessPreview() {
     WooTheme {
-        HardwareBarcodeScannerInfoContent(isTestScanSuccessful = true)
+        HardwareBarcodeScannerInfoContent(testScanState = TestScanState.SUCCESS)
     }
 }
 
