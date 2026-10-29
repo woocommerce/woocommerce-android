@@ -136,6 +136,10 @@ class WooPosTotalsViewModel @Inject constructor(
     private var paymentAnalyticsJob: Job? = null
     private var activePaymentMode: PaymentMode? = null
 
+    // Capture has started but checkout is still shown while the totals hide. Reacting to the reader here
+    // would cancel the capture, losing the result of a charge that may already be done.
+    private var isCaptureStarting = false
+
     // Persisted ViewModel-side flag covering the entire TTP flow (connect → SDK overlay → terminal).
     // Drives the `listenToPaymentState` mode dispatch and silences the reader-status observer.
     private var isTapToPayPayment: Boolean by TTPPaymentProgressDelegate(savedState, KEY_IS_TAP_TO_PAY_PAYMENT)
@@ -187,6 +191,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private suspend fun handleReaderStatus(effective: WooPosEffectiveReaderStatus, data: TotalsDataState) {
         if (isTapToPayPayment) return
+        if (isCaptureStarting) return
         val state = uiState.value as? WooPosTotalsViewState.Checkout ?: return
         if (!state.isCardPaymentEnabledForCountry) return
         when (effective) {
@@ -848,9 +853,14 @@ class WooPosTotalsViewModel @Inject constructor(
     private suspend fun handleCapturingPaymentState() {
         val state = uiState.value
         if (state is WooPosTotalsViewState.Checkout) {
-            uiState.value = state.copy(totals = Totals.Hidden)
-            @Suppress("MagicNumber")
-            delay(384)
+            isCaptureStarting = true
+            try {
+                uiState.value = state.copy(totals = Totals.Hidden)
+                @Suppress("MagicNumber")
+                delay(384)
+            } finally {
+                isCaptureStarting = false
+            }
         }
         uiState.value = buildPaymentInProgressState()
         childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentInProgress)
