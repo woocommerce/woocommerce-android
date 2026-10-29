@@ -34,6 +34,13 @@
 -keepnames class org.wordpress.android.fluxc.store.**
 ###### FluxC stores - end
 
+###### Kotlin multifile classes - begin
+# Stripe Terminal's consumer rules keep some parts of Kotlin's multifile classes (e.g.
+# CollectionsKt__IterablesKt). R8 then moves an unkept part out of the package, and it can no longer
+# extend its package-private kept superclass: IllegalAccessError at launch.
+-keepnames class kotlin.**Kt__*
+###### Kotlin multifile classes - end
+
 ###### SavedStateHandleExt - begin
 ###### We use reflection so we have to keep this method
 -keepclassmembers class * extends androidx.navigation.NavArgs {
