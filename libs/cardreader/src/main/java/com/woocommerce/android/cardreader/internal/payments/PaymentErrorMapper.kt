@@ -138,6 +138,7 @@ internal class PaymentErrorMapper {
         val type = when (capturePaymentResponse) {
             is NetworkError -> NoNetwork
             is ServerError -> Server(capturePaymentResponse.message)
+            is CapturePaymentResponse.Error.GatewayError -> Server(capturePaymentResponse.message)
             is CapturePaymentResponse.Error.CaptureError -> {
                 when (capturePaymentResponse) {
                     is CapturePaymentResponse.Error.CaptureError.AmountTooSmall -> {

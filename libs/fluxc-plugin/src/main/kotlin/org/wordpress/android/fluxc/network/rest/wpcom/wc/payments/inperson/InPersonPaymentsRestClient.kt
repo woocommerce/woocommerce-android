@@ -8,6 +8,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentError
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.AMOUNT_TOO_SMALL
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.CAPTURE_ERROR
+import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.GATEWAY_ERROR
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.MISSING_ORDER
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.NETWORK_ERROR
@@ -250,6 +251,7 @@ class InPersonPaymentsRestClient @Inject constructor(
             error.errorCode == "wcpay_capture_error" -> CAPTURE_ERROR
             error.errorCode == "wcpay_server_error" -> SERVER_ERROR
             error.errorCode == "wcpay_capture_error_amount_too_small" -> AMOUNT_TOO_SMALL
+            error.volleyError?.networkResponse?.statusCode in GATEWAY_ERROR_STATUS_CODES -> GATEWAY_ERROR
             error.type == GenericErrorType.TIMEOUT -> NETWORK_ERROR
             error.type == GenericErrorType.NO_CONNECTION -> NETWORK_ERROR
             error.type == GenericErrorType.NETWORK_ERROR -> NETWORK_ERROR
@@ -291,6 +293,7 @@ class InPersonPaymentsRestClient @Inject constructor(
     }
 
     companion object {
+        private val GATEWAY_ERROR_STATUS_CODES = 502..504
         private const val ACCOUNT_REQUESTED_FIELDS: String =
             "status,has_pending_requirements,has_overdue_requirements,current_deadline,statement_descriptor," +
                 "store_currencies,country,is_live,test_mode"

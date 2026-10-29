@@ -34,5 +34,11 @@ enum class WCCapturePaymentErrorType {
     MISSING_ORDER,
     CAPTURE_ERROR,
     SERVER_ERROR,
-    NETWORK_ERROR
+    NETWORK_ERROR,
+
+    /**
+     * A gateway in front of the site answered 502, 503 or 504 before the site finished handling the request,
+     * so the capture may still be running.
+     */
+    GATEWAY_ERROR
 }
