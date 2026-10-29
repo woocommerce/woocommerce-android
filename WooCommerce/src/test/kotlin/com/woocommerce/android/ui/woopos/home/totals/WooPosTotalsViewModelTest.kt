@@ -1267,6 +1267,8 @@ class WooPosTotalsViewModelTest {
                 .thenReturn("Payment not confirmed")
             whenever(resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_check_status))
                 .thenReturn("Check payment status")
+            whenever(resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_message))
+                .thenReturn("The card may already have been charged.")
             givenCardReaderConnectedAndNetworkAvailable()
             val mockCardReaderPaymentController: CardReaderPaymentController = mock()
             val factory: WooPosCardReaderPaymentControllerFactory = mock()
@@ -1286,6 +1288,7 @@ class WooPosTotalsViewModelTest {
             // THEN
             val state = vm.state.value as WooPosTotalsViewState.PaymentFailed
             assertThat(state.title).isEqualTo("Payment not confirmed")
+            assertThat(state.subtitle).isEqualTo("The card may already have been charged.")
             assertThat(state.retryPaymentButtonLabel).isEqualTo("Check payment status")
             assertThat(state.isReturnToCheckoutButtonVisible).isTrue()
         }
