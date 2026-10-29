@@ -481,8 +481,12 @@ class WooPosTotalsViewModel @Inject constructor(
     private suspend fun retryBluetoothFailedTransaction() {
         when (val paymentState = cardReaderPaymentController?.paymentState?.value) {
             is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment -> {
+                val onRetry = paymentState.onRetry
                 when {
-                    paymentState.onRetry != null -> paymentState.onRetry!!()
+                    onRetry != null -> {
+                        uiState.value = buildPaymentInProgressState()
+                        onRetry()
+                    }
                     else -> {
                         childrenToParentEventSender.sendToParent(
                             ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout
@@ -496,13 +500,14 @@ class WooPosTotalsViewModel @Inject constructor(
                 val sdkRetry = paymentState.onRetry
                 if (sdkRetry != null) {
                     isTapToPayPayment = true
+                    uiState.value = buildPaymentInProgressState()
                     sdkRetry.invoke()
                 } else {
                     returnToCheckoutAfterTapToPayFailed()
                 }
             }
 
-            else -> error("Retry failed transaction clicked but payment state is not PaymentFailed")
+            else -> wooPosLogWrapper.e("Retry failed transaction clicked but payment state is not PaymentFailed")
         }
     }
 
@@ -870,6 +875,8 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private suspend fun handleReaderLoadingPaymentState() {
         val totalsState = uiState.value
+        // A retry keeps showing progress instead of flashing the checkout and its payment methods.
+        if (totalsState is PaymentInProgress) return
         if (totalsState is WooPosTotalsViewState.Checkout) {
             uiState.value = totalsState.copy(
                 readerStatus = WooPosTotalsViewState.ReaderStatus.Preparing(
