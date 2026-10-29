@@ -18,4 +18,5 @@ sealed class WooPosTotalsUIEvent {
     data class OnAllPaymentMethodsVisibilityChanged(val isVisible: Boolean) : WooPosTotalsUIEvent()
     data object ConnectReaderClicked : WooPosTotalsUIEvent()
     data object OnBackClicked : WooPosTotalsUIEvent()
+    data object OnScreenResumed : WooPosTotalsUIEvent()
 }
