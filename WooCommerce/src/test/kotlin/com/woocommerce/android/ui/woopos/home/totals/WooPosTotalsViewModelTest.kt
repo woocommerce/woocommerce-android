@@ -2867,6 +2867,33 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
+    fun `given TTP retry already started, when retry clicked again, then retry is not invoked twice`() = runTest {
+        // GIVEN
+        mockPaymentFailedTexts()
+        whenever(resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_title))
+            .thenReturn("Payment not confirmed")
+        val (vm, paymentState) = givenTtpInFlight()
+        advanceUntilIdle()
+        var retryCount = 0
+        paymentState.value = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
+            errorType = PaymentFlowError.CaptureOutcomeUnknown,
+            onRetry = {
+                retryCount++
+                paymentState.value = CardReaderPaymentState.LoadingData {}
+            },
+        )
+        advanceUntilIdle()
+
+        // WHEN
+        vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
+        vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(retryCount).isEqualTo(1)
+    }
+
+    @Test
     fun `given TTP failed without onRetry, when retry clicked, then returns to checkout`() = runTest {
         // GIVEN
         mockPaymentFailedTexts()
