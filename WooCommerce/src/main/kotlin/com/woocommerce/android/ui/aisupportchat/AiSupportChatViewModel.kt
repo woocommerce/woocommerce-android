@@ -31,6 +31,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -399,6 +400,7 @@ class AiSupportChatViewModel @Inject constructor(
             it.copy(
                 input = "",
                 messages = listOf(greetingMessage()),
+                loginContext = AiSupportChatLoginContext.DuringLogin(contextProvider.buildLoginContext()),
                 hasStartedChat = true,
                 hasProceededToChat = true,
                 canPersistChatHistory = false,
@@ -468,6 +470,7 @@ class AiSupportChatViewModel @Inject constructor(
                 selectedIssueType = SupportIssueType.OTHER,
                 diagnosticResult = result,
                 diagnosticLog = failure.supportDetails,
+                loginContext = AiSupportChatLoginContext.DuringLogin(contextProvider.buildLoginContext()),
                 launchExtraTags = listOf(LoginUnexpectedResponseFailure.SUPPORT_TAG),
                 hasProceededToChat = true,
                 hasStartedChat = true,
@@ -579,7 +582,8 @@ class AiSupportChatViewModel @Inject constructor(
         val state = _viewState.value
         if (message.isBlank() || state.isSending || !state.canSendMessages) return
         val chatId = state.chatId
-        val hasDiagnosticsContext = chatId == null && state.diagnosticResult != null
+        val hasDiagnosticsContext = chatId == null &&
+            (state.diagnosticResult != null || state.loginContext is AiSupportChatLoginContext.DuringLogin)
         analyticsTracker.trackMessageSent(
             entryPoint = state.entryPoint,
             isFirstMessage = chatId == null,
@@ -604,10 +608,16 @@ class AiSupportChatViewModel @Inject constructor(
         val context = if (chatId == null) {
             val statusReport = initialStatusReport
                 ?: contextProvider.buildStatusReport(state.siteAddress).also { initialStatusReport = it }
+            val (loginDetails, loginDiagnosticResult) = when (val loginContext = state.loginContext) {
+                AiSupportChatLoginContext.NotDuringLogin -> null to null
+                is AiSupportChatLoginContext.DuringLogin ->
+                    loginContext.details to diagnosticsService.runLoginDiagnostics().last()
+            }
             contextProvider.buildInitialContext(
-                diagnosticResult = state.diagnosticResult,
+                diagnosticResult = loginDiagnosticResult.withStatusesOf(state.diagnosticResult),
                 siteAddress = state.siteAddress,
-                statusReport = statusReport
+                statusReport = statusReport,
+                loginContext = loginDetails
             )
         } else {
             JsonObject()
@@ -1087,6 +1097,7 @@ data class AiSupportChatViewState(
     val selectedIssueLabel: String? = null,
     val launchExtraTags: List<String> = emptyList(),
     val diagnosticResult: DiagnosticResult? = null,
+    val loginContext: AiSupportChatLoginContext = AiSupportChatLoginContext.NotDuringLogin,
     val diagnosticLog: String? = null,
     val diagnosticSuggestedActionOverride: SuggestedFixAction? = null,
     val isRunningDiagnostics: Boolean = false,
@@ -1161,6 +1172,11 @@ data class AiSupportChatViewState(
     private companion object {
         const val MIN_BOT_RESPONSES_FOR_RESOLUTION_ACTION = 2
     }
+}
+
+sealed interface AiSupportChatLoginContext {
+    data object NotDuringLogin : AiSupportChatLoginContext
+    data class DuringLogin(val details: String) : AiSupportChatLoginContext
 }
 
 enum class HumanSupportContactSource {
@@ -1295,3 +1311,9 @@ private fun ConnectivityCheckStatus.toTestStatus(): TestStatus =
             durationMs = durationMs
         )
     }
+
+private fun DiagnosticResult?.withStatusesOf(other: DiagnosticResult?): DiagnosticResult? = when {
+    this == null -> other
+    other == null -> this
+    else -> other.copy(statuses = statuses + other.statuses)
+}

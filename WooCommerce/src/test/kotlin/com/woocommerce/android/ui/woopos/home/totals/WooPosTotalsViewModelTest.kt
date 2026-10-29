@@ -67,6 +67,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosElapsedTime
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosPaymentStateAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosPaymentsFlowTrackerEventProvider
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.CurrencyFormatter
@@ -3215,7 +3216,10 @@ class WooPosTotalsViewModelTest {
             analyticsTracker = analyticsTracker,
             analyticsData = timingData,
             productsDataSource = productsDataSource,
-            readerReadyForPaymentTracker = mock(),
+            paymentStateTracker = WooPosPaymentStateAnalyticsTracker(
+                analyticsData = timingData,
+                readerReadyForPaymentTracker = mock(),
+            ),
         ),
         wooPosLogWrapper = wooPosLogWrapper,
         performIncrementalSyncUseCase = performIncrementalSyncUseCase,

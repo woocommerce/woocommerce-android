@@ -39,9 +39,12 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -227,6 +230,24 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 )
             }
             .launchIn(this)
+        recordShownErrors()
+    }
+
+    private fun recordShownErrors() {
+        merge(
+            authError.filterNotNull().map { it.errorMessage.toPresentableString() },
+            endpointRecovery.mapNotNull { it?.errorMessage?.toPresentableString() },
+            unexpectedResponse.filterNotNull().map {
+                resourceProvider.getString(R.string.login_unexpected_response_title)
+            }
+        )
+            .onEach { unifiedLoginTracker.onErrorShown(it) }
+            .launchIn(this)
+    }
+
+    private fun showErrorSnackbar(@StringRes message: Int) {
+        unifiedLoginTracker.onErrorShown(resourceProvider.getString(message))
+        triggerEvent(ShowSnackbar(message))
     }
 
     fun onUsernameChanged(username: String) {
@@ -371,7 +392,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     fetchedSiteId.value = -1
 
                     analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_REJECTED)
-                    triggerEvent(ShowSnackbar(R.string.login_site_credentials_web_authorization_connection_rejected))
+                    showErrorSnackbar(R.string.login_site_credentials_web_authorization_connection_rejected)
                     return@launch
                 }
 
@@ -770,7 +791,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     private fun handleEndpointPersistenceFailure(exception: Throwable) {
-        triggerEvent(ShowSnackbar(R.string.login_site_credentials_endpoint_persistence_failed))
+        showErrorSnackbar(R.string.login_site_credentials_endpoint_persistence_failed)
         val siteError = (exception as? OnChangedException)?.error as? SiteError
         val error = (exception as? OnChangedException)?.error ?: exception
         trackLoginFailure(
@@ -786,7 +807,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         if (unexpectedResponseFailure != null) {
             showUnexpectedResponse(unexpectedResponseFailure)
         } else {
-            triggerEvent(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
+            showErrorSnackbar(R.string.user_role_access_error_fetch_failed)
         }
         val applicationPasswordError = (exception as? ApplicationPasswordGenerationException)?.networkError
         if (applicationPasswordError != null) {
@@ -835,9 +856,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         errorDescription: String?,
         statusCode: Int? = null
     ) {
-        loginAnalyticsListener.trackFailure(
-            message = errorDescription
-        )
+        unifiedLoginTracker.trackFailure(errorDescription)
 
         analyticsTracker.track(
             LOGIN_SITE_CREDENTIALS_LOGIN_FAILED,

@@ -100,6 +100,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val appPrefs: AppPrefsWrapper = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(R.string.error_generic) } doReturn "error"
+        on { getString(R.string.login_unexpected_response_title) } doReturn "Unable to log in"
     }
     private val unexpectedResponseTracker: LoginUnexpectedResponseTracker = mock()
     private val unexpectedResponseSupport: LoginUnexpectedResponseSupport = mock()
@@ -1225,6 +1226,23 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             .isEqualTo(loginStepFailure(LoginUnexpectedResponseFailure.Step.WOO_PLUGIN_CHECK))
         assertThat(viewModel.viewState.value?.authenticationError).isNull()
     }
+
+    @Test
+    fun `given the site check gets an unexpected response, when logging in, then the alert title is the shown error`() =
+        testBlocking {
+            // GIVEN
+            whenever(repository.fetchSite(SITE_URL, USERNAME, PASSWORD)).thenReturn(Result.failure(siteFetchError()))
+            setup()
+
+            // WHEN
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+            }
+
+            // THEN
+            verify(unifiedLoginTracker).onErrorShown("Unable to log in")
+        }
 
     @Test
     fun `given the site check alert, when trying again successfully, then log in and track it`() = testBlocking {
