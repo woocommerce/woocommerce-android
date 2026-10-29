@@ -292,8 +292,8 @@ internal class PaymentManager(
     intent and finding it SUCCEEDED means the funds were captured, so the payment is reported as completed to
     prevent a retry leading to a double charge. When the intent can't be refreshed (e.g. the network is down), its
     status can't confirm the backend call went through (single-step terminal payments are SUCCEEDED before the
-    capture call), or the request was lost or timed out so the capture may still be running on the backend, the
-    outcome is reported as unknown so the merchant doesn't take another payment. */
+    capture call), or the request was lost, timed out or cut off by a gateway so the capture may still be running on
+    the backend, the outcome is reported as unknown so the merchant doesn't take another payment. */
     @Suppress("TooGenericExceptionCaught")
     private suspend fun checkCaptureOutcome(
         paymentIntent: PaymentIntent,
@@ -301,7 +301,8 @@ internal class PaymentManager(
     ): CaptureOutcome {
         val isAmbiguousError = error is CapturePaymentResponse.Error.GenericError ||
             error is CapturePaymentResponse.Error.ServerError ||
-            error is CapturePaymentResponse.Error.NetworkError
+            error is CapturePaymentResponse.Error.NetworkError ||
+            error is CapturePaymentResponse.Error.GatewayError
         if (!isAmbiguousError) return CaptureOutcome.NOT_CAPTURED
         val clientSecret = paymentIntent.clientSecret
         if (paymentIntent.status != PaymentIntentStatus.REQUIRES_CAPTURE || clientSecret == null) {
@@ -312,7 +313,7 @@ internal class PaymentManager(
                 PaymentIntentStatus.SUCCEEDED -> CaptureOutcome.CAPTURED
                 PaymentIntentStatus.CANCELED,
                 PaymentIntentStatus.REQUIRES_PAYMENT_METHOD -> CaptureOutcome.NOT_CAPTURED
-                PaymentIntentStatus.REQUIRES_CAPTURE -> if (error is CapturePaymentResponse.Error.NetworkError) {
+                PaymentIntentStatus.REQUIRES_CAPTURE -> if (error.mayStillBeCapturing()) {
                     CaptureOutcome.UNKNOWN
                 } else {
                     CaptureOutcome.NOT_CAPTURED
@@ -325,6 +326,9 @@ internal class PaymentManager(
             CaptureOutcome.UNKNOWN
         }
     }
+
+    private fun CapturePaymentResponse.Error.mayStillBeCapturing() =
+        this is CapturePaymentResponse.Error.NetworkError || this is CapturePaymentResponse.Error.GatewayError
 
     private enum class CaptureOutcome {
         CAPTURED,
