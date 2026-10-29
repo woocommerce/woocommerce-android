@@ -29,6 +29,11 @@
 -keep class com.wellsql** { *; }
 ###### FluxC - end
 
+###### FluxC stores - begin
+# Login and error tracking send FluxC store event and error class names (e.g. SiteStore.SiteError).
+-keepnames class org.wordpress.android.fluxc.store.**
+###### FluxC stores - end
+
 ###### SavedStateHandleExt - begin
 ###### We use reflection so we have to keep this method
 -keepclassmembers class * extends androidx.navigation.NavArgs {
