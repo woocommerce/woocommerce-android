@@ -304,6 +304,8 @@ sealed class PaymentFlowError(val message: UiString) {
     object Server : PaymentFlowError(UiStringRes(R.string.card_reader_payment_failed_server_error_state))
     object Generic : PaymentFlowError(UiStringRes(R.string.card_reader_payment_failed_unexpected_error_state))
     object Canceled : PaymentFlowError(UiStringRes(R.string.card_reader_payment_failed_canceled))
+    object CaptureOutcomeUnknown :
+        PaymentFlowError(UiStringRes(R.string.card_reader_payment_failed_capture_outcome_unknown))
     data class AmountTooSmall(val errorMessage: UiString) : Declined(errorMessage), NonRetryableError
 
     object Unknown : Declined(UiStringRes(R.string.card_reader_payment_failed_unknown)), ContactSupportError

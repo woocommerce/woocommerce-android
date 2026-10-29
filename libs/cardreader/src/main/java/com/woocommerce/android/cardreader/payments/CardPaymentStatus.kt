@@ -22,6 +22,12 @@ sealed class CardPaymentStatus {
         object Generic : CardPaymentStatusErrorType()
         object Canceled : CardPaymentStatusErrorType()
 
+        /**
+         * Capturing the payment failed in a way that doesn't tell whether the funds were captured,
+         * e.g. the network dropped while the capture request was in flight. The order may already be paid.
+         */
+        object CaptureOutcomeUnknown : CardPaymentStatusErrorType()
+
         sealed class DeclinedByBackendError : CardPaymentStatusErrorType() {
             /**
              * The specified amount is less than the minimum amount allowed

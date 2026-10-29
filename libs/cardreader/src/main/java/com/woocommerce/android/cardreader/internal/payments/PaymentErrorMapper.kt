@@ -11,6 +11,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.InvalidAppSetup
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.NfcDisabled
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Canceled
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.CaptureOutcomeUnknown
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.AmountTooSmallStripe
@@ -155,6 +156,15 @@ internal class PaymentErrorMapper {
         }
         return PaymentFailed(type, paymentData, message)
     }
+
+    fun mapUnknownCaptureOutcomeError(
+        originalPaymentIntent: PaymentIntent,
+        capturePaymentResponse: CapturePaymentResponse.Error
+    ): PaymentFailed = PaymentFailed(
+        type = CaptureOutcomeUnknown,
+        paymentDataForRetry = PaymentDataImpl(originalPaymentIntent),
+        errorMessage = "Capturing payment outcome unknown: $capturePaymentResponse",
+    )
 
     fun mapError(
         originalPaymentIntent: PaymentIntent? = null,
