@@ -2833,6 +2833,37 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
+    fun `given TTP capture outcome unknown, when retry fails again, then payment failed state shown again`() = runTest {
+        // GIVEN
+        mockPaymentFailedTexts()
+        whenever(resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_title))
+            .thenReturn("Payment not confirmed")
+        val (vm, paymentState) = givenTtpInFlight()
+        advanceUntilIdle()
+        val failedState = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
+            errorType = PaymentFlowError.CaptureOutcomeUnknown,
+            onRetry = {},
+        )
+        paymentState.value = failedState
+        advanceUntilIdle()
+        vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
+        clearInvocations(childrenToParentEventSender)
+
+        // WHEN
+        paymentState.value = CardReaderPaymentState.LoadingData {}
+        advanceUntilIdle()
+        paymentState.value = CardReaderPaymentState.PaymentCapturing.BuiltInReaderPaymentCapturing("")
+        advanceUntilIdle()
+        paymentState.value = failedState.copy()
+        advanceUntilIdle()
+
+        // THEN
+        val state = vm.state.value as WooPosTotalsViewState.PaymentFailed
+        assertThat(state.title).isEqualTo("Payment not confirmed")
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.PaymentFailed)
+    }
+
+    @Test
     fun `given TTP failed without onRetry, when retry clicked, then returns to checkout`() = runTest {
         // GIVEN
         mockPaymentFailedTexts()
