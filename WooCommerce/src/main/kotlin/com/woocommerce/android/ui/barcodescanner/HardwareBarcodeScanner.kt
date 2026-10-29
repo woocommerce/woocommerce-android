@@ -101,13 +101,13 @@ class HardwareBarcodeScanner @Inject constructor(
         val onBarcodeScanned: (CodeScannerStatus.Success) -> Unit,
     )
 
-    private companion object {
+    companion object {
         const val MIN_SKU_LENGTH = 3
-        const val EAN_8_LENGTH = 8
-        const val UPC_A_LENGTH = 12
-        const val EAN_13_LENGTH = 13
-        const val GS1_ODD_POSITION_WEIGHT = 3
-        const val GS1_MODULO = 10
+        private const val EAN_8_LENGTH = 8
+        private const val UPC_A_LENGTH = 12
+        private const val EAN_13_LENGTH = 13
+        private const val GS1_ODD_POSITION_WEIGHT = 3
+        private const val GS1_MODULO = 10
     }
 }
 
