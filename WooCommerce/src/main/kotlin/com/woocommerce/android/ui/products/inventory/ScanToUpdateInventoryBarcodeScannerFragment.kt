@@ -15,9 +15,12 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState.Unknown
+import com.woocommerce.android.ui.barcodescanner.HardwareBarcodeScanner
+import com.woocommerce.android.ui.barcodescanner.listenForHardwareBarcodes
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,6 +33,9 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    lateinit var hardwareBarcodeScanner: HardwareBarcodeScanner
     private var undoSnackbar: Snackbar? = null
 
     override fun onCreateView(
@@ -56,12 +62,28 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
                 onViewProductDetailsClicked = viewModel::onViewProductDetailsClicked,
                 onManualQuantityEntered = viewModel::onManualQuantityEntered,
                 onManageStockClicked = viewModel::onManageStockClicked,
+                isHardwareScannerInfoVisible = scannerViewModel.isHardwareScannerInfoVisible.collectAsState(),
+                onHardwareScannerInfoClicked = {
+                    scannerViewModel.onHardwareScannerInfoClicked(ScanningSource.SCAN_TO_UPDATE_INVENTORY)
+                },
+                onHardwareScannerTestScanSucceeded = {
+                    scannerViewModel.onHardwareScannerTestScanSucceeded(ScanningSource.SCAN_TO_UPDATE_INVENTORY)
+                },
+                onHardwareScannerTestScanFailed = { failure ->
+                    scannerViewModel.onHardwareScannerTestScanFailed(ScanningSource.SCAN_TO_UPDATE_INVENTORY, failure)
+                },
+                onHardwareScannerInfoDismissed = scannerViewModel::onHardwareScannerInfoDismissed,
             )
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         observeViewModelEvents()
+        listenForHardwareBarcodes(
+            hardwareBarcodeScanner = hardwareBarcodeScanner,
+            source = ScanningSource.SCAN_TO_UPDATE_INVENTORY,
+            onBarcodeScanned = viewModel::onBarcodeScanningResult,
+        )
     }
 
     override fun onResume() {

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.list
 
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 sealed class ProductListEvent : MultiLiveEvent.Event() {
@@ -32,4 +33,5 @@ sealed class ProductListEvent : MultiLiveEvent.Event() {
     data object OpenEmptyProduct : ProductListEvent()
 
     data object ShowBarcodeScanner : ProductListEvent()
+    data class ShowScanToUpdateInventory(val scannedBarcode: CodeScannerStatus.Success) : ProductListEvent()
 }

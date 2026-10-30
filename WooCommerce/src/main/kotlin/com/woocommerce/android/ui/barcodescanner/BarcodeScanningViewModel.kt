@@ -11,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
 import com.woocommerce.android.ui.orders.creation.GoogleMLKitCodeScanner
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,16 +19,23 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class BarcodeScanningViewModel @Inject constructor(
     private val codeScanner: GoogleMLKitCodeScanner,
+    private val barcodeScanningTracker: BarcodeScanningTracker,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
     private val _permissionState = MutableLiveData<PermissionState>()
     val permissionState: LiveData<PermissionState> = _permissionState
+
+    private val _isHardwareScannerInfoVisible = MutableStateFlow(false)
+    val isHardwareScannerInfoVisible: StateFlow<Boolean> = _isHardwareScannerInfoVisible.asStateFlow()
 
     private var frameChannel = createChannel()
 
@@ -42,7 +50,7 @@ class BarcodeScanningViewModel @Inject constructor(
         processingJob = launch {
             @ExperimentalGetImage
             for (frame in frameChannel) {
-                codeScanner.recogniseCode(frame).let { status ->
+                codeScanner.recogniseCode(frame).takeUnless { _isHardwareScannerInfoVisible.value }?.let { status ->
                     when (status) {
                         is CodeScannerStatus.Success -> {
                             triggerEvent(ScanningEvents.OnScanningResult(status))
@@ -59,6 +67,23 @@ class BarcodeScanningViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun onHardwareScannerInfoClicked(source: ScanningSource) {
+        barcodeScanningTracker.trackHardwareScannerInfoTapped(source)
+        _isHardwareScannerInfoVisible.value = true
+    }
+
+    fun onHardwareScannerTestScanSucceeded(source: ScanningSource) {
+        barcodeScanningTracker.trackHardwareScannerTestScanSuccess(source)
+    }
+
+    fun onHardwareScannerTestScanFailed(source: ScanningSource, failure: HardwareBarcodeScannerTestFailure) {
+        barcodeScanningTracker.trackHardwareScannerTestScanFailed(source, failure)
+    }
+
+    fun onHardwareScannerInfoDismissed() {
+        _isHardwareScannerInfoVisible.value = false
     }
 
     fun stopCodesRecognition() {

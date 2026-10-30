@@ -9,6 +9,7 @@
 
 26.0
 -----
+- [*] You can now use a Bluetooth or USB barcode scanner on the Orders and Products screens [https://github.com/woocommerce/woocommerce-android/pull/16756]
 - [*] Shipping labels: carrier outage notices from WooCommerce Shipping now show on the label creation screen, and a purchase that fails during an outage explains the incident instead of showing a generic error [https://github.com/woocommerce/woocommerce-android/pull/16778]
 - [*] The gaps between sections on product details are no longer pure black in dark mode [https://github.com/woocommerce/woocommerce-android/pull/16781]
 - [*] Fixed a crash on order details that could happen after changing the status of an order paid with a gift card [https://github.com/woocommerce/woocommerce-android/pull/16766]

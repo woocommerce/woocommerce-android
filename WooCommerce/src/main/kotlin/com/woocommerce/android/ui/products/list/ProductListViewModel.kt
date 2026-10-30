@@ -17,6 +17,7 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.products.GetProductsByIds
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.RefreshProductsSignal
@@ -305,6 +306,11 @@ class ProductListViewModel @Inject constructor(
     fun onBarcodeScannerClicked() {
         analyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
         triggerEvent(ProductListEvent.ShowBarcodeScanner)
+    }
+
+    fun onHardwareBarcodeScanned(status: CodeScannerStatus.Success) {
+        if (isSquarePluginActive()) return
+        triggerEvent(ProductListEvent.ShowScanToUpdateInventory(scannedBarcode = status))
     }
 
     fun reloadProductsFromDb(excludeProductId: Long? = null) {
