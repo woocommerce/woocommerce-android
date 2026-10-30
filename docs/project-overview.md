@@ -58,6 +58,14 @@ Google Sign-In requires configuration files which contain client and server info
 that can't be shared publicly. More documentation and guides can be found on the
 [Google Identity Platform website][google-ident].
 
+### Reading Stack Traces in App Logs
+
+Release builds are obfuscated, so stack traces in app logs show renamed methods. To restore them, run the script with the app version and the log file. It needs the Android SDK Command-line Tools.
+
+```bash
+tools/retrace/retrace.sh 26.0 ~/Downloads/woo-log.txt
+```
+
 
 
 [wp-com-apps]: https://developer.wordpress.com/apps/
