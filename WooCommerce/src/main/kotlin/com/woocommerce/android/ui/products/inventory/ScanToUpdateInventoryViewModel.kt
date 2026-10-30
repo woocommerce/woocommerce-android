@@ -49,6 +49,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
     init {
         navArgs.scannedBarcode?.let(::onBarcodeScanningResult)
+        savedState.remove<CodeScannerStatus.Success>(SCANNED_BARCODE_ARG_KEY)
     }
 
     fun onBarcodeScanningResult(status: CodeScannerStatus) {
@@ -376,5 +377,6 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
     companion object {
         private const val SCANNER_RESTART_DEBOUNCE_MS = 3500L
+        private const val SCANNED_BARCODE_ARG_KEY = "scannedBarcode"
     }
 }

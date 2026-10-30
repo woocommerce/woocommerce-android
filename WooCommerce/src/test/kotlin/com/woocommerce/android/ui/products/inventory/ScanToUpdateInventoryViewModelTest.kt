@@ -21,6 +21,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.eq
@@ -67,14 +68,15 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a scanned barcode in arguments, when screen opened, then the product is fetched`() = testBlocking {
+    fun `given a scanned barcode in arguments, when screen opened, then the product is fetched once`() = testBlocking {
         // GIVEN
         val scannedBarcode = CodeScannerStatus.Success("123", GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8)
+        val savedState = SavedStateHandle(mapOf("scannedBarcode" to scannedBarcode))
 
         // WHEN
         ScanToUpdateInventoryViewModel(
             fetchProductByIdentifier = fetchProductByIdentifier,
-            savedState = SavedStateHandle(mapOf("scannedBarcode" to scannedBarcode)),
+            savedState = savedState,
             resourceProvider = resourceProvider,
             productRepository = productRepo,
             variationRepository = variationRepo,
@@ -83,6 +85,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
 
         // THEN
         verify(fetchProductByIdentifier).invoke("123", GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8)
+        assertThat(savedState.contains("scannedBarcode")).isFalse()
     }
 
     @Test
