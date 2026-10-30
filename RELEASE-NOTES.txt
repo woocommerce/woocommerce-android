@@ -6,6 +6,7 @@
 -----
 
 - [*] Order details and the order edit form now show the shipping phone with the shipping address [https://github.com/woocommerce/woocommerce-android/pull/16797]
+- [*] Order attribution in order details now labels the campaign as "Campaign" instead of "Medium" [https://github.com/woocommerce/woocommerce-android/pull/16801]
 
 26.0
 -----
