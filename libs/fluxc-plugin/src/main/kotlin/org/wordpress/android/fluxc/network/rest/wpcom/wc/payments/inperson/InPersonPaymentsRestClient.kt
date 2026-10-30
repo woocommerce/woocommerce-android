@@ -265,9 +265,6 @@ class InPersonPaymentsRestClient @Inject constructor(
         )
     }
 
-    // A coded 502 (e.g. wc_stripe_capture_error) is a definite answer from the site, so only a response without a REST
-    // error code counts. On the Jetpack tunnel the store's own status is in the unexpected store response, or in the
-    // error data when the store sent no body.
     private fun WPAPINetworkError.isGatewayError(): Boolean {
         val storeStatusCode = unexpectedStoreResponse?.statusCode
             ?: errorData?.optInt(STATUS_KEY)?.takeIf { errorCode == NO_RESPONSE_BODY_ERROR_CODE && it > 0 }

@@ -518,7 +518,16 @@ class WooPosTotalsViewModel @Inject constructor(
                 }
             }
 
-            else -> wooPosLogWrapper.e("Retry failed transaction clicked but payment state is not PaymentFailed")
+            null,
+            is CardReaderPaymentState.LoadingData,
+            CardReaderPaymentState.ReFetchingOrder,
+            is CardReaderPaymentState.ProcessingPayment,
+            is CardReaderPaymentState.PrintingReceipt,
+            is CardReaderPaymentState.PaymentCapturing,
+            is CardReaderPaymentState.PaymentSuccessful,
+            CardReaderPaymentState.SharingReceipt,
+            is CardReaderPaymentOrRefundState.CardReaderInteracRefundState ->
+                wooPosLogWrapper.e("Retry failed transaction clicked but payment state is not PaymentFailed")
         }
     }
 
@@ -915,7 +924,6 @@ class WooPosTotalsViewModel @Inject constructor(
     ): PaymentFailed = buildPaymentFailedState(state.errorType, isRetryAvailable = state.onRetry != null)
 
     private fun buildPaymentFailedState(errorType: PaymentFlowError, isRetryAvailable: Boolean): PaymentFailed {
-        // Retrying an unconfirmed payment re-captures it: it can confirm the charge but never charge twice.
         val isOutcomeUnknown = errorType == PaymentFlowError.CaptureOutcomeUnknown
         val retryButtonLabel = when {
             !isRetryAvailable -> resourceProvider.getString(R.string.woo_pos_payment_failed_try_another_payment_method)
