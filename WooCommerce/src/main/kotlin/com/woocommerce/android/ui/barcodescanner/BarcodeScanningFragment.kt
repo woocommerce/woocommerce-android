@@ -55,8 +55,7 @@ class BarcodeScanningFragment : BaseFragment() {
                                 granted,
                                 shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
                             )
-                        },
-                        shouldRequestCameraPermission = true,
+                        }
                     )
                 }
             }
