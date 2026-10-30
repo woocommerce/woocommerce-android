@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-08 09:55:04+0000
+Translation-Revision-Date: 2026-10-19 14:55:32+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s richiede un numero di telefono del destinatario.</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">Deve contenere al massimo %1$s caratteri.</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin_required">Inserisci il GTIN/EAN o seleziona \"Nessun codice a barre\"</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_required">Obbligatorio per le spedizioni verso l\'UE</string>
+    <string name="woo_shipping_labels_customs_product_details_no_barcode">Nessun codice a barre</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin">GTIN/EAN</string>
+    <string name="woo_shipping_labels_customs_product_details_manufacturer_part_number">Codice articolo del produttore</string>
+    <string name="woo_shipping_labels_customs_product_details_sku">SKU</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_plugin_update_notice">Le spedizioni verso l\'UE ora richiedono identificatori di prodotto per ciascun articolo. Aggiorna il plugin WooCommerce Shipping per aggiungerli.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_description">Obbligatorio per le spedizioni verso l\'UE. SKU e GTIN / EAN vengono precompilati dalle impostazioni Magazzino del prodotto.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_title">Identificatori di prodotto UE</string>
+    <string name="woopos_settings_payments_success_sound_subtitle">Riproduci un suono al completamento del pagamento</string>
+    <string name="woopos_settings_payments_success_sound">Suono di pagamento riuscito</string>
+    <string name="woopos_settings_payments_category_subtitle">Gestisci le impostazioni di pagamento</string>
+    <string name="woopos_settings_payments_category">Pagamenti</string>
+    <string name="blaze_campaign_list_outstanding_balance_payment_title">Paga il saldo insoluto</string>
+    <string name="blaze_campaign_list_outstanding_balance_pay">Paga</string>
+    <string name="blaze_campaign_list_outstanding_balance_message">Il tuo account ha attualmente un saldo insoluto di %1$s. Effettua il pagamento prima di creare nuove campagne.</string>
+    <string name="blaze_campaign_list_outstanding_balance_title">Saldo insoluto</string>
+    <string name="bottom_sheet_attributes_desc">Aggiungi dettagli come materiale o taglia alla pagina del prodotto</string>
+    <string name="card_reader_mode_nfc_disabled_open_settings">Apri le impostazioni NFC</string>
+    <string name="card_reader_mode_nfc_disabled_subtitle">Questo telefono richiede l\'NFC per accettare pagamenti con carta. Apri le impostazioni NFC, attiva l\'NFC, quindi torna a questa schermata.</string>
+    <string name="card_reader_mode_nfc_disabled_header">Attiva NFC</string>
+    <string name="card_reader_payment_subscription_check_failed">Impossibile verificare se questo ordine può essere pagato di persona. Riprova.</string>
+    <string name="card_reader_interac_refund_not_available">Questo ordine non può essere rimborsato di persona</string>
+    <string name="order_refunds_amount_capped_notice">Rimangono solo %1$s da rimborsare per questo ordine, quindi il rimborso è limitato a tale importo.</string>
+    <string name="product_attribute_no_options">Nessuna opzione</string>
+    <string name="product_attribute_stop_using_for_variations_confirm">Non utilizzare più</string>
+    <string name="product_attribute_stop_using_for_variations_message">Le variazioni esistenti non corrisponderanno più a questo attributo.</string>
+    <string name="product_attribute_stop_using_for_variations_title">Non utilizzare più per le variazioni?</string>
+    <string name="product_attribute_used_for_variations">Usato nelle variazioni</string>
+    <string name="product_attribute_visible_on_product_page">Visibile nella pagina prodotto</string>
     <string name="woopos_orders_details_breakdown_custom_amounts_label">Importi personalizzati</string>
     <string name="woopos_payment_custom_amounts_label">Importi personalizzati</string>
     <string name="woopos_cart_item_discount_applied">Sconto applicato</string>
@@ -2789,7 +2821,6 @@ Language: it
     <string name="inbox_screen_title">Casella di posta</string>
     <string name="settings_card_reader_manuals">Manuali del lettore di schede</string>
     <string name="card_reader_interac_refund_refund_payment_hint">Tocca o inserisci per effettuare il rimborso</string>
-    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">L\'ordine è già stato rimborsato</string>
     <string name="card_reader_interac_refund_refund_failed_cancelled">Rimborso annullato</string>
     <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
     <string name="card_reader_interac_refund_refund_failed_test_card">Le carte di prova del sistema non sono autorizzate al rimborso</string>
@@ -3837,6 +3868,7 @@ Language: it
     <string name="date_timeframe_future">In arrivo</string>
     <string name="remove">Rimuovi</string>
     <string name="product_images_uploading_multi_notif_message">Caricamento delle immagini in corso…%1$d di %2$d</string>
+    <string name="product_attribute_hidden">Nascosto</string>
     <string name="login_discovery_error_generic">Non siamo stati in grado di accedere al tuo sito. Dovrai contattare il tuo fornitore di hosting per risolvere questo problema.</string>
     <string name="login_discovery_error_ssl">Non siamo stati in grado di accedere al tuo sito perché abbiamo riscontrato un problema con il &lt;b&gt;certificato SSL&lt;/b&gt;. Dovrai contattare il tuo fornitore di hosting per risolvere questo problema.</string>
     <string name="login_discovery_error_http_auth">Non siamo stati in grado di accedere al tuo sito perché viene richiesta l\'&lt;b&gt;autenticazione HTTP&lt;/b&gt;. Dovrai contattare il tuo fornitore di hosting per risolvere questo problema.</string>

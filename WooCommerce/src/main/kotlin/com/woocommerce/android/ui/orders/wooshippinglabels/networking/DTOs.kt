@@ -302,3 +302,15 @@ private class ShipmentMapDeserializer : JsonDeserializer<ShipmentMap> {
         return Gson().fromJson(jsonObject, mapType)
     }
 }
+
+data class ServiceStatusResponseDTO(
+    val notices: List<ServiceStatusNoticeDTO?>? = null,
+)
+
+data class ServiceStatusNoticeDTO(
+    val id: String? = null,
+    val type: String? = null,
+    val message: String? = null,
+    val dismissible: Boolean? = null,
+    val action: String? = null,
+)

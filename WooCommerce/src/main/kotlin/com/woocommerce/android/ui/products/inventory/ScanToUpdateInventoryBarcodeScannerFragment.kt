@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products.inventory
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,10 +9,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
@@ -33,7 +30,6 @@ import javax.inject.Inject
 class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
     private val scannerViewModel: BarcodeScanningViewModel by viewModels()
     private val viewModel: ScanToUpdateInventoryViewModel by viewModels()
-    private val navArgs: ScanToUpdateInventoryBarcodeScannerFragmentArgs by navArgs()
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
@@ -53,7 +49,6 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
                 onNewFrame = scannerViewModel::onNewFrame,
                 onBindingException = scannerViewModel::onBindingException,
                 permissionState = scannerViewModel.permissionState.observeAsState(Unknown),
-                shouldRequestCameraPermission = navArgs.scannedBarcode == null || hasCameraPermission(),
                 onCameraPermissionResult = { granted ->
                     scannerViewModel.updatePermissionState(
                         granted,
@@ -74,9 +69,6 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
             )
         }
     }
-
-    private fun hasCameraPermission() =
-        ContextCompat.checkSelfPermission(requireContext(), KEY_CAMERA_PERMISSION) == PackageManager.PERMISSION_GRANTED
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         observeViewModelEvents()

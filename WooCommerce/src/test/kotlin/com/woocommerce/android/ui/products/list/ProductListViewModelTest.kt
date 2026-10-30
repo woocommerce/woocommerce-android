@@ -11,6 +11,8 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.products.GetProductsByIds
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -44,6 +46,9 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
@@ -1338,6 +1343,23 @@ class ProductListViewModelTest : BaseUnitTest() {
         verify(analyticsTracker, times(1)).track(AnalyticsEvent.PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED)
         verify(analyticsTracker, times(1)).track(AnalyticsEvent.PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED)
         verify(analyticsTracker, times(1)).track(AnalyticsEvent.PRODUCT_LIST_PULLED_TO_REFRESH)
+    }
+
+    @Test
+    fun `given Square plugin is active, when an external barcode is scanned, then inventory update is not opened`() {
+        // GIVEN
+        whenever(selectedSite.get()).thenReturn(SiteModel())
+        whenever(wooCommerceStore.getActiveSitePlugin(any(), eq(WooCommerceStore.WooPlugin.WOO_SQUARE)))
+            .thenReturn(SitePluginModel(LocalId(1), "woocommerce-square", "1.0", "woocommerce-square", "", true))
+        createViewModel()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever(events::add)
+
+        // WHEN
+        viewModel.onHardwareBarcodeScanned(CodeScannerStatus.Success("1234567890128", BarcodeFormat.FormatEAN13))
+
+        // THEN
+        assertThat(events.filterIsInstance<ProductListEvent.ShowScanToUpdateInventory>()).isEmpty()
     }
 
     private companion object {

@@ -52,7 +52,6 @@ fun QrLoginScannerScreen(
                 onBindingException = onBindingException,
                 permissionState = permissionState,
                 onResult = onPermissionResult,
-                shouldRequestCameraPermission = true,
                 overlayContent = { QrLoginViewfinder() }
             )
         }

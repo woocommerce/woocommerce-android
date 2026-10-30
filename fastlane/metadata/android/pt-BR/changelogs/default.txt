@@ -1,0 +1,2 @@
+25.9:
+Os leitores de cartão WisePad 3, M2 e Chipper 2X agora podem se conectar via USB, e as etiquetas de envio da UE solicitam os códigos de produto exigidos pela alfândega. Gerenciar variações e atributos é mais fácil, o Blaze mostra os saldos não pagos com um botão "Pagar", e o PDV permite desativar o som de pagamento. Além disso, fizemos correções em reembolsos, notificações, configuração de NFC e filtros de pedidos.

@@ -125,6 +125,8 @@ class ProductListFragment :
     }
 
     private val refreshBackPressedCallbackState = Runnable {
+        // May run after onDestroyView, whose removeCallbacks can't reach a post already on the window Handler
+        if (_binding == null) return@Runnable
         setupDetailNavController()
         updateBackPressedCallbackState()
     }

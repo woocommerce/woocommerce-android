@@ -23,7 +23,6 @@ fun ScanToUpdateInventoryScreen(
     onBindingException: (Exception) -> Unit,
     permissionState: State<BarcodeScanningViewModel.PermissionState>,
     onCameraPermissionResult: (Boolean) -> Unit,
-    shouldRequestCameraPermission: Boolean,
     viewState: State<ScanToUpdateInventoryViewModel.ViewState>,
     onBottomSheetDismissed: () -> Unit,
     onIncrementQuantityClicked: () -> Unit,
@@ -41,7 +40,6 @@ fun ScanToUpdateInventoryScreen(
         onBindingException = onBindingException,
         permissionState = permissionState,
         onResult = onCameraPermissionResult,
-        shouldRequestCameraPermission = shouldRequestCameraPermission,
         overlayContent = {
             DefaultScannerOverlay(
                 onHardwareScannerInfoClicked = onHardwareScannerInfoClicked,
