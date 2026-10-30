@@ -127,6 +127,8 @@ class SmokeCliContractTest(unittest.TestCase):
         env.update(
             {
                 "HOME": str(temporary_path),
+                # Keeps the developer's own AVDs, such as the default Maestro_Phone, out of the run.
+                "ANDROID_HOME": str(temporary_path / "android-sdk"),
                 "PATH": f"{fake_bin}:/usr/bin:/bin",
                 "WOO_MAESTRO_ENV_FILE": str(temporary_path / "missing.env"),
                 "WOO_MAESTRO_OUTPUT_DIR": str(temporary_path / "output"),
@@ -183,6 +185,8 @@ class SmokeCliContractTest(unittest.TestCase):
         env.update(
             {
                 "HOME": str(temporary_path),
+                # Keeps the developer's own AVDs, such as the default Maestro_Phone, out of the run.
+                "ANDROID_HOME": str(temporary_path / "android-sdk"),
                 "PATH": f"{fake_bin}:/usr/bin:/bin",
                 "WOO_MAESTRO_ENV_FILE": str(temporary_path / "missing.env"),
                 "WOO_MAESTRO_OUTPUT_DIR": str(temporary_path / "output"),
@@ -307,6 +311,8 @@ class SmokeCliContractTest(unittest.TestCase):
         env.update(
             {
                 "HOME": str(temporary_path),
+                # Keeps the developer's own AVDs, such as the default Maestro_Phone, out of the run.
+                "ANDROID_HOME": str(temporary_path / "android-sdk"),
                 "PATH": f"{fake_bin}:/usr/bin:/bin",
                 "WOO_MAESTRO_ENV_FILE": str(temporary_path / "missing.env"),
                 "WOO_MAESTRO_OUTPUT_DIR": str(temporary_path / "output"),

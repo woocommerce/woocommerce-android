@@ -337,7 +337,11 @@ mkdir -p "$LOGS_DIR" "$TMP_DIR" "$SCREENSHOTS_DIR"
 
 echo "--- Pre-flight checks"
 if ! command -v maestro >/dev/null 2>&1; then
-  echo "maestro CLI not found. Run 'source .maestro/scripts/configure-toolchain.sh' in this shell first." >&2
+  # shellcheck source=/dev/null
+  source "$REPO_ROOT/.maestro/scripts/configure-toolchain.sh" >/dev/null || exit 1
+fi
+if ! command -v maestro >/dev/null 2>&1; then
+  echo "maestro CLI not found. Run .maestro/scripts/setup.sh first." >&2
   exit 1
 fi
 if ! command -v adb >/dev/null 2>&1; then
@@ -552,6 +556,21 @@ for flow in "${ORDERED_FLOWS[@]}"; do
     POS_FLOW_COUNT=$((POS_FLOW_COUNT + 1))
   fi
 done
+# Created by .maestro/scripts/setup.sh and used when no device is passed, even when
+# other emulators are running, so a smoke run never lands on a device in use elsewhere.
+DEFAULT_PHONE_AVD="Maestro_Phone"
+DEFAULT_TABLET_AVD="Maestro_Tablet"
+EMULATOR="${ANDROID_HOME:-$HOME/Library/Android/sdk}/emulator/emulator"
+is_avd() {
+  "$EMULATOR" -list-avds 2>/dev/null | grep -qx "$1"
+}
+if [[ -z "$POS_DEVICE_SELECTOR" && "$POS_FLOW_COUNT" -gt 0 ]] && is_avd "$DEFAULT_TABLET_AVD"; then
+  POS_DEVICE_SELECTOR="$DEFAULT_TABLET_AVD"
+fi
+if [[ -z "$DEVICE_SELECTOR" && "$POS_FLOW_COUNT" -lt ${#ORDERED_FLOWS[@]} ]] && is_avd "$DEFAULT_PHONE_AVD"; then
+  DEVICE_SELECTOR="$DEFAULT_PHONE_AVD"
+fi
+
 DEVICE_OPTION="--device"
 if [[ "$POS_FLOW_COUNT" -eq ${#ORDERED_FLOWS[@]} && -n "$POS_DEVICE_SELECTOR" ]]; then
   DEVICE_SELECTOR="$POS_DEVICE_SELECTOR"
@@ -693,7 +712,6 @@ while read -r serial state _rest; do
   fi
 done < <(adb devices)
 
-EMULATOR="${ANDROID_HOME:-$HOME/Library/Android/sdk}/emulator/emulator"
 # Emulators this run started, stopped again when it ends.
 STARTED_SERIALS=()
 
@@ -704,10 +722,6 @@ is_attached() {
     [[ "$(adb -s "$serial" emu avd name 2>/dev/null | tr -d '\r' | head -n 1 || true)" == "$1" ]] && return 0
   done
   return 1
-}
-
-is_avd() {
-  "$EMULATOR" -list-avds 2>/dev/null | grep -qx "$1"
 }
 
 # Starts an AVD and prints its serial once it has booted.

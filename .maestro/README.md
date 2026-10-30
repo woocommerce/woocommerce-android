@@ -24,6 +24,35 @@ The runner refuses destructive flows against the shared store. Run them with `--
 
 ## Local Setup
 
+For smoke testing, run the setup script and follow what it prints:
+
+```bash
+.maestro/scripts/setup.sh
+.maestro/scripts/run-smoke-tests.sh --profile full
+```
+
+`setup.sh` installs the toolchain, runs `configure apply` when the app secrets or the shared-store secrets
+(`~/.configure/woocommerce-android/secrets/maestro.txt`, once `.configure` lists it) are missing, creates
+`.maestro/.env.local` and fills the shared-store lines from `maestro.txt`, asks once for your WordPress.com test account and
+checks it, checks your lab store, creates the `Maestro_Phone` and `Maestro_Tablet` emulators, and runs the doctor. When
+you have no lab store, or it expired, it offers to create one, either with a coding agent running `/setup-test-stores`
+or by opening jurassic.ninja in your browser and asking for the new site, and waits until the new store answers
+quickly. Every step is skipped when already done. Without `--device` and `--pos-device`, the runner uses those emulators.
+
+The shared-store credentials live in mobile-secrets as `android/WCAndroid/maestro.txt`, laid out like
+`env.example` with only the shared lines filled in; empty lines never overwrite your own values. To ship it, add
+this entry to `.configure` and run `bundle exec fastlane run configure_update`:
+
+```json
+{
+  "file": "android/WCAndroid/maestro.txt",
+  "destination": "~/.configure/woocommerce-android/secrets/maestro.txt",
+  "encrypt": true
+}
+```
+
+The rest of this section describes the same steps done by hand.
+
 Install prerequisites:
 
 ```bash

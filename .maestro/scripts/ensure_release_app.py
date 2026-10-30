@@ -192,7 +192,12 @@ def find_aapt() -> Path:
     from_path = shutil.which("aapt")
     if from_path:
         return Path(from_path)
-    sdk_root_value = os.environ.get("ANDROID_HOME") or os.environ.get("ANDROID_SDK_ROOT")
+    # Android Studio's default location, for shells that never set ANDROID_HOME.
+    sdk_root_value = (
+        os.environ.get("ANDROID_HOME")
+        or os.environ.get("ANDROID_SDK_ROOT")
+        or str(Path.home() / "Library" / "Android" / "sdk")
+    )
     if sdk_root_value:
         candidates = list((Path(sdk_root_value) / "build-tools").glob("*/aapt"))
         if candidates:
