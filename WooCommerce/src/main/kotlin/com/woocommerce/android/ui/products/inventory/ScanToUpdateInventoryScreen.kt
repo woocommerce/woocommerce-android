@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.barcodescanner.DefaultScannerOverlay
 import com.woocommerce.android.ui.barcodescanner.HardwareBarcodeScannerInfoSheet
+import com.woocommerce.android.ui.barcodescanner.HardwareBarcodeScannerTestFailure
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
@@ -33,6 +34,7 @@ fun ScanToUpdateInventoryScreen(
     isHardwareScannerInfoVisible: State<Boolean>,
     onHardwareScannerInfoClicked: () -> Unit,
     onHardwareScannerTestScanSucceeded: () -> Unit,
+    onHardwareScannerTestScanFailed: (HardwareBarcodeScannerTestFailure) -> Unit,
     onHardwareScannerInfoDismissed: () -> Unit,
 ) = LegacyWooThemeWithBackground {
     BarcodeScannerScreen(
@@ -49,6 +51,7 @@ fun ScanToUpdateInventoryScreen(
     if (isHardwareScannerInfoVisible.value) {
         HardwareBarcodeScannerInfoSheet(
             onTestScanSucceeded = onHardwareScannerTestScanSucceeded,
+            onTestScanFailed = onHardwareScannerTestScanFailed,
             onDismissRequest = onHardwareScannerInfoDismissed,
         )
     }

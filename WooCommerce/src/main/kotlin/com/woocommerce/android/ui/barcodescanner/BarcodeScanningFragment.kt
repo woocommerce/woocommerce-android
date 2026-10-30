@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,14 +61,21 @@ class BarcodeScanningFragment : BaseFragment() {
                         },
                         overlayContent = {
                             DefaultScannerOverlay(
-                                onHardwareScannerInfoClicked = viewModel::onHardwareScannerInfoClicked,
+                                onHardwareScannerInfoClicked = {
+                                    viewModel.onHardwareScannerInfoClicked(ScanningSource.BARCODE_SCANNER)
+                                },
                             )
                         },
                     )
                     val isHardwareScannerInfoVisible by viewModel.isHardwareScannerInfoVisible.collectAsState()
                     if (isHardwareScannerInfoVisible) {
                         HardwareBarcodeScannerInfoSheet(
-                            onTestScanSucceeded = viewModel::onHardwareScannerTestScanSucceeded,
+                            onTestScanSucceeded = {
+                                viewModel.onHardwareScannerTestScanSucceeded(ScanningSource.BARCODE_SCANNER)
+                            },
+                            onTestScanFailed = { failure ->
+                                viewModel.onHardwareScannerTestScanFailed(ScanningSource.BARCODE_SCANNER, failure)
+                            },
                             onDismissRequest = viewModel::onHardwareScannerInfoDismissed,
                         )
                     }

@@ -63,8 +63,15 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
                 onManualQuantityEntered = viewModel::onManualQuantityEntered,
                 onManageStockClicked = viewModel::onManageStockClicked,
                 isHardwareScannerInfoVisible = scannerViewModel.isHardwareScannerInfoVisible.collectAsState(),
-                onHardwareScannerInfoClicked = scannerViewModel::onHardwareScannerInfoClicked,
-                onHardwareScannerTestScanSucceeded = scannerViewModel::onHardwareScannerTestScanSucceeded,
+                onHardwareScannerInfoClicked = {
+                    scannerViewModel.onHardwareScannerInfoClicked(ScanningSource.SCAN_TO_UPDATE_INVENTORY)
+                },
+                onHardwareScannerTestScanSucceeded = {
+                    scannerViewModel.onHardwareScannerTestScanSucceeded(ScanningSource.SCAN_TO_UPDATE_INVENTORY)
+                },
+                onHardwareScannerTestScanFailed = { failure ->
+                    scannerViewModel.onHardwareScannerTestScanFailed(ScanningSource.SCAN_TO_UPDATE_INVENTORY, failure)
+                },
                 onHardwareScannerInfoDismissed = scannerViewModel::onHardwareScannerInfoDismissed,
             )
         }
