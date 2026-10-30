@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-07 09:54:40+0000
+Translation-Revision-Date: 2026-10-20 15:55:37+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s требуется номер телефона получателя.</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">Должно быть не более %1$s симв.</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin_required">Введите GTIN/EAN или выберите «Без штрихкода»</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_required">Требуется для доставки в ЕС</string>
+    <string name="woo_shipping_labels_customs_product_details_no_barcode">Штрихкод отсутствует</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin">GTIN/EAN</string>
+    <string name="woo_shipping_labels_customs_product_details_manufacturer_part_number">Артикул производителя</string>
+    <string name="woo_shipping_labels_customs_product_details_sku">Артикул</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_plugin_update_notice">Для доставки в ЕС теперь необходимо указывать идентификаторы товаров для каждой позиции. Обновите плагин WooCommerce Shipping, чтобы добавить их.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_description">Требуется для доставки в ЕС. Артикул и GTIN/EAN предварительно заполнены из настроек запасов товаров.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_title">Идентификаторы товаров ЕС</string>
+    <string name="woopos_settings_payments_success_sound_subtitle">Воспроизводить звук по завершении платежа</string>
+    <string name="woopos_settings_payments_success_sound">Звук успешной оплаты</string>
+    <string name="woopos_settings_payments_category_subtitle">Задайте настройки оплаты</string>
+    <string name="woopos_settings_payments_category">Платежи</string>
+    <string name="blaze_campaign_list_outstanding_balance_payment_title">Оплатить задолженность</string>
+    <string name="blaze_campaign_list_outstanding_balance_pay">Оплатить</string>
+    <string name="blaze_campaign_list_outstanding_balance_message">На вашем счёте имеется задолженность в размере %1$s. Оплатите её перед созданием новых кампаний.</string>
+    <string name="blaze_campaign_list_outstanding_balance_title">Задолженность</string>
+    <string name="bottom_sheet_attributes_desc">Добавьте на страницу товара такие сведения, как материал или размер</string>
+    <string name="card_reader_mode_nfc_disabled_open_settings">Открыть настройки NFC</string>
+    <string name="card_reader_mode_nfc_disabled_subtitle">Этому телефону требуется NFC для приёма платежей по карте. Откройте настройки NFC, включите NFC и вернитесь на этот экран.</string>
+    <string name="card_reader_mode_nfc_disabled_header">Включить NFC</string>
+    <string name="card_reader_payment_subscription_check_failed">Не удалось проверить возможность очной оплаты заказа. Повторите попытку.</string>
+    <string name="card_reader_interac_refund_not_available">Этот заказ не может быть возвращён лично</string>
+    <string name="order_refunds_amount_capped_notice">Для этого заказа осталось вернуть только %1$s, поэтому сумма возврата ограничена этим значением.</string>
+    <string name="product_attribute_no_options">Нет опций</string>
+    <string name="product_attribute_stop_using_for_variations_confirm">Прекратить использование</string>
+    <string name="product_attribute_stop_using_for_variations_message">Существующие варианты больше не будут совпадать с этим атрибутом.</string>
+    <string name="product_attribute_stop_using_for_variations_title">Больше не использовать варианты?</string>
+    <string name="product_attribute_used_for_variations">Используется для вариаций</string>
+    <string name="product_attribute_visible_on_product_page">Отображается на странице товара</string>
     <string name="woopos_orders_details_breakdown_custom_amounts_label">Индивидуальные суммы</string>
     <string name="woopos_payment_custom_amounts_label">Индивидуальные суммы</string>
     <string name="woopos_cart_item_discount_applied">Использованная скидка</string>
@@ -895,8 +927,8 @@ Language: ru
     <string name="woopos_scanning_setup_software_keyboard_bullet_one">Найдите значок клавиатуры или панель инструментов на экране.</string>
     <string name="woopos_scanning_setup_software_keyboard_hint">Нажмите здесь, чтобы проверить отображение клавиатуры</string>
     <string name="woopos_scanning_setup_software_keyboard_message_two">Если клавиатура не видна, попробуйте выполнить следующие действия.</string>
-    <string name="woopos_scanning_setup_software_keyboard_bullet_two">Перейдите в настройки устройства, выполните поиск по запросу keyboard (клавиатура) и включите параметр Show on-screen keyboard when physical keyboard connected (Отображать экранную клавиатуру при подключении физической клавиатуры). Этот параметр может находиться в настройках вашего приложения для клавиатуры.</string>
     <string name="woopos_scanning_setup_software_keyboard_message">Android воспринимает сканер штрихкодов как физическую клавиатуру, которая может заслонять экранную клавиатуру. Давайте проверим.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_two">Перейдите в настройки устройства, выполните поиск по запросу keyboard (клавиатура) и включите параметр Show on-screen keyboard when physical keyboard connected (Отображать экранную клавиатуру при подключении физической клавиатуры). Этот параметр может находиться в настройках вашего приложения для клавиатуры.</string>
     <string name="woopos_scanning_setup_software_keyboard_title">Отображать экранную клавиатуру</string>
     <string name="woopos_scanning_setup_success_message">Вы можете начинать сканировать товары. В следующий раз, когда вам потребуется сканер, просто включите его и он подключится автоматически.</string>
     <string name="woopos_cart_clear_all_button_content_description">Значок «Очистить корзину»</string>
@@ -2726,8 +2758,8 @@ Language: ru
     <string name="coupon_conditions_products_all_products_title">Все товары</string>
     <string name="coupon_conditions_products_select_products_title">Выбрать товары</string>
     <string name="coupon_restrictions_exclude_sale_items">Исключить товары со скидками</string>
-    <string name="coupon_restrictions_exclude_sale_items_hint">Включите это, если купон не следует применять к товарам на распродаже. Купоны на один товар применяются только в том случае, если товар не на распродаже. Купоны на одну покупку применяются только в том случае, если в корзине есть товары не по распродаже.</string>
     <string name="coupon_restrictions_individual_use_hint">Включите это, если купон нельзя применять вместе с другими купонами.</string>
+    <string name="coupon_restrictions_exclude_sale_items_hint">Включите это, если купон не следует применять к товарам на распродаже. Купоны на один товар применяются только в том случае, если товар не на распродаже. Купоны на одну покупку применяются только в том случае, если в корзине есть товары не по распродаже.</string>
     <string name="product_selector_filter_button_title_zero">Фильтр</string>
     <string name="coupon_restrictions_individual_use">Только для индивидуального использования</string>
     <string name="coupon_restrictions_limit_per_user_hint">Лимит пользователя</string>
@@ -2789,7 +2821,6 @@ Language: ru
     <string name="inbox_screen_title">Входящие</string>
     <string name="settings_card_reader_manuals">Руководства по работе с платёжными терминалами</string>
     <string name="card_reader_interac_refund_refund_payment_hint">Приложите или вставьте, чтобы вернуть средства</string>
-    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">Сумма заказа уже возвращена</string>
     <string name="card_reader_interac_refund_refund_failed_cancelled">Возврат отменён</string>
     <string name="card_reader_interac_refund_refund_failed_ok">ОК</string>
     <string name="card_reader_interac_refund_refund_failed_test_card">Нельзя вернуть средства на карты для тестирования системы</string>
@@ -3837,6 +3868,7 @@ Language: ru
     <string name="date_timeframe_future">Ближайшие</string>
     <string name="remove">Удалить</string>
     <string name="product_images_uploading_multi_notif_message">Загрузка изображений…%1$d из %2$d</string>
+    <string name="product_attribute_hidden">Скрытый</string>
     <string name="login_discovery_error_generic">Не удалось получить доступ к вашему сайту. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
     <string name="login_discovery_error_ssl">Не удалось получить доступ к вашему сайту: возникла проблема с &lt;b&gt;сертификатом SSL&lt;/b&gt;. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
     <string name="login_discovery_error_http_auth">Не удалось получить доступ к вашему сайту: необходимо выполнить &lt;b&gt;проверку подлинности HTTP&lt;/b&gt;. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>

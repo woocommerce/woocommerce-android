@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-07 09:55:09+0000
+Translation-Revision-Date: 2026-10-20 09:57:35+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s alıcının telefon numarasını gerektirir.</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">%1$s karakter veya daha az olmalıdır.</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin_required">GTIN/EAN girin veya \"Barkod yok\" seçin</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_required">AB\'ye gönderim için gerekli</string>
+    <string name="woo_shipping_labels_customs_product_details_no_barcode">Barkod yok</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin">GTIN/EAN</string>
+    <string name="woo_shipping_labels_customs_product_details_manufacturer_part_number">Üretici parça numarası</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_plugin_update_notice">AB\'ye gönderimlerin artık her öğede ürün tanımlayıcısı olması gerekiyor. WooCommerce Shipping eklentisini güncelleyip bunları ekleyin.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_description">AB\'ye gönderim için gerekli. SKU ve GTIN/EAN, ürünün Stok ayarlarından önceden yüklenmiştir.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_title">AB ürün tanımlayıcıları</string>
+    <string name="woopos_settings_payments_success_sound_subtitle">Ödeme tamamlandığında ses çıkar</string>
+    <string name="woopos_settings_payments_success_sound">Ödeme başarılı sesi</string>
+    <string name="woopos_settings_payments_category_subtitle">Ödeme ayarlarını yönetin</string>
+    <string name="woopos_settings_payments_category">Ödemeler</string>
+    <string name="blaze_campaign_list_outstanding_balance_payment_title">Bekleyen bakiye ödeyin</string>
+    <string name="blaze_campaign_list_outstanding_balance_pay">Öde</string>
+    <string name="blaze_campaign_list_outstanding_balance_message">Hesabınızda şu anda bekleyen %1$s bakiye var. Lütfen yeni kampanyalar oluşturmadan önce ödeyin.</string>
+    <string name="blaze_campaign_list_outstanding_balance_title">Bekleyen bakiye</string>
+    <string name="bottom_sheet_attributes_desc">Ürün sayfasına materyal veya boyut gibi ayrıntıları ekleyin</string>
+    <string name="card_reader_mode_nfc_disabled_open_settings">NFC ayarlarını aç</string>
+    <string name="card_reader_mode_nfc_disabled_subtitle">Bu telefonun kart ödemelerini alması için NFC gerekir. NFC ayarlarını açın, NFC\'yi açın ve ardından bu ekrana dönün.</string>
+    <string name="card_reader_mode_nfc_disabled_header">NFC\'yi aç</string>
+    <string name="card_reader_payment_subscription_check_failed">Bu siparişin şahsen ödenip ödenmeyeceği kontrol edilemedi. Lütfen tekrar deneyin.</string>
+    <string name="card_reader_interac_refund_not_available">Bu siparişin para iadesi yüz yüze yapılamaz</string>
+    <string name="order_refunds_amount_capped_notice">Bu siparişte yalnızca %1$s geri ödeneceğinden bu tutar ile sınırlıdır.</string>
+    <string name="product_attribute_no_options">Seçenek yok</string>
+    <string name="product_attribute_stop_using_for_variations_confirm">Kullanmayı durdur</string>
+    <string name="product_attribute_stop_using_for_variations_message">Mevcut varyasyonlar bu nitelikte artık eşleşmeyecek.</string>
+    <string name="product_attribute_stop_using_for_variations_title">Varyasyonlar için kullanma durdurulsun mu?</string>
+    <string name="product_attribute_used_for_variations">Varyasyonlar için kullanılır</string>
+    <string name="product_attribute_visible_on_product_page">Ürün sayfasında görünür</string>
     <string name="woopos_orders_details_breakdown_custom_amounts_label">Özel tutarlar</string>
     <string name="woopos_payment_custom_amounts_label">Özel tutarlar</string>
     <string name="more_menu_payments_new_feature_state_description">Yeni ödeme özelliği kullanılabilir</string>
@@ -2788,7 +2819,6 @@ Language: tr
     <string name="inbox_screen_title">Gelen kutusu</string>
     <string name="settings_card_reader_manuals">Kart Okuyucu Kılavuzları</string>
     <string name="card_reader_interac_refund_refund_payment_hint">Geri ödeme yapmak için dokunun veya ekleyin</string>
-    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">Siparişin geri ödemesi zaten yapıldı</string>
     <string name="card_reader_interac_refund_refund_failed_cancelled">Geri ödeme iptal edildi</string>
     <string name="card_reader_interac_refund_refund_failed_ok">Tamam</string>
     <string name="card_reader_interac_refund_refund_failed_test_card">Geri ödeme için sistem test kartlarının kullanılmasına izin verilmez</string>
@@ -3836,6 +3866,7 @@ Language: tr
     <string name="date_timeframe_future">Yakında</string>
     <string name="remove">Kaldır</string>
     <string name="product_images_uploading_multi_notif_message">Görseller yükleniyor…%1$d / %2$d</string>
+    <string name="product_attribute_hidden">Gizli</string>
     <string name="login_discovery_error_generic">Sitenize erişimi başaramadık. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
     <string name="login_discovery_error_ssl">&lt;b&gt;SSL Sertifikası&lt;/b&gt; ile ilgili bir sorun nedeniyle sitenize erişemedik. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
     <string name="login_discovery_error_http_auth">&lt;b&gt;HTTP Kimlik Doğrulaması&lt;/b&gt; gerektiğinden sitenize erişemedik. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>

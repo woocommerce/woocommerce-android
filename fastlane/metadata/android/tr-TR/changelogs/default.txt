@@ -1,0 +1,2 @@
+25.9:
+WisePad 3, M2 ve Chipper 2X kart okuyucuları artık USB üzerinden bağlanabilir ve AB gönderim etiketleri, gümrük kodlarının gerektirdiği ürün kodlarını isteyebilirler. Varyasyonları ve nitelikleri yönetmek daha pürüzsüzdür. Blaze, bir Ödeme düğmesi ile ödenmemiş bakiyeleri gösterir ve POS ödeme sesini kapatmanızı sağlar. Ayrıca para iadeleri, bildirimler, NFC kurulumu ve sipariş filtreleri için düzeltmeler.
