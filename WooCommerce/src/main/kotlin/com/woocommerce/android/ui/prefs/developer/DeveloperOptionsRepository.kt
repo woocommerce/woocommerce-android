@@ -48,7 +48,6 @@ class DeveloperOptionsRepository @Inject constructor(
 
     fun updateSimulatedReaderOption(selectedOption: CardReaderManager.SimulatorUpdateFrequency) {
         appPrefs.updateReaderOptionSelected = selectedOption.toString()
-        reinitializeSimulatedReaderIfNeeded()
     }
 
     fun isInteracPaymentEnabled(): Boolean = appPrefs.isInteracEnabled
@@ -94,7 +93,6 @@ class DeveloperOptionsRepository @Inject constructor(
     private fun reinitializeSimulatedReaderIfNeeded() {
         if (cardReaderManager.initialized) {
             cardReaderManager.reinitializeSimulatedTerminal(
-                updateFrequency = getUpdateSimulatedReaderOption(),
                 useInterac = appPrefs.isInteracEnabled,
                 useEftpos = appPrefs.isEftposEnabled,
             )

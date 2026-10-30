@@ -7,7 +7,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
+import com.woocommerce.android.ui.barcodescanner.BarcodeInputDetector
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatus
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
@@ -78,6 +80,7 @@ class WooPosCartViewModel @Inject constructor(
     private val soundHelper: WooPosSoundHelper,
     private val barcodeEventTracker: WooPosBarcodeEventTracker,
     private val variationMapper: WooPosVariationMapper,
+    private val effectiveReaderStatusProvider: WooPosEffectiveReaderStatusProvider,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -88,7 +91,7 @@ class WooPosCartViewModel @Inject constructor(
 
     val state: LiveData<WooPosCartState> = _state
         .asLiveData()
-        .map { updateCartStatusDependingOnItems(it).also { newState -> updateAnalyticsData(newState) } }
+        .map { updateCartStatusDependingOnItems(it) }
         .map { updateToolbarState(it) }
         .map { updateStateDependingOnCartStatus(it) }
         .map { updateCustomAmountDiscountNotAppliedNote(it) }
@@ -97,6 +100,7 @@ class WooPosCartViewModel @Inject constructor(
 
     init {
         listenEventsFromParent()
+        listenToReaderConnectionForAnalytics()
         viewModelScope.launch {
             soundHelper.preloadBarcodeScanFailure()
         }
@@ -316,6 +320,14 @@ class WooPosCartViewModel @Inject constructor(
             updatedProducts = event.data.updatedProducts,
             updatedCoupons = event.data.updatedCoupons,
         )
+        // The cart may have been cleared while the order was checked. Writing back the stale items would bring them
+        // back and skip the next sale's customer interaction start. Product changes still refresh the product list.
+        if (_state.value.body == WooPosCartState.Body.Empty) {
+            if (result.productsChanged) {
+                childrenToParentEventSender.sendToParent(ChildToParentEvent.RefreshProductList)
+            }
+            return
+        }
         // Responses that arrive after the user already left checkout must not store
         // order-derived verdicts, or they would resurface stale on the next checkout.
         val isCheckout = _state.value.cartStatus == CHECKOUT
@@ -581,6 +593,8 @@ class WooPosCartViewModel @Inject constructor(
 
         _state.value = when (val body = currentState.body) {
             is WooPosCartState.Body.Empty -> {
+                // The only place an empty cart gets items, so the customer interaction starts here, like on iOS.
+                analyticsTrackingDataKeeper.startCustomerInteraction(System.currentTimeMillis())
                 currentState.copy(body = WooPosCartState.Body.WithItems(listOf(newItem)))
             }
 
@@ -712,10 +726,15 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
-    private fun updateAnalyticsData(newState: WooPosCartState) {
-        if (newState.body == WooPosCartState.Body.Empty) {
-            analyticsTrackingDataKeeper.reset()
-            analyticsTrackingDataKeeper.interactionWithCustomerStartedTimestamp = System.currentTimeMillis()
+    private fun listenToReaderConnectionForAnalytics() {
+        viewModelScope.launch {
+            effectiveReaderStatusProvider.flow.collect { status ->
+                analyticsTrackingDataKeeper.onReaderConnectionChanged(
+                    isConnected = status == WooPosEffectiveReaderStatus.BluetoothConnected ||
+                        status == WooPosEffectiveReaderStatus.RemoteConnected,
+                    timestamp = System.currentTimeMillis(),
+                )
+            }
         }
     }
 

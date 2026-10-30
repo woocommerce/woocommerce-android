@@ -33,6 +33,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFail
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPaymentCompleted
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RefundParams
@@ -82,6 +83,7 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -182,7 +184,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         whenever(cardReaderPaymentOrderHelper.getAmountLabel(mockedOrder))
             .thenReturn("${DUMMY_CURRENCY_SYMBOL}${DUMMY_TOTAL}")
         whenever(cardReaderManager.batteryStatus).thenAnswer { flow { emit(CardReaderBatteryStatus.Unknown) } }
-        whenever(currencyFormatter.formatAmountWithCurrency(DUMMY_TOTAL.toDouble(), "GBP"))
+        whenever(currencyFormatter.formatCurrency(DUMMY_TOTAL, "GBP"))
             .thenReturn("${DUMMY_CURRENCY_SYMBOL}${DUMMY_TOTAL}")
         whenever(mockedOrder.billingAddress).thenReturn(mockedAddress)
         whenever(mockedAddress.email).thenReturn("")
@@ -648,6 +650,20 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given receipt lookup fails before capture, when payment fails, then capture timing is not started`() = testBlocking {
+        whenever(errorMapper.mapPaymentErrorToUiError(Generic, false)).thenReturn(PaymentFlowError.Generic)
+        whenever(cardReaderManager.collectPayment(any())).thenReturn(
+            flow { emit(PaymentFailed(Generic, null, "ReceiptUrl not available")) }
+        )
+
+        controller.start()
+
+        verify(tracker, never()).onPaymentCapturing()
+        verify(tracker).trackPaymentFailed("ReceiptUrl not available", Generic)
+        assertThat(controller.paymentState.value).isInstanceOf(ExternalReaderFailedPayment::class.java)
+    }
+
+    @Test
     fun `when processing payment completed with card present, then tracking keeper stores payment type`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -730,6 +746,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
             assertThat(controller.paymentState.value)
                 .isInstanceOf(CardReaderPaymentState.PaymentCapturing.ExternalReaderPaymentCapturing::class.java)
+            verify(tracker).onPaymentCapturing()
         }
 
     @Test
@@ -744,6 +761,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
             assertThat(controller.paymentState.value)
                 .isInstanceOf(CardReaderPaymentState.PaymentCapturing.BuiltInReaderPaymentCapturing::class.java)
+            verify(tracker).onPaymentCapturing()
         }
 
     @Test
@@ -1257,14 +1275,22 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             }
             whenever(
                 cardReaderManager.retryCollectPayment(any(), any())
-            ).thenReturn(flow { emit(PaymentCompleted("")) })
+            ).thenReturn(
+                flow {
+                    emit(CapturingPayment)
+                    emit(PaymentCompleted(""))
+                }
+            )
             controller.start()
 
             (controller.paymentState.value as CardReaderPaymentState.PaymentFailed).onRetry!!()
             advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), any())
-            verify(tracker).trackPaymentSucceeded(mockedOrder)
+            inOrder(tracker) {
+                verify(tracker).onPaymentCapturing()
+                verify(tracker).trackPaymentSucceeded(mockedOrder)
+            }
         }
 
     @Test
@@ -2561,6 +2587,63 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(paymentFailedWithValidDataForRetry) }
+            }
+            controller.start()
+
+            controller.stop()
+
+            verify(cardReaderManager).cancelPayment(any())
+        }
+
+    @Test
+    fun `given reader asks for input twice in one attempt, when collecting payment, then reader ready is signalled once`() =
+        testBlocking {
+            val signals = mutableListOf<Unit>()
+            val collector = launch { controller.readerReadyForCardInput.toList(signals) }
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow {
+                    emit(ProcessingPayment)
+                    emit(WaitingForInput)
+                    emit(WaitingForInput)
+                }
+            }
+
+            controller.start()
+
+            assertThat(signals).hasSize(1)
+            assertThat(controller.paymentState.value).isInstanceOf(CardReaderPaymentState.ProcessingPayment::class.java)
+            collector.cancel()
+        }
+
+    @Test
+    fun `given a new collection attempt starts, when reader asks for input again, then reader ready is signalled again`() =
+        testBlocking {
+            val signals = mutableListOf<Unit>()
+            val collector = launch { controller.readerReadyForCardInput.toList(signals) }
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow {
+                    emit(ProcessingPayment)
+                    emit(WaitingForInput)
+                    emit(ProcessingPayment)
+                    emit(WaitingForInput)
+                }
+            }
+
+            controller.start()
+
+            assertThat(signals).hasSize(2)
+            collector.cancel()
+        }
+
+    @Test
+    fun `given payment failed with retry data, when an input request arrives afterwards, then retry data is kept`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow {
+                    emit(ProcessingPayment)
+                    emit(paymentFailedWithValidDataForRetry)
+                    emit(WaitingForInput)
+                }
             }
             controller.start()
 

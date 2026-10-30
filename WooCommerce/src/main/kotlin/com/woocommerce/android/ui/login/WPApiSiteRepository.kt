@@ -96,17 +96,32 @@ class WPApiSiteRepository @Inject constructor(
         username: String? = null,
         password: String? = null,
         wasUrlNormalizedToHttps: Boolean = false,
-    ): Result<SiteModel> {
-        WooLog.d(WooLog.T.LOGIN, "Fetching site using WP REST API")
+    ): Result<SiteModel> = fetchSite(
+        FetchWPAPISitePayload(
+            url = url,
+            username = username,
+            password = password,
+            wasUrlNormalizedToHttps = wasUrlNormalizedToHttps,
+        )
+    )
 
-        return siteStore.fetchWPAPISite(
+    /**
+     * Fetches the site before the browser login, which needs the application password authorization address.
+     */
+    suspend fun fetchSiteForBrowserLogin(url: String, wasUrlNormalizedToHttps: Boolean = false): Result<SiteModel> =
+        fetchSite(
             FetchWPAPISitePayload(
                 url = url,
-                username = username,
-                password = password,
                 wasUrlNormalizedToHttps = wasUrlNormalizedToHttps,
+                checksAuthorizationUrl = true
             )
-        ).let { result ->
+        )
+
+    private suspend fun fetchSite(payload: FetchWPAPISitePayload): Result<SiteModel> {
+        WooLog.d(WooLog.T.LOGIN, "Fetching site using WP REST API")
+
+        val url = payload.url
+        return siteStore.fetchWPAPISite(payload).let { result ->
             when {
                 result.isError -> {
                     WooLog.w(
@@ -236,7 +251,8 @@ class WPApiSiteRepository @Inject constructor(
             networkStatusCode = networkStatusCode,
             loginEntryVerified = loginEntryVerified,
             networkErrorType = networkError?.type,
-            unexpectedStoreResponse = unexpectedStoreResponse
+            unexpectedStoreResponse = unexpectedStoreResponse,
+            step = step
         )
     }
 
@@ -270,7 +286,8 @@ class WPApiSiteRepository @Inject constructor(
         val networkStatusCode: Int?,
         val loginEntryVerified: Boolean = false,
         val networkErrorType: GenericErrorType? = null,
-        val unexpectedStoreResponse: UnexpectedStoreResponse? = null
+        val unexpectedStoreResponse: UnexpectedStoreResponse? = null,
+        val step: Nonce.CookieNonceLoginStep? = null
     ) : Exception((errorMessage as? UiStringText)?.text)
 
     companion object {

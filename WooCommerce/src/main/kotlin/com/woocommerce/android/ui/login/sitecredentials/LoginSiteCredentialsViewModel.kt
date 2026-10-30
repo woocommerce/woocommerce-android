@@ -20,10 +20,17 @@ import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseSupport
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure.Flow as UnexpectedResponseFlow
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure.Step as UnexpectedResponseStep
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker.Action
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -32,15 +39,20 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.INVALID_SSL_CERTIFICATE
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseKind
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.AdminBaseVerification
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.Endpoint as ValidationEndpoint
@@ -51,7 +63,9 @@ import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_RESPONSE
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceLoginStep
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -60,6 +74,7 @@ import java.net.URI
 import javax.inject.Inject
 
 @HiltViewModel
+@Suppress("LargeClass")
 class LoginSiteCredentialsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val httpsUrlNormalizer: HttpsUrlNormalizer,
@@ -71,7 +86,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val appPrefs: AppPrefsWrapper,
     private val resourceProvider: ResourceProvider,
-    private val applicationPasswordsConfiguration: ApplicationPasswordsConfiguration
+    private val applicationPasswordsConfiguration: ApplicationPasswordsConfiguration,
+    private val unexpectedResponseTracker: LoginUnexpectedResponseTracker,
+    private val unexpectedResponseSupport: LoginUnexpectedResponseSupport
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val SITE_ADDRESS_KEY = "site-address"
@@ -86,6 +103,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         private const val HAS_RECONCILED_SITE_URL_KEY = "has-reconciled-site-url"
         private const val LOGIN_ENTRY_URL_KEY = "login-entry-url"
         private const val ADMIN_BASE_URL_KEY = "admin-base-url"
+        private const val TUTORIAL_AFTER_ALERT_KEY = "tutorial-after-alert"
+        private const val BROWSER_LOGIN_ON_FORM_KEY = "browser-login-on-form"
     }
 
     private val wasSiteAddressNormalizedToHttps =
@@ -134,6 +153,33 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         clazz = EndpointRecovery::class.java,
         key = "endpoint-recovery"
     )
+    private val unexpectedResponse = savedStateHandle.getNullableStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = LoginUnexpectedResponseFailure::class.java,
+        key = "unexpected-response"
+    )
+    private val offersBrowserLogin = savedStateHandle.getStateFlow(viewModelScope, false, BROWSER_LOGIN_ON_FORM_KEY)
+    private val formUnexpectedResponse = savedStateHandle.getNullableStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = LoginUnexpectedResponseFailure::class.java,
+        key = "form-unexpected-response"
+    )
+    private val tutorialErrorMessage = savedStateHandle.getNullableStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = UiString::class.java,
+        key = "tutorial-error-message"
+    )
+    private val credentialsLoginFlow = savedStateHandle.getStateFlow(
+        scope = viewModelScope,
+        initialValue = UnexpectedResponseFlow.SITE_CREDENTIALS,
+        key = "credentials-login-flow"
+    )
+    private var pendingUnexpectedResponse: LoginUnexpectedResponseFailure? = null
+    private var retryingStep: UnexpectedResponseStep? = null
+    private var hasPassedRetryingStep = false
 
     private val SiteModel?.applicationPasswordAuthorizationUrl: String?
         get() = this?.applicationPasswordsAuthorizeUrl
@@ -141,21 +187,34 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 "$url?app_name=${applicationPasswordsConfiguration.applicationName}&success_url=$REDIRECTION_URL"
             }
 
+    private val username: String
+        get() = savedStateHandle[USERNAME_KEY] ?: ""
+
+    private val password: String
+        get() = savedStateHandle[PASSWORD_KEY] ?: ""
+
     val viewState = combine(
         flowOf(siteAddress.removeSchemeAndSuffix()),
         savedStateHandle.getStateFlow(USERNAME_KEY, ""),
         savedStateHandle.getStateFlow(PASSWORD_KEY, ""),
         loadingMessage.map { message -> message.takeIf { it != 0 } },
         authError,
-        endpointRecovery
-    ) { siteAddress, username, password, loadingMessage, authenticationError, endpointRecovery ->
+        endpointRecovery,
+        unexpectedResponse,
+        offersBrowserLogin,
+        formUnexpectedResponse
+    ) { siteAddress, username, password, loadingMessage, authenticationError, endpointRecovery, unexpectedResponse,
+        offersBrowserLogin, formUnexpectedResponse ->
         ViewState(
             siteUrl = siteAddress,
             username = username,
             password = password,
             loadingMessage = loadingMessage,
             authenticationError = authenticationError,
-            endpointRecovery = endpointRecovery
+            endpointRecovery = endpointRecovery,
+            unexpectedResponse = unexpectedResponse,
+            offersBrowserLogin = offersBrowserLogin,
+            formUnexpectedResponse = formUnexpectedResponse
         )
     }.asLiveData()
 
@@ -171,6 +230,24 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 )
             }
             .launchIn(this)
+        recordShownErrors()
+    }
+
+    private fun recordShownErrors() {
+        merge(
+            authError.filterNotNull().map { it.errorMessage.toPresentableString() },
+            endpointRecovery.mapNotNull { it?.errorMessage?.toPresentableString() },
+            unexpectedResponse.filterNotNull().map {
+                resourceProvider.getString(R.string.login_unexpected_response_title)
+            }
+        )
+            .onEach { unifiedLoginTracker.onErrorShown(it) }
+            .launchIn(this)
+    }
+
+    private fun showErrorSnackbar(@StringRes message: Int) {
+        unifiedLoginTracker.onErrorShown(resourceProvider.getString(message))
+        triggerEvent(ShowSnackbar(message))
     }
 
     fun onUsernameChanged(username: String) {
@@ -187,9 +264,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         endpointRecovery.value = endpointRecovery.value?.copy(url = url, errorMessage = null)
     }
 
-    private suspend fun continueEndpointRecovery(recovery: EndpointRecovery) {
+    private suspend fun continueEndpointRecovery(recovery: EndpointRecovery): Boolean {
         val endpoints = currentAuthenticationEndpoints(recovery).withSiteSchemeFrom(recovery.url)
-        when (val validation = endpoints.validate()) {
+        return when (val validation = endpoints.validate()) {
             is ValidationResult.Valid -> {
                 val validatedEndpoints = endpoints.withValidatedUrls(validation)
                 endpointRecovery.value = recovery.copy(
@@ -217,6 +294,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                         showWpAdminFallbackOption = true
                     )
                 }
+                false
             }
         }
     }
@@ -226,6 +304,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     fun onContinueClick() = launch {
+        clearUnexpectedResponseOptions()
         endpointRecovery.value?.let {
             continueEndpointRecovery(it)
             return@launch
@@ -242,6 +321,37 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     fun onErrorDialogDismissed() {
         authError.value = null
+    }
+
+    fun onUnexpectedResponseRetryClick() {
+        val failure = unexpectedResponse.value ?: return
+        unexpectedResponseTracker.trackActionTapped(failure, Action.RETRY)
+        unexpectedResponse.value = null
+        authError.value = null
+        clearUnexpectedResponseOptions()
+        launch {
+            unexpectedResponseTracker.trackRetryResult(failure, isSuccess = retry(failure.step))
+        }
+    }
+
+    fun onUnexpectedResponseContactSupportClick() {
+        val failure = formUnexpectedResponse.value ?: return
+        unexpectedResponseTracker.trackActionTapped(failure, Action.CONTACT_SUPPORT)
+        triggerEvent(
+            unexpectedResponseSupport.contactSupportEvent(failure, siteAddress, HelpOrigin.LOGIN_USERNAME_PASSWORD)
+        )
+    }
+
+    fun onUnexpectedResponseDismissClick() {
+        val failure = unexpectedResponse.value ?: return
+        unexpectedResponseTracker.trackActionTapped(failure, Action.DISMISS)
+        unexpectedResponse.value = null
+    }
+
+    fun onUnexpectedResponseBrowserLoginClick() {
+        if (!offersBrowserLogin.value) return
+        val tutorial = savedStateHandle.remove<ApplicationPasswordTutorial>(TUTORIAL_AFTER_ALERT_KEY)
+        if (tutorial != null) triggerEvent(tutorial.toEvent()) else onStartWebAuthorizationClick()
     }
 
     fun onResetPasswordClick() {
@@ -282,7 +392,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     fetchedSiteId.value = -1
 
                     analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_REJECTED)
-                    triggerEvent(ShowSnackbar(R.string.login_site_credentials_web_authorization_connection_rejected))
+                    showErrorSnackbar(R.string.login_site_credentials_web_authorization_connection_rejected)
                     return@launch
                 }
 
@@ -291,6 +401,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 val password = requireNotNull(params[PASSWORD_PARAMETER])
 
                 wpApiSiteRepository.saveApplicationPassword(fetchedSiteId.value, username, password)
+                credentialsLoginFlow.value = UnexpectedResponseFlow.APP_PASSWORD
                 fetchUserInfo()
             }
         }
@@ -309,13 +420,14 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private suspend fun login(
         endpoints: CookieNonceAuthenticationEndpoints = currentAuthenticationEndpoints(),
         retryingEndpoint: EndpointType? = null
-    ) {
-        val state = requireNotNull(this@LoginSiteCredentialsViewModel.viewState.value)
+    ): Boolean {
         loadingMessage.value = R.string.logging_in
+        credentialsLoginFlow.value = UnexpectedResponseFlow.SITE_CREDENTIALS
+        pendingUnexpectedResponse = null
         val result = wpApiSiteRepository.login(
             url = siteAddress,
-            username = state.username,
-            password = state.password,
+            username = username,
+            password = password,
             endpoints = endpoints
         )
         result.fold(
@@ -323,9 +435,40 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             onFailure = { handleLoginFailure(it, endpoints, retryingEndpoint) }
         )
         loadingMessage.value = 0
+        return result.isSuccess
+    }
+
+    private suspend fun retry(step: UnexpectedResponseStep): Boolean = when (step) {
+        UnexpectedResponseStep.LOGIN_PAGE,
+        UnexpectedResponseStep.CREDENTIALS_SUBMISSION,
+        UnexpectedResponseStep.DASHBOARD_VERIFICATION,
+        UnexpectedResponseStep.NONCE_RETRIEVAL -> retryLogin(step)
+        UnexpectedResponseStep.APP_PASSWORD_GENERATION ->
+            fetchUserInfo().exceptionOrNull()?.isPasswordGenerationFailure() != true
+        UnexpectedResponseStep.USER_ROLE_CHECK -> fetchUserInfo().getOrDefault(false)
+        UnexpectedResponseStep.WOO_PLUGIN_CHECK -> fetchSite()
+        UnexpectedResponseStep.APP_PASSWORD_AUTHORIZATION_URL -> fetchSiteForTutorial(tutorialErrorMessage.value)
+    }
+
+    /**
+     * Counts as a success once any login attempt gets past the step that failed, even if a later step fails.
+     */
+    private suspend fun retryLogin(failedStep: UnexpectedResponseStep): Boolean {
+        retryingStep = failedStep
+        hasPassedRetryingStep = false
+        endpointRecovery.value?.let { continueEndpointRecovery(it) } ?: login()
+        retryingStep = null
+        return hasPassedRetryingStep
+    }
+
+    private fun CookieNonceLoginStep.isAfter(step: UnexpectedResponseStep): Boolean {
+        val failedStep = CookieNonceLoginStep.entries.firstOrNull { UnexpectedResponseStep.of(it) == step }
+            ?: return false
+        return ordinal > failedStep.ordinal
     }
 
     private suspend fun completeNativeAuthentication(endpoints: CookieNonceAuthenticationEndpoints) {
+        if (retryingStep != null) hasPassedRetryingStep = true
         promoteValidatedEndpoints(endpoints)
         endpointRecovery.value = null
         fetchSite()
@@ -346,7 +489,15 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             endpointRecovery.value = null
         }
 
+        val failedStep = authenticationError?.step
+        val retryingStep = retryingStep
+        if (failedStep != null && retryingStep != null && failedStep.isAfter(retryingStep)) {
+            hasPassedRetryingStep = true
+        }
+        pendingUnexpectedResponse = authenticationError?.toUnexpectedResponseFailure()
+            ?.takeUnless { it.isAtTypedAddress(retryingEndpoint) }
         routeLoginFailure(authenticationError, endpoints, retryingEndpoint, hasVerifiedCustomLoginEntry)
+        pendingUnexpectedResponse?.let { showUnexpectedResponse(it) }
         trackLoginFailure(
             step = Step.AUTHENTICATION,
             errorContext = exception.javaClass.simpleName,
@@ -363,10 +514,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         hasVerifiedCustomLoginEntry: Boolean
     ) {
         when (authenticationError?.errorType) {
-            CUSTOM_LOGIN_URL -> if (hasVerifiedCustomLoginEntry) {
-                showNativeAuthenticationError(authenticationError.errorMessage)
-            } else {
-                handleEndpointRecovery(EndpointType.LOGIN, retryingEndpoint == EndpointType.LOGIN)
+            CUSTOM_LOGIN_URL -> when {
+                hasVerifiedCustomLoginEntry -> showNativeAuthenticationError(authenticationError.errorMessage)
+                // A redirect the login can't follow, like to another site, can't be fixed by typing an address.
+                pendingUnexpectedResponse != null -> Unit
+                else -> handleEndpointRecovery(EndpointType.LOGIN, retryingEndpoint == EndpointType.LOGIN)
             }
 
             CUSTOM_ADMIN_URL -> handleEndpointRecovery(
@@ -420,6 +572,54 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         }
     }
 
+    private fun CookieNonceAuthenticationException.toUnexpectedResponseFailure(): LoginUnexpectedResponseFailure? {
+        val response = unexpectedStoreResponse ?: return null
+        val step = step ?: return null
+        return LoginUnexpectedResponseFailure.siteCredentials(step, response)
+    }
+
+    /**
+     * A page other than the login page or the dashboard at the address the merchant typed most likely means a wrong
+     * address, so the error the app already shows for that address covers it.
+     */
+    private fun LoginUnexpectedResponseFailure.isAtTypedAddress(retryingEndpoint: EndpointType?): Boolean =
+        response.kind == UnexpectedStoreResponseKind.UNEXPECTED_CONTENT && when (retryingEndpoint) {
+            EndpointType.LOGIN -> step == UnexpectedResponseStep.LOGIN_PAGE
+            EndpointType.ADMIN -> step == UnexpectedResponseStep.DASHBOARD_VERIFICATION
+            null -> false
+        }
+
+    private fun showUnexpectedResponse(failure: LoginUnexpectedResponseFailure) {
+        pendingUnexpectedResponse = null
+        offersBrowserLogin.value = authError.value?.showWpAdminFallbackOption == true ||
+            savedStateHandle.contains(TUTORIAL_AFTER_ALERT_KEY)
+        authError.value = null
+        unexpectedResponse.value = failure
+        formUnexpectedResponse.value = failure
+        unexpectedResponseTracker.trackErrorShown(failure)
+    }
+
+    private fun clearUnexpectedResponseOptions() {
+        offersBrowserLogin.value = false
+        formUnexpectedResponse.value = null
+        if (savedStateHandle.remove<ApplicationPasswordTutorial>(TUTORIAL_AFTER_ALERT_KEY) != null) {
+            fetchedSiteId.value = -1
+        }
+    }
+
+    /**
+     * After an unexpected response, the alert comes first and the form offers the browser login instead of opening it.
+     */
+    private fun showApplicationPasswordTutorial(tutorial: ApplicationPasswordTutorial) {
+        val failure = pendingUnexpectedResponse
+        if (failure == null) {
+            triggerEvent(tutorial.toEvent())
+        } else {
+            savedStateHandle[TUTORIAL_AFTER_ALERT_KEY] = tutorial
+            showUnexpectedResponse(failure)
+        }
+    }
+
     private fun showNativeAuthenticationError(errorMessage: UiString) {
         authError.value = AuthenticationError(
             errorMessage = errorMessage,
@@ -427,12 +627,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         )
     }
 
-    private suspend fun fetchSiteForTutorial(detectedErrorMessage: UiString? = null) {
+    private suspend fun fetchSiteForTutorial(detectedErrorMessage: UiString? = null): Boolean {
         loadingMessage.value = R.string.login_site_credentials_fetching_site
-        wpApiSiteRepository.fetchSite(
+        val result = wpApiSiteRepository.fetchSiteForBrowserLogin(
             url = siteAddress,
             wasUrlNormalizedToHttps = wasSiteAddressNormalizedToHttps,
-        ).fold(
+        )
+        result.fold(
             onSuccess = { site ->
                 val canonicalUrl = site.url
                 if (!hasReconciledSiteUrl && !canonicalUrl.isNullOrEmpty() && canonicalUrl != siteAddress) {
@@ -449,14 +650,15 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                         ?: resourceProvider.getString(R.string.error_generic)
                     val applicationPasswordAuthorizationUrl = site.applicationPasswordAuthorizationUrl
                     if (!applicationPasswordAuthorizationUrl.isNullOrEmpty()) {
-                        triggerEvent(
-                            ShowApplicationPasswordTutorialScreen(
+                        showApplicationPasswordTutorial(
+                            ApplicationPasswordTutorial(
                                 verifiedLoginUrl = savedStateHandle.get<String>(LOGIN_ENTRY_URL_KEY),
                                 applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
                                 errorMessage = errorMessage
                             )
                         )
                     } else {
+                        pendingUnexpectedResponse = null
                         analyticsTracker.track(
                             AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_URL_NOT_AVAILABLE,
                             properties = mapOf(
@@ -466,25 +668,32 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                         triggerEvent(ShowApplicationPasswordsUnavailableScreen(siteAddress, site.isJetpackConnected))
                     }
                 } else {
+                    pendingUnexpectedResponse = null
                     triggerEvent(ShowNonWooErrorScreen(siteAddress))
                 }
             },
             onFailure = {
                 loadingMessage.value = 0
-                handleSiteFetchingError(it)
+                tutorialErrorMessage.value = detectedErrorMessage
+                handleSiteFetchingError(
+                    it,
+                    UnexpectedResponseFlow.APP_PASSWORD,
+                    UnexpectedResponseStep.APP_PASSWORD_AUTHORIZATION_URL
+                )
             }
         )
+        return !result.getOrNull()?.applicationPasswordsAuthorizeUrl.isNullOrEmpty()
     }
 
-    private suspend fun fetchSite() {
-        val viewState = viewState.value
+    private suspend fun fetchSite(): Boolean {
         loadingMessage.value = R.string.logging_in
-        wpApiSiteRepository.fetchSite(
+        val result = wpApiSiteRepository.fetchSite(
             url = siteAddress,
-            username = viewState?.username,
-            password = viewState?.password,
+            username = username,
+            password = password,
             wasUrlNormalizedToHttps = wasSiteAddressNormalizedToHttps,
-        ).fold(
+        )
+        result.fold(
             onSuccess = { site ->
                 if (site.hasWooCommerce) {
                     persistAuthenticationEndpoints(site)
@@ -492,17 +701,35 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     triggerEvent(ShowNonWooErrorScreen(siteAddress))
                 }
             },
-            onFailure = { handleSiteFetchingError(it) }
+            onFailure = {
+                handleSiteFetchingError(
+                    it,
+                    UnexpectedResponseFlow.SITE_CREDENTIALS,
+                    UnexpectedResponseStep.WOO_PLUGIN_CHECK
+                )
+            }
         )
         loadingMessage.value = 0
+        return result.isSuccess
     }
 
-    private fun handleSiteFetchingError(exception: Throwable) {
+    private fun handleSiteFetchingError(
+        exception: Throwable,
+        flow: UnexpectedResponseFlow,
+        step: UnexpectedResponseStep
+    ) {
         val siteError = (exception as? OnChangedException)?.error as? SiteError
 
-        this.authError.value = AuthenticationError(
-            errorMessage = UiStringRes(R.string.login_site_credentials_fetching_site_failed)
-        )
+        val unexpectedStoreResponse = siteError?.unexpectedStoreResponse
+        // Try again already does what the browser login option does here: it fetches the authorization address again.
+        if (unexpectedStoreResponse == null || step != UnexpectedResponseStep.APP_PASSWORD_AUTHORIZATION_URL) {
+            this.authError.value = AuthenticationError(
+                errorMessage = UiStringRes(R.string.login_site_credentials_fetching_site_failed)
+            )
+        }
+        unexpectedStoreResponse?.let {
+            showUnexpectedResponse(LoginUnexpectedResponseFailure(flow, step, it))
+        }
 
         val error = (exception as? OnChangedException)?.error ?: exception
         trackLoginFailure(
@@ -529,17 +756,19 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun fetchUserInfo(site: SiteModel? = null) {
+    private suspend fun fetchUserInfo(site: SiteModel? = null): Result<Boolean> {
         val resolvedSite = site ?: requireNotNull(wpApiSiteRepository.getSiteByLocalId(fetchedSiteId.value)) {
             "Site credentials login: Site not found in DB after login"
         }
         loadingMessage.value = R.string.logging_in
-        checkEligibilityAndCompleteLogin(resolvedSite)
+        val result = checkEligibilityAndCompleteLogin(resolvedSite)
         loadingMessage.value = 0
+        return result
     }
 
-    private suspend fun checkEligibilityAndCompleteLogin(site: SiteModel) {
-        wpApiSiteRepository.checkIfUserIsEligible(site).fold(
+    private suspend fun checkEligibilityAndCompleteLogin(site: SiteModel): Result<Boolean> {
+        val result = wpApiSiteRepository.checkIfUserIsEligible(site)
+        result.fold(
             onSuccess = { isEligible ->
                 if (isEligible) {
                     // Track success only if the user is eligible, for the other cases, the user eligibility screen will
@@ -558,10 +787,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             },
             onFailure = ::handleUserInfoFailure
         )
+        return result
     }
 
     private fun handleEndpointPersistenceFailure(exception: Throwable) {
-        triggerEvent(ShowSnackbar(R.string.login_site_credentials_endpoint_persistence_failed))
+        showErrorSnackbar(R.string.login_site_credentials_endpoint_persistence_failed)
         val siteError = (exception as? OnChangedException)?.error as? SiteError
         val error = (exception as? OnChangedException)?.error ?: exception
         trackLoginFailure(
@@ -573,7 +803,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     private fun handleUserInfoFailure(exception: Throwable) {
-        triggerEvent(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
+        val unexpectedResponseFailure = exception.toUserInfoUnexpectedResponseFailure()
+        if (unexpectedResponseFailure != null) {
+            showUnexpectedResponse(unexpectedResponseFailure)
+        } else {
+            showErrorSnackbar(R.string.user_role_access_error_fetch_failed)
+        }
         val applicationPasswordError = (exception as? ApplicationPasswordGenerationException)?.networkError
         if (applicationPasswordError != null) {
             trackLoginFailure(
@@ -593,6 +828,27 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         }
     }
 
+    /**
+     * When app password generation fails, the user request fails too, with a prefixed error code. If WordPress
+     * reports app passwords as unavailable, only that error arrives here, and the unavailable screen handles it.
+     */
+    private fun Throwable.toUserInfoUnexpectedResponseFailure(): LoginUnexpectedResponseFailure? = when {
+        this is ApplicationPasswordGenerationException -> networkError.unexpectedStoreResponse?.let {
+            userInfoFailure(UnexpectedResponseStep.APP_PASSWORD_GENERATION, it)
+        }
+        this is WooException && !isPasswordGenerationFailure() -> error.unexpectedStoreResponse?.let {
+            userInfoFailure(UnexpectedResponseStep.USER_ROLE_CHECK, it)
+        }
+        else -> null
+    }
+
+    private fun Throwable.isPasswordGenerationFailure() = this is ApplicationPasswordGenerationException ||
+        (this as? WooException)?.error?.apiErrorCode.orEmpty()
+            .startsWith(ApplicationPasswordsNetwork.APP_PASSWORDS_GENERATION_FAILURE_ERROR_CODE_PREFIX)
+
+    private fun userInfoFailure(step: UnexpectedResponseStep, response: UnexpectedStoreResponse) =
+        LoginUnexpectedResponseFailure(flow = credentialsLoginFlow.value, step = step, response = response)
+
     private fun trackLoginFailure(
         step: Step,
         errorContext: String?,
@@ -600,9 +856,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         errorDescription: String?,
         statusCode: Int? = null
     ) {
-        loginAnalyticsListener.trackFailure(
-            message = errorDescription
-        )
+        unifiedLoginTracker.trackFailure(errorDescription)
 
         analyticsTracker.track(
             LOGIN_SITE_CREDENTIALS_LOGIN_FAILED,
@@ -747,7 +1001,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         val password: String = "",
         @StringRes val loadingMessage: Int? = null,
         val authenticationError: AuthenticationError? = null,
-        val endpointRecovery: EndpointRecovery? = null
+        val endpointRecovery: EndpointRecovery? = null,
+        val unexpectedResponse: LoginUnexpectedResponseFailure? = null,
+        val offersBrowserLogin: Boolean = false,
+        val formUnexpectedResponse: LoginUnexpectedResponseFailure? = null
     ) {
         val isValid = username.isNotBlank() && password.isNotBlank()
     }
@@ -769,6 +1026,19 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             LOGIN -> endpoints.loginEntryUrl
             ADMIN -> endpoints.adminBaseUrl
         }
+    }
+
+    @Parcelize
+    data class ApplicationPasswordTutorial(
+        val verifiedLoginUrl: String?,
+        val applicationPasswordAuthorizationUrl: String,
+        val errorMessage: String
+    ) : Parcelable {
+        fun toEvent() = ShowApplicationPasswordTutorialScreen(
+            verifiedLoginUrl = verifiedLoginUrl,
+            applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
+            errorMessage = errorMessage
+        )
     }
 
     @Parcelize

@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.JetpackConnectionStatus
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.support.help.HelpOrigin.JETPACK_INSTALLATION
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -66,6 +67,7 @@ class JetpackActivationMainViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val registerDevice: RegisterDevice,
     selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -164,6 +166,7 @@ class JetpackActivationMainViewModel @Inject constructor(
             requireNotNull(site) { "Illegal state, the button shouldn't be visible before fetching the site" }
             if (site.hasWooCommerce) {
                 jetpackActivationRepository.setSelectedSiteAndCleanOldSites(site)
+                registerDevice.kickoff(RegisterDevice.Trigger.LOGIN_SUCCESS)
                 triggerEvent(GoToStore)
 
                 analyticsTrackerWrapper.track(stat = AnalyticsEvent.JETPACK_SETUP_SYNCHRONIZATION_COMPLETED)

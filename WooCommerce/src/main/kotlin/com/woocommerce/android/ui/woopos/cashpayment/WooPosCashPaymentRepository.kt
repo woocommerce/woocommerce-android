@@ -109,7 +109,7 @@ class WooPosCashPaymentRepository @Inject constructor(
         val siteSettings = wooCommerceStore.getSiteSettings(selectedSite.get())
         val currencyCode = siteSettings?.currencyCode
         val currencySymbol = wooCommerceStore.getSiteCurrency(selectedSite.get(), currencyCode)
-        val gmtOffset = selectedSite.get().timezone?.toFloat() ?: 0f
+        val gmtOffset = selectedSite.get().timezone?.toFloatOrNull() ?: 0f
         val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(selectedSite.get()).let {
             Pair(it?.weightUnit, it?.dimensionUnit)
         }

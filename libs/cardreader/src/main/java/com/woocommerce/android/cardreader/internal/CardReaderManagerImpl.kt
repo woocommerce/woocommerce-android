@@ -27,7 +27,12 @@ import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.cardreader.payments.RetrieveAndCollectResult
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.launch
 
 /**
  * Implementation of CardReaderManager using StripeTerminalSDK.
@@ -66,7 +71,6 @@ internal class CardReaderManagerImpl(
     override val connectionTokenProvider: CompositeConnectionTokenProvider = tokenProvider
 
     override fun initialize(
-        updateFrequency: CardReaderManager.SimulatorUpdateFrequency,
         useInterac: Boolean,
         useEftpos: Boolean,
         isDebug: Boolean
@@ -78,18 +82,17 @@ internal class CardReaderManagerImpl(
 
             initStripeTerminal(logLevel)
 
-            terminal.setupSimulator(updateFrequency, useInterac, useEftpos)
+            terminal.setupSimulator(useInterac, useEftpos)
         } else {
             logWrapper.w(TAG, "CardReaderManager is already initialized")
         }
     }
 
     override fun reinitializeSimulatedTerminal(
-        updateFrequency: CardReaderManager.SimulatorUpdateFrequency,
         useInterac: Boolean,
         useEftpos: Boolean,
     ) {
-        terminal.setupSimulator(updateFrequency, useInterac, useEftpos)
+        terminal.setupSimulator(useInterac, useEftpos)
     }
 
     override fun discoverReaders(
@@ -142,7 +145,7 @@ internal class CardReaderManagerImpl(
 
     override suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> {
         resetBluetoothDisplayMessage()
-        return paymentManager.acceptPayment(paymentInfo)
+        return paymentManager.acceptPayment(paymentInfo).withReaderInputRequests()
     }
 
     override suspend fun createPaymentIntent(paymentInfo: PaymentInfo): CreatePaymentIntentResult {
@@ -173,7 +176,15 @@ internal class CardReaderManagerImpl(
     }
 
     override suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus> =
-        paymentManager.retryPayment(orderId, paymentData)
+        paymentManager.retryPayment(orderId, paymentData).withReaderInputRequests()
+
+    private fun Flow<CardPaymentStatus>.withReaderInputRequests(): Flow<CardPaymentStatus> = channelFlow {
+        val inputRequests = launch(start = CoroutineStart.UNDISPATCHED) {
+            connectionManager.readerInputRequests.collect { send(CardPaymentStatus.WaitingForInput) }
+        }
+        this@withReaderInputRequests.collect { send(it) }
+        inputRequests.cancel()
+    }.buffer(Channel.RENDEZVOUS)
 
     override fun cancelPayment(paymentData: PaymentData) = paymentManager.cancelPayment(paymentData)
 

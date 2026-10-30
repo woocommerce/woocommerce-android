@@ -9,9 +9,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -25,6 +27,10 @@ import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseSupport
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker.Action
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAddStoreEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAuthenticatedWebView
@@ -42,12 +48,15 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCApiVersionResponse
@@ -57,6 +66,7 @@ import java.util.Objects
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure.Step as UnexpectedResponseStep
 
 @Suppress("LargeClass")
 @HiltViewModel
@@ -73,7 +83,9 @@ class SitePickerViewModel @Inject constructor(
     private val experimentTracker: ExperimentTracker,
     private val getWooVisibleSites: GetWooVisibleSites,
     private val visibleWooSitesDataStore: VisibleWooSitesDataStore,
-    private val registerDevice: RegisterDevice
+    private val registerDevice: RegisterDevice,
+    private val unexpectedResponseTracker: LoginUnexpectedResponseTracker,
+    private val unexpectedResponseSupport: LoginUnexpectedResponseSupport
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
@@ -125,6 +137,14 @@ class SitePickerViewModel @Inject constructor(
     private val _isWooUpgradeDialogVisible: MutableState<Boolean> by lazy { mutableStateOf(false) }
     val isWooUpgradeDialogVisible: State<Boolean> = _isWooUpgradeDialogVisible
 
+    private val _unexpectedResponse = savedState.getNullableStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = LoginUnexpectedResponseFailure::class.java,
+        key = "unexpected-response"
+    )
+    val unexpectedResponse: StateFlow<LoginUnexpectedResponseFailure?> = _unexpectedResponse
+
     private var loginSiteAddress: String?
         get() = savedState[LOGIN_SITE_ADDRESS_KEY]
         set(value) {
@@ -151,7 +171,7 @@ class SitePickerViewModel @Inject constructor(
 
     private fun showPendingErrorMessageIfNeeded() {
         if (pendingErrorMessage != 0) {
-            triggerEvent(ShowSnackbar(pendingErrorMessage))
+            showErrorSnackbar(pendingErrorMessage)
         }
     }
 
@@ -168,7 +188,7 @@ class SitePickerViewModel @Inject constructor(
                     sitePickerViewState = sitePickerViewState.copy(userInfo = getUserInfo())
                 },
                 onFailure = {
-                    triggerEvent(ShowSnackbar(string.error_fetch_my_profile))
+                    showErrorSnackbar(string.error_fetch_my_profile)
                 }
             )
         }
@@ -205,7 +225,7 @@ class SitePickerViewModel @Inject constructor(
         sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
 
         when {
-            result.isError -> triggerEvent(ShowSnackbar(string.site_picker_error))
+            result.isError -> showErrorSnackbar(string.site_picker_error)
             result.model != null -> {
                 if (result.model!!.any { it.isJetpackCPConnected }) {
                     analyticsTrackerWrapper.track(
@@ -443,7 +463,7 @@ class SitePickerViewModel @Inject constructor(
                 }
             },
             onFailure = {
-                triggerEvent(ShowSnackbar(string.site_picker_error))
+                showErrorSnackbar(string.site_picker_error)
                 loginSiteAddress = null
                 loadAndDisplaySites()
             }
@@ -467,11 +487,13 @@ class SitePickerViewModel @Inject constructor(
         // Make sure installation is enabled only for selfhosted and atomic sites
         // TODO remove this when we handle non-atomic sites
         val isWooInstallationEnabled = site.isJetpackConnected
+        val errorMessage = resourceProvider.getString(string.login_not_woo_store, site.url)
+        recordShownError(errorMessage)
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = isWooInstallationEnabled,
             primaryBtnText = resourceProvider.getString(string.login_install_woo),
-            noStoresLabelText = resourceProvider.getString(string.login_not_woo_store, site.url),
+            noStoresLabelText = errorMessage,
             noStoresSubText = null,
             isNoStoresBtnVisible = true,
             noStoresBtnText = resourceProvider.getString(string.login_view_connected_stores),
@@ -481,11 +503,13 @@ class SitePickerViewModel @Inject constructor(
 
     private fun loadSimpleWPComView(site: SiteModel) {
         trackNotWooStore(site)
+        val errorMessage = resourceProvider.getString(string.login_simple_wpcom_site, site.url)
+        recordShownError(errorMessage)
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true,
             primaryBtnText = resourceProvider.getString(string.login_view_connected_stores),
-            noStoresLabelText = resourceProvider.getString(string.login_simple_wpcom_site, site.url),
+            noStoresLabelText = errorMessage,
             noStoresSubText = null,
             isNoStoresBtnVisible = false,
             currentSitePickerState = SitePickerState.SimpleWPComState
@@ -658,16 +682,22 @@ class SitePickerViewModel @Inject constructor(
         }
     }
 
-    private suspend fun continueIntoSelectedSite(selectedSiteModel: SiteModel) {
-        var reachedTheDashboard = false
+    /**
+     * Returns the check that failed, or null once the merchant reaches the dashboard.
+     */
+    private suspend fun continueIntoSelectedSite(selectedSiteModel: SiteModel): UnexpectedResponseStep? {
         val siteVerificationResult = repository.verifySiteWooAPIVersion(selectedSiteModel)
         val siteVerificationModel = siteVerificationResult.model
-        when {
-            siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, selectedSiteModel)
+        val failedCheck = when {
+            siteVerificationResult.isError -> {
+                onSiteVerificationError(siteVerificationResult, selectedSiteModel)
+                UnexpectedResponseStep.WOO_PLUGIN_CHECK
+            }
             siteVerificationModel?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
                 experimentTracker.log(ExperimentTracker.SITE_VERIFICATION_SUCCESSFUL_EVENT)
                 trackAppPasswordsSupport(siteVerificationModel.siteModel)
-                userEligibilityFetcher.fetchUserInfo(siteVerificationModel.siteModel).fold(
+                val userInfoResult = userEligibilityFetcher.fetchUserInfo(siteVerificationModel.siteModel)
+                userInfoResult.fold(
                     onSuccess = {
                         selectedSite.set(siteVerificationModel.siteModel)
                         trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SUCCESS)
@@ -680,21 +710,29 @@ class SitePickerViewModel @Inject constructor(
                         registerDevice.kickoff(registerDeviceTrigger)
 
                         sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
-                        reachedTheDashboard = true
                         triggerEvent(SitePickerEvent.NavigateToMainActivityEvent)
                     },
-                    onFailure = {
-                        triggerEvent(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
+                    onFailure = { exception ->
+                        val unexpectedStoreResponse = (exception as? WooException)?.error?.unexpectedStoreResponse
+                        if (navArgs.openedFromLogin && unexpectedStoreResponse != null) {
+                            showUnexpectedResponse(UnexpectedResponseStep.USER_ROLE_CHECK, unexpectedStoreResponse)
+                        } else {
+                            showErrorSnackbar(R.string.user_role_access_error_fetch_failed)
+                        }
                     }
                 )
+                if (userInfoResult.isSuccess) null else UnexpectedResponseStep.USER_ROLE_CHECK
             }
 
             else -> {
+                recordShownError(resourceProvider.getString(string.login_update_required_desc))
                 _isWooUpgradeDialogVisible.value = true
+                UnexpectedResponseStep.WOO_PLUGIN_CHECK
             }
         }
         // The merchant stays on the list, so report it in case an auto-login skipped it.
-        if (!reachedTheDashboard) trackSiteListShown()
+        if (failedCheck != null) trackSiteListShown()
+        return failedCheck
     }
 
     /**
@@ -705,6 +743,63 @@ class SitePickerViewModel @Inject constructor(
     private fun setContinueInFlight(inFlight: Boolean) {
         isContinueInFlight = inFlight
         sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = inFlight)
+    }
+
+    fun onUnexpectedResponseRetryClick() {
+        val failure = _unexpectedResponse.value ?: return
+        val site = getSelectedWooSite() ?: return
+        unexpectedResponseTracker.trackActionTapped(failure, Action.RETRY)
+        _unexpectedResponse.value = null
+        setContinueInFlight(true)
+        launch {
+            try {
+                val failedCheck = continueIntoSelectedSite(site)
+                // The store check comes before the role check, so passing it counts even if the role check fails.
+                val passedTheFailedCheck = when (failedCheck) {
+                    null -> true
+                    UnexpectedResponseStep.USER_ROLE_CHECK -> failure.step == UnexpectedResponseStep.WOO_PLUGIN_CHECK
+                    else -> false
+                }
+                unexpectedResponseTracker.trackRetryResult(failure, isSuccess = passedTheFailedCheck)
+            } finally {
+                setContinueInFlight(false)
+            }
+        }
+    }
+
+    fun onUnexpectedResponseContactSupportClick() {
+        val failure = _unexpectedResponse.value ?: return
+        unexpectedResponseTracker.trackActionTapped(failure, Action.CONTACT_SUPPORT)
+        _unexpectedResponse.value = null
+        triggerEvent(
+            unexpectedResponseSupport.contactSupportEvent(failure, getSelectedWooSite()?.url, HelpOrigin.LOGIN_EPILOGUE)
+        )
+    }
+
+    fun onUnexpectedResponseDismissClick() {
+        val failure = _unexpectedResponse.value ?: return
+        unexpectedResponseTracker.trackActionTapped(failure, Action.DISMISS)
+        _unexpectedResponse.value = null
+    }
+
+    private fun showUnexpectedResponse(step: UnexpectedResponseStep, response: UnexpectedStoreResponse) {
+        val failure = LoginUnexpectedResponseFailure(
+            flow = LoginUnexpectedResponseFailure.Flow.STORE_PICKER,
+            step = step,
+            response = response
+        )
+        _unexpectedResponse.value = failure
+        unexpectedResponseTracker.trackErrorShown(failure)
+        recordShownError(resourceProvider.getString(R.string.login_unexpected_response_title))
+    }
+
+    private fun showErrorSnackbar(@StringRes message: Int) {
+        recordShownError(resourceProvider.getString(message))
+        triggerEvent(ShowSnackbar(message))
+    }
+
+    private fun recordShownError(message: String) {
+        if (navArgs.openedFromLogin) unifiedLoginTracker.onErrorShown(message)
     }
 
     private fun getSelectedWooSite(): SiteModel? {
@@ -733,18 +828,29 @@ class SitePickerViewModel @Inject constructor(
         site: SiteModel
     ) {
         sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
+        val unexpectedStoreResponse = siteVerificationResult.error.unexpectedStoreResponse
+        if (navArgs.openedFromLogin && unexpectedStoreResponse != null) {
+            showUnexpectedResponse(UnexpectedResponseStep.WOO_PLUGIN_CHECK, unexpectedStoreResponse)
+            return
+        }
         val event = when (siteVerificationResult.error.type) {
             WooErrorType.TIMEOUT -> {
                 analyticsTrackerWrapper.track(
                     stat = AnalyticsEvent.SITE_PICKER_JETPACK_TIMEOUT_ERROR_SHOWN
                 )
+                recordShownError(
+                    resourceProvider.getString(string.login_verifying_site_jetpack_timeout_error_description)
+                )
                 getJetpackTimeoutDialogEvent()
             }
 
-            else -> ShowSnackbar(
-                message = string.login_verifying_site_error,
-                args = arrayOf(site.getSiteName())
-            )
+            else -> {
+                recordShownError(resourceProvider.getString(string.login_verifying_site_error, site.getSiteName()))
+                ShowSnackbar(
+                    message = string.login_verifying_site_error,
+                    args = arrayOf(site.getSiteName())
+                )
+            }
         }
         triggerEvent(event)
     }
@@ -828,7 +934,7 @@ class SitePickerViewModel @Inject constructor(
                     onSitesLoaded(repository.getSites(), isApiResponse = false)
                 },
                 onFailure = {
-                    triggerEvent(ShowSnackbar(string.site_picker_error))
+                    showErrorSnackbar(string.site_picker_error)
                     // This would lead to the [WooNotFoundState] again
                     // The chance of getting this state is small, because of the retry mechanism above
                     onSitesLoaded(repository.getSites(), isApiResponse = false)

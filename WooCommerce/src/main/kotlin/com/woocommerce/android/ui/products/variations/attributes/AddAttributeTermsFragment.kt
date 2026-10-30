@@ -86,7 +86,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             override fun onTermMoved(fromTermName: String, toTermName: String) {
                 viewModel.swapProductDraftAttributeTerms(
                     navArgs.attributeId,
-                    navArgs.attributeName,
+                    attributeName,
                     fromTermName,
                     toTermName
                 )
@@ -437,8 +437,6 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     private fun updateAttributeSettings() {
         val state = viewModel.getAttributeSettingsState(navArgs.attributeId, attributeName, navArgs.isVariationCreation)
-        binding.attributeSettingsContainer.isVisible = state != null
-        if (state == null) return
 
         with(binding.visibleSwitch) {
             setOnCheckedChangeListener(null)
@@ -491,6 +489,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
         viewModel.addAttributeTermToDraft(navArgs.attributeId, attributeName, termName, navArgs.isVariationCreation)
         checkViews()
+
+        // the term is added at the end, matching the draft, so scroll to it to keep it in view
+        binding.assignedTermList.smoothScrollToPosition(assignedTermsAdapter.itemCount - 1)
     }
 
     private fun showSkeleton(show: Boolean) {

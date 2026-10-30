@@ -23,6 +23,7 @@ internal fun wooColors(useDarkTheme: Boolean): WooColors {
 internal fun loadWooColors(context: Context, useDarkTheme: Boolean): WooColors =
     context.createWooColorContext(useDarkTheme = useDarkTheme).loadWooColorsFromResources()
 
+@Suppress("LongMethod")
 internal fun loadWooPaletteColors(context: Context): WooPaletteColors = WooPaletteColors(
     sandstone = WooSandstoneColors(
         shade5 = context.color(R.color.woo_ds_color_palette_sandstone_shade5),
@@ -30,6 +31,7 @@ internal fun loadWooPaletteColors(context: Context): WooPaletteColors = WooPalet
         shade20 = context.color(R.color.woo_ds_color_palette_sandstone_shade20),
         shade40 = context.color(R.color.woo_ds_color_palette_sandstone_shade40),
         shade60 = context.color(R.color.woo_ds_color_palette_sandstone_shade60),
+        shade80 = context.color(R.color.woo_ds_color_palette_sandstone_shade80),
     ),
     gray = WooGrayColors(
         shade0 = context.color(R.color.woo_ds_color_palette_gray_shade0),
@@ -131,6 +133,9 @@ private fun Context.loadWooColorsFromResources(): WooColors {
             onInfoContainer = color(R.color.woo_ds_color_status_on_info_container),
             neutralContainer = color(R.color.woo_ds_color_status_neutral_container),
             onNeutralContainer = color(R.color.woo_ds_color_status_on_neutral_container),
+        ),
+        iconContainer = WooIconContainerToneColors(
+            sandstone = color(R.color.woo_ds_color_icon_container_sandstone),
         ),
         overlay = WooOverlayColors(
             overlay20 = color(R.color.woo_ds_color_overlay_overlay20),

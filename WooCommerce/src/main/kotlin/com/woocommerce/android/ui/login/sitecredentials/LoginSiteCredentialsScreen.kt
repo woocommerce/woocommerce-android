@@ -29,12 +29,14 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseAlert
 
 @Composable
 fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
@@ -50,7 +52,11 @@ fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
             onBackClick = viewModel::onBackClick,
             onHelpButtonClick = viewModel::onHelpButtonClick,
             onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-            onStartWebAuthorizationClick = viewModel::onStartWebAuthorizationClick
+            onStartWebAuthorizationClick = viewModel::onStartWebAuthorizationClick,
+            onUnexpectedResponseRetryClick = viewModel::onUnexpectedResponseRetryClick,
+            onUnexpectedResponseContactSupportClick = viewModel::onUnexpectedResponseContactSupportClick,
+            onUnexpectedResponseDismissClick = viewModel::onUnexpectedResponseDismissClick,
+            onUnexpectedResponseBrowserLoginClick = viewModel::onUnexpectedResponseBrowserLoginClick
         )
     }
 }
@@ -67,7 +73,11 @@ fun LoginSiteCredentialsScreen(
     onBackClick: () -> Unit,
     onHelpButtonClick: () -> Unit,
     onErrorDialogDismissed: () -> Unit,
-    onStartWebAuthorizationClick: () -> Unit
+    onStartWebAuthorizationClick: () -> Unit,
+    onUnexpectedResponseRetryClick: () -> Unit,
+    onUnexpectedResponseContactSupportClick: () -> Unit,
+    onUnexpectedResponseDismissClick: () -> Unit,
+    onUnexpectedResponseBrowserLoginClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     Scaffold(
@@ -136,6 +146,24 @@ fun LoginSiteCredentialsScreen(
                     text = stringResource(id = R.string.continue_button)
                 )
             }
+            if (viewState.formUnexpectedResponse != null) {
+                WCOutlinedButton(
+                    onClick = onUnexpectedResponseContactSupportClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                ) {
+                    Text(text = stringResource(id = R.string.support_contact))
+                }
+            }
+            if (viewState.endpointRecovery == null && viewState.offersBrowserLogin) {
+                WCTextButton(
+                    onClick = onUnexpectedResponseBrowserLoginClick,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    Text(text = stringResource(id = R.string.login_site_credentials_use_web_authorization))
+                }
+            }
             if (viewState.endpointRecovery != null) {
                 WCTextButton(
                     onClick = onStartWebAuthorizationClick,
@@ -191,6 +219,13 @@ fun LoginSiteCredentialsScreen(
                         }
                     }
                 }
+            )
+        }
+
+        if (viewState.unexpectedResponse != null) {
+            LoginUnexpectedResponseAlert(
+                onRetryClick = onUnexpectedResponseRetryClick,
+                onDismissClick = onUnexpectedResponseDismissClick
             )
         }
 
@@ -308,7 +343,11 @@ private fun LoginSiteCredentialsScreenPreview(viewState: LoginSiteCredentialsVie
             onBackClick = {},
             onHelpButtonClick = {},
             onErrorDialogDismissed = {},
-            onStartWebAuthorizationClick = {}
+            onStartWebAuthorizationClick = {},
+            onUnexpectedResponseRetryClick = {},
+            onUnexpectedResponseContactSupportClick = {},
+            onUnexpectedResponseDismissClick = {},
+            onUnexpectedResponseBrowserLoginClick = {}
         )
     }
 }

@@ -12,6 +12,7 @@ import base64
 import datetime as dt
 import json
 import os
+import random
 import re
 import sys
 import urllib.error
@@ -398,6 +399,36 @@ def create_order(
     )
 
 
+def push_order(args: argparse.Namespace) -> None:
+    """Create one order for a push notification flow and print its number and total."""
+    run_id = strict_run_id(args.run_id)
+    load_store_env(args.store)
+    client = WooClient()
+    manifest_path = Path(args.manifest)
+    manifest = read_json(manifest_path) if manifest_path.exists() else manifest_template(run_id, args.store)
+    # The push names only the total, so a total no other order in the run has
+    # tells this order's notification apart.
+    total = f"{random.randint(1000, 9999) / 100:.2f}"
+    order = client.create(
+        "orders",
+        {
+            "status": "processing",
+            "set_paid": True,
+            "billing": {
+                "first_name": run_id,
+                "last_name": "Tester",
+                "email": suite_email(run_id),
+                "country": "US",
+            },
+            "customer_note": f"{run_id} push order",
+            "fee_lines": [{"name": f"{run_id} push", "total": total}],
+            "meta_data": [{"key": "suite_run_id", "value": run_id}],
+        },
+    )
+    record(manifest, "order", int(order["id"]), "push order", manifest_path)
+    print(f"{order['number']} {order['total']}")
+
+
 def orders_with_seeded_products(client: WooClient, manifest: dict[str, Any]) -> list[int]:
     """Return the orders made during the run that hold a seeded product or variation."""
     seeded = {
@@ -619,6 +650,12 @@ def build_parser() -> argparse.ArgumentParser:
     cleanup_parser.add_argument("--manifest", required=True)
     cleanup_parser.add_argument("--store", choices=("lab", "shared"))
     cleanup_parser.set_defaults(func=cleanup)
+
+    push_order_parser = subparsers.add_parser("push-order")
+    push_order_parser.add_argument("--store", choices=("lab", "shared"), required=True)
+    push_order_parser.add_argument("--run-id", required=True)
+    push_order_parser.add_argument("--manifest", required=True)
+    push_order_parser.set_defaults(func=push_order)
 
     sweep_parser = subparsers.add_parser("sweep")
     sweep_parser.add_argument("--store", choices=("lab", "shared"), required=True)

@@ -40,6 +40,19 @@ class CardReaderRemoteErrorTest {
     }
 
     @Test
+    fun `given an insecure environment failure, when classified, then the insecure environment error is returned`() {
+        // GIVEN
+        val exception: TerminalException = mock()
+        whenever(exception.errorCode).thenReturn(TerminalErrorCode.TAP_TO_PAY_INSECURE_ENVIRONMENT)
+
+        // WHEN
+        val error = exception.toCardReaderRemoteError(CardReaderRemoteError.CollectFailed)
+
+        // THEN
+        assertThat(error).isEqualTo(CardReaderRemoteError.InsecureEnvironment)
+    }
+
+    @Test
     fun `given nfc is disabled, when classified, then the nfc error is returned`() {
         // GIVEN
         val exception: TerminalException = mock()

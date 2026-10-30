@@ -46,11 +46,13 @@ class ShippingLabelRefundViewModel @Inject constructor(
     }
 
     fun start() {
-        shippingLabelRefundViewState = shippingLabelRefundViewState.copy(
-            shippingLabel = repository.getShippingLabelByOrderIdAndLabelId(
-                arguments.orderId, arguments.shippingLabelId
+        launch {
+            shippingLabelRefundViewState = shippingLabelRefundViewState.copy(
+                shippingLabel = repository.getShippingLabelByOrderIdAndLabelId(
+                    arguments.orderId, arguments.shippingLabelId
+                )
             )
-        )
+        }
     }
 
     fun onRefundShippingLabelButtonClicked() {

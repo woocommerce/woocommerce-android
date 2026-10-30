@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.creation.customerlist
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.customer.CustomerListViewModel
@@ -30,7 +31,12 @@ open class CustomerListSelectionViewModel @Inject constructor(
     isAdvancedSearchSupported,
     getSupportedSearchModes,
     analyticsTracker,
-    stringUtils
+    stringUtils,
+    trackingSource = if (OrderCustomerListFragmentArgs.fromSavedStateHandle(savedState).allowCustomerCreation) {
+        AnalyticsTracker.VALUE_CUSTOMER_LIST_SOURCE_ORDER_FORM
+    } else {
+        AnalyticsTracker.VALUE_CUSTOMER_LIST_SOURCE_ORDER_LIST_FILTER
+    },
 ) {
     private var loadingMoreInfoAboutCustomerJob: Job? = null
 

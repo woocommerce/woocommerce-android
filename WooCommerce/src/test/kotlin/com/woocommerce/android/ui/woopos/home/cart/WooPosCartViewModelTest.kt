@@ -5,8 +5,10 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.barcodescanner.BarcodeInputDetector
 import com.woocommerce.android.ui.products.ProductTestUtils
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatus
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
@@ -44,6 +46,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -51,6 +54,7 @@ import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -148,12 +152,187 @@ class WooPosCartViewModelTest {
     }
 
     private val savedState: SavedStateHandle = SavedStateHandle()
-    private val trackerData: WooPosAnalyticsTrackingDataKeeper = WooPosAnalyticsTrackingDataKeeper()
+    private val trackerData = WooPosAnalyticsTrackingDataKeeper(mock())
     private val cartItemsUpdater: WooPosCartItemsUpdater = mock()
     private val customAmountCartHandler: WooPosCustomAmountCartHandler = WooPosCustomAmountCartHandler()
     private val searchByIdentifier: WooPosSearchByIdentifier = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
     private val barcodeEventTracker: WooPosBarcodeEventTracker = mock()
+    private val readerStatus = MutableStateFlow(WooPosEffectiveReaderStatus.Disconnected)
+    private val effectiveReaderStatusProvider: WooPosEffectiveReaderStatusProvider = mock {
+        on { flow } doReturn readerStatus
+    }
+
+    @Test
+    fun `given empty cart, when no item is added, then no customer interaction starts`() = runTest {
+        // WHEN
+        val sut = createSut()
+        sut.state.captureValues()
+
+        // THEN
+        assertThat(trackerData.interactionWithCustomerStartedTimestamp).isNull()
+        assertThat(trackerData.readerConnectedAtCheckout).isNull()
+    }
+
+    @Test
+    fun `given reader connected while the cart was empty, when the first item is added, then reader is connected at checkout`() =
+        runTest {
+            // GIVEN
+            val sut = createSut()
+            sut.state.captureValues()
+            readerStatus.value = WooPosEffectiveReaderStatus.BluetoothConnected
+
+            // WHEN
+            addProductToEmptyCart()
+
+            // THEN
+            assertThat(trackerData.interactionWithCustomerStartedTimestamp).isNotNull()
+            assertThat(trackerData.readerConnectedAtCheckout).isTrue()
+            assertThat(trackerData.millisecondsWaitingForReaderConnection).isNull()
+        }
+
+    @Test
+    fun `given no reader when the first item is added, when reader connects, then connection waiting is recorded`() =
+        runTest {
+            // GIVEN
+            val sut = createSut()
+            sut.state.captureValues()
+            addProductToEmptyCart()
+
+            // WHEN
+            readerStatus.value = WooPosEffectiveReaderStatus.BluetoothConnected
+
+            // THEN
+            assertThat(trackerData.readerConnectedAtCheckout).isFalse()
+            assertThat(trackerData.millisecondsWaitingForReaderConnection).isNotNull()
+        }
+
+    @Test
+    fun `given data from the previous sale, when the first item is added, then the interaction starts fresh`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        sut.state.captureValues()
+        trackerData.orderSyncSuccessTimestamp = 1L
+        trackerData.checkoutButtonTapsCount = 3
+
+        // WHEN
+        addProductToEmptyCart()
+
+        // THEN
+        assertThat(trackerData.interactionWithCustomerStartedTimestamp).isNotNull()
+        assertThat(trackerData.orderSyncSuccessTimestamp).isNull()
+        assertThat(trackerData.checkoutButtonTapsCount).isZero()
+    }
+
+    @Test
+    fun `given an item in the cart, when another item is added, then the interaction does not restart`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        sut.state.captureValues()
+        addProductToEmptyCart(productId = 23L)
+        trackerData.orderSyncSuccessTimestamp = 5L
+
+        // WHEN
+        addProductToEmptyCart(productId = 24L)
+
+        // THEN
+        assertThat(trackerData.orderSyncSuccessTimestamp).isEqualTo(5L)
+    }
+
+    @Test
+    fun `given a slow item lookup, when the cart is cleared before the item lands, then a new interaction starts`() =
+        runTest {
+            // GIVEN
+            val sut = createSut()
+            sut.state.captureValues()
+            addProductToEmptyCart(productId = 23L)
+            trackerData.orderSyncSuccessTimestamp = 5L
+            val slowProduct = generateWooPosProduct(productId = 24L)
+            whenever(getProductById(eq(slowProduct.remoteId))).doSuspendableAnswer {
+                delay(1_000)
+                slowProduct
+            }
+            parentToChildrenMutableSharedFlow.emit(
+                ParentToChildrenEvent.ItemClickedInItemsList(
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = slowProduct.remoteId),
+                    eventForTracking = mockedEventForTracking
+                )
+            )
+
+            // WHEN
+            sut.onUIEvent(WooPosCartUIEvent.ClearAllClicked)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(sut.state.value?.body).isInstanceOf(WooPosCartState.Body.WithItems::class.java)
+            assertThat(trackerData.orderSyncSuccessTimestamp).isNull()
+            assertThat(trackerData.interactionWithCustomerStartedTimestamp).isNotNull()
+        }
+
+    @Test
+    fun `given order response still pending, when the cart is cleared, then the response does not bring items back`() =
+        runTest {
+            // GIVEN
+            val sut = createSut()
+            val states = sut.state.captureValues()
+            addProductToEmptyCart()
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            whenever(cartItemsUpdater(any(), any(), any())).doSuspendableAnswer {
+                delay(1_000)
+                WooPosCartItemsUpdater.CartItemsUpdaterResult(
+                    updatedItems = emptyList(),
+                    productsChanged = false,
+                    couponsChanged = false,
+                )
+            }
+            simulateOrderCreated(wholeCartCouponDiscountApplied = false)
+
+            // WHEN
+            sut.onUIEvent(WooPosCartUIEvent.BackClicked)
+            sut.onUIEvent(WooPosCartUIEvent.ClearAllClicked)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(states.last().body).isEqualTo(WooPosCartState.Body.Empty)
+        }
+
+    @Test
+    fun `given order response with product changes still pending, when the cart is cleared, then the product list is refreshed`() =
+        runTest {
+            // GIVEN
+            val sut = createSut()
+            sut.state.captureValues()
+            addProductToEmptyCart()
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            whenever(cartItemsUpdater(any(), any(), any())).doSuspendableAnswer {
+                delay(1_000)
+                WooPosCartItemsUpdater.CartItemsUpdaterResult(
+                    updatedItems = emptyList(),
+                    productsChanged = true,
+                    couponsChanged = false,
+                )
+            }
+            simulateOrderCreated(wholeCartCouponDiscountApplied = false)
+
+            // WHEN
+            sut.onUIEvent(WooPosCartUIEvent.BackClicked)
+            sut.onUIEvent(WooPosCartUIEvent.ClearAllClicked)
+            advanceUntilIdle()
+
+            // THEN
+            verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.RefreshProductList)
+        }
+
+    private suspend fun addProductToEmptyCart(productId: Long = 23L) {
+        val product = generateWooPosProduct(productId = productId)
+        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.ItemClickedInItemsList(
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = product.remoteId),
+                eventForTracking = mockedEventForTracking
+            )
+        )
+    }
 
     @Test
     fun `given empty cart, when product clicked in product selector, then should add product to cart`() = runTest {
@@ -1766,6 +1945,7 @@ class WooPosCartViewModelTest {
             soundHelper,
             barcodeEventTracker,
             variationMapper,
+            effectiveReaderStatusProvider,
             savedState,
         )
     }

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.sitepicker
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -15,6 +16,10 @@ import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.CONNECT_JETPACK
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseSupport
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker.Action
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAddStoreEvent
@@ -67,6 +72,9 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseKind
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -98,9 +106,234 @@ class SitePickerViewModelTest : BaseUnitTest() {
     }
     private val visibleWooSitesDataStore: VisibleWooSitesDataStore = mock()
     private val registerDevice: RegisterDevice = mock()
+    private val unexpectedResponseTracker: LoginUnexpectedResponseTracker = mock()
+    private val unexpectedResponseSupport: LoginUnexpectedResponseSupport = mock()
 
     private lateinit var viewModel: SitePickerViewModel
     private lateinit var savedState: SavedStateHandle
+
+    @Test
+    fun `given the store check gets an unexpected response during login, when continuing, then show the alert`() =
+        testBlocking {
+            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(WooResult(UNEXPECTED_RESPONSE_ERROR))
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            viewModel.onSiteSelected(defaultExpectedSiteList[1])
+            viewModel.onContinueButtonClick()
+
+            val failure = storePickerFailure(LoginUnexpectedResponseFailure.Step.WOO_PLUGIN_CHECK)
+            assertThat(viewModel.unexpectedResponse.value).isEqualTo(failure)
+            verify(userEligibilityFetcher, times(0)).fetchUserInfo(any())
+            verify(unexpectedResponseTracker).trackErrorShown(failure)
+        }
+
+    @Test
+    fun `given the store check gets an unexpected response during login, when continuing, then the alert title is the shown error`() =
+        testBlocking {
+            // GIVEN
+            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(WooResult(UNEXPECTED_RESPONSE_ERROR))
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            // WHEN
+            viewModel.onSiteSelected(defaultExpectedSiteList[1])
+            viewModel.onContinueButtonClick()
+
+            // THEN
+            verify(unifiedLoginTracker).onErrorShown(R.string.login_unexpected_response_title.toString())
+        }
+
+    @Test
+    fun `given the store fetch fails during login, when the picker opens, then the snackbar is the shown error`() =
+        testBlocking {
+            // GIVEN
+            givenTheScreenIsFromLogin(true)
+            whenSitesAreFetched(returnsError = true)
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN
+            verify(unifiedLoginTracker).onErrorShown(R.string.site_picker_error.toString())
+        }
+
+    @Test
+    fun `given the store fetch fails while switching stores, when the picker opens, then no error is recorded`() =
+        testBlocking {
+            // GIVEN
+            givenTheScreenIsFromLogin(false)
+            whenSitesAreFetched(returnsError = true)
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN
+            verify(unifiedLoginTracker, never()).onErrorShown(any())
+        }
+
+    @Test
+    fun `given the store check times out during login, when continuing, then the dialog message is the shown error`() =
+        testBlocking {
+            // GIVEN
+            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
+                WooResult(
+                    WooError(
+                        type = WooErrorType.TIMEOUT,
+                        message = "",
+                        original = BaseRequest.GenericErrorType.TIMEOUT
+                    )
+                )
+            )
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            // WHEN
+            viewModel.onSiteSelected(defaultExpectedSiteList[1])
+            viewModel.onContinueButtonClick()
+
+            // THEN
+            verify(unifiedLoginTracker).onErrorShown(
+                R.string.login_verifying_site_jetpack_timeout_error_description.toString()
+            )
+        }
+
+    @Test
+    fun `given a site without Woo during login, when it is selected, then the not a store message is the shown error`() =
+        testBlocking {
+            // GIVEN
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            // WHEN
+            viewModel.onNonWooSiteSelected(SiteModel().apply { url = "https://example.com" })
+
+            // THEN
+            verify(unifiedLoginTracker).onErrorShown(R.string.login_not_woo_store.toString())
+        }
+
+    @Test
+    fun `given the role check gets an unexpected response during login, when continuing, then show the alert`() =
+        testBlocking {
+            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
+                WooResult(SitePickerTestUtils.apiVerificationResponse)
+            )
+            whenever(userEligibilityFetcher.fetchUserInfo(any()))
+                .thenReturn(Result.failure(WooException(UNEXPECTED_RESPONSE_ERROR)))
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            viewModel.onSiteSelected(defaultExpectedSiteList[1])
+            viewModel.onContinueButtonClick()
+
+            assertThat(viewModel.unexpectedResponse.value)
+                .isEqualTo(storePickerFailure(LoginUnexpectedResponseFailure.Step.USER_ROLE_CHECK))
+            verify(selectedSite, times(0)).set(any())
+        }
+
+    @Test
+    fun `given the store picker alert, when trying again successfully, then open the store and track it`() =
+        testBlocking {
+            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
+                WooResult(UNEXPECTED_RESPONSE_ERROR),
+                WooResult(SitePickerTestUtils.apiVerificationResponse)
+            )
+            whenever(userEligibilityFetcher.fetchUserInfo(any()))
+                .thenReturn(Result.success(SitePickerTestUtils.userModel))
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            viewModel.onSiteSelected(defaultExpectedSiteList[1])
+            viewModel.onContinueButtonClick()
+            viewModel.onUnexpectedResponseRetryClick()
+
+            val failure = storePickerFailure(LoginUnexpectedResponseFailure.Step.WOO_PLUGIN_CHECK)
+            assertThat(viewModel.unexpectedResponse.value).isNull()
+            assertThat(viewModel.event.value).isEqualTo(NavigateToMainActivityEvent)
+            verify(unexpectedResponseTracker).trackActionTapped(failure, Action.RETRY)
+            verify(unexpectedResponseTracker).trackRetryResult(failure, isSuccess = true)
+        }
+
+    @Test
+    fun `given the store check alert, when trying again passes the store check but the role check fails, then track a success`() =
+        testBlocking {
+            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
+                WooResult(UNEXPECTED_RESPONSE_ERROR),
+                WooResult(SitePickerTestUtils.apiVerificationResponse)
+            )
+            whenever(userEligibilityFetcher.fetchUserInfo(any()))
+                .thenReturn(Result.failure(WooException(UNEXPECTED_RESPONSE_ERROR)))
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            viewModel.onSiteSelected(defaultExpectedSiteList[1])
+            viewModel.onContinueButtonClick()
+            viewModel.onUnexpectedResponseRetryClick()
+
+            verify(unexpectedResponseTracker).trackRetryResult(
+                storePickerFailure(LoginUnexpectedResponseFailure.Step.WOO_PLUGIN_CHECK),
+                isSuccess = true
+            )
+        }
+
+    @Test
+    fun `given the store picker alert, when contacting support, then open support for the selected store`() =
+        testBlocking {
+            val failure = storePickerFailure(LoginUnexpectedResponseFailure.Step.WOO_PLUGIN_CHECK)
+            val site = defaultExpectedSiteList[1]
+            val supportEvent = LoginUnexpectedResponseSupport.OpenAiSupportChat(failure, site.url)
+            whenever(unexpectedResponseSupport.contactSupportEvent(failure, site.url, HelpOrigin.LOGIN_EPILOGUE))
+                .thenReturn(supportEvent)
+            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(WooResult(UNEXPECTED_RESPONSE_ERROR))
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            viewModel.onSiteSelected(site)
+            viewModel.onContinueButtonClick()
+            viewModel.onUnexpectedResponseContactSupportClick()
+
+            assertThat(viewModel.unexpectedResponse.value).isNull()
+            assertThat(viewModel.event.value).isEqualTo(supportEvent)
+            verify(unexpectedResponseTracker).trackActionTapped(failure, Action.CONTACT_SUPPORT)
+        }
+
+    @Test
+    fun `given the store picker alert, when dismissing it, then close it and track it`() = testBlocking {
+        whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(WooResult(UNEXPECTED_RESPONSE_ERROR))
+        whenSitesAreFetched()
+        whenViewModelIsCreated()
+
+        viewModel.onSiteSelected(defaultExpectedSiteList[1])
+        viewModel.onContinueButtonClick()
+        viewModel.onUnexpectedResponseDismissClick()
+
+        assertThat(viewModel.unexpectedResponse.value).isNull()
+        verify(unexpectedResponseTracker).trackActionTapped(
+            storePickerFailure(LoginUnexpectedResponseFailure.Step.WOO_PLUGIN_CHECK),
+            Action.DISMISS
+        )
+    }
+
+    @Test
+    fun `given the store check gets an unexpected response while switching stores, when continuing, then do not show the alert`() =
+        testBlocking {
+            givenTheScreenIsFromLogin(false)
+            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(WooResult(UNEXPECTED_RESPONSE_ERROR))
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            viewModel.onSiteSelected(defaultExpectedSiteList[1])
+            viewModel.onContinueButtonClick()
+
+            assertThat(viewModel.unexpectedResponse.value).isNull()
+            verify(unexpectedResponseTracker, times(0)).trackErrorShown(any())
+        }
+
+    private fun storePickerFailure(step: LoginUnexpectedResponseFailure.Step) = LoginUnexpectedResponseFailure(
+        flow = LoginUnexpectedResponseFailure.Flow.STORE_PICKER,
+        step = step,
+        response = UNEXPECTED_RESPONSE
+    )
 
     private fun whenViewModelIsCreated() {
         viewModel = SitePickerViewModel(
@@ -116,7 +349,9 @@ class SitePickerViewModelTest : BaseUnitTest() {
             experimentTracker = experimentTracker,
             getWooVisibleSites = getWooVisibleSites,
             visibleWooSitesDataStore = visibleWooSitesDataStore,
-            registerDevice = registerDevice
+            registerDevice = registerDevice,
+            unexpectedResponseTracker = unexpectedResponseTracker,
+            unexpectedResponseSupport = unexpectedResponseSupport
         )
     }
 
@@ -1946,5 +2181,20 @@ class SitePickerViewModelTest : BaseUnitTest() {
         viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
 
         assertThat(sitePickerData?.isPrimaryBtnEnabled).isFalse()
+    }
+
+    private companion object {
+        val UNEXPECTED_RESPONSE = UnexpectedStoreResponse(
+            kind = UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE,
+            statusCode = 403,
+            contentType = "text/html",
+            requestType = "GET /",
+            excerpt = "Access Denied"
+        )
+        val UNEXPECTED_RESPONSE_ERROR = WooError(
+            type = WooErrorType.GENERIC_ERROR,
+            original = GenericErrorType.UNKNOWN,
+            unexpectedStoreResponse = UNEXPECTED_RESPONSE
+        )
     }
 }

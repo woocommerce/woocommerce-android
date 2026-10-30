@@ -89,6 +89,8 @@ class DuplicateProduct @Inject constructor(
                 }
             }
             .take(100)
+            // Created oldest first, so variations sharing a menu order keep their order in the duplicate
+            .sortedBy { it.remoteVariationId }
 
         val variationsDuplicationResult = variationRepository.createVariations(
             duplicatedProductRemoteId,

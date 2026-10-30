@@ -17,6 +17,11 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
 import com.woocommerce.android.cardreader.internal.payments.AdditionalInfoMapper
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.REMOVE_CARD
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.yield
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -118,6 +123,25 @@ class BluetoothReaderListenerImplTest {
         // THEN
         assertThat(listener.displayMessagesEvents.value)
             .isEqualTo(BluetoothCardReaderMessages.CardReaderInputMessage(options.toString()))
+    }
+
+    @Test
+    fun `given a collector, when on reader input message called, then a reader input request is emitted`() = runTest {
+        // GIVEN
+        val requests = mutableListOf<Unit>()
+        val collector = launch(start = CoroutineStart.UNDISPATCHED) {
+            listener.readerInputRequests.toList(requests)
+        }
+
+        // WHEN
+        listener.onRequestReaderInput(ReaderInputOptions(listOf()))
+        yield()
+        listener.onRequestReaderInput(ReaderInputOptions(listOf()))
+        yield()
+
+        // THEN
+        assertThat(requests).hasSize(2)
+        collector.cancel()
     }
 
     @Test
