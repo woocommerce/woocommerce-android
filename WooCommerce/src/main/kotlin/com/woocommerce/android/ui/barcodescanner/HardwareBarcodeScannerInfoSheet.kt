@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.barcodescanner
 
-import android.content.res.Configuration
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
@@ -40,13 +39,13 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.BarcodeEAN13Code
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
 import com.woocommerce.android.ui.compose.component.dismissWCModalBottomSheet
-import com.woocommerce.android.ui.compose.theme.WooTheme
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import kotlinx.coroutines.delay
 
 private const val TEST_BARCODE_EAN13 = "4006381333931"
@@ -228,38 +227,34 @@ private fun TestBarcode() {
     }
 }
 
-@Preview(name = "Light mode")
-@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@LightDarkThemePreviews
 @Composable
 private fun HardwareBarcodeScannerInfoContentPreview() {
-    WooTheme {
+    LegacyWooThemeWithBackground {
         HardwareBarcodeScannerInfoContent(testScanState = TestScanState.WAITING)
     }
 }
 
-@Preview(name = "Light mode")
-@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@LightDarkThemePreviews
 @Composable
 private fun HardwareBarcodeScannerInfoContentMissingEnterSuffixPreview() {
-    WooTheme {
+    LegacyWooThemeWithBackground {
         HardwareBarcodeScannerInfoContent(testScanState = TestScanState.MISSING_ENTER_SUFFIX)
     }
 }
 
-@Preview(name = "Light mode")
-@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@LightDarkThemePreviews
 @Composable
 private fun HardwareBarcodeScannerInfoContentWrongValuePreview() {
-    WooTheme {
+    LegacyWooThemeWithBackground {
         HardwareBarcodeScannerInfoContent(testScanState = TestScanState.WRONG_VALUE)
     }
 }
 
-@Preview(name = "Light mode")
-@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@LightDarkThemePreviews
 @Composable
 private fun HardwareBarcodeScannerInfoContentSuccessPreview() {
-    WooTheme {
+    LegacyWooThemeWithBackground {
         HardwareBarcodeScannerInfoContent(testScanState = TestScanState.SUCCESS)
     }
 }
