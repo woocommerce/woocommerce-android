@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
 import com.woocommerce.android.ui.orders.creation.GoogleMLKitCodeScanner
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -45,20 +46,35 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
     @Test
     fun `when hardware scanner info is clicked, then info is shown and tracked`() {
         // WHEN
-        barcodeScanningViewModel.onHardwareScannerInfoClicked()
+        barcodeScanningViewModel.onHardwareScannerInfoClicked(ScanningSource.ORDER_LIST)
 
         // THEN
         assertThat(barcodeScanningViewModel.isHardwareScannerInfoVisible.value).isTrue()
-        verify(barcodeScanningTracker).trackHardwareScannerInfoTapped()
+        verify(barcodeScanningTracker).trackHardwareScannerInfoTapped(ScanningSource.ORDER_LIST)
     }
 
     @Test
     fun `when hardware scanner test scan succeeds, then it is tracked`() {
         // WHEN
-        barcodeScanningViewModel.onHardwareScannerTestScanSucceeded()
+        barcodeScanningViewModel.onHardwareScannerTestScanSucceeded(ScanningSource.SCAN_TO_UPDATE_INVENTORY)
 
         // THEN
-        verify(barcodeScanningTracker).trackHardwareScannerTestScanSuccess()
+        verify(barcodeScanningTracker).trackHardwareScannerTestScanSuccess(ScanningSource.SCAN_TO_UPDATE_INVENTORY)
+    }
+
+    @Test
+    fun `when hardware scanner test scan fails, then it is tracked with the reason`() {
+        // WHEN
+        barcodeScanningViewModel.onHardwareScannerTestScanFailed(
+            ScanningSource.ORDER_LIST,
+            HardwareBarcodeScannerTestFailure.WRONG_VALUE,
+        )
+
+        // THEN
+        verify(barcodeScanningTracker).trackHardwareScannerTestScanFailed(
+            ScanningSource.ORDER_LIST,
+            HardwareBarcodeScannerTestFailure.WRONG_VALUE,
+        )
     }
 
     @Test
@@ -286,7 +302,7 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
             whenever(codeScanner.recogniseCode(imageProxy)).thenReturn(
                 CodeScannerStatus.Success("4006381333931", GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN13)
             )
-            barcodeScanningViewModel.onHardwareScannerInfoClicked()
+            barcodeScanningViewModel.onHardwareScannerInfoClicked(ScanningSource.ORDER_LIST)
             barcodeScanningViewModel.startCodesRecognition()
 
             // WHEN

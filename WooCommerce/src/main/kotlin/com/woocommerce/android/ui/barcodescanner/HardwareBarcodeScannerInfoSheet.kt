@@ -56,6 +56,7 @@ private const val TEST_SCAN_SUCCESS_DISPLAY_MS = 3000L
 @Composable
 fun HardwareBarcodeScannerInfoSheet(
     onTestScanSucceeded: () -> Unit,
+    onTestScanFailed: (HardwareBarcodeScannerTestFailure) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -75,9 +76,17 @@ fun HardwareBarcodeScannerInfoSheet(
             testScanState = testScanState,
             modifier = Modifier.listenForBarcodes(
                 onBarcodeEvent = { result ->
-                    if (testScanState != TestScanState.SUCCESS) {
-                        testScanState = result.toTestScanState(testScanState)
-                        if (testScanState == TestScanState.SUCCESS) onTestScanSucceeded()
+                    val newState = result.toTestScanState()
+                    if (testScanState != TestScanState.SUCCESS && newState != null) {
+                        testScanState = newState
+                        when (newState) {
+                            TestScanState.SUCCESS -> onTestScanSucceeded()
+                            TestScanState.MISSING_ENTER_SUFFIX ->
+                                onTestScanFailed(HardwareBarcodeScannerTestFailure.MISSING_ENTER_SUFFIX)
+                            TestScanState.WRONG_VALUE ->
+                                onTestScanFailed(HardwareBarcodeScannerTestFailure.WRONG_VALUE)
+                            TestScanState.WAITING -> error("Unexpected WAITING state after a scan")
+                        }
                     }
                 },
             ),
@@ -85,9 +94,14 @@ fun HardwareBarcodeScannerInfoSheet(
     }
 }
 
+enum class HardwareBarcodeScannerTestFailure(val reason: String) {
+    MISSING_ENTER_SUFFIX("missing_enter_suffix"),
+    WRONG_VALUE("wrong_value"),
+}
+
 private enum class TestScanState { WAITING, MISSING_ENTER_SUFFIX, WRONG_VALUE, SUCCESS }
 
-private fun BarcodeInputDetector.BarcodeResult.toTestScanState(current: TestScanState): TestScanState =
+private fun BarcodeInputDetector.BarcodeResult.toTestScanState(): TestScanState? =
     when (this) {
         is BarcodeInputDetector.BarcodeResult.Success -> when (barcode == TEST_BARCODE_EAN13) {
             true -> TestScanState.SUCCESS
@@ -95,7 +109,7 @@ private fun BarcodeInputDetector.BarcodeResult.toTestScanState(current: TestScan
         }
         is BarcodeInputDetector.BarcodeResult.Error -> when (isMissingEnterSuffix()) {
             true -> TestScanState.MISSING_ENTER_SUFFIX
-            false -> current
+            false -> null
         }
     }
 

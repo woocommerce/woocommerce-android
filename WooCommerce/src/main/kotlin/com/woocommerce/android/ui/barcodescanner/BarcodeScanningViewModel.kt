@@ -11,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
 import com.woocommerce.android.ui.orders.creation.GoogleMLKitCodeScanner
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -68,13 +69,17 @@ class BarcodeScanningViewModel @Inject constructor(
         }
     }
 
-    fun onHardwareScannerInfoClicked() {
-        barcodeScanningTracker.trackHardwareScannerInfoTapped()
+    fun onHardwareScannerInfoClicked(source: ScanningSource) {
+        barcodeScanningTracker.trackHardwareScannerInfoTapped(source)
         _isHardwareScannerInfoVisible.value = true
     }
 
-    fun onHardwareScannerTestScanSucceeded() {
-        barcodeScanningTracker.trackHardwareScannerTestScanSuccess()
+    fun onHardwareScannerTestScanSucceeded(source: ScanningSource) {
+        barcodeScanningTracker.trackHardwareScannerTestScanSuccess(source)
+    }
+
+    fun onHardwareScannerTestScanFailed(source: ScanningSource, failure: HardwareBarcodeScannerTestFailure) {
+        barcodeScanningTracker.trackHardwareScannerTestScanFailed(source, failure)
     }
 
     fun onHardwareScannerInfoDismissed() {
