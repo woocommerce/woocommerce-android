@@ -905,7 +905,16 @@ class OrderListViewModel @Inject constructor(
                     R.string.orderlist_mark_completed_success,
                     gestureSource.orderId
                 ),
-                undoAction = { undoSwipeStatusUpdate(gestureSource) },
+                undoAction = {
+                    analyticsTracker.track(
+                        AnalyticsEvent.ORDER_STATUS_CHANGE_UNDO,
+                        mapOf(
+                            AnalyticsTracker.KEY_ID to gestureSource.orderId,
+                            AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_LIST
+                        )
+                    )
+                    undoSwipeStatusUpdate(gestureSource)
+                },
                 dismissAction = dismissAction
             )
         )

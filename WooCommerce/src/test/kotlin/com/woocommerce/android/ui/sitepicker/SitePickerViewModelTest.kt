@@ -129,6 +129,90 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given the store check gets an unexpected response during login, when continuing, then the alert title is the shown error`() =
+        testBlocking {
+            // GIVEN
+            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(WooResult(UNEXPECTED_RESPONSE_ERROR))
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            // WHEN
+            viewModel.onSiteSelected(defaultExpectedSiteList[1])
+            viewModel.onContinueButtonClick()
+
+            // THEN
+            verify(unifiedLoginTracker).onErrorShown(R.string.login_unexpected_response_title.toString())
+        }
+
+    @Test
+    fun `given the store fetch fails during login, when the picker opens, then the snackbar is the shown error`() =
+        testBlocking {
+            // GIVEN
+            givenTheScreenIsFromLogin(true)
+            whenSitesAreFetched(returnsError = true)
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN
+            verify(unifiedLoginTracker).onErrorShown(R.string.site_picker_error.toString())
+        }
+
+    @Test
+    fun `given the store fetch fails while switching stores, when the picker opens, then no error is recorded`() =
+        testBlocking {
+            // GIVEN
+            givenTheScreenIsFromLogin(false)
+            whenSitesAreFetched(returnsError = true)
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN
+            verify(unifiedLoginTracker, never()).onErrorShown(any())
+        }
+
+    @Test
+    fun `given the store check times out during login, when continuing, then the dialog message is the shown error`() =
+        testBlocking {
+            // GIVEN
+            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
+                WooResult(
+                    WooError(
+                        type = WooErrorType.TIMEOUT,
+                        message = "",
+                        original = BaseRequest.GenericErrorType.TIMEOUT
+                    )
+                )
+            )
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            // WHEN
+            viewModel.onSiteSelected(defaultExpectedSiteList[1])
+            viewModel.onContinueButtonClick()
+
+            // THEN
+            verify(unifiedLoginTracker).onErrorShown(
+                R.string.login_verifying_site_jetpack_timeout_error_description.toString()
+            )
+        }
+
+    @Test
+    fun `given a site without Woo during login, when it is selected, then the not a store message is the shown error`() =
+        testBlocking {
+            // GIVEN
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            // WHEN
+            viewModel.onNonWooSiteSelected(SiteModel().apply { url = "https://example.com" })
+
+            // THEN
+            verify(unifiedLoginTracker).onErrorShown(R.string.login_not_woo_store.toString())
+        }
+
+    @Test
     fun `given the role check gets an unexpected response during login, when continuing, then show the alert`() =
         testBlocking {
             whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(

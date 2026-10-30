@@ -1,0 +1,1 @@
+Saatinizdeki para birimi tutarları artık daha hızlı gösteriliyor ve arka planda yapılan iyileştirmeler sorunları daha hızlı bulmamıza ve düzeltmemize yardımcı oluyor.

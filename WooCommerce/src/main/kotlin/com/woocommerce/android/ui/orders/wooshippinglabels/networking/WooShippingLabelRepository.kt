@@ -65,6 +65,9 @@ class WooShippingLabelRepository @Inject constructor(
                 }
         }
 
+    suspend fun fetchServiceStatus(site: SiteModel) =
+        restClient.fetchServiceStatus(site = site).asWooResult { mapper(it) }
+
     suspend fun updateAccountSettings(
         site: SiteModel,
         selectedPaymentMethodId: Long?,

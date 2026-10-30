@@ -230,6 +230,7 @@ class AnalyticsTracker private constructor(
         const val KEY_TO = "to"
         const val KEY_TYPE = "type"
         const val KEY_CARRIER = "carrier"
+        const val KEY_SERVICE_STATUS_NOTICE_SHOWN = "service_status_notice_shown"
         const val KEY_OPTION = "option"
         const val KEY_URL = "url"
         const val KEY_HAS_CONNECTED_STORES = "has_connected_stores"

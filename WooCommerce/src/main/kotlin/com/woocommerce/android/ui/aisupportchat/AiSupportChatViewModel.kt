@@ -605,23 +605,7 @@ class AiSupportChatViewModel @Inject constructor(
             )
         }
 
-        val context = if (chatId == null) {
-            val statusReport = initialStatusReport
-                ?: contextProvider.buildStatusReport(state.siteAddress).also { initialStatusReport = it }
-            val (loginDetails, loginDiagnosticResult) = when (val loginContext = state.loginContext) {
-                AiSupportChatLoginContext.NotDuringLogin -> null to null
-                is AiSupportChatLoginContext.DuringLogin ->
-                    loginContext.details to diagnosticsService.runLoginDiagnostics().last()
-            }
-            contextProvider.buildInitialContext(
-                diagnosticResult = loginDiagnosticResult.withStatusesOf(state.diagnosticResult),
-                siteAddress = state.siteAddress,
-                statusReport = statusReport,
-                loginContext = loginDetails
-            )
-        } else {
-            JsonObject()
-        }
+        val context = if (chatId == null) buildFirstMessageContext(state) else JsonObject()
 
         repository.sendMessage(
             botSlug = state.botSlug,
@@ -639,6 +623,28 @@ class AiSupportChatViewModel @Inject constructor(
         }.onFailure { error ->
             handleSendFailure(message = message, optimisticMessage = optimisticMessage, error = error)
         }
+    }
+
+    private suspend fun buildFirstMessageContext(state: AiSupportChatViewState): JsonObject {
+        val statusReport = initialStatusReport
+            ?: contextProvider.buildStatusReport(state.siteAddress).also { initialStatusReport = it }
+        val (loginDetails, loginDiagnosticResult, recentAppLogs) = when (val loginContext = state.loginContext) {
+            AiSupportChatLoginContext.NotDuringLogin -> Triple(null, null, null)
+            is AiSupportChatLoginContext.DuringLogin -> Triple(
+                loginContext.details,
+                diagnosticsService.runLoginDiagnostics().last(),
+                contextProvider.buildRecentAppLogs(
+                    keepStoreResponseExcerpts = LoginUnexpectedResponseFailure.SUPPORT_TAG !in state.launchExtraTags
+                )
+            )
+        }
+        return contextProvider.buildInitialContext(
+            diagnosticResult = loginDiagnosticResult.withStatusesOf(state.diagnosticResult),
+            siteAddress = state.siteAddress,
+            statusReport = statusReport,
+            loginContext = loginDetails,
+            recentAppLogs = recentAppLogs
+        )
     }
 
     private suspend fun handleSendSuccess(

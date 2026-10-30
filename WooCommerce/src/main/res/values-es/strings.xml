@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-05 19:54:43+0000
+Translation-Revision-Date: 2026-10-20 13:54:57+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s necesita un número de teléfono del destinatario.</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">Debe tener %1$s caracteres o menos.</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin_required">Introduce el GTIN/EAN o selecciona «Sin código de barras»</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_required">Necesario para envíos a la UE</string>
+    <string name="woo_shipping_labels_customs_product_details_no_barcode">Sin código de barras</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin">GTIN/EAN</string>
+    <string name="woo_shipping_labels_customs_product_details_manufacturer_part_number">Número de pieza del fabricante</string>
+    <string name="woo_shipping_labels_customs_product_details_sku">SKU</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_plugin_update_notice">Ahora, los envíos a la UE necesitan identificadores de producto para cada artículo. Actualiza el plugin WooCommerce Shipping para añadirlos.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_description">Necesario para envíos a la UE. El SKU y el GTIN/EAN se rellenan previamente a partir de los ajustes de inventario del producto.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_title">Identificadores de producto de la UE</string>
+    <string name="woopos_settings_payments_success_sound_subtitle">Reproducir un sonido cuando se complete un pago</string>
+    <string name="woopos_settings_payments_success_sound">Sonido de pago realizado correctamente</string>
+    <string name="woopos_settings_payments_category_subtitle">Gestionar los ajustes de pago</string>
+    <string name="woopos_settings_payments_category">Pagos</string>
+    <string name="blaze_campaign_list_outstanding_balance_payment_title">Pagar saldo pendiente</string>
+    <string name="blaze_campaign_list_outstanding_balance_pay">Pagar</string>
+    <string name="blaze_campaign_list_outstanding_balance_message">Tu cuenta tiene actualmente un saldo pendiente de %1$s. Págalo antes de crear nuevas campañas.</string>
+    <string name="blaze_campaign_list_outstanding_balance_title">Saldo pendiente</string>
+    <string name="bottom_sheet_attributes_desc">Añade detalles como el material o el tamaño a la página de producto</string>
+    <string name="card_reader_mode_nfc_disabled_open_settings">Abrir los ajustes de NFC</string>
+    <string name="card_reader_mode_nfc_disabled_subtitle">Este teléfono necesita NFC para aceptar pagos con tarjeta. Abre los ajustes de NFC, activa NFC y vuelve a esta pantalla.</string>
+    <string name="card_reader_mode_nfc_disabled_header">Activar NFC</string>
+    <string name="card_reader_payment_subscription_check_failed">No se ha podido comprobar si este pedido se puede pagar en persona. Inténtalo de nuevo.</string>
+    <string name="card_reader_interac_refund_not_available">Este pedido no se puede reembolsar en persona</string>
+    <string name="order_refunds_amount_capped_notice">Solo quedan %1$s para reembolsar de este pedido, por lo que este reembolso está limitado a este importe.</string>
+    <string name="product_attribute_no_options">No hay opciones</string>
+    <string name="product_attribute_stop_using_for_variations_confirm">Dejar de usar</string>
+    <string name="product_attribute_stop_using_for_variations_message">Las variaciones existentes ya no coincidirán con este atributo.</string>
+    <string name="product_attribute_stop_using_for_variations_title">¿Quieres dejar de usarlo para las variaciones?</string>
+    <string name="product_attribute_used_for_variations">Se usa para las variaciones</string>
+    <string name="product_attribute_visible_on_product_page">Visible en la página de producto</string>
     <string name="woopos_orders_details_breakdown_custom_amounts_label">Cantidades personalizadas</string>
     <string name="woopos_payment_custom_amounts_label">Cantidades personalizadas</string>
     <string name="woopos_cart_item_discount_applied">Descuento aplicado</string>
@@ -2789,7 +2821,6 @@ Language: es
     <string name="inbox_screen_title">Bandeja de entrada</string>
     <string name="settings_card_reader_manuals">Manuales del lector de tarjetas</string>
     <string name="card_reader_interac_refund_refund_payment_hint">Toca o inserta para obtener el reembolso</string>
-    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">El pedido ya se ha reembolsado.</string>
     <string name="card_reader_interac_refund_refund_failed_ok">Entendido</string>
     <string name="card_reader_interac_refund_refund_failed_test_card">No se pueden realizar reembolsos con las tarjetas de prueba del sistema.</string>
     <string name="card_reader_interac_refund_refund_failed_insufficient_funds">Se ha rechazado el reembolso porque no hay fondos suficientes.</string>
@@ -3837,6 +3868,7 @@ Language: es
     <string name="date_timeframe_future">Próximo</string>
     <string name="remove">Eliminar</string>
     <string name="product_images_uploading_multi_notif_message">Cargando imágenes…%1$d de %2$d</string>
+    <string name="product_attribute_hidden">Oculto</string>
     <string name="login_discovery_error_generic">No hemos podido acceder a tu sitio. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
     <string name="login_discovery_error_ssl">No hemos podido acceder a tu sitio debido a un problema con el &lt;b&gt;Certificado SSL&lt;/b&gt;. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
     <string name="login_discovery_error_http_auth">No hemos podido acceder a tu sitio porque requiere &lt;b&gt;Autentificación con HTTP&lt;/b&gt;. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>

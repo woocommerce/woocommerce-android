@@ -2,8 +2,13 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+26.1
+-----
+- [*] Order details and the order edit form now show the shipping phone with the shipping address [https://github.com/woocommerce/woocommerce-android/pull/16797]
+
 26.0
 -----
+- [*] Shipping labels: carrier outage notices from WooCommerce Shipping now show on the label creation screen, and a purchase that fails during an outage explains the incident instead of showing a generic error [https://github.com/woocommerce/woocommerce-android/pull/16778]
 - [*] The gaps between sections on product details are no longer pure black in dark mode [https://github.com/woocommerce/woocommerce-android/pull/16781]
 - [*] Fixed a crash on order details that could happen after changing the status of an order paid with a gift card [https://github.com/woocommerce/woocommerce-android/pull/16766]
 - [*] Push notifications for new orders now arrive right after connecting Jetpack from the app [https://github.com/woocommerce/woocommerce-android/pull/16763]
@@ -32,11 +37,15 @@
 - [*] The "Generate all variations?" confirmation now stays open when you rotate the device [https://github.com/woocommerce/woocommerce-android/pull/16770]
 - [*] Refunds: the item count now says "1 item selected" instead of "1 items selected" [https://github.com/woocommerce/woocommerce-android/pull/16769]
 - [*] The "Never miss a new order" card now shows on My Store right after logging in to a store without Jetpack [https://github.com/woocommerce/woocommerce-android/pull/16747]
+- [*] POS: The card reader stops waiting for a card while you take cash, scan to pay or mark the order as paid, so a customer can't be charged twice [https://github.com/woocommerce/woocommerce-android/pull/16779]
 - [*] Products: Attribute options now keep their order after rotating the device, and new options are added at the end of the list [https://github.com/woocommerce/woocommerce-android/pull/16777]
 - [*] Fixed a crash when opening a product whose short description has a heading or aligned paragraph inside a list [https://github.com/woocommerce/woocommerce-android/pull/16776]
+- [*] [POS] A card payment no longer gets stuck on "Processing payment" when the card reader disconnects just as the payment completes [https://github.com/woocommerce/woocommerce-android/pull/16785]
 
 25.9
 -----
+- [*] Swiping an order in the Orders list marks it completed only after dragging it past halfway again, so a quick flick while scrolling no longer completes it [https://github.com/woocommerce/woocommerce-android/pull/16790]
+- [*] Fixed an occasional crash on the product list [https://github.com/woocommerce/woocommerce-android/pull/16761]
 - [*****] [Internal] Update Stripe Terminal SDK from 5.8.2 to 6.0.0 [https://github.com/woocommerce/woocommerce-android/pull/16688]
 - [*] Tap to Pay: when a payment is blocked for security reasons (for example an accessibility service is on), the app now says what to check instead of showing a generic error [https://github.com/woocommerce/woocommerce-android/pull/16693]
 - [*] Generate all variations no longer suggests variations that already exist, and bulk update now covers every variation of products with more than 25 variations [https://github.com/woocommerce/woocommerce-android/pull/16691]
