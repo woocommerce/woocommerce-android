@@ -1,16 +1,14 @@
--dontobfuscate
-
 ##### WooCommerce - begin
 # Gson instantiates DTOs reflectively and populates their fields, so R8 full mode must not
 # remove, abstract, or merge any of our classes it can't trace (TypeToken / ::class.java
 # targets and their transitively-reached field types), or deserialization breaks in release
 # builds only (LinkedTreeMap ClassCastException, "Abstract classes can't be instantiated").
-# Keep all our classes with their fields and no-arg constructor - we don't obfuscate, so names
-# are stable, and methods stay eligible for R8 optimization. The <init>() matters: when R8 strips
-# the reflectively-used no-arg constructor, Gson falls back to Unsafe.allocateInstance, which skips
-# Kotlin field initializers, so defaulted fields (e.g. `= emptyList()`) deserialize to null in
-# release only. Gson's own consumer rules keep <init>() for @SerializedName classes; this covers
-# the rest.
+# Keep all our classes with their fields and no-arg constructor, names included, since Gson
+# matches JSON keys to field names. Methods stay eligible for R8 optimization and obfuscation.
+# The <init>() matters: when R8 strips the reflectively-used no-arg constructor, Gson falls back
+# to Unsafe.allocateInstance, which skips Kotlin field initializers, so defaulted fields
+# (e.g. `= emptyList()`) deserialize to null in release only. Gson's own consumer rules keep
+# <init>() for @SerializedName classes; this covers the rest.
 #
 # We considered scoping this to the packages Gson DTOs conventionally live in:
 #   -keep class com.woocommerce.android.network.** { <fields>; }
@@ -28,6 +26,18 @@
 ###### FluxC - WellSql (needed for Addon support) - begin
 -keep class com.wellsql** { *; }
 ###### FluxC - end
+
+###### FluxC stores - begin
+# Login and error tracking send FluxC store event and error class names (e.g. SiteStore.SiteError).
+-keepnames class org.wordpress.android.fluxc.store.**
+###### FluxC stores - end
+
+###### Kotlin multifile classes - begin
+# Stripe Terminal's consumer rules keep some parts of Kotlin's multifile classes (e.g.
+# CollectionsKt__IterablesKt). R8 then moves an unkept part out of the package, and it can no longer
+# extend its package-private kept superclass: IllegalAccessError at launch.
+-keepnames class kotlin.**Kt__*
+###### Kotlin multifile classes - end
 
 ###### SavedStateHandleExt - begin
 ###### We use reflection so we have to keep this method

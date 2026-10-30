@@ -203,8 +203,7 @@ android {
 
     buildTypes {
         release {
-            // R8 shrinks and optimizes the app (dead code removal, inlining, class merging),
-            // but we don't obfuscate the bytecode (-dontobfuscate in proguard-rules.pro).
+            // R8 shrinks, optimizes (dead code removal, inlining, class merging) and obfuscates the app.
             minifyEnabled = true
             shrinkResources = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
