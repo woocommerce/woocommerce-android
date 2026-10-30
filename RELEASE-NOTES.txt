@@ -5,6 +5,7 @@
 26.1
 -----
 
+- [*] Order details and the order edit form now show the shipping phone with the shipping address [https://github.com/woocommerce/woocommerce-android/pull/16797]
 
 26.0
 -----
