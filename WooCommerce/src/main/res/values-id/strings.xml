@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-06 09:57:02+0000
+Translation-Revision-Date: 2026-10-20 11:58:07+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s memerlukan nomor telepon penerima.</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">Harus berjumlah %1$s atau lebih sedikit karakter.</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin_required">Masukkan kode GTIN/EAN, atau pilih \"Tanpa barcode\"</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_required">Diperlukan untuk pengiriman ke UE</string>
+    <string name="woo_shipping_labels_customs_product_details_no_barcode">Tanpa barcode</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin">Kode GTIN / EAN</string>
+    <string name="woo_shipping_labels_customs_product_details_manufacturer_part_number">Nomor Komponen Produsen (MPN)</string>
+    <string name="woo_shipping_labels_customs_product_details_sku">Kode SKU</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_plugin_update_notice">Pengiriman ke UE sekarang memerlukan kode identifikasi produk pada setiap item.  Perbarui plugin WooCommerce Shipping untuk menambahkannya.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_description">Diperlukan untuk pengiriman ke UE. Kode SKU dan GTIN / EAN sudah terisi secara otomatis dari pengaturan Inventaris produk.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_title">Kode identifikasi produk UE</string>
+    <string name="woopos_settings_payments_success_sound_subtitle">Putar suara setelah pembayaran selesai</string>
+    <string name="woopos_settings_payments_success_sound">Suara pembayaran berhasil</string>
+    <string name="woopos_settings_payments_category_subtitle">Kelola pengaturan pembayaran</string>
+    <string name="woopos_settings_payments_category">Pembayaran</string>
+    <string name="blaze_campaign_list_outstanding_balance_payment_title">Bayar saldo terutang</string>
+    <string name="blaze_campaign_list_outstanding_balance_pay">Bayar</string>
+    <string name="blaze_campaign_list_outstanding_balance_message">Akun Anda saat ini memiliki saldo terutang %1$s. Harap lakukan pembayaran sebelum membuat kampanye baru.</string>
+    <string name="blaze_campaign_list_outstanding_balance_title">Saldo terutang</string>
+    <string name="bottom_sheet_attributes_desc">Tambahkan detail seperti materi atau ukuran ke halaman produk</string>
+    <string name="card_reader_mode_nfc_disabled_open_settings">Buka pengaturan NFC</string>
+    <string name="card_reader_mode_nfc_disabled_subtitle">Ponsel ini memerlukan NFC untuk menerima pembayaran kartu. Buka pengaturan NFC, aktifkan NFC, lalu kembali ke layar ini.</string>
+    <string name="card_reader_mode_nfc_disabled_header">Aktifkan NFC</string>
+    <string name="card_reader_payment_subscription_check_failed">Tidak dapat memeriksa apakah pesanan ini dapat dibayar secara langsung. Mohon coba lagi.</string>
+    <string name="card_reader_interac_refund_not_available">Dana pesanan ini tidak dapat dikembalikan secara langsung</string>
+    <string name="order_refunds_amount_capped_notice">Hanya tersisa %1$s  untuk pengembalian dana pesanan ini, sehingga hanya terbatas untuk jumlah tersebut.</string>
+    <string name="product_attribute_no_options">Belum ada pilihan</string>
+    <string name="product_attribute_stop_using_for_variations_confirm">Berhenti menggunakan</string>
+    <string name="product_attribute_stop_using_for_variations_message">Variasi yang ada tidak akan sesuai lagi dengan atribut ini.</string>
+    <string name="product_attribute_stop_using_for_variations_title">Hentikan penggunaan untuk variasi?</string>
+    <string name="product_attribute_used_for_variations">Digunakan untuk variasi</string>
+    <string name="product_attribute_visible_on_product_page">Terlihat di halaman produk</string>
     <string name="woopos_orders_details_breakdown_custom_amounts_label">Jumlah kustom</string>
     <string name="woopos_payment_custom_amounts_label">Jumlah kustom</string>
     <string name="woopos_cart_item_discount_applied">Diskon digunakan</string>
@@ -2789,7 +2821,6 @@ Language: id
     <string name="inbox_screen_title">Kotak Masuk</string>
     <string name="settings_card_reader_manuals">Panduan Pembaca Kartu</string>
     <string name="card_reader_interac_refund_refund_payment_hint">Ketuk atau masukkan untuk mengembalikan dana</string>
-    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">Pengembalian dana untuk pesanan ini sudah dilakukan </string>
     <string name="card_reader_interac_refund_refund_failed_cancelled">Pengembalian dana dibatalkan</string>
     <string name="card_reader_interac_refund_refund_failed_ok">Oke</string>
     <string name="card_reader_interac_refund_refund_failed_test_card">Kartu pengujian sistem tidak boleh digunakan untuk pengembalian dana</string>
@@ -3837,6 +3868,7 @@ Language: id
     <string name="date_timeframe_future">Mendatang</string>
     <string name="remove">Buang</string>
     <string name="product_images_uploading_multi_notif_message">Mengunggah gambar…%1$d dari %2$d</string>
+    <string name="product_attribute_hidden">Tersembunyi</string>
     <string name="login_discovery_error_generic">Kami tidak dapat mengakses situs Anda. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
     <string name="login_discovery_error_ssl">Kami tidak dapat mengakses situs Anda karena ada masalah dengan &lt;b&gt;Sertifikat SSL&lt;/b&gt;. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
     <string name="login_discovery_error_http_auth">Kami tidak dapat mengakses situs Anda akrena hal ini membutuhkan &lt;b&gt;Autentikasi HTTP&lt;/b&gt;. Anda harus menghubungi host untuk mengatasi masalah ini.</string>

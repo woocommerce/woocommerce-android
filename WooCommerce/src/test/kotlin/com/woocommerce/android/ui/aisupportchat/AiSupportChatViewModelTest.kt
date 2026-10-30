@@ -196,6 +196,28 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given pre-login launch mode, when message sent, then context includes recent app logs`() =
+        testBlocking {
+            contextProvider.stub { on { buildRecentAppLogs(true) } doReturn RECENT_APP_LOGS }
+            whenever(
+                contextProvider.buildInitialContext(
+                    diagnosticResult = EMPTY_LOGIN_DIAGNOSTIC_RESULT,
+                    statusReport = STATUS_REPORT,
+                    loginContext = LOGIN_CONTEXT,
+                    recentAppLogs = RECENT_APP_LOGS
+                )
+            ).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
+                .thenReturn(Result.success(createResponse()))
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin())
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+            viewModel.onSendClicked()
+
+            verify(repository).sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null)
+        }
+
+    @Test
     fun `given pre-login launch mode with site address, when message sent, then context includes site address`() =
         testBlocking {
             whenever(
@@ -576,6 +598,25 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 AiSupportChatMessageContent.PostDiagnosticsGreeting
             )
             verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
+        }
+
+    @Test
+    fun `given chat outside login, when first message sent, then recent app logs are not read`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(
+                contextProvider.buildInitialContext(diagnosticResult = result, statusReport = STATUS_REPORT)
+            ).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(Result.success(createResponse()))
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+
+            verify(contextProvider, never()).buildRecentAppLogs(any())
+            verify(repository).sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null)
         }
 
     @Test
@@ -1491,7 +1532,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                     diagnosticResult = any(),
                     siteAddress = anyOrNull(),
                     statusReport = anyOrNull(),
-                    loginContext = anyOrNull()
+                    loginContext = anyOrNull(),
+                    recentAppLogs = anyOrNull()
                 )
             ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
@@ -1512,12 +1554,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting
             )
-            verify(contextProvider, never()).buildInitialContext(
-                diagnosticResult = any(),
-                siteAddress = anyOrNull(),
-                statusReport = anyOrNull(),
-                loginContext = anyOrNull()
-            )
+            verify(contextProvider, never())
+                .buildInitialContext(any(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
             verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
 
             viewModel.onInputChanged(ISSUE_DETAILS)
@@ -1531,7 +1569,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 diagnosticResult = diagnosticResultCaptor.capture(),
                 siteAddress = anyOrNull(),
                 statusReport = anyOrNull(),
-                loginContext = anyOrNull()
+                loginContext = anyOrNull(),
+                recentAppLogs = anyOrNull()
             )
             assertThat(diagnosticResultCaptor.firstValue.statuses.map { it.status }).containsExactly(
                 TestStatus.Passed,
@@ -1601,7 +1640,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                     diagnosticResult = any(),
                     siteAddress = anyOrNull(),
                     statusReport = anyOrNull(),
-                    loginContext = anyOrNull()
+                    loginContext = anyOrNull(),
+                    recentAppLogs = anyOrNull()
                 )
             ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
@@ -1623,7 +1663,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 diagnosticResult = diagnosticResultCaptor.capture(),
                 siteAddress = anyOrNull(),
                 statusReport = eq(STATUS_REPORT),
-                loginContext = anyOrNull()
+                loginContext = anyOrNull(),
+                recentAppLogs = anyOrNull()
             )
             assertThat(diagnosticResultCaptor.firstValue.statuses.map { it.status }).containsExactly(
                 TestStatus.Failed(technicalDetails = "rest_invalid_signature")
@@ -1639,7 +1680,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                     diagnosticResult = any(),
                     siteAddress = anyOrNull(),
                     statusReport = anyOrNull(),
-                    loginContext = anyOrNull()
+                    loginContext = anyOrNull(),
+                    recentAppLogs = anyOrNull()
                 )
             ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
@@ -1684,7 +1726,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                     diagnosticResult = any(),
                     siteAddress = anyOrNull(),
                     statusReport = anyOrNull(),
-                    loginContext = anyOrNull()
+                    loginContext = anyOrNull(),
+                    recentAppLogs = anyOrNull()
                 )
             )
                 .thenReturn(CONTEXT)
@@ -1701,12 +1744,27 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 diagnosticResult = diagnosticResultCaptor.capture(),
                 siteAddress = anyOrNull(),
                 statusReport = eq(STATUS_REPORT),
-                loginContext = anyOrNull()
+                loginContext = anyOrNull(),
+                recentAppLogs = anyOrNull()
             )
             assertThat(diagnosticResultCaptor.firstValue.statuses.single().status).isEqualTo(
                 TestStatus.Failed(technicalDetails = LOGIN_UNEXPECTED_RESPONSE_FAILURE.supportDetails)
             )
             verify(repository).sendMessage(DEFAULT_BOT_SLUG, LOGIN_UNEXPECTED_RESPONSE_MESSAGE, CONTEXT, null, null)
+        }
+
+    @Test
+    fun `given login unexpected response launch mode, when sending the message, then logs leave out store excerpts`() =
+        testBlocking {
+            whenever(repository.sendMessage(any(), any(), anyOrNull(), anyOrNull(), anyOrNull()))
+                .thenReturn(Result.success(createResponse()))
+            viewModel.onLaunchModeLoaded(
+                AiSupportChatLaunchMode.LoginUnexpectedResponse(LOGIN_UNEXPECTED_RESPONSE_FAILURE, SITE_URL)
+            )
+
+            viewModel.onSendClicked()
+
+            verify(contextProvider).buildRecentAppLogs(keepStoreResponseExcerpts = false)
         }
 
     @Test
@@ -1735,7 +1793,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                     diagnosticResult = any(),
                     siteAddress = anyOrNull(),
                     statusReport = anyOrNull(),
-                    loginContext = anyOrNull()
+                    loginContext = anyOrNull(),
+                    recentAppLogs = anyOrNull()
                 )
             ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
@@ -1758,7 +1817,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                     diagnosticResult = any(),
                     siteAddress = anyOrNull(),
                     statusReport = anyOrNull(),
-                    loginContext = anyOrNull()
+                    loginContext = anyOrNull(),
+                    recentAppLogs = anyOrNull()
                 )
             ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
@@ -2631,6 +2691,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         const val SITE_URL = "https://example.com"
         const val STATUS_REPORT = "### Mobile Status Report ###"
         const val LOGIN_CONTEXT = "# Login context"
+        const val RECENT_APP_LOGS = "# Recent app logs"
         val EMPTY_LOGIN_DIAGNOSTIC_RESULT = DiagnosticResult(issueType = SupportIssueType.OTHER, statuses = emptyList())
         const val CHANGED_STATUS_REPORT = "### Changed Mobile Status Report ###"
 

@@ -4721,9 +4721,15 @@
     <string name="woo_shipping_labels_package_removing_error">Unable to remove the package</string>
     <string name="woo_shipping_labels_package_saving_error">Unable to save the package</string>
     <string name="woo_shipping_labels_purchase_error">We are unable to purchase the shipping label. Please try again.</string>
+    <string name="woo_shipping_labels_purchase_service_status_error">We are unable to purchase the shipping label due to a carrier service issue: %1$s</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Unable to purchase shipping label. Please complete the origin address.</string>
     <string name="woo_shipping_labels_purchase_phone_error">Unable to purchase shipping label. Please add a valid phone number to the shipping address.</string>
     <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s requires a recipient phone number.</string>
+    <string name="woo_shipping_labels_service_status_view_status_page">View status page</string>
+    <string name="woo_shipping_labels_service_status_dismiss">Dismiss notice: %1$s</string>
+    <string name="woo_shipping_labels_service_status_severity_error">Error</string>
+    <string name="woo_shipping_labels_service_status_severity_warning">Warning</string>
+    <string name="woo_shipping_labels_service_status_severity_info">Information</string>
     <string name="woo_shipping_labels_order_completion_error">Couldn\'t mark the order as complete</string>
     <string name="woo_shipping_split_shipment_error">We were unable to split the shipments. Please try again.</string>
     <string name="woo_shipping_labels_loading_error">Unable to load data</string>
