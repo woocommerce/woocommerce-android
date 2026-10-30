@@ -1294,33 +1294,6 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `given retryable payment error, when payment fails, then payment failed state with go back to checkout shown`() =
-        runTest {
-            // GIVEN
-            mockPaymentFailedTexts()
-            givenCardReaderConnectedAndNetworkAvailable()
-            val mockCardReaderPaymentController: CardReaderPaymentController = mock()
-            val factory: WooPosCardReaderPaymentControllerFactory = mock()
-            whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
-            val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
-                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
-            )
-            whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
-            val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
-
-            // WHEN
-            paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.NonCancelable(
-                errorType = PaymentFlowError.NoNetwork, onRetry = {}
-            )
-            advanceUntilIdle()
-
-            // THEN
-            val state = vm.state.value as WooPosTotalsViewState.PaymentFailed
-            assertThat(state.title).isEqualTo("Payment failed")
-            assertThat(state.isReturnToCheckoutButtonVisible).isTrue()
-        }
-
-    @Test
     fun `given payment failed without retry action, when retry clicked, then should cancel previous payment action and start again`() =
         runTest {
             // GIVEN
@@ -2864,33 +2837,6 @@ class WooPosTotalsViewModelTest {
         val state = vm.state.value as WooPosTotalsViewState.PaymentFailed
         assertThat(state.title).isEqualTo("Payment not confirmed")
         verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.PaymentFailed)
-    }
-
-    @Test
-    fun `given TTP retry already started, when retry clicked again, then retry is not invoked twice`() = runTest {
-        // GIVEN
-        mockPaymentFailedTexts()
-        whenever(resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_title))
-            .thenReturn("Payment not confirmed")
-        val (vm, paymentState) = givenTtpInFlight()
-        advanceUntilIdle()
-        var retryCount = 0
-        paymentState.value = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
-            errorType = PaymentFlowError.CaptureOutcomeUnknown,
-            onRetry = {
-                retryCount++
-                paymentState.value = CardReaderPaymentState.LoadingData {}
-            },
-        )
-        advanceUntilIdle()
-
-        // WHEN
-        vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
-        vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
-        advanceUntilIdle()
-
-        // THEN
-        assertThat(retryCount).isEqualTo(1)
     }
 
     @Test

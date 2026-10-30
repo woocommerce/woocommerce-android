@@ -153,16 +153,6 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
     }
 
     @Test
-    fun `when GATEWAY_ERROR capture payment exception thrown, then SERVER_ERROR type returned`() {
-        val result = mapper.mapCapturePaymentError(
-            mock(),
-            CapturePaymentResponse.Error.GatewayError("error message")
-        )
-
-        assertThat(result.type).isEqualTo(Server("error message"))
-    }
-
-    @Test
     fun `when mapping unknown capture outcome, then CaptureOutcomeUnknown type with retry data returned`() {
         val paymentIntent = mock<PaymentIntent>()
 

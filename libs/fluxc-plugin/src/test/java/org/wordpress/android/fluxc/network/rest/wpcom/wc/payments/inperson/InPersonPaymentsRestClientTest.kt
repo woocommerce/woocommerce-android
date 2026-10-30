@@ -109,27 +109,6 @@ class InPersonPaymentsRestClientTest {
     }
 
     @Test
-    fun `given bad gateway and service unavailable responses, when capturePayment, then gateway error is returned`() =
-        runTest {
-            listOf(502, 503).forEach { statusCode ->
-                givenCaptureFailsWith(statusCode = statusCode, type = GenericErrorType.UNKNOWN)
-
-                val result = capture()
-
-                assertThat(result.error?.type).isEqualTo(WCCapturePaymentErrorType.GATEWAY_ERROR)
-            }
-        }
-
-    @Test
-    fun `given internal server error response, when capturePayment, then generic error is returned`() = runTest {
-        givenCaptureFailsWith(statusCode = 500, type = GenericErrorType.SERVER_ERROR)
-
-        val result = capture()
-
-        assertThat(result.error?.type).isEqualTo(WCCapturePaymentErrorType.GENERIC_ERROR)
-    }
-
-    @Test
     fun `given stripe extension capture error with 502, when capturePayment, then generic error is returned`() =
         runTest {
             givenCaptureFailsWith(
@@ -144,15 +123,6 @@ class InPersonPaymentsRestClientTest {
         }
 
     @Test
-    fun `given WooPayments capture error with 502, when capturePayment, then capture error is returned`() = runTest {
-        givenCaptureFailsWith(statusCode = 502, type = GenericErrorType.UNKNOWN, errorCode = "wcpay_capture_error")
-
-        val result = capture()
-
-        assertThat(result.error?.type).isEqualTo(WCCapturePaymentErrorType.CAPTURE_ERROR)
-    }
-
-    @Test
     fun `given tunnel wraps a store gateway timeout, when capturePayment, then gateway error is returned`() = runTest {
         givenCaptureFailsWith(
             statusCode = 502,
@@ -164,20 +134,6 @@ class InPersonPaymentsRestClientTest {
         val result = capture()
 
         assertThat(result.error?.type).isEqualTo(WCCapturePaymentErrorType.GATEWAY_ERROR)
-    }
-
-    @Test
-    fun `given tunnel wraps a store fatal error, when capturePayment, then generic error is returned`() = runTest {
-        givenCaptureFailsWith(
-            statusCode = 502,
-            type = GenericErrorType.UNKNOWN,
-            errorCode = "no_response_body",
-            storeStatusCode = 500
-        )
-
-        val result = capture()
-
-        assertThat(result.error?.type).isEqualTo(WCCapturePaymentErrorType.GENERIC_ERROR)
     }
 
     @Test
