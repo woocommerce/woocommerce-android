@@ -10,7 +10,7 @@
     },
     {
       "file": "android/WCAndroid/google-services.json",
-      "destination": "WooCommerce/google-services.json",
+      "destination": "~/.configure/woocommerce-android/secrets/google-services.json",
       "encrypt": true
     },
     {
