@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-07 09:57:49+0000
+Translation-Revision-Date: 2026-10-20 15:58:41+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s vereist een telefoonnummer van de ontvanger.</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">Mag uit maximaal %1$s tekens bestaan.</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin_required">Voer de GTIN/EAN in of selecteer \"Geen streepjescode\"</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_required">Vereist voor verzendingen naar de EU</string>
+    <string name="woo_shipping_labels_customs_product_details_no_barcode">Geen streepjescode</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin">GTIN/EAN</string>
+    <string name="woo_shipping_labels_customs_product_details_manufacturer_part_number">Onderdeelnummer fabrikant</string>
+    <string name="woo_shipping_labels_customs_product_details_sku">SKU</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_plugin_update_notice">Voor verzendingen naar de EU zijn nu voor elk artikel productcodes nodig. Werk de WooCommerce Shipping-plugin bij om ze toe te voegen.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_description">Vereist voor verzendingen naar de EU. SKU en GTIN / EAN zijn vooraf ingevuld in de voorraadinstellingen van het product.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_title">EU-product-ID\'s</string>
+    <string name="woopos_settings_payments_success_sound_subtitle">Een geluid afspelen wanneer een betaling is voltooid</string>
+    <string name="woopos_settings_payments_success_sound">Geluid van betalingssucces</string>
+    <string name="woopos_settings_payments_category_subtitle">Beheer de betaalinstellingen</string>
+    <string name="woopos_settings_payments_category">Betalingen</string>
+    <string name="blaze_campaign_list_outstanding_balance_payment_title">Betaal openstaand saldo</string>
+    <string name="blaze_campaign_list_outstanding_balance_pay">Betalen</string>
+    <string name="blaze_campaign_list_outstanding_balance_message">Je account heeft momenteel een openstaand saldo van %1$s. Betaal voordat je nieuwe campagnes aanmaakt.</string>
+    <string name="blaze_campaign_list_outstanding_balance_title">Openstaand saldo</string>
+    <string name="bottom_sheet_attributes_desc">Voeg details zoals materiaal of grootte toe aan de productpagina</string>
+    <string name="card_reader_mode_nfc_disabled_open_settings">NFC-instellingen openen</string>
+    <string name="card_reader_mode_nfc_disabled_subtitle">Deze telefoon heeft NFC nodig om kaartbetalingen te ontvangen. Open NFC-instellingen, schakel NFC in en kom dan terug naar dit scherm.</string>
+    <string name="card_reader_mode_nfc_disabled_header">NFC inschakelen</string>
+    <string name="card_reader_payment_subscription_check_failed">Kon niet controleren of deze bestelling persoonlijk betaald kan worden. Probeer het nog eens.</string>
+    <string name="card_reader_interac_refund_not_available">Deze bestelling kan niet persoonlijk worden terugbetaald</string>
+    <string name="order_refunds_amount_capped_notice">Er blijft slechts %1$s over voor deze bestelling, dus deze terugbetaling is beperkt tot dat bedrag.</string>
+    <string name="product_attribute_no_options">Geen opties</string>
+    <string name="product_attribute_stop_using_for_variations_confirm">Stoppen met gebruiken</string>
+    <string name="product_attribute_stop_using_for_variations_message">Bestaande variaties komen niet meer overeen met deze eigenschap.</string>
+    <string name="product_attribute_stop_using_for_variations_title">Stoppen met gebruiken voor variaties?</string>
+    <string name="product_attribute_used_for_variations">Gebruik voor variaties</string>
+    <string name="product_attribute_visible_on_product_page">Zichtbaar op productpagina</string>
     <string name="woopos_orders_details_breakdown_custom_amounts_label">Aangepaste bedragen</string>
     <string name="woopos_payment_custom_amounts_label">Aangepaste bedragen</string>
     <string name="more_menu_payments_new_feature_state_description">Nieuwe betaalfunctie beschikbaar</string>
@@ -2789,7 +2821,6 @@ Language: nl
     <string name="inbox_screen_title">Inbox</string>
     <string name="settings_card_reader_manuals">Handleidingen kaartlezer</string>
     <string name="card_reader_interac_refund_refund_payment_hint">Tik of voer in om terug te betalen</string>
-    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">De bestelling is al terugbetaald</string>
     <string name="card_reader_interac_refund_refund_failed_cancelled">Terugbetaling geannuleerd</string>
     <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
     <string name="card_reader_interac_refund_refund_failed_test_card">Er mag niet worden terugbetaald met systeemtestkaarten</string>
@@ -3837,6 +3868,7 @@ Language: nl
     <string name="date_timeframe_future">Komende</string>
     <string name="remove">Verwijderen</string>
     <string name="product_images_uploading_multi_notif_message">Bezig met afbeeldingen uploaden…%1$d van %2$d</string>
+    <string name="product_attribute_hidden">Verborgen</string>
     <string name="login_discovery_error_generic">We konden geen toegang krijgen tot je site. Neem contact op met je host om dit probleem te verhelpen.</string>
     <string name="login_discovery_error_ssl">We konden geen toegang krijgen tot je site vanwege een probleem met het &lt;b&gt;SSL-certificaat&lt;/b&gt;. Neem contact op met je host om dit probleem te verhelpen.</string>
     <string name="login_discovery_error_http_auth">We konden geen toegang krijgen tot je site omdat hiervoor &lt;b&gt;HTTP-authenticatie is vereist&lt;/b&gt;. Neem contact op met je host om dit probleem te verhelpen.</string>
