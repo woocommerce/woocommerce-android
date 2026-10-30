@@ -22,6 +22,8 @@ sealed class CardPaymentStatus {
         object Generic : CardPaymentStatusErrorType()
         object Canceled : CardPaymentStatusErrorType()
 
+        object CaptureOutcomeUnknown : CardPaymentStatusErrorType()
+
         sealed class DeclinedByBackendError : CardPaymentStatusErrorType() {
             /**
              * The specified amount is less than the minimum amount allowed
