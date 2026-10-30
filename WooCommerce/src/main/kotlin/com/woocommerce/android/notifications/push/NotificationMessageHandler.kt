@@ -22,7 +22,6 @@ import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.viewmodel.ResourceProvider
-import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
@@ -71,7 +70,7 @@ class NotificationMessageHandler @Inject constructor(
     }
 
     @Suppress("ReturnCount", "ComplexMethod")
-    fun onNewMessageReceived(messageData: Map<String, String>) {
+    suspend fun onNewMessageReceived(messageData: Map<String, String>) {
         if (!selectedSite.exists()) {
             wooLog.e(NOTIFICATIONS, "User has no site selected!")
             return
@@ -120,7 +119,7 @@ class NotificationMessageHandler @Inject constructor(
                 return
             }
 
-            if (runBlocking { pushNotificationRepository.hasWooPushTokenForSite(notification.remoteSiteId) }) {
+            if (pushNotificationRepository.hasWooPushTokenForSite(notification.remoteSiteId)) {
                 wooLog.d(NOTIFICATIONS, "Skipping WPCOM notification, already registered with Woo Core")
                 return
             }
@@ -138,9 +137,8 @@ class NotificationMessageHandler @Inject constructor(
         handleWooNotification(notification, notificationSource)
     }
 
-    private fun isWooSiteVisible(siteId: Long): Boolean = runBlocking {
+    private suspend fun isWooSiteVisible(siteId: Long): Boolean =
         getWooVisibleSites().any { it.siteId == siteId }
-    }
 
     private fun dispatchBackgroundEvents(notificationModel: NotificationModel) {
         // Save temporary notification to the database.
