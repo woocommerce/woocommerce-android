@@ -237,7 +237,6 @@
     <string name="login_qr_prologue_camera_blocked_title">Camera access is turned off</string>
     <string name="login_qr_prologue_camera_blocked_body">Enable camera access in Settings or cancel to sign in with your store address instead.</string>
     <string name="login_qr_prologue_camera_blocked_settings_button">Open Permissions Settings</string>
-    <string name="login_qr_scanner_hint">Center the QR code in the frame</string>
     <string name="login_qr_scanner_visit_url">Visit %1$s</string>
     <string name="login_qr_scanner_authenticating">Signing you in…</string>
     <string name="login_qr_endpoint_missing_title">This store can\'t complete QR login</string>
@@ -865,6 +864,8 @@
     <string name="barcode_scanning_alert_dialog_dismiss_label">Cancel</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Go to settings</string>
     <string name="barcode_scanning_scan_product_barcode_label">Scan Product Barcode</string>
+    <string name="barcode_scanning_hardware_scanner_info_link">Use an external scanner</string>
+    <string name="barcode_scanning_or">or</string>
     <string name="barcode_scanning_hardware_scanner_info_title">Use a Bluetooth or USB scanner</string>
     <string name="barcode_scanning_hardware_scanner_info_setup">Pair your scanner in your device\'s Bluetooth settings, or connect it with USB. Set it to keyboard (HID) mode.</string>
     <string name="barcode_scanning_hardware_scanner_info_usage">Scan on the Orders and Products screens, or while creating an order. You don\'t need to open the camera.</string>

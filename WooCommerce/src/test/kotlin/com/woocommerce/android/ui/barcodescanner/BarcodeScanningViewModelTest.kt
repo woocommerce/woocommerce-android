@@ -46,11 +46,11 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
     @Test
     fun `when hardware scanner info is clicked, then info is shown and tracked`() {
         // WHEN
-        barcodeScanningViewModel.onHardwareScannerInfoClicked(ScanningSource.ORDER_LIST)
+        barcodeScanningViewModel.onHardwareScannerInfoClicked(ScanningSource.BARCODE_SCANNER)
 
         // THEN
         assertThat(barcodeScanningViewModel.isHardwareScannerInfoVisible.value).isTrue()
-        verify(barcodeScanningTracker).trackHardwareScannerInfoTapped(ScanningSource.ORDER_LIST)
+        verify(barcodeScanningTracker).trackHardwareScannerInfoTapped(ScanningSource.BARCODE_SCANNER)
     }
 
     @Test
@@ -66,13 +66,13 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
     fun `when hardware scanner test scan fails, then it is tracked with the reason`() {
         // WHEN
         barcodeScanningViewModel.onHardwareScannerTestScanFailed(
-            ScanningSource.ORDER_LIST,
+            ScanningSource.BARCODE_SCANNER,
             HardwareBarcodeScannerTestFailure.WRONG_VALUE,
         )
 
         // THEN
         verify(barcodeScanningTracker).trackHardwareScannerTestScanFailed(
-            ScanningSource.ORDER_LIST,
+            ScanningSource.BARCODE_SCANNER,
             HardwareBarcodeScannerTestFailure.WRONG_VALUE,
         )
     }
@@ -302,7 +302,7 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
             whenever(codeScanner.recogniseCode(imageProxy)).thenReturn(
                 CodeScannerStatus.Success("4006381333931", GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN13)
             )
-            barcodeScanningViewModel.onHardwareScannerInfoClicked(ScanningSource.ORDER_LIST)
+            barcodeScanningViewModel.onHardwareScannerInfoClicked(ScanningSource.BARCODE_SCANNER)
             barcodeScanningViewModel.startCodesRecognition()
 
             // WHEN
