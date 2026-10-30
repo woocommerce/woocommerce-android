@@ -95,11 +95,6 @@ private fun BarcodeInputDetector.BarcodeResult.toTestScanState(current: TestScan
         }
     }
 
-private fun BarcodeInputDetector.BarcodeResult.Error.isMissingEnterSuffix(): Boolean = when (failureReason) {
-    BarcodeInputDetector.FailureReason.NO_TERMINATOR -> barcode.length >= HardwareBarcodeScanner.MIN_SKU_LENGTH
-    BarcodeInputDetector.FailureReason.TOO_SHORT -> false
-}
-
 @Composable
 private fun HardwareBarcodeScannerInfoContent(
     testScanState: TestScanState,
