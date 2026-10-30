@@ -1,2 +1,0 @@
-25.9:
-I lettori di carte WisePad 3, M2 e Chipper 2X ora possono connettersi tramite USB e le etichette di spedizione per l'UE richiedono i codici prodotto previsti dalla dogana. La gestione di variazioni e attributi è più fluida, Blaze mostra i saldi insoluti con un pulsante Paga e il POS consente di disattivare il suono del pagamento. Inoltre, correzioni per rimborsi, notifiche, configurazione NFC e filtri degli ordini.
