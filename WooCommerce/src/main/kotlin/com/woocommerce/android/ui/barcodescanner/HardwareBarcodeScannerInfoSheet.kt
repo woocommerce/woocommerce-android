@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.barcodescanner
 
 import android.content.res.Configuration
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -84,11 +85,14 @@ fun HardwareBarcodeScannerInfoSheet(
     }
 }
 
-private enum class TestScanState { WAITING, MISSING_ENTER_SUFFIX, SUCCESS }
+private enum class TestScanState { WAITING, MISSING_ENTER_SUFFIX, WRONG_VALUE, SUCCESS }
 
 private fun BarcodeInputDetector.BarcodeResult.toTestScanState(current: TestScanState): TestScanState =
     when (this) {
-        is BarcodeInputDetector.BarcodeResult.Success -> TestScanState.SUCCESS
+        is BarcodeInputDetector.BarcodeResult.Success -> when (barcode == TEST_BARCODE_EAN13) {
+            true -> TestScanState.SUCCESS
+            false -> TestScanState.WRONG_VALUE
+        }
         is BarcodeInputDetector.BarcodeResult.Error -> when (isMissingEnterSuffix()) {
             true -> TestScanState.MISSING_ENTER_SUFFIX
             false -> current
@@ -150,16 +154,25 @@ private fun HardwareBarcodeScannerInfoContent(
                 false -> TestBarcode()
             }
         }
-        if (testScanState == TestScanState.MISSING_ENTER_SUFFIX) {
+        testScanState.errorHint?.let { errorHint ->
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
             Text(
-                text = stringResource(R.string.barcode_scanning_hardware_scanner_no_enter_suffix),
+                text = stringResource(errorHint),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error,
             )
         }
     }
 }
+
+@get:StringRes
+private val TestScanState.errorHint: Int?
+    get() = when (this) {
+        TestScanState.MISSING_ENTER_SUFFIX -> R.string.barcode_scanning_hardware_scanner_no_enter_suffix
+        TestScanState.WRONG_VALUE -> R.string.barcode_scanning_hardware_scanner_wrong_value
+        TestScanState.WAITING,
+        TestScanState.SUCCESS -> null
+    }
 
 @Composable
 private fun TestScanSuccess() {
@@ -216,6 +229,15 @@ private fun HardwareBarcodeScannerInfoContentPreview() {
 private fun HardwareBarcodeScannerInfoContentMissingEnterSuffixPreview() {
     WooTheme {
         HardwareBarcodeScannerInfoContent(testScanState = TestScanState.MISSING_ENTER_SUFFIX)
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun HardwareBarcodeScannerInfoContentWrongValuePreview() {
+    WooTheme {
+        HardwareBarcodeScannerInfoContent(testScanState = TestScanState.WRONG_VALUE)
     }
 }
 

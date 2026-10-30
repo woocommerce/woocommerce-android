@@ -871,6 +871,7 @@
     <string name="barcode_scanning_hardware_scanner_info_test_title">Test your scanner</string>
     <string name="barcode_scanning_hardware_scanner_info_test_success">Your scanner works</string>
     <string name="barcode_scanning_hardware_scanner_info_test_instruction">Scan this barcode with your scanner.</string>
+    <string name="barcode_scanning_hardware_scanner_wrong_value">The scanned code doesn\'t match. Set your scanner to the same keyboard layout as your device.</string>
 
     <!--
         Order Editing
