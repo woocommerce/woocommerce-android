@@ -68,7 +68,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         viewOrdersButtonVissible: Boolean = false,
     ) {
         val noBillingInfo = order.billingAddress.hasInfo().not() && order.formatBillingInformationForDisplay().isEmpty()
-        val noShippingInfo = order.formatShippingInformationForDisplay().isEmpty()
+        val noShippingInfo = order.formatShippingDetailsForDisplay().isEmpty()
         val noCustomerNoteInfo = order.customerNote.isEmpty()
 
         // hide this entire view if there is no info to display
@@ -87,7 +87,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
     private fun showBillingInfo(order: Order, isReadOnly: Boolean) {
         val billingAddress = order.formatBillingInformationForDisplay()
-        val shippingAddress = order.formatShippingInformationForDisplay()
+        val shippingAddress = order.formatShippingDetailsForDisplay()
 
         if (isReadOnly && billingAddress.isEmpty()) {
             binding.customerInfoBillingLabel.hide()
@@ -263,7 +263,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     }
 
     private fun showShippingAddress(order: Order, isVirtualOrder: Boolean, isReadOnly: Boolean) {
-        val shippingAddress = order.formatShippingInformationForDisplay()
+        val shippingAddress = order.formatShippingDetailsForDisplay()
         if (shippingAddress.isEmpty()) {
             binding.customerInfoShippingLabel.hide()
         } else {
@@ -302,6 +302,11 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                 binding.customerInfoShippingAddressSection
             )
         }
+    }
+
+    private fun Order.formatShippingDetailsForDisplay(): String {
+        val phone = shippingAddress.phone.takeIf { it.isNotBlank() }?.let { PhoneUtils.formatPhone(it) }
+        return listOfNotNull(formatShippingInformationForDisplay().ifEmpty { null }, phone).joinToString("\n")
     }
 
     private fun navigateToCustomerNote(order: Order) {
