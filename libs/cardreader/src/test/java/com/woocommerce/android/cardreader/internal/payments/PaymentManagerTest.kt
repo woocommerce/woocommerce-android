@@ -609,6 +609,14 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         }
 
     @Test
+    fun `given server capture error and refreshed intent still requires capture, when capturing payment, then outcome unknown emitted`() =
+        testBlocking {
+            val result = captureFailingWith(CapturePaymentResponse.Error.ServerError(""), REQUIRES_CAPTURE)
+
+            assertThat(result).isEqualTo(CardPaymentStatusErrorType.CaptureOutcomeUnknown)
+        }
+
+    @Test
     fun `given generic capture error and refreshed intent still requires capture, when capturing payment, then error emitted`() =
         testBlocking {
             val result = captureFailingWith(CapturePaymentResponse.Error.GenericError(""), REQUIRES_CAPTURE)
