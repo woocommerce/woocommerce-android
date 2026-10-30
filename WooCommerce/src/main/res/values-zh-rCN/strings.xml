@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-06 13:57:35+0000
+Translation-Revision-Date: 2026-10-20 11:55:32+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s 要求提供收件人电话号码。</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">不得超过 %1$s 个字符。</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin_required">请输入 GTIN/EAN，或选择“无条形码”</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_required">发往欧盟的货件必填</string>
+    <string name="woo_shipping_labels_customs_product_details_no_barcode">无条形码</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin">GTIN / EAN</string>
+    <string name="woo_shipping_labels_customs_product_details_manufacturer_part_number">制造商零件号</string>
+    <string name="woo_shipping_labels_customs_product_details_sku">SKU</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_plugin_update_notice">现在，运往欧盟的货件必须在每件商品上标注产品标识符。 请更新 WooCommerce Shipping 插件以添加这些标识符。</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_description">发往欧盟的货件必填。 系统会根据产品的库存设置预填 SKU 和 GTIN / EAN。</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_title">欧盟产品标识符</string>
+    <string name="woopos_settings_payments_success_sound_subtitle">付款完成后播放提示音</string>
+    <string name="woopos_settings_payments_success_sound">付款成功提示音</string>
+    <string name="woopos_settings_payments_category_subtitle">管理付款设置</string>
+    <string name="woopos_settings_payments_category">付款</string>
+    <string name="blaze_campaign_list_outstanding_balance_payment_title">支付未结余额</string>
+    <string name="blaze_campaign_list_outstanding_balance_pay">支付</string>
+    <string name="blaze_campaign_list_outstanding_balance_message">您账户当前的未结余额为 %1$s。 请先支付该余额，然后再创建新广告活动。</string>
+    <string name="blaze_campaign_list_outstanding_balance_title">未结余额</string>
+    <string name="bottom_sheet_attributes_desc">在产品页面中添加材质或尺寸等详细信息</string>
+    <string name="card_reader_mode_nfc_disabled_open_settings">打开 NFC 设置</string>
+    <string name="card_reader_mode_nfc_disabled_subtitle">这款手机需要 NFC 功能才能接受银行卡付款。 请打开 NFC 设置，在其中开启 NFC 功能，然后返回此屏幕。</string>
+    <string name="card_reader_mode_nfc_disabled_header">开启 NFC 功能</string>
+    <string name="card_reader_payment_subscription_check_failed">无法确认此订单是否支持现场付款。 请重试。</string>
+    <string name="card_reader_interac_refund_not_available">此订单无法现场退款</string>
+    <string name="order_refunds_amount_capped_notice">此订单仅剩 %1$s 待退款，因此本次退款金额仅限于此。</string>
+    <string name="product_attribute_no_options">无选项</string>
+    <string name="product_attribute_stop_using_for_variations_confirm">停止使用</string>
+    <string name="product_attribute_stop_using_for_variations_message">现有变体将不再与此属性匹配。</string>
+    <string name="product_attribute_stop_using_for_variations_title">停止用于变体？</string>
+    <string name="product_attribute_used_for_variations">用于变体</string>
+    <string name="product_attribute_visible_on_product_page">在产品页面上可见</string>
     <string name="woopos_orders_details_breakdown_custom_amounts_label">自定义金额</string>
     <string name="woopos_payment_custom_amounts_label">自定义金额</string>
     <string name="woopos_cart_item_discount_applied">已应用折扣</string>
@@ -2789,7 +2821,6 @@ Language: zh_CN
     <string name="inbox_screen_title">收件箱</string>
     <string name="settings_card_reader_manuals">读卡器手册</string>
     <string name="card_reader_interac_refund_refund_payment_hint">点按或插入，进行退款</string>
-    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">此订单已退款</string>
     <string name="card_reader_interac_refund_refund_failed_cancelled">退款已取消</string>
     <string name="card_reader_interac_refund_refund_failed_ok">确定</string>
     <string name="card_reader_interac_refund_refund_failed_test_card">禁止使用系统测试卡退款</string>
@@ -3837,6 +3868,7 @@ Language: zh_CN
     <string name="date_timeframe_future">即将到来</string>
     <string name="remove">删除</string>
     <string name="product_images_uploading_multi_notif_message">正在上传图片…%1$d 张，共 %2$d 张</string>
+    <string name="product_attribute_hidden">已隐藏</string>
     <string name="login_discovery_error_generic">我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>
     <string name="login_discovery_error_ssl">由于 &lt;b&gt;SSL 证书&lt;/b&gt;的问题，我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>
     <string name="login_discovery_error_http_auth">由于需要 &lt;b&gt;HTTP 验证&lt;/b&gt;，我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>

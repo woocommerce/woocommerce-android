@@ -62,7 +62,6 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooBadge
 import com.woocommerce.android.ui.compose.designsystem.component.WooBadgeDefaults
 import com.woocommerce.android.ui.compose.designsystem.icons.CheckSmall
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
-import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
@@ -159,8 +158,8 @@ private fun OrderListSwipeToComplete(
 ) {
     var widthPx by remember(orderId) { mutableIntStateOf(0) }
     var offsetPx by remember(orderId) { mutableFloatStateOf(0f) }
-    val velocityThresholdPx = with(LocalDensity.current) {
-        SWIPE_VELOCITY_THRESHOLD.toPx()
+    val cancelVelocityThresholdPx = with(LocalDensity.current) {
+        SWIPE_CANCEL_VELOCITY_THRESHOLD.toPx()
     }
     val dragState = rememberDraggableState { delta ->
         if (widthPx == 0 || !canHandleDelta()) return@rememberDraggableState
@@ -196,7 +195,7 @@ private fun OrderListSwipeToComplete(
                             offsetPx = offsetPx,
                             widthPx = widthPx,
                             velocityPxPerSecond = velocity,
-                            velocityThresholdPxPerSecond = velocityThresholdPx,
+                            cancelVelocityThresholdPxPerSecond = cancelVelocityThresholdPx,
                         )
                     if (shouldMarkCompleted) {
                         onMarkCompleted()
@@ -380,26 +379,23 @@ private val ORDER_ROW_MIN_HEIGHT = 96.dp
 private val SELECTION_SLOT_START_INSET = 12.dp
 private val SELECTION_INDICATOR_SIZE = 40.dp
 
-// Match Material 3 swipe settling for a short, intentional fling.
-private val SWIPE_VELOCITY_THRESHOLD = 125.dp
+private val SWIPE_CANCEL_VELOCITY_THRESHOLD = 125.dp
 private const val COMPLETED_MAXIMUM_TRAVEL = 0.1f
 private const val COMPLETION_THRESHOLD = 0.5f
 private const val FULL_TRAVEL = 1f
 
+// Speed alone must never complete an order: a short flick while scrolling is fast but barely moves the row.
 internal fun shouldCompleteOrderSwipe(
     offsetPx: Float,
     widthPx: Int,
     velocityPxPerSecond: Float,
-    velocityThresholdPxPerSecond: Float,
+    cancelVelocityThresholdPxPerSecond: Float,
 ): Boolean {
     if (widthPx <= 0) return false
 
     val crossedDistanceThreshold = offsetPx < -(widthPx * COMPLETION_THRESHOLD)
-    return if (abs(velocityPxPerSecond) >= velocityThresholdPxPerSecond) {
-        velocityPxPerSecond < 0f
-    } else {
-        crossedDistanceThreshold
-    }
+    val isReleasedMovingRight = velocityPxPerSecond >= cancelVelocityThresholdPxPerSecond
+    return crossedDistanceThreshold && !isReleasedMovingRight
 }
 
 internal fun maximumOrderSwipeTravel(widthPx: Int, isCompleted: Boolean): Float {

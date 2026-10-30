@@ -1,0 +1,2 @@
+25.9 :
+Les lecteurs de carte WisePad 3, M2 et Chipper 2X peuvent désormais se connecter via USB, et les étiquettes d’expédition de l’UE demandent les codes produit requis par les douanes. La gestion des variantes et des attributs est plus fluide, Blaze affiche les soldes impayés avec un bouton Payer et le PDV vous permet de désactiver le son des paiements. Plus des correctifs pour les remboursements, les notifications, la configuration NFC et les filtres de commande.

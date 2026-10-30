@@ -118,6 +118,13 @@ class WooShippingLabelRestClient @Inject constructor(
             clazz = ConfigLineItemsResponse::class.java
         ).toWooPayload()
 
+    suspend fun fetchServiceStatus(site: SiteModel): WooPayload<ServiceStatusResponseDTO> =
+        wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = "/wcshipping/v1/service-status",
+            clazz = ServiceStatusResponseDTO::class.java
+        ).toWooPayload()
+
     suspend fun fetchConfig(site: SiteModel, orderId: Long): WooPayload<ConfigResponse> {
         val url = "/wcshipping/v1/config/label-purchase/$orderId"
 

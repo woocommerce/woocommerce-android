@@ -89,6 +89,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.E
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRatesSection
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingSortOption
+import com.woocommerce.android.ui.orders.wooshippinglabels.servicestatus.ServiceStatusNotices
 import kotlinx.coroutines.launch
 
 @Composable
@@ -134,6 +135,8 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onRefundClicked = viewModel::onRefundClicked,
                 onPrintCustomsClicked = { viewModel.onPrintCustomsClicked(context.filesDir) },
                 onLearnMoreClicked = viewModel::onLearnMoreClicked,
+                onServiceStatusActionClick = viewModel::onServiceStatusActionClicked,
+                onServiceStatusNoticeDismiss = viewModel::onServiceStatusNoticeDismissed,
             )
         }
 
@@ -184,6 +187,8 @@ fun WooShippingLabelCreationScreen(
     onRefundClicked: () -> Unit,
     onPrintCustomsClicked: () -> Unit,
     onLearnMoreClicked: () -> Unit,
+    onServiceStatusActionClick: (String) -> Unit,
+    onServiceStatusNoticeDismiss: (String) -> Unit,
 ) {
     val shipmentDetailsBottomSheetState = rememberBottomSheetState(
         initialValue = BottomSheetValue.Collapsed
@@ -230,6 +235,8 @@ fun WooShippingLabelCreationScreen(
             onRefundClicked = onRefundClicked,
             onPrintCustomsClicked = onPrintCustomsClicked,
             onLearnMoreClicked = onLearnMoreClicked,
+            onServiceStatusActionClick = onServiceStatusActionClick,
+            onServiceStatusNoticeDismiss = onServiceStatusNoticeDismiss,
         )
 
         val selectedShipment = shipmentUIList[uiState.selectedIndex]
@@ -289,6 +296,8 @@ private fun LabelCreationScreenWithBottomSheet(
     onRefundClicked: () -> Unit,
     onPrintCustomsClicked: () -> Unit,
     onLearnMoreClicked: () -> Unit,
+    onServiceStatusActionClick: (String) -> Unit,
+    onServiceStatusNoticeDismiss: (String) -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -426,6 +435,8 @@ private fun LabelCreationScreenWithBottomSheet(
                         onRefundClicked = onRefundClicked,
                         onPrintCustomsClicked = onPrintCustomsClicked,
                         onLearnMoreClicked = onLearnMoreClicked,
+                        onServiceStatusActionClick = onServiceStatusActionClick,
+                        onServiceStatusNoticeDismiss = onServiceStatusNoticeDismiss,
                     )
                 }
             }
@@ -479,6 +490,8 @@ private fun CreateShippingCards(
     onRefundClicked: () -> Unit,
     onPrintCustomsClicked: () -> Unit,
     onLearnMoreClicked: () -> Unit,
+    onServiceStatusActionClick: (String) -> Unit,
+    onServiceStatusNoticeDismiss: (String) -> Unit,
 ) {
     Column {
         val isExpanded = remember { mutableStateOf(false) }
@@ -518,6 +531,13 @@ private fun CreateShippingCards(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
+            )
+            ServiceStatusNotices(
+                notices = uiState.serviceStatusNotices,
+                onActionClick = onServiceStatusActionClick,
+                onDismiss = onServiceStatusNoticeDismiss,
+                modifier = Modifier.padding(horizontal = 16.dp),
+                topSpacing = if (shipmentUI.customsState is NotRequired) 8.dp else 0.dp
             )
             PackageCard(
                 packageSelectionState = shipmentUI.packageSelectionState,
@@ -890,6 +910,8 @@ private fun WooShippingLabelCreationScreenPreview() {
             onRefundClicked = {},
             onPrintCustomsClicked = {},
             onLearnMoreClicked = {},
+            onServiceStatusActionClick = {},
+            onServiceStatusNoticeDismiss = {},
         )
     }
 }
