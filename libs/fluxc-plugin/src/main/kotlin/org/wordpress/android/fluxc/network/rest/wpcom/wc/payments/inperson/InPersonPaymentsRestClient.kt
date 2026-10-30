@@ -251,6 +251,7 @@ class InPersonPaymentsRestClient @Inject constructor(
             error.errorCode == "wcpay_capture_error" -> CAPTURE_ERROR
             error.errorCode == "wcpay_server_error" -> SERVER_ERROR
             error.errorCode == "wcpay_capture_error_amount_too_small" -> AMOUNT_TOO_SMALL
+            error.errorCode == TUNNEL_REQUEST_TO_SITE_FAILED_ERROR_CODE -> NETWORK_ERROR
             error.isGatewayError() -> GATEWAY_ERROR
             error.type == GenericErrorType.TIMEOUT -> NETWORK_ERROR
             error.type == GenericErrorType.NO_CONNECTION -> NETWORK_ERROR
@@ -305,6 +306,7 @@ class InPersonPaymentsRestClient @Inject constructor(
     companion object {
         private val GATEWAY_ERROR_STATUS_CODES = 502..504
         private const val NO_RESPONSE_BODY_ERROR_CODE = "no_response_body"
+        private const val TUNNEL_REQUEST_TO_SITE_FAILED_ERROR_CODE = "http_request_failed"
         private const val STATUS_KEY = "status"
         private const val ACCOUNT_REQUESTED_FIELDS: String =
             "status,has_pending_requirements,has_overdue_requirements,current_deadline,statement_descriptor," +

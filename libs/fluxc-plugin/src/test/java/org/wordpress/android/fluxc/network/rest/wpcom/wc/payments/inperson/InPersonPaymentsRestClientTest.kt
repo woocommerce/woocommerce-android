@@ -151,6 +151,22 @@ class InPersonPaymentsRestClientTest {
             assertThat(result.error?.type).isEqualTo(WCCapturePaymentErrorType.GATEWAY_ERROR)
         }
 
+    @Test
+    fun `given tunnel request to the site failed, when capturePayment, then network error is returned`() = runTest {
+        // GIVEN
+        givenCaptureFailsWith(
+            statusCode = 500,
+            type = GenericErrorType.UNKNOWN,
+            errorCode = "http_request_failed"
+        )
+
+        // WHEN
+        val result = capture()
+
+        // THEN
+        assertThat(result.error?.type).isEqualTo(WCCapturePaymentErrorType.NETWORK_ERROR)
+    }
+
     private suspend fun capture() =
         sut.capturePayment(WOOCOMMERCE_PAYMENTS, site, paymentId = "pi_test", orderId = 123L)
 
