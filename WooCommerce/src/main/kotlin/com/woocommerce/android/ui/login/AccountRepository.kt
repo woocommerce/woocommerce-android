@@ -208,5 +208,6 @@ enum class InvoluntaryLogoutReason(val trackingValue: String) {
     INVALID_TOKEN("invalid_token"),
     APPLICATION_PASSWORDS_DISABLED("application_passwords_disabled"),
     APPLICATION_PASSWORD_UNAUTHORIZED("application_password_unauthorized"),
+    SITE_CREDENTIALS_REJECTED("site_credentials_rejected"),
     WOOCOMMERCE_NOT_AVAILABLE("woocommerce_not_available")
 }

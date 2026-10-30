@@ -15,6 +15,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.generated.endpoint.WPAPI
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
@@ -62,7 +63,7 @@ class ApplicationPasswordsMediaRestClientTest {
                 ),
                 "incorrect_password"
             )
-            whenever(applicationPasswordsManager.getApplicationCredentials(site)).thenReturn(
+            whenever(applicationPasswordsManager.getApplicationCredentials(site, WPAPI.media.urlV2)).thenReturn(
                 ApplicationPasswordCreationResult.Failure(networkError)
             )
 
@@ -93,7 +94,7 @@ class ApplicationPasswordsMediaRestClientTest {
             ).apply {
                 apiError = "application_passwords_disabled"
             }
-            whenever(applicationPasswordsManager.getApplicationCredentials(site)).thenReturn(
+            whenever(applicationPasswordsManager.getApplicationCredentials(site, WPAPI.media.urlV2)).thenReturn(
                 ApplicationPasswordCreationResult.NotSupported(networkError)
             )
 

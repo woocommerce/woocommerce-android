@@ -1,14 +1,16 @@
 package com.woocommerce.android.applicationpasswords
 
+import androidx.lifecycle.Lifecycle.State.STARTED
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordGenerationScenario
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsListener
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackSiteFlaggedAsUnsupported
 import javax.inject.Inject
@@ -16,8 +18,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ApplicationPasswordsNotifier @Inject constructor(
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val selectedSite: SelectedSite
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ApplicationPasswordsListener {
     companion object {
         private const val UNAUTHORIZED_STATUS_CODE = 401
@@ -31,10 +32,17 @@ class ApplicationPasswordsNotifier @Inject constructor(
     val passwordGenerationFailures: Flow<ApplicationPasswordGenerationException> =
         _passwordGenerationFailures.asSharedFlow()
 
-    override fun onFeatureUnavailable(siteModel: SiteModel, networkError: WPAPINetworkError) {
+    override fun onFeatureUnavailable(
+        siteModel: SiteModel,
+        networkError: WPAPINetworkError,
+        path: String,
+        scenario: ApplicationPasswordGenerationScenario
+    ) {
         trackGenerationFailure(
             cause = GenerationFailureCause.FEATURE_DISABLED,
             networkError = networkError,
+            path = path,
+            scenario = scenario,
             additionalProperties = mapOf(
                 AnalyticsTracker.KEY_SITE_URL to siteModel.url
             )
@@ -42,7 +50,11 @@ class ApplicationPasswordsNotifier @Inject constructor(
         _featureUnavailableEvents.tryEmit(networkError)
     }
 
-    override fun onPasswordGenerationFailed(networkError: WPAPINetworkError) {
+    override fun onPasswordGenerationFailed(
+        networkError: WPAPINetworkError,
+        path: String,
+        scenario: ApplicationPasswordGenerationScenario
+    ) {
         val statusCode = networkError.volleyError?.networkResponse?.statusCode
         trackGenerationFailure(
             cause = if (statusCode == UNAUTHORIZED_STATUS_CODE) {
@@ -50,17 +62,14 @@ class ApplicationPasswordsNotifier @Inject constructor(
             } else {
                 GenerationFailureCause.OTHER
             },
-            networkError = networkError
+            networkError = networkError,
+            path = path,
+            scenario = scenario
         )
         _passwordGenerationFailures.tryEmit(ApplicationPasswordGenerationException(networkError))
     }
 
-    override fun onNewPasswordCreated(isPasswordRegenerated: Boolean) {
-        val scenario = if (isPasswordRegenerated) {
-            GenerationFailureScenario.REGENERATION
-        } else {
-            GenerationFailureScenario.GENERATION
-        }
+    override fun onNewPasswordCreated(scenario: ApplicationPasswordGenerationScenario) {
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.APPLICATION_PASSWORDS_NEW_PASSWORD_CREATED,
             properties = mapOf(AnalyticsTracker.KEY_SCENARIO to scenario.name.lowercase())
@@ -82,19 +91,18 @@ class ApplicationPasswordsNotifier @Inject constructor(
     private fun trackGenerationFailure(
         cause: GenerationFailureCause,
         networkError: WPAPINetworkError,
+        path: String,
+        scenario: ApplicationPasswordGenerationScenario,
         additionalProperties: Map<String, String> = emptyMap()
     ) {
-        val scenario = if (selectedSite.exists()) {
-            GenerationFailureScenario.REGENERATION
-        } else {
-            GenerationFailureScenario.GENERATION
-        }
-
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.APPLICATION_PASSWORDS_GENERATION_FAILED,
             properties = mapOf(
                 AnalyticsTracker.KEY_SCENARIO to scenario.name.lowercase(),
-                AnalyticsTracker.KEY_CAUSE to cause.name.lowercase()
+                AnalyticsTracker.KEY_CAUSE to cause.name.lowercase(),
+                AnalyticsTracker.KEY_PATH to path,
+                AnalyticsTracker.KEY_IS_APP_IN_FOREGROUND to ProcessLifecycleOwner.get()
+                    .lifecycle.currentState.isAtLeast(STARTED)
             ) + additionalProperties,
             errorContext = networkError.javaClass.simpleName,
             errorType = networkError.type.name,
@@ -104,10 +112,6 @@ class ApplicationPasswordsNotifier @Inject constructor(
 
     private enum class GenerationFailureCause {
         AUTHORIZATION_FAILED, FEATURE_DISABLED, OTHER
-    }
-
-    private enum class GenerationFailureScenario {
-        GENERATION, REGENERATION
     }
 }
 

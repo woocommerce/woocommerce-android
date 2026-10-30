@@ -27,7 +27,6 @@
 - [*] Login errors from an unexpected store response now offer Contact Support [https://github.com/woocommerce/woocommerce-android/pull/16750]
 - [*] [Internal] AI support chats started during login now send the login step, last error and connectivity checks [https://github.com/woocommerce/woocommerce-android/pull/16752]
 - [*] Fixed variations missing from the variations list and the order creation variation picker on products with more than 25 variations [https://github.com/woocommerce/woocommerce-android/pull/16725]
-
 - [*] AI support chat now receives the Mobile Status Report, so it can help without asking for app and device details [https://github.com/woocommerce/woocommerce-android/pull/16733]
 - [*] Card payment dialogs now show the amount in the store's currency format, matching the rest of the order [https://github.com/woocommerce/woocommerce-android/pull/16771]
 - [*] The "Generate all variations?" confirmation now stays open when you rotate the device [https://github.com/woocommerce/woocommerce-android/pull/16770]
@@ -37,6 +36,7 @@
 - [*] Products: Attribute options now keep their order after rotating the device, and new options are added at the end of the list [https://github.com/woocommerce/woocommerce-android/pull/16777]
 - [*] Fixed a crash when opening a product whose short description has a heading or aligned paragraph inside a list [https://github.com/woocommerce/woocommerce-android/pull/16776]
 - [*] [POS] A card payment no longer gets stuck on "Processing payment" when the card reader disconnects just as the payment completes [https://github.com/woocommerce/woocommerce-android/pull/16785]
+- [*] The app no longer keeps retrying in the background when it can't create an application password for a store, and logs you out if the store rejects your saved username or password [https://github.com/woocommerce/woocommerce-android/pull/16783]
 
 25.9
 -----

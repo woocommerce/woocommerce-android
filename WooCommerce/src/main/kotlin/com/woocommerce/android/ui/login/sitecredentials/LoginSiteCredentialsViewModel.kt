@@ -767,6 +767,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     private suspend fun checkEligibilityAndCompleteLogin(site: SiteModel): Result<Boolean> {
+        val applicationPasswordException = wpApiSiteRepository.ensureApplicationPassword(site).exceptionOrNull()
+        if (applicationPasswordException != null) {
+            handleUserInfoFailure(applicationPasswordException)
+            return Result.failure(applicationPasswordException)
+        }
+
         val result = wpApiSiteRepository.checkIfUserIsEligible(site)
         result.fold(
             onSuccess = { isEligible ->
@@ -829,8 +835,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     /**
-     * When app password generation fails, the user request fails too, with a prefixed error code. If WordPress
-     * reports app passwords as unavailable, only that error arrives here, and the unavailable screen handles it.
+     * A failed password creation arrives as an ApplicationPasswordGenerationException, before any user request.
+     * A prefixed WooException means the user request hit a rejected saved password and couldn't replace it.
+     * When app passwords are disabled, the unavailable screen handles the error instead.
      */
     private fun Throwable.toUserInfoUnexpectedResponseFailure(): LoginUnexpectedResponseFailure? = when {
         this is ApplicationPasswordGenerationException -> networkError.unexpectedStoreResponse?.let {

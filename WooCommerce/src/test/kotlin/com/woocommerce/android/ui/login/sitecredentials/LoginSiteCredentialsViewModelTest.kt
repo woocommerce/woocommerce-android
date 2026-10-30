@@ -86,6 +86,8 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         on { fetchSite(SITE_URL) } doReturn Result.success(site)
         on { fetchSiteForBrowserLogin(SITE_URL) } doReturn Result.success(site)
         on { getSiteByLocalId(SITE_ID) } doReturn site
+        on { ensureApplicationPassword(site) } doReturn Result.success(Unit)
+        on { ensureApplicationPassword(persistedSite) } doReturn Result.success(Unit)
         on { checkIfUserIsEligible(site) } doReturn Result.success(true)
         on { checkIfUserIsEligible(persistedSite) } doReturn Result.success(true)
         on { saveAuthenticationEndpoints(site, PROVEN_ENDPOINTS) } doReturn Result.success(persistedSite)
@@ -142,6 +144,35 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 properties = any()
             )
         }
+
+    @Test
+    fun `given application password creation fails, when checking eligibility, then track failure without user check`() =
+        testBlocking {
+            val networkError = WPAPINetworkError(BaseNetworkError(GenericErrorType.SERVER_ERROR, "generation failed"))
+            val exception = ApplicationPasswordGenerationException(networkError)
+            whenever(repository.ensureApplicationPassword(site)).thenReturn(Result.failure(exception))
+            setup()
+
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+            }
+
+            verify(repository).ensureApplicationPassword(site)
+            verify(repository, never()).checkIfUserIsEligible(site)
+            verify(analytics).track(
+                stat = AnalyticsEvent.LOGIN_SITE_CREDENTIALS_LOGIN_FAILED,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_STEP to "application_password_generation",
+                    AnalyticsTracker.KEY_NETWORK_STATUS_CODE to "",
+                    AnalyticsTracker.KEY_URL_WAS_NORMALIZED_TO_HTTPS to "false"
+                ),
+                errorContext = WPAPINetworkError::class.java.simpleName,
+                errorType = GenericErrorType.SERVER_ERROR.name,
+                errorDescription = exception.message
+            )
+        }
+
     @Test
     fun `given default native authentication succeeds, when submitting, then keep the existing login flow`() =
         testBlocking {

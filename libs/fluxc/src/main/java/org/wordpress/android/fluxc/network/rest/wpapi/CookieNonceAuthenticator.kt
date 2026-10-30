@@ -6,6 +6,7 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
 import org.wordpress.android.fluxc.network.discovery.DiscoveryWPAPIRestClient
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.Available
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.FailedRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.Unknown
 import org.wordpress.android.fluxc.persistence.SiteStorePersistence
@@ -182,7 +183,10 @@ class CookieNonceAuthenticator @Inject constructor(
         }
         val error = BaseNetworkError(genericErrorType, message)
         error.unexpectedStoreResponse = (this as? FailedRequest)?.unexpectedStoreResponse
-        return WPAPIResponse.Error(WPAPINetworkError(error))
+        val errorCode = if ((this as? FailedRequest)?.type == INVALID_CREDENTIALS) {
+            INVALID_CREDENTIALS_ERROR_CODE
+        } else null
+        return WPAPIResponse.Error(WPAPINetworkError(error, errorCode))
     }
 
     sealed interface CookieNonceAuthenticationResult {
@@ -198,6 +202,7 @@ class CookieNonceAuthenticator @Inject constructor(
     }
 
     companion object {
+        const val INVALID_CREDENTIALS_ERROR_CODE = "cookie_nonce_invalid_credentials"
         private const val STATUS_CODE_NOT_FOUND = 404
         private const val STATUS_CODE_FORBIDDEN = 403
         private const val STATUS_CODE_UNAUTHORIZED = 401
