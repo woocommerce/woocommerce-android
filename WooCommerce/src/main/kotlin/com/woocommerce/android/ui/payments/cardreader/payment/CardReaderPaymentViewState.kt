@@ -52,7 +52,7 @@ sealed class ViewState(
         override val onPrimaryActionClicked: (() -> Unit),
         override val onSecondaryActionClicked: (() -> Unit)? = null,
     ) : ViewState(
-        headerLabel = R.string.card_reader_payment_payment_failed_header,
+        headerLabel = errorType.failedPaymentHeaderLabel(),
         paymentStateLabel = errorType.message,
         primaryActionLabel = primaryLabel,
         illustration = R.drawable.img_products_error,
@@ -67,7 +67,7 @@ sealed class ViewState(
         override val onPrimaryActionClicked: (() -> Unit),
         override val onSecondaryActionClicked: (() -> Unit)? = null,
     ) : ViewState(
-        headerLabel = R.string.card_reader_payment_payment_failed_header,
+        headerLabel = errorType.failedPaymentHeaderLabel(),
         paymentStateLabel = errorType.message,
         primaryActionLabel = primaryLabel,
         illustration = R.drawable.img_card_reader_tpp_payment_failed,
@@ -411,4 +411,10 @@ sealed class InteracRefundFlowError(val message: UiString) {
     interface NonRetryableError
 
     interface ContactSupportError
+}
+
+@StringRes
+private fun PaymentFlowError.failedPaymentHeaderLabel(): Int = when (this == PaymentFlowError.CaptureOutcomeUnknown) {
+    true -> R.string.card_reader_payment_not_confirmed_header
+    false -> R.string.card_reader_payment_payment_failed_header
 }

@@ -1667,6 +1667,7 @@
     <string name="card_reader_payment_capturing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
     <string name="card_reader_payment_completed_payment_header">Payment successful</string>
     <string name="card_reader_payment_payment_failed_header">Payment failed</string>
+    <string name="card_reader_payment_not_confirmed_header">Payment not confirmed</string>
     <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Buy a card reader</string>
 
@@ -1697,7 +1698,7 @@
     <string name="card_reader_payment_failed_test_mode_live_card">A live card was used on a site in test mode</string>
     <string name="card_reader_payment_failed_unknown">Payment was declined for an unknown reason</string>
     <string name="card_reader_payment_failed_canceled">Transaction was canceled</string>
-    <string name="card_reader_payment_failed_capture_outcome_unknown">Payment couldn\'t be confirmed</string>
+    <string name="card_reader_payment_failed_capture_outcome_unknown">The card may already have been charged. Try again to check the payment status.</string>
 
     <string name="card_reader_mode_ready_to_pair_header">Ready to pair</string>
     <string name="card_reader_mode_ready_to_pair_subtitle">Open Woo POS on your tablet and pick this phone.</string>

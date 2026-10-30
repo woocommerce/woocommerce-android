@@ -214,6 +214,23 @@ class CardReaderPaymentReaderTypeStateProviderTest {
     }
 
     @Test
+    fun `given capture outcome unknown, when provideFailedPaymentState, then payment not confirmed header returned`() {
+        // GIVEN
+        val error = PaymentFlowError.CaptureOutcomeUnknown
+
+        // WHEN
+        val result = provider.provideFailedPaymentState(
+            CardReaderType.EXTERNAL,
+            errorType = error,
+            amountLabel = "amountLabel",
+            onPrimaryActionClicked = {},
+        )
+
+        // THEN
+        assertThat(result.headerLabel).isEqualTo(R.string.card_reader_payment_not_confirmed_header)
+    }
+
+    @Test
     fun `given built in card reader type, when provideCapturingPaymentState, then return BuiltInReaderCapturingPaymentState`() {
         // GIVEN
         val cardReaderType = CardReaderType.BUILT_IN
