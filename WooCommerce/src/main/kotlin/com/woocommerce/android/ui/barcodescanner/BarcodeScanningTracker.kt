@@ -21,6 +21,30 @@ class BarcodeScanningTracker @Inject constructor(
         )
     }
 
+    fun trackHardwareScannerInfoTapped(source: ScanningSource) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.HARDWARE_BARCODE_SCANNER_INFO_TAPPED,
+            mapOf(KEY_SCANNING_SOURCE to source.source)
+        )
+    }
+
+    fun trackHardwareScannerTestScanSuccess(source: ScanningSource) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.HARDWARE_BARCODE_SCANNER_TEST_SCAN_SUCCESS,
+            mapOf(KEY_SCANNING_SOURCE to source.source)
+        )
+    }
+
+    fun trackHardwareScannerTestScanFailed(source: ScanningSource, failure: HardwareBarcodeScannerTestFailure) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.HARDWARE_BARCODE_SCANNER_TEST_SCAN_FAILED,
+            mapOf(
+                KEY_SCANNING_SOURCE to source.source,
+                KEY_SCANNING_FAILURE_REASON to failure.reason,
+            )
+        )
+    }
+
     fun trackHardwareScanSuccess(source: ScanningSource) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.HARDWARE_BARCODE_SCANNING_SUCCESS,

@@ -17,6 +17,8 @@ import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private const val MIN_SKU_LENGTH = 3
+
 @Singleton
 class HardwareBarcodeScanner @Inject constructor(
     @AppCoroutineScope appCoroutineScope: CoroutineScope,
@@ -69,11 +71,8 @@ class HardwareBarcodeScanner @Inject constructor(
     }
 
     private fun onBarcodeError(error: BarcodeInputDetector.BarcodeResult.Error) {
-        when (error.failureReason) {
-            BarcodeInputDetector.FailureReason.NO_TERMINATOR -> if (error.barcode.length >= MIN_SKU_LENGTH) {
-                _scansWithoutEnterSuffix.tryEmit(Unit)
-            }
-            BarcodeInputDetector.FailureReason.TOO_SHORT -> Unit
+        if (error.isMissingEnterSuffix()) {
+            _scansWithoutEnterSuffix.tryEmit(Unit)
         }
     }
 
@@ -101,14 +100,18 @@ class HardwareBarcodeScanner @Inject constructor(
         val onBarcodeScanned: (CodeScannerStatus.Success) -> Unit,
     )
 
-    private companion object {
-        const val MIN_SKU_LENGTH = 3
-        const val EAN_8_LENGTH = 8
-        const val UPC_A_LENGTH = 12
-        const val EAN_13_LENGTH = 13
-        const val GS1_ODD_POSITION_WEIGHT = 3
-        const val GS1_MODULO = 10
+    companion object {
+        private const val EAN_8_LENGTH = 8
+        private const val UPC_A_LENGTH = 12
+        private const val EAN_13_LENGTH = 13
+        private const val GS1_ODD_POSITION_WEIGHT = 3
+        private const val GS1_MODULO = 10
     }
+}
+
+fun BarcodeInputDetector.BarcodeResult.Error.isMissingEnterSuffix(): Boolean = when (failureReason) {
+    BarcodeInputDetector.FailureReason.NO_TERMINATOR -> barcode.length >= MIN_SKU_LENGTH
+    BarcodeInputDetector.FailureReason.TOO_SHORT -> false
 }
 
 fun Fragment.listenForHardwareBarcodes(
