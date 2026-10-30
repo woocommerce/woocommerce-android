@@ -292,8 +292,9 @@ internal class PaymentManager(
     intent and finding it SUCCEEDED means the funds were captured, so the payment is reported as completed to
     prevent a retry leading to a double charge. When the intent can't be refreshed (e.g. the network is down), its
     status can't confirm the backend call went through (single-step terminal payments are SUCCEEDED before the
-    capture call), or the request was lost, timed out or cut off by a gateway so the capture may still be running on
-    the backend, the outcome is reported as unknown so the merchant doesn't take another payment. */
+    capture call), or the request was lost, timed out, cut off by a gateway or failed unexpectedly on the server so
+    the capture may still be running, the outcome is reported as unknown so the merchant doesn't take another
+    payment. */
     @Suppress("TooGenericExceptionCaught")
     private suspend fun checkCaptureOutcome(
         paymentIntent: PaymentIntent,
@@ -328,7 +329,9 @@ internal class PaymentManager(
     }
 
     private fun CapturePaymentResponse.Error.mayStillBeCapturing() =
-        this is CapturePaymentResponse.Error.NetworkError || this is CapturePaymentResponse.Error.GatewayError
+        this is CapturePaymentResponse.Error.NetworkError ||
+            this is CapturePaymentResponse.Error.GatewayError ||
+            this is CapturePaymentResponse.Error.ServerError
 
     private enum class CaptureOutcome {
         CAPTURED,
