@@ -2,6 +2,10 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+26.1
+-----
+- [*] Order details now show the shipping phone under Shipping details [https://github.com/woocommerce/woocommerce-android/pull/16797]
+
 26.0
 -----
 - [*] Shipping labels: carrier outage notices from WooCommerce Shipping now show on the label creation screen, and a purchase that fails during an outage explains the incident instead of showing a generic error [https://github.com/woocommerce/woocommerce-android/pull/16778]
