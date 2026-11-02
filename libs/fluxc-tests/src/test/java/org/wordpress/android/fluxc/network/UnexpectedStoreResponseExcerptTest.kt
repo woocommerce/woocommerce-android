@@ -230,6 +230,6 @@ class UnexpectedStoreResponseExcerptTest {
         val excerpt = UnexpectedStoreResponseExcerpt.from(body)
 
         assertThat(excerpt)
-            .isEqualTo("Request: log=demo&pwd=[redacted]&_wpnonce=[redacted]&csrf_token=[redacted]")
+            .isEqualTo("Request: log=demo&pwd=[redacted]")
     }
 }

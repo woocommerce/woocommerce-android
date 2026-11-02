@@ -971,6 +971,32 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given an order completed by swipe, when Undo is tapped, then the Undo is tracked`() = testBlocking {
+        // GIVEN
+        val order = OrderTestUtils.generateOrder()
+        val gesture = OrderStatusUpdateSource.SwipeToCompleteGesture(order.orderId, order.status)
+        whenever(orderDetailRepository.updateOrderStatus(any(), any())).thenReturn(
+            flowOf(
+                WCOrderStore.UpdateOrderResult.OptimisticUpdateResult(WCOrderStore.OnOrderChanged())
+            )
+        )
+        viewModel.onSwipeStatusUpdate(gesture)
+        val undoEvent = viewModel.event.getOrAwaitValue() as ShowUndoSnackbar
+
+        // WHEN
+        undoEvent.undoAction.onClick(null)
+
+        // THEN
+        verify(analyticsTracker).track(
+            AnalyticsEvent.ORDER_STATUS_CHANGE_UNDO,
+            mapOf(
+                AnalyticsTracker.KEY_ID to order.orderId,
+                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_LIST
+            )
+        )
+    }
+
+    @Test
     fun `given a swiped order moves, when completion and Undo resolve, then the same order is updated`() = testBlocking {
         val originalStatus = CoreOrderStatus.PROCESSING.value
         val targetOrder = OrderListItemUIType.OrderListItemUI(

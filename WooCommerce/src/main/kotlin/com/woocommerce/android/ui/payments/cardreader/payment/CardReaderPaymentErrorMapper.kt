@@ -30,6 +30,7 @@ class CardReaderPaymentErrorMapper @Inject constructor(
 
             is CardPaymentStatus.CardPaymentStatusErrorType.Server -> PaymentFlowError.Server
             CardPaymentStatus.CardPaymentStatusErrorType.Canceled -> PaymentFlowError.Canceled
+            CardPaymentStatus.CardPaymentStatusErrorType.CaptureOutcomeUnknown -> PaymentFlowError.CaptureOutcomeUnknown
             CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.NfcDisabled ->
                 PaymentFlowError.BuiltInReader.NfcDisabled
 

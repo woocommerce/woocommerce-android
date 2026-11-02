@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
 import com.woocommerce.android.ui.orders.creation.GoogleMLKitCodeScanner
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -26,6 +27,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
@@ -33,11 +35,46 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
     private lateinit var barcodeScanningViewModel: BarcodeScanningViewModel
     private lateinit var savedStateHandle: SavedStateHandle
     private val codeScanner: GoogleMLKitCodeScanner = mock()
+    private val barcodeScanningTracker: BarcodeScanningTracker = mock()
 
     @Before
     fun setup() {
         savedStateHandle = mock()
-        barcodeScanningViewModel = BarcodeScanningViewModel(codeScanner, savedStateHandle)
+        barcodeScanningViewModel = BarcodeScanningViewModel(codeScanner, barcodeScanningTracker, savedStateHandle)
+    }
+
+    @Test
+    fun `when hardware scanner info is clicked, then info is shown and tracked`() {
+        // WHEN
+        barcodeScanningViewModel.onHardwareScannerInfoClicked(ScanningSource.BARCODE_SCANNER)
+
+        // THEN
+        assertThat(barcodeScanningViewModel.isHardwareScannerInfoVisible.value).isTrue()
+        verify(barcodeScanningTracker).trackHardwareScannerInfoTapped(ScanningSource.BARCODE_SCANNER)
+    }
+
+    @Test
+    fun `when hardware scanner test scan succeeds, then it is tracked`() {
+        // WHEN
+        barcodeScanningViewModel.onHardwareScannerTestScanSucceeded(ScanningSource.SCAN_TO_UPDATE_INVENTORY)
+
+        // THEN
+        verify(barcodeScanningTracker).trackHardwareScannerTestScanSuccess(ScanningSource.SCAN_TO_UPDATE_INVENTORY)
+    }
+
+    @Test
+    fun `when hardware scanner test scan fails, then it is tracked with the reason`() {
+        // WHEN
+        barcodeScanningViewModel.onHardwareScannerTestScanFailed(
+            ScanningSource.BARCODE_SCANNER,
+            HardwareBarcodeScannerTestFailure.WRONG_VALUE,
+        )
+
+        // THEN
+        verify(barcodeScanningTracker).trackHardwareScannerTestScanFailed(
+            ScanningSource.BARCODE_SCANNER,
+            HardwareBarcodeScannerTestFailure.WRONG_VALUE,
+        )
     }
 
     @Test
@@ -255,6 +292,24 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
                         codeScannerStatus
                     )
                 )
+        }
+
+    @Test
+    fun `given hardware scanner info visible, when a code is recognised, then nothing is emitted`() =
+        runTest {
+            // GIVEN
+            val imageProxy: ImageProxy = mock()
+            whenever(codeScanner.recogniseCode(imageProxy)).thenReturn(
+                CodeScannerStatus.Success("4006381333931", GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN13)
+            )
+            barcodeScanningViewModel.onHardwareScannerInfoClicked(ScanningSource.BARCODE_SCANNER)
+            barcodeScanningViewModel.startCodesRecognition()
+
+            // WHEN
+            barcodeScanningViewModel.onNewFrame(imageProxy)
+
+            // THEN
+            assertThat(barcodeScanningViewModel.event.value).isNull()
         }
 
     @Test

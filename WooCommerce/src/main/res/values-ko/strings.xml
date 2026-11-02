@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-06 09:57:32+0000
+Translation-Revision-Date: 2026-10-20 09:55:25+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s에는 받는 사람의 전화번호가 필요합니다.</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">%1$s자 이하여야 합니다.</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin_required">GTIN/EAN을 입력하거나 \"바코드 없음\"을 선택합니다.</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_required">EU로 배송하기 위한 필수 사항</string>
+    <string name="woo_shipping_labels_customs_product_details_no_barcode">바코드 없음</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin">GTIN/EAN</string>
+    <string name="woo_shipping_labels_customs_product_details_manufacturer_part_number">제조업체 품목 번호(MPN)</string>
+    <string name="woo_shipping_labels_customs_product_details_sku">SKU</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_plugin_update_notice">이제 EU로 배송하려면 각 아이템에 대한 상품 식별자가 필요합니다. 우커머스 배송 플러그인을 업데이트하여 추가하세요.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_description">EU로 배송하기 위한 필수 사항입니다. SKU와 GTIN/EAN은 상품의 재고 설정에서 미리 채워집니다.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_title">EU 상품 식별자</string>
+    <string name="woopos_settings_payments_success_sound_subtitle">결제가 완료되면 소리 재생</string>
+    <string name="woopos_settings_payments_success_sound">결제 성공 소리</string>
+    <string name="woopos_settings_payments_category_subtitle">결제 설정 관리</string>
+    <string name="woopos_settings_payments_category">결제</string>
+    <string name="blaze_campaign_list_outstanding_balance_payment_title">미결제 잔액 결제</string>
+    <string name="blaze_campaign_list_outstanding_balance_pay">결제</string>
+    <string name="blaze_campaign_list_outstanding_balance_message">계정에 현재 %1$s의 미결제 잔액이 있습니다. 새 캠페인을 생성하기 전에 결제하세요.</string>
+    <string name="blaze_campaign_list_outstanding_balance_title">미결제 잔액</string>
+    <string name="bottom_sheet_attributes_desc">상품 페이지에 재료 또는 크기와 같은 상세 정보 추가</string>
+    <string name="card_reader_mode_nfc_disabled_open_settings">NFC 설정 열기</string>
+    <string name="card_reader_mode_nfc_disabled_subtitle">카드 결제를 하려면 이 스마트폰에 NFC가 필요합니다. NFC 설정을 열고 NFC를 켠 다음 이 화면으로 돌아오세요.</string>
+    <string name="card_reader_mode_nfc_disabled_header">NFC 켜기</string>
+    <string name="card_reader_payment_subscription_check_failed">이 주문을 직접 결제할 수 있는지 확인할 수 없습니다. 다시 시도해 주세요.</string>
+    <string name="card_reader_interac_refund_not_available">이 주문은 직접 환불할 수 없습니다.</string>
+    <string name="order_refunds_amount_capped_notice">이 주문에 대해 환불 가능한 금액은 %1$s만 남았으므로, 이번 환불은 해당 금액으로 제한됩니다.</string>
+    <string name="product_attribute_no_options">옵션 없음</string>
+    <string name="product_attribute_stop_using_for_variations_confirm">사용 중지</string>
+    <string name="product_attribute_stop_using_for_variations_message">기존 변형이 더 이상 이 속성과 일치하지 않습니다.</string>
+    <string name="product_attribute_stop_using_for_variations_title">변형에 대해 사용하는 것을 중지하시겠어요?</string>
+    <string name="product_attribute_used_for_variations">변형에 사용됨</string>
+    <string name="product_attribute_visible_on_product_page">상품 페이지에 보임</string>
     <string name="woopos_orders_details_breakdown_custom_amounts_label">사용자 정의 금액</string>
     <string name="woopos_payment_custom_amounts_label">사용자 정의 금액</string>
     <string name="woopos_cart_item_discount_applied">할인 적용됨</string>
@@ -1783,12 +1815,12 @@ Language: ko_KR
     <string name="blaze_campaign_budget_impressions_title">노출 수</string>
     <string name="blaze_campaign_budget_update_button">업데이트</string>
     <string name="blaze_campaign_budget_edit_duration_button">편집</string>
-    <string name="blaze_campaign_budget_impressions_info">노출 수는 잠재적 고객에게 광고가 표시되는 빈도를 반영합니다.\n\n\n        온라인 트래픽과 사용자 행동의 유동성으로 인해 정확한 수는 보장할 수 없지만 광고의 실제 노출 수를 목표 수에 최대한 가깝게 일치시키는 것을 목표로 합니다.\n\n\n        노출 수는 독자의 행동이 아니라 가시성을 나타낸다는 점에 유의하세요.</string>
     <string name="blaze_campaign_budget_reach_forecast">일일 예상 도달 인원</string>
     <string name="blaze_campaign_budget_days_duration">%1$s일 동안</string>
     <string name="blaze_campaign_budget_toolbar_title">예산 설정</string>
     <string name="blaze_campaign_preview_target_default_value">모두</string>
     <string name="blaze_campaign_preview_days_duration">%2$s(으)로부터 %1$s일</string>
+    <string name="blaze_campaign_budget_impressions_info">노출 수는 잠재적 고객에게 광고가 표시되는 빈도를 반영합니다.\n\n\n        온라인 트래픽과 사용자 행동의 유동성으로 인해 정확한 수는 보장할 수 없지만 광고의 실제 노출 수를 목표 수에 최대한 가깝게 일치시키는 것을 목표로 합니다.\n\n\n        노출 수는 독자의 행동이 아니라 가시성을 나타낸다는 점에 유의하세요.</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">시작 날짜</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">상세 정보 확인</string>
     <string name="blaze_campaign_preview_details_destination_url">광고 대상</string>
@@ -2789,7 +2821,6 @@ Language: ko_KR
     <string name="inbox_screen_title">받은 편지함</string>
     <string name="settings_card_reader_manuals">카드 리더 사용설명서</string>
     <string name="card_reader_interac_refund_refund_payment_hint">누르거나 삽입하여 환불받기</string>
-    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">주문이 이미 환불되었습니다.</string>
     <string name="card_reader_interac_refund_refund_failed_cancelled">환불 취소됨</string>
     <string name="card_reader_interac_refund_refund_failed_ok">확인</string>
     <string name="card_reader_interac_refund_refund_failed_test_card">시스템 테스트 카드는 환불에 사용할 수 없습니다.</string>
@@ -3837,6 +3868,7 @@ Language: ko_KR
     <string name="date_timeframe_future">다음</string>
     <string name="remove">제거</string>
     <string name="product_images_uploading_multi_notif_message">이미지 업로드 중…%1$d/%2$d개</string>
+    <string name="product_attribute_hidden">숨김</string>
     <string name="login_discovery_error_generic">사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
     <string name="login_discovery_error_ssl">&lt;b&gt;SSL 인증서&lt;/b&gt; 문제로 인해 사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
     <string name="login_discovery_error_http_auth">&lt;b&gt;HTTP 인증&lt;/b&gt;이 필요하므로 사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>

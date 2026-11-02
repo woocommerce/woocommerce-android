@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-06 13:58:10+0000
+Translation-Revision-Date: 2026-10-20 15:54:56+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_purchase_phone_required_by_service">נדרש מספר טלפון של הנמען עבור ⁦%1$s⁩.</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">חייב להכיל ⁦%1$s⁩ תווים לכל היותר.</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin_required">יש להזין GTIN/EAN או לבחור באפשרות \'ללא ברקוד\'</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_required">חובה במשלוחים לאיחוד האירופי</string>
+    <string name="woo_shipping_labels_customs_product_details_no_barcode">ללא ברקוד</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin">GTIN / EAN</string>
+    <string name="woo_shipping_labels_customs_product_details_manufacturer_part_number">מק\"ט יצרן</string>
+    <string name="woo_shipping_labels_customs_product_details_sku">SKU</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_plugin_update_notice">כעת נדרשים מזהי מוצרים לכל פריט במשלוחים לאיחוד האירופי. יש לעדכן את התוסף WooCommerce Shipping כדי להוסיף אותם.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_description">חובה במשלוחים אל תוך האיחוד האירופי. ה-SKU וה-GTIN / EAN ממולאים מראש מתוך הגדרות המלאי של המוצר.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_title">מזהי מוצרים לאיחוד האירופי</string>
+    <string name="woopos_settings_payments_success_sound_subtitle">השמעת צליל עם השלמת תשלום</string>
+    <string name="woopos_settings_payments_success_sound">צליל תשלום מוצלח</string>
+    <string name="woopos_settings_payments_category_subtitle">ניהול הגדרות תשלום</string>
+    <string name="woopos_settings_payments_category">תשלומים</string>
+    <string name="blaze_campaign_list_outstanding_balance_payment_title">תשלום היתרה</string>
+    <string name="blaze_campaign_list_outstanding_balance_pay">תשלום</string>
+    <string name="blaze_campaign_list_outstanding_balance_message">בחשבונך קיימת כרגע יתרה לתשלום בסכום של ⁦%1$s⁩. יש לשלם את היתרה לפני יצירת קמפיינים חדשים.</string>
+    <string name="blaze_campaign_list_outstanding_balance_title">יתרה לתשלום</string>
+    <string name="bottom_sheet_attributes_desc">אפשר להוסיף פרטים כמו חומר או מידה לעמוד המוצר.</string>
+    <string name="card_reader_mode_nfc_disabled_open_settings">פתיחת הגדרות NFC</string>
+    <string name="card_reader_mode_nfc_disabled_subtitle">הטלפון הזה חייב לתמוך ב-NFC כדי לקבל תשלומים בכרטיס. יש לפתוח את הגדרות ה-NFC, להפעיל את ה-NFC ולחזור למסך הזה.</string>
+    <string name="card_reader_mode_nfc_disabled_header">הפעלת NFC</string>
+    <string name="card_reader_payment_subscription_check_failed">לא ניתן היה לבדוק אם אפשר לשלם עבור ההזמנה הזו באופן אישי. יש לנסות שוב.</string>
+    <string name="card_reader_interac_refund_not_available">לא ניתן לבצע החזר כספי באופן אישי על הזמנה זו</string>
+    <string name="order_refunds_amount_capped_notice">נותרו רק ⁦%1$s⁩ להחזר כספי בהזמנה הזאת, כך שההחזר הכספי מוגבל לסכום הזה.</string>
+    <string name="product_attribute_no_options">אין אפשרויות</string>
+    <string name="product_attribute_stop_using_for_variations_confirm">הפסקת שימוש</string>
+    <string name="product_attribute_stop_using_for_variations_message">הווריאציות הקיימות לא יתאימו עוד למאפיין זה.</string>
+    <string name="product_attribute_stop_using_for_variations_title">רוצה להפסיק את השימוש עבור וריאציות?</string>
+    <string name="product_attribute_used_for_variations">בשימוש עבור וריאציות</string>
+    <string name="product_attribute_visible_on_product_page">מוצג בעמוד המוצר</string>
     <string name="woopos_orders_details_breakdown_custom_amounts_label">סכומים בהתאמה אישית</string>
     <string name="woopos_payment_custom_amounts_label">סכומים בהתאמה אישית</string>
     <string name="woopos_cart_item_discount_applied">ההנחה הוחלה</string>
@@ -2787,7 +2819,6 @@ Language: he_IL
     <string name="inbox_screen_title">תיבת דואר נכנס</string>
     <string name="settings_card_reader_manuals">מדריכים לקורא הכרטיסים</string>
     <string name="card_reader_interac_refund_refund_payment_hint">יש להקיש או להכניס כדי להנפיק החזר כספי</string>
-    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">כבר הונפק החזר כספי עבור ההזמנה</string>
     <string name="card_reader_interac_refund_refund_failed_cancelled">ההחזר הכספי בוטל</string>
     <string name="card_reader_interac_refund_refund_failed_ok">אישור</string>
     <string name="card_reader_interac_refund_refund_failed_test_card">כרטיסי בדיקה של המערכת לא מותרים לשימוש לצורך החזר כספי</string>
@@ -3835,6 +3866,7 @@ Language: he_IL
     <string name="product_add_image_content_description">להוסיף תמונה</string>
     <string name="date_timeframe_future">אירועים קרובים</string>
     <string name="remove">הסרה</string>
+    <string name="product_attribute_hidden">מוסתר</string>
     <string name="login_discovery_error_generic">לא הייתה לנו אפשרות לגשת לאתר שלך. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
     <string name="login_discovery_error_ssl">לא הייתה לנו אפשרות לגשת לאתר שלך עקב בעיה &lt;b&gt;בתעודת SSL&lt;/b&gt;. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
     <string name="login_discovery_error_http_auth">לא הייתה לנו אפשרות לגשת לאתר שלך מכיוון שהוא דורש &lt;b&gt;אימות HTTP&lt;/b&gt;. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>

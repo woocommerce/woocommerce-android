@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-06 09:57:15+0000
+Translation-Revision-Date: 2026-10-20 09:54:09+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s には受取人の電話番号が必要です。</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">%1$s文字以下にしてください。</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin_required">GTIN/EAN を入力するか、「バーコードなし」を選択</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_required">EU への配送に必要</string>
+    <string name="woo_shipping_labels_customs_product_details_no_barcode">バーコードなし</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin">GTIN / EAN</string>
+    <string name="woo_shipping_labels_customs_product_details_manufacturer_part_number">製品番号 (MPN)</string>
+    <string name="woo_shipping_labels_customs_product_details_sku">SKU</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_plugin_update_notice">EU への配送では、各商品に商品識別子が必要になりました。 WooCommerce Shipping プラグインを更新して追加します。</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_description">EU への配送に必要です。 SKU と GTIN / EAN は商品の在庫設定から事前に入力されます。</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_title">EU 商品識別子</string>
+    <string name="woopos_settings_payments_success_sound_subtitle">支払いが完了したときにサウンドを再生</string>
+    <string name="woopos_settings_payments_success_sound">支払い成功のサウンド</string>
+    <string name="woopos_settings_payments_category_subtitle">支払い設定を管理</string>
+    <string name="woopos_settings_payments_category">支払い</string>
+    <string name="blaze_campaign_list_outstanding_balance_payment_title">未払い残高を支払う</string>
+    <string name="blaze_campaign_list_outstanding_balance_pay">支払う</string>
+    <string name="blaze_campaign_list_outstanding_balance_message">現在、アカウントには%1$sの未払い残高があります。 新しいキャンペーンを作成する前にお支払いください。</string>
+    <string name="blaze_campaign_list_outstanding_balance_title">未払い残高</string>
+    <string name="bottom_sheet_attributes_desc">商品ページに素材やサイズなどの詳細を追加</string>
+    <string name="card_reader_mode_nfc_disabled_open_settings">NFC 設定を開く</string>
+    <string name="card_reader_mode_nfc_disabled_subtitle">このスマートフォンはカード支払いを受け取るために NFC が必要です。 NFC 設定を開き、NFC をオンにしてから、この画面に戻ります。</string>
+    <string name="card_reader_mode_nfc_disabled_header">NFC をオンにする</string>
+    <string name="card_reader_payment_subscription_check_failed">この注文が対面で支払いできるかどうかを確認できませんでした。 もう一度お試しください。</string>
+    <string name="card_reader_interac_refund_not_available">この注文は対面で返金できません</string>
+    <string name="order_refunds_amount_capped_notice">この注文で返金可能な金額は%1$sのみのため、この返金はその金額までに制限されます。</string>
+    <string name="product_attribute_no_options">オプションなし</string>
+    <string name="product_attribute_stop_using_for_variations_confirm">使用を停止</string>
+    <string name="product_attribute_stop_using_for_variations_message">既存のバリエーションはこの属性に一致しなくなります。</string>
+    <string name="product_attribute_stop_using_for_variations_title">バリエーションでの使用を停止しますか ?</string>
+    <string name="product_attribute_used_for_variations">バリエーションで使用</string>
+    <string name="product_attribute_visible_on_product_page">商品ページに表示</string>
     <string name="woopos_orders_details_breakdown_custom_amounts_label">カスタム金額</string>
     <string name="woopos_payment_custom_amounts_label">カスタム金額</string>
     <string name="woopos_cart_item_discount_applied">割引を適用済み</string>
@@ -2789,7 +2821,6 @@ Language: ja_JP
     <string name="inbox_screen_title">受信箱</string>
     <string name="settings_card_reader_manuals">カードリーダーマニュアル</string>
     <string name="card_reader_interac_refund_refund_payment_hint">タップまたは挿入して返金</string>
-    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">注文はすでに返金されています</string>
     <string name="card_reader_interac_refund_refund_failed_cancelled">返金を中止しました</string>
     <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
     <string name="card_reader_interac_refund_refund_failed_test_card">システムテストカードは返金を許可されていません。</string>
@@ -3837,6 +3868,7 @@ Language: ja_JP
     <string name="product_add_image_content_description">画像を追加</string>
     <string name="date_timeframe_future">次回</string>
     <string name="remove">削除</string>
+    <string name="product_attribute_hidden">非表示</string>
     <string name="login_discovery_error_generic">サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
     <string name="login_discovery_error_ssl">&lt;b&gt;SSL 証明書&lt;/b&gt;の問題により、サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
     <string name="login_discovery_error_http_auth">&lt;b&gt;HTTP 認証&lt;/b&gt;の問題により、サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>

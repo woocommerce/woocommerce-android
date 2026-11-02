@@ -52,7 +52,7 @@ sealed class ViewState(
         override val onPrimaryActionClicked: (() -> Unit),
         override val onSecondaryActionClicked: (() -> Unit)? = null,
     ) : ViewState(
-        headerLabel = R.string.card_reader_payment_payment_failed_header,
+        headerLabel = errorType.failedPaymentHeaderLabel(),
         paymentStateLabel = errorType.message,
         primaryActionLabel = primaryLabel,
         illustration = R.drawable.img_products_error,
@@ -67,7 +67,7 @@ sealed class ViewState(
         override val onPrimaryActionClicked: (() -> Unit),
         override val onSecondaryActionClicked: (() -> Unit)? = null,
     ) : ViewState(
-        headerLabel = R.string.card_reader_payment_payment_failed_header,
+        headerLabel = errorType.failedPaymentHeaderLabel(),
         paymentStateLabel = errorType.message,
         primaryActionLabel = primaryLabel,
         illustration = R.drawable.img_card_reader_tpp_payment_failed,
@@ -304,6 +304,8 @@ sealed class PaymentFlowError(val message: UiString) {
     object Server : PaymentFlowError(UiStringRes(R.string.card_reader_payment_failed_server_error_state))
     object Generic : PaymentFlowError(UiStringRes(R.string.card_reader_payment_failed_unexpected_error_state))
     object Canceled : PaymentFlowError(UiStringRes(R.string.card_reader_payment_failed_canceled))
+    object CaptureOutcomeUnknown :
+        PaymentFlowError(UiStringRes(R.string.card_reader_payment_failed_capture_outcome_unknown))
     data class AmountTooSmall(val errorMessage: UiString) : Declined(errorMessage), NonRetryableError
 
     object Unknown : Declined(UiStringRes(R.string.card_reader_payment_failed_unknown)), ContactSupportError
@@ -409,4 +411,10 @@ sealed class InteracRefundFlowError(val message: UiString) {
     interface NonRetryableError
 
     interface ContactSupportError
+}
+
+@StringRes
+private fun PaymentFlowError.failedPaymentHeaderLabel(): Int = when (this == PaymentFlowError.CaptureOutcomeUnknown) {
+    true -> R.string.card_reader_payment_not_confirmed_header
+    false -> R.string.card_reader_payment_payment_failed_header
 }

@@ -198,4 +198,58 @@ class OrderTest {
         // THEN
         assertTrue(result)
     }
+
+    @Test
+    fun `given shipping address with phone, when formatting shipping information, then phone is the last line`() {
+        // GIVEN
+        val shippingAddress = Address.EMPTY.copy(firstName = "Sam", address1 = "99 Shipping Ave", phone = "2125550199")
+        val order = orderWithShippingAddress(shippingAddress)
+
+        // WHEN
+        val result = order.formatShippingInformationForDisplay(formatPhone = { "formatted $it" })
+
+        // THEN
+        assertThat(result).isEqualTo("${shippingAddress.getFullAddress()}\nformatted 2125550199")
+    }
+
+    @Test
+    fun `given shipping address without phone, when formatting shipping information, then only address is shown`() {
+        // GIVEN
+        val shippingAddress = Address.EMPTY.copy(firstName = "Sam", address1 = "99 Shipping Ave", phone = " ")
+        val order = orderWithShippingAddress(shippingAddress)
+
+        // WHEN
+        val result = order.formatShippingInformationForDisplay(formatPhone = { "formatted $it" })
+
+        // THEN
+        assertThat(result).isEqualTo(shippingAddress.getFullAddress())
+    }
+
+    @Test
+    fun `given shipping address with only phone, when formatting shipping information, then only phone is shown`() {
+        // GIVEN
+        val order = orderWithShippingAddress(Address.EMPTY.copy(phone = "2125550199"))
+
+        // WHEN
+        val result = order.formatShippingInformationForDisplay(formatPhone = { "formatted $it" })
+
+        // THEN
+        assertThat(result).isEqualTo("formatted 2125550199")
+    }
+
+    @Test
+    fun `given empty shipping address, when formatting shipping information, then result is empty`() {
+        // GIVEN
+        val order = orderWithShippingAddress(Address.EMPTY)
+
+        // WHEN
+        val result = order.formatShippingInformationForDisplay(formatPhone = { "formatted $it" })
+
+        // THEN
+        assertThat(result).isEmpty()
+    }
+
+    private fun orderWithShippingAddress(shippingAddress: Address) = OrderTestUtils.generateTestOrder().copy(
+        customer = Order.Customer.EMPTY.copy(shippingAddress = shippingAddress)
+    )
 }

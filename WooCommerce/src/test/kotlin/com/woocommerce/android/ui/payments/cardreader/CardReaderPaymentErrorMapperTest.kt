@@ -408,6 +408,20 @@ class CardReaderPaymentErrorMapperTest {
     }
 
     @Test
+    fun `given CaptureOutcomeUnknown error, when map to ui error, then CaptureOutcomeUnknown error returned`() {
+        // GIVEN
+        val error = CardPaymentStatusErrorType.CaptureOutcomeUnknown
+
+        // WHEN
+        val result = mapper.mapPaymentErrorToUiError(error, false)
+
+        // THEN
+        assertThat(result).isEqualTo(PaymentFlowError.CaptureOutcomeUnknown)
+        assertThat(result.message)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_capture_outcome_unknown))
+    }
+
+    @Test
     fun `given NfcDisabled error, when map to ui error, then NfcDisable error returned`() {
         // GIVEN
         val error = CardPaymentStatusErrorType.BuiltInReader.NfcDisabled

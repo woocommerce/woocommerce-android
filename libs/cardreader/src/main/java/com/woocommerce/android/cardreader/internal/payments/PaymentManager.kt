@@ -277,10 +277,12 @@ internal class PaymentManager(
         when (val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id!!)) {
             is CapturePaymentResponse.Successful -> emit(PaymentCompleted(receiptUrl))
             is CapturePaymentResponse.Error -> {
-                if (wasCapturedDespiteError(paymentIntent, captureResponse)) {
-                    emit(PaymentCompleted(receiptUrl))
-                } else {
-                    emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
+                when (checkCaptureOutcome(paymentIntent, captureResponse)) {
+                    CaptureOutcome.CAPTURED -> emit(PaymentCompleted(receiptUrl))
+                    CaptureOutcome.NOT_CAPTURED ->
+                        emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
+                    CaptureOutcome.UNKNOWN ->
+                        emit(errorMapper.mapUnknownCaptureOutcomeError(paymentIntent, captureResponse))
                 }
             }
         }
@@ -288,25 +290,53 @@ internal class PaymentManager(
 
     /* Ambiguous capture errors don't reveal whether the backend actually captured the payment. Refreshing the
     intent and finding it SUCCEEDED means the funds were captured, so the payment is reported as completed to
-    prevent a retry leading to a double charge. Intents that are already SUCCEEDED before the capture call
-    (single-step terminal payments) are excluded as their status can't confirm the backend call went through. */
+    prevent a retry leading to a double charge. When the intent can't be refreshed (e.g. the network is down), its
+    status can't confirm the backend call went through (single-step terminal payments are SUCCEEDED before the
+    capture call), or the request was lost, timed out, cut off by a gateway or failed unexpectedly on the server so
+    the capture may still be running, the outcome is reported as unknown so the merchant doesn't take another
+    payment. */
     @Suppress("TooGenericExceptionCaught")
-    private suspend fun wasCapturedDespiteError(
+    private suspend fun checkCaptureOutcome(
         paymentIntent: PaymentIntent,
         error: CapturePaymentResponse.Error,
-    ): Boolean {
+    ): CaptureOutcome {
         val isAmbiguousError = error is CapturePaymentResponse.Error.GenericError ||
             error is CapturePaymentResponse.Error.ServerError ||
-            error is CapturePaymentResponse.Error.NetworkError
-        if (!isAmbiguousError || paymentIntent.status != PaymentIntentStatus.REQUIRES_CAPTURE) return false
-        val clientSecret = paymentIntent.clientSecret ?: return false
+            error is CapturePaymentResponse.Error.NetworkError ||
+            error is CapturePaymentResponse.Error.GatewayError
+        if (!isAmbiguousError) return CaptureOutcome.NOT_CAPTURED
+        val clientSecret = paymentIntent.clientSecret
+        if (paymentIntent.status != PaymentIntentStatus.REQUIRES_CAPTURE || clientSecret == null) {
+            return CaptureOutcome.UNKNOWN
+        }
         return try {
-            terminalWrapper.retrievePaymentIntent(clientSecret).status == PaymentIntentStatus.SUCCEEDED
+            when (terminalWrapper.retrievePaymentIntent(clientSecret).status) {
+                PaymentIntentStatus.SUCCEEDED -> CaptureOutcome.CAPTURED
+                PaymentIntentStatus.CANCELED,
+                PaymentIntentStatus.REQUIRES_PAYMENT_METHOD -> CaptureOutcome.NOT_CAPTURED
+                PaymentIntentStatus.REQUIRES_CAPTURE -> if (error.mayStillBeCapturing()) {
+                    CaptureOutcome.UNKNOWN
+                } else {
+                    CaptureOutcome.NOT_CAPTURED
+                }
+                else -> CaptureOutcome.UNKNOWN
+            }
         } catch (cancel: CancellationException) {
             throw cancel
         } catch (ignored: Exception) {
-            false
+            CaptureOutcome.UNKNOWN
         }
+    }
+
+    private fun CapturePaymentResponse.Error.mayStillBeCapturing() =
+        this is CapturePaymentResponse.Error.NetworkError ||
+            this is CapturePaymentResponse.Error.GatewayError ||
+            this is CapturePaymentResponse.Error.ServerError
+
+    private enum class CaptureOutcome {
+        CAPTURED,
+        NOT_CAPTURED,
+        UNKNOWN,
     }
 
     private suspend fun FlowCollector<CardPaymentStatus>.isInvalidState(paymentInfo: PaymentInfo): Boolean {

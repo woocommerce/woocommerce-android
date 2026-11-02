@@ -5,6 +5,7 @@ import com.stripe.stripeterminal.external.models.Charge
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.CANCELED
+import com.stripe.stripeterminal.external.models.PaymentIntentStatus.PROCESSING
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CAPTURE
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CONFIRMATION
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_PAYMENT_METHOD
@@ -122,6 +123,8 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
         whenever(paymentErrorMapper.mapCapturePaymentError(anyOrNull(), anyOrNull()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
+        whenever(paymentErrorMapper.mapUnknownCaptureOutcomeError(anyOrNull(), anyOrNull()))
+            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.CaptureOutcomeUnknown, null, ""))
         whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
         whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(
@@ -555,7 +558,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `when capturing payment fails, then mapCapturePaymentError invoked`() = testBlocking {
         whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
-            .thenReturn(CapturePaymentResponse.Error.GenericError(""))
+            .thenReturn(CapturePaymentResponse.Error.MissingOrder(""))
 
         manager
             .acceptPayment(createPaymentInfo()).toList()
@@ -582,37 +585,71 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         }
 
     @Test
-    fun `given ambiguous capture error and refreshed intent not succeeded, when capturing payment, then error emitted`() =
+    fun `given ambiguous capture error and refreshed intent canceled, when capturing payment, then error emitted`() =
         testBlocking {
-            val intent = createPaymentIntent(REQUIRES_CAPTURE)
-            whenever(intent.clientSecret).thenReturn("secret")
-            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
-                .thenReturn(ProcessPaymentIntentStatus.Success(intent))
-            whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
-                .thenReturn(CapturePaymentResponse.Error.NetworkError(""))
-            val refreshedIntent = createPaymentIntent(REQUIRES_CAPTURE)
-            whenever(terminalWrapper.retrievePaymentIntent("secret")).thenReturn(refreshedIntent)
+            val result = captureFailingWith(CapturePaymentResponse.Error.ServerError(""), CANCELED)
 
-            val result = manager.acceptPayment(createPaymentInfo()).toList()
-
-            assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
+            assertThat(result).isEqualTo(CardPaymentStatusErrorType.Generic)
         }
 
     @Test
-    fun `given ambiguous capture error and refreshing intent fails, when capturing payment, then error emitted`() =
+    fun `given network capture error and refreshed intent still requires capture, when capturing payment, then outcome unknown emitted`() =
+        testBlocking {
+            val result = captureFailingWith(CapturePaymentResponse.Error.NetworkError(""), REQUIRES_CAPTURE)
+
+            assertThat(result).isEqualTo(CardPaymentStatusErrorType.CaptureOutcomeUnknown)
+        }
+
+    @Test
+    fun `given gateway capture error and refreshed intent still requires capture, when capturing payment, then outcome unknown emitted`() =
+        testBlocking {
+            val result = captureFailingWith(CapturePaymentResponse.Error.GatewayError(""), REQUIRES_CAPTURE)
+
+            assertThat(result).isEqualTo(CardPaymentStatusErrorType.CaptureOutcomeUnknown)
+        }
+
+    @Test
+    fun `given server capture error and refreshed intent still requires capture, when capturing payment, then outcome unknown emitted`() =
+        testBlocking {
+            val result = captureFailingWith(CapturePaymentResponse.Error.ServerError(""), REQUIRES_CAPTURE)
+
+            assertThat(result).isEqualTo(CardPaymentStatusErrorType.CaptureOutcomeUnknown)
+        }
+
+    @Test
+    fun `given generic capture error and refreshed intent still requires capture, when capturing payment, then error emitted`() =
+        testBlocking {
+            val result = captureFailingWith(CapturePaymentResponse.Error.GenericError(""), REQUIRES_CAPTURE)
+
+            assertThat(result).isEqualTo(CardPaymentStatusErrorType.Generic)
+        }
+
+    @Test
+    fun `given ambiguous capture error and refreshed intent processing, when capturing payment, then outcome unknown emitted`() =
+        testBlocking {
+            val result = captureFailingWith(CapturePaymentResponse.Error.ServerError(""), PROCESSING)
+
+            assertThat(result).isEqualTo(CardPaymentStatusErrorType.CaptureOutcomeUnknown)
+        }
+
+    @Test
+    fun `given ambiguous capture error and refreshing intent fails, when capturing payment, then outcome unknown emitted`() =
         testBlocking {
             val intent = createPaymentIntent(REQUIRES_CAPTURE)
             whenever(intent.clientSecret).thenReturn("secret")
             whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(intent))
-            whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
-                .thenReturn(CapturePaymentResponse.Error.ServerError(""))
+            val captureError = CapturePaymentResponse.Error.NetworkError("")
+            whenever(cardReaderStore.capturePaymentIntent(any(), anyString())).thenReturn(captureError)
             whenever(terminalWrapper.retrievePaymentIntent("secret"))
                 .thenAnswer { throw IllegalStateException() }
 
             val result = manager.acceptPayment(createPaymentInfo()).toList()
 
-            assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
+            assertThat((result.last() as PaymentFailed).type)
+                .isEqualTo(CardPaymentStatusErrorType.CaptureOutcomeUnknown)
+            verify(paymentErrorMapper).mapUnknownCaptureOutcomeError(intent, captureError)
+            verify(paymentErrorMapper, never()).mapCapturePaymentError(anyOrNull(), anyOrNull())
         }
 
     @Test
@@ -626,24 +663,25 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
 
             val result = manager.acceptPayment(createPaymentInfo()).toList()
 
-            assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
+            assertThat((result.last() as PaymentFailed).type).isEqualTo(CardPaymentStatusErrorType.Generic)
             verify(terminalWrapper, never()).retrievePaymentIntent(anyString())
         }
 
     @Test
-    fun `given capture error and missing client secret, when capturing payment, then intent not refreshed`() =
+    fun `given capture error and missing client secret, when capturing payment, then outcome unknown emitted`() =
         testBlocking {
             whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
                 .thenReturn(CapturePaymentResponse.Error.ServerError(""))
 
             val result = manager.acceptPayment(createPaymentInfo()).toList()
 
-            assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
+            assertThat((result.last() as PaymentFailed).type)
+                .isEqualTo(CardPaymentStatusErrorType.CaptureOutcomeUnknown)
             verify(terminalWrapper, never()).retrievePaymentIntent(anyString())
         }
 
     @Test
-    fun `given succeeded interac intent and capture error, when capturing payment, then intent not refreshed`() =
+    fun `given succeeded interac intent and capture error, when capturing payment, then outcome unknown emitted`() =
         testBlocking {
             val intent = createPaymentIntent(SUCCEEDED, interacPresentDetails = CardDetails())
             whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
@@ -653,7 +691,8 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
 
             val result = manager.acceptPayment(createPaymentInfo()).toList()
 
-            assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
+            assertThat((result.last() as PaymentFailed).type)
+                .isEqualTo(CardPaymentStatusErrorType.CaptureOutcomeUnknown)
             verify(terminalWrapper, never()).retrievePaymentIntent(anyString())
         }
 
@@ -809,6 +848,21 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         assertThat(result).isEqualTo(
             RetrieveAndCollectResult.Success("dummyId", "succeeded", PaymentMethodType.INTERAC_PRESENT)
         )
+    }
+
+    private suspend fun captureFailingWith(
+        error: CapturePaymentResponse.Error,
+        refreshedStatus: PaymentIntentStatus,
+    ): CardPaymentStatusErrorType {
+        val intent = createPaymentIntent(REQUIRES_CAPTURE)
+        whenever(intent.clientSecret).thenReturn("secret")
+        whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+            .thenReturn(ProcessPaymentIntentStatus.Success(intent))
+        whenever(cardReaderStore.capturePaymentIntent(any(), anyString())).thenReturn(error)
+        val refreshedIntent = createPaymentIntent(refreshedStatus)
+        whenever(terminalWrapper.retrievePaymentIntent("secret")).thenReturn(refreshedIntent)
+
+        return (manager.acceptPayment(createPaymentInfo()).toList().last() as PaymentFailed).type
     }
 
     private fun createPaymentIntent(
