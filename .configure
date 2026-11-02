@@ -30,7 +30,7 @@
     },
     {
       "file": "android/WCAndroid/firebase.secrets.json",
-      "destination": ".configure-files/firebase.secrets.json",
+      "destination": "~/.configure/woocommerce-android/secrets/firebase.secrets.json",
       "encrypt": true
     }
   ],
