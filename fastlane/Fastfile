@@ -95,7 +95,9 @@ REPOSITORY_NAME = 'woocommerce-android'
 GH_ORG_NAME = 'woocommerce'
 GITHUB_REPO = "#{GH_ORG_NAME}/#{REPOSITORY_NAME}".freeze
 
-UPLOAD_TO_PLAY_STORE_JSON_KEY = File.join(Dir.home, '.configure', 'woocommerce-android', 'secrets', 'google-upload-credentials.json')
+# Mirrors `a8c-secrets which`, without spawning the command
+A8C_SECRETS_FOLDER = File.join(Dir.home, '.a8c-secrets', File.read(File.join(PROJECT_ROOT_FOLDER, '.a8c-secrets', 'repo-id')).strip)
+UPLOAD_TO_PLAY_STORE_JSON_KEY = File.join(A8C_SECRETS_FOLDER, 'google-upload-credentials.json')
 
 SUPPORTED_LOCALES = [
   { glotpress: 'ar', android: 'ar', google_play: 'ar', promo_config: {} },
