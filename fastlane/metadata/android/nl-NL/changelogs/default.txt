@@ -1,2 +1,0 @@
-25.9:
-Kaartlezers WisePad 3, M2 en Chipper 2X kunnen nu via USB worden aangesloten, en EU-verzendlabels vragen om de productcodes die de douane vereist. Het beheren van variaties en eigenschappen verloopt soepeler, Blaze toont onbetaalde saldo's met een knop Betalen en POS laat je het betaalgeluid dempen. Plus oplossingen voor terugbetalingen, meldingen, NFC-configuratie en bestelfilters.

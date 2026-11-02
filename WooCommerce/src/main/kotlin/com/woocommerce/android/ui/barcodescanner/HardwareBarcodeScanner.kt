@@ -6,6 +6,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,13 +17,16 @@ import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private const val MIN_SKU_LENGTH = 3
+
 @Singleton
 class HardwareBarcodeScanner @Inject constructor(
     @AppCoroutineScope appCoroutineScope: CoroutineScope,
     dispatchers: CoroutineDispatchers,
     currentTimeProvider: CurrentTimeProvider,
+    private val barcodeScanningTracker: BarcodeScanningTracker,
 ) {
-    private var onBarcodeScanned: ((CodeScannerStatus.Success) -> Unit)? = null
+    private var listener: Listener? = null
 
     private val _scansWithoutEnterSuffix = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val scansWithoutEnterSuffix: SharedFlow<Unit> = _scansWithoutEnterSuffix.asSharedFlow()
@@ -34,21 +38,21 @@ class HardwareBarcodeScanner @Inject constructor(
         minBarcodeLength = MIN_SKU_LENGTH,
     )
 
-    fun startListening(onBarcodeScanned: (CodeScannerStatus.Success) -> Unit) {
+    fun startListening(source: ScanningSource, onBarcodeScanned: (CodeScannerStatus.Success) -> Unit) {
         detector.clear()
-        this.onBarcodeScanned = onBarcodeScanned
+        listener = Listener(source, onBarcodeScanned)
     }
 
     fun stopListening(onBarcodeScanned: (CodeScannerStatus.Success) -> Unit) {
-        if (this.onBarcodeScanned === onBarcodeScanned) {
+        if (listener?.onBarcodeScanned === onBarcodeScanned) {
             detector.clear()
-            this.onBarcodeScanned = null
+            listener = null
         }
     }
 
     fun onKeyDown(unicodeChar: Int, isTextInputFocused: Boolean): Boolean {
         return when {
-            onBarcodeScanned == null || isTextInputFocused || !unicodeChar.isBarcodeInputChar() -> false
+            listener == null || isTextInputFocused || !unicodeChar.isBarcodeInputChar() -> false
             unicodeChar.toChar().isWhitespace() && !detector.hasPendingInput -> false
             else -> detector.handleKeyInput(unicodeChar.toChar())
         }
@@ -56,19 +60,19 @@ class HardwareBarcodeScanner @Inject constructor(
 
     private fun onBarcodeEvent(result: BarcodeInputDetector.BarcodeResult) {
         when (result) {
-            is BarcodeInputDetector.BarcodeResult.Success -> onBarcodeScanned?.invoke(
-                CodeScannerStatus.Success(code = result.barcode, format = result.barcode.inferBarcodeFormat())
-            )
+            is BarcodeInputDetector.BarcodeResult.Success -> listener?.let { listener ->
+                barcodeScanningTracker.trackHardwareScanSuccess(listener.source)
+                listener.onBarcodeScanned(
+                    CodeScannerStatus.Success(code = result.barcode, format = result.barcode.inferBarcodeFormat())
+                )
+            }
             is BarcodeInputDetector.BarcodeResult.Error -> onBarcodeError(result)
         }
     }
 
     private fun onBarcodeError(error: BarcodeInputDetector.BarcodeResult.Error) {
-        when (error.failureReason) {
-            BarcodeInputDetector.FailureReason.NO_TERMINATOR -> if (error.barcode.length >= MIN_SKU_LENGTH) {
-                _scansWithoutEnterSuffix.tryEmit(Unit)
-            }
-            BarcodeInputDetector.FailureReason.TOO_SHORT -> Unit
+        if (error.isMissingEnterSuffix()) {
+            _scansWithoutEnterSuffix.tryEmit(Unit)
         }
     }
 
@@ -91,24 +95,34 @@ class HardwareBarcodeScanner @Inject constructor(
         return (GS1_MODULO - weightedSum % GS1_MODULO) % GS1_MODULO == last().digitToInt()
     }
 
-    private companion object {
-        const val MIN_SKU_LENGTH = 3
-        const val EAN_8_LENGTH = 8
-        const val UPC_A_LENGTH = 12
-        const val EAN_13_LENGTH = 13
-        const val GS1_ODD_POSITION_WEIGHT = 3
-        const val GS1_MODULO = 10
+    private data class Listener(
+        val source: ScanningSource,
+        val onBarcodeScanned: (CodeScannerStatus.Success) -> Unit,
+    )
+
+    companion object {
+        private const val EAN_8_LENGTH = 8
+        private const val UPC_A_LENGTH = 12
+        private const val EAN_13_LENGTH = 13
+        private const val GS1_ODD_POSITION_WEIGHT = 3
+        private const val GS1_MODULO = 10
     }
+}
+
+fun BarcodeInputDetector.BarcodeResult.Error.isMissingEnterSuffix(): Boolean = when (failureReason) {
+    BarcodeInputDetector.FailureReason.NO_TERMINATOR -> barcode.length >= MIN_SKU_LENGTH
+    BarcodeInputDetector.FailureReason.TOO_SHORT -> false
 }
 
 fun Fragment.listenForHardwareBarcodes(
     hardwareBarcodeScanner: HardwareBarcodeScanner,
+    source: ScanningSource,
     onBarcodeScanned: (CodeScannerStatus.Success) -> Unit,
 ) {
     viewLifecycleOwner.lifecycle.addObserver(
         object : DefaultLifecycleObserver {
             override fun onResume(owner: LifecycleOwner) {
-                hardwareBarcodeScanner.startListening(onBarcodeScanned)
+                hardwareBarcodeScanner.startListening(source, onBarcodeScanned)
             }
 
             override fun onPause(owner: LifecycleOwner) {

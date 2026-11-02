@@ -1,2 +1,0 @@
-25.9:
-Verbindung der Kartenlesegeräte WisePad 3, M2 und Chipper 2X jetzt über USB möglich; Abfrage der vom Zoll benötigten Produktcodes auf EU-Versandetiketten; reibungsloseres Verwalten von Varianten und Attributen; Blaze zeigt offene Beträge mit Bezahlen-Button an und Stummschalten des Bezahlungstons mit POS möglich. Außerdem: Fehlerbehebungen für Rückerstattungen, Benachrichtigungen, NFC-Einrichtung und Bestellfilter.

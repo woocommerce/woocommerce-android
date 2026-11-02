@@ -526,6 +526,10 @@ class OrderListViewModel @Inject constructor(
         analyticsTracker.track(ORDERS_LIST_TOP_BANNER_TROUBLESHOOT_TAPPED)
     }
 
+    fun onHardwareBarcodeScanned(status: CodeScannerStatus.Success) {
+        triggerEvent(OrderListEvent.OnBarcodeScanned(status.code, status.format))
+    }
+
     fun handleBarcodeScannedStatus(status: CodeScannerStatus) {
         when (status) {
             is CodeScannerStatus.Failure -> {

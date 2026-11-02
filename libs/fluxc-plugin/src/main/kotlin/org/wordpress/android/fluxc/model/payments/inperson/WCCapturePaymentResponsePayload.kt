@@ -34,5 +34,6 @@ enum class WCCapturePaymentErrorType {
     MISSING_ORDER,
     CAPTURE_ERROR,
     SERVER_ERROR,
-    NETWORK_ERROR
+    NETWORK_ERROR,
+    GATEWAY_ERROR
 }

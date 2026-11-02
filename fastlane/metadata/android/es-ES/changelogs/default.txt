@@ -1,2 +1,0 @@
-25.9:
-Los lectores de tarjetas WisePad 3, M2 y Chipper 2X ahora se pueden conectar por USB, y las etiquetas de envío de la UE piden los códigos de producto que requieren las aduanas. La gestión de las variaciones y los atributos es más sencilla, Blaze muestra los saldos pendientes con un botón para pagar y el TPV te permite silenciar el sonido del pago. Correcciones adicionales para reembolsos, notificaciones, configuración de NFC y filtros de pedidos.

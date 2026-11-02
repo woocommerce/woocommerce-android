@@ -1,1 +1,0 @@
-Los importes de las monedas ahora se muestran más rápido en el reloj, y las mejoras en segundo plano nos ayudan a detectar y solucionar problemas más rápidamente.

@@ -237,7 +237,6 @@
     <string name="login_qr_prologue_camera_blocked_title">Camera access is turned off</string>
     <string name="login_qr_prologue_camera_blocked_body">Enable camera access in Settings or cancel to sign in with your store address instead.</string>
     <string name="login_qr_prologue_camera_blocked_settings_button">Open Permissions Settings</string>
-    <string name="login_qr_scanner_hint">Center the QR code in the frame</string>
     <string name="login_qr_scanner_visit_url">Visit %1$s</string>
     <string name="login_qr_scanner_authenticating">Signing you in…</string>
     <string name="login_qr_endpoint_missing_title">This store can\'t complete QR login</string>
@@ -865,6 +864,15 @@
     <string name="barcode_scanning_alert_dialog_dismiss_label">Cancel</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Go to settings</string>
     <string name="barcode_scanning_scan_product_barcode_label">Scan Product Barcode</string>
+    <string name="barcode_scanning_hardware_scanner_info_link">Use an external scanner</string>
+    <string name="barcode_scanning_or">or</string>
+    <string name="barcode_scanning_hardware_scanner_info_title">Use a Bluetooth or USB scanner</string>
+    <string name="barcode_scanning_hardware_scanner_info_setup">Pair your scanner in your device\'s Bluetooth settings, or connect it with USB. Set it to keyboard (HID) mode.</string>
+    <string name="barcode_scanning_hardware_scanner_info_usage">Scan on the Orders and Products screens, or while creating an order. You don\'t need to open the camera.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_title">Test your scanner</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_success">Your scanner works</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_instruction">Scan this barcode with your scanner.</string>
+    <string name="barcode_scanning_hardware_scanner_wrong_value">The scanned code doesn\'t match. Set your scanner to the same keyboard layout as your device.</string>
 
     <!--
         Order Editing
@@ -1667,6 +1675,7 @@
     <string name="card_reader_payment_capturing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
     <string name="card_reader_payment_completed_payment_header">Payment successful</string>
     <string name="card_reader_payment_payment_failed_header">Payment failed</string>
+    <string name="card_reader_payment_not_confirmed_header">Payment not confirmed</string>
     <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Buy a card reader</string>
 
@@ -1697,6 +1706,7 @@
     <string name="card_reader_payment_failed_test_mode_live_card">A live card was used on a site in test mode</string>
     <string name="card_reader_payment_failed_unknown">Payment was declined for an unknown reason</string>
     <string name="card_reader_payment_failed_canceled">Transaction was canceled</string>
+    <string name="card_reader_payment_failed_capture_outcome_unknown">The card may already have been charged. Try again to check the payment status.</string>
 
     <string name="card_reader_mode_ready_to_pair_header">Ready to pair</string>
     <string name="card_reader_mode_ready_to_pair_subtitle">Open Woo POS on your tablet and pick this phone.</string>
@@ -4222,6 +4232,9 @@
     <string name="woopos_success_totals_payment_processing_title">Processing payment</string>
     <string name="woopos_success_totals_payment_processing_subtitle">Please wait…</string>
     <string name="woopos_success_totals_payment_failed_title">Payment failed</string>
+    <string name="woopos_totals_payment_not_confirmed_title">Payment not confirmed</string>
+    <string name="woopos_totals_payment_not_confirmed_message">We couldn\'t confirm this payment, so the card may already have been charged. Check the payment status before taking another payment method.</string>
+    <string name="woopos_totals_payment_not_confirmed_check_status">Check payment status</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">Try another payment method</string>
     <string name="woo_pos_payment_failed_try_again">Try payment again</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">Go back to checkout</string>

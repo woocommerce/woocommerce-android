@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import org.wordpress.android.util.ActivityUtils
 
 class OrderCreateEditCustomerNoteFragment :
     BaseFragment(R.layout.fragment_order_create_edit_customer_note) {
@@ -70,6 +71,13 @@ class OrderCreateEditCustomerNoteFragment :
             }
             else -> false
         }
+    }
+
+    override fun onPause() {
+        binding.root.isFocusableInTouchMode = true
+        binding.root.requestFocus()
+        ActivityUtils.hideKeyboardForced(binding.customerOrderNoteEditor)
+        super.onPause()
     }
 
     override fun onDestroyView() {

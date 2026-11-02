@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
@@ -14,6 +16,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,8 +58,27 @@ class BarcodeScanningFragment : BaseFragment() {
                                 granted,
                                 shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
                             )
-                        }
+                        },
+                        overlayContent = {
+                            DefaultScannerOverlay(
+                                onHardwareScannerInfoClicked = {
+                                    viewModel.onHardwareScannerInfoClicked(ScanningSource.BARCODE_SCANNER)
+                                },
+                            )
+                        },
                     )
+                    val isHardwareScannerInfoVisible by viewModel.isHardwareScannerInfoVisible.collectAsState()
+                    if (isHardwareScannerInfoVisible) {
+                        HardwareBarcodeScannerInfoSheet(
+                            onTestScanSucceeded = {
+                                viewModel.onHardwareScannerTestScanSucceeded(ScanningSource.BARCODE_SCANNER)
+                            },
+                            onTestScanFailed = { failure ->
+                                viewModel.onHardwareScannerTestScanFailed(ScanningSource.BARCODE_SCANNER, failure)
+                            },
+                            onDismissRequest = viewModel::onHardwareScannerInfoDismissed,
+                        )
+                    }
                 }
             }
         }

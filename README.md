@@ -63,6 +63,7 @@ $ ./gradlew :WooCommerce:connectedVanillaDebugAndroidTest # assemble, install an
     - [Configuration Files](docs/project-overview.md#configuration-files)
     - [Using Detekt](docs/project-overview.md#using-detekt)
     - [Google Configuration](docs/project-overview.md#google-configuration)
+    - [Reading Stack Traces in App Logs](docs/project-overview.md#reading-stack-traces-in-app-logs)
 - Development Practices
     - [Coding Style Practices](docs/coding-style.md)
     - [Pull Request Guidelines](docs/pull-request-guidelines.md)

@@ -37,6 +37,8 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment.Companion.KEY_BARCODE_SCANNING_SCAN_STATUS
+import com.woocommerce.android.ui.barcodescanner.HardwareBarcodeScanner
+import com.woocommerce.android.ui.barcodescanner.listenForHardwareBarcodes
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.setDesignSystemContent
@@ -49,6 +51,7 @@ import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
@@ -79,6 +82,9 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list) {
 
     @Inject
     internal lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    internal lateinit var hardwareBarcodeScanner: HardwareBarcodeScanner
 
     @Inject
     internal lateinit var currencyFormatter: CurrencyFormatter
@@ -579,6 +585,11 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list) {
         }
         handleResult<CodeScannerStatus>(KEY_BARCODE_SCANNING_SCAN_STATUS) { status ->
             viewModel.handleBarcodeScannedStatus(status)
+        }
+        listenForHardwareBarcodes(hardwareBarcodeScanner, ScanningSource.ORDER_LIST) { status ->
+            if (_binding?.orderListComposeContainer?.isVisible == true) {
+                viewModel.onHardwareBarcodeScanned(status)
+            }
         }
         handleResult<Long>(KEY_ORDER_ID) {
             if (requireContext().isTwoPanesShouldBeUsed) {

@@ -1,2 +1,0 @@
-25.9:
-Kortläsarna WisePad 3, M2 och Chipper 2X kan nu anslutas via USB och EU-fraktetiketter efterfrågar de produktkoder som tullen kräver. Hanteringen av variationer och attribut är smidigare, Blaze visar obetalda saldon med en Betala-knapp och POS låter dig tysta betalningsljudet. Plus korrigeringar för återbetalningar, aviseringar, NFC-konfiguration och beställningsfilter.

@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import org.wordpress.android.fluxc.annotations.endpoint.WPAPIEndpoint
+import org.wordpress.android.fluxc.generated.endpoint.WPAPI
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
@@ -33,7 +34,7 @@ class ApplicationPasswordsMediaRestClient @Inject constructor(
     }
 
     override suspend fun getAuthorizationHeader(site: SiteModel): AuthorizationHeaderResult {
-        return when (val result = applicationPasswordsManager.getApplicationCredentials(site)) {
+        return when (val result = applicationPasswordsManager.getApplicationCredentials(site, WPAPI.media.urlV2)) {
             is ApplicationPasswordCreationResult.Created -> AuthorizationHeaderResult.Success(
                 Credentials.basic(result.credentials.userName, result.credentials.password)
             )

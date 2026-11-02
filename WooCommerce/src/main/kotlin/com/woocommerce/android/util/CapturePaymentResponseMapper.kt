@@ -1,6 +1,7 @@
 package com.woocommerce.android.util
 
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.CaptureError
+import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.GatewayError
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.GenericError
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.MissingOrder
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.NetworkError
@@ -11,6 +12,7 @@ import com.woocommerce.android.cardreader.CardReaderStore.PreparePaymentResponse
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentError
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.AMOUNT_TOO_SMALL
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.CAPTURE_ERROR
+import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.GATEWAY_ERROR
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.MISSING_ORDER
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.NETWORK_ERROR
@@ -30,6 +32,7 @@ class CapturePaymentResponseMapper @Inject constructor() {
         CAPTURE_ERROR -> CaptureError.Generic(response.error.messageOrDefault())
         SERVER_ERROR -> ServerError(response.error.messageOrDefault())
         NETWORK_ERROR -> NetworkError(response.error.messageOrDefault())
+        GATEWAY_ERROR -> GatewayError(response.error.messageOrDefault())
         AMOUNT_TOO_SMALL -> mapAmountTooSmallError(response)
     }
 

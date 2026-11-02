@@ -1,2 +1,0 @@
-25.9:
-Pembaca kartu WisePad 3, M2 dan Chipper 2X sekarang dapat terhubung melalui USB, dan label pengiriman UE meminta kode produk yang diperlukan bea cukai. Pengelolaan variasi dan atribut berjalan lancar, Blaze juga menunjukkan saldo tak dibayar dengan tombol Bayar, dan POS memungkinkan Anda mematikan suara notifikasi pembayaran. Selain itu, terdapat perbaikan untuk fitur pengembalian dana, pemberitahuan, pengaturan NFC, serta penyaring pesanan.

@@ -1424,6 +1424,41 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
+    fun `given capture outcome unknown, when payment fails, then not confirmed state with check status shown`() =
+        runTest {
+            // GIVEN
+            mockPaymentFailedTexts()
+            whenever(resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_title))
+                .thenReturn("Payment not confirmed")
+            whenever(resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_check_status))
+                .thenReturn("Check payment status")
+            whenever(resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_message))
+                .thenReturn("The card may already have been charged.")
+            givenCardReaderConnectedAndNetworkAvailable()
+            val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+            val factory: WooPosCardReaderPaymentControllerFactory = mock()
+            whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+            val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
+                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
+            )
+            whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
+            val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+
+            // WHEN
+            paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.NonCancelable(
+                errorType = PaymentFlowError.CaptureOutcomeUnknown, onRetry = {}
+            )
+            advanceUntilIdle()
+
+            // THEN
+            val state = vm.state.value as WooPosTotalsViewState.PaymentFailed
+            assertThat(state.title).isEqualTo("Payment not confirmed")
+            assertThat(state.subtitle).isEqualTo("The card may already have been charged.")
+            assertThat(state.retryPaymentButtonLabel).isEqualTo("Check payment status")
+            assertThat(state.isReturnToCheckoutButtonVisible).isTrue()
+        }
+
+    @Test
     fun `given payment failed without retry action, when retry clicked, then should cancel previous payment action and start again`() =
         runTest {
             // GIVEN
@@ -2936,6 +2971,37 @@ class WooPosTotalsViewModelTest {
 
         // THEN
         assertThat(retryCalled).isTrue()
+    }
+
+    @Test
+    fun `given TTP capture outcome unknown, when retry fails again, then payment failed state shown again`() = runTest {
+        // GIVEN
+        mockPaymentFailedTexts()
+        whenever(resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_title))
+            .thenReturn("Payment not confirmed")
+        val (vm, paymentState) = givenTtpInFlight()
+        advanceUntilIdle()
+        val failedState = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
+            errorType = PaymentFlowError.CaptureOutcomeUnknown,
+            onRetry = {},
+        )
+        paymentState.value = failedState
+        advanceUntilIdle()
+        vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
+        clearInvocations(childrenToParentEventSender)
+
+        // WHEN
+        paymentState.value = CardReaderPaymentState.LoadingData {}
+        advanceUntilIdle()
+        paymentState.value = CardReaderPaymentState.PaymentCapturing.BuiltInReaderPaymentCapturing("")
+        advanceUntilIdle()
+        paymentState.value = failedState.copy()
+        advanceUntilIdle()
+
+        // THEN
+        val state = vm.state.value as WooPosTotalsViewState.PaymentFailed
+        assertThat(state.title).isEqualTo("Payment not confirmed")
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.PaymentFailed)
     }
 
     @Test
