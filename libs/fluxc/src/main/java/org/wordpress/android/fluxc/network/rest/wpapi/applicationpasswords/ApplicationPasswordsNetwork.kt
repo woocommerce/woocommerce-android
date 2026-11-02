@@ -6,20 +6,18 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Credentials
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
-import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.HttpMethod
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
+import org.wordpress.android.fluxc.network.rest.wpapi.toWPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.wpApiSuccessListener
-import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.network.toVolleyMethod
 import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import org.wordpress.android.util.AppLog
-import java.util.Optional
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -33,7 +31,6 @@ private const val UNAUTHORIZED = 401
 class ApplicationPasswordsNetwork @Inject constructor(
     @Named("no-cookies") private val requestQueue: RequestQueue,
     private val userAgent: UserAgent,
-    private val listener: Optional<ApplicationPasswordsListener>,
     private val httpsUrlNormalizer: HttpsUrlNormalizer,
 ) : WPAPINetwork {
     // We can't use construction injection for this variable, as its class is internal
@@ -53,7 +50,7 @@ class ApplicationPasswordsNetwork @Inject constructor(
         forced: Boolean = false,
         requestTimeout: Int = BaseRequest.DEFAULT_REQUEST_TIMEOUT,
         retries: Int = BaseRequest.DEFAULT_MAX_RETRIES,
-        isRegeneratingApplicationPassword: Boolean = false,
+        scenario: ApplicationPasswordGenerationScenario = ApplicationPasswordGenerationScenario.GENERATION,
         readableBodyCheck: ((T) -> Boolean)? = null
     ): WPAPIResponse<T> {
         fun buildRequest(
@@ -94,28 +91,21 @@ class ApplicationPasswordsNetwork @Inject constructor(
             return request
         }
 
-        val credentialsResult = mApplicationPasswordsManager.getApplicationCredentials(site)
+        val credentialsResult = mApplicationPasswordsManager.getApplicationCredentials(
+            site = site,
+            requestPath = path,
+            scenario = scenario
+        )
         val credentials = when (credentialsResult) {
             is ApplicationPasswordCreationResult.Existing -> credentialsResult.credentials
-            is ApplicationPasswordCreationResult.Created -> {
-                if (listener.isPresent) {
-                    listener.get().onNewPasswordCreated(isRegeneratingApplicationPassword)
-                }
-                credentialsResult.credentials
-            }
+            is ApplicationPasswordCreationResult.Created -> credentialsResult.credentials
 
             is ApplicationPasswordCreationResult.Failure -> {
-                if (listener.isPresent) {
-                    listener.get().onPasswordGenerationFailed(credentialsResult.error.toWPAPINetworkError())
-                }
                 return WPAPIResponse.Error(credentialsResult.error.toWPAPINetworkError().asGenerationFailure())
             }
 
             is ApplicationPasswordCreationResult.NotSupported -> {
                 val networkError = credentialsResult.originalError.toWPAPINetworkError()
-                if (listener.isPresent) {
-                    listener.get().onFeatureUnavailable(site, networkError)
-                }
                 return WPAPIResponse.Error(networkError.asGenerationFailure())
             }
         }
@@ -144,7 +134,7 @@ class ApplicationPasswordsNetwork @Inject constructor(
                 clazz,
                 params,
                 body,
-                isRegeneratingApplicationPassword = true,
+                scenario = ApplicationPasswordGenerationScenario.REGENERATION,
                 readableBodyCheck = readableBodyCheck
             )
         } else {
@@ -231,17 +221,5 @@ class ApplicationPasswordsNetwork @Inject constructor(
          * from other regular API errors.
          */
         const val APP_PASSWORDS_GENERATION_FAILURE_ERROR_CODE_PREFIX = "app_passwords_generation_failure:"
-    }
-}
-
-private fun BaseNetworkError.toWPAPINetworkError(): WPAPINetworkError {
-    return when (this) {
-        is WPAPINetworkError -> this
-        is WPComGsonNetworkError -> WPAPINetworkError(
-            baseError = this,
-            errorCode = this.apiError
-        )
-
-        else -> WPAPINetworkError(this)
     }
 }
