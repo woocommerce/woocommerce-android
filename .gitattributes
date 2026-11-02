@@ -1,4 +1,3 @@
 RELEASE-NOTES.txt merge=union
 
-.configure-files/*.enc binary
 .a8c-secrets/*.age binary

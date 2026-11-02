@@ -23,7 +23,6 @@ ext {
 
 gradle.ext {
     isCi = System.getenv('CI')?.toBoolean() ?: false
-    decryptedSecretsDir = file("${System.getProperty("user.home")}/.configure/woocommerce-android/secrets")
     a8cSecretsDir = resolveA8cSecretsDir(file("${rootDir}/.a8c-secrets/repo-id"))
     secretsPath = new File(a8cSecretsDir, "secrets.properties").path
     secretProperties = loadPropertiesWithFallback(

@@ -9,4 +9,3 @@ install_a8c-secrets_binary --install-dir "$a8c_secrets_bin_dir"
 export PATH="$a8c_secrets_bin_dir:$PATH"
 
 a8c-secrets decrypt --non-interactive
-bundle exec fastlane run configure_apply
