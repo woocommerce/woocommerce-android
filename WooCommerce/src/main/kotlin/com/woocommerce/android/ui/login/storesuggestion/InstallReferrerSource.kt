@@ -15,7 +15,7 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 
 class InstallReferrerSource @Inject constructor(
-    @ApplicationContext private val context: Context,
+    private val clientFactory: InstallReferrerClientFactory,
     private val appPrefsWrapper: AppPrefsWrapper,
 ) {
     suspend fun fetch(): InstallReferrerResult =
@@ -33,7 +33,7 @@ class InstallReferrerSource @Inject constructor(
     }
 
     private suspend fun connectAndRead(): InstallReferrerResult = suspendCancellableCoroutine { continuation ->
-        val client = InstallReferrerClient.newBuilder(context).build()
+        val client = clientFactory.create()
         continuation.invokeOnCancellation { client.endConnection() }
 
         fun finish(result: InstallReferrerResult) {
@@ -83,6 +83,12 @@ class InstallReferrerSource @Inject constructor(
             else -> InstallReferrerResult.Error
         }
     }
+}
+
+class InstallReferrerClientFactory @Inject constructor(
+    @ApplicationContext private val context: Context,
+) {
+    fun create(): InstallReferrerClient = InstallReferrerClient.newBuilder(context).build()
 }
 
 sealed interface InstallReferrerResult {

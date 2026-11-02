@@ -84,6 +84,92 @@ class InstallReferrerParserTest {
     }
 
     @Test
+    fun `given site url with explicit port, when parse, then port is kept`() {
+        // WHEN
+        val result = sut.parse(referrer(siteUrl = "https://store.com:8443"))
+
+        // THEN
+        assertThat(result.siteUrl).isEqualTo("https://store.com:8443")
+    }
+
+    @Test
+    fun `given site url with ipv4 host, when parse, then site url is invalid`() {
+        // WHEN
+        val result = sut.parse(referrer(siteUrl = "https://192.168.1.10"))
+
+        // THEN
+        assertThat(result.hasSiteUrl).isTrue()
+        assertThat(result.siteUrl).isNull()
+    }
+
+    @Test
+    fun `given site url with ipv6 host, when parse, then site url is invalid`() {
+        // WHEN
+        val result = sut.parse(referrer(siteUrl = "https://[2001:db8::1]"))
+
+        // THEN
+        assertThat(result.hasSiteUrl).isTrue()
+        assertThat(result.siteUrl).isNull()
+    }
+
+    @Test
+    fun `given site url with localhost host, when parse, then site url is invalid`() {
+        // WHEN
+        val result = sut.parse(referrer(siteUrl = "localhost"))
+
+        // THEN
+        assertThat(result.hasSiteUrl).isTrue()
+        assertThat(result.siteUrl).isNull()
+    }
+
+    @Test
+    fun `given site url with unicode host, when parse, then host is converted to punycode`() {
+        // WHEN
+        val result = sut.parse(referrer(siteUrl = "https://bücher.example"))
+
+        // THEN
+        assertThat(result.siteUrl).isEqualTo("https://xn--bcher-kva.example")
+    }
+
+    @Test
+    fun `given site url with encoded plus in host, when parse, then plus is kept in host`() {
+        // WHEN
+        val result = sut.parse(referrer(siteUrl = "https://my+store.com"))
+
+        // THEN
+        assertThat(result.siteUrl).isEqualTo("https://my+store.com")
+    }
+
+    @Test
+    fun `given site url with unencoded plus in host, when parse, then site url is invalid`() {
+        // WHEN
+        val result = sut.parse("utm_campaign=$CAMPAIGN&site_url=https://my+store.com")
+
+        // THEN
+        assertThat(result.hasSiteUrl).isTrue()
+        assertThat(result.siteUrl).isNull()
+    }
+
+    @Test
+    fun `given double encoded site url, when parse, then site url is invalid`() {
+        // WHEN
+        val result = sut.parse("utm_campaign=$CAMPAIGN&site_url=https%253A%252F%252Fstore.com")
+
+        // THEN
+        assertThat(result.hasSiteUrl).isTrue()
+        assertThat(result.siteUrl).isNull()
+    }
+
+    @Test
+    fun `given site url with uncommon tld, when parse, then site url is accepted`() {
+        // WHEN
+        val result = sut.parse(referrer(siteUrl = "https://store.local"))
+
+        // THEN
+        assertThat(result.siteUrl).isEqualTo("https://store.local")
+    }
+
+    @Test
     fun `given empty site url, when parse, then has no site url`() {
         // WHEN
         val result = sut.parse(referrer(siteUrl = ""))

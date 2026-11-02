@@ -30,9 +30,12 @@ class InstallReferrerParser @Inject constructor() {
             ?: return null
         val hasUserInfo = parsed.username.isNotEmpty() || parsed.password.isNotEmpty()
         val hasQueryOrFragment = parsed.querySize > 0 || parsed.fragment != null
-        if (hasUserInfo || hasQueryOrFragment || !parsed.host.contains('.')) return null
+        if (hasUserInfo || hasQueryOrFragment || !parsed.host.isDomainName()) return null
         return parsed.toString().trimEnd('/')
     }
+
+    private fun String.isDomainName(): Boolean =
+        contains('.') && !contains(':') && !all { it.isDigit() || it == '.' }
 
     private fun String.decodeOrNull(): String? = try {
         URLDecoder.decode(this, Charsets.UTF_8.name())
