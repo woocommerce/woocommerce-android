@@ -64,6 +64,26 @@ class InstallReferrerParserTest {
     }
 
     @Test
+    fun `given uppercase scheme and host, when parse, then site url is lowercased`() {
+        // WHEN
+        val result = sut.parse(referrer(siteUrl = "HTTPS://EXAMPLE.COM"))
+
+        // THEN
+        assertThat(result.siteUrl).isEqualTo("https://example.com")
+    }
+
+    @Test
+    fun `given repeated site url param, when parse, then last value is used`() {
+        // WHEN
+        val result = sut.parse(
+            referrer(siteUrl = "https://first.example.com") + "&site_url=${encode("https://second.example.com")}"
+        )
+
+        // THEN
+        assertThat(result.siteUrl).isEqualTo("https://second.example.com")
+    }
+
+    @Test
     fun `given empty site url, when parse, then has no site url`() {
         // WHEN
         val result = sut.parse(referrer(siteUrl = ""))

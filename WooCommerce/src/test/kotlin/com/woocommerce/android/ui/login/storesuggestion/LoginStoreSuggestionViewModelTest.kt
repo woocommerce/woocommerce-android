@@ -23,10 +23,11 @@ class LoginStoreSuggestionViewModelTest : BaseUnitTest() {
         on { invoke() } doReturn SUGGESTION
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val savedStateHandle = SavedStateHandle()
 
     private lateinit var viewModel: LoginStoreSuggestionViewModel
 
-    private fun setup(savedState: SavedStateHandle = SavedStateHandle()) {
+    private fun setup(savedState: SavedStateHandle = savedStateHandle) {
         viewModel = LoginStoreSuggestionViewModel(
             savedState = savedState,
             getInstallReferrerStoreSuggestion = getInstallReferrerStoreSuggestion,
@@ -51,6 +52,15 @@ class LoginStoreSuggestionViewModelTest : BaseUnitTest() {
 
         // THEN
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.LOGIN_STORE_SUGGESTION_SHOWN)
+    }
+
+    @Test
+    fun `given happy path, when initialized, then suggestion is saved`() = testBlocking {
+        // WHEN
+        setup()
+
+        // THEN
+        assertThat(savedStateHandle.get<StoreSuggestion>(KEY_SUGGESTION)).isEqualTo(SUGGESTION)
     }
 
     @Test
@@ -129,6 +139,31 @@ class LoginStoreSuggestionViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given happy path, when onLogInToStoreClicked, then saved suggestion is cleared`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        viewModel.onLogInToStoreClicked()
+
+        // THEN
+        assertThat(savedStateHandle.get<StoreSuggestion>(KEY_SUGGESTION)).isNull()
+    }
+
+    @Test
+    fun `given suggestion dismissed, when onLogInToStoreClicked, then no event is triggered`() = testBlocking {
+        // GIVEN
+        setup()
+        viewModel.onDismissed()
+
+        // WHEN
+        viewModel.onLogInToStoreClicked()
+
+        // THEN
+        assertThat(viewModel.event.captureValues()).isEmpty()
+    }
+
+    @Test
     fun `given happy path, when onUseDifferentStoreClicked, then dismiss is requested`() = testBlocking {
         // GIVEN
         setup()
@@ -168,6 +203,18 @@ class LoginStoreSuggestionViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(states.last()).isNull()
+    }
+
+    @Test
+    fun `given happy path, when onDismissed, then saved suggestion is cleared`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        viewModel.onDismissed()
+
+        // THEN
+        assertThat(savedStateHandle.get<StoreSuggestion>(KEY_SUGGESTION)).isNull()
     }
 
     @Test

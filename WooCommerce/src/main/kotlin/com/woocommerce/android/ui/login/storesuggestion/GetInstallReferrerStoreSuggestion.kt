@@ -7,6 +7,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import java.util.concurrent.TimeUnit
@@ -23,10 +25,13 @@ class GetInstallReferrerStoreSuggestion @Inject constructor(
     suspend operator fun invoke(): StoreSuggestion? {
         if (!featureFlagRepository.isEnabled(FeatureFlag.LOGIN_STORE_SUGGESTION)) return null
         if (appPrefsWrapper.isInstallReferrerChecked) return null
-        appPrefsWrapper.isInstallReferrerChecked = true
 
-        val outcome = evaluate(installReferrerSource.fetch())
-        track(outcome)
+        val outcome = withContext(NonCancellable) {
+            evaluate(installReferrerSource.fetch()).also {
+                appPrefsWrapper.isInstallReferrerChecked = true
+                track(it)
+            }
+        }
 
         return outcome.parsed?.siteUrl
             ?.takeIf { outcome.status == Status.VALID }

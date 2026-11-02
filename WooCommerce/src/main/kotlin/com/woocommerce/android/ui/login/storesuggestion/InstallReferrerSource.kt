@@ -43,14 +43,7 @@ class InstallReferrerSource @Inject constructor(
 
         val listener = object : InstallReferrerStateListener {
             override fun onInstallReferrerSetupFinished(responseCode: Int) {
-                finish(
-                    when (responseCode) {
-                        InstallReferrerResponse.OK -> readReferrer(client)
-                        InstallReferrerResponse.FEATURE_NOT_SUPPORTED,
-                        InstallReferrerResponse.SERVICE_UNAVAILABLE -> InstallReferrerResult.Unavailable
-                        else -> InstallReferrerResult.Error
-                    }
-                )
+                finish(resultForResponseCode(responseCode) { readReferrer(client) })
             }
 
             override fun onInstallReferrerServiceDisconnected() {
@@ -77,8 +70,18 @@ class InstallReferrerSource @Inject constructor(
         InstallReferrerResult.Error
     }
 
-    private companion object {
-        const val TIMEOUT_MILLIS = 3_000L
+    companion object {
+        private const val TIMEOUT_MILLIS = 3_000L
+
+        internal fun resultForResponseCode(
+            responseCode: Int,
+            readReferrer: () -> InstallReferrerResult,
+        ): InstallReferrerResult = when (responseCode) {
+            InstallReferrerResponse.OK -> readReferrer()
+            InstallReferrerResponse.FEATURE_NOT_SUPPORTED,
+            InstallReferrerResponse.SERVICE_UNAVAILABLE -> InstallReferrerResult.Unavailable
+            else -> InstallReferrerResult.Error
+        }
     }
 }
 

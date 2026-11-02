@@ -7,13 +7,18 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
@@ -137,15 +142,34 @@ class GetInstallReferrerStoreSuggestionTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given happy path, when invoked, then referrer is marked as checked before reading it`() = testBlocking {
+    fun `given happy path, when invoked, then referrer is marked as checked after reading it`() = testBlocking {
         // WHEN
         sut()
 
         // THEN
-        inOrder(appPrefsWrapper, installReferrerSource) {
-            verify(appPrefsWrapper).isInstallReferrerChecked = true
+        inOrder(installReferrerSource, appPrefsWrapper) {
             verify(installReferrerSource).fetch()
+            verify(appPrefsWrapper).isInstallReferrerChecked = true
         }
+    }
+
+    @Test
+    fun `given caller cancelled while fetching, when invoked, then referrer is still marked as checked`() =
+        testBlocking {
+            // WHEN
+            invokeAndCancelWhileFetching()
+
+            // THEN
+            verify(appPrefsWrapper).isInstallReferrerChecked = true
+        }
+
+    @Test
+    fun `given caller cancelled while fetching, when invoked, then result is still tracked`() = testBlocking {
+        // WHEN
+        invokeAndCancelWhileFetching()
+
+        // THEN
+        verifyTracked(result = "valid", hasSiteUrl = true, campaign = CAMPAIGN)
     }
 
     @Test
@@ -251,6 +275,19 @@ class GetInstallReferrerStoreSuggestionTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given click timestamp in the future, when invoked, then returns store suggestion`() = testBlocking {
+        // GIVEN
+        givenReferrer(VALID_REFERRER, clickTimestampSeconds = NOW_SECONDS + ONE_HOUR_SECONDS)
+
+        // WHEN
+        val result = sut()
+
+        // THEN
+        assertThat(result).isEqualTo(StoreSuggestion(siteUrl = SITE_URL, displayAddress = SITE_ADDRESS))
+        verifyTracked(result = "valid", hasSiteUrl = true, campaign = CAMPAIGN)
+    }
+
+    @Test
     fun `given click exactly 24 hours ago, when invoked, then returns store suggestion`() = testBlocking {
         // GIVEN
         givenReferrer(VALID_REFERRER, clickTimestampSeconds = NOW_SECONDS - MAX_AGE_SECONDS)
@@ -345,6 +382,21 @@ class GetInstallReferrerStoreSuggestionTest : BaseUnitTest() {
         whenever(installReferrerSource.fetch()).thenReturn(
             InstallReferrerResult.Available(referrer = referrer, clickTimestampSeconds = clickTimestampSeconds)
         )
+    }
+
+    private suspend fun TestScope.invokeAndCancelWhileFetching() {
+        val fetchResult = CompletableDeferred<InstallReferrerResult>()
+        whenever(installReferrerSource.fetch()).doSuspendableAnswer { fetchResult.await() }
+
+        val job = launch { sut() }
+        job.cancel()
+        fetchResult.complete(
+            InstallReferrerResult.Available(
+                referrer = VALID_REFERRER,
+                clickTimestampSeconds = NOW_SECONDS - ONE_HOUR_SECONDS,
+            )
+        )
+        advanceUntilIdle()
     }
 
     private fun verifyTracked(result: String, hasSiteUrl: Boolean, campaign: String?) {

@@ -20,6 +20,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -102,6 +104,7 @@ private fun LoginStoreSuggestionContent(
             style = WooTheme.text.titleLarge.strong,
             color = WooTheme.colors.surface.onDefault,
             textAlign = TextAlign.Center,
+            modifier = Modifier.semantics { heading() },
         )
 
         Text(
@@ -147,7 +150,9 @@ private fun StoreAddress(
         color = WooTheme.colors.surface.default,
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = WooTheme.spacing.space4, vertical = WooTheme.spacing.space3),
+            modifier = Modifier
+                .semantics(mergeDescendants = true) {}
+                .padding(horizontal = WooTheme.spacing.space4, vertical = WooTheme.spacing.space3),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space2, Alignment.CenterHorizontally),
         ) {
