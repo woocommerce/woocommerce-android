@@ -526,6 +526,10 @@ class OrderListViewModel @Inject constructor(
         analyticsTracker.track(ORDERS_LIST_TOP_BANNER_TROUBLESHOOT_TAPPED)
     }
 
+    fun onHardwareBarcodeScanned(status: CodeScannerStatus.Success) {
+        triggerEvent(OrderListEvent.OnBarcodeScanned(status.code, status.format))
+    }
+
     fun handleBarcodeScannedStatus(status: CodeScannerStatus) {
         when (status) {
             is CodeScannerStatus.Failure -> {
@@ -901,7 +905,16 @@ class OrderListViewModel @Inject constructor(
                     R.string.orderlist_mark_completed_success,
                     gestureSource.orderId
                 ),
-                undoAction = { undoSwipeStatusUpdate(gestureSource) },
+                undoAction = {
+                    analyticsTracker.track(
+                        AnalyticsEvent.ORDER_STATUS_CHANGE_UNDO,
+                        mapOf(
+                            AnalyticsTracker.KEY_ID to gestureSource.orderId,
+                            AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_LIST
+                        )
+                    )
+                    undoSwipeStatusUpdate(gestureSource)
+                },
                 dismissAction = dismissAction
             )
         )

@@ -20,8 +20,7 @@ class CardReaderPaymentOrderHelper @Inject constructor(
             selectedSite.get().remoteId().value
         )
 
-    fun getAmountLabel(order: Order): String = currencyFormatter
-        .formatAmountWithCurrency(order.total.toDouble(), order.currency)
+    fun getAmountLabel(order: Order): String = currencyFormatter.formatCurrency(order.total, order.currency)
 
     fun getReceiptDocumentName(orderId: Long) = "receipt-order-$orderId"
 }

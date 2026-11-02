@@ -9,4 +9,9 @@ class Login2FaSupportedAuthTypesTest {
     fun `given SMS auth type, when parsing, then return SMS`() {
         assertThat(SupportedAuthTypes.fromString("sms")).isEqualTo(SupportedAuthTypes.SMS)
     }
+
+    @Test
+    fun `given email auth type, when parsing, then return EMAIL`() {
+        assertThat(SupportedAuthTypes.fromString("email")).isEqualTo(SupportedAuthTypes.EMAIL)
+    }
 }

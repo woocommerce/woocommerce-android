@@ -19,6 +19,9 @@ import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsView
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowNonWooErrorScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowResetPasswordScreen
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseSupport
+import com.woocommerce.android.ui.login.unexpectedresponse.openAiSupportChat
+import com.woocommerce.android.ui.login.unexpectedresponse.openSupportForm
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
@@ -99,6 +102,8 @@ class LoginSiteCredentialsFragment : Fragment() {
                         errorMessage = it.errorMessage
                     )
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(it.message)
+                is LoginUnexpectedResponseSupport.OpenAiSupportChat -> openAiSupportChat(it)
+                is LoginUnexpectedResponseSupport.OpenSupportForm -> openSupportForm(it)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
             }
         }

@@ -16,21 +16,15 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUi
 import com.woocommerce.android.ui.dashboard.data.AnalyticsScheduledImportRepository
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
-import com.woocommerce.android.util.FeatureFlagRepository.FeatureFlagState
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -82,10 +76,6 @@ class DashboardViewModelTest : BaseUnitTest() {
     private val analyticsScheduledImportRepository: AnalyticsScheduledImportRepository = mock {
         on { observeIsEnabled() } doReturn flowOf(false)
     }
-    private val featureFlagRepository: FeatureFlagRepository = mock {
-        on { getFlagState(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1) } doReturn
-            pushNotificationsFlagState(remoteValue = false)
-    }
     private lateinit var viewModel: DashboardViewModel
 
     suspend fun setup(prepareMocks: suspend () -> Unit) {
@@ -105,55 +95,8 @@ class DashboardViewModelTest : BaseUnitTest() {
             pushNotificationRegistrationStatus = pushNotificationRegistrationStatus,
             shouldShowEnablePushNotificationsUi = shouldShowEnablePushNotificationsUi,
             feedbackPrefs = feedbackPrefs,
-            featureFlagRepository = featureFlagRepository,
         )
     }
-
-    private fun pushNotificationsFlagState(remoteValue: Boolean?) = FeatureFlagState(
-        flag = FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1,
-        localValue = false,
-        remoteValue = remoteValue,
-        overrideValue = null
-    )
-
-    private suspend fun setupApplicationPasswordsSiteWithBanner(
-        isPushNotificationsUiAvailable: Flow<Boolean>
-    ) = setup {
-        whenever(selectedSite.observe()).thenReturn(flowOf(SiteModel().apply { origin = SiteModel.ORIGIN_WPAPI }))
-        whenever(pushNotificationRegistrationStatus.observe(any())).thenReturn(flowOf(Status.UNREGISTERED))
-        whenever(shouldShowEnablePushNotificationsUi.invoke()).thenReturn(isPushNotificationsUiAvailable)
-        whenever(featureFlagRepository.getFlagState(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
-            .thenReturn(pushNotificationsFlagState(remoteValue = null))
-    }
-
-    @Test
-    fun `given the remote flag value is unknown, when the banner should show, then it shows after the delay`() =
-        testBlocking {
-            setupApplicationPasswordsSiteWithBanner(isPushNotificationsUiAvailable = flowOf(false))
-
-            val banners = viewModel.jetpackBenefitsBannerState.captureValues()
-            advanceTimeBy(499)
-            val bannersBeforeDelay = banners.toList()
-            advanceUntilIdle()
-
-            assertThat(bannersBeforeDelay).isEmpty()
-            assertThat(banners.single()?.show).isTrue()
-        }
-
-    @Test
-    fun `given the remote flag value is unknown, when the push notifications card appears within the delay, then the banner never shows`() =
-        testBlocking {
-            val isPushNotificationsUiAvailable = MutableStateFlow(false)
-            setupApplicationPasswordsSiteWithBanner(isPushNotificationsUiAvailable)
-
-            val banners = viewModel.jetpackBenefitsBannerState.captureValues()
-            advanceTimeBy(100)
-            isPushNotificationsUiAvailable.value = true
-            advanceUntilIdle()
-
-            assertThat(banners).isNotEmpty
-            assertThat(banners.none { it?.show == true }).isTrue()
-        }
 
     @Test
     fun `when the toolbar is collapsed, then isToolbarExpanded is false`() = testBlocking {

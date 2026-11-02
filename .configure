@@ -10,17 +10,17 @@
     },
     {
       "file": "android/WCAndroid/google-services.json",
-      "destination": "WooCommerce/google-services.json",
+      "destination": "~/.configure/woocommerce-android/secrets/google-services.json",
       "encrypt": true
     },
     {
       "file": "android/debug.keystore",
-      "destination": "~/.configure/woocommerce-android/secrets/debug_a8c.keystore",
+      "destination": "~/.configure/woocommerce-android/secrets/debug.keystore",
       "encrypt": true
     },
     {
       "file": "android/automattic_upload.jks",
-      "destination": "WooCommerce/upload.jks",
+      "destination": "~/.configure/woocommerce-android/secrets/upload.jks",
       "encrypt": true
     },
     {
@@ -30,7 +30,7 @@
     },
     {
       "file": "android/WCAndroid/firebase.secrets.json",
-      "destination": ".configure-files/firebase.secrets.json",
+      "destination": "~/.configure/woocommerce-android/secrets/firebase.secrets.json",
       "encrypt": true
     }
   ],

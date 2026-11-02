@@ -11,6 +11,19 @@ object WooPosAnalyticsEventConstant {
         override fun toString(): String = value
     }
 
+    enum class ReaderReadySignal(val value: String) {
+        INPUT_REQUESTED("input_requested"),
+
+        // Tap to Pay on Android has no card input request, so it is marked ready when collection starts.
+        COLLECTION_STARTED("collection_started");
+
+        override fun toString(): String = value
+
+        companion object {
+            const val READER_READY_SIGNAL = "reader_ready_signal"
+        }
+    }
+
     enum class RefundFlow(val value: String) {
         LOCAL("local"),
         SERVER_COMPUTED("server_computed");

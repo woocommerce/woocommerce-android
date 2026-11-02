@@ -738,6 +738,70 @@ class WCProductStoreTest {
     }
 
     @Test
+    fun `given newest first sorting, when product variations sync fetch is requested, then the request uses it`() =
+        runTest {
+            val site = SiteModel().apply { id = 42 }
+            val productId = 100L
+            whenever(
+                productRestClient.fetchProductVariationsWithSyncRequest(
+                    site = any(),
+                    productId = any(),
+                    pageSize = any(),
+                    offset = any(),
+                    includedVariationIds = any(),
+                    searchQuery = anyOrNull(),
+                    excludedVariationIds = any(),
+                    filterOptions = anyOrNull(),
+                    orderCurrency = anyOrNull(),
+                    posProductsOnly = any(),
+                    sorting = any(),
+                    context = any()
+                )
+            ).thenReturn(WooPayload(emptyList()))
+
+            productStore.fetchProductVariations(
+                site = site,
+                productId = productId,
+                sorting = VariationSorting.ID_DESC
+            )
+
+            verify(productRestClient).fetchProductVariationsWithSyncRequest(
+                site = any(),
+                productId = any(),
+                pageSize = any(),
+                offset = any(),
+                includedVariationIds = any(),
+                searchQuery = anyOrNull(),
+                excludedVariationIds = any(),
+                filterOptions = anyOrNull(),
+                orderCurrency = anyOrNull(),
+                posProductsOnly = any(),
+                sorting = eq(VariationSorting.ID_DESC),
+                context = any()
+            )
+        }
+
+    @Test
+    fun `given variations sharing a menu order, when variations are read, then ties are sorted newest first`() =
+        runTest {
+            val site = SiteModel().apply { id = 42 }
+            val productId = 100L
+            val variations = listOf(
+                ProductTestUtils.generateSampleVariation(productId, 1L, site.id).copy(menuOrder = 1),
+                ProductTestUtils.generateSampleVariation(productId, 2L, site.id).copy(menuOrder = 0),
+                ProductTestUtils.generateSampleVariation(productId, 3L, site.id).copy(menuOrder = 1),
+                ProductTestUtils.generateSampleVariation(productId, 4L, site.id).copy(menuOrder = 0)
+            )
+            productsVariationsDao.upsertProductVariations(variations)
+
+            val storedVariations = productStore.getVariationsForProduct(site, productId)
+            val observedVariations = productStore.observeVariations(site, productId).first()
+
+            assertThat(storedVariations.map { it.remoteVariationId.value }).containsExactly(4L, 2L, 3L, 1L)
+            assertThat(observedVariations.map { it.remoteVariationId.value }).containsExactly(4L, 2L, 3L, 1L)
+        }
+
+    @Test
     fun `given product review exists, when fetch product review, then local database updated`() = runTest {
         val site = insertTestAccountAndSiteIntoDb()
         val productModel = ProductTestUtils.generateSampleProduct(remoteId = 1).copy(

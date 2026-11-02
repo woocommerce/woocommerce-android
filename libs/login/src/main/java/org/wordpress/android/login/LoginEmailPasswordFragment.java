@@ -382,14 +382,16 @@ public class LoginEmailPasswordFragment extends LoginBaseFormFragment<LoginListe
                 break;
             case FAILURE_2FA:
                 onLoginFinished(false);
-                mLoginListener.needs2fa(mEmailAddress, mRequestedPassword);
+                mLoginListener.needs2fa(mEmailAddress, mRequestedPassword, null, null, null, null, null,
+                        loginState.getSupportedAuthTypes());
 
                 // consume the state so we don't relauch the 2FA dialog if user backs up
                 LoginWpcomService.clearLoginServiceState();
                 break;
             case FAILURE_SOCIAL_2FA:
                 onLoginFinished(false);
-                mLoginListener.needs2faSocialConnect(mEmailAddress, mRequestedPassword, mIdToken, mService);
+                mLoginListener.needs2faSocialConnect(mEmailAddress, mRequestedPassword, mIdToken, mService,
+                        loginState.getSupportedAuthTypes());
 
                 // consume the state so we don't relauch the 2FA dialog if user backs up
                 LoginWpcomService.clearLoginServiceState();

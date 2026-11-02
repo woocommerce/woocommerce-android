@@ -42,7 +42,8 @@ class JetpackTunnelWPAPINetwork @Inject constructor(
         cacheTimeToLive: Int,
         forced: Boolean,
         requestTimeout: Int,
-        retries: Int
+        retries: Int,
+        readableBodyCheck: ((T) -> Boolean)?
     ): WPAPIResponse<T> {
         return jetpackTunnelGsonRequestBuilder.syncGetRequest(
             restClient = this,

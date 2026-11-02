@@ -44,8 +44,16 @@ class SupportDiagnosticsService @Inject constructor(
     private val storeAnalyticsCheck: StoreAnalyticsCheckUseCase,
     private val storeNotificationsCheck: StoreNotificationsCheckUseCase
 ) {
-    fun runDiagnostics(issueType: SupportIssueType): Flow<DiagnosticResult> = flow {
-        val tests = testsFor(issueType)
+    fun runDiagnostics(issueType: SupportIssueType): Flow<DiagnosticResult> =
+        runDiagnostics(issueType, testsFor(issueType))
+
+    fun runLoginDiagnostics(): Flow<DiagnosticResult> =
+        runDiagnostics(SupportIssueType.OTHER, listOf(INTERNET_CONNECTION, WPCOM_SERVERS))
+
+    private fun runDiagnostics(
+        issueType: SupportIssueType,
+        tests: List<DiagnosticTest>
+    ): Flow<DiagnosticResult> = flow {
         var statuses = tests.map { DiagnosticStatus(it, TestStatus.Pending) }
         emit(DiagnosticResult(issueType, statuses))
 

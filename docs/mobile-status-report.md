@@ -8,6 +8,17 @@ tickets filed from the login screen.
 It is built by
 [`MobileStatusProvider`](../WooCommerce/src/main/kotlin/com/woocommerce/android/support/zendesk/MobileStatusProvider.kt).
 
+## AI support chat
+
+Every new AI support chat includes the Mobile Status Report in its first outgoing request, appended to
+`context.troubleshootingResults` after a blank line, below any troubleshooting diagnostics. The report is background
+context and is not shown in the chat. It is generated locally, including before login. When the chat was opened for
+an address other than the selected store, such as the address entered at login, `Address given in the form` carries
+it.
+
+The report is generated once per chat and reused if the first request fails. Follow-up messages and chats resumed
+from history do not resend it.
+
 ## Reading the report
 
 The report is split in two by a single band:
@@ -132,7 +143,7 @@ that contains no cold start therefore has no channel dump in it. That is expecte
 | Field | Meaning | Values |
 | --- | --- | --- |
 | `WPCom user ID` | The logged-in WordPress.com account. | Numeric ID; `not logged in` — expected for application-password logins, which have no WPCom account |
-| `Address given in the form` | The store address the merchant typed into the support form. Present only when they typed one. | A URL |
+| `Address given in the form` | The store address the merchant gave: typed into the support form, or the address an AI support chat was opened for when it differs from the selected store. Present only when there is one. | A URL |
 | `Connected stores` | How many WooCommerce stores the app knows about. | Integer |
 | `All connected stores:` | One line per store: `<url>: <Type: ... Plan: ... Jetpack-version: ...>`. | — |
 

@@ -8,6 +8,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.VariantOption
+import com.woocommerce.android.ui.products.variations.VariationListPaging
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -59,7 +60,13 @@ class VariationPickerViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             loadingState.value = LoadingState.LOADING
-            variationListHandler.fetchVariations(productId = navArgs.productId, forceRefresh = true)
+            variationListHandler.fetchVariations(
+                productId = navArgs.productId,
+                forceRefresh = true,
+                sorting = VariationListPaging.SORTING,
+                pageSize = VariationListPaging.PAGE_SIZE,
+                includedVariationIds = allowedVariations.toList()
+            )
             loadingState.value = LoadingState.IDLE
         }
     }

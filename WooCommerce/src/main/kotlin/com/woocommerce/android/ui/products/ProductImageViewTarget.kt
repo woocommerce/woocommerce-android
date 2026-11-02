@@ -52,9 +52,11 @@ class ProductImageViewTarget(
     }
 
     private fun loadImage(remoteProductId: Long) {
+        // Transition overlays can attach removed rows before a lifecycle owner is available
+        val lifecycleOwner = imageView.findViewTreeLifecycleOwner() ?: return
         val loader = imageLoader ?: factory.create(
             target = this,
-            scope = checkNotNull(imageView.findViewTreeLifecycleOwner()).lifecycleScope
+            scope = lifecycleOwner.lifecycleScope
         ).also { imageLoader = it }
         loader.load(remoteProductId)
     }

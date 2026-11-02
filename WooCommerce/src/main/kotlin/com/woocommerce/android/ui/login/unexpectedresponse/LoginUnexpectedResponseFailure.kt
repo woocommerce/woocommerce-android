@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.unexpectedresponse
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.UnexpectedStoreResponse
+import org.wordpress.android.fluxc.network.UnexpectedStoreResponseLogger
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceLoginStep
 
 @Parcelize
@@ -11,6 +12,10 @@ data class LoginUnexpectedResponseFailure(
     val step: Step,
     val response: UnexpectedStoreResponse
 ) : Parcelable {
+    val supportDetails: String
+        get() = "Unexpected store response during login: login_flow=${flow.trackingValue}, " +
+            "step=${step.trackingValue}, ${UnexpectedStoreResponseLogger.buildFields(response)}"
+
     enum class Flow(val trackingValue: String) {
         SITE_CREDENTIALS("site_credentials"),
         APP_PASSWORD("app_password"),
@@ -38,6 +43,8 @@ data class LoginUnexpectedResponseFailure(
     }
 
     companion object {
+        const val SUPPORT_TAG = "login_unexpected_response"
+
         fun siteCredentials(step: CookieNonceLoginStep, response: UnexpectedStoreResponse) =
             LoginUnexpectedResponseFailure(flow = Flow.SITE_CREDENTIALS, step = Step.of(step), response = response)
     }

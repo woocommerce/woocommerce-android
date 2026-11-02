@@ -209,4 +209,27 @@ class UnexpectedStoreResponseExcerptTest {
 
         assertThat(excerpt).isNull()
     }
+
+    @Test
+    fun `given a PHP stack trace with login arguments, when the excerpt is built, then the arguments are redacted`() {
+        val body = "<b>Fatal error</b>: Uncaught Error: Call to undefined function helper() in /plugin.php:7\n" +
+            "Stack trace:\n" +
+            "#0 /wp-includes/class-wp-hook.php(324): check_login(NULL, 'demo', 'LeakyPassword1...')\n" +
+            "#1 /wp-includes/pluggable.php(633): apply_filters('authenticate', NULL, 'demo', 'LeakyPassword1...')"
+
+        val excerpt = UnexpectedStoreResponseExcerpt.from(body)
+
+        assertThat(excerpt).doesNotContain("demo", "LeakyPassword1")
+        assertThat(excerpt).contains("check_login(NULL, '[redacted]', '[redacted]')")
+    }
+
+    @Test
+    fun `given login form fields and nonces in the text, when the excerpt is built, then their values are redacted`() {
+        val body = "<p>Request: log=demo&pwd=LeakyPassword1&_wpnonce=a1b2c3&csrf_token=d4e5f6</p>"
+
+        val excerpt = UnexpectedStoreResponseExcerpt.from(body)
+
+        assertThat(excerpt)
+            .isEqualTo("Request: log=demo&pwd=[redacted]")
+    }
 }

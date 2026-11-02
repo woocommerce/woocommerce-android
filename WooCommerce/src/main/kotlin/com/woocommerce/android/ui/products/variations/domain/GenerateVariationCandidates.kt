@@ -1,13 +1,18 @@
 package com.woocommerce.android.ui.products.variations.domain
 
+import android.os.Parcelable
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.variations.VariationRepository
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 typealias VariationCandidate = List<VariantOption>
+
+@Parcelize
+data class VariationCandidates(val candidates: List<VariationCandidate>) : Parcelable
 
 class GenerateVariationCandidates @Inject constructor(
     private val variationRepository: VariationRepository

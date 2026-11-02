@@ -45,6 +45,41 @@ class WPAPIGsonRequestTest {
     }
 
     @Test
+    fun `given a body check, when an empty 2xx is parsed, then it is unexpected content`() {
+        var deliveredError: WPAPINetworkError? = null
+        val request = buildUserRequest(readableBodyCheck = { true }) { deliveredError = it }
+
+        request.deliverError(request.parseNetworkResponse(networkResponse(200, JSON, "")).error)
+
+        assertThat(deliveredError?.unexpectedStoreResponse?.kind)
+            .isEqualTo(UnexpectedStoreResponseKind.UNEXPECTED_CONTENT)
+        assertThat(deliveredError?.unexpectedStoreResponse?.statusCode).isEqualTo(200)
+        assertThat(deliveredError?.unexpectedStoreResponse?.requestType).isEqualTo("GET /wp/v2/users/me")
+    }
+
+    @Test
+    fun `given a body check, when JSON of another shape is parsed, then it is unexpected content`() {
+        var deliveredError: WPAPINetworkError? = null
+        val request = buildUserRequest(readableBodyCheck = { true }) { deliveredError = it }
+
+        request.deliverError(request.parseNetworkResponse(networkResponse(200, JSON, "[]")).error)
+
+        assertThat(deliveredError?.unexpectedStoreResponse?.kind)
+            .isEqualTo(UnexpectedStoreResponseKind.UNEXPECTED_CONTENT)
+    }
+
+    @Test
+    fun `given a body check, when the body fails it, then it is unexpected content`() {
+        var deliveredError: WPAPINetworkError? = null
+        val request = buildUserRequest(readableBodyCheck = { it.id > 0 }) { deliveredError = it }
+
+        request.deliverError(request.parseNetworkResponse(networkResponse(200, JSON, """{"id":0}""")).error)
+
+        assertThat(deliveredError?.unexpectedStoreResponse?.kind)
+            .isEqualTo(UnexpectedStoreResponseKind.UNEXPECTED_CONTENT)
+    }
+
+    @Test
     fun `given a 403 firewall page, when the error is delivered, then it adds the details`() {
         val request = buildRequest(
             method = Method.POST,
@@ -89,6 +124,21 @@ class WPAPIGsonRequestTest {
         { _: Any? -> },
         { error -> onError(error) }
     )
+
+    private fun buildUserRequest(
+        readableBodyCheck: ((User) -> Boolean)?,
+        onError: (WPAPINetworkError) -> Unit = {}
+    ) = WPAPIGsonRequest(
+        Method.GET,
+        "$SITE/wp-json/wp/v2/users/me",
+        null,
+        null,
+        User::class.java,
+        { _: User? -> },
+        { error -> onError(error) }
+    ).apply { setReadableBodyCheck(readableBodyCheck) }
+
+    private data class User(val id: Long)
 
     private fun networkResponse(statusCode: Int, contentType: String, body: String) =
         NetworkResponse(statusCode, body.toByteArray(), mapOf("Content-Type" to contentType), false)

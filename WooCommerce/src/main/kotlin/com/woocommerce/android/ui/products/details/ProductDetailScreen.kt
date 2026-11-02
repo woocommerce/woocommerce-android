@@ -73,7 +73,7 @@ fun ProductDetailScreen(
     val showAddMore = (state.screen as? ProductDetailScreenState.Content)?.showAddMore == true
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = WooTheme.colors.background.section,
+        color = WooTheme.colors.surface.default,
     ) {
         Column(modifier = Modifier.testTag(ProductDetailTestTags.PAGE)) {
             ProductDetailTopAppBar(

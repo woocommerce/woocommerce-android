@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource
 
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
+import com.woocommerce.android.WooException
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
@@ -64,7 +65,7 @@ class WooShippingRatesRepository @Inject constructor(
         )
 
         return if (result.isError) {
-            Result.failure(Exception(result.error.message))
+            Result.failure(WooException(result.error))
         } else if (hasInvalidDestinationNameRateError(result.model)) {
             Result.failure(InvalidDestinationNameRateException())
         } else {

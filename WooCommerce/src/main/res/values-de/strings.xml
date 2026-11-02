@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-06 09:58:08+0000
+Translation-Revision-Date: 2026-10-20 11:58:45+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_purchase_phone_required_by_service">Für %1$s ist eine Telefonnummer des Empfängers erforderlich.</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">Darf maximal %1$s Zeichen lang sein.</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin_required">Gib die GTIN/EAN ein oder wähle „Kein Barcode“</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_required">Erforderlich für Sendungen in die EU</string>
+    <string name="woo_shipping_labels_customs_product_details_no_barcode">Kein Barcode</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin">GTIN/EAN</string>
+    <string name="woo_shipping_labels_customs_product_details_manufacturer_part_number">Hersteller-Teilenummer</string>
+    <string name="woo_shipping_labels_customs_product_details_sku">Artikelnummer</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_plugin_update_notice">Für Sendungen in die EU sind jetzt Produkt-IDs für jeden Artikel erforderlich. Aktualisiere das WooCommerce Shipping-Plugin, um sie hinzuzufügen.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_description">Erforderlich für Sendungen in die EU. Artikelnummer und GTIN/EAN werden basierend auf den Inventareinstellungen des Produkts vorausgefüllt.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_title">EU-Produkt-IDs</string>
+    <string name="woopos_settings_payments_success_sound_subtitle">Einen Ton wiedergeben, wenn eine Zahlung abgeschlossen wird</string>
+    <string name="woopos_settings_payments_success_sound">Ton für erfolgreichen Zahlungsvorgang</string>
+    <string name="woopos_settings_payments_category_subtitle">Zahlungseinstellungen verwalten</string>
+    <string name="woopos_settings_payments_category">Zahlungen</string>
+    <string name="blaze_campaign_list_outstanding_balance_payment_title">Ausstehenden Betrag bezahlen</string>
+    <string name="blaze_campaign_list_outstanding_balance_pay">Bezahlen</string>
+    <string name="blaze_campaign_list_outstanding_balance_message">Dein Konto weist derzeit einen ausstehenden Betrag von %1$s auf. Bitte begleiche den Betrag, bevor du neue Kampagnen erstellst.</string>
+    <string name="blaze_campaign_list_outstanding_balance_title">Ausstehender Betrag</string>
+    <string name="bottom_sheet_attributes_desc">Füge der Produktseite Details wie Material oder Größe hinzu</string>
+    <string name="card_reader_mode_nfc_disabled_open_settings">NFC-Einstellungen öffnen</string>
+    <string name="card_reader_mode_nfc_disabled_subtitle">Dieses Telefon benötigt NFC, um Kartenzahlungen entgegennehmen zu können. Öffne die NFC-Einstellungen, schalte NFC ein und kehre dann zu diesem Bildschirm zurück.</string>
+    <string name="card_reader_mode_nfc_disabled_header">NFC aktivieren</string>
+    <string name="card_reader_payment_subscription_check_failed">Es konnte nicht überprüft werden, ob diese Bestellung persönlich bezahlt werden kann. Bitte versuche es erneut.</string>
+    <string name="card_reader_interac_refund_not_available">Diese Bestellung kann nicht persönlich rückerstattet werden</string>
+    <string name="order_refunds_amount_capped_notice">Bei dieser Bestellung muss nur noch der Betrag von %1$s erstattet werden, daher beschränkt sich diese Rückerstattung auf diesen Betrag.</string>
+    <string name="product_attribute_no_options">Keine Optionen</string>
+    <string name="product_attribute_stop_using_for_variations_confirm">Verwendung beenden</string>
+    <string name="product_attribute_stop_using_for_variations_message">Bestehende Varianten werden nicht länger anhand dieses Attributs abgeglichen.</string>
+    <string name="product_attribute_stop_using_for_variations_title">Für Varianten nicht mehr verwenden?</string>
+    <string name="product_attribute_used_for_variations">Für Varianten verwendet</string>
+    <string name="product_attribute_visible_on_product_page">Sichtbar auf der Produktseite</string>
     <string name="woopos_orders_details_breakdown_custom_amounts_label">Individuelle Beträge</string>
     <string name="woopos_payment_custom_amounts_label">Individuelle Beträge</string>
     <string name="woopos_cart_item_discount_applied">Angewendeter Rabatt</string>
@@ -2789,7 +2821,6 @@ Language: de
     <string name="coupon_details_usage_limit_per_coupon_single">Kann %1$d Mal genutzt werden</string>
     <string name="coupon_details_usage_limit_per_coupon_multiple">Kann %1$d Mal genutzt werden</string>
     <string name="card_reader_interac_refund_refund_payment_hint">Zum Erstatten tippen oder eingeben</string>
-    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">Diese Bestellung wird bereits erstattet</string>
     <string name="card_reader_interac_refund_refund_failed_cancelled">Rückerstattung storniert</string>
     <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
     <string name="card_reader_interac_refund_refund_failed_test_card">Karten für Systemtests sind für Rückerstattungen nicht zulässig</string>
@@ -3837,6 +3868,7 @@ Language: de
     <string name="date_timeframe_future">Bevorstehend</string>
     <string name="remove">Entfernen</string>
     <string name="product_images_uploading_multi_notif_message">Bilder werden hochgeladen …%1$d von %2$d</string>
+    <string name="product_attribute_hidden">Verborgen</string>
     <string name="login_discovery_error_generic">Leider konnten wir nicht auf deine Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
     <string name="login_discovery_error_ssl">Aufgrund eines Problems mit dem &lt;b&gt;SSL-Zertifikat&lt;/b&gt; konnten wir nicht auf deine Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
     <string name="login_discovery_error_http_auth">Leider konnten wir nicht auf deine Website zugreifen, weil eine &lt;b&gt;HTTP-Authentifizierung&lt;/b&gt; erforderlich ist. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>

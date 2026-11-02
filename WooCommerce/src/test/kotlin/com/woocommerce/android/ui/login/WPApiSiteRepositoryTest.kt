@@ -5,9 +5,11 @@ import com.android.volley.VolleyError
 import com.woocommerce.android.FakeDispatcher
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
-import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
+import com.woocommerce.android.applicationpasswords.ApplicationPasswordGenerationException
+import com.woocommerce.android.model.User
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.model.UserRole
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.CoroutineScope
@@ -18,6 +20,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.action.SiteAction
@@ -35,8 +38,10 @@ import org.wordpress.android.fluxc.network.rest.wpapi.Nonce
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_NONCE
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.UNKNOWN
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.SiteStore.EnsureApplicationPasswordResult
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.GENERIC_ERROR
@@ -63,12 +68,12 @@ class WPApiSiteRepositoryTest : BaseUnitTest() {
             }
         }
     }
+    private val userEligibilityFetcher: UserEligibilityFetcher = mock()
     private val repository = WPApiSiteRepository(
         dispatcher,
         siteStore,
         authenticator,
-        mock<UserEligibilityFetcher>(),
-        mock<ApplicationPasswordsNotifier>(),
+        userEligibilityFetcher,
         CookieManager(),
         mock<ApplicationPasswordsStore>()
     )
@@ -138,6 +143,43 @@ class WPApiSiteRepositoryTest : BaseUnitTest() {
 
             assertThat(exception.errorMessage).isEqualTo(UiStringRes(R.string.error_generic))
             assertThat(exception.message).isNull()
+        }
+
+    @Test
+    fun `given an application password is available, when ensuring it, then return success`() = testBlocking {
+        whenever(siteStore.ensureApplicationPassword(site)).thenReturn(EnsureApplicationPasswordResult.Available)
+
+        val result = repository.ensureApplicationPassword(site)
+
+        assertThat(result.isSuccess).isTrue()
+        verify(siteStore).ensureApplicationPassword(site)
+    }
+
+    @Test
+    fun `given password creation fails, when ensuring it, then return generation error`() =
+        testBlocking {
+            val error = WPAPINetworkError(BaseNetworkError(NO_CONNECTION))
+            whenever(siteStore.ensureApplicationPassword(site)).thenReturn(EnsureApplicationPasswordResult.Failed(error))
+
+            val result = repository.ensureApplicationPassword(site)
+
+            val exception = result.exceptionOrNull()
+            assertThat(exception).isInstanceOf(ApplicationPasswordGenerationException::class.java)
+            assertThat((exception as ApplicationPasswordGenerationException).networkError).isSameAs(error)
+            verify(userEligibilityFetcher, never()).fetchUserInfo(site)
+        }
+
+    @Test
+    fun `given fetched user info, when checking eligibility, then return user eligibility`() =
+        testBlocking {
+            whenever(userEligibilityFetcher.fetchUserInfo(site)).thenReturn(
+                Result.success(User(1L, "", "", USERNAME, "merchant@example.com", listOf(UserRole.Owner)))
+            )
+
+            val result = repository.checkIfUserIsEligible(site)
+
+            assertThat(result.getOrNull()).isTrue()
+            verify(userEligibilityFetcher).fetchUserInfo(site)
         }
 
     @Test

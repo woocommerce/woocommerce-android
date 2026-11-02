@@ -45,6 +45,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class Authenticator {
     private static final String WPCOM_OAUTH_PREFIX = "https://public-api.wordpress.com/oauth2";
@@ -233,10 +234,12 @@ public class Authenticator {
             mParams.put(GRANT_TYPE_PARAM_NAME, PASSWORD_GRANT_TYPE);
             mParams.put(GET_BEARER_TOKEN, "true");
             mParams.put("wpcom_otp", twoStepCode);
-            if (shouldSendTwoStepSMS && TextUtils.isEmpty(twoStepCode)) {
-                mParams.put("wpcom_resend_otp", "true");
+            if (TextUtils.isEmpty(twoStepCode)) {
+                mParams.put("wpcom_supports_2fa", "true");
+                if (shouldSendTwoStepSMS) {
+                    mParams.put("wpcom_resend_otp", "true");
+                }
             }
-            mParams.put("wpcom_supports_2fa", "true");
         }
     }
 
@@ -380,6 +383,27 @@ public class Authenticator {
             }
         }
         return null;
+    }
+
+    @NonNull
+    public static List<String> volleyErrorToSupportedAuthTypes(@Nullable VolleyError error) {
+        List<String> supportedAuthTypes = new ArrayList<>();
+        if (error != null && error.networkResponse != null && error.networkResponse.data != null) {
+            try {
+                JSONArray types = new JSONObject(new String(error.networkResponse.data))
+                        .optJSONArray(TwoFactorResponse.TWO_STEP_SUPPORTED_AUTH_TYPES);
+                if (types != null) {
+                    for (int i = 0; i < types.length(); i++) {
+                        Object type = types.opt(i);
+                        if (type instanceof String) {
+                            supportedAuthTypes.add((String) type);
+                        }
+                    }
+                }
+            } catch (JSONException ignored) {
+            }
+        }
+        return supportedAuthTypes;
     }
 
     public static AuthenticationErrorType jsonErrorToAuthenticationError(JSONObject jsonObject) {

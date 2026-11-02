@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels
 
+import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
@@ -8,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CARRIER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SERVICE_STATUS_NOTICE_SHOWN
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
@@ -72,6 +74,9 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRate
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOptionUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingSortOption
+import com.woocommerce.android.ui.orders.wooshippinglabels.servicestatus.FetchServiceStatusNotices
+import com.woocommerce.android.ui.orders.wooshippinglabels.servicestatus.IsServiceOutageError
+import com.woocommerce.android.ui.orders.wooshippinglabels.servicestatus.ServiceStatusNotice
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
@@ -91,6 +96,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.withContext
 import org.assertj.core.api.Assertions.assertThat
+import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -358,12 +364,16 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     private val file: File = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val createDefaultCustomsData = CreateDefaultCustomsData(mock())
+    private val fetchServiceStatusNotices: FetchServiceStatusNotices = mock {
+        on { invoke() } doReturn Result.success(emptyList())
+    }
 
     private lateinit var sut: WooShippingLabelCreationViewModel
     private var requirementCheckCalls = 0
 
     private val customsState get() = (sut.viewState.value as DataState).shipmentUIList[0].customsState
     private val customsData get() = (customsState as CustomsState.DataAvailable).customsData
+    private val serviceStatusNotices get() = (sut.viewState.value as DataState).uiState.serviceStatusNotices
 
     @Before
     fun setup() {
@@ -393,9 +403,38 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             fetchShippingLabelFile = fetchShippingLabelFile,
             observeShippingLabelStatus = observeShippingLabelStatus,
             downloadAndPrintInvoiceUseCase = mock(),
+            fetchServiceStatusNotices = fetchServiceStatusNotices,
+            isServiceOutageError = IsServiceOutageError(),
             analyticsTracker = analyticsTracker,
             savedState = savedState
         )
+    }
+
+    private suspend fun TestScope.givenPurchaseWillFailWith(
+        exception: Throwable,
+        beforePurchase: () -> Unit = {}
+    ) {
+        whenever(
+            purchaseShippingLabel(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
+        ) doReturn Result.failure(exception)
+        createViewModel()
+        advanceUntilIdle()
+        beforePurchase()
+        sut.onPackageSelected(defaultPackageData)
+        advanceUntilIdle()
+        val ratesState = (sut.viewState.value as DataState).shipmentUIList[0]
+            .shippingRatesState as ShippingRatesState.DataState
+        ratesState.onSelectedShippingRateChanged(defaultShippingRates.values.first().first())
+        advanceUntilIdle()
+    }
+
+    private suspend fun TestScope.whenPurchaseFailsWith(
+        exception: Throwable,
+        beforePurchase: () -> Unit = {}
+    ) {
+        givenPurchaseWillFailWith(exception = exception, beforePurchase = beforePurchase)
+        sut.onPurchaseShippingLabel()
+        advanceUntilIdle()
     }
 
     private suspend fun givenCustomsRequired(
@@ -2651,5 +2690,311 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val currentViewState = sut.viewState.value as DataState
 
         assertThat(currentViewState.shouldShowSplitShipmentButton).isTrue
+    }
+
+    @Test
+    fun `given multiple service status notices, when screen opens, then expose all notices`() = testBlocking {
+        val notices = listOf(uspsOutageNotice, upsDegradedNotice, dhlInfoNotice)
+        whenever(fetchServiceStatusNotices()) doReturn Result.success(notices)
+
+        createViewModel()
+        advanceUntilIdle()
+
+        assertThat(serviceStatusNotices).containsExactlyElementsOf(notices)
+    }
+
+    @Test
+    fun `given service status request fails, when screen opens, then expose no notices`() = testBlocking {
+        whenever(fetchServiceStatusNotices()) doReturn Result.failure(Exception("Unable to fetch service status."))
+
+        createViewModel()
+        advanceUntilIdle()
+
+        assertThat(serviceStatusNotices).isEmpty()
+    }
+
+    @Test
+    fun `when a service status notice is dismissed, then remove only that notice`() = testBlocking {
+        whenever(fetchServiceStatusNotices()) doReturn
+            Result.success(listOf(uspsOutageNotice, upsDegradedNotice, dhlInfoNotice))
+        createViewModel()
+        advanceUntilIdle()
+
+        sut.onServiceStatusNoticeDismissed(upsDegradedNotice.id)
+
+        assertThat(serviceStatusNotices).containsExactly(uspsOutageNotice, dhlInfoNotice)
+    }
+
+    @Test
+    fun `given a notice was dismissed, when service status is refetched, then keep the notice hidden`() =
+        testBlocking {
+            whenever(fetchServiceStatusNotices()) doReturn Result.success(listOf(uspsOutageNotice, upsDegradedNotice))
+
+            whenPurchaseFailsWith(WooException(outageError)) {
+                sut.onServiceStatusNoticeDismissed(upsDegradedNotice.id)
+            }
+
+            verify(fetchServiceStatusNotices, times(2)).invoke()
+            assertThat(serviceStatusNotices).containsExactly(uspsOutageNotice)
+        }
+
+    @Test
+    fun `when a service status action is clicked, then open the status page`() = testBlocking {
+        createViewModel()
+        var event: OpenUrl? = null
+        sut.event.observeForever { if (it is OpenUrl) event = it }
+
+        sut.onServiceStatusActionClicked("https://www.easypoststatus.com")
+
+        assertThat(event?.url).isEqualTo("https://www.easypoststatus.com")
+    }
+
+    @Test
+    fun `given active incidents, when purchase fails with a 500 outage error, then show the most severe incident in the snackbar`() =
+        testBlocking {
+            whenever(fetchServiceStatusNotices()) doReturn
+                Result.success(listOf(dhlInfoNotice, uspsOutageNotice, upsDegradedNotice))
+
+            whenPurchaseFailsWith(WooException(outageError))
+
+            val snackbar = sut.snackbarData
+            assertThat(snackbar?.message).isEqualTo(R.string.woo_shipping_labels_purchase_service_status_error)
+            assertThat(snackbar?.messageParameters).containsExactly(uspsOutageNotice.message)
+            assertThat(snackbar?.duration).isEqualTo(SnackbarDuration.Long)
+            assertThat(snackbar?.actionLabel).isEqualTo(R.string.retry)
+        }
+
+    @Test
+    fun `given an incident started after the screen opened, when purchase fails with an outage error, then show the incident`() =
+        testBlocking {
+            whenever(fetchServiceStatusNotices()).doReturn(
+                Result.success(emptyList()),
+                Result.success(listOf(upsDegradedNotice))
+            )
+
+            whenPurchaseFailsWith(WooException(outageError))
+
+            assertThat(sut.snackbarData?.messageParameters).containsExactly(upsDegradedNotice.message)
+            assertThat(serviceStatusNotices).containsExactly(upsDegradedNotice)
+        }
+
+    @Test
+    fun `given the only incident banner was dismissed, when purchase fails with an outage error, then still show the incident`() =
+        testBlocking {
+            whenever(fetchServiceStatusNotices()) doReturn Result.success(listOf(upsDegradedNotice))
+
+            whenPurchaseFailsWith(WooException(outageError)) {
+                sut.onServiceStatusNoticeDismissed(upsDegradedNotice.id)
+            }
+
+            assertThat(serviceStatusNotices).isEmpty()
+            assertThat(sut.snackbarData?.messageParameters).containsExactly(upsDegradedNotice.message)
+        }
+
+    @Test
+    fun `given active incidents, when the connect server is unreachable, then show the incident in the snackbar`() =
+        testBlocking {
+            whenever(fetchServiceStatusNotices()) doReturn Result.success(listOf(uspsOutageNotice))
+            val gatewayError = WooError(
+                type = WooErrorType.API_ERROR,
+                original = GenericErrorType.SERVER_ERROR,
+                message = "Error: The WooCommerce Shipping server returned HTTP code: 503",
+                apiErrorCode = "wcc_server_error",
+                errorData = mock<JSONObject> { on { optInt("response_status_code") } doReturn 503 }
+            )
+
+            whenPurchaseFailsWith(WooException(gatewayError))
+
+            assertThat(sut.snackbarData?.message).isEqualTo(R.string.woo_shipping_labels_purchase_service_status_error)
+        }
+
+    @Test
+    fun `when purchase fails with an outage error, then keep loading until the service status is refetched`() =
+        testBlocking {
+            val refetchedNotices = CompletableDeferred<Result<List<ServiceStatusNotice>>>()
+            var calls = 0
+            whenever(fetchServiceStatusNotices()).doSuspendableAnswer {
+                if (calls++ == 0) Result.success(emptyList()) else refetchedNotices.await()
+            }
+
+            givenPurchaseWillFailWith(WooException(outageError))
+            sut.onPurchaseShippingLabel()
+            runCurrent()
+
+            val shipmentWhileRefetching = (sut.viewState.value as DataState).shipmentUIList[0]
+            assertThat(shipmentWhileRefetching.isPurchaseAPILoading).isTrue()
+            assertThat(sut.snackbarData).isNull()
+
+            refetchedNotices.complete(Result.success(listOf(uspsOutageNotice)))
+            advanceUntilIdle()
+
+            val shipmentAfterRefetch = (sut.viewState.value as DataState).shipmentUIList[0]
+            assertThat(shipmentAfterRefetch.isPurchaseAPILoading).isFalse()
+            assertThat(sut.snackbarData?.messageParameters).containsExactly(uspsOutageNotice.message)
+        }
+
+    @Test
+    fun `given the service status refetch hangs, when purchase fails with an outage error, then stop loading after the timeout`() =
+        testBlocking {
+            var calls = 0
+            whenever(fetchServiceStatusNotices()).doSuspendableAnswer {
+                if (calls++ == 0) Result.success(listOf(uspsOutageNotice)) else awaitCancellation()
+            }
+
+            whenPurchaseFailsWith(WooException(outageError))
+
+            val shipment = (sut.viewState.value as DataState).shipmentUIList[0]
+            assertThat(shipment.isPurchaseAPILoading).isFalse()
+            assertThat(sut.snackbarData?.messageParameters).containsExactly(uspsOutageNotice.message)
+        }
+
+    @Test
+    fun `given only an info notice is active, when purchase fails with an outage error, then show the generic snackbar`() =
+        testBlocking {
+            whenever(fetchServiceStatusNotices()) doReturn Result.success(listOf(dhlInfoNotice))
+
+            whenPurchaseFailsWith(WooException(outageError))
+
+            assertThat(sut.snackbarData?.message).isEqualTo(R.string.woo_shipping_labels_purchase_error)
+        }
+
+    @Test
+    fun `when purchase fails with a phone error, then do not refetch the service status`() = testBlocking {
+        val phoneServerError = WooError(
+            type = WooErrorType.API_ERROR,
+            original = GenericErrorType.SERVER_ERROR,
+            message = "Invalid phone number"
+        )
+
+        whenPurchaseFailsWith(WooException(phoneServerError))
+
+        verify(fetchServiceStatusNotices, times(1)).invoke()
+        assertThat(sut.snackbarData?.message).isEqualTo(R.string.woo_shipping_labels_purchase_phone_error)
+    }
+
+    @Test
+    fun `given a service status fetch is in flight, when rates fail with an outage error, then do not start another fetch`() =
+        testBlocking {
+            val pendingNotices = CompletableDeferred<Result<List<ServiceStatusNotice>>>()
+            whenever(fetchServiceStatusNotices()).doSuspendableAnswer { pendingNotices.await() }
+            whenever(
+                getShippingRates(any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull())
+            ) doReturn Result.failure(WooException(outageError))
+
+            createViewModel()
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+            pendingNotices.complete(Result.success(listOf(uspsOutageNotice)))
+            advanceUntilIdle()
+
+            verify(fetchServiceStatusNotices, times(1)).invoke()
+            assertThat(serviceStatusNotices).containsExactly(uspsOutageNotice)
+        }
+
+    @Test
+    fun `given no active incidents, when purchase fails with an outage error, then show the generic snackbar`() =
+        testBlocking {
+            whenPurchaseFailsWith(WooException(outageError))
+
+            assertThat(sut.snackbarData?.message).isEqualTo(R.string.woo_shipping_labels_purchase_error)
+        }
+
+    @Test
+    fun `given active incidents, when the card is declined, then show the generic snackbar without refetching`() =
+        testBlocking {
+            whenever(fetchServiceStatusNotices()) doReturn Result.success(listOf(uspsOutageNotice))
+            val cardDeclinedError = WooError(
+                type = WooErrorType.API_ERROR,
+                original = GenericErrorType.SERVER_ERROR,
+                message = "Error: The WooCommerce Shipping server returned: Payment Required " +
+                    "Your card was declined. ( 402 )",
+                apiErrorCode = "wcc_server_error_response",
+                errorData = mock<JSONObject> { on { optInt("response_status_code") } doReturn 402 }
+            )
+
+            whenPurchaseFailsWith(WooException(cardDeclinedError))
+
+            verify(fetchServiceStatusNotices, times(1)).invoke()
+            assertThat(sut.snackbarData?.message).isEqualTo(R.string.woo_shipping_labels_purchase_error)
+        }
+
+    @Test
+    fun `given active incidents, when purchase fails with an outage error, then track the incident was shown`() =
+        testBlocking {
+            whenever(fetchServiceStatusNotices()) doReturn Result.success(listOf(uspsOutageNotice))
+
+            whenPurchaseFailsWith(WooException(outageError))
+
+            verify(analyticsTracker).track(
+                AnalyticsEvent.WCS_PURCHASE_STEP,
+                mapOf(
+                    KEY_STATE to "purchase_failed",
+                    KEY_ERROR to outageError.message,
+                    KEY_SERVICE_STATUS_NOTICE_SHOWN to true
+                )
+            )
+        }
+
+    @Test
+    fun `when shipping rates fail with an outage error, then refetch the service status`() = testBlocking {
+        whenever(
+            getShippingRates(any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull())
+        ) doReturn Result.failure(WooException(outageError))
+        whenever(fetchServiceStatusNotices()).doReturn(
+            Result.success(emptyList()),
+            Result.success(listOf(uspsOutageNotice))
+        )
+
+        createViewModel()
+        sut.onPackageSelected(defaultPackageData)
+        advanceUntilIdle()
+
+        verify(fetchServiceStatusNotices, times(2)).invoke()
+        assertThat(serviceStatusNotices).containsExactly(uspsOutageNotice)
+    }
+
+    @Test
+    fun `when shipping rates fail with a non outage error, then do not refetch the service status`() = testBlocking {
+        whenever(
+            getShippingRates(any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull())
+        ) doReturn Result.failure(Exception("Random error"))
+
+        createViewModel()
+        sut.onPackageSelected(defaultPackageData)
+        advanceUntilIdle()
+
+        verify(fetchServiceStatusNotices, times(1)).invoke()
+    }
+
+    private companion object {
+        val outageError = WooError(
+            type = WooErrorType.API_ERROR,
+            original = GenericErrorType.SERVER_ERROR,
+            message = "Error: The WooCommerce Shipping server returned: Internal Server Error " +
+                "An internal server error occurred ( 500 )",
+            apiErrorCode = "wcc_server_error_response",
+            errorData = mock<JSONObject> { on { optInt("response_status_code") } doReturn 500 }
+        )
+        val uspsOutageNotice = ServiceStatusNotice(
+            id = "usps",
+            severity = ServiceStatusNotice.Severity.ERROR,
+            message = "USPS: API Outage | Status: Investigating",
+            isDismissible = false,
+            actionUrl = "https://www.easypoststatus.com"
+        )
+        val upsDegradedNotice = ServiceStatusNotice(
+            id = "ups",
+            severity = ServiceStatusNotice.Severity.WARNING,
+            message = "UPS: API Degradation | Status: Monitoring",
+            isDismissible = true,
+            actionUrl = null
+        )
+        val dhlInfoNotice = ServiceStatusNotice(
+            id = "dhl",
+            severity = ServiceStatusNotice.Severity.INFO,
+            message = "DHL Express: Scheduled maintenance",
+            isDismissible = true,
+            actionUrl = null
+        )
     }
 }

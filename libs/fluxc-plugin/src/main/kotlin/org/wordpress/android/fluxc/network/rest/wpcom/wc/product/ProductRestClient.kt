@@ -1005,7 +1005,7 @@ class ProductRestClient @Inject constructor(
         val params = mutableMapOf(
             "per_page" to pageSize.toString(),
             "orderby" to sorting.orderBy,
-            "order" to "asc",
+            "order" to sorting.order,
             "offset" to offset.toString(),
             "context" to context
         ).putIfNotEmpty("search" to searchQuery)

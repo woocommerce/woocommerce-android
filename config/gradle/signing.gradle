@@ -1,0 +1,40 @@
+def secretProperties = gradle.ext.secretProperties
+def uploadKeystore = new File(gradle.ext.decryptedSecretsDir, "upload.jks")
+def uploadCredentials = ["uploadStorePassword", "uploadKeyAlias", "uploadKeyPassword"]
+def uploadKeyAvailable = uploadKeystore.exists() && uploadCredentials.every { secretProperties.containsKey(it) }
+
+android {
+    signingConfigs {
+        if (uploadKeyAvailable) {
+            logger.info("Upload keystore found, configuring signing for release builds.")
+            release {
+                storeFile = uploadKeystore
+                storePassword = secretProperties.get("uploadStorePassword")
+                keyAlias = secretProperties.get("uploadKeyAlias")
+                keyPassword = secretProperties.get("uploadKeyPassword")
+            }
+            android.buildTypes.release.signingConfig = android.signingConfigs.release
+        }
+
+        def debugKeystore = new File(gradle.ext.decryptedSecretsDir, "debug.keystore")
+        if (debugKeystore.exists()) {
+            logger.info("Shared debug keystore found, configuring signing for debug builds.")
+            debug {
+                storeFile debugKeystore
+            }
+        }
+    }
+}
+
+// AGP only creates `validateSigning*` for already-signed variants, so the guard hangs off the packaging tasks.
+// `package*ReleaseResources` is excluded because compiling and linting release variants depends on it.
+tasks.matching { it.name ==~ /package\w+Release(Bundle|UniversalApk)?/ }.configureEach {
+    doFirst {
+        if (!uploadKeyAvailable) {
+            throw new GradleException(
+                "The upload keystore is missing, so this release build would not be signed. " +
+                    "Please run `bundle exec fastlane run configure_apply` to apply secrets."
+            )
+        }
+    }
+}

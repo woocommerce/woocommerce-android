@@ -42,6 +42,7 @@ import org.wordpress.android.util.ToastUtils;
 import org.wordpress.android.util.UrlUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import dagger.android.support.AndroidSupportInjection;
 
@@ -379,7 +380,8 @@ public class LoginUsernamePasswordFragment extends LoginBaseDiscoveryFragment im
         mRequestedPassword = null;
     }
 
-    private void handleAuthError(AuthenticationErrorType error, XmlRpcErrorType xmlRpcErrorType, String errorMessage) {
+    private void handleAuthError(@NonNull AuthenticationErrorType error, @Nullable XmlRpcErrorType xmlRpcErrorType,
+                                 @Nullable String errorMessage, @NonNull List<String> supportedAuthTypes) {
         switch (error) {
             case INCORRECT_USERNAME_OR_PASSWORD:
             case NOT_AUTHENTICATED: // NOT_AUTHENTICATED is the generic error from XMLRPC response on first call.
@@ -396,7 +398,7 @@ public class LoginUsernamePasswordFragment extends LoginBaseDiscoveryFragment im
             case INVALID_TOKEN:
             case AUTHORIZATION_REQUIRED:
             case NEEDS_2FA:
-                handle2fa();
+                handle2fa(null, null, null, null, null, supportedAuthTypes);
                 break;
             default:
                 AppLog.e(T.NUX, "Server response: " + errorMessage);
@@ -407,10 +409,13 @@ public class LoginUsernamePasswordFragment extends LoginBaseDiscoveryFragment im
         }
     }
 
-    private void handle2fa() {
+    private void handle2fa(@Nullable String userId, @Nullable String webauthnNonce,
+                           @Nullable String authenticatorNonce, @Nullable String backupNonce,
+                           @Nullable String pushNonce, @NonNull List<String> supportedAuthTypes) {
         if (mIsWpcom) {
             if (mLoginListener != null) {
-                mLoginListener.needs2fa(mRequestedUsername, mRequestedPassword);
+                mLoginListener.needs2fa(mRequestedUsername, mRequestedPassword, userId, webauthnNonce,
+                        authenticatorNonce, backupNonce, pushNonce, supportedAuthTypes);
             }
         } else {
             showError("2FA not supported for self-hosted sites. Please use an app-password.");
@@ -423,7 +428,8 @@ public class LoginUsernamePasswordFragment extends LoginBaseDiscoveryFragment im
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTwoFactorAuthStarted(OnTwoFactorAuthStarted event) {
         mLoginStarted = false;
-        handle2fa();
+        handle2fa(event.userId, event.webauthnNonce, event.authenticatorNonce, event.mBackupNonce,
+                event.pushNonce, event.mSupportedAuthTypes);
         endProgress();
     }
 
@@ -450,7 +456,8 @@ public class LoginUsernamePasswordFragment extends LoginBaseDiscoveryFragment im
             mAnalyticsListener.trackLoginFailed(event.getClass().getSimpleName(),
                     event.error.type.toString(), event.error.message);
 
-            handleAuthError(event.error.type, event.error.xmlRpcErrorType, event.error.message);
+            handleAuthError(event.error.type, event.error.xmlRpcErrorType, event.error.message,
+                    event.error.supportedAuthTypes);
 
             // end the progress last since it cleans up the requested username/password and those might be needed
             //  in handleAuthError()

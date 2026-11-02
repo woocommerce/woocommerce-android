@@ -194,6 +194,7 @@ enum class AiSupportChatEntryPoint(val value: String) {
     HELP_AND_SUPPORT("help_and_support"),
     CONNECTIVITY_TOOL("connectivity_tool"),
     STORE_CONNECTION_ERROR("store_connection_error"),
+    LOGIN_UNEXPECTED_RESPONSE("login_unexpected_response"),
     CHAT_HISTORY("chat_history"),
     PRE_LOGIN("pre_login")
 }

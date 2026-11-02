@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.toList
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -56,6 +57,21 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
 
             assertThat(initial.statuses.map(DiagnosticStatus::test))
                 .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, STORE_ORDERS)
+        }
+
+    @Test
+    fun `given login diagnostics, when run, then only internet and wpcom checks run`() =
+        testBlocking {
+            // GIVEN
+            stubAll(success = true)
+
+            // WHEN
+            val final = service.runLoginDiagnostics().toList().last()
+
+            // THEN
+            assertThat(final.statuses.map(DiagnosticStatus::test)).containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS)
+            assertThat(final.isComplete).isTrue
+            verify(storeConnectionCheck, never()).invoke()
         }
 
     @Test

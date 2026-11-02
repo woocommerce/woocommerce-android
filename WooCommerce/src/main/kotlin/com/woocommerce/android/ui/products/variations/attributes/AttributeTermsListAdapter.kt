@@ -91,8 +91,8 @@ class AttributeTermsListAdapter(
 
     fun addTerm(termName: String) {
         if (!containsTerm(termName)) {
-            termNames.add(0, termName)
-            notifyItemInserted(0)
+            termNames.add(termName)
+            notifyItemInserted(termNames.lastIndex)
             if (itemCount == 2) {
                 delayedChangeNotification()
             }

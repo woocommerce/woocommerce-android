@@ -244,6 +244,7 @@ class LoginAnalyticsTracker(
     }
 
     override fun trackFailure(message: String?) {
+        message?.let { unifiedLoginTracker.onErrorShown(it) }
         unifiedLoginTracker.trackFailure(message)
     }
 

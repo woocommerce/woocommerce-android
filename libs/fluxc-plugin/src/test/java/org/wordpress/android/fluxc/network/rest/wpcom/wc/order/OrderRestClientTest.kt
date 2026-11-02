@@ -7,6 +7,7 @@ import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
@@ -74,7 +75,8 @@ class OrderRestClientTest {
                 cacheTimeToLive = any(),
                 forced = any(),
                 requestTimeout = any(),
-                retries = any()
+                retries = any(),
+                readableBodyCheck = anyOrNull()
             )
         ).thenReturn(mockResponse)
 
@@ -97,7 +99,8 @@ class OrderRestClientTest {
             cacheTimeToLive = any(),
             forced = any(),
             requestTimeout = any(),
-            retries = any()
+            retries = any(),
+            readableBodyCheck = anyOrNull()
         )
 
         assertThat(paramsCaptor.firstValue).containsExactlyInAnyOrderEntriesOf(expectedParams)
@@ -118,7 +121,8 @@ class OrderRestClientTest {
                 cacheTimeToLive = any(),
                 forced = any(),
                 requestTimeout = any(),
-                retries = any()
+                retries = any(),
+                readableBodyCheck = anyOrNull()
             )
         ).thenReturn(mockResponse)
 
@@ -141,7 +145,8 @@ class OrderRestClientTest {
             cacheTimeToLive = any(),
             forced = any(),
             requestTimeout = any(),
-            retries = any()
+            retries = any(),
+            readableBodyCheck = anyOrNull()
         )
 
         assertThat(paramsCaptor.firstValue).doesNotContainKey("created_via")
@@ -162,7 +167,8 @@ class OrderRestClientTest {
                 cacheTimeToLive = any(),
                 forced = any(),
                 requestTimeout = any(),
-                retries = any()
+                retries = any(),
+                readableBodyCheck = anyOrNull()
             )
         ).thenReturn(mockResponse)
 
@@ -185,7 +191,8 @@ class OrderRestClientTest {
             cacheTimeToLive = any(),
             forced = any(),
             requestTimeout = any(),
-            retries = any()
+            retries = any(),
+            readableBodyCheck = anyOrNull()
         )
 
         assertThat(paramsCaptor.firstValue).doesNotContainKey("created_via")
@@ -207,7 +214,8 @@ class OrderRestClientTest {
                 cacheTimeToLive = any(),
                 forced = any(),
                 requestTimeout = any(),
-                retries = any()
+                retries = any(),
+                readableBodyCheck = anyOrNull()
             )
         ).thenReturn(mockResponse)
 
@@ -230,7 +238,8 @@ class OrderRestClientTest {
             cacheTimeToLive = any(),
             forced = any(),
             requestTimeout = any(),
-            retries = any()
+            retries = any(),
+            readableBodyCheck = anyOrNull()
         )
 
         assertThat(paramsCaptor.firstValue["created_via"]).isEqualTo(expectedCreatedVia)
@@ -253,7 +262,8 @@ class OrderRestClientTest {
                 cacheTimeToLive = any(),
                 forced = any(),
                 requestTimeout = any(),
-                retries = any()
+                retries = any(),
+                readableBodyCheck = anyOrNull()
             )
         ).thenReturn(mockResponse)
 
@@ -279,7 +289,8 @@ class OrderRestClientTest {
             cacheTimeToLive = any(),
             forced = any(),
             requestTimeout = any(),
-            retries = any()
+            retries = any(),
+            readableBodyCheck = anyOrNull()
         )
         assertThat(paramsCaptor.firstValue["created_via"]).isEqualTo(expectedCreatedVia)
     }
@@ -422,7 +433,8 @@ class OrderRestClientTest {
                     cacheTimeToLive = any(),
                     forced = any(),
                     requestTimeout = any(),
-                    retries = any()
+                    retries = any(),
+                    readableBodyCheck = anyOrNull()
                 )
             ).thenReturn(WPAPIResponse.Error(error))
 
@@ -457,7 +469,8 @@ class OrderRestClientTest {
                     cacheTimeToLive = any(),
                     forced = any(),
                     requestTimeout = any(),
-                    retries = any()
+                    retries = any(),
+                    readableBodyCheck = anyOrNull()
                 )
             ).thenReturn(WPAPIResponse.Error(error))
 

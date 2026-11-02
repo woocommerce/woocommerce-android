@@ -101,7 +101,7 @@ class WooPosTotalsViewModel @Inject constructor(
         private const val KEY_STATE = "woo_pos_totals_data_state"
         private const val KEY_IS_TAP_TO_PAY_PAYMENT = "woo_pos_is_tap_to_pay_payment"
         private const val TAP_TO_PAY_SOURCE = "woo_pos_checkout"
-        private val InitialState = WooPosTotalsViewState.Loading
+        private val InitialState = WooPosTotalsViewState.Idle
         private val DISCOUNTED_LINE_TOLERANCE = BigDecimal("0.005")
     }
 
@@ -133,7 +133,12 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private var cardReaderPaymentController: CardReaderPaymentController? = null
     private var remotePaymentJob: Job? = null
+    private var paymentAnalyticsJob: Job? = null
     private var activePaymentMode: PaymentMode? = null
+
+    // Capture has started but checkout is still shown while the totals hide. Reacting to the reader here
+    // would cancel the capture, losing the result of a charge that may already be done.
+    private var isCaptureStarting = false
 
     // Persisted ViewModel-side flag covering the entire TTP flow (connect → SDK overlay → terminal).
     // Drives the `listenToPaymentState` mode dispatch and silences the reader-status observer.
@@ -180,18 +185,21 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             effectiveReaderStatusProvider.flow
                 .combine(dataState) { effective, data -> effective to data }
-                .collect { (effective, data) ->
-                    if (isTapToPayPayment) return@collect
-                    val state = uiState.value as? WooPosTotalsViewState.Checkout ?: return@collect
-                    if (!state.isCardPaymentEnabledForCountry) return@collect
-                    when (effective) {
-                        WooPosEffectiveReaderStatus.RemoteConnected -> handleRemoteConnected(state, data)
-                        WooPosEffectiveReaderStatus.BluetoothConnected -> handleBluetoothConnected(state, data)
-                        WooPosEffectiveReaderStatus.Connecting,
-                        WooPosEffectiveReaderStatus.Disconnected -> handleReaderDisconnected(state)
-                        WooPosEffectiveReaderStatus.Reconnecting -> Unit
-                    }
-                }
+                .collect { (effective, data) -> handleReaderStatus(effective, data) }
+        }
+    }
+
+    private suspend fun handleReaderStatus(effective: WooPosEffectiveReaderStatus, data: TotalsDataState) {
+        if (isTapToPayPayment) return
+        if (isCaptureStarting) return
+        val state = uiState.value as? WooPosTotalsViewState.Checkout ?: return
+        if (!state.isCardPaymentEnabledForCountry) return
+        when (effective) {
+            WooPosEffectiveReaderStatus.RemoteConnected -> handleRemoteConnected(state, data)
+            WooPosEffectiveReaderStatus.BluetoothConnected -> handleBluetoothConnected(state, data)
+            WooPosEffectiveReaderStatus.Connecting,
+            WooPosEffectiveReaderStatus.Disconnected -> handleReaderDisconnected(state)
+            WooPosEffectiveReaderStatus.Reconnecting -> Unit
         }
     }
 
@@ -229,6 +237,10 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun cancelPaymentAction() {
         cardReaderPaymentController?.onBackPressed()
+        stopPaymentCollection()
+    }
+
+    private fun stopPaymentCollection() {
         cardReaderPaymentController?.stop()
         if (isTapToPayPayment) {
             isTTPPaymentInProgress = false
@@ -256,13 +268,14 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.OnStartReceiptFlowClicked -> handleEmailReceiptClicked()
 
-            WooPosTotalsUIEvent.OnCashPaymentClicked -> handleCashPaymentClicked()
+            WooPosTotalsUIEvent.OnCashPaymentClicked -> handleOtherPaymentMethodClicked(OtherPaymentMethod.CASH)
 
             WooPosTotalsUIEvent.OnTapToPayClicked -> startTapToPayPayment()
 
-            WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked -> handleMarkOrderAsPaidClicked()
+            WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked ->
+                handleOtherPaymentMethodClicked(OtherPaymentMethod.MARK_ORDER_AS_PAID)
 
-            WooPosTotalsUIEvent.OnScanToPayClicked -> handleScanToPayClicked()
+            WooPosTotalsUIEvent.OnScanToPayClicked -> handleOtherPaymentMethodClicked(OtherPaymentMethod.SCAN_TO_PAY)
 
             is WooPosTotalsUIEvent.OnFineLocationPermissionResult ->
                 onFineLocationPermissionResult(event.granted)
@@ -281,6 +294,8 @@ class WooPosTotalsViewModel @Inject constructor(
             }
 
             WooPosTotalsUIEvent.OnBackClicked -> handleBackPress()
+
+            WooPosTotalsUIEvent.OnScreenResumed -> handleScreenResumed()
 
             WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedCouponValidation -> handleEditOrderClicked()
 
@@ -301,31 +316,33 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
-    private fun handleCashPaymentClicked() = viewModelScope.launch {
-        totalsAnalyticsTracker.trackCashPaymentTapped()
-        childrenToParentEventSender.sendToParent(
-            ToCashPayment(dataState.value.orderId)
-        )
-    }
-
-    private fun handleMarkOrderAsPaidClicked() = viewModelScope.launch {
+    private fun handleOtherPaymentMethodClicked(method: OtherPaymentMethod) = viewModelScope.launch {
         val orderId = dataState.value.orderId
         if (orderId == EMPTY_ORDER_ID) {
-            wooPosLogWrapper.e("Mark order as complete tapped before order draft was created")
+            wooPosLogWrapper.e("$method tapped before order draft was created")
             return@launch
         }
-        totalsAnalyticsTracker.trackCheckoutMarkAsPaidTapped()
-        childrenToParentEventSender.sendToParent(ToMarkOrderAsPaid(orderId))
+        // The card reader must not take a card while the order is being paid another way.
+        stopPaymentCollection()
+        when (method) {
+            OtherPaymentMethod.CASH -> {
+                totalsAnalyticsTracker.trackCashPaymentTapped()
+                childrenToParentEventSender.sendToParent(ToCashPayment(orderId))
+            }
+            OtherPaymentMethod.SCAN_TO_PAY -> {
+                totalsAnalyticsTracker.trackCheckoutScanToPayPaymentTapped()
+                childrenToParentEventSender.sendToParent(ToScanToPay(orderId))
+            }
+            OtherPaymentMethod.MARK_ORDER_AS_PAID -> {
+                totalsAnalyticsTracker.trackCheckoutMarkAsPaidTapped()
+                childrenToParentEventSender.sendToParent(ToMarkOrderAsPaid(orderId))
+            }
+        }
     }
 
-    private fun handleScanToPayClicked() = viewModelScope.launch {
-        val orderId = dataState.value.orderId
-        if (orderId == EMPTY_ORDER_ID) {
-            wooPosLogWrapper.e("Scan to pay tapped before order draft was created")
-            return@launch
-        }
-        totalsAnalyticsTracker.trackCheckoutScanToPayPaymentTapped()
-        childrenToParentEventSender.sendToParent(ToScanToPay(orderId))
+    private fun handleScreenResumed() {
+        if (activePaymentMode != null) return
+        viewModelScope.launch { handleReaderStatus(effectiveReaderStatusProvider.current(), dataState.value) }
     }
 
     private fun handleAllPaymentMethodsVisibilityChanged(isVisible: Boolean) {
@@ -494,13 +511,23 @@ class WooPosTotalsViewModel @Inject constructor(
             is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment -> {
                 val sdkRetry = paymentState.onRetry
                 if (sdkRetry != null) {
+                    isTapToPayPayment = true
                     sdkRetry.invoke()
                 } else {
                     returnToCheckoutAfterTapToPayFailed()
                 }
             }
 
-            else -> error("Retry failed transaction clicked but payment state is not PaymentFailed")
+            null,
+            is CardReaderPaymentState.LoadingData,
+            CardReaderPaymentState.ReFetchingOrder,
+            is CardReaderPaymentState.ProcessingPayment,
+            is CardReaderPaymentState.PrintingReceipt,
+            is CardReaderPaymentState.PaymentCapturing,
+            is CardReaderPaymentState.PaymentSuccessful,
+            CardReaderPaymentState.SharingReceipt,
+            is CardReaderPaymentOrRefundState.CardReaderInteracRefundState ->
+                wooPosLogWrapper.e("Retry failed transaction clicked but payment state is not PaymentFailed")
         }
     }
 
@@ -754,7 +781,11 @@ class WooPosTotalsViewModel @Inject constructor(
                 }
             }
         }
-        viewModelScope.launch { totalsAnalyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState) }
+        paymentAnalyticsJob?.cancel()
+        paymentAnalyticsJob = viewModelScope.launch {
+            launch { totalsAnalyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState) }
+            totalsAnalyticsTracker.trackReaderReadyForCardInput(cardReaderPaymentController?.readerReadyForCardInput)
+        }
     }
 
     private suspend fun notifyOrderPaidByCard() {
@@ -832,9 +863,14 @@ class WooPosTotalsViewModel @Inject constructor(
     private suspend fun handleCapturingPaymentState() {
         val state = uiState.value
         if (state is WooPosTotalsViewState.Checkout) {
-            uiState.value = state.copy(totals = Totals.Hidden)
-            @Suppress("MagicNumber")
-            delay(384)
+            isCaptureStarting = true
+            try {
+                uiState.value = state.copy(totals = Totals.Hidden)
+                @Suppress("MagicNumber")
+                delay(384)
+            } finally {
+                isCaptureStarting = false
+            }
         }
         uiState.value = buildPaymentInProgressState()
         childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentInProgress)
@@ -881,35 +917,32 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun buildPaymentFailedState(
         state: CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment
-    ): PaymentFailed {
-        val isRetryAvailable = state.onRetry != null
-        val retryButtonLabel = if (isRetryAvailable) {
-            resourceProvider.getString(R.string.woo_pos_payment_failed_try_again)
-        } else {
-            resourceProvider.getString(R.string.woo_pos_payment_failed_try_another_payment_method)
-        }
-        return PaymentFailed(
-            title = resourceProvider.getString(
-                R.string.woopos_success_totals_payment_failed_title
-            ),
-            subtitle = uiStringParser.asString(state.errorType.message),
-            retryPaymentButtonLabel = retryButtonLabel,
-            isReturnToCheckoutButtonVisible = isRetryAvailable
-        )
-    }
+    ): PaymentFailed = buildPaymentFailedState(state.errorType, isRetryAvailable = state.onRetry != null)
 
     private fun buildBuiltInPaymentFailedState(
         state: CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment
-    ): PaymentFailed {
-        val isRetryAvailable = state.onRetry != null
-        val retryButtonLabel = if (isRetryAvailable) {
-            resourceProvider.getString(R.string.woo_pos_payment_failed_try_again)
+    ): PaymentFailed = buildPaymentFailedState(state.errorType, isRetryAvailable = state.onRetry != null)
+
+    private fun buildPaymentFailedState(errorType: PaymentFlowError, isRetryAvailable: Boolean): PaymentFailed {
+        val isOutcomeUnknown = errorType == PaymentFlowError.CaptureOutcomeUnknown
+        val retryButtonLabel = when {
+            !isRetryAvailable -> resourceProvider.getString(R.string.woo_pos_payment_failed_try_another_payment_method)
+            isOutcomeUnknown -> resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_check_status)
+            else -> resourceProvider.getString(R.string.woo_pos_payment_failed_try_again)
+        }
+        val title = if (isOutcomeUnknown) {
+            resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_title)
         } else {
-            resourceProvider.getString(R.string.woo_pos_payment_failed_try_another_payment_method)
+            resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title)
+        }
+        val subtitle = if (isOutcomeUnknown) {
+            resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_message)
+        } else {
+            uiStringParser.asString(errorType.message)
         }
         return PaymentFailed(
-            title = resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title),
-            subtitle = uiStringParser.asString(state.errorType.message),
+            title = title,
+            subtitle = subtitle,
             retryPaymentButtonLabel = retryButtonLabel,
             isReturnToCheckoutButtonVisible = isRetryAvailable
         )
@@ -1223,5 +1256,11 @@ class WooPosTotalsViewModel @Inject constructor(
     private enum class PaymentMode {
         BLUETOOTH,
         REMOTE,
+    }
+
+    private enum class OtherPaymentMethod {
+        CASH,
+        SCAN_TO_PAY,
+        MARK_ORDER_AS_PAID,
     }
 }

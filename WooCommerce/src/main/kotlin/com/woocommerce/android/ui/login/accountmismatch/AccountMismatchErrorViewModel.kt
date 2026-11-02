@@ -11,6 +11,7 @@ import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.support.help.HelpOrigin.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
@@ -30,6 +31,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val resourceProvider: ResourceProvider,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val unifiedLoginTracker: UnifiedLoginTracker,
     val webViewAuthenticator: WebViewAuthenticator,
     val userAgent: UserAgent
 ) : ScopedViewModel(savedStateHandle) {
@@ -37,11 +39,12 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private val userAccount = accountRepository.getUserAccount()
     private val siteUrl = navArgs.siteUrl
 
-    val viewState: LiveData<ViewState> = flowOf(
-        prepareMainState()
-    ).asLiveData()
+    private val mainState = prepareMainState()
+
+    val viewState: LiveData<ViewState> = flowOf(mainState).asLiveData()
 
     init {
+        unifiedLoginTracker.onErrorShown(mainState.message)
         if (navArgs.primaryButton == AccountMismatchPrimaryButton.CONNECT_JETPACK) {
             analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_CONNECTION_ERROR_SHOWN)
         }

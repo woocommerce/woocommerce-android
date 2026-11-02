@@ -9,7 +9,7 @@ class LogEntry(
     val tag: WooLog.T,
     val level: WooLog.LogLevel,
     val text: String?,
-    private val logDate: Date = Date()
+    val logDate: Date = Date()
 ) {
     override fun toString(): String {
         val logText = if (text.isNullOrEmpty()) "null" else text

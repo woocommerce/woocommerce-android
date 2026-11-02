@@ -47,7 +47,8 @@ class WooNetwork @Inject constructor(
         cacheTimeToLive: Int,
         forced: Boolean,
         requestTimeout: Int,
-        retries: Int
+        retries: Int,
+        readableBodyCheck: ((T) -> Boolean)?
     ): WPAPIResponse<T> = handleRequest(site, RequestContext(path, "GET")) {
         executeGetGsonRequest(
             site = site,
@@ -58,7 +59,8 @@ class WooNetwork @Inject constructor(
             cacheTimeToLive = cacheTimeToLive,
             forced = forced,
             requestTimeout = requestTimeout,
-            retries = retries
+            retries = retries,
+            readableBodyCheck = readableBodyCheck
         )
     }
 

@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.util.analytics
 
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ReaderReadySignal
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
@@ -13,19 +15,22 @@ class WooPosPaymentStateAnalyticsTracker @Inject constructor(
     suspend fun trackPaymentStates(paymentState: StateFlow<CardReaderPaymentOrRefundState>?) {
         paymentState?.distinctUntilChanged { old, new -> old::class == new::class }?.collect {
             when (it) {
-                is CardReaderPaymentState.ProcessingPayment -> readerReadyForPaymentTracker.track()
+                is CardReaderPaymentState.LoadingData -> analyticsData.startPaymentAttempt(System.currentTimeMillis())
+
+                is CardReaderPaymentState.ProcessingPayment.BuiltInReaderProcessingPayment ->
+                    readerReadyForPaymentTracker.track(ReaderReadySignal.COLLECTION_STARTED)
 
                 is CardReaderPaymentState.PaymentCapturing -> {
                     analyticsData.cardTappedTimestamp = System.currentTimeMillis()
                 }
 
+                is CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment,
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.CollectingInteracRefund,
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.InteracRefundFailure.Cancelable,
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.InteracRefundFailure.NonCancelable,
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.InteracRefundSuccessful,
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.LoadingData,
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.ProcessingInteracRefund,
-                is CardReaderPaymentState.LoadingData,
                 is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.Cancelable,
                 is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable,
                 is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.Cancelable,
@@ -39,5 +44,9 @@ class WooPosPaymentStateAnalyticsTracker @Inject constructor(
                 CardReaderPaymentState.SharingReceipt -> Unit
             }
         }
+    }
+
+    suspend fun trackReaderReadyForCardInput(readerReadyForCardInput: Flow<Unit>?) {
+        readerReadyForCardInput?.collect { readerReadyForPaymentTracker.track(ReaderReadySignal.INPUT_REQUESTED) }
     }
 }

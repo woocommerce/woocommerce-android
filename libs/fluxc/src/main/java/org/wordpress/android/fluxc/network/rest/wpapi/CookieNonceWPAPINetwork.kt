@@ -24,7 +24,8 @@ class CookieNonceWPAPINetwork @Inject constructor(
         cacheTimeToLive: Int,
         forced: Boolean,
         requestTimeout: Int,
-        retries: Int
+        retries: Int,
+        readableBodyCheck: ((T) -> Boolean)?
     ): WPAPIResponse<T> {
         return cookieNonceAuthenticator.makeAuthenticatedWPAPIRequest(site) { nonce ->
             wpApiGsonRequestBuilder.syncGetRequest(
@@ -36,6 +37,7 @@ class CookieNonceWPAPINetwork @Inject constructor(
                 enableCaching = enableCaching,
                 cacheTimeToLive = cacheTimeToLive,
                 nonce = nonce.value,
+                readableBodyCheck = readableBodyCheck,
             )
         }
     }

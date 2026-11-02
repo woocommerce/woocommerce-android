@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource
 
+import com.woocommerce.android.WooException
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
@@ -13,6 +14,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageDa
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.WooShippingRatesRestClient
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.assertj.core.api.Assertions.assertThat
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -117,6 +119,9 @@ class WooShippingRatesRepositoryTest : BaseUnitTest() {
         )
 
         assert(result.isFailure)
+        val exception = result.exceptionOrNull()
+        assertThat(exception).isInstanceOf(WooException::class.java)
+        assertThat((exception as WooException).error.original).isEqualTo(BaseRequest.GenericErrorType.PARSE_ERROR)
     }
 
     @Test

@@ -75,9 +75,8 @@ class MobileStatusProvider @Inject constructor(
     private val wooPushNotificationsStore: WooPushNotificationsStore
 ) {
     /**
-     * @param siteAddress the address the merchant typed into the support form, which can differ from the selected
-     * site when they are contacting us precisely because the app picked up the wrong store. Absent when the report
-     * is produced outside the support form.
+     * @param siteAddress a store address the merchant gave us, which can differ from the selected site when they are
+     * contacting us precisely because the app picked up the wrong store. Absent when there is none.
      */
     suspend operator fun invoke(selectedSite: SiteModel?, siteAddress: String? = null): String = buildString {
         appendLine(REPORT_HEADING)

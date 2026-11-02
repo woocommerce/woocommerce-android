@@ -8,6 +8,7 @@ import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -58,6 +59,7 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Sho
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDialog
 import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
 import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
+import com.woocommerce.android.ui.products.variations.domain.VariationCandidates
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -77,6 +79,7 @@ class VariationListFragment :
         const val TAG: String = "VariationListFragment"
         const val KEY_VARIATION_LIST_RESULT = "key_variation_list_result"
         private const val LIST_STATE_KEY = "list_state"
+        private const val KEY_GENERATE_VARIATIONS_CANDIDATES = "generate_variations_candidates"
     }
 
     @Inject
@@ -88,6 +91,8 @@ class VariationListFragment :
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
     private var fetchErrorSnackbar: Snackbar? = null
+    private var generateVariationsDialog: AlertDialog? = null
+    private var generateVariationsCandidates: List<VariationCandidate>? = null
 
     private val navArgs: VariationListFragmentArgs by navArgs()
 
@@ -104,6 +109,10 @@ class VariationListFragment :
 
         initializeViews(savedInstanceState)
         initializeViewModel()
+
+        savedInstanceState?.parcelable<VariationCandidates>(KEY_GENERATE_VARIATIONS_CANDIDATES)?.let {
+            showGenerateVariationConfirmation(it.candidates)
+        }
     }
 
     override fun onStop() {
@@ -113,6 +122,8 @@ class VariationListFragment :
 
     override fun onDestroyView() {
         skeletonView.hide()
+        generateVariationsDialog?.dismiss()
+        generateVariationsDialog = null
         super.onDestroyView()
         _binding = null
         progressDialog = null
@@ -133,6 +144,9 @@ class VariationListFragment :
         super.onSaveInstanceState(outState)
         layoutManager?.let {
             outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
+        }
+        generateVariationsCandidates?.let {
+            outState.putParcelable(KEY_GENERATE_VARIATIONS_CANDIDATES, VariationCandidates(it))
         }
     }
 
@@ -261,7 +275,8 @@ class VariationListFragment :
     }
 
     private fun showGenerateVariationConfirmation(variationCandidatesSize: List<VariationCandidate>) {
-        MaterialAlertDialogBuilder(requireActivity())
+        generateVariationsCandidates = variationCandidatesSize
+        generateVariationsDialog = MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.variations_bulk_creation_confirmation_title)
             .setMessage(getString(R.string.variations_bulk_creation_confirmation_message, variationCandidatesSize.size))
             .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
@@ -271,6 +286,7 @@ class VariationListFragment :
             .setNegativeButton(android.R.string.cancel) { dialogInterface, _ ->
                 dialogInterface.dismiss()
             }
+            .setOnDismissListener { generateVariationsCandidates = null }
             .show()
     }
 

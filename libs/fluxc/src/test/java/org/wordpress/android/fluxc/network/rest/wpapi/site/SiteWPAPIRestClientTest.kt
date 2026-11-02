@@ -5,7 +5,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
@@ -97,6 +102,27 @@ class SiteWPAPIRestClientTest {
         val refreshedSite = subject.fetchWPAPISite(existingSite)
 
         assertThat(refreshedSite.adminUrl).isEqualTo(REST_ADMIN_URL)
+    }
+
+    @Test
+    fun `given the browser login, when the site advertises a relative authorization address, then the body is not readable`() =
+        test {
+            givenSiteResponse(siteWithAuthorizationUrl(REST_ADMIN_AUTHORIZATION_URL))
+
+            val check = readableBodyCheck(FetchWPAPISitePayload(SITE_URL, checksAuthorizationUrl = true))
+
+            assertThat(check(siteWithAuthorizationUrl("/wp-admin/authorize-application.php"))).isFalse()
+            assertThat(check(siteWithAuthorizationUrl(null))).isFalse()
+            assertThat(check(siteWithAuthorizationUrl(REST_ADMIN_AUTHORIZATION_URL))).isTrue()
+        }
+
+    @Test
+    fun `given the browser login, when the site advertises no app passwords, then the body is readable`() = test {
+        givenSiteResponse(siteWithAuthorizationUrl(REST_ADMIN_AUTHORIZATION_URL))
+
+        val check = readableBodyCheck(FetchWPAPISitePayload(SITE_URL, checksAuthorizationUrl = true))
+
+        assertThat(check(RootWPAPIRestResponse(namespaces = listOf("wc/v3")))).isTrue()
     }
 
     @Test
@@ -261,13 +287,46 @@ class SiteWPAPIRestClientTest {
     private suspend fun givenSiteResponse(response: RootWPAPIRestResponse) {
         whenever(
             requestBuilder.syncGetRequest(
-                restClient = subject,
-                url = WP_API_URL,
-                clazz = RootWPAPIRestResponse::class.java,
-                params = mapOf("_fields" to FETCH_API_CALL_FIELDS)
+                restClient = eq(subject),
+                url = eq(WP_API_URL),
+                params = eq(mapOf("_fields" to FETCH_API_CALL_FIELDS)),
+                body = any(),
+                clazz = eq(RootWPAPIRestResponse::class.java),
+                enableCaching = any(),
+                cacheTimeToLive = any(),
+                nonce = anyOrNull(),
+                readableBodyCheck = any()
             )
         ).thenReturn(WPAPIResponse.Success(response, emptyList()))
     }
+
+    private suspend fun readableBodyCheck(payload: FetchWPAPISitePayload): (RootWPAPIRestResponse) -> Boolean {
+        subject.fetchWPAPISite(payload)
+        val captor = argumentCaptor<(RootWPAPIRestResponse) -> Boolean>()
+        verify(requestBuilder).syncGetRequest(
+            restClient = eq(subject),
+            url = eq(WP_API_URL),
+            params = any(),
+            body = any(),
+            clazz = eq(RootWPAPIRestResponse::class.java),
+            enableCaching = any(),
+            cacheTimeToLive = any(),
+            nonce = anyOrNull(),
+            readableBodyCheck = captor.capture()
+        )
+        return captor.firstValue
+    }
+
+    private fun siteWithAuthorizationUrl(authorizationUrl: String?) = RootWPAPIRestResponse(
+        authentication = RootWPAPIRestResponse.Authentication(
+            applicationPasswords = RootWPAPIRestResponse.Authentication.ApplicationPasswords(
+                endpoints = RootWPAPIRestResponse.Authentication.ApplicationPasswords.Endpoints(
+                    authorization = authorizationUrl
+                )
+            )
+        ),
+        namespaces = listOf("wc/v3")
+    )
 
     private companion object {
         const val SITE_URL = "https://site.example"

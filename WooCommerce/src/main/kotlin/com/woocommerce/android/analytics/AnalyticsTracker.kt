@@ -230,6 +230,7 @@ class AnalyticsTracker private constructor(
         const val KEY_TO = "to"
         const val KEY_TYPE = "type"
         const val KEY_CARRIER = "carrier"
+        const val KEY_SERVICE_STATUS_NOTICE_SHOWN = "service_status_notice_shown"
         const val KEY_OPTION = "option"
         const val KEY_URL = "url"
         const val KEY_HAS_CONNECTED_STORES = "has_connected_stores"
@@ -612,6 +613,9 @@ class AnalyticsTracker private constructor(
 
         // -- App links
         const val KEY_PATH = "path"
+
+        // -- Application passwords
+        const val KEY_IS_APP_IN_FOREGROUND = "is_app_in_foreground"
 
         const val VALUE_OTHER = "other"
         const val VALUE_STEP_WEB_CHECKOUT = "web_checkout"

@@ -44,6 +44,7 @@ import org.wordpress.android.fluxc.persistence.AccountStorePersistence;
 import org.wordpress.android.util.AppLog;
 import org.wordpress.android.util.AppLog.T;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -420,6 +421,7 @@ public class AccountStore extends Store {
         public AuthenticationErrorType type;
         public String message;
         public XmlRpcErrorType xmlRpcErrorType = NOT_SET;
+        @NonNull public List<String> supportedAuthTypes = Collections.emptyList();
 
         public AuthenticationError(AuthenticationErrorType type, @NonNull String message) {
             this.type = type;
@@ -1223,6 +1225,9 @@ public class AccountStore extends Store {
         event.error = new AuthenticationError(
                 Authenticator.volleyErrorToAuthenticationError(volleyError),
                 Authenticator.volleyErrorToErrorMessage(volleyError));
+        if (event.error.type == AuthenticationErrorType.NEEDS_2FA) {
+            event.error.supportedAuthTypes = Authenticator.volleyErrorToSupportedAuthTypes(volleyError);
+        }
         emitChange(event);
     }
 

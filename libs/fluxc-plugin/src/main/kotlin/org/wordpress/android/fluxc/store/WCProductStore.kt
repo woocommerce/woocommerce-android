@@ -444,9 +444,10 @@ class WCProductStore @Inject internal constructor(
         POPULARITY_DESC
     }
 
-    enum class VariationSorting(val orderBy: String) {
-        MENU_ORDER("menu_order"),
-        ID("id")
+    enum class VariationSorting(val orderBy: String, val order: String) {
+        MENU_ORDER("menu_order", "asc"),
+        ID("id", "asc"),
+        ID_DESC("id", "desc")
     }
 
     enum class ProductCategorySorting {
@@ -2076,6 +2077,7 @@ class WCProductStore @Inject internal constructor(
         excludedVariationIds: List<Long> = emptyList(),
         filterOptions: Map<VariationFilterOption, String>? = null,
         orderCurrency: String? = null,
+        sorting: VariationSorting = VariationSorting.MENU_ORDER,
     ): WooResult<ProductVariationsPage> {
         return coroutineEngine.withDefaultContext(API, this, "fetchProductVariations") {
             val response = wcProductRestClient.fetchProductVariationsWithSyncRequest(
@@ -2086,7 +2088,8 @@ class WCProductStore @Inject internal constructor(
                 includedVariationIds = includedVariationIds,
                 excludedVariationIds = excludedVariationIds,
                 filterOptions = filterOptions,
-                orderCurrency = orderCurrency
+                orderCurrency = orderCurrency,
+                sorting = sorting
             )
             database.executeInTransaction {
                 val mergedResponse = response.result

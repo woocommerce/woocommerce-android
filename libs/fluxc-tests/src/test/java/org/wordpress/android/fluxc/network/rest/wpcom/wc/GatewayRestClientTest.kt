@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -35,7 +36,8 @@ class GatewayRestClientTest {
                     cacheTimeToLive = any(),
                     forced = any(),
                     requestTimeout = any(),
-                    retries = any()
+                    retries = any(),
+                    readableBodyCheck = anyOrNull()
                 )
             ).thenReturn(
                 WPAPIResponse.Success(arrayOf(mock()), emptyList())
@@ -64,7 +66,8 @@ class GatewayRestClientTest {
                     cacheTimeToLive = any(),
                     forced = any(),
                     requestTimeout = any(),
-                    retries = any()
+                    retries = any(),
+                    readableBodyCheck = anyOrNull()
                 )
             ).thenReturn(
                 WPAPIResponse.Error(expectedError)

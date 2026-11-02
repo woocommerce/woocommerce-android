@@ -7,6 +7,7 @@ import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.products.ProductHelper
+import com.woocommerce.android.util.PhoneUtils
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -303,7 +304,10 @@ data class Order(
 
     fun formatBillingInformationForDisplay(): String = this.billingAddress.getFullAddress()
 
-    fun formatShippingInformationForDisplay(): String = this.shippingAddress.getFullAddress()
+    fun formatShippingInformationForDisplay(formatPhone: (String) -> String = PhoneUtils::formatPhone): String {
+        val phone = shippingAddress.phone.takeIf { it.isNotBlank() }?.let(formatPhone)
+        return listOfNotNull(shippingAddress.getFullAddress().ifEmpty { null }, phone).joinToString("\n")
+    }
 
     fun getProductIds() = items.map { it.productId }
 

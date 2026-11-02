@@ -75,7 +75,6 @@
     <string name="loading">Loading…</string>
     <string name="shipping_labels">Shipping Labels</string>
     <string name="product_variations">Variations</string>
-    <string name="product_variation_options">%1$s (%2$s options)</string>
     <string name="product_variation_multiple_count">%1$s variations</string>
     <string name="product_variation_single_count">1 variation</string>
     <string name="product_variation_attributes">Attributes</string>
@@ -415,6 +414,8 @@
     <string name="login_site_credentials_fetching_site_failed">An error occurred while fetching your website</string>
     <string name="login_site_credentials_fetching_site">Fetching site…</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Unable to login because application password creation is not approved.</string>
+    <string name="login_unexpected_response_title">Unable to log in</string>
+    <string name="login_unexpected_response_message">Your store returned an unexpected response, so we couldn\'t finish logging you in. Try again or contact support for help.</string>
     <string name="login_app_login_malformed_link">We couldn\'t process your app login request</string>
     <string name="login_jetpack_connection_create_account">If you don\'t have an account, we\'ll use this email to create one.</string>
     <string name="login_wpcom_connection_consent">%1$s, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
@@ -810,6 +811,15 @@
     <string name="order_creation_fee_percentage_toggle_text">Calculate as percentage</string>
     <string name="order_creation_fee_percentage_calculated_amount">Calculated amount: %s</string>
     <string name="order_creation_customer_search_empty">No customers found</string>
+    <string name="customer_list_analytics_unavailable_title">Customers can\'t be loaded</string>
+    <string name="customer_list_analytics_disabled_message">Customer lists need WooCommerce Analytics, which is turned off for this store. You can enable it here, or in your store admin under WooCommerce › Settings › Advanced › Features and then tap Retry.</string>
+    <string name="customer_list_analytics_permission_denied_message">Customer lists need WooCommerce Analytics, which isn\'t available on this store. Ask a store administrator to turn it on in WooCommerce › Settings › Advanced › Features.</string>
+    <string name="customer_list_analytics_unavailable_message">Customer lists need WooCommerce Analytics, which isn\'t available on this store right now. Ask a store administrator to check that it\'s turned on.</string>
+    <string name="customer_list_enable_analytics">Enable Analytics</string>
+    <string name="customer_list_enable_analytics_confirmation_title">Enable WooCommerce Analytics?</string>
+    <string name="customer_list_enable_analytics_confirmation_message">This changes a setting for your whole store. It stays on until someone turns it off in WooCommerce › Settings › Advanced › Features. Customers from the time Analytics was off may only show up after you import historical data in WooCommerce › Analytics › Settings.</string>
+    <string name="customer_list_enable_analytics_confirmation_action">Enable</string>
+    <string name="customer_list_enable_analytics_error">WooCommerce Analytics couldn\'t be enabled. Please try again.</string>
     <string name="order_creation_customer_search_empty_on_old_version_wcpay">Search for an existing customer or</string>
     <string name="order_creation_customer_search_hint">Search for customers</string>
     <string name="order_creation_customer_search_old_wc_hint">Search for customers by</string>
@@ -847,6 +857,7 @@
          Barcode Scanning
     -->
     <string name="barcode_scanning_title">Scan Barcode</string>
+    <string name="barcode_scanning_hardware_scanner_no_enter_suffix">Scan not finished. Set your scanner to send Enter after each barcode.</string>
     <string name="barcode_scanning_alert_dialog_title">Grant Camera Permission</string>
     <string name="barcode_scanning_alert_dialog_rationale_message">Camera permission is required in order to scan the barcode</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_message">You have permanently denied Camera permission. It is required in order to scan the barcode. Please enable it from the app settings</string>
@@ -1426,7 +1437,10 @@
     <string name="order_refunds_refund_manual_refund_note">The payment method does not support automatic refunds. Complete the refund by transferring the money to the customer manually.</string>
     <string name="order_refunds_items_select_all">Select all</string>
     <string name="order_refunds_items_select_none">Select none</string>
-    <string name="order_refunds_items_selected">%d items selected</string>
+    <plurals name="order_refunds_items_selected_count">
+        <item quantity="one">%d item selected</item>
+        <item quantity="other">%d items selected</item>
+    </plurals>
     <string name="order_refunds_item_description">%1$s x %2$s each</string>
     <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_products_refund">Products refund</string>
@@ -1722,6 +1736,7 @@
 
     <string name="card_reader_payment_failed_nfc_disabled">The app could not enable the card reader, because the NFC chip is disabled</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Enable NFC</string>
+    <string name="card_reader_payment_failed_insecure_environment">Tap to Pay was blocked for security reasons. Check that accessibility services and screen recording are turned off.</string>
     <string name="card_reader_payment_failed_device_is_not_supported">Your device is not supported. Please contact support for more details</string>
     <string name="card_reader_payment_failed_app_setup_is_invalid">Something went wrong with the app setup. Please contact support for more details</string>
 
@@ -1978,7 +1993,6 @@
     <string name="product_price">Price</string>
     <string name="product_sale">Sale</string>
     <string name="product_price_empty">Add price</string>
-    <string name="variable_product_attributes">Variations attributes</string>
     <string name="product_attributes">Attributes</string>
     <string name="product_attributes_created_title">Attributes created</string>
     <string name="product_attributes_created_description">Now that you\'ve added attributes, you can create your first variation!</string>
@@ -2596,6 +2610,7 @@
     <string name="ai_support_chat_screen_title">Contact Support</string>
     <string name="ai_support_chat_store_connection_error_message">My store can\'t be reached. The app detected a connection error when trying to reach my store. How can I fix this?</string>
     <string name="ai_support_chat_history_row_title">Chat history</string>
+    <string name="ai_support_chat_login_unexpected_response_message">I can\'t log in to my store. The app says my store returned an unexpected response. How can I fix this?</string>
     <string name="ai_support_chat_history_row_subtitle">Revisit past support conversations</string>
     <string name="ai_support_chat_history_title">Chat history</string>
     <string name="ai_support_chat_history_empty">You haven\'t chatted with support yet.</string>
@@ -2622,7 +2637,7 @@
     <string name="ai_support_chat_mark_resolved_confirmation_title">Mark chat as resolved?</string>
     <string name="ai_support_chat_mark_resolved_confirmation_message">This will close the chat actions for this conversation.</string>
     <string name="ai_support_chat_escalation_consent_title">Send this chat to support?</string>
-    <string name="ai_support_chat_escalation_consent_message">We can create a support request using this chat transcript, or you can open the contact form and enter the details yourself.</string>
+    <string name="ai_support_chat_escalation_consent_message_v2">Both options include this chat transcript. Send the request now, or open the contact form to add more details first.</string>
     <string name="ai_support_chat_escalation_consent_send_request">Send Request</string>
     <string name="ai_support_chat_escalation_consent_contact_form">Contact Form</string>
     <string name="ai_support_chat_escalation_transcript_header">Following is the transcript of an in-app AI support chat session:</string>
@@ -2711,6 +2726,9 @@
     <string name="enter_verification_code">Enter a verification code to continue.</string>
     <string name="enter_verification_code_sms">We sent a text message to the phone number ending in %s. Please enter the verification code in the SMS.</string>
     <string name="enter_verification_code_sms_generic">We sent a text message. Enter the verification code from the message.</string>
+    <string name="enter_verification_code_authenticator">Enter the verification code from your authenticator app.</string>
+    <string name="enter_verification_code_email">Check your email for a verification code from WordPress.com, then enter it to continue.</string>
+    <string name="enter_verification_code_backup">Enter a backup code to continue.</string>
     <string name="login_use_wpcom_username_instead">Use username and password instead</string>
 
     <string name="requesting_otp">Requesting a verification code via SMS.</string>
@@ -2749,13 +2767,11 @@
     <string name="login_error_generic">There was some trouble connecting with the Google account.</string>
     <string name="login_error_sms_throttled">We\'ve made too many attempts to send an SMS verification code — take a break, and request a new one in a minute.</string>
     <string name="login_error_generic_start">Google login could not be started.</string>
-    <string name="login_error_suffix">\nMaybe try a different account?</string>
     <string name="signup_magic_link_error">There was some trouble sending the email. You can retry now or close and try again later.</string>
     <string name="signup_magic_link_error_button_negative">Close</string>
     <string name="signup_magic_link_error_button_positive">Retry</string>
 
     <string name="signup_magic_link_progress">Sending email</string>
-    <string name="signup_with_google_progress">Signing up with Google…</string>
 
     <string name="enter_email_for_site" content_override="true">Log in with WordPress.com to connect to &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="username">Username</string>
@@ -2770,7 +2786,6 @@
     <string name="login_error_xml_rpc_cannot_read_site_auth_required">XML-RPC calls seem blocked on this site (error code 401). If attempt to login fails tap on help icon to view the FAQ.</string>
     <string name="login_error_xml_rpc_auth_error_communicating">There was a problem communicating with the site. An HTTP error code 401 was returned.</string>
 
-    <string name="google_error_timeout">Google took too long to respond. You may need to wait until you have a stronger internet connection.</string>
 
     <string name="login_invalid_credentials_message">It seems the username or password you entered doesn\'t quite match. Double-check your credentials and try again.</string>
     <string name="username_or_password_incorrect">The username or password you entered is incorrect</string>
@@ -3347,6 +3362,7 @@
     <string name="support_request_help_title">I need help with</string>
     <string name="support_request_title">Let\'s get this sorted</string>
     <string name="support_request_description">Let us know your site address (URL) and tell us as much as you can about the problem, and we will be in touch soon.</string>
+    <string name="support_request_ai_chat_transcript_disclosure">Your AI support chat transcript will also be included with this request.</string>
     <string name="support_request_subject">Subject</string>
     <string name="support_request_site_address">Site Address</string>
     <string name="support_request_submit">Submit Support Request</string>
@@ -3843,6 +3859,7 @@
     <string name="ai_feedback_form_positive_button">Positive feedback</string>
     <string name="ai_feedback_form_negative_button">Negative feedback</string>
     <string name="login_text_security_key">Use a security key</string>
+    <string name="login_text_backup_code">Use a backup code instead</string>
     <string name="login_error_security_key">There was some trouble with the Security key login</string>
     <string name="notification_security_key_needed">Please provide your security key to continue.</string>
 
@@ -3961,6 +3978,7 @@
     <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_reader_reconnecting">Reconnecting…</string>
     <string name="woopos_remote_reader_connect_failed_generic">Connection failed</string>
+    <string name="woopos_remote_reader_failed_insecure_environment">Tap to Pay was blocked on the phone for security reasons. On the phone, check that accessibility services and screen recording are turned off.</string>
     <string name="woopos_remote_reader_failed_phone_not_eligible">This phone isn\'t eligible for Tap to Pay. Try a different device.</string>
     <string name="woopos_remote_reader_failed_nfc_disabled">Turn on NFC on the phone, then try again.</string>
     <string name="woopos_remote_reader_failed_token_invalid">Payment service error. Try reconnecting.</string>
@@ -4507,6 +4525,9 @@
     <string name="woopos_remote_ttp_explainer_requirements_heading">Check compatibility</string>
     <string name="woopos_remote_ttp_explainer_requirements_body">Use the same Wi-Fi and sign in to the same store on both devices. Your phone needs Android 13 or newer, NFC, and Tap-to-Pay support.</string>
     <string name="woopos_remote_ttp_explainer_got_it">Got it</string>
+    <string name="woopos_remote_ttp_explainer_allow_local_network">Allow local network access</string>
+    <string name="woopos_remote_ttp_explainer_local_network_heading">Let POS find your phone</string>
+    <string name="woopos_remote_ttp_explainer_local_network_body">Allow local network access so POS can find your phone on the same Wi-Fi.</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
@@ -4700,9 +4721,15 @@
     <string name="woo_shipping_labels_package_removing_error">Unable to remove the package</string>
     <string name="woo_shipping_labels_package_saving_error">Unable to save the package</string>
     <string name="woo_shipping_labels_purchase_error">We are unable to purchase the shipping label. Please try again.</string>
+    <string name="woo_shipping_labels_purchase_service_status_error">We are unable to purchase the shipping label due to a carrier service issue: %1$s</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Unable to purchase shipping label. Please complete the origin address.</string>
     <string name="woo_shipping_labels_purchase_phone_error">Unable to purchase shipping label. Please add a valid phone number to the shipping address.</string>
     <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s requires a recipient phone number.</string>
+    <string name="woo_shipping_labels_service_status_view_status_page">View status page</string>
+    <string name="woo_shipping_labels_service_status_dismiss">Dismiss notice: %1$s</string>
+    <string name="woo_shipping_labels_service_status_severity_error">Error</string>
+    <string name="woo_shipping_labels_service_status_severity_warning">Warning</string>
+    <string name="woo_shipping_labels_service_status_severity_info">Information</string>
     <string name="woo_shipping_labels_order_completion_error">Couldn\'t mark the order as complete</string>
     <string name="woo_shipping_split_shipment_error">We were unable to split the shipments. Please try again.</string>
     <string name="woo_shipping_labels_loading_error">Unable to load data</string>

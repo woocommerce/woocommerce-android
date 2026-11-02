@@ -267,10 +267,13 @@ class AIProductVariationsDataSourceTest {
         productId: Long,
         pageSize: Int,
         offset: Int,
-    ): WCProductStore.FetchProductVariationsPayload =
-        org.mockito.kotlin.argThat {
-            remoteProductId == productId && this.pageSize == pageSize && this.offset == offset && site == this.site
+    ): WCProductStore.FetchProductVariationsPayload {
+        val expectedSite = site
+        return org.mockito.kotlin.argThat {
+            remoteProductId == productId && this.pageSize == pageSize && this.offset == offset &&
+                site == expectedSite && sorting == WCProductStore.VariationSorting.ID_DESC
         }
+    }
 
     private fun variationsFetched(
         vararg variations: WCProductVariationModel,

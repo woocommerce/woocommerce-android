@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpapi.site
 
 import com.android.volley.RequestQueue
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
@@ -52,12 +53,7 @@ class SiteWPAPIRestClient @Inject constructor(
             return SiteModel().apply { error = BaseNetworkError(INVALID_RESPONSE) }
         }
 
-        val result = wpapiGsonRequestBuilder.syncGetRequest(
-            restClient = this,
-            url = discoveredWpApiUrl,
-            clazz = RootWPAPIRestResponse::class.java,
-            params = mapOf("_fields" to FETCH_API_CALL_FIELDS)
-        )
+        val result = fetchRoot(discoveredWpApiUrl, payload)
 
         return when (result) {
             is Success -> {
@@ -130,6 +126,23 @@ class SiteWPAPIRestClient @Inject constructor(
                     ?.let { refreshedSite.adminUrl = it }
             }
         }
+    }
+
+    private suspend fun fetchRoot(wpApiUrl: String, payload: FetchWPAPISitePayload) =
+        wpapiGsonRequestBuilder.syncGetRequest(
+            restClient = this,
+            url = wpApiUrl,
+            clazz = RootWPAPIRestResponse::class.java,
+            params = mapOf("_fields" to FETCH_API_CALL_FIELDS),
+            readableBodyCheck = { response -> response.isReadable(payload) }
+        )
+
+    private fun RootWPAPIRestResponse.isReadable(payload: FetchWPAPISitePayload) =
+        !namespaces.isNullOrEmpty() && (!payload.checksAuthorizationUrl || advertisesReadableAuthorizationUrl())
+
+    private fun RootWPAPIRestResponse.advertisesReadableAuthorizationUrl(): Boolean {
+        val applicationPasswords = authentication?.applicationPasswords ?: return true
+        return applicationPasswords.endpoints?.authorization?.toHttpUrlOrNull() != null
     }
 
     @SiteModel.HttpsConfigurationState

@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-06 11:59:46+0000
+Translation-Revision-Date: 2026-10-20 09:55:56+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s requiert un numéro de téléphone de destinataire.</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">Doit contenir au maximum %1$s caractères.</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin_required">Saisissez le GTIN/EAN ou sélectionnez « Pas de code-barres »</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_required">Obligatoire pour les expéditions vers l’UE</string>
+    <string name="woo_shipping_labels_customs_product_details_no_barcode">Pas de code-barres</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin">GTIN/EAN</string>
+    <string name="woo_shipping_labels_customs_product_details_manufacturer_part_number">Numéro de pièce fabricant</string>
+    <string name="woo_shipping_labels_customs_product_details_sku">UGS</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_plugin_update_notice">Les envois vers l’UE nécessitent désormais des identifiants de produit sur chaque article. Mettez à jour l’extension WooCommerce Shipping pour les ajouter.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_description">Obligatoire pour les expéditions vers l’UE. Les UGS et GTIN/EAN sont préremplis à partir des réglages d’inventaire du produit.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_title">Identifiants de produits de l’UE</string>
+    <string name="woopos_settings_payments_success_sound_subtitle">Émettre un son lorsqu’un paiement est effectué</string>
+    <string name="woopos_settings_payments_success_sound">Son de réussite du paiement</string>
+    <string name="woopos_settings_payments_category_subtitle">Gérer les réglages de paiement</string>
+    <string name="woopos_settings_payments_category">Paiements</string>
+    <string name="blaze_campaign_list_outstanding_balance_payment_title">Payer le solde impayé</string>
+    <string name="blaze_campaign_list_outstanding_balance_pay">Payer</string>
+    <string name="blaze_campaign_list_outstanding_balance_message">Votre compte présente actuellement un solde impayé de %1$s. Veuillez le régler avant de créer de nouvelles campagnes.</string>
+    <string name="blaze_campaign_list_outstanding_balance_title">Solde restant</string>
+    <string name="bottom_sheet_attributes_desc">Ajoutez des détails tels que le matériau ou la taille à la page de produit</string>
+    <string name="card_reader_mode_nfc_disabled_open_settings">Ouvrir les réglages NFC</string>
+    <string name="card_reader_mode_nfc_disabled_subtitle">Ce téléphone a besoin de NFC pour accepter les paiements par carte. Ouvrez les réglages NFC, activez le NFC, puis revenez à cet écran.</string>
+    <string name="card_reader_mode_nfc_disabled_header">Activer le NFC</string>
+    <string name="card_reader_payment_subscription_check_failed">Impossible de vérifier si cette commande peut être payée en personne. Veuillez réessayer.</string>
+    <string name="card_reader_interac_refund_not_available">Cette commande ne peut pas être remboursée en personne</string>
+    <string name="order_refunds_amount_capped_notice">Il ne reste que %1$s à rembourser sur cette commande, ce remboursement est donc limité à ce montant.</string>
+    <string name="product_attribute_no_options">Aucune option</string>
+    <string name="product_attribute_stop_using_for_variations_confirm">Arrêter d’utiliser</string>
+    <string name="product_attribute_stop_using_for_variations_message">Les variantes existantes ne correspondent plus à cet attribut.</string>
+    <string name="product_attribute_stop_using_for_variations_title">Arrêter d’utiliser pour les variantes ?</string>
+    <string name="product_attribute_used_for_variations">Utilisé pour les variations</string>
+    <string name="product_attribute_visible_on_product_page">Visible sur la page produit</string>
     <string name="woopos_orders_details_breakdown_custom_amounts_label">Montants personnalisés</string>
     <string name="woopos_payment_custom_amounts_label">Montants personnalisés</string>
     <string name="woopos_cart_item_discount_applied">Remise appliquée</string>
@@ -2788,7 +2820,6 @@ Language: fr
     <string name="inbox_screen_title">Boîte de réception</string>
     <string name="settings_card_reader_manuals">Manuels des lecteurs de carte</string>
     <string name="card_reader_interac_refund_refund_payment_hint">Appuyez sur le montant à rembourser ou insérez-le</string>
-    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">Votre commande a déjà été remboursée</string>
     <string name="card_reader_interac_refund_refund_failed_cancelled">Remboursement annulé</string>
     <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
     <string name="card_reader_interac_refund_refund_failed_test_card">Les cartes de test système ne sont pas autorisées pour le remboursement</string>
@@ -3836,6 +3867,7 @@ Language: fr
     <string name="product_add_image_content_description">Ajouter une image</string>
     <string name="date_timeframe_future">À venir</string>
     <string name="remove">Supprimer</string>
+    <string name="product_attribute_hidden">Masqué</string>
     <string name="login_discovery_error_generic">Nous n\'avons pas pu accéder à votre site. Vous devrez contacter votre hébergeur pour résoudre ce problème.</string>
     <string name="login_discovery_error_ssl">Nous n\'avons pas pu accéder à votre site à cause d\'un problème avec le &lt;b&gt;certificat SSL&lt;/b&gt;. Vous devrez contacter votre hébergeur pour résoudre ce problème.</string>
     <string name="login_discovery_error_http_auth">Nous n\'avons pas pu accéder à votre site car il requiert une &lt;b&gt;authentification HTTP&lt;/b&gt;. Vous devrez contacter votre hébergeur pour résoudre ce problème.</string>

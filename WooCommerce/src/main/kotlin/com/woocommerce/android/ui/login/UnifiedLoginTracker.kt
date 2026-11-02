@@ -31,6 +31,15 @@ class UnifiedLoginTracker
     var previousStepBeforeHelpStep: Step? = null
         private set
 
+    var lastShownError: String? = null
+        private set
+
+    var enteredSiteAddress: String? = null
+        private set
+
+    val stepBeforeHelp: Step?
+        get() = currentStep.takeIf { it != Step.HELP } ?: previousStepBeforeHelpStep
+
     @JvmOverloads
     fun track(
         flow: Flow? = currentFlow,
@@ -103,6 +112,19 @@ class UnifiedLoginTracker
         } else {
             WooLog.e(LOGIN, errorMessage)
         }
+    }
+
+    fun onErrorShown(message: String) {
+        lastShownError = message
+    }
+
+    fun onSiteAddressEntered(siteAddress: String) {
+        enteredSiteAddress = siteAddress
+    }
+
+    fun clearSupportDetails() {
+        lastShownError = null
+        enteredSiteAddress = null
     }
 
     fun setSource(value: String) {

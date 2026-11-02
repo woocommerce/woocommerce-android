@@ -67,6 +67,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosElapsedTime
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosPaymentStateAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosPaymentsFlowTrackerEventProvider
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.CurrencyFormatter
@@ -76,6 +77,7 @@ import com.woocommerce.android.util.WooErrorTestUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -98,6 +100,7 @@ import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.isA
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -263,7 +266,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `initial state is loading`() = runTest {
+    fun `given back from checkout event, when vm created, then state is idle`() = runTest {
         // GIVEN
         val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
             on { events }.thenReturn(MutableStateFlow(ParentToChildrenEvent.BackFromCheckoutToCartClicked))
@@ -277,7 +280,30 @@ class WooPosTotalsViewModelTest {
         )
 
         // THEN
-        assertThat(viewModel.state.value).isEqualTo(WooPosTotalsViewState.Loading)
+        assertThat(viewModel.state.value).isEqualTo(WooPosTotalsViewState.Idle)
+    }
+
+    @Test
+    fun `given checkout state, when BackFromCheckoutToCartClicked, then state is idle`() = runTest {
+        // GIVEN
+        val events = MutableStateFlow<ParentToChildrenEvent>(
+            ParentToChildrenEvent.CheckoutClicked(
+                listOf(
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                )
+            )
+        )
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(parentToChildrenEventFlow = events)
+        assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Checkout::class.java)
+
+        // WHEN
+        events.value = ParentToChildrenEvent.BackFromCheckoutToCartClicked
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(viewModel.state.value).isEqualTo(WooPosTotalsViewState.Idle)
     }
 
     @Test
@@ -449,7 +475,7 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `given OnNewTransactionClicked, should send NewTransactionClicked event and reset state to initial`() =
+    fun `when OnNewTransactionClicked, then sends OnNewTransactionStarted to parent`() =
         runTest {
             // GIVEN
             whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title))
@@ -467,7 +493,6 @@ class WooPosTotalsViewModelTest {
             viewModel.onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked)
 
             // THEN
-            assertThat(viewModel.state.value).isEqualTo(WooPosTotalsViewState.Loading)
             verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OnNewTransactionStarted)
         }
 
@@ -960,6 +985,23 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
+    fun `given no order draft, when OnCashPaymentClicked, then do not emit navigation event`() = runTest {
+        // GIVEN
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(MutableStateFlow(ParentToChildrenEvent.BackFromCheckoutToCartClicked))
+        }
+        val viewModel = createViewModel(parentToChildrenEventReceiver = parentToChildrenEventReceiver)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked)
+
+        // THEN
+        verify(childrenToParentEventSender, never()).sendToParent(
+            isA<ChildToParentEvent.NavigationEvent.ToCashPayment>(),
+        )
+    }
+
+    @Test
     fun `given order draft created, when OnScanToPayClicked, then track analytic and emit ToScanToPay`() = runTest {
         // GIVEN
         val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
@@ -1054,6 +1096,152 @@ class WooPosTotalsViewModelTest {
         verify(mockCardReaderPaymentController).stop()
         verify(mockCardReaderPaymentController).onBackPressed()
     }
+
+    @Test
+    fun `given card collection started, when OnCashPaymentClicked, then stop card collection`() = runTest {
+        // GIVEN
+        givenCardReaderConnectedAndNetworkAvailable()
+        val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
+        whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked)
+
+        // THEN
+        verify(mockCardReaderPaymentController).stop()
+    }
+
+    @Test
+    fun `given card collection started, when OnScanToPayClicked, then stop card collection`() = runTest {
+        // GIVEN
+        givenCardReaderConnectedAndNetworkAvailable()
+        val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
+        whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnScanToPayClicked)
+
+        // THEN
+        verify(mockCardReaderPaymentController).stop()
+    }
+
+    @Test
+    fun `given card collection started, when OnMarkOrderAsPaidClicked, then stop card collection`() = runTest {
+        // GIVEN
+        givenCardReaderConnectedAndNetworkAvailable()
+        val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
+        whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked)
+
+        // THEN
+        verify(mockCardReaderPaymentController).stop()
+    }
+
+    @Test
+    fun `given card collection started, when paid by cash, then card payment is cancelled only once order is paid`() = runTest {
+        // GIVEN
+        givenCardReaderConnectedAndNetworkAvailable()
+        whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_cash, "5.00$"))
+            .thenReturn("Paid 5.00$ in Cash")
+        val parentToChildrenEventFlow = MutableStateFlow<ParentToChildrenEvent>(
+            ParentToChildrenEvent.CheckoutClicked(
+                listOf(
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                )
+            )
+        )
+        val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
+        whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(
+            controllerFactory = factory,
+            parentToChildrenEventFlow = parentToChildrenEventFlow,
+        )
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked)
+
+        // THEN
+        verify(mockCardReaderPaymentController).stop()
+        verify(mockCardReaderPaymentController, never()).onBackPressed()
+
+        // WHEN
+        parentToChildrenEventFlow.value = ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CASH)
+
+        // THEN
+        verify(mockCardReaderPaymentController, times(1)).onBackPressed()
+    }
+
+    @Test
+    fun `given card collection cancelled by cash payment, when OnScreenResumed, then restart card collection`() = runTest {
+        // GIVEN
+        givenCardReaderConnectedAndNetworkAvailable()
+        val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
+        whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked)
+        clearInvocations(mockCardReaderPaymentController)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnScreenResumed)
+
+        // THEN
+        verify(mockCardReaderPaymentController).start()
+    }
+
+    @Test
+    fun `given card collection in progress, when OnScreenResumed, then do not restart card collection`() = runTest {
+        // GIVEN
+        givenCardReaderConnectedAndNetworkAvailable()
+        val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
+        whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+        clearInvocations(mockCardReaderPaymentController)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnScreenResumed)
+
+        // THEN
+        verify(mockCardReaderPaymentController, never()).start()
+    }
+
+    @Test
+    fun `given payment capturing, when reader disconnects before processing screen shows, then payment is not stopped`() =
+        runTest {
+            // GIVEN
+            whenever(networkStatus.isConnected()).thenReturn(true)
+            val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
+            whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
+            val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+            val factory: WooPosCardReaderPaymentControllerFactory = mock()
+            whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+            val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
+                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
+            )
+            whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
+            createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+            paymentState.value = CardReaderPaymentState.PaymentCapturing.ExternalReaderPaymentCapturing("")
+
+            // WHEN
+            readerStatus.value = CardReaderStatus.NotConnected()
+            advanceUntilIdle()
+
+            // THEN
+            verify(mockCardReaderPaymentController, never()).stop()
+            verify(mockCardReaderPaymentController, never()).onBackPressed()
+        }
 
     @Test
     fun `given order draft created and reader connected, when card tapped, should show payment processing screen`() =
@@ -1233,6 +1421,41 @@ class WooPosTotalsViewModelTest {
 
             // THEN
             verify(failedPaymentRetryAction).invoke()
+        }
+
+    @Test
+    fun `given capture outcome unknown, when payment fails, then not confirmed state with check status shown`() =
+        runTest {
+            // GIVEN
+            mockPaymentFailedTexts()
+            whenever(resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_title))
+                .thenReturn("Payment not confirmed")
+            whenever(resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_check_status))
+                .thenReturn("Check payment status")
+            whenever(resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_message))
+                .thenReturn("The card may already have been charged.")
+            givenCardReaderConnectedAndNetworkAvailable()
+            val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+            val factory: WooPosCardReaderPaymentControllerFactory = mock()
+            whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+            val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
+                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
+            )
+            whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
+            val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+
+            // WHEN
+            paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.NonCancelable(
+                errorType = PaymentFlowError.CaptureOutcomeUnknown, onRetry = {}
+            )
+            advanceUntilIdle()
+
+            // THEN
+            val state = vm.state.value as WooPosTotalsViewState.PaymentFailed
+            assertThat(state.title).isEqualTo("Payment not confirmed")
+            assertThat(state.subtitle).isEqualTo("The card may already have been charged.")
+            assertThat(state.retryPaymentButtonLabel).isEqualTo("Check payment status")
+            assertThat(state.isReturnToCheckoutButtonVisible).isTrue()
         }
 
     @Test
@@ -2751,6 +2974,37 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
+    fun `given TTP capture outcome unknown, when retry fails again, then payment failed state shown again`() = runTest {
+        // GIVEN
+        mockPaymentFailedTexts()
+        whenever(resourceProvider.getString(R.string.woopos_totals_payment_not_confirmed_title))
+            .thenReturn("Payment not confirmed")
+        val (vm, paymentState) = givenTtpInFlight()
+        advanceUntilIdle()
+        val failedState = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
+            errorType = PaymentFlowError.CaptureOutcomeUnknown,
+            onRetry = {},
+        )
+        paymentState.value = failedState
+        advanceUntilIdle()
+        vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
+        clearInvocations(childrenToParentEventSender)
+
+        // WHEN
+        paymentState.value = CardReaderPaymentState.LoadingData {}
+        advanceUntilIdle()
+        paymentState.value = CardReaderPaymentState.PaymentCapturing.BuiltInReaderPaymentCapturing("")
+        advanceUntilIdle()
+        paymentState.value = failedState.copy()
+        advanceUntilIdle()
+
+        // THEN
+        val state = vm.state.value as WooPosTotalsViewState.PaymentFailed
+        assertThat(state.title).isEqualTo("Payment not confirmed")
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.PaymentFailed)
+    }
+
+    @Test
     fun `given TTP failed without onRetry, when retry clicked, then returns to checkout`() = runTest {
         // GIVEN
         mockPaymentFailedTexts()
@@ -2845,6 +3099,34 @@ class WooPosTotalsViewModelTest {
                 .containsEntry("pos_time_since_payment_confirmed_ms", 1000L)
         }
 
+    @Test
+    fun `given remote capture starting, when remote reader disconnects before processing screen shows, then capture result is reported`() =
+        runTest {
+            // GIVEN
+            givenCardReaderConnectedAndNetworkAvailable()
+            whenever(cardReaderFacade.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            val remoteState = MutableStateFlow<WooPosRemoteReaderSession.State>(
+                WooPosRemoteReaderSession.State.Connected(simulatedRemoteReader(), "SIM-1")
+            )
+            whenever(remoteReaderSession.state).thenReturn(remoteState)
+            whenever(remoteReaderPaymentFlow.collect(any(), any())).doSuspendableAnswer { invocation ->
+                invocation.getArgument<suspend () -> Unit>(1).invoke()
+                WooPosRemoteReaderPaymentFlow.Result.Completed
+            }
+            createViewModelAndSetupForSuccessfulOrderCreation()
+            runCurrent()
+
+            // WHEN
+            remoteState.value = WooPosRemoteReaderSession.State.Idle
+            advanceUntilIdle()
+
+            // THEN
+            verify(remoteReaderPaymentFlow).collect(any(), any())
+            verify(childrenToParentEventSender).sendToParent(
+                ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.CARD)
+            )
+        }
+
     private suspend fun TestScope.collectAfterRemoteReconnect(confirmRetry: Boolean): WooPosAnalyticsEvent {
         givenCardReaderConnectedAndNetworkAvailable()
         whenever(cardReaderFacade.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
@@ -2860,8 +3142,7 @@ class WooPosTotalsViewModelTest {
             if (collections == 1) {
                 whenever(timingClock.milliseconds()).thenReturn(1000L)
                 events.onPaymentCapturing()
-                onCaptureStarting()
-                WooPosRemoteReaderPaymentFlow.Result.Completed
+                awaitCancellation()
             } else if (confirmRetry) {
                 whenever(timingClock.milliseconds()).thenReturn(3000L)
                 events.onPaymentCapturing()
@@ -2880,8 +3161,6 @@ class WooPosTotalsViewModelTest {
         val vm = createViewModelAndSetupForSuccessfulOrderCreation()
         runCurrent()
         assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.Checkout::class.java)
-        assertThat((vm.state.value as WooPosTotalsViewState.Checkout).totals)
-            .isEqualTo(WooPosTotalsViewState.Totals.Hidden)
 
         remoteState.value = WooPosRemoteReaderSession.State.Idle
         runCurrent()
@@ -3055,7 +3334,10 @@ class WooPosTotalsViewModelTest {
             analyticsTracker = analyticsTracker,
             analyticsData = timingData,
             productsDataSource = productsDataSource,
-            readerReadyForPaymentTracker = mock(),
+            paymentStateTracker = WooPosPaymentStateAnalyticsTracker(
+                analyticsData = timingData,
+                readerReadyForPaymentTracker = mock(),
+            ),
         ),
         wooPosLogWrapper = wooPosLogWrapper,
         performIncrementalSyncUseCase = performIncrementalSyncUseCase,

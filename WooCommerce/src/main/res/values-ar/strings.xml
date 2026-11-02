@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-06 13:54:37+0000
+Translation-Revision-Date: 2026-10-20 15:54:55+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_purchase_phone_required_by_service">تتطلب الخدمة ⁦%1$s⁩ إدخال رقم هاتف المُستلِم.</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">يجب أن يكون عدد الأحرف ⁦%1$s⁩ من الأحرف أو أقل.</string>
+    <string name="woo_shipping_labels_customs_product_details_gtin_required">أدخل الرقم التجاري العالمي للسلعة (GTIN)/الرقم الأوروبي للسلعة (EAN)، أو حدد \"بدون رمز شريطي\"</string>
+    <string name="woo_shipping_labels_customs_product_details_eu_identifier_required">مطلوب للشحنات المتجهة إلى دول الاتحاد الأوروبي (EU)</string>
+    <string name="woo_shipping_labels_customs_product_details_no_barcode">بدون رمز شريطي</string>
+    <string name="woo_shipping_labels_customs_product_details_manufacturer_part_number">رقم القطعة المحدّد من الشركة المُصنّعة</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_plugin_update_notice">تتطلب الشحنات المتجهة إلى دول الاتحاد الأوروبي (EU) الآن توفير معرّف المنتج لكل سلعة. قم بتحديث الإضافة WooCommerce Shipping لإضافة المعرّفات.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_description">مطلوب للشحنات المتجهة إلى دول الاتحاد الأوروبي (EU). يتم ملء كل من حقل وحدة حفظ المخزون (SKU) وحقل الرقم التجاري العالمي للسلعة (GTIN) / الرقم الأوروبي للسلعة (EAN) تلقائيًا باستخدام البيانات الموجودة في إعدادات المخزون للمنتج.</string>
+    <string name="woo_shipping_labels_customs_eu_product_identifiers_title">معرّفات المنتجات الخاصة بالاتحاد الأوروبي (EU)</string>
+    <string name="woopos_settings_payments_success_sound_subtitle">إصدار صوت عند إكمال عملية الدفع</string>
+    <string name="woopos_settings_payments_success_sound">الصوت الصادر عند نجاح عملية الدفع</string>
+    <string name="woopos_settings_payments_category_subtitle">إدارة إعدادات الدفع</string>
+    <string name="woopos_settings_payments_category">المدفوعات</string>
+    <string name="blaze_campaign_list_outstanding_balance_payment_title">دفع الرصيد المستحق</string>
+    <string name="blaze_campaign_list_outstanding_balance_pay">دفع</string>
+    <string name="blaze_campaign_list_outstanding_balance_message">ما زال في حسابك رصيد مالي مستحق قدره ⁦%1$s⁩. يُرجى دفع هذا الرصيد قبل إنشاء حملات جديدة.</string>
+    <string name="blaze_campaign_list_outstanding_balance_title">الرصيد المستحق</string>
+    <string name="bottom_sheet_attributes_desc">إضافة تفاصيل، مثل المادة أو الحجم، إلى صفحة المنتج</string>
+    <string name="card_reader_mode_nfc_disabled_open_settings">فتح إعدادات NFC</string>
+    <string name="card_reader_mode_nfc_disabled_subtitle">يجب أن يدعم هذا الهاتف تقنية NFC لقبول إجراء عمليات الدفع باستخدام البطاقات. افتح إعدادات NFC، وفعّل NFC، ثم عُد إلى هذه الشاشة.</string>
+    <string name="card_reader_mode_nfc_disabled_header">تفعيل NFC</string>
+    <string name="card_reader_payment_subscription_check_failed">تعذَّر التحقق مما إذا كان بالإمكان دفع قيمة هذا الطلب في المتجر أم لا. يُرجى إعادة المحاولة.</string>
+    <string name="card_reader_interac_refund_not_available">لا يمكن رد قيمة هذا الطلب داخل المتجر</string>
+    <string name="order_refunds_amount_capped_notice">لم يتبقَ سوى ⁦%1$s⁩ من قيمة هذا الطلب لاسترداده، لذا تقتصر عملية الاسترداد هذه على هذا المبلغ.</string>
+    <string name="product_attribute_no_options">لا توجد خيارات</string>
+    <string name="product_attribute_stop_using_for_variations_confirm">إيقاف الاستخدام</string>
+    <string name="product_attribute_stop_using_for_variations_message">لن تتطابق إصدارات المنتجات مع هذه السمة بعد الآن.</string>
+    <string name="product_attribute_stop_using_for_variations_title">هل ترغب في تفعيل إيقاف الاستخدام لإصدارات المنتجات؟</string>
+    <string name="product_attribute_used_for_variations">تُستخدَم السمة لإصدارات المنتجات</string>
+    <string name="product_attribute_visible_on_product_page">ظاهر على صفحة المنتج</string>
     <string name="woopos_orders_details_breakdown_custom_amounts_label">المبالغ المخصصة</string>
     <string name="woopos_payment_custom_amounts_label">المبالغ المخصصة</string>
     <string name="woopos_cart_item_discount_applied">الخصومات المُطبَّقة</string>
@@ -2789,7 +2819,6 @@ Language: ar
     <string name="inbox_screen_title">علبة الوارد</string>
     <string name="settings_card_reader_manuals">أدلة قارئ البطاقة</string>
     <string name="card_reader_interac_refund_refund_payment_hint">النقر أو الإدراج لاسترداد المبالغ المدفوعة</string>
-    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">تم رد المبالغ المدفوعة للطلب بالفعل</string>
     <string name="card_reader_interac_refund_refund_failed_cancelled">تم إلغاء رد المبالغ المدفوعة</string>
     <string name="card_reader_interac_refund_refund_failed_ok">موافق</string>
     <string name="card_reader_interac_refund_refund_failed_test_card">غير مسموح لبطاقات اختبار النظام برد المبالغ المدفوعة</string>
@@ -3837,6 +3866,7 @@ Language: ar
     <string name="date_timeframe_future">القادم</string>
     <string name="remove">إزالة</string>
     <string name="product_images_uploading_multi_notif_message">جارٍ رفع الصور…⁦%1$d⁩ من ⁦%2$d⁩</string>
+    <string name="product_attribute_hidden">مخفي</string>
     <string name="login_discovery_error_generic">تعذر علينا الوصول إلى موقعك. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
     <string name="login_discovery_error_ssl">تعذر علينا الوصول إلى موقعك بسبب حدوث مشكلة في &lt;b&gt;شهادة SSL&lt;/b&gt;. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
     <string name="login_discovery_error_http_auth">تعذر علينا الوصول إلى موقعك لأنه يتطلب &lt;b&gt;مصادقة HTTP&lt;/b&gt;. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>

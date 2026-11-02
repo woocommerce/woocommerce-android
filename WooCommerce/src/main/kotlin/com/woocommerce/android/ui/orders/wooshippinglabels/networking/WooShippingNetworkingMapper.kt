@@ -25,12 +25,14 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooS
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingSelectedRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.ShippingRateSurchargeDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.servicestatus.ServiceStatusNotice
 import com.woocommerce.android.util.StringUtils.combineStrings
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.entity.WooShippingLabelEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingShipmentEntity
 import java.math.BigDecimal
+import java.net.URI
 import java.util.Date
 import javax.inject.Inject
 
@@ -618,6 +620,28 @@ class WooShippingNetworkingMapper @Inject constructor(
             )
         } ?: HazmatDTO()
 
+    operator fun invoke(serviceStatusDTO: ServiceStatusResponseDTO): List<ServiceStatusNotice> =
+        serviceStatusDTO.notices.orEmpty().filterNotNull().mapNotNull { notice ->
+            val id = notice.id?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+            val message = notice.message?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+            ServiceStatusNotice(
+                id = id,
+                severity = when (notice.type?.lowercase()) {
+                    "error" -> ServiceStatusNotice.Severity.ERROR
+                    "warning" -> ServiceStatusNotice.Severity.WARNING
+                    else -> ServiceStatusNotice.Severity.INFO
+                },
+                message = message,
+                isDismissible = notice.dismissible == true,
+                actionUrl = notice.action?.takeIf { it.isHttpUrl() }
+            )
+        }
+
+    private fun String.isHttpUrl(): Boolean {
+        val uri = runCatching { URI(this) }.getOrNull() ?: return false
+        return uri.scheme?.lowercase() in HTTP_SCHEMES && !uri.host.isNullOrBlank()
+    }
+
     private fun parseFullName(name: String?): Pair<String, String> {
         val safeName = name.orEmpty()
         val lastSpaceIndex = safeName.indexOfLast { it == ' ' }
@@ -626,5 +650,9 @@ class WooShippingNetworkingMapper @Inject constructor(
         } else {
             safeName.substring(0, lastSpaceIndex) to safeName.substring(lastSpaceIndex + 1)
         }
+    }
+
+    private companion object {
+        val HTTP_SCHEMES = setOf("http", "https")
     }
 }

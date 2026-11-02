@@ -184,7 +184,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         whenever(cardReaderPaymentOrderHelper.getAmountLabel(mockedOrder))
             .thenReturn("${DUMMY_CURRENCY_SYMBOL}${DUMMY_TOTAL}")
         whenever(cardReaderManager.batteryStatus).thenAnswer { flow { emit(CardReaderBatteryStatus.Unknown) } }
-        whenever(currencyFormatter.formatAmountWithCurrency(DUMMY_TOTAL.toDouble(), "GBP"))
+        whenever(currencyFormatter.formatCurrency(DUMMY_TOTAL, "GBP"))
             .thenReturn("${DUMMY_CURRENCY_SYMBOL}${DUMMY_TOTAL}")
         whenever(mockedOrder.billingAddress).thenReturn(mockedAddress)
         whenever(mockedAddress.email).thenReturn("")

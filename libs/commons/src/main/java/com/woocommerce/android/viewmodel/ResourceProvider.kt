@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import androidx.annotation.ArrayRes
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
+import androidx.annotation.PluralsRes
 import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
@@ -19,6 +20,10 @@ class ResourceProvider @Inject constructor(private val context: Context) {
 
     fun getString(@StringRes resourceId: Int, vararg formatArgs: Any): String {
         return context.getString(resourceId, *formatArgs)
+    }
+
+    fun getPluralString(@PluralsRes resourceId: Int, quantity: Int, vararg formatArgs: Any): String {
+        return context.resources.getQuantityString(resourceId, quantity, *formatArgs)
     }
 
     fun getStringArray(@ArrayRes resourceId: Int): Array<String> {

@@ -8,6 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
@@ -36,6 +37,10 @@ import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseAlertWithSupport
+import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseSupport
+import com.woocommerce.android.ui.login.unexpectedresponse.openAiSupportChat
+import com.woocommerce.android.ui.login.unexpectedresponse.openSupportForm
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
@@ -182,6 +187,15 @@ class SitePickerFragment :
                         )
                     }
                 }
+                if (viewModel.unexpectedResponse.collectAsState().value != null) {
+                    WooTheme {
+                        LoginUnexpectedResponseAlertWithSupport(
+                            onRetryClick = viewModel::onUnexpectedResponseRetryClick,
+                            onContactSupportClick = viewModel::onUnexpectedResponseContactSupportClick,
+                            onDismissClick = viewModel::onUnexpectedResponseDismissClick
+                        )
+                    }
+                }
             }
         }
     }
@@ -263,6 +277,8 @@ class SitePickerFragment :
                     .show()
 
                 is ShowDialog -> event.showDialog()
+                is LoginUnexpectedResponseSupport.OpenAiSupportChat -> openAiSupportChat(event)
+                is LoginUnexpectedResponseSupport.OpenSupportForm -> openSupportForm(event)
                 is Logout -> onLogout()
                 is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false

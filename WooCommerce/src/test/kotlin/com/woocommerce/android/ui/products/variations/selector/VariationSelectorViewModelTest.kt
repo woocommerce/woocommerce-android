@@ -7,6 +7,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.selector.ProductSelectorTracker
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.selector.ProductSourceForTracking
+import com.woocommerce.android.ui.products.variations.VariationListPaging
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -34,7 +35,7 @@ class VariationSelectorViewModelTest : BaseUnitTest() {
     private val productSelectorTracker: ProductSelectorTracker = ProductSelectorTracker(tracker)
 
     @Test
-    fun `given order creation flow, when view model is initiated, should call fetchVariations with order currency`() = testBlocking {
+    fun `given order creation flow, when view model is initiated, then variations are fetched newest first with order currency`() = testBlocking {
         val navArgs = VariationSelectorFragmentArgs(
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             productId = 1L,
@@ -50,7 +51,9 @@ class VariationSelectorViewModelTest : BaseUnitTest() {
             1L,
             forceRefresh = true,
             filterOptions = null,
-            orderCurrency = "USD"
+            orderCurrency = "USD",
+            sorting = VariationListPaging.SORTING,
+            pageSize = VariationListPaging.PAGE_SIZE
         )
     }
 

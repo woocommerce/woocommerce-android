@@ -5,6 +5,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 sealed class WooPosTotalsViewState : Parcelable {
+    data object Idle : WooPosTotalsViewState()
+
     data object Loading : WooPosTotalsViewState()
 
     data class Checkout(

@@ -6,10 +6,10 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -44,14 +44,16 @@ fun WooPosShimmerBox(
         label = "shimmer"
     )
 
-    val brush = Brush.linearGradient(
-        colors = shimmerColors,
-        start = Offset(0f, 0f),
-        end = Offset(translateAnim.value, 0f)
-    )
-
     Box(
         modifier = modifier
-            .background(brush = brush)
+            .drawBehind {
+                drawRect(
+                    brush = Brush.linearGradient(
+                        colors = shimmerColors,
+                        start = Offset(0f, 0f),
+                        end = Offset(translateAnim.value, 0f)
+                    )
+                )
+            }
     )
 }

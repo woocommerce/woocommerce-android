@@ -32,6 +32,7 @@ interface CardReaderStore {
             }
             data class ServerError(override val message: String) : Error(message)
             data class NetworkError(override val message: String) : Error(message)
+            data class GatewayError(override val message: String) : Error(message)
         }
     }
 }

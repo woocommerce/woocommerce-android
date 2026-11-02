@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.login
 
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R.string
-import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
+import com.woocommerce.android.applicationpasswords.ApplicationPasswordGenerationException
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -10,12 +10,7 @@ import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.dispatchAndAwait
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
@@ -45,7 +40,6 @@ class WPApiSiteRepository @Inject constructor(
     private val siteStore: SiteStore,
     private val cookieNonceAuthenticator: CookieNonceAuthenticator,
     private val userEligibilityFetcher: UserEligibilityFetcher,
-    private val applicationPasswordsNotifier: ApplicationPasswordsNotifier,
     private val cookieManager: CookieManager,
     private val applicationPasswordsStore: ApplicationPasswordsStore
 ) {
@@ -96,17 +90,32 @@ class WPApiSiteRepository @Inject constructor(
         username: String? = null,
         password: String? = null,
         wasUrlNormalizedToHttps: Boolean = false,
-    ): Result<SiteModel> {
-        WooLog.d(WooLog.T.LOGIN, "Fetching site using WP REST API")
+    ): Result<SiteModel> = fetchSite(
+        FetchWPAPISitePayload(
+            url = url,
+            username = username,
+            password = password,
+            wasUrlNormalizedToHttps = wasUrlNormalizedToHttps,
+        )
+    )
 
-        return siteStore.fetchWPAPISite(
+    /**
+     * Fetches the site before the browser login, which needs the application password authorization address.
+     */
+    suspend fun fetchSiteForBrowserLogin(url: String, wasUrlNormalizedToHttps: Boolean = false): Result<SiteModel> =
+        fetchSite(
             FetchWPAPISitePayload(
                 url = url,
-                username = username,
-                password = password,
                 wasUrlNormalizedToHttps = wasUrlNormalizedToHttps,
+                checksAuthorizationUrl = true
             )
-        ).let { result ->
+        )
+
+    private suspend fun fetchSite(payload: FetchWPAPISitePayload): Result<SiteModel> {
+        WooLog.d(WooLog.T.LOGIN, "Fetching site using WP REST API")
+
+        val url = payload.url
+        return siteStore.fetchWPAPISite(payload).let { result ->
             when {
                 result.isError -> {
                     WooLog.w(
@@ -131,30 +140,17 @@ class WPApiSiteRepository @Inject constructor(
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    suspend fun checkIfUserIsEligible(site: SiteModel): Result<Boolean> = coroutineScope {
-        WooLog.d(WooLog.T.LOGIN, "Fetch user info to check if user is eligible for using the API")
-
-        val applicationPasswordErrorTask = async {
-            applicationPasswordsNotifier.passwordGenerationFailures.first()
+    suspend fun ensureApplicationPassword(site: SiteModel): Result<Unit> {
+        return when (val result = siteStore.ensureApplicationPassword(site)) {
+            SiteStore.EnsureApplicationPasswordResult.Available -> Result.success(Unit)
+            is SiteStore.EnsureApplicationPasswordResult.Failed ->
+                Result.failure(ApplicationPasswordGenerationException(result.error))
         }
+    }
 
-        return@coroutineScope userEligibilityFetcher.fetchUserInfo(site)
-            .recoverCatching { exception ->
-                // Wait for any potential application password generation error and report it as the cause of failure
-                // We use the 100L waiting time just to make sure it's correctly reported before the network failure
-                @Suppress("MagicNumber")
-                withTimeoutOrNull(100L) { applicationPasswordErrorTask.join() }
-
-                if (applicationPasswordErrorTask.isCompleted) {
-                    throw applicationPasswordErrorTask.getCompleted()
-                } else {
-                    applicationPasswordErrorTask.cancel()
-                    throw exception
-                }
-            }
-            .onSuccess { applicationPasswordErrorTask.cancel() }
-            .map { it.isEligible }
+    suspend fun checkIfUserIsEligible(site: SiteModel): Result<Boolean> {
+        WooLog.d(WooLog.T.LOGIN, "Fetch user info to check if user is eligible for using the API")
+        return userEligibilityFetcher.fetchUserInfo(site).map { it.isEligible }
     }
 
     suspend fun getSiteByUrl(siteUrl: String): SiteModel? = withContext(Dispatchers.IO) {
