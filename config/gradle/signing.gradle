@@ -32,8 +32,8 @@ tasks.matching { it.name ==~ /package\w+Release(Bundle|UniversalApk)?/ }.configu
     doFirst {
         if (!uploadKeyAvailable) {
             throw new GradleException(
-                "The upload keystore is missing, so this release build would not be signed. " +
-                    "Please run `bundle exec fastlane run configure_apply` to apply secrets."
+                "The upload keystore or its credentials are missing, so this release build would not be signed. " +
+                    "Please run `bundle exec fastlane run configure_apply` and `a8c-secrets decrypt` to apply secrets."
             )
         }
     }

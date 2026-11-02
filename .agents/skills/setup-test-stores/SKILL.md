@@ -18,7 +18,7 @@ hand against a site created in a browser.
 
 - ContextA8C MCP configured with the `jurassic-ninja` provider.
 - `wc.oauth.app_id` and `wc.oauth.app_secret` present in
-  `~/.configure/woocommerce-android/secrets/secrets.properties` (see Environment Setup in `AGENTS.md`).
+  `secrets.properties` (see Environment Setup in `AGENTS.md`).
 - `expect` on PATH (ships with macOS) for password-based SSH.
 - A **WordPress.com test account with two-factor authentication disabled**. The OAuth
   password grant used to connect Jetpack cannot answer a 2FA challenge non-interactively.

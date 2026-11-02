@@ -30,7 +30,8 @@ SITE="" SITE_PASS="" WPCOM_USER="" WPCOM_PASS=""
 ADMIN_USER="demo"
 ADMIN_ID="1"
 ENV_OUT=""
-APP_CREDS="$HOME/.configure/woocommerce-android/secrets/secrets.properties"
+# Mirrors `a8c-secrets which`, without spawning the command
+APP_CREDS="$HOME/.a8c-secrets/$(cat "$(dirname "${BASH_SOURCE[0]}")/../../.a8c-secrets/repo-id")/secrets.properties"
 
 die() { printf '\033[31merror:\033[0m %s\n' "$*" >&2; exit 1; }
 STEP=0
