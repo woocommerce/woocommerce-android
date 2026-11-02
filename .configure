@@ -4,11 +4,6 @@
   "pinned_hash": "5ae47de51ac6cbcfcc639ac3e32dfb3744403841",
   "files_to_copy": [
     {
-      "file": "android/automattic_upload.jks",
-      "destination": "~/.configure/woocommerce-android/secrets/upload.jks",
-      "encrypt": true
-    },
-    {
       "file": "android/WCAndroid/google-upload-credentials.json",
       "destination": "~/.configure/woocommerce-android/secrets/google-upload-credentials.json",
       "encrypt": true
