@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_ONBOARDING_NEXT_BUTTON_TAPPED
@@ -16,8 +18,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.databinding.FragmentLoginPrologueCarouselBinding
 import com.woocommerce.android.extensions.doOnApplyWindowInsets
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
+import com.woocommerce.android.ui.login.storesuggestion.LoginStoreSuggestionBottomSheet
+import com.woocommerce.android.ui.login.storesuggestion.LoginStoreSuggestionViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
@@ -35,6 +40,7 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
 
     interface PrologueCarouselListener {
         fun onCarouselFinished()
+        fun onStoreSuggestionAccepted(siteUrl: String)
     }
 
     @Inject
@@ -45,6 +51,8 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
 
     @Inject
     lateinit var appPrefsWrapper: AppPrefsWrapper
+
+    private val storeSuggestionViewModel: LoginStoreSuggestionViewModel by viewModels()
 
     private var prologueCarouselListener: PrologueCarouselListener? = null
 
@@ -104,6 +112,26 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE_CAROUSEL)
             analyticsTrackerWrapper.track(LOGIN_ONBOARDING_SHOWN)
+        }
+
+        setupStoreSuggestion(binding)
+    }
+
+    private fun setupStoreSuggestion(binding: FragmentLoginPrologueCarouselBinding) {
+        binding.storeSuggestionComposeView.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                WooDesignSystemTheme {
+                    LoginStoreSuggestionBottomSheet(viewModel = storeSuggestionViewModel)
+                }
+            }
+        }
+
+        storeSuggestionViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is LoginStoreSuggestionViewModel.LogInToStore ->
+                    prologueCarouselListener?.onStoreSuggestionAccepted(event.siteUrl)
+            }
         }
     }
 

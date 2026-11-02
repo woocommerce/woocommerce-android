@@ -1118,6 +1118,11 @@ class LoginActivity :
         showPrologueFragment()
     }
 
+    override fun onStoreSuggestionAccepted(siteUrl: String) {
+        disableDynamicEdgeToEdge()
+        loginViaSiteAddress(prefilledSiteUrl = siteUrl)
+    }
+
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onFetchedConnectSiteInfo(event: OnConnectSiteInfoChecked) {
