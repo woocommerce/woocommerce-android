@@ -20,6 +20,7 @@ name: "Push notifications without Jetpack"
 tags:
   - smoke_extended
   - push
+  - login
   - destructive
   - no_jetpack_store
 env:
