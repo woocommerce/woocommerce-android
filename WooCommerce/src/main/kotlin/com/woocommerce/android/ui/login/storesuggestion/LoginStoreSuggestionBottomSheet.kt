@@ -133,6 +133,7 @@ private fun LoginStoreSuggestionContent(
                 text = stringResource(R.string.login_store_suggestion_use_different_store),
                 style = WooTheme.text.labelLarge.emphasized,
                 color = WooTheme.colors.primary,
+                textAlign = TextAlign.Center,
             )
         }
     }
