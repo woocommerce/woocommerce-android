@@ -67,6 +67,12 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var remoteFeatureFlagsDeviceId by AppPrefs::remoteFeatureFlagsDeviceId
 
+    var isInstallReferrerChecked by AppPrefs::isInstallReferrerChecked
+
+    var debugInstallReferrerOverride by AppPrefs::debugInstallReferrerOverride
+
+    var debugInstallReferrerClickTimestampSeconds by AppPrefs::debugInstallReferrerClickTimestampSeconds
+
     fun getAppInstallationDate() = AppPrefs.installationDate
 
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
