@@ -71,6 +71,7 @@ import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
 import java.net.URI
+import java.net.URLDecoder
 import javax.inject.Inject
 
 @HiltViewModel
@@ -100,6 +101,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         private const val SUCCESS_PARAMETER = "success"
         private const val USERNAME_PARAMETER = "user_login"
         private const val PASSWORD_PARAMETER = "password"
+        private const val SITE_URL_PARAMETER = "site_url"
+        private const val SITE_MISMATCH_STEP_BEFORE_APPROVAL = "before_approval"
+        private const val SITE_MISMATCH_STEP_AFTER_APPROVAL = "after_approval"
         private const val HAS_RECONCILED_SITE_URL_KEY = "has-reconciled-site-url"
         private const val LOGIN_ENTRY_URL_KEY = "login-entry-url"
         private const val ADMIN_BASE_URL_KEY = "admin-base-url"
@@ -382,10 +386,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     fun onWebAuthorizationUrlLoaded(url: String) {
         if (url.startsWith(REDIRECTION_URL)) {
             launch {
-                val uri = URI.create(url)
-                val params = uri.query!!.split("&")
-                    .map { it.split("=") }
-                    .associate { it[0] to it[1] }
+                val params = url.redirectionQueryParameters()
 
                 val isSuccess = params[SUCCESS_PARAMETER]?.toBoolean() ?: true
                 if (!isSuccess) {
@@ -396,15 +397,45 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     return@launch
                 }
 
-                analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_APPROVED)
-                val username = requireNotNull(params[USERNAME_PARAMETER])
-                val password = requireNotNull(params[PASSWORD_PARAMETER])
+                val username = params[USERNAME_PARAMETER]
+                val password = params[PASSWORD_PARAMETER]
+                if (username.isNullOrEmpty() || password.isNullOrEmpty() ||
+                    !ApplicationPasswordSiteMatcher.isSameSite(siteAddress, params[SITE_URL_PARAMETER])
+                ) {
+                    onAuthorizationSiteMismatch(SITE_MISMATCH_STEP_AFTER_APPROVAL)
+                    return@launch
+                }
 
+                analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_APPROVED)
                 wpApiSiteRepository.saveApplicationPassword(fetchedSiteId.value, username, password)
                 credentialsLoginFlow.value = UnexpectedResponseFlow.APP_PASSWORD
                 fetchUserInfo()
             }
         }
+    }
+
+    private fun onAuthorizationSiteMismatch(step: String) {
+        fetchedSiteId.value = -1
+        loadingMessage.value = 0
+        analyticsTracker.track(
+            AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_SITE_MISMATCH,
+            properties = mapOf(AnalyticsTracker.KEY_STEP to step)
+        )
+        showErrorSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch)
+    }
+
+    private fun String.redirectionQueryParameters(): Map<String, String> {
+        val query = runCatching { URI(this).rawQuery }.getOrNull() ?: return emptyMap()
+        return query.split("&")
+            .mapNotNull { parameter ->
+                val name = parameter.substringBefore("=", missingDelimiterValue = "")
+                if (name.isEmpty()) return@mapNotNull null
+                runCatching {
+                    URLDecoder.decode(name, Charsets.UTF_8.name()) to
+                        URLDecoder.decode(parameter.substringAfter("="), Charsets.UTF_8.name())
+                }.getOrNull()
+            }
+            .toMap()
     }
 
     fun onWooInstallationAttempted() = launch {
@@ -649,15 +680,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                         ?.toPresentableString()
                         ?: resourceProvider.getString(R.string.error_generic)
                     val applicationPasswordAuthorizationUrl = site.applicationPasswordAuthorizationUrl
-                    if (!applicationPasswordAuthorizationUrl.isNullOrEmpty()) {
-                        showApplicationPasswordTutorial(
-                            ApplicationPasswordTutorial(
-                                verifiedLoginUrl = savedStateHandle.get<String>(LOGIN_ENTRY_URL_KEY),
-                                applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
-                                errorMessage = errorMessage
-                            )
-                        )
-                    } else {
+                    if (applicationPasswordAuthorizationUrl.isNullOrEmpty()) {
                         pendingUnexpectedResponse = null
                         analyticsTracker.track(
                             AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_URL_NOT_AVAILABLE,
@@ -666,6 +689,19 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                             )
                         )
                         triggerEvent(ShowApplicationPasswordsUnavailableScreen(siteAddress, site.isJetpackConnected))
+                    } else if (
+                        !ApplicationPasswordSiteMatcher.isSameSite(siteAddress, site.applicationPasswordsAuthorizeUrl)
+                    ) {
+                        pendingUnexpectedResponse = null
+                        onAuthorizationSiteMismatch(SITE_MISMATCH_STEP_BEFORE_APPROVAL)
+                    } else {
+                        showApplicationPasswordTutorial(
+                            ApplicationPasswordTutorial(
+                                verifiedLoginUrl = savedStateHandle.get<String>(LOGIN_ENTRY_URL_KEY),
+                                applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
+                                errorMessage = errorMessage
+                            )
+                        )
                     }
                 } else {
                     pendingUnexpectedResponse = null
