@@ -825,17 +825,6 @@ private fun CustomAmountItem(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.clearAndSetSemantics { },
                 )
-                if (item.isTaxable) {
-                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
-                    WooPosText(
-                        text = stringResource(R.string.woopos_cart_custom_amount_includes_tax),
-                        style = WooPosTypography.BodySmall,
-                        color = WooPosTheme.colors.onSurfaceVariantLowest,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.clearAndSetSemantics { },
-                    )
-                }
                 if (isDiscountNotAppliedNoteVisible) {
                     Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
                     WooPosText(
