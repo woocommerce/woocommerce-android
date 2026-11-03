@@ -41,6 +41,7 @@ data class CustomerDTO(
         @SerializedName("country") val country: String? = null,
         @SerializedName("first_name") val firstName: String? = null,
         @SerializedName("last_name") val lastName: String? = null,
+        @SerializedName("phone") val phone: String? = null,
         @SerializedName("postcode") val postcode: String? = null,
         @SerializedName("state") val state: String? = null
     )
