@@ -74,29 +74,32 @@ fun CustomerListScreen(
     onEndOfListReached: () -> Unit,
     onRetryClicked: () -> Unit,
     onEnableAnalyticsClicked: () -> Unit,
+    showSearchBar: Boolean = true,
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.surface)
     ) {
-        SearchLayoutWithParams(
-            state = SearchLayoutWithParamsState(
-                hint = state.searchHint,
-                searchQuery = state.searchQuery,
-                isSearchFocused = state.searchFocused,
-                areSearchTypesAlwaysVisible = true,
-                supportedSearchTypes = state.searchModes.map {
-                    SearchLayoutWithParamsState.SearchType(
-                        labelResId = it.labelResId,
-                        isSelected = it.isSelected,
-                    )
-                }
-            ),
-            paramsFillWidth = false,
-            onSearchQueryChanged = onSearchQueryChanged,
-            onSearchTypeSelected = onSearchTypeChanged,
-        )
+        if (showSearchBar) {
+            SearchLayoutWithParams(
+                state = SearchLayoutWithParamsState(
+                    hint = state.searchHint,
+                    searchQuery = state.searchQuery,
+                    isSearchFocused = state.searchFocused,
+                    areSearchTypesAlwaysVisible = true,
+                    supportedSearchTypes = state.searchModes.map {
+                        SearchLayoutWithParamsState.SearchType(
+                            labelResId = it.labelResId,
+                            isSelected = it.isSelected,
+                        )
+                    }
+                ),
+                paramsFillWidth = false,
+                onSearchQueryChanged = onSearchQueryChanged,
+                onSearchTypeSelected = onSearchTypeChanged,
+            )
+        }
 
         PartialLoadingIndicator(state)
 
