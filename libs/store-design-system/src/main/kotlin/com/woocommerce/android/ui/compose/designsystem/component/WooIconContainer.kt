@@ -103,7 +103,9 @@ private fun WooIconContainerTone.toIconContainerColors(): WooIconContainerColors
     val palette = colors.palette
 
     return when (this) {
-        WooIconContainerTone.Purple -> WooIconContainerColors(palette.wooPurple.shade0, colors.primary)
+        WooIconContainerTone.Purple -> {
+            WooIconContainerColors(colors.container.secondaryContainer, colors.container.onSecondaryContainer)
+        }
         WooIconContainerTone.Sandstone -> {
             WooIconContainerColors(colors.iconContainer.sandstone, palette.sandstone.shade60)
         }
