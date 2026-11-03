@@ -20,7 +20,7 @@ from typing import Any
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent.parent
 DEFAULT_CACHE_DIR = REPO_ROOT / "build" / "maestro-release-apk"
-LATEST_RELEASE_API = "https://api.github.com/repos/woocommerce/woocommerce-android/releases/latest"
+RELEASES_API = "https://api.github.com/repos/woocommerce/woocommerce-android/releases?per_page=30"
 PRODUCTION_APP_ID = "com.woocommerce.android"
 
 
@@ -93,6 +93,21 @@ def installed_release(device: str) -> ApkMetadata | None:
     return metadata
 
 
+def phone_apk_name(tag: str) -> str:
+    return f"WooCommerce-{tag}-universal.apk"
+
+
+def latest_phone_release(releases: list[Any]) -> dict[str, Any]:
+    # Wear releases are published right after the phone release, so they are skipped by asset name.
+    for release in releases:
+        if not isinstance(release, dict) or release.get("draft") or release.get("prerelease"):
+            continue
+        tag = str(release.get("tag_name", "")).strip()
+        if any(str(asset.get("name", "")) == phone_apk_name(tag) for asset in release.get("assets", [])):
+            return release
+    raise ReleaseAppError("GitHub has no stable WooCommerce Android release with a universal APK")
+
+
 def parse_release_asset(release: dict[str, Any]) -> ReleaseAsset:
     tag = str(release.get("tag_name", "")).strip()
     if not tag:
@@ -100,11 +115,7 @@ def parse_release_asset(release: dict[str, Any]) -> ReleaseAsset:
     if release.get("draft") or release.get("prerelease"):
         raise ReleaseAppError(f"GitHub latest release {tag} is not a stable published release")
 
-    candidates = [
-        asset
-        for asset in release.get("assets", [])
-        if str(asset.get("name", "")).endswith("-universal.apk")
-    ]
+    candidates = [asset for asset in release.get("assets", []) if str(asset.get("name", "")) == phone_apk_name(tag)]
     if len(candidates) != 1:
         raise ReleaseAppError(f"GitHub release {tag} must contain exactly one universal APK asset")
 
@@ -135,15 +146,15 @@ def github_headers() -> dict[str, str]:
 
 
 def latest_release_asset() -> ReleaseAsset:
-    request = urllib.request.Request(LATEST_RELEASE_API, headers=github_headers())
+    request = urllib.request.Request(RELEASES_API, headers=github_headers())
     try:
         with urllib.request.urlopen(request, timeout=30) as response:
-            release = json.load(response)
+            releases = json.load(response)
     except (OSError, ValueError) as error:
         raise ReleaseAppError(f"could not resolve the latest WooCommerce Android release: {error}") from error
-    if not isinstance(release, dict):
-        raise ReleaseAppError("GitHub latest release response is not an object")
-    return parse_release_asset(release)
+    if not isinstance(releases, list):
+        raise ReleaseAppError("GitHub releases response is not a list")
+    return parse_release_asset(latest_phone_release(releases))
 
 
 def sha256(path: Path) -> str:
