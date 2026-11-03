@@ -12,7 +12,6 @@ import androidx.navigation.navArgument
 import com.woocommerce.android.ui.woopos.home.HOME_ROUTE
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
-import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
 
 private const val CUSTOM_AMOUNT_ROUTE_BASE = "$HOME_ROUTE/custom_amount"
 private const val ITEM_NUMBER_KEY = "itemNumber"
@@ -28,6 +27,8 @@ const val CUSTOM_AMOUNT_ROUTE = "$CUSTOM_AMOUNT_ROUTE_BASE?" +
     "$IS_TAXABLE_KEY={$IS_TAXABLE_KEY}"
 
 fun NavController.navigateToCustomAmountScreen(editing: WooPosCartItemViewState.CustomAmount?) {
+    if (currentDestination?.route == CUSTOM_AMOUNT_ROUTE) return
+
     val route = if (editing == null) {
         CUSTOM_AMOUNT_ROUTE_BASE
     } else {
@@ -37,7 +38,7 @@ fun NavController.navigateToCustomAmountScreen(editing: WooPosCartItemViewState.
             "$NAME_KEY=${Uri.encode(editing.name)}&" +
             "$IS_TAXABLE_KEY=${editing.isTaxable}"
     }
-    navigateOnce(route)
+    navigate(route) { launchSingleTop = true }
 }
 
 fun NavGraphBuilder.customAmountScreen(
