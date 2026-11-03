@@ -57,7 +57,7 @@ class CustomerListViewModelMapper @Inject constructor(
             country = wcCustomer.shippingCountry,
             state = wcCustomer.shippingState,
             postcode = wcCustomer.shippingPostcode,
-            phone = ""
+            phone = wcCustomer.shippingPhone
         )
 
     fun mapFromCustomerModelToBillingAddress(wcCustomer: WCCustomerModel) =
