@@ -102,8 +102,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         private const val USERNAME_PARAMETER = "user_login"
         private const val PASSWORD_PARAMETER = "password"
         private const val SITE_URL_PARAMETER = "site_url"
-        private const val SITE_MISMATCH_STEP_BEFORE_APPROVAL = "before_approval"
-        private const val SITE_MISMATCH_STEP_AFTER_APPROVAL = "after_approval"
         private const val HAS_RECONCILED_SITE_URL_KEY = "has-reconciled-site-url"
         private const val LOGIN_ENTRY_URL_KEY = "login-entry-url"
         private const val ADMIN_BASE_URL_KEY = "admin-base-url"
@@ -397,12 +395,16 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     return@launch
                 }
 
+                if (!ApplicationPasswordSiteMatcher.isSameSite(siteAddress, params[SITE_URL_PARAMETER])) {
+                    onAuthorizationSiteMismatch(AnalyticsTracker.VALUE_STEP_AFTER_APPROVAL)
+                    return@launch
+                }
+
                 val username = params[USERNAME_PARAMETER]
                 val password = params[PASSWORD_PARAMETER]
-                if (username.isNullOrEmpty() || password.isNullOrEmpty() ||
-                    !ApplicationPasswordSiteMatcher.isSameSite(siteAddress, params[SITE_URL_PARAMETER])
-                ) {
-                    onAuthorizationSiteMismatch(SITE_MISMATCH_STEP_AFTER_APPROVAL)
+                if (username.isNullOrEmpty() || password.isNullOrEmpty()) {
+                    fetchedSiteId.value = -1
+                    showErrorSnackbar(R.string.error_generic)
                     return@launch
                 }
 
@@ -713,7 +715,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             !ApplicationPasswordSiteMatcher.isSameSite(siteAddress, site.applicationPasswordsAuthorizeUrl)
         ) {
             pendingUnexpectedResponse = null
-            onAuthorizationSiteMismatch(SITE_MISMATCH_STEP_BEFORE_APPROVAL)
+            onAuthorizationSiteMismatch(AnalyticsTracker.VALUE_STEP_BEFORE_APPROVAL)
         } else {
             showApplicationPasswordTutorial(
                 ApplicationPasswordTutorial(

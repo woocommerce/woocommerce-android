@@ -899,7 +899,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given authorize URL on another host, when starting web authorization, then show the site mismatch snackbar`() =
+    fun `given authorize URL on another host, when starting web authorization, then show the site mismatch snackbar without loading`() =
         testBlocking {
             // GIVEN
             givenAuthorizeUrl("$OTHER_SITE_URL$AUTHORIZE_PATH")
@@ -911,6 +911,67 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(viewModel.event.value)
                 .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch))
+            assertThat(viewModel.viewState.value?.loadingMessage).isNull()
+        }
+
+    @Test
+    fun `given cookie login gets an unexpected response and authorize URL on another host, when logging in, then show the site mismatch snackbar`() =
+        testBlocking {
+            // GIVEN
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
+                .thenReturn(Result.failure(unexpectedResponseError()))
+            givenAuthorizeUrl("$OTHER_SITE_URL$AUTHORIZE_PATH")
+            setup()
+
+            // WHEN
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+            }
+
+            // THEN
+            assertThat(viewModel.event.value)
+                .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch))
+        }
+
+    @Test
+    fun `given cookie login gets an unexpected response and authorize URL on another host, when logging in, then do not show the unexpected response alert`() =
+        testBlocking {
+            // GIVEN
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
+                .thenReturn(Result.failure(unexpectedResponseError()))
+            givenAuthorizeUrl("$OTHER_SITE_URL$AUTHORIZE_PATH")
+            setup()
+
+            // WHEN
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+            }
+
+            // THEN
+            assertThat(viewModel.viewState.value?.unexpectedResponse).isNull()
+            verify(unexpectedResponseTracker, never()).trackErrorShown(any())
+        }
+
+    @Test
+    fun `given cookie login gets an unexpected response and authorize URL on another host, when logging in, then do not open the tutorial`() =
+        testBlocking {
+            // GIVEN
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
+                .thenReturn(Result.failure(unexpectedResponseError()))
+            givenAuthorizeUrl("$OTHER_SITE_URL$AUTHORIZE_PATH")
+            setup()
+            val events = viewModel.event.captureValues()
+
+            // WHEN
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+            }
+
+            // THEN
+            assertThat(events).noneMatch { it is ShowApplicationPasswordTutorialScreen }
         }
 
     @Test
@@ -926,7 +987,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             // THEN
             verify(analytics).track(
                 AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_SITE_MISMATCH,
-                mapOf(AnalyticsTracker.KEY_STEP to "before_approval")
+                mapOf(AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_BEFORE_APPROVAL)
             )
         }
 
@@ -1081,7 +1142,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             // THEN
             verify(analytics).track(
                 AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_SITE_MISMATCH,
-                mapOf(AnalyticsTracker.KEY_STEP to "after_approval")
+                mapOf(AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_AFTER_APPROVAL)
             )
         }
 
@@ -1122,6 +1183,80 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
             // THEN
             verify(repository, never()).saveApplicationPassword(any(), any(), any())
+        }
+
+    @Test
+    fun `given redirect without username, when web authorization redirects, then show the generic error snackbar`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_REDIRECT_URL?password=$PASSWORD&site_url=$SITE_URL")
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.error_generic))
+        }
+
+    @Test
+    fun `given redirect with an empty password, when web authorization redirects, then show the generic error snackbar`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_REDIRECT_URL?user_login=$USERNAME&password=&site_url=$SITE_URL")
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.error_generic))
+        }
+
+    @Test
+    fun `given redirect without username, when web authorization redirects, then do not track the site mismatch`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_REDIRECT_URL?password=$PASSWORD&site_url=$SITE_URL")
+
+            // THEN
+            verify(analytics, never()).track(
+                eq(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_SITE_MISMATCH),
+                any()
+            )
+        }
+
+    @Test
+    fun `given redirect without site URL, when web authorization redirects, then track mismatch after approval`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects(WEB_CREDENTIALS_URL)
+
+            // THEN
+            verify(analytics).track(
+                AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_SITE_MISMATCH,
+                mapOf(AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_AFTER_APPROVAL)
+            )
+        }
+
+    @Test
+    fun `given redirect site URL on a lookalike host, when web authorization redirects, then track mismatch after approval`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_CREDENTIALS_URL&site_url=$LOOKALIKE_SITE_URL")
+
+            // THEN
+            verify(analytics).track(
+                AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_SITE_MISMATCH,
+                mapOf(AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_AFTER_APPROVAL)
+            )
         }
 
     @Test
@@ -1193,7 +1328,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given redirect without a query, when web authorization redirects, then stop without saving`() =
+    fun `given redirect without a query, when web authorization redirects, then stop as a site mismatch without saving`() =
         testBlocking {
             // GIVEN
             setup()
@@ -1203,12 +1338,11 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
             // THEN
             verify(repository, never()).saveApplicationPassword(any(), any(), any())
-            assertThat(viewModel.event.value)
-                .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch))
+            thenSiteMismatchAfterApprovalIsReported()
         }
 
     @Test
-    fun `given redirect with an empty query, when web authorization redirects, then stop without saving`() =
+    fun `given redirect with an empty query, when web authorization redirects, then stop as a site mismatch without saving`() =
         testBlocking {
             // GIVEN
             setup()
@@ -1218,12 +1352,11 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
             // THEN
             verify(repository, never()).saveApplicationPassword(any(), any(), any())
-            assertThat(viewModel.event.value)
-                .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch))
+            thenSiteMismatchAfterApprovalIsReported()
         }
 
     @Test
-    fun `given redirect with a parameter without a value, when web authorization redirects, then stop without saving`() =
+    fun `given redirect with a parameter without a value, when web authorization redirects, then show the generic error without saving`() =
         testBlocking {
             // GIVEN
             setup()
@@ -1233,12 +1366,27 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
             // THEN
             verify(repository, never()).saveApplicationPassword(any(), any(), any())
-            assertThat(viewModel.event.value)
-                .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch))
+            assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.error_generic))
         }
 
     @Test
-    fun `given redirect that is not a valid URI, when web authorization redirects, then stop without saving`() =
+    fun `given redirect with a parameter without a value, when web authorization redirects, then do not track the site mismatch`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_REDIRECT_URL?user_login&password=$PASSWORD&site_url=$SITE_URL")
+
+            // THEN
+            verify(analytics, never()).track(
+                eq(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_SITE_MISMATCH),
+                any()
+            )
+        }
+
+    @Test
+    fun `given redirect that is not a valid URI, when web authorization redirects, then stop as a site mismatch without saving`() =
         testBlocking {
             // GIVEN
             setup()
@@ -1248,8 +1396,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
             // THEN
             verify(repository, never()).saveApplicationPassword(any(), any(), any())
-            assertThat(viewModel.event.value)
-                .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch))
+            thenSiteMismatchAfterApprovalIsReported()
         }
 
     @Test
@@ -1862,6 +2009,15 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.onWebAuthorizationUrlLoaded(redirectUrl)
             advanceUntilIdle()
         }
+    }
+
+    private fun thenSiteMismatchAfterApprovalIsReported() {
+        assertThat(viewModel.event.value)
+            .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch))
+        verify(analytics).track(
+            AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_SITE_MISMATCH,
+            mapOf(AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_AFTER_APPROVAL)
+        )
     }
 
     private val EndpointType.recoveryUrl: String
