@@ -45,6 +45,13 @@
             android:permission="android.permission.DUMP"
             android:theme="@style/Theme.Woo.Splash" />
 
+        <activity
+            android:name="com.woocommerce.android.ui.login.storesuggestion.DebugInstallReferrerActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:permission="android.permission.DUMP"
+            android:theme="@style/Theme.Woo.Splash" />
+
     </application>
 
 </manifest>
