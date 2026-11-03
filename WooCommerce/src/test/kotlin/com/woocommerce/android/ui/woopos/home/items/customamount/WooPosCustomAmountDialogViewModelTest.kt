@@ -216,6 +216,57 @@ class WooPosCustomAmountDialogViewModelTest {
     }
 
     @Test
+    fun `given valid amount, when submitted, then onSubmitted is invoked after event is sent`() = runTest {
+        val order = mutableListOf<String>()
+        whenever(childrenToParentEventSender.sendToParent(any())).doSuspendableAnswer {
+            order.add("sent")
+            Unit
+        }
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(editing = null)
+        sut.onAmountChanged(BigDecimal("5.00"))
+
+        sut.onSubmit(onSubmitted = { order.add("callback") })
+        advanceUntilIdle()
+
+        assertThat(order).containsExactly("sent", "callback")
+    }
+
+    @Test
+    fun `given amount is null, when onSubmit called, then onSubmitted is not invoked`() = runTest {
+        var invocations = 0
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(editing = null)
+
+        sut.onSubmit(onSubmitted = { invocations++ })
+        advanceUntilIdle()
+
+        assertThat(invocations).isZero()
+    }
+
+    @Test
+    fun `given submission in flight, when onSubmit called again, then onSubmitted is invoked once`() = runTest {
+        var invocations = 0
+        val sendGate = CompletableDeferred<Unit>()
+        whenever(childrenToParentEventSender.sendToParent(any())).doSuspendableAnswer {
+            sendGate.await()
+        }
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(editing = null)
+        sut.onAmountChanged(BigDecimal("3.00"))
+
+        sut.onSubmit(onSubmitted = { invocations++ })
+        sut.onSubmit(onSubmitted = { invocations++ })
+        sendGate.complete(Unit)
+        advanceUntilIdle()
+
+        assertThat(invocations).isEqualTo(1)
+    }
+
+    @Test
     fun `given same editing item, when initializeFor called twice, then state is set once`() = runTest {
         val sut = createSut()
         advanceUntilIdle()
