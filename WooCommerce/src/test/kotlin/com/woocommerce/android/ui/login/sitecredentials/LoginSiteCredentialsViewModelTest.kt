@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedRespon
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseSupport
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker.Action
+import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -33,6 +34,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
@@ -882,6 +884,96 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given authorize URL on another host, when starting web authorization, then do not open the tutorial`() =
+        testBlocking {
+            // GIVEN
+            givenAuthorizeUrl("$OTHER_SITE_URL$AUTHORIZE_PATH")
+            setup()
+            val events = viewModel.event.captureValues()
+
+            // WHEN
+            whenStartingWebAuthorization()
+
+            // THEN
+            assertThat(events).noneMatch { it is ShowApplicationPasswordTutorialScreen }
+        }
+
+    @Test
+    fun `given authorize URL on another host, when starting web authorization, then show the site mismatch snackbar`() =
+        testBlocking {
+            // GIVEN
+            givenAuthorizeUrl("$OTHER_SITE_URL$AUTHORIZE_PATH")
+            setup()
+
+            // WHEN
+            whenStartingWebAuthorization()
+
+            // THEN
+            assertThat(viewModel.event.value)
+                .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch))
+        }
+
+    @Test
+    fun `given authorize URL on another host, when starting web authorization, then track mismatch before approval`() =
+        testBlocking {
+            // GIVEN
+            givenAuthorizeUrl("$OTHER_SITE_URL$AUTHORIZE_PATH")
+            setup()
+
+            // WHEN
+            whenStartingWebAuthorization()
+
+            // THEN
+            verify(analytics).track(
+                AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_SITE_MISMATCH,
+                mapOf(AnalyticsTracker.KEY_STEP to "before_approval")
+            )
+        }
+
+    @Test
+    fun `given authorize URL on a lookalike host, when starting web authorization, then show the site mismatch snackbar`() =
+        testBlocking {
+            // GIVEN
+            givenAuthorizeUrl("$LOOKALIKE_SITE_URL$AUTHORIZE_PATH")
+            setup()
+
+            // WHEN
+            whenStartingWebAuthorization()
+
+            // THEN
+            assertThat(viewModel.event.value)
+                .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch))
+        }
+
+    @Test
+    fun `given authorize URL with a www prefix, when starting web authorization, then open the tutorial`() =
+        testBlocking {
+            // GIVEN
+            givenAuthorizeUrl("https://www.site.example$AUTHORIZE_PATH")
+            setup()
+
+            // WHEN
+            whenStartingWebAuthorization()
+
+            // THEN
+            assertThat(viewModel.event.value).isInstanceOf(ShowApplicationPasswordTutorialScreen::class.java)
+        }
+
+    @Test
+    fun `given authorize URL with an uppercase host, when starting web authorization, then open the tutorial`() =
+        testBlocking {
+            // GIVEN
+            givenAuthorizeUrl("https://SITE.Example$AUTHORIZE_PATH")
+            setup()
+
+            // WHEN
+            whenStartingWebAuthorization()
+
+            // THEN
+            assertThat(viewModel.event.value).isInstanceOf(ShowApplicationPasswordTutorialScreen::class.java)
+        }
+
+    @Test
     fun `given login or admin recovery, when browser completes, then do not promote pending endpoints`() =
         testBlocking {
             EndpointType.entries.forEach { type ->
@@ -898,6 +990,280 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             verify(repository, times(2)).saveApplicationPassword(SITE_ID, USERNAME, PASSWORD)
             verify(repository, never()).saveAuthenticationEndpoints(any(), any())
             verify(repository, times(2)).checkIfUserIsEligible(site)
+        }
+
+    @Test
+    fun `given happy path, when web authorization redirects, then save the application password`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        whenWebAuthorizationRedirects(WEB_SUCCESS_URL)
+
+        // THEN
+        verify(repository).saveApplicationPassword(SITE_ID, USERNAME, PASSWORD)
+    }
+
+    @Test
+    fun `given happy path, when web authorization redirects, then track the approval`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        whenWebAuthorizationRedirects(WEB_SUCCESS_URL)
+
+        // THEN
+        verify(analytics).track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_APPROVED)
+    }
+
+    @Test
+    fun `given redirect without site URL, when web authorization redirects, then do not save the application password`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects(WEB_CREDENTIALS_URL)
+
+            // THEN
+            verify(repository, never()).saveApplicationPassword(any(), any(), any())
+        }
+
+    @Test
+    fun `given redirect site URL on another host, when web authorization redirects, then do not save the application password`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_CREDENTIALS_URL&site_url=$OTHER_SITE_URL")
+
+            // THEN
+            verify(repository, never()).saveApplicationPassword(any(), any(), any())
+        }
+
+    @Test
+    fun `given redirect site URL on a lookalike host, when web authorization redirects, then do not save the application password`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_CREDENTIALS_URL&site_url=$LOOKALIKE_SITE_URL")
+
+            // THEN
+            verify(repository, never()).saveApplicationPassword(any(), any(), any())
+        }
+
+    @Test
+    fun `given redirect site URL on another host, when web authorization redirects, then show the site mismatch snackbar`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_CREDENTIALS_URL&site_url=$OTHER_SITE_URL")
+
+            // THEN
+            assertThat(viewModel.event.value)
+                .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch))
+        }
+
+    @Test
+    fun `given redirect site URL on another host, when web authorization redirects, then track mismatch after approval`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_CREDENTIALS_URL&site_url=$OTHER_SITE_URL")
+
+            // THEN
+            verify(analytics).track(
+                AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_SITE_MISMATCH,
+                mapOf(AnalyticsTracker.KEY_STEP to "after_approval")
+            )
+        }
+
+    @Test
+    fun `given redirect site URL on another host, when web authorization redirects, then do not track the approval`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_CREDENTIALS_URL&site_url=$OTHER_SITE_URL")
+
+            // THEN
+            verify(analytics, never()).track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_APPROVED)
+        }
+
+    @Test
+    fun `given redirect without username, when web authorization redirects, then do not save the application password`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_REDIRECT_URL?password=$PASSWORD&site_url=$SITE_URL")
+
+            // THEN
+            verify(repository, never()).saveApplicationPassword(any(), any(), any())
+        }
+
+    @Test
+    fun `given redirect with an empty password, when web authorization redirects, then do not save the application password`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_REDIRECT_URL?user_login=$USERNAME&password=&site_url=$SITE_URL")
+
+            // THEN
+            verify(repository, never()).saveApplicationPassword(any(), any(), any())
+        }
+
+    @Test
+    fun `given redirect site URL with http scheme, when web authorization redirects, then save the application password`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_CREDENTIALS_URL&site_url=http://site.example")
+
+            // THEN
+            verify(repository).saveApplicationPassword(SITE_ID, USERNAME, PASSWORD)
+        }
+
+    @Test
+    fun `given redirect site URL with a www prefix, when web authorization redirects, then save the application password`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_CREDENTIALS_URL&site_url=https://www.site.example")
+
+            // THEN
+            verify(repository).saveApplicationPassword(SITE_ID, USERNAME, PASSWORD)
+        }
+
+    @Test
+    fun `given redirect site URL in a subfolder, when web authorization redirects, then save the application password`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_CREDENTIALS_URL&site_url=$SITE_URL/wp")
+
+            // THEN
+            verify(repository).saveApplicationPassword(SITE_ID, USERNAME, PASSWORD)
+        }
+
+    @Test
+    fun `given URL-encoded redirect site URL, when web authorization redirects, then save the application password`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_CREDENTIALS_URL&site_url=https%3A%2F%2Fsite.example")
+
+            // THEN
+            verify(repository).saveApplicationPassword(SITE_ID, USERNAME, PASSWORD)
+        }
+
+    @Test
+    fun `given URL-encoded credentials, when web authorization redirects, then save the decoded credentials`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects(
+                "$WEB_REDIRECT_URL?user_login=shop%20manager%40site.example" +
+                    "&password=abc%2Bdef%26ghi%3D&site_url=$SITE_URL"
+            )
+
+            // THEN
+            verify(repository).saveApplicationPassword(SITE_ID, "shop manager@site.example", "abc+def&ghi=")
+        }
+
+    @Test
+    fun `given redirect without a query, when web authorization redirects, then stop without saving`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects(WEB_REDIRECT_URL)
+
+            // THEN
+            verify(repository, never()).saveApplicationPassword(any(), any(), any())
+            assertThat(viewModel.event.value)
+                .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch))
+        }
+
+    @Test
+    fun `given redirect with an empty query, when web authorization redirects, then stop without saving`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_REDIRECT_URL?")
+
+            // THEN
+            verify(repository, never()).saveApplicationPassword(any(), any(), any())
+            assertThat(viewModel.event.value)
+                .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch))
+        }
+
+    @Test
+    fun `given redirect with a parameter without a value, when web authorization redirects, then stop without saving`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_REDIRECT_URL?user_login&password=$PASSWORD&site_url=$SITE_URL")
+
+            // THEN
+            verify(repository, never()).saveApplicationPassword(any(), any(), any())
+            assertThat(viewModel.event.value)
+                .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch))
+        }
+
+    @Test
+    fun `given redirect that is not a valid URI, when web authorization redirects, then stop without saving`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_SUCCESS_URL&broken=%%")
+
+            // THEN
+            verify(repository, never()).saveApplicationPassword(any(), any(), any())
+            assertThat(viewModel.event.value)
+                .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch))
+        }
+
+    @Test
+    fun `given redirect with success false, when web authorization redirects, then show the rejected snackbar`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_REDIRECT_URL?success=false")
+
+            // THEN
+            assertThat(viewModel.event.value)
+                .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_connection_rejected))
         }
 
     @Test
@@ -1477,6 +1843,27 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         hasWooCommerce = true
     }
 
+    private suspend fun givenAuthorizeUrl(authorizeUrl: String) {
+        val fetchedSite = siteWithUrl(SITE_URL).apply { applicationPasswordsAuthorizeUrl = authorizeUrl }
+        whenever(repository.fetchSiteForBrowserLogin(SITE_URL)).thenReturn(Result.success(fetchedSite))
+    }
+
+    private fun TestScope.whenStartingWebAuthorization() {
+        viewModel.viewState.observeForTesting {
+            viewModel.onStartWebAuthorizationClick()
+            advanceUntilIdle()
+        }
+    }
+
+    private fun TestScope.whenWebAuthorizationRedirects(redirectUrl: String) {
+        viewModel.viewState.observeForTesting {
+            viewModel.onStartWebAuthorizationClick()
+            advanceUntilIdle()
+            viewModel.onWebAuthorizationUrlLoaded(redirectUrl)
+            advanceUntilIdle()
+        }
+    }
+
     private val EndpointType.recoveryUrl: String
         get() = when (this) {
             EndpointType.LOGIN -> LOGIN_URL
@@ -1541,7 +1928,12 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         const val ENDPOINT_RECOVERY_STATE_KEY = "endpoint-recovery"
         const val LOGIN_ENTRY_URL_STATE_KEY = "login-entry-url"
         const val ADMIN_BASE_URL_STATE_KEY = "admin-base-url"
-        const val WEB_SUCCESS_URL = "woocommerce://login?user_login=$USERNAME&password=$PASSWORD"
+        const val WEB_REDIRECT_URL = "woocommerce://login"
+        const val WEB_CREDENTIALS_URL = "$WEB_REDIRECT_URL?user_login=$USERNAME&password=$PASSWORD"
+        const val WEB_SUCCESS_URL = "$WEB_CREDENTIALS_URL&site_url=$SITE_URL"
+        const val OTHER_SITE_URL = "https://other.example"
+        const val LOOKALIKE_SITE_URL = "https://site.example.evil.test"
+        const val AUTHORIZE_PATH = "/wp-admin/authorize-application.php"
         val DEFAULT_ENDPOINTS = CookieNonceAuthenticationEndpoints(SITE_URL)
         val LOGIN_ENDPOINTS = CookieNonceAuthenticationEndpoints("$SITE_URL/", loginEntryUrl = LOGIN_URL)
         val PENDING_LOGIN_ENDPOINTS = CookieNonceAuthenticationEndpoints(SITE_URL, loginEntryUrl = LOGIN_URL)

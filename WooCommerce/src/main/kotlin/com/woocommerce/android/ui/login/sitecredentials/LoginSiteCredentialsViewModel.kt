@@ -679,30 +679,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     val errorMessage = detectedErrorMessage
                         ?.toPresentableString()
                         ?: resourceProvider.getString(R.string.error_generic)
-                    val applicationPasswordAuthorizationUrl = site.applicationPasswordAuthorizationUrl
-                    if (applicationPasswordAuthorizationUrl.isNullOrEmpty()) {
-                        pendingUnexpectedResponse = null
-                        analyticsTracker.track(
-                            AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_URL_NOT_AVAILABLE,
-                            properties = mapOf(
-                                AnalyticsTracker.KEY_SITE_URL to siteAddress
-                            )
-                        )
-                        triggerEvent(ShowApplicationPasswordsUnavailableScreen(siteAddress, site.isJetpackConnected))
-                    } else if (
-                        !ApplicationPasswordSiteMatcher.isSameSite(siteAddress, site.applicationPasswordsAuthorizeUrl)
-                    ) {
-                        pendingUnexpectedResponse = null
-                        onAuthorizationSiteMismatch(SITE_MISMATCH_STEP_BEFORE_APPROVAL)
-                    } else {
-                        showApplicationPasswordTutorial(
-                            ApplicationPasswordTutorial(
-                                verifiedLoginUrl = savedStateHandle.get<String>(LOGIN_ENTRY_URL_KEY),
-                                applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
-                                errorMessage = errorMessage
-                            )
-                        )
-                    }
+                    showAuthorizationFor(site, errorMessage)
                 } else {
                     pendingUnexpectedResponse = null
                     triggerEvent(ShowNonWooErrorScreen(siteAddress))
@@ -719,6 +696,33 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             }
         )
         return !result.getOrNull()?.applicationPasswordsAuthorizeUrl.isNullOrEmpty()
+    }
+
+    private fun showAuthorizationFor(site: SiteModel, errorMessage: String) {
+        val applicationPasswordAuthorizationUrl = site.applicationPasswordAuthorizationUrl
+        if (applicationPasswordAuthorizationUrl.isNullOrEmpty()) {
+            pendingUnexpectedResponse = null
+            analyticsTracker.track(
+                AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_URL_NOT_AVAILABLE,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_SITE_URL to siteAddress
+                )
+            )
+            triggerEvent(ShowApplicationPasswordsUnavailableScreen(siteAddress, site.isJetpackConnected))
+        } else if (
+            !ApplicationPasswordSiteMatcher.isSameSite(siteAddress, site.applicationPasswordsAuthorizeUrl)
+        ) {
+            pendingUnexpectedResponse = null
+            onAuthorizationSiteMismatch(SITE_MISMATCH_STEP_BEFORE_APPROVAL)
+        } else {
+            showApplicationPasswordTutorial(
+                ApplicationPasswordTutorial(
+                    verifiedLoginUrl = savedStateHandle.get<String>(LOGIN_ENTRY_URL_KEY),
+                    applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
+                    errorMessage = errorMessage
+                )
+            )
+        }
     }
 
     private suspend fun fetchSite(): Boolean {
