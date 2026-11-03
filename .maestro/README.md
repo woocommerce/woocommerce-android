@@ -107,6 +107,20 @@ The store ships with the WooCommerce sample products. The script tops it up to 1
 and 100 completed orders, and adds one customer and a `maestro10` coupon. The negative-login
 fixtures are filled in by hand.
 
+`no_jetpack.yaml` and `push_no_jetpack.yaml` need a second site, with WooCommerce and without Jetpack. The skill
+creates it too. For one you created yourself, run:
+
+```bash
+.maestro/scripts/setup-jn-store.sh --no-jetpack-site your-other-site.jurassic.ninja
+```
+
+`jetpack_not_connected.yaml` needs a third site, with WooCommerce and Jetpack installed but
+not connected. The skill creates it too. For one you created yourself, run:
+
+```bash
+.maestro/scripts/setup-jn-store.sh --jetpack-not-connected-site your-third-site.jurassic.ninja
+```
+
 Jurassic Ninja sites expire after 7 days of inactivity. Re-run the script or the skill
 against a new site when that happens; the WordPress.com account already in `.env.local`
 is reused.
@@ -220,6 +234,8 @@ The runner:
 - `app_locale_de`: the runner logs in and sets the app language to German first.
 - `home_widget`: the runner removes Woo widgets from the home screen before and after the flow.
 - `push_new_order`: the runner logs in and creates an order first, and passes its number and total to the flow. Needs `--seed`.
+- `no_jetpack_store`: the runner resets the store without Jetpack first, over SSH: it uninstalls Jetpack and removes the WordPress.com connection.
+- `jetpack_not_connected`: the runner disconnects Jetpack on the store with Jetpack not connected first, over SSH.
 - `system_surface`: flow enters Android-owned UI; assertions stop at the documented handoff boundary.
 - `destructive`: mutates store data.
 - `store_shared`: runs against the shared store unless `--store` is passed; never combined with `destructive`.

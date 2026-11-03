@@ -59,6 +59,27 @@ class EnsureReleaseAppTests(unittest.TestCase):
                 }
             )
 
+    def test_latest_phone_release_skips_prereleases_and_wear_releases(self) -> None:
+        def release(tag: str, apk: str, prerelease: bool = False) -> dict:
+            return {"tag_name": tag, "draft": False, "prerelease": prerelease, "assets": [{"name": apk}]}
+
+        selected = release_app.latest_phone_release(
+            [
+                release("26.0-rc-1", "WooCommerce-26.0-rc-1-universal.apk", prerelease=True),
+                release("25.9w", "WooCommerce-Wear-25.9-universal.apk"),
+                release("25.9", "WooCommerce-25.9-universal.apk"),
+                release("25.8", "WooCommerce-25.8-universal.apk"),
+            ]
+        )
+
+        self.assertEqual(selected["tag_name"], "25.9")
+
+    def test_no_stable_phone_release_is_rejected(self) -> None:
+        with self.assertRaisesRegex(release_app.ReleaseAppError, "no stable"):
+            release_app.latest_phone_release(
+                [{"tag_name": "25.9w", "assets": [{"name": "WooCommerce-Wear-25.9-universal.apk"}]}]
+            )
+
     def test_production_apk_badging_must_not_be_debuggable(self) -> None:
         metadata = release_app.parse_apk_badging(
             "package: name='com.woocommerce.android' versionCode='778' versionName='25.4'\n"
