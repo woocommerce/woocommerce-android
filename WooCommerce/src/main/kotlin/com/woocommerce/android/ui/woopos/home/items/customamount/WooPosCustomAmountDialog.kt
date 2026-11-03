@@ -55,6 +55,7 @@ fun WooPosCustomAmountFormScreen(
     editing: WooPosCartItemViewState.CustomAmount?,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onSubmitted: () -> Unit = {},
     submitButtonPadding: PaddingValues = defaultSubmitButtonPadding(),
     viewModel: WooPosCustomAmountDialogViewModel = hiltViewModel(),
 ) {
@@ -116,7 +117,7 @@ fun WooPosCustomAmountFormScreen(
                     .fillMaxWidth()
                     .padding(submitButtonPadding),
                 state = state,
-                onSubmit = viewModel::onSubmit,
+                onSubmit = { viewModel.onSubmit(onSubmitted) },
             )
         }
     }

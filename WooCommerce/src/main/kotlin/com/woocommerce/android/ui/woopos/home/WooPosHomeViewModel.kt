@@ -18,6 +18,8 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -34,6 +36,7 @@ class WooPosHomeViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val soundHelper: WooPosSoundHelper,
     private val preferencesRepository: WooPosPreferencesRepository,
+    private val featureFlagRepository: FeatureFlagRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -286,9 +289,13 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.CustomAmountDialogRequested -> {
-                        sendEventToChildren(
-                            ParentToChildrenEvent.ShowCustomAmountForm(editing = event.editing)
-                        )
+                        if (featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_CUSTOM_AMOUNT_FULL_SCREEN)) {
+                            handleNavigationEvent(NavigationEvent.ToCustomAmount(event.editing))
+                        } else {
+                            sendEventToChildren(
+                                ParentToChildrenEvent.ShowCustomAmountForm(editing = event.editing)
+                            )
+                        }
                     }
 
                     is ChildToParentEvent.CustomAmountSubmitted -> {

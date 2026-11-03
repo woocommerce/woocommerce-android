@@ -73,6 +73,7 @@ sealed class ChildToParentEvent {
         data class ToMarkOrderAsPaid(val orderId: Long) : NavigationEvent()
         data class ToScanToPay(val orderId: Long) : NavigationEvent()
         data class ToEmailReceipt(val orderId: Long) : NavigationEvent()
+        data class ToCustomAmount(val editing: WooPosCartItemViewState.CustomAmount?) : NavigationEvent()
         data object ReturnHomeFromCashWhenCardPaymentStarted : NavigationEvent()
         data object ExitPos : NavigationEvent()
         data object ToSettings : NavigationEvent()
