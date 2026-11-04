@@ -81,8 +81,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCustom
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosIconButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenu
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenuItem
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -776,24 +774,29 @@ private fun CustomAmountItem(
     } else {
         baseContentDescription
     }
+    val editClickLabel = stringResource(R.string.woopos_cart_custom_amount_edit_content_description, item.name)
 
     WooPosCard(
-        modifier = modifier
-            .wrapContentHeight()
-            .semantics { contentDescription = itemContentDescription },
+        modifier = modifier.wrapContentHeight(),
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         elevation = WooPosElevation.Medium,
         shadowType = ShadowType.Soft,
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
     ) {
         Row(
-            modifier = Modifier.height(IntrinsicSize.Min),
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
+                .clickable(enabled = canRemoveItems, onClickLabel = editClickLabel) {
+                    onUIEvent(WooPosCartUIEvent.EditCustomAmountClicked(item))
+                }
+                .semantics(mergeDescendants = true) { contentDescription = itemContentDescription },
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             WooPosCustomAmountInitialsAvatar(
                 name = item.name,
                 modifier = Modifier
+                    .clearAndSetSemantics { }
                     .width(WooPosComponentSize.Medium.value)
                     .fillMaxHeight()
                     .heightIn(min = WooPosComponentSize.Medium.value),
@@ -838,34 +841,13 @@ private fun CustomAmountItem(
                 }
             }
 
-            // Edit lives inside the overflow menu, so this also gates the edit path during checkout
-            // — intentional: cart contents are locked once payment starts.
+            // Cart contents are locked once payment starts, so both edit (row tap) and remove are gated.
             if (canRemoveItems) {
-                CustomAmountOverflowMenu(item = item, onUIEvent = onUIEvent)
+                RemoveItemFromCartButton(item, onUIEvent)
             }
             Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
         }
     }
-}
-
-@Composable
-private fun CustomAmountOverflowMenu(
-    item: WooPosCartItemViewState.CustomAmount,
-    onUIEvent: (WooPosCartUIEvent) -> Unit,
-) {
-    WooPosOverflowMenu(
-        items = listOf(
-            WooPosOverflowMenuItem(
-                label = stringResource(R.string.woopos_cart_custom_amount_menu_edit),
-                onClick = { onUIEvent(WooPosCartUIEvent.EditCustomAmountClicked(item)) },
-            ),
-            WooPosOverflowMenuItem(
-                label = stringResource(R.string.woopos_cart_custom_amount_menu_remove),
-                color = MaterialTheme.colorScheme.error,
-                onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
-            ),
-        )
-    )
 }
 
 @Composable
