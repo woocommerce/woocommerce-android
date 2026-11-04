@@ -31,6 +31,8 @@ fabric.properties
 # See https://linear.app/a8c/issue/AINFRA-3221
 sentry.properties
 google-services.json
+google-upload-credentials.json
+.configure-files/
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -91,7 +93,6 @@ projectFilesBackup/
 fastlane/README.md
 fastlane/report.xml
 fastlane/.env
-google-upload-credentials.json
 fastlane/screenshots
 fastlane/promo_sceenshots
 # This is a byproduct of the screenshots composition process
@@ -104,15 +105,6 @@ default.profraw
 .markdownlint.json
 
 local-builds.gradle
-
-# All secrets should be stored under .configure-files
-# Everything without a .enc extension is ignored
-.configure-files/*
-!.configure-files/*.enc
-# This secret is not part of the repository anymore, but we keep it in the
-# gitignore for retrocompatibility, so that it won't appear as a new file and
-# be accidentally checked in the repository.
-google-upload-credentials.json
 
 # Kotlin
 .kotlin/

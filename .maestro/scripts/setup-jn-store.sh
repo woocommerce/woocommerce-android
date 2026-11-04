@@ -40,7 +40,8 @@ SITE="" KEYS_ONLY_SITE="" KEYS_ONLY_PREFIX="" KEYS_ONLY_NAME="" REQUIRE_JETPACK=
 ADMIN_USER="demo"
 ADMIN_ID="1"
 ENV_OUT=""
-APP_CREDS="$HOME/.configure/woocommerce-android/secrets/secrets.properties"
+# Mirrors `a8c-secrets which`, without spawning the command
+APP_CREDS="$HOME/.a8c-secrets/$(cat "$(dirname "${BASH_SOURCE[0]}")/../../.a8c-secrets/repo-id")/secrets.properties"
 ONE_STORE="each run configures one store: pass only one of --site, --no-jetpack-site and --jetpack-not-connected-site"
 
 die() { printf '\033[31merror:\033[0m %s\n' "$*" >&2; exit 1; }

@@ -35,7 +35,7 @@ Read more about [OAuth2][oauth] and the [WordPress.com REST endpoint][wp-api].
 
 #### `secrets.properties`
 
-The `secrets.properties` file is used to store sensitive information that should not be checked into version control. This file is located at `~/.configure/woocommerce-android/secrets/secrets.properties`.
+The `secrets.properties` file is used to store sensitive information that should not be checked into version control. This file is located at `~/.a8c-secrets/<repo-id>/secrets.properties`, where `<repo-id>` is the content of `.a8c-secrets/repo-id`.
 
 | Property                   | Description |
 |:---------------------------|:------------|
