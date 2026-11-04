@@ -5,6 +5,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -12,6 +13,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Index
@@ -282,6 +284,25 @@ class ProductImagesViewModelTest : BaseUnitTest() {
             assertThat(state.images).isEqualTo(images)
         }
     }
+
+    @Test
+    fun `given an image finished uploading while dragging, when dragging is cancelled, then the image is kept`() =
+        testBlocking {
+            // GIVEN
+            val successfulUploads = MutableSharedFlow<MediaModel>()
+            whenever(mediaFileUploadHandler.observeSuccessfulUploads(any())).thenReturn(successfulUploads)
+            initialize(requestCode = RequestCodes.PRODUCT_DETAIL_IMAGES)
+            viewModel.onGalleryImageDragStarted()
+            successfulUploads.emit(uploadedMedia)
+
+            // WHEN
+            viewModel.onNavigateBackButtonClicked()
+
+            // THEN
+            observeState { state ->
+                assertThat(state.images).isEqualTo(DEFAULT_PRODUCT_IMAGES + uploadedMedia.toAppModel())
+            }
+        }
 
     @Test
     fun `Send tracks event upon exit if there was no changes`() {

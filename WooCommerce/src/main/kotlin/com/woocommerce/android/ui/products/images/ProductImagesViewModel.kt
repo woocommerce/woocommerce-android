@@ -219,6 +219,10 @@ class ProductImagesViewModel @Inject constructor(
                 val uploadedImage = media.toAppModel()
                 viewState = viewState.copy(
                     images = if (isMultiSelectionAllowed) images + uploadedImage else listOf(uploadedImage),
+                    productImagesState = when (val state = viewState.productImagesState) {
+                        is Dragging -> Dragging(state.initialState + uploadedImage)
+                        Browsing -> Browsing
+                    },
                     hasCompletedUploads = true
                 )
             }
