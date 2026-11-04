@@ -34,34 +34,37 @@ fun WooPosCustomAmountScreen(
     }
     val state by viewModel.state.collectAsState()
 
-    if (state.screen == WooPosCustomAmountDialogState.Screen.AMOUNT) {
-        WooPosCustomAmountAmountScreen(
-            state = state,
-            onAmountChanged = viewModel::onAmountChanged,
-            onContinueClicked = viewModel::onAmountConfirmed,
-            onBackClicked = goBack,
-            modifier = modifier.background(MaterialTheme.colorScheme.surface),
-        )
-        return
-    }
+    when (state.screen) {
+        WooPosCustomAmountDialogState.Screen.AMOUNT -> {
+            WooPosCustomAmountValueScreen(
+                state = state,
+                onAmountChanged = viewModel::onAmountChanged,
+                onContinueClicked = viewModel::onAmountConfirmed,
+                onBackClicked = goBack,
+                modifier = modifier.background(MaterialTheme.colorScheme.surface),
+            )
+        }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
-    ) {
-        WooPosToolbar(
-            titleText = stringResource(R.string.woopos_custom_amount_form_title),
-            onBackClicked = viewModel::onEditAmount,
-        )
-        WooPosCustomAmountFormScreen(
-            state = state,
-            onAmountChanged = viewModel::onAmountChanged,
-            onNameChanged = viewModel::onNameChanged,
-            onTaxableToggled = viewModel::onTaxableToggled,
-            onSubmit = { viewModel.onSubmit(goBack) },
-            onBackClick = viewModel::onEditAmount,
-            modifier = Modifier.weight(1f),
-        )
+        WooPosCustomAmountDialogState.Screen.FORM -> {
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surface)
+            ) {
+                WooPosToolbar(
+                    titleText = stringResource(R.string.woopos_custom_amount_form_title),
+                    onBackClicked = viewModel::onEditAmount,
+                )
+                WooPosCustomAmountFormScreen(
+                    state = state,
+                    onAmountChanged = viewModel::onAmountChanged,
+                    onNameChanged = viewModel::onNameChanged,
+                    onTaxableToggled = viewModel::onTaxableToggled,
+                    onSubmit = { viewModel.onSubmit(goBack) },
+                    onBackClick = viewModel::onEditAmount,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        }
     }
 }

@@ -27,7 +27,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import java.math.BigDecimal
 
 @Composable
-fun WooPosCustomAmountAmountScreen(
+fun WooPosCustomAmountValueScreen(
     state: WooPosCustomAmountDialogState,
     onAmountChanged: (BigDecimal?) -> Unit,
     onContinueClicked: () -> Unit,
@@ -84,9 +84,9 @@ fun WooPosCustomAmountAmountScreen(
 
 @WooPosPreview
 @Composable
-fun WooPosCustomAmountAmountScreenPreview() {
+fun WooPosCustomAmountValueScreenPreview() {
     WooPosTheme {
-        WooPosCustomAmountAmountScreen(
+        WooPosCustomAmountValueScreen(
             state = WooPosCustomAmountDialogState(amount = BigDecimal("10.00"), currencySymbol = "$"),
             onAmountChanged = {},
             onContinueClicked = {},
