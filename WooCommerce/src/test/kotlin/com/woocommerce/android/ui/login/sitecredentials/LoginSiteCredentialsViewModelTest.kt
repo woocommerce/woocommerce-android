@@ -955,6 +955,25 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given cookie login gets an unexpected response and authorize URL on another host, when logging in, then offer contact support on the form`() =
+        testBlocking {
+            // GIVEN
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
+                .thenReturn(Result.failure(unexpectedResponseError()))
+            givenAuthorizeUrl("$OTHER_SITE_URL$AUTHORIZE_PATH")
+            setup()
+
+            // WHEN
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+            }
+
+            // THEN
+            assertThat(viewModel.viewState.value?.formUnexpectedResponse).isEqualTo(LOGIN_PAGE_FAILURE)
+        }
+
+    @Test
     fun `given cookie login gets an unexpected response and authorize URL on another host, when logging in, then do not open the tutorial`() =
         testBlocking {
             // GIVEN

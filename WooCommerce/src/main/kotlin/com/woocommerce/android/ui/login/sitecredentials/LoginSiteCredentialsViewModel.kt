@@ -714,8 +714,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         } else if (
             !ApplicationPasswordSiteMatcher.isSameSite(siteAddress, site.applicationPasswordsAuthorizeUrl)
         ) {
-            pendingUnexpectedResponse = null
             onAuthorizationSiteMismatch(AnalyticsTracker.VALUE_STEP_BEFORE_APPROVAL)
+            // The snackbar explains why login stopped, so skip the generic alert but keep Contact support on the
+            // form for a store whose authorization page is legitimately on another host.
+            pendingUnexpectedResponse?.let { failure ->
+                pendingUnexpectedResponse = null
+                formUnexpectedResponse.value = failure
+            }
         } else {
             showApplicationPasswordTutorial(
                 ApplicationPasswordTutorial(
