@@ -174,7 +174,9 @@ class ProductImagesViewModel @Inject constructor(
                     AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED,
                     mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChange)
                 )
-                if (hasChange) {
+                // The caller adds completed uploads to its draft too, so it needs the final list even when it
+                // matches the original one, e.g. after removing an image that was uploaded here
+                if (hasChange || viewState.hasCompletedUploads) {
                     triggerEvent(MultiLiveEvent.Event.ExitWithResult(images))
                 } else {
                     triggerEvent(MultiLiveEvent.Event.Exit)
@@ -214,11 +216,11 @@ class ProductImagesViewModel @Inject constructor(
 
         mediaFileUploadHandler.observeSuccessfulUploads(remoteProductId)
             .onEach { media ->
-                viewState = if (isMultiSelectionAllowed) {
-                    viewState.copy(images = images + media.toAppModel())
-                } else {
-                    viewState.copy(images = listOf(media.toAppModel()))
-                }
+                val uploadedImage = media.toAppModel()
+                viewState = viewState.copy(
+                    images = if (isMultiSelectionAllowed) images + uploadedImage else listOf(uploadedImage),
+                    hasCompletedUploads = true
+                )
             }
             .launchIn(this)
 
@@ -286,7 +288,8 @@ class ProductImagesViewModel @Inject constructor(
         val isWarningVisible: Boolean? = null,
         val hasUploadErrors: Boolean? = null,
         val isDragDropDescriptionVisible: Boolean? = null,
-        val productImagesState: ProductImagesState = Browsing
+        val productImagesState: ProductImagesState = Browsing,
+        val hasCompletedUploads: Boolean = false
     ) : Parcelable
 
     object ShowImageSourceDialog : MultiLiveEvent.Event()
