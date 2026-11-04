@@ -70,9 +70,32 @@ fun WooPosCustomAmountFormScreen(
         onDispose { viewModel.onDismissed() }
     }
 
-    BackHandler(enabled = true) { onBackClick() }
-
     val state by viewModel.state.collectAsState()
+
+    WooPosCustomAmountFormScreen(
+        state = state,
+        onAmountChanged = viewModel::onAmountChanged,
+        onNameChanged = viewModel::onNameChanged,
+        onTaxableToggled = viewModel::onTaxableToggled,
+        onSubmit = { viewModel.onSubmit(onSubmitted) },
+        onBackClick = onBackClick,
+        modifier = modifier,
+        submitButtonPadding = submitButtonPadding,
+    )
+}
+
+@Composable
+fun WooPosCustomAmountFormScreen(
+    state: WooPosCustomAmountDialogState,
+    onAmountChanged: (BigDecimal?) -> Unit,
+    onNameChanged: (String) -> Unit,
+    onTaxableToggled: (Boolean) -> Unit,
+    onSubmit: () -> Unit,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    submitButtonPadding: PaddingValues = defaultSubmitButtonPadding(),
+) {
+    BackHandler { onBackClick() }
 
     Column(
         modifier = modifier
@@ -89,21 +112,21 @@ fun WooPosCustomAmountFormScreen(
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
             AmountSection(
                 state = state,
-                onAmountChanged = viewModel::onAmountChanged,
+                onAmountChanged = onAmountChanged,
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
             HorizontalDivider(
                 color = WooPosTheme.colors.outlineVariant,
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
-            TaxesToggle(isTaxable = state.isTaxable, onToggled = viewModel::onTaxableToggled)
+            TaxesToggle(isTaxable = state.isTaxable, onToggled = onTaxableToggled)
             HorizontalDivider(
                 color = WooPosTheme.colors.outlineVariant,
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
             NameSection(
                 value = state.name,
-                onNameChanged = viewModel::onNameChanged,
+                onNameChanged = onNameChanged,
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
         }
@@ -117,7 +140,7 @@ fun WooPosCustomAmountFormScreen(
                     .fillMaxWidth()
                     .padding(submitButtonPadding),
                 state = state,
-                onSubmit = { viewModel.onSubmit(onSubmitted) },
+                onSubmit = onSubmit,
             )
         }
     }

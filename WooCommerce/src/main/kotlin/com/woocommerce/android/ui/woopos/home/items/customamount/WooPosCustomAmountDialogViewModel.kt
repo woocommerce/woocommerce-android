@@ -52,11 +52,21 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
             name = editing?.name.orEmpty(),
             isTaxable = editing?.isTaxable ?: false,
             isSubmitting = false,
+            screen = WooPosCustomAmountDialogState.Screen.AMOUNT,
         )
     }
 
     fun onAmountChanged(value: BigDecimal?) {
         _state.value = _state.value.copy(amount = value)
+    }
+
+    fun onAmountConfirmed() {
+        if (!_state.value.isSubmitEnabled) return
+        _state.value = _state.value.copy(screen = WooPosCustomAmountDialogState.Screen.FORM)
+    }
+
+    fun onEditAmount() {
+        _state.value = _state.value.copy(screen = WooPosCustomAmountDialogState.Screen.AMOUNT)
     }
 
     fun onNameChanged(value: String) {
