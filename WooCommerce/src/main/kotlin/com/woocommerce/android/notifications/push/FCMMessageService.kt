@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.store.InvalidateDeviceRegistration
 import javax.inject.Inject
 
@@ -38,7 +39,11 @@ class FCMMessageService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         WooLog.v(T.NOTIFICATIONS, "Received message from Firebase")
-        notificationMessageHandler.get().onNewMessageReceived(message.data)
+        // FCM calls this on a background thread and may kill the process once it returns, so handle the
+        // message synchronously instead of launching it in serviceScope, which is cancelled in onDestroy.
+        runBlocking {
+            notificationMessageHandler.get().onNewMessageReceived(message.data)
+        }
     }
 
     override fun onDestroy() {

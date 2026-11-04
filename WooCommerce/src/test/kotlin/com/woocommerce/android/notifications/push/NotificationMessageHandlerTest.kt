@@ -176,7 +176,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `given site is not selected, when new message received, then do not process the incoming notification`() {
+    fun `given site is not selected, when new message received, then do not process the incoming notification`() = runTest {
         doReturn(false).whenever(accountStore).hasAccessToken()
         doReturn(false).whenever(selectedSite).exists()
 
@@ -186,7 +186,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `when the notification payload data is empty, then do not process the notification`() {
+    fun `when the notification payload data is empty, then do not process the notification`() = runTest {
         notificationMessageHandler.onNewMessageReceived(emptyMap())
 
         verify(wooLog).e(
@@ -377,7 +377,7 @@ class NotificationMessageHandlerTest {
         }
 
     @Test
-    fun `when the notification payload is empty then do not process the notification`() {
+    fun `when the notification payload is empty then do not process the notification`() = runTest {
         notificationMessageHandler.onNewMessageReceived(
             mapOf(
                 "type" to "new_order",
@@ -497,7 +497,7 @@ class NotificationMessageHandlerTest {
         }
 
     @Test
-    fun `when an incoming notification is received, then we should update that notification to local cache`() {
+    fun `when an incoming notification is received, then we should update that notification to local cache`() = runTest {
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
         verify(dispatcher, atLeastOnce()).dispatch(actionCaptor.capture())
@@ -509,7 +509,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `when an incoming notification is received, then we should request the notification fetch from api`() {
+    fun `when an incoming notification is received, then we should request the notification fetch from api`() = runTest {
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
         verify(dispatcher, atLeastOnce()).dispatch(actionCaptor.capture())
@@ -521,7 +521,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `when review notifications are received, then do not request all orders diff fetch from api`() {
+    fun `when review notifications are received, then do not request all orders diff fetch from api`() = runTest {
         notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
 
         verify(dispatcher, atLeastOnce()).dispatch(actionCaptor.capture())
@@ -533,13 +533,13 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `when order notifications are received, then we should request all orders diff fetch from api`() {
+    fun `when order notifications are received, then we should request all orders diff fetch from api`() = runTest {
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
         verify(workManagerScheduler).scheduleOrderUpdate(any(), any())
     }
 
     @Test
-    fun `when order and review notifications are received together, then display notification details correctly`() {
+    fun `when order and review notifications are received together, then display notification details correctly`() = runTest {
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
@@ -578,7 +578,7 @@ class NotificationMessageHandlerTest {
         )
     }
 
-    private fun verifyGroupedNotificationDisplay(
+    private suspend fun verifyGroupedNotificationDisplay(
         firstPayload: Map<String, String>,
         firstNotification: Notification,
         secondPayload: Map<String, String>,
@@ -624,7 +624,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `when two new order notifications are received for the same store, then display correctly`() {
+    fun `when two new order notifications are received for the same store, then display correctly`() = runTest {
         val orderNotificationPayload2 = NotificationTestUtils.generateTestNewOrderNotificationPayload(
             userId = accountModel.userId,
             noteData = TEST_ORDER_NOTE_FULL_DATA_2
@@ -638,7 +638,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `when two new review notifications are received for the same store, then display correctly`() {
+    fun `when two new review notifications are received for the same store, then display correctly`() = runTest {
         val reviewNotificationPayload2 = NotificationTestUtils.generateTestNewReviewNotificationPayload(
             userId = accountModel.userId,
             noteData = TEST_REVIEW_NOTE_FULL_DATA_2
@@ -652,7 +652,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `when two new order notifications are received for different stores, then display correctly`() {
+    fun `when two new order notifications are received for different stores, then display correctly`() = runTest {
         val orderNotificationPayload2 = NotificationTestUtils.generateTestNewOrderNotificationPayload(
             userId = accountModel.userId,
             noteData = TEST_ORDER_NOTE_FULL_DATA_SITE_2
@@ -666,7 +666,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `when two new review notifications are received for different stores, then display correctly`() {
+    fun `when two new review notifications are received for different stores, then display correctly`() = runTest {
         val reviewNotificationPayload2 = NotificationTestUtils.generateTestNewReviewNotificationPayload(
             userId = accountModel.userId,
             noteData = TEST_REVIEW_NOTE_FULL_DATA_SITE_2
@@ -680,7 +680,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `when more than 5 notifications are received for same store, then display correctly`() {
+    fun `when more than 5 notifications are received for same store, then display correctly`() = runTest {
         // Simulate 5 existing notifications
         val existingNotifications = (0 until 5).map { index ->
             orderNotification
