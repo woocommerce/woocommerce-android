@@ -777,9 +777,7 @@ private fun CustomAmountItem(
     val editClickLabel = stringResource(R.string.woopos_cart_custom_amount_edit_content_description, item.name)
 
     WooPosCard(
-        modifier = modifier
-            .wrapContentHeight()
-            .semantics { contentDescription = itemContentDescription },
+        modifier = modifier.wrapContentHeight(),
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         elevation = WooPosElevation.Medium,
         shadowType = ShadowType.Soft,
@@ -790,13 +788,15 @@ private fun CustomAmountItem(
                 .height(IntrinsicSize.Min)
                 .clickable(enabled = canRemoveItems, onClickLabel = editClickLabel) {
                     onUIEvent(WooPosCartUIEvent.EditCustomAmountClicked(item))
-                },
+                }
+                .semantics(mergeDescendants = true) { contentDescription = itemContentDescription },
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             WooPosCustomAmountInitialsAvatar(
                 name = item.name,
                 modifier = Modifier
+                    .clearAndSetSemantics { }
                     .width(WooPosComponentSize.Medium.value)
                     .fillMaxHeight()
                     .heightIn(min = WooPosComponentSize.Medium.value),
