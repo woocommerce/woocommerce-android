@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.items.customamount
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -10,10 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
@@ -40,31 +35,21 @@ fun WooPosCustomAmountScreen(
                 state = state,
                 onAmountChanged = viewModel::onAmountChanged,
                 onContinueClicked = viewModel::onAmountConfirmed,
-                onBackClicked = goBack,
+                onBackClicked = { viewModel.onAmountBack(goBack) },
                 modifier = modifier.background(MaterialTheme.colorScheme.surface),
             )
         }
 
-        WooPosCustomAmountDialogState.Screen.FORM -> {
-            Column(
-                modifier = modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface)
-            ) {
-                WooPosToolbar(
-                    titleText = stringResource(R.string.woopos_custom_amount_form_title),
-                    onBackClicked = viewModel::onEditAmount,
-                )
-                WooPosCustomAmountFormScreen(
-                    state = state,
-                    onAmountChanged = viewModel::onAmountChanged,
-                    onNameChanged = viewModel::onNameChanged,
-                    onTaxableToggled = viewModel::onTaxableToggled,
-                    onSubmit = { viewModel.onSubmit(goBack) },
-                    onBackClick = viewModel::onEditAmount,
-                    modifier = Modifier.weight(1f),
-                )
-            }
+        WooPosCustomAmountDialogState.Screen.DETAILS -> {
+            WooPosCustomAmountDetailsScreen(
+                state = state,
+                onEditAmount = viewModel::onEditAmount,
+                onNameChanged = viewModel::onNameChanged,
+                onTaxableToggled = viewModel::onTaxableToggled,
+                onSubmit = { viewModel.onSubmit(goBack) },
+                onBackClicked = goBack,
+                modifier = modifier.background(MaterialTheme.colorScheme.surface),
+            )
         }
     }
 }

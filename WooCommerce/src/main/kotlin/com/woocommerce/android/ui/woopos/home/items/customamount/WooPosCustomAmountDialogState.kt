@@ -22,7 +22,7 @@ data class WooPosCustomAmountDialogState(
     val isSubmitEnabled: Boolean
         get() = amount != null && amount > BigDecimal.ZERO && !isSubmitting
 
-    enum class Screen { AMOUNT, FORM }
+    enum class Screen { AMOUNT, DETAILS }
 
     @Parcelize
     sealed class Mode : Parcelable {

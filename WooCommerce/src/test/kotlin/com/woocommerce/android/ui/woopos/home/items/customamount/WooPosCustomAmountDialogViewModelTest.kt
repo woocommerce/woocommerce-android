@@ -304,7 +304,7 @@ class WooPosCustomAmountDialogViewModelTest {
     }
 
     @Test
-    fun `given valid amount, when continued, then form opens without submitting to cart`() = runTest {
+    fun `given valid amount, when continued, then details open without submitting to cart`() = runTest {
         // GIVEN
         val sut = createSut()
         advanceUntilIdle()
@@ -316,7 +316,7 @@ class WooPosCustomAmountDialogViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        assertThat(sut.state.value.screen).isEqualTo(WooPosCustomAmountDialogState.Screen.FORM)
+        assertThat(sut.state.value.screen).isEqualTo(WooPosCustomAmountDialogState.Screen.DETAILS)
         assertThat(sut.state.value.amount).isEqualByComparingTo("12.50")
         verify(childrenToParentEventSender, never()).sendToParent(any())
     }
@@ -378,6 +378,87 @@ class WooPosCustomAmountDialogViewModelTest {
         assertThat(sut.state.value.amount).isNull()
         assertThat(sut.state.value.name).isEmpty()
         assertThat(sut.state.value.isTaxable).isFalse()
+    }
+
+    @Test
+    fun `given an existing item, when opened, then details are shown before amount editing`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+
+        // WHEN
+        sut.initializeFor(
+            WooPosCartItemViewState.CustomAmount(7, "Service", BigDecimal.TEN, "$10.00", true)
+        )
+
+        // THEN
+        assertThat(sut.state.value.screen).isEqualTo(WooPosCustomAmountDialogState.Screen.DETAILS)
+        verify(childrenToParentEventSender, never()).sendToParent(any())
+    }
+
+    @Test
+    fun `given amount edited from details, when cancelled, then original amount and other fields are retained`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(editing = null)
+        sut.onAmountChanged(BigDecimal.TEN)
+        sut.onAmountConfirmed()
+        sut.onNameChanged("Gift wrap")
+        sut.onTaxableToggled(true)
+        sut.onEditAmount()
+        sut.onAmountChanged(BigDecimal.ZERO)
+        var dismissed = false
+
+        // WHEN
+        sut.onAmountBack { dismissed = true }
+
+        // THEN
+        assertThat(dismissed).isFalse()
+        assertThat(sut.state.value.screen).isEqualTo(WooPosCustomAmountDialogState.Screen.DETAILS)
+        assertThat(sut.state.value.amount).isEqualByComparingTo(BigDecimal.TEN)
+        assertThat(sut.state.value.name).isEqualTo("Gift wrap")
+        assertThat(sut.state.value.isTaxable).isTrue()
+        verify(childrenToParentEventSender, never()).sendToParent(any())
+    }
+
+    @Test
+    fun `given initial amount entry, when back is clicked, then the flow is dismissed without submitting`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(editing = null)
+        sut.onAmountChanged(BigDecimal.TEN)
+        var dismissed = false
+
+        // WHEN
+        sut.onAmountBack { dismissed = true }
+
+        // THEN
+        assertThat(dismissed).isTrue()
+        verify(childrenToParentEventSender, never()).sendToParent(any())
+    }
+
+    @Test
+    fun `given a confirmed amount change, when another edit is cancelled, then the last confirmed amount is restored`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(editing = null)
+        sut.onAmountChanged(BigDecimal.TEN)
+        sut.onAmountConfirmed()
+        sut.onEditAmount()
+        sut.onAmountChanged(BigDecimal("15.00"))
+        sut.onAmountConfirmed()
+        sut.onEditAmount()
+        sut.onAmountChanged(null)
+
+        // WHEN
+        sut.onAmountBack { error("Should return to details") }
+
+        // THEN
+        assertThat(sut.state.value.amount).isEqualByComparingTo("15.00")
+        assertThat(sut.state.value.isSubmitEnabled).isTrue()
     }
 
     private fun createSut() = WooPosCustomAmountDialogViewModel(
