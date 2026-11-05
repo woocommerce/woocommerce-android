@@ -1072,6 +1072,80 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given approval page on another host that serves this store, when starting web authorization, then open the tutorial`() =
+        testBlocking {
+            // GIVEN
+            givenAuthorizeUrl("$APPROVAL_SITE_URL$AUTHORIZE_PATH")
+            whenever(repository.fetchSiteHomeUrl(APPROVAL_SITE_URL)).thenReturn(SITE_URL)
+            setup()
+
+            // WHEN
+            whenStartingWebAuthorization()
+
+            // THEN
+            assertThat(viewModel.event.value).isInstanceOf(ShowApplicationPasswordTutorialScreen::class.java)
+        }
+
+    @Test
+    fun `given approval page on another host that serves another store, when starting web authorization, then show the site mismatch snackbar`() =
+        testBlocking {
+            // GIVEN
+            givenAuthorizeUrl("$OTHER_SITE_URL$AUTHORIZE_PATH")
+            whenever(repository.fetchSiteHomeUrl(OTHER_SITE_URL)).thenReturn(OTHER_SITE_URL)
+            setup()
+
+            // WHEN
+            whenStartingWebAuthorization()
+
+            // THEN
+            assertThat(viewModel.event.value)
+                .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch))
+        }
+
+    @Test
+    fun `given approval page on another host, when starting web authorization, then ask that host for its home address`() =
+        testBlocking {
+            // GIVEN
+            givenAuthorizeUrl("$OTHER_SITE_URL$AUTHORIZE_PATH")
+            setup()
+
+            // WHEN
+            whenStartingWebAuthorization()
+
+            // THEN
+            verify(repository).fetchSiteHomeUrl(OTHER_SITE_URL)
+        }
+
+    @Test
+    fun `given approval page on the store host, when starting web authorization, then don't ask any host for its home address`() =
+        testBlocking {
+            // GIVEN
+            givenAuthorizeUrl("$SITE_URL$AUTHORIZE_PATH")
+            setup()
+
+            // WHEN
+            whenStartingWebAuthorization()
+
+            // THEN
+            verify(repository, never()).fetchSiteHomeUrl(any())
+        }
+
+    @Test
+    fun `given a verified approval host, when the redirect reports that host, then save the application password`() =
+        testBlocking {
+            // GIVEN
+            givenAuthorizeUrl("$APPROVAL_SITE_URL$AUTHORIZE_PATH")
+            whenever(repository.fetchSiteHomeUrl(APPROVAL_SITE_URL)).thenReturn(SITE_URL)
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_CREDENTIALS_URL&site_url=https%3A%2F%2Fwp.site.example")
+
+            // THEN
+            verify(repository).saveApplicationPassword(SITE_ID, USERNAME, PASSWORD)
+        }
+
+    @Test
     fun `given the approval page on the store host, when the redirect reports a subdomain, then don't save`() =
         testBlocking {
             // GIVEN
@@ -1091,6 +1165,26 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             // GIVEN
             givenAuthorizeUrl("$SITE_URL/ea-authorize/")
             setup()
+
+            // WHEN
+            whenStartingWebAuthorization()
+
+            // THEN
+            assertThat(viewModel.event.value)
+                .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch))
+        }
+
+    @Test
+    fun `given a subsite store, when the approval page belongs to a sibling subsite, then show the site mismatch snackbar`() =
+        testBlocking {
+            // GIVEN
+            val subsiteUrl = "https://network.example/evil"
+            val fetchedSite = siteWithUrl(subsiteUrl).apply {
+                applicationPasswordsAuthorizeUrl = "https://network.example/shop$AUTHORIZE_PATH"
+            }
+            whenever(repository.fetchSiteForBrowserLogin(subsiteUrl)).thenReturn(Result.success(fetchedSite))
+            whenever(repository.fetchSiteHomeUrl("https://network.example/shop")).thenReturn("https://network.example/shop")
+            setup(siteAddress = subsiteUrl)
 
             // WHEN
             whenStartingWebAuthorization()
@@ -2168,6 +2262,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         const val WEB_CREDENTIALS_URL = "$WEB_REDIRECT_URL?user_login=$USERNAME&password=$PASSWORD"
         const val WEB_SUCCESS_URL = "$WEB_CREDENTIALS_URL&site_url=$SITE_URL"
         const val OTHER_SITE_URL = "https://other.example"
+        const val APPROVAL_SITE_URL = "https://wp.site.example"
         const val LOOKALIKE_SITE_URL = "https://site.example.evil.test"
         const val AUTHORIZE_PATH = "/wp-admin/authorize-application.php"
         val DEFAULT_ENDPOINTS = CookieNonceAuthenticationEndpoints(SITE_URL)

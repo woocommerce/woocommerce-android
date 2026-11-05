@@ -314,6 +314,27 @@ class ApplicationPasswordSiteMatcherTest {
     }
 
     @Test
+    fun `given the same address with a trailing slash and www, when isSameSiteAddress, then returns true`() {
+        // WHEN
+        val result = ApplicationPasswordSiteMatcher.isSameSiteAddress(
+            "https://site.example/shop",
+            "http://www.site.example/shop/"
+        )
+
+        // THEN
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `given a deeper path, when isSameSiteAddress, then returns false`() {
+        // WHEN
+        val result = ApplicationPasswordSiteMatcher.isSameSiteAddress(SITE_URL, "$SITE_URL/wp")
+
+        // THEN
+        assertThat(result).isFalse()
+    }
+
+    @Test
     fun `given extra path after the approval page, when isApprovalPage, then returns true`() {
         // WHEN
         val result = ApplicationPasswordSiteMatcher.isApprovalPage(

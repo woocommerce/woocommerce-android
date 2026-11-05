@@ -107,6 +107,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         private const val ADMIN_BASE_URL_KEY = "admin-base-url"
         private const val TUTORIAL_AFTER_ALERT_KEY = "tutorial-after-alert"
         private const val BROWSER_LOGIN_ON_FORM_KEY = "browser-login-on-form"
+        private const val APPROVAL_SITE_URL_KEY = "approval-site-url"
     }
 
     private val wasSiteAddressNormalizedToHttps =
@@ -138,6 +139,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         get() = savedStateHandle[HAS_RECONCILED_SITE_URL_KEY] ?: false
         set(value) {
             savedStateHandle[HAS_RECONCILED_SITE_URL_KEY] = value
+        }
+
+    private var approvalSiteUrl: String?
+        get() = savedStateHandle[APPROVAL_SITE_URL_KEY]
+        set(value) {
+            savedStateHandle[APPROVAL_SITE_URL_KEY] = value
         }
 
     private val authError = savedStateHandle.getNullableStateFlow(
@@ -417,7 +424,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     private fun isApprovedByThisStore(redirectSiteUrl: String?): Boolean =
-        ApplicationPasswordSiteMatcher.isWithinSite(siteAddress, redirectSiteUrl)
+        ApplicationPasswordSiteMatcher.isWithinSite(siteAddress, redirectSiteUrl) ||
+            ApplicationPasswordSiteMatcher.isWithinSite(approvalSiteUrl, redirectSiteUrl)
 
     fun onWebAuthorizationForeignHost() {
         onAuthorizationSiteMismatch(AnalyticsTracker.VALUE_STEP_DURING_APPROVAL)
@@ -707,7 +715,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         return !result.getOrNull()?.applicationPasswordsAuthorizeUrl.isNullOrEmpty()
     }
 
-    private fun showAuthorizationFor(site: SiteModel, errorMessage: String) {
+    private suspend fun showAuthorizationFor(site: SiteModel, errorMessage: String) {
         val applicationPasswordAuthorizationUrl = site.applicationPasswordAuthorizationUrl
         if (applicationPasswordAuthorizationUrl.isNullOrEmpty()) {
             pendingUnexpectedResponse = null
@@ -738,11 +746,21 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     /**
-     * The approval page belongs to this store when it's WordPress's approval page within the store's address.
+     * The approval page belongs to this store when it sits within the store's address, or when the WordPress
+     * serving it reports the store's address as its home. A lookalike store can't make another store's WordPress
+     * report that.
      */
-    private fun isApprovalPageOfThisStore(authorizationUrl: String?): Boolean =
-        ApplicationPasswordSiteMatcher.approvalSiteUrl(authorizationUrl) != null &&
-            ApplicationPasswordSiteMatcher.isWithinSite(siteAddress, authorizationUrl)
+    private suspend fun isApprovalPageOfThisStore(authorizationUrl: String?): Boolean {
+        approvalSiteUrl = null
+        val candidate = ApplicationPasswordSiteMatcher.approvalSiteUrl(authorizationUrl) ?: return false
+        if (ApplicationPasswordSiteMatcher.isWithinSite(siteAddress, authorizationUrl)) return true
+        loadingMessage.value = R.string.login_site_credentials_fetching_site
+        val candidateHome = wpApiSiteRepository.fetchSiteHomeUrl(candidate)
+        loadingMessage.value = 0
+        return ApplicationPasswordSiteMatcher.isSameSiteAddress(siteAddress, candidateHome).also { verified ->
+            if (verified) approvalSiteUrl = candidate
+        }
+    }
 
     private suspend fun fetchSite(): Boolean {
         loadingMessage.value = R.string.logging_in

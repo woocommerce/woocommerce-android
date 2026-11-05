@@ -21,6 +21,9 @@ object ApplicationPasswordSiteMatcher {
             candidatePath.subList(0, sitePath.size) == sitePath
     }
 
+    fun isSameSiteAddress(siteUrl: String?, candidateUrl: String?): Boolean =
+        isWithinSite(siteUrl, candidateUrl) && isWithinSite(candidateUrl, siteUrl)
+
     /**
      * True for WordPress's approval page, also when the server is given extra path after it. Checked before `..` is
      * resolved, because some servers run the page and pass the rest as extra path.
