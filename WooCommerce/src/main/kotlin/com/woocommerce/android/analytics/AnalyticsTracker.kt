@@ -617,6 +617,7 @@ class AnalyticsTracker private constructor(
         // -- Application passwords
         const val KEY_IS_APP_IN_FOREGROUND = "is_app_in_foreground"
         const val VALUE_STEP_BEFORE_APPROVAL = "before_approval"
+        const val VALUE_STEP_DURING_APPROVAL = "during_approval"
         const val VALUE_STEP_AFTER_APPROVAL = "after_approval"
 
         const val VALUE_OTHER = "other"

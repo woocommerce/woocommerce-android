@@ -1011,6 +1011,38 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given the approval web view navigated to another host, when it reports back, then show the mismatch snackbar`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            viewModel.onWebAuthorizationForeignHost()
+
+            // THEN
+            assertThat(viewModel.event.value)
+                .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch))
+            verify(analytics).track(
+                AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_SITE_MISMATCH,
+                mapOf(AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_DURING_APPROVAL)
+            )
+        }
+
+    @Test
+    fun `given the approval web view navigated to another host, when it reports back, then do not save a password`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            viewModel.onWebAuthorizationForeignHost()
+            advanceUntilIdle()
+
+            // THEN
+            verify(repository, never()).saveApplicationPassword(any(), any(), any())
+        }
+
+    @Test
     fun `given authorize URL on a lookalike host, when starting web authorization, then show the site mismatch snackbar`() =
         testBlocking {
             // GIVEN
@@ -1037,6 +1069,35 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.value).isInstanceOf(ShowApplicationPasswordTutorialScreen::class.java)
+        }
+
+    @Test
+    fun `given the approval page on the store host, when the redirect reports a subdomain, then don't save`() =
+        testBlocking {
+            // GIVEN
+            givenAuthorizeUrl("$SITE_URL$AUTHORIZE_PATH")
+            setup()
+
+            // WHEN
+            whenWebAuthorizationRedirects("$WEB_CREDENTIALS_URL&site_url=https%3A%2F%2Fwp.site.example")
+
+            // THEN
+            verify(repository, never()).saveApplicationPassword(any(), any(), any())
+        }
+
+    @Test
+    fun `given a listed authorization URL that isn't the approval page, when starting web authorization, then show the site mismatch snackbar`() =
+        testBlocking {
+            // GIVEN
+            givenAuthorizeUrl("$SITE_URL/ea-authorize/")
+            setup()
+
+            // WHEN
+            whenStartingWebAuthorization()
+
+            // THEN
+            assertThat(viewModel.event.value)
+                .isEqualTo(ShowSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch))
         }
 
     @Test

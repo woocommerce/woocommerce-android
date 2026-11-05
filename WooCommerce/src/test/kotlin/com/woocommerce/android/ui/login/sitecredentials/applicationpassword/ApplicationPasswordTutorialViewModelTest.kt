@@ -239,6 +239,146 @@ class ApplicationPasswordTutorialViewModelTest : BaseUnitTest() {
         assertThat(viewModel.currentState.authorizationRecoveryAttempted).isFalse()
     }
 
+    @Test
+    fun `given authorization page on a host, when the approval page on another host is requested, then block it`() =
+        testBlocking {
+            setup()
+            givenWebViewData()
+            val foreignUrl = "https://other.example/wp-admin/authorize-application.php"
+
+            // WHEN
+            val event = viewModel.event.runAndCaptureValues {
+                val intercepted = viewModel.onWebNavigationRequested(foreignUrl)
+
+                // THEN
+                assertThat(intercepted).isTrue()
+            }.last()
+            assertThat(event).isEqualTo(ExitWithResult(ApplicationPasswordTutorialViewModel.FOREIGN_HOST_RESULT))
+        }
+
+    @Test
+    fun `given authorization page on a host, when navigating to a www variant, then do not block as foreign`() =
+        testBlocking {
+            setup()
+            givenWebViewData()
+            val wwwUrl = "https://www.site.example/wp-admin/authorize-application.php"
+
+            // WHEN
+            val intercepted = viewModel.onWebNavigationRequested(wwwUrl)
+
+            // THEN
+            assertThat(intercepted).isFalse()
+        }
+
+    @Test
+    fun `given authorization page on a host, when a login passes through another host, then allow navigation`() =
+        testBlocking {
+            setup()
+            givenWebViewData()
+            val ssoUrl = "https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fsite.example%2Fwp-admin%2F"
+
+            // WHEN
+            val events = viewModel.event.runAndCaptureValues {
+                val intercepted = viewModel.onWebNavigationRequested(ssoUrl)
+
+                // THEN
+                assertThat(intercepted).isFalse()
+            }
+            assertThat(events).noneMatch { it is ExitWithResult<*> }
+        }
+
+    @Test
+    fun `given authorization page on a host, when another host's page loads, then keep the flow open`() =
+        testBlocking {
+            setup()
+            givenWebViewData()
+            val twoFactorUrl = "https://api-1234.duosecurity.com/frame/v4/auth/prompt"
+
+            // WHEN
+            val events = viewModel.event.runAndCaptureValues {
+                viewModel.onWebPageLoaded(twoFactorUrl)
+            }
+
+            // THEN
+            assertThat(events).noneMatch { it is ExitWithResult<*> }
+        }
+
+    @Test
+    fun `given authorization page on a host, when the approval page on another host loads, then exit as foreign host`() =
+        testBlocking {
+            setup()
+            givenWebViewData()
+            val foreignUrl = "https://other.example/wp-admin/authorize-application.php"
+
+            // WHEN
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onWebPageLoaded(foreignUrl)
+            }.last()
+
+            // THEN
+            assertThat(event).isEqualTo(ExitWithResult(ApplicationPasswordTutorialViewModel.FOREIGN_HOST_RESULT))
+        }
+
+    @Test
+    fun `given authorization page on a host, when a foreign approval page has extra path, then block it`() =
+        testBlocking {
+            setup()
+            givenWebViewData()
+            val foreignUrl = "https://other.example/wp-admin/authorize-application.php/x?app_name=woo"
+
+            // WHEN
+            val intercepted = viewModel.onWebNavigationRequested(foreignUrl)
+
+            // THEN
+            assertThat(intercepted).isTrue()
+        }
+
+    @Test
+    fun `given a subsite's authorization page, when a sibling subsite's approval page is requested, then block it`() =
+        testBlocking {
+            setup()
+            givenWebViewData(
+                applicationPasswordAuthorizationUrl = "https://network.example/evil/wp-admin/authorize-application.php"
+            )
+            val siblingUrl = "https://network.example/shop/wp-admin/authorize-application.php"
+
+            // WHEN
+            val intercepted = viewModel.onWebNavigationRequested(siblingUrl)
+
+            // THEN
+            assertThat(intercepted).isTrue()
+        }
+
+    @Test
+    fun `given a subfolder install, when its own approval page is requested, then allow it`() =
+        testBlocking {
+            setup()
+            givenWebViewData(
+                applicationPasswordAuthorizationUrl = "https://site.example/wp/wp-admin/authorize-application.php"
+            )
+            val ownUrl = "https://www.site.example/wp/wp-admin/authorize-application.php?app_name=woo"
+
+            // WHEN
+            val intercepted = viewModel.onWebNavigationRequested(ownUrl)
+
+            // THEN
+            assertThat(intercepted).isFalse()
+        }
+
+    @Test
+    fun `given authorization page on a host, when a foreign approval page hides behind an encoded slash, then block it`() =
+        testBlocking {
+            setup()
+            givenWebViewData()
+            val foreignUrl = "https://other.example/wp-admin%2Fauthorize-application.php?app_name=woo"
+
+            // WHEN
+            val intercepted = viewModel.onWebNavigationRequested(foreignUrl)
+
+            // THEN
+            assertThat(intercepted).isTrue()
+        }
+
     private fun setup(savedStateHandle: SavedStateHandle = SavedStateHandle()) {
         viewModel = ApplicationPasswordTutorialViewModel(
             analyticsTracker = analyticsTracker,

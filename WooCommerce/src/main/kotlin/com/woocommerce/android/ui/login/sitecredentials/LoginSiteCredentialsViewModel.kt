@@ -395,7 +395,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     return@launch
                 }
 
-                if (!ApplicationPasswordSiteMatcher.isSameSite(siteAddress, params[SITE_URL_PARAMETER])) {
+                if (!isApprovedByThisStore(params[SITE_URL_PARAMETER])) {
                     onAuthorizationSiteMismatch(AnalyticsTracker.VALUE_STEP_AFTER_APPROVAL)
                     return@launch
                 }
@@ -414,6 +414,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 fetchUserInfo()
             }
         }
+    }
+
+    private fun isApprovedByThisStore(redirectSiteUrl: String?): Boolean =
+        ApplicationPasswordSiteMatcher.isWithinSite(siteAddress, redirectSiteUrl)
+
+    fun onWebAuthorizationForeignHost() {
+        onAuthorizationSiteMismatch(AnalyticsTracker.VALUE_STEP_DURING_APPROVAL)
     }
 
     private fun onAuthorizationSiteMismatch(step: String) {
@@ -711,9 +718,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 )
             )
             triggerEvent(ShowApplicationPasswordsUnavailableScreen(siteAddress, site.isJetpackConnected))
-        } else if (
-            !ApplicationPasswordSiteMatcher.isSameSite(siteAddress, site.applicationPasswordsAuthorizeUrl)
-        ) {
+        } else if (!isApprovalPageOfThisStore(site.applicationPasswordsAuthorizeUrl)) {
             onAuthorizationSiteMismatch(AnalyticsTracker.VALUE_STEP_BEFORE_APPROVAL)
             // The snackbar explains why login stopped, so skip the generic alert but keep Contact support on the
             // form for a store whose authorization page is legitimately on another host.
@@ -731,6 +736,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             )
         }
     }
+
+    /**
+     * The approval page belongs to this store when it's WordPress's approval page within the store's address.
+     */
+    private fun isApprovalPageOfThisStore(authorizationUrl: String?): Boolean =
+        ApplicationPasswordSiteMatcher.approvalSiteUrl(authorizationUrl) != null &&
+            ApplicationPasswordSiteMatcher.isWithinSite(siteAddress, authorizationUrl)
 
     private suspend fun fetchSite(): Boolean {
         loadingMessage.value = R.string.logging_in
