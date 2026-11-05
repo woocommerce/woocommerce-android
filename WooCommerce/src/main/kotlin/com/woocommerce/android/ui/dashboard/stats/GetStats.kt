@@ -6,6 +6,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.ranges.dayCount
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.analytics.ranges.visitorStatsGranularity
 import com.woocommerce.android.ui.analytics.ranges.visitorSummaryStatsGranularity
@@ -33,7 +34,6 @@ import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.days
 
 class GetStats @Inject constructor(
     private val selectedSite: SelectedSite,
@@ -183,9 +183,7 @@ class GetStats @Inject constructor(
         rangeSelection: StatsTimeRangeSelection,
         forceRefresh: Boolean
     ): Flow<Result<ResultWithOutdatedFlag<Int?>>> = flow {
-        if (rangeSelection.selectionType == SelectionType.CUSTOM &&
-            rangeSelection.currentRange.end.time - rangeSelection.currentRange.start.time > 1.days.inWholeMilliseconds
-        ) {
+        if (rangeSelection.selectionType == SelectionType.CUSTOM && rangeSelection.currentRange.dayCount > 1) {
             // Total visitor stats are not available for custom ranges
             emit(Result.success(ResultWithOutdatedFlag(value = null)))
             return@flow
