@@ -1067,7 +1067,7 @@ public class AccountStore extends Store {
 
     private void handlePushUsernameCompleted(AccountPushUsernameResponsePayload payload) {
         if (!payload.isError()) {
-            mAccountStorePersistence.updateUsername(payload.username);
+            mAccountStorePersistence.updateUsernameBlocking(payload.username);
             getAccount().setUserName(payload.username);
         }
 
@@ -1135,7 +1135,7 @@ public class AccountStore extends Store {
 
     private void clearAccountAndAccessToken() {
         // Remove Account
-        mAccountStorePersistence.deleteAccount();
+        mAccountStorePersistence.deleteAccountBlocking();
         mAccount.init();
         // Remove authentication token
         mAccessToken.set(null);
@@ -1194,7 +1194,7 @@ public class AccountStore extends Store {
     private void updateDefaultAccount(AccountModel accountModel, AccountAction cause) {
         // Update memory instance
         mAccount = accountModel;
-        mAccountStorePersistence.insertOrUpdateDefaultAccount(accountModel);
+        mAccountStorePersistence.insertOrUpdateDefaultAccountBlocking(accountModel);
         OnAccountChanged accountChanged = new OnAccountChanged();
         accountChanged.accountInfosChanged = true;
         accountChanged.causeOfChange = cause;
@@ -1202,7 +1202,7 @@ public class AccountStore extends Store {
     }
 
     private AccountModel loadAccount() {
-        AccountModel account = mAccountStorePersistence.getDefaultAccount();
+        AccountModel account = mAccountStorePersistence.getDefaultAccountBlocking();
         return account == null ? new AccountModel() : account;
     }
 

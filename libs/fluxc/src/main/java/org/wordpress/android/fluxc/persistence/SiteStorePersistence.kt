@@ -3,6 +3,7 @@ package org.wordpress.android.fluxc.persistence
 import android.database.sqlite.SQLiteConstraintException
 import com.wellsql.generated.SiteModelTable
 import com.yarolegovich.wellsql.WellSql
+import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.AppLog
@@ -41,7 +42,7 @@ class SiteStorePersistence @Inject constructor(
         // account present
         // This prevents a late UPDATE_SITES action from re-populating the database after sign out from WordPress.com
         if (site.isUsingWpComRestApi) {
-            val account = accountStorePersistence.getDefaultAccount()
+            val account = runBlocking { accountStorePersistence.getDefaultAccount() }
             if (account == null || account.userId == 0L) {
                 AppLog.w(AppLog.T.DB, "Can't insert WP.com site " + site.url + ", missing user account")
                 return 0

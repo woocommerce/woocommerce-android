@@ -12,19 +12,24 @@ class AccountStorePersistence @Inject constructor(
 ) {
     private val accountDao get() = database.accountDao()
 
-    fun getDefaultAccount(): AccountModel? = runBlocking {
+    suspend fun getDefaultAccount(): AccountModel? =
         accountDao.getDefaultAccount()?.let { accountMapper.toModel(it) }
-    }
 
-    fun insertOrUpdateDefaultAccount(account: AccountModel) = runBlocking {
+    suspend fun insertOrUpdateDefaultAccount(account: AccountModel) =
         accountDao.upsert(accountMapper.toEntity(account))
-    }
 
-    fun updateUsername(username: String) = runBlocking {
-        accountDao.updateDefaultUsername(username)
-    }
+    suspend fun updateUsername(username: String) = accountDao.updateDefaultUsername(username)
 
-    fun deleteAccount() = runBlocking {
-        accountDao.deleteDefaultAccount()
-    }
+    suspend fun deleteAccount() = accountDao.deleteDefaultAccount()
+
+    // The blocking functions below are only for AccountStore, which is written in Java and can't call suspend functions
+
+    fun getDefaultAccountBlocking(): AccountModel? = runBlocking { getDefaultAccount() }
+
+    fun insertOrUpdateDefaultAccountBlocking(account: AccountModel) =
+        runBlocking { insertOrUpdateDefaultAccount(account) }
+
+    fun updateUsernameBlocking(username: String) = runBlocking { updateUsername(username) }
+
+    fun deleteAccountBlocking() = runBlocking { deleteAccount() }
 }
