@@ -99,7 +99,7 @@ JN_SSH_PASS=… MAESTRO_WOO_LAB_WPCOM_EMAIL=… MAESTRO_WOO_LAB_WPCOM_PASSWORD=�
 ```
 
 Requirements: `expect` (ships with macOS), `wc.oauth.app_id` and `wc.oauth.app_secret` in
-`~/.configure/woocommerce-android/secrets/secrets.properties`, and a **WordPress.com test
+`secrets.properties` (run `a8c-secrets decrypt`), and a **WordPress.com test
 account with two-factor authentication disabled**. The OAuth password grant cannot answer
 a 2FA challenge non-interactively. Use test accounts only.
 

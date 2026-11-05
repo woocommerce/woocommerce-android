@@ -37,7 +37,7 @@ if (isComposeScreenshotTestsEnabled) {
 
 fladle {
     variant = "vanillaDebug"
-    serviceAccountCredentials = new File(gradle.ext.decryptedSecretsDir, "firebase.secrets.json")
+    serviceAccountCredentials = new File(gradle.ext.a8cSecretsDir, "firebase.secrets.json")
     testTargets = [
             "notPackage com.woocommerce.android.e2e.tests.screenshot"
     ]
@@ -547,7 +547,7 @@ android.buildTypes.all { buildType ->
     }
 }
 
-def decryptedGoogleServicesJson = new File(gradle.ext.decryptedSecretsDir, "google-services.json")
+def decryptedGoogleServicesJson = new File(gradle.ext.a8cSecretsDir, "google-services.json")
 def exampleGoogleServicesJson = file("google-services.json-example")
 def staleGoogleServicesJson = file("google-services.json")
 
@@ -560,7 +560,7 @@ if (decryptedGoogleServicesJson.exists()) {
     logger.warn("${decryptedGoogleServicesJson} not found. Using ${exampleGoogleServicesJson}; Google login will fail.")
 } else {
     throw new GradleException("No google-services.json to read. " +
-            "Run `bundle exec fastlane run configure_apply` to decrypt ${decryptedGoogleServicesJson}, " +
+            "Run `a8c-secrets decrypt` to decrypt ${decryptedGoogleServicesJson}, " +
             "or `git restore WooCommerce/google-services.json-example` to restore the example fallback.")
 }
 

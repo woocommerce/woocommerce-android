@@ -618,7 +618,7 @@ The app has two distinct navigation domains with different architectures. **Only
 | Problem | Solution |
 |---------|----------|
 | **Build fails: "SDK location not found"** | Ensure `local.properties` exists at the repo root with `sdk.dir=/path/to/Android/sdk`. Copy from the main repo if working in a worktree. |
-| **Build fails: missing `secrets.properties`** | Copy from `~/.configure/woocommerce-android/secrets/` or use `defaults.properties` as a template. |
+| **Build fails: missing `secrets.properties`** | Run `a8c-secrets decrypt` or use `defaults.properties` as a template. |
 | **App not responding / blank screen** | Call `mobile_terminate_app` then `mobile_launch_app` to restart. |
 | **Element not found on screen** | The screen may still be loading — follow the "Waiting for Screen Transitions" protocol. If stable, try scrolling (see "Finding Elements That Require Scrolling"). |
 | **Tap lands on wrong element** | You likely used screenshot coordinates instead of element coordinates. Always use `mobile_list_elements_on_screen` and compute the center of the bounding rect. |
