@@ -47,7 +47,7 @@ public class AccountStoreTest {
         AccountModel testAccount = new AccountModel();
         testAccount.setPrimarySiteId(100);
         testAccount.setAboutMe("testAboutMe");
-        mAccountStorePersistence.insertOrUpdateDefaultAccount(testAccount);
+        mAccountStorePersistence.insertOrUpdateDefaultAccountBlocking(testAccount);
         AccountStore testStore = new AccountStore(new Dispatcher(), getMockRestClient(),
                 getMockSelfHostedEndpointFinder(), getMockAuthenticator(), getMockAccessToken(true),
                 mAccountStorePersistence);
@@ -71,13 +71,13 @@ public class AccountStoreTest {
     public void testIsSignedIn() {
         AccountModel testAccount = new AccountModel();
         testAccount.setVisibleSiteCount(0);
-        mAccountStorePersistence.insertOrUpdateDefaultAccount(testAccount);
+        mAccountStorePersistence.insertOrUpdateDefaultAccountBlocking(testAccount);
         AccountStore testStore = new AccountStore(new Dispatcher(), getMockRestClient(),
                 getMockSelfHostedEndpointFinder(), getMockAuthenticator(), getMockAccessToken(false),
                 mAccountStorePersistence);
         assertThat(testStore.hasAccessToken()).isFalse();
         testAccount.setVisibleSiteCount(1);
-        mAccountStorePersistence.insertOrUpdateDefaultAccount(testAccount);
+        mAccountStorePersistence.insertOrUpdateDefaultAccountBlocking(testAccount);
         testStore = new AccountStore(new Dispatcher(), getMockRestClient(), getMockSelfHostedEndpointFinder(),
                 getMockAuthenticator(), getMockAccessToken(true), mAccountStorePersistence);
         assertThat(testStore.hasAccessToken()).isTrue();
@@ -89,7 +89,7 @@ public class AccountStoreTest {
         AccessToken testToken = new AccessToken(ApplicationProvider.getApplicationContext());
         testToken.set("TESTTOKEN");
         testAccount.setUserId(24);
-        mAccountStorePersistence.insertOrUpdateDefaultAccount(testAccount);
+        mAccountStorePersistence.insertOrUpdateDefaultAccountBlocking(testAccount);
         AccountStore testStore = new AccountStore(new Dispatcher(), getMockRestClient(),
                 getMockSelfHostedEndpointFinder(), getMockAuthenticator(), testToken,
                 mAccountStorePersistence);
@@ -99,7 +99,7 @@ public class AccountStoreTest {
         privateMethod.setAccessible(true);
         privateMethod.invoke(testStore);
         assertThat(testStore.hasAccessToken()).isFalse();
-        assertThat(mAccountStorePersistence.getDefaultAccount()).isNull();
+        assertThat(mAccountStorePersistence.getDefaultAccountBlocking()).isNull();
     }
 
     @Test

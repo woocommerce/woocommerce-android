@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.persistence
 
 import androidx.test.core.app.ApplicationProvider
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -26,14 +27,14 @@ class AccountStorePersistenceTest {
     }
 
     @Test
-    fun `given empty database, when get default account, then returns null`() {
+    fun `given empty database, when get default account, then returns null`() = runTest {
         val result = sut.getDefaultAccount()
 
         assertThat(result).isNull()
     }
 
     @Test
-    fun `given account inserted, when get default account, then returns account`() {
+    fun `given account inserted, when get default account, then returns account`() = runTest {
         val account = createTestAccount()
         sut.insertOrUpdateDefaultAccount(account)
 
@@ -45,7 +46,7 @@ class AccountStorePersistenceTest {
     }
 
     @Test
-    fun `given account inserted, when insert again, then account is updated`() {
+    fun `given account inserted, when insert again, then account is updated`() = runTest {
         val account = createTestAccount()
         sut.insertOrUpdateDefaultAccount(account)
 
@@ -57,7 +58,7 @@ class AccountStorePersistenceTest {
     }
 
     @Test
-    fun `given account inserted, when update username, then only username changes`() {
+    fun `given account inserted, when update username, then only username changes`() = runTest {
         val account = createTestAccount()
         account.userName = "oldUsername"
         account.firstName = "John"
@@ -71,7 +72,7 @@ class AccountStorePersistenceTest {
     }
 
     @Test
-    fun `given account inserted, when delete account, then account is removed`() {
+    fun `given account inserted, when delete account, then account is removed`() = runTest {
         val account = createTestAccount()
         sut.insertOrUpdateDefaultAccount(account)
 

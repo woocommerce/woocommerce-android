@@ -3,6 +3,7 @@ package org.wordpress.android.fluxc.store
 import androidx.test.core.app.ApplicationProvider
 import com.wellsql.generated.SiteModelTable
 import com.yarolegovich.wellsql.WellSql
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
@@ -55,7 +56,7 @@ class SiteStoreUnitTest {
         )
         val account = AccountModel()
         account.userId = 20151021
-        accountStorePersistence.insertOrUpdateDefaultAccount(account)
+        runBlocking { accountStorePersistence.insertOrUpdateDefaultAccount(account) }
 
         mSiteStorePersistence = SiteStorePersistence(accountStorePersistence)
         mSiteStore = SiteStore(
