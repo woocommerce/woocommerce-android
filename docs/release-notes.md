@@ -9,6 +9,8 @@ Feature PRs use a title and an impact label instead of editing `RELEASE-NOTES.tx
 
 Danger requires one impact label; `Releases` PRs are exempt. Feature-flagged changes are excluded; describe their effect in the PR that enables them.
 
+Dependabot PRs default to `impact: internal`, so routine dependency updates are excluded from the notes. Replace it with `impact: user-visible` and update the title when an update warrants a user-facing release note.
+
 Also add these labels when applicable:
 
 - `feature: android wear`: group Wear changes under **Android Wear** in the generated notes.
