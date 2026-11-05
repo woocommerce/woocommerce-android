@@ -201,9 +201,7 @@ object UnexpectedStoreResponseExcerpt {
         pattern = """<head\b[^<>]*>.*?(?:</head\s*>|(?=<body\b)|\z)""",
         options = setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)
     )
-    private val TAG_OPEN_PATTERN = Regex("""<[A-Za-z/!?]""")
-    private val TAG_NAME_PATTERN = Regex("""<(/?)([A-Za-z][A-Za-z0-9-]*)""")
-    private val QUOTED_VALUE_PATTERN =Regex(""""[^"]*"|'[^']*'""")
+    private val QUOTED_VALUE_PATTERN = Regex(""""[^"]*"|'[^']*'""")
     private val HIDDEN_ATTRIBUTE_PATTERN = Regex("""(?:^|\s)hidden(?=[\s=/]|$)""", RegexOption.IGNORE_CASE)
     private val HIDDEN_STYLE_PATTERN = Regex(
         pattern = """(?:^|\s)style\s*=\s*(?:"[^"]*|'[^']*)(?:display\s*:\s*none|visibility\s*:\s*hidden)""",
