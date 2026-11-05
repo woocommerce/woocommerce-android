@@ -1,5 +1,5 @@
 <!--
-Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
+Contains editorialized release notes. Developer notes in `RELEASE-NOTES.txt` are generated from PR titles and labels at code freeze; see `docs/release-notes.md`.
 -->
 ## 26.0
 You can now add and edit attributes on every product type, and choose if each one shows on the product page or is used for variations. Shipping labels show carrier outage notices, two-step login explains your verification options, and POS stops waiting for a card while you take cash. Plus fixes for crashes, refunds, variations, and dark mode.

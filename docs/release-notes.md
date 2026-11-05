@@ -20,7 +20,7 @@ Also add these labels when applicable:
 
 `start_code_freeze` generates the version section before extracting the Play Store draft. It compares the preceding release's tag with the trunk commit being frozen. Before creating the release branch, it checks that the tag exists on `origin`; if it is missing, publish the preceding release first. Other version sections are preserved.
 
-The toolkit uses `generate_release_notes_file` (which calls `get_prs_between_tags`) with [developer-release-notes.yml](../.github/developer-release-notes.yml) to exclude internal, release-process, and feature-flagged PRs. It keeps the generated Markdown, including headings, author attribution, contributors, and links, under the existing version heading. Full GitHub release changelogs are unaffected.
+The toolkit uses `generate_release_notes_file` (which calls `get_prs_between_tags`) with [developer-release-notes.yml](../.github/developer-release-notes.yml) to exclude internal, release-process, and feature-flagged PRs. It inserts a missing version section or replaces an existing one, keeping the generated Markdown, including headings, author attribution, contributors, and links. No empty heading needs to be added for the next freeze. Full GitHub release changelogs are unaffected.
 
 The same lane uses [release-testing.yml](../.github/release-testing.yml) to list PRs labeled for release smoke testing over the same commit range. This separate report includes internal and feature-flagged changes. Review the **Release smoke testing** annotation on the code-freeze build and complete the requested checks before release. The report is also printed in the lane output; it is not added to store notes.
 
