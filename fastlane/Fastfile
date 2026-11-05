@@ -156,8 +156,12 @@ platform :android do
     UI.important(message)
     UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
-    # Create the release branch
+    # Validate release prerequisites before creating the branch.
     ensure_branch_does_not_exist!(new_release_branch)
+    previous_release_tag = release_version_current
+    unless git_tag_exists(tag: previous_release_tag, remote: true)
+      UI.user_error!("The previous release tag `#{previous_release_tag}` is missing from origin. Publish that release before freezing #{new_version}.")
+    end
 
     UI.message 'Creating release branch...'
     Fastlane::Helper::GitHelper.create_branch(new_release_branch, from: DEFAULT_BRANCH)
@@ -167,7 +171,7 @@ platform :android do
     release_notes_comparison = {
       repository: GITHUB_REPO,
       tag_name: new_version,
-      previous_tag: release_version_current,
+      previous_tag: previous_release_tag,
       target_commitish: last_git_commit[:commit_hash]
     }
     release_testing = get_prs_between_tags(

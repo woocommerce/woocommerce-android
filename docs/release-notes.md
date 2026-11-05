@@ -18,7 +18,7 @@ Also add these labels when applicable:
 
 ## Release workflow
 
-`start_code_freeze` generates the version section before extracting the Play Store draft. It compares the preceding release's tag with the trunk commit being frozen; that tag must exist. Other version sections are preserved.
+`start_code_freeze` generates the version section before extracting the Play Store draft. It compares the preceding release's tag with the trunk commit being frozen. Before creating the release branch, it checks that the tag exists on `origin`; if it is missing, publish the preceding release first. Other version sections are preserved.
 
 The toolkit uses `generate_release_notes_file` (which calls `get_prs_between_tags`) with [developer-release-notes.yml](../.github/developer-release-notes.yml) to exclude internal, release-process, and feature-flagged PRs. It keeps the generated Markdown, including headings, author attribution, contributors, and links, under the existing version heading. Full GitHub release changelogs are unaffected.
 
