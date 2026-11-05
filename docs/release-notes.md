@@ -25,3 +25,13 @@ The same lane uses [release-testing.yml](../.github/release-testing.yml) to list
 Release managers edit the extracted Play Store text, use the **Android Wear** section for Wear notes, and run `complete_code_freeze` as usual. Translation uses the same files. The existing backmerge brings `RELEASE-NOTES.txt` to trunk for Mission Control/ReleasesV2 summaries.
 
 Regenerate only before editorial review: generation replaces the version's draft. Release managers still add late-fix and hotfix notes and testing requirements in the release PR; the code-freeze testing report is a snapshot.
+
+## Rollout checklist
+
+Before merging this workflow:
+
+- Release [release-toolkit#776](https://github.com/wordpress-mobile/release-toolkit/pull/776), replace the temporary Git dependency with that released gem version, and refresh `Gemfile.lock`.
+- Ensure `impact: user-visible`, `impact: internal`, and `testing: release smoke test` exist in the repository.
+- Review PRs already merged for the upcoming release and apply impact, Wear, and smoke-testing labels as appropriate. Unlabeled PRs are included in the generated notes.
+- Remove handwritten entries from open feature PRs and apply the new labels.
+- Update the ReleasesV2 checklist to review the **Android Wear** section, turn the generated Markdown into store-ready text, and check both the freeze-time smoke report and late-fix/hotfix PRs for testing requirements.
