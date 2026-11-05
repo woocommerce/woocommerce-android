@@ -4,6 +4,7 @@
 
 26.1
 -----
+- [Internal] Account database functions are now suspendable, with no change in app behavior [https://github.com/woocommerce/woocommerce-android/pull/16825]
 - [*] If you add a photo to a product and remove it before saving, it now stays removed [https://github.com/woocommerce/woocommerce-android/pull/16822]
 - [*] Custom date ranges now show the right stats around daylight saving changes [https://github.com/woocommerce/woocommerce-android/pull/16821]
 - [*] Product names with line breaks now show every line on product details, and long names wrap instead of being cut off [https://github.com/woocommerce/woocommerce-android/pull/16818]
