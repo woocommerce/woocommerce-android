@@ -34,6 +34,7 @@ class SiteWPAPIRestClient @Inject constructor(
         private const val WOO_API_NAMESPACE_PREFIX = "wc/"
         private const val FETCH_API_CALL_FIELDS =
             "name,description,gmt_offset,url,authentication,namespaces"
+        private const val FETCH_HOME_CALL_FIELDS = "home"
         private const val APPLICATION_PASSWORDS_URL_SUFFIX = "authorize-application.php"
     }
 
@@ -126,6 +127,23 @@ class SiteWPAPIRestClient @Inject constructor(
                     ?.let { refreshedSite.adminUrl = it }
             }
         }
+    }
+
+    /**
+     * Returns the home address the site at [siteUrl] reports in its own REST index, or null if it can't be read.
+     */
+    suspend fun fetchSiteHomeUrl(siteUrl: String): String? {
+        val wpApiUrl = runCatching {
+            val normalizedSiteUrl = httpsUrlNormalizer.normalize(siteUrl, addHttpsSchemeIfMissing = true)
+            httpsUrlNormalizer.normalize(discoverApiEndpoint(normalizedSiteUrl.normalizedUrl)).normalizedUrl
+        }.getOrNull() ?: return null
+        val result = wpapiGsonRequestBuilder.syncGetRequest(
+            restClient = this,
+            url = wpApiUrl,
+            clazz = RootWPAPIRestResponse::class.java,
+            params = mapOf("_fields" to FETCH_HOME_CALL_FIELDS)
+        )
+        return (result as? Success)?.data?.home?.takeUnless(String::isBlank)
     }
 
     private suspend fun fetchRoot(wpApiUrl: String, payload: FetchWPAPISitePayload) =
