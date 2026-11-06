@@ -47,31 +47,35 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import java.math.BigDecimal
 
 @Composable
 fun WooPosCustomAmountFormScreen(
-    editing: WooPosCartItemViewState.CustomAmount?,
+    mode: WooPosCustomAmountDialogState.Mode,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onSubmitted: () -> Unit,
     submitButtonPadding: PaddingValues = defaultSubmitButtonPadding(),
     viewModel: WooPosCustomAmountDialogViewModel = hiltViewModel(),
 ) {
-    LaunchedEffect(editing?.itemNumber) {
-        viewModel.initializeFor(editing)
+    LaunchedEffect(mode) {
+        viewModel.initializeFor(mode)
     }
 
     // Reset the VM init sentinel whenever the form leaves composition — covers back gestures, submit
     // success, and any external navigation. Without this, opening the form again for the same item
     // (or a fresh "add" after a cancel) would short-circuit `initializeFor` and reuse stale state.
     DisposableEffect(Unit) {
-        onDispose { viewModel.onDismissed() }
+        onDispose { viewModel.onUIEvent(WooPosCustomAmountUIEvent.Closed) }
     }
 
     BackHandler(enabled = true) { onBackClick() }
 
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(state.isSubmitted) {
+        if (state.isSubmitted) onSubmitted()
+    }
 
     Column(
         modifier = modifier
@@ -88,21 +92,24 @@ fun WooPosCustomAmountFormScreen(
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
             AmountSection(
                 state = state,
-                onAmountChanged = viewModel::onAmountChanged,
+                onAmountChanged = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(it)) },
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
             HorizontalDivider(
                 color = WooPosTheme.colors.outlineVariant,
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
-            TaxesToggle(isTaxable = state.isTaxable, onToggled = viewModel::onTaxableToggled)
+            TaxesToggle(
+                isTaxable = state.isTaxable,
+                onToggled = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.TaxableToggled(it)) },
+            )
             HorizontalDivider(
                 color = WooPosTheme.colors.outlineVariant,
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
             NameSection(
                 value = state.name,
-                onNameChanged = viewModel::onNameChanged,
+                onNameChanged = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.NameChanged(it)) },
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
         }
@@ -116,7 +123,7 @@ fun WooPosCustomAmountFormScreen(
                     .fillMaxWidth()
                     .padding(submitButtonPadding),
                 state = state,
-                onSubmit = viewModel::onSubmit,
+                onSubmit = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked) },
             )
         }
     }

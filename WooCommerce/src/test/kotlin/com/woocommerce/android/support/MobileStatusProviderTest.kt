@@ -743,6 +743,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
             woo_notification_1d_before_free_trial_expires: true (remote)
             woo_notification_store_creation_ready: true (remote)
             woo_pos_all_countries: true (remote)
+            woo_pos_custom_amount_full_screen: true (remote)
             woo_pos_local_catalog_m1: true (remote)
             woo_pos_mark_order_as_complete: true (remote)
             woo_pos_phone: true (remote)

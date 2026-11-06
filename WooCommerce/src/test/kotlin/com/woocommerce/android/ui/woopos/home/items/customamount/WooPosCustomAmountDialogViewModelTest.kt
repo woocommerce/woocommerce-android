@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.home.items.customamount
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.CompletableDeferred
@@ -47,11 +46,14 @@ class WooPosCustomAmountDialogViewModelTest {
 
     @Test
     fun `given add mode, when initialized, then state has empty fields and currency params`() = runTest {
+        // GIVEN
         val sut = createSut()
         advanceUntilIdle()
 
-        sut.initializeFor(editing = null)
+        // WHEN
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
 
+        // THEN
         val state = sut.state.value
         assertThat(state.mode).isEqualTo(WooPosCustomAmountDialogState.Mode.Add)
         assertThat(state.amount).isNull()
@@ -63,21 +65,30 @@ class WooPosCustomAmountDialogViewModelTest {
 
     @Test
     fun `given edit mode, when initialized, then state is pre-filled from editing item`() = runTest {
+        // GIVEN
         val sut = createSut()
         advanceUntilIdle()
 
+        // WHEN
         sut.initializeFor(
-            editing = WooPosCartItemViewState.CustomAmount(
+            mode = WooPosCustomAmountDialogState.Mode.Edit(
                 itemNumber = 42,
                 name = "Service",
                 amount = BigDecimal("25.00"),
-                formattedAmount = "$25.00",
                 isTaxable = true,
             )
         )
 
+        // THEN
         val state = sut.state.value
-        assertThat(state.mode).isEqualTo(WooPosCustomAmountDialogState.Mode.Edit(itemNumber = 42))
+        assertThat(state.mode).isEqualTo(
+            WooPosCustomAmountDialogState.Mode.Edit(
+                itemNumber = 42,
+                amount = BigDecimal("25.00"),
+                name = "Service",
+                isTaxable = true,
+            )
+        )
         assertThat(state.amount).isEqualByComparingTo(BigDecimal("25.00"))
         assertThat(state.name).isEqualTo("Service")
         assertThat(state.isTaxable).isTrue()
@@ -85,38 +96,49 @@ class WooPosCustomAmountDialogViewModelTest {
 
     @Test
     fun `given amount is zero, when state inspected, then submit is disabled`() = runTest {
+        // GIVEN
         val sut = createSut()
         advanceUntilIdle()
 
-        sut.initializeFor(editing = null)
-        sut.onAmountChanged(BigDecimal.ZERO)
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
 
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal.ZERO))
+
+        // THEN
         assertThat(sut.state.value.isSubmitEnabled).isFalse()
     }
 
     @Test
     fun `given amount is positive, when state inspected, then submit is enabled`() = runTest {
+        // GIVEN
         val sut = createSut()
         advanceUntilIdle()
 
-        sut.initializeFor(editing = null)
-        sut.onAmountChanged(BigDecimal("5.00"))
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
 
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal("5.00")))
+
+        // THEN
         assertThat(sut.state.value.isSubmitEnabled).isTrue()
     }
 
     @Test
     fun `given add mode with name and amount, when submitted, then event is sent to parent`() = runTest {
+        // GIVEN
         val sut = createSut()
         advanceUntilIdle()
-        sut.initializeFor(editing = null)
-        sut.onAmountChanged(BigDecimal("10.00"))
-        sut.onNameChanged("Service fee")
-        sut.onTaxableToggled(true)
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal("10.00")))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.NameChanged("Service fee"))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.TaxableToggled(true))
 
-        sut.onSubmit()
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
         advanceUntilIdle()
 
+        // THEN
         verify(childrenToParentEventSender).sendToParent(
             ChildToParentEvent.CustomAmountSubmitted(
                 name = "Service fee",
@@ -129,15 +151,18 @@ class WooPosCustomAmountDialogViewModelTest {
 
     @Test
     fun `given name is blank, when submitted, then default name is used`() = runTest {
+        // GIVEN
         val sut = createSut()
         advanceUntilIdle()
-        sut.initializeFor(editing = null)
-        sut.onAmountChanged(BigDecimal("10.00"))
-        sut.onNameChanged("   ")
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal("10.00")))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.NameChanged("   "))
 
-        sut.onSubmit()
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
         advanceUntilIdle()
 
+        // THEN
         verify(childrenToParentEventSender).sendToParent(
             ChildToParentEvent.CustomAmountSubmitted(
                 name = DEFAULT_NAME,
@@ -150,23 +175,25 @@ class WooPosCustomAmountDialogViewModelTest {
 
     @Test
     fun `given edit mode, when submitted, then event carries editingItemNumber`() = runTest {
+        // GIVEN
         val sut = createSut()
         advanceUntilIdle()
         sut.initializeFor(
-            editing = WooPosCartItemViewState.CustomAmount(
+            mode = WooPosCustomAmountDialogState.Mode.Edit(
                 itemNumber = 7,
                 name = "Old",
                 amount = BigDecimal("1.00"),
-                formattedAmount = "$1.00",
                 isTaxable = false,
             )
         )
-        sut.onAmountChanged(BigDecimal("2.50"))
-        sut.onNameChanged("Updated")
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal("2.50")))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.NameChanged("Updated"))
 
-        sut.onSubmit()
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
         advanceUntilIdle()
 
+        // THEN
         verify(childrenToParentEventSender).sendToParent(
             ChildToParentEvent.CustomAmountSubmitted(
                 name = "Updated",
@@ -179,20 +206,24 @@ class WooPosCustomAmountDialogViewModelTest {
 
     @Test
     fun `given submission in flight, when onSubmit called again, then second submission is ignored`() = runTest {
+        // GIVEN
         val sendGate = CompletableDeferred<Unit>()
         whenever(childrenToParentEventSender.sendToParent(any())).doSuspendableAnswer {
             sendGate.await()
         }
         val sut = createSut()
         advanceUntilIdle()
-        sut.initializeFor(editing = null)
-        sut.onAmountChanged(BigDecimal("3.00"))
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal("3.00")))
 
-        sut.onSubmit()
-        sut.onSubmit()
+        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
+
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
         sendGate.complete(Unit)
         advanceUntilIdle()
 
+        // THEN
         verify(childrenToParentEventSender, times(1)).sendToParent(
             ChildToParentEvent.CustomAmountSubmitted(
                 name = DEFAULT_NAME,
@@ -205,32 +236,116 @@ class WooPosCustomAmountDialogViewModelTest {
 
     @Test
     fun `given amount is null, when onSubmit called, then nothing is sent`() = runTest {
+        // GIVEN
         val sut = createSut()
         advanceUntilIdle()
-        sut.initializeFor(editing = null)
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
 
-        sut.onSubmit()
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
         advanceUntilIdle()
 
+        // THEN
         verify(childrenToParentEventSender, never()).sendToParent(any())
     }
 
     @Test
-    fun `given same editing item, when initializeFor called twice, then state is set once`() = runTest {
+    fun `given valid amount, when submitted, then state is marked as submitted after event is sent`() = runTest {
+        // GIVEN
+        val submittedWhenSent = mutableListOf<Boolean>()
+        val sut = createSut()
+        whenever(childrenToParentEventSender.sendToParent(any())).doSuspendableAnswer {
+            submittedWhenSent.add(sut.state.value.isSubmitted)
+            Unit
+        }
+        advanceUntilIdle()
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal("5.00")))
+
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(submittedWhenSent).containsExactly(false)
+        assertThat(sut.state.value.isSubmitted).isTrue()
+        assertThat(sut.state.value.isSubmitEnabled).isFalse()
+    }
+
+    @Test
+    fun `given amount is null, when onSubmit called, then state is not marked as submitted`() = runTest {
+        // GIVEN
         val sut = createSut()
         advanceUntilIdle()
-        val item = WooPosCartItemViewState.CustomAmount(
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(sut.state.value.isSubmitted).isFalse()
+    }
+
+    @Test
+    fun `given submission completed, when onSubmit called again, then event is sent once`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal("3.00")))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
+        advanceUntilIdle()
+
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
+        advanceUntilIdle()
+
+        // THEN
+        verify(childrenToParentEventSender, times(1)).sendToParent(any())
+    }
+
+    @Test
+    fun `given submitted, when dismissed and reopened, then form can be submitted again`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal("3.00")))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
+        advanceUntilIdle()
+
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.Closed)
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal("4.00")))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(sut.state.value.isSubmitted).isTrue()
+        verify(childrenToParentEventSender, times(2)).sendToParent(any())
+    }
+
+    @Test
+    fun `given same editing item, when initializeFor called twice, then state is set once`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        val item = WooPosCustomAmountDialogState.Mode.Edit(
             itemNumber = 1,
             name = "Original",
             amount = BigDecimal("5.00"),
-            formattedAmount = "$5.00",
             isTaxable = false,
         )
 
         sut.initializeFor(item)
-        sut.onNameChanged("User typed")
+        sut.onUIEvent(WooPosCustomAmountUIEvent.NameChanged("User typed"))
+
+        // WHEN
         sut.initializeFor(item)
 
+        // THEN
         assertThat(sut.state.value.name).isEqualTo("User typed")
     }
 
