@@ -163,6 +163,8 @@ class CustomerListSelectionViewModelMapperTest {
             on { shippingPostcode }.thenReturn("postcode")
             on { shippingFirstName }.thenReturn("firstName")
             on { shippingLastName }.thenReturn("lastName")
+            on { shippingPhone }.thenReturn("shippingPhone")
+            on { billingPhone }.thenReturn("billingPhone")
         }
 
         // WHEN
@@ -175,7 +177,7 @@ class CustomerListSelectionViewModelMapperTest {
         assertThat(result.address1).isEqualTo("address1")
         assertThat(result.address2).isEqualTo("address2")
         assertThat(result.postcode).isEqualTo("postcode")
-        assertThat(result.phone).isEqualTo("")
+        assertThat(result.phone).isEqualTo("shippingPhone")
         assertThat(result.country).isEqualTo("country")
         assertThat(result.state).isEqualTo("state")
     }
