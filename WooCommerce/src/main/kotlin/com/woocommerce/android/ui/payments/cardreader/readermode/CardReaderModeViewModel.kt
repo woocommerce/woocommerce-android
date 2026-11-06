@@ -25,7 +25,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStar
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayViewState
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
-import com.woocommerce.android.util.siteIdHash
+import com.woocommerce.android.util.pairingIdentity
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -137,7 +137,7 @@ class CardReaderModeViewModel @Inject constructor(
 
     private fun startSessionIfNeeded() {
         if (sessionStarted) return
-        val siteHash = selectedSite.getOrNull()?.remoteId()?.value?.let(::siteIdHash) ?: return
+        val identity = selectedSite.getOrNull()?.pairingIdentity() ?: return
         sessionStarted = true
 
         if (!cardReaderManager.initialized) {
@@ -160,7 +160,8 @@ class CardReaderModeViewModel @Inject constructor(
         }
         session.start(
             parentScope = viewModelScope,
-            siteHash = siteHash,
+            siteHash = identity.siteHash,
+            siteUrlHash = identity.siteUrlHash,
             deviceId = getOrCreateDeviceId(),
             isSimulated = isSimulated,
         )

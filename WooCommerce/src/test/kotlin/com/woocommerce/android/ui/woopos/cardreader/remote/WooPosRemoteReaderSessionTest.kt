@@ -270,6 +270,7 @@ class WooPosRemoteReaderSessionTest {
         port = 9000,
         fingerprintBase64 = "AB4F",
         siteHash = "site-hash",
+        siteUrlHash = null,
         isSimulated = isSimulated,
     )
 }
