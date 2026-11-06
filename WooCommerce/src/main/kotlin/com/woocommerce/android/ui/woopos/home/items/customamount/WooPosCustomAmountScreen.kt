@@ -34,9 +34,19 @@ fun WooPosCustomAmountScreen(
             WooPosCustomAmountValueScreen(
                 state = state,
                 onAmountChanged = viewModel::onAmountChanged,
-                onContinueClicked = viewModel::onAmountConfirmed,
+                onSaveClicked = viewModel::onAmountConfirmed,
                 onBackClicked = { viewModel.onAmountBack(goBack) },
                 modifier = modifier.background(MaterialTheme.colorScheme.surface),
+            )
+        }
+
+        WooPosCustomAmountDialogState.Screen.NAME -> {
+            WooPosCustomAmountNameScreen(
+                value = state.nameDraft,
+                onNameChanged = viewModel::onNameDraftChanged,
+                onSaveClicked = viewModel::onNameConfirmed,
+                onBackClicked = viewModel::onNameBack,
+                modifier = modifier,
             )
         }
 
@@ -44,7 +54,7 @@ fun WooPosCustomAmountScreen(
             WooPosCustomAmountDetailsScreen(
                 state = state,
                 onEditAmount = viewModel::onEditAmount,
-                onNameChanged = viewModel::onNameChanged,
+                onEditName = viewModel::onEditName,
                 onTaxableToggled = viewModel::onTaxableToggled,
                 onSubmit = { viewModel.onSubmit(goBack) },
                 onBackClicked = goBack,

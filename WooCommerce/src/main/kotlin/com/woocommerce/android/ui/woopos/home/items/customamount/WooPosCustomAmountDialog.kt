@@ -119,7 +119,7 @@ fun WooPosCustomAmountFormScreen(
                 color = WooPosTheme.colors.outlineVariant,
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
-            WooPosCustomAmountTaxesToggle(isTaxable = state.isTaxable, onToggled = onTaxableToggled)
+            TaxesToggle(isTaxable = state.isTaxable, onToggled = onTaxableToggled)
             HorizontalDivider(
                 color = WooPosTheme.colors.outlineVariant,
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
@@ -226,7 +226,7 @@ private fun NameSection(
 }
 
 @Composable
-internal fun WooPosCustomAmountTaxesToggle(
+private fun TaxesToggle(
     isTaxable: Boolean,
     onToggled: (Boolean) -> Unit,
 ) {

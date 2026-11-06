@@ -55,6 +55,7 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
             mode = mode,
             amount = editing?.amount,
             name = editing?.name.orEmpty(),
+            nameDraft = "",
             isTaxable = editing?.isTaxable ?: false,
             isSubmitting = false,
             screen = if (editing == null) {
@@ -97,6 +98,28 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
 
     fun onNameChanged(value: String) {
         _state.value = _state.value.copy(name = value)
+    }
+
+    fun onEditName() {
+        _state.value = _state.value.copy(
+            screen = WooPosCustomAmountDialogState.Screen.NAME,
+            nameDraft = _state.value.name,
+        )
+    }
+
+    fun onNameDraftChanged(value: String) {
+        _state.value = _state.value.copy(nameDraft = value)
+    }
+
+    fun onNameConfirmed() {
+        _state.value = _state.value.copy(
+            name = _state.value.nameDraft,
+            screen = WooPosCustomAmountDialogState.Screen.DETAILS,
+        )
+    }
+
+    fun onNameBack() {
+        _state.value = _state.value.copy(nameDraft = "", screen = WooPosCustomAmountDialogState.Screen.DETAILS)
     }
 
     fun onTaxableToggled(value: Boolean) {

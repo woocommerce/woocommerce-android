@@ -1,43 +1,42 @@
 package com.woocommerce.android.ui.woopos.home.items.customamount
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.NullableCurrencyTextFieldValueMapper
 import com.woocommerce.android.ui.payments.changeduecalculator.CurrencyVisualTransformation
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosFullScreenInputLayout
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosInputField
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -48,118 +47,133 @@ import java.math.BigDecimal
 fun WooPosCustomAmountDetailsScreen(
     state: WooPosCustomAmountDialogState,
     onEditAmount: () -> Unit,
-    onNameChanged: (String) -> Unit,
+    onEditName: () -> Unit,
     onTaxableToggled: (Boolean) -> Unit,
     onSubmit: () -> Unit,
     onBackClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val submitText = when (state.mode) {
-        WooPosCustomAmountDialogState.Mode.Add -> R.string.woopos_custom_amount_dialog_submit_add
-        is WooPosCustomAmountDialogState.Mode.Edit -> R.string.woopos_custom_amount_dialog_submit_edit
-    }
-    WooPosFullScreenInputLayout(
-        modifier = modifier.navigationBarsPadding(),
-        titleText = stringResource(R.string.woopos_custom_amount_form_title),
+    WooPosCustomAmountLayout(
+        modifier = modifier.background(MaterialTheme.colorScheme.surface),
+        title = stringResource(R.string.woopos_custom_amount_details_title),
         onBackClicked = onBackClicked,
-        centerContent = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                AmountRow(state = state, onEditAmount = onEditAmount)
-                DetailsDivider()
-                NameRow(value = state.name, onNameChanged = onNameChanged)
-                DetailsDivider()
-                WooPosCustomAmountTaxesToggle(isTaxable = state.isTaxable, onToggled = onTaxableToggled)
-            }
+        onSaveClicked = onSubmit,
+        buttonState = when {
+            state.isSubmitting -> WooPosButtonState.LOADING
+            state.isSubmitEnabled -> WooPosButtonState.ENABLED
+            else -> WooPosButtonState.DISABLED
         },
-        buttonText = stringResource(submitText),
-        buttonState = if (state.isSubmitEnabled) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED,
-        onButtonClicked = onSubmit,
-    )
+    ) { contentModifier ->
+        Column(
+            modifier = contentModifier
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = WooPosSpacing.XLarge.value),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
+        ) {
+            EditableDetailCard(
+                label = stringResource(R.string.woopos_custom_amount_dialog_amount_label),
+                value = formattedAmount(state),
+                enabled = !state.isSubmitting,
+                onClick = onEditAmount,
+            )
+            EditableDetailCard(
+                label = stringResource(R.string.woopos_custom_amount_name_optional),
+                value = state.name.trim().ifBlank {
+                    stringResource(R.string.woopos_custom_amount_dialog_name_placeholder)
+                },
+                enabled = !state.isSubmitting,
+                onClick = onEditName,
+            )
+            DetailCard {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .toggleable(
+                            value = state.isTaxable,
+                            enabled = !state.isSubmitting,
+                            role = Role.Switch,
+                            onValueChange = onTaxableToggled,
+                        )
+                        .padding(WooPosSpacing.XLarge.value),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
+                ) {
+                    DetailLabel(
+                        text = stringResource(R.string.woopos_custom_amount_dialog_charge_taxes),
+                        modifier = Modifier.weight(1f),
+                    )
+                    Switch(checked = state.isTaxable, enabled = !state.isSubmitting, onCheckedChange = null)
+                }
+            }
+        }
+    }
 }
 
 @Composable
-private fun AmountRow(state: WooPosCustomAmountDialogState, onEditAmount: () -> Unit) {
-    val label = stringResource(R.string.woopos_custom_amount_dialog_amount_label)
-    val editLabel = stringResource(R.string.woopos_cart_custom_amount_edit_content_description, label)
+private fun formattedAmount(state: WooPosCustomAmountDialogState): String {
     val valueMapper = NullableCurrencyTextFieldValueMapper.create(
         decimalSeparator = state.decimalSeparator,
         numberOfDecimals = state.numberOfDecimals,
         keepTrailingZeros = true,
     )
-    val formattedAmount = CurrencyVisualTransformation(state.currencySymbol, state.currencyPosition)
+    return CurrencyVisualTransformation(state.currencySymbol, state.currencyPosition)
         .filter(AnnotatedString(valueMapper.printValue(state.amount)))
         .text.text
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
-            .clickable(onClickLabel = editLabel, onClick = onEditAmount)
-            .padding(WooPosSpacing.Medium.value),
-        horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        DetailsLabel(text = label, modifier = Modifier.weight(1f))
-        WooPosText(text = formattedAmount, style = WooPosTypography.BodyLarge)
-        Icon(
-            imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_right_24dp),
-            contentDescription = null,
-            tint = WooPosTheme.colors.onSurfaceVariantHighest,
-            modifier = Modifier.size(WooPosIconSize.Small.value),
-        )
-    }
 }
 
 @Composable
-private fun NameRow(value: String, onNameChanged: (String) -> Unit) {
-    val label = stringResource(R.string.woopos_custom_amount_dialog_name_label)
+private fun EditableDetailCard(label: String, value: String, enabled: Boolean, onClick: () -> Unit) {
     val editLabel = stringResource(R.string.woopos_cart_custom_amount_edit_content_description, label)
-    val focusRequester = remember { FocusRequester() }
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
-            .clickable(onClickLabel = editLabel) {
-                focusRequester.requestFocus()
-                keyboardController?.show()
-            }
-            .padding(WooPosSpacing.Medium.value),
-        horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        DetailsLabel(text = label, modifier = Modifier.weight(1f))
-        WooPosInputField(
+    DetailCard {
+        Row(
             modifier = Modifier
-                .weight(2f)
-                .focusRequester(focusRequester),
-            value = value,
-            onValueChange = onNameChanged,
-            label = stringResource(R.string.woopos_custom_amount_dialog_name_placeholder),
-            textStyle = WooPosTypography.BodyLarge,
-            textColor = MaterialTheme.colorScheme.onSurface,
-            contentAlignment = Alignment.CenterEnd,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-        )
+                .fillMaxWidth()
+                .clickable(enabled = enabled, role = Role.Button, onClickLabel = editLabel, onClick = onClick)
+                .padding(WooPosSpacing.XLarge.value),
+            horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            DetailLabel(text = label, modifier = Modifier.weight(1f))
+            WooPosText(
+                modifier = Modifier.weight(2f),
+                text = value,
+                style = WooPosTypography.BodyXLarge,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.End,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Box(modifier = Modifier.size(WooPosIconSize.XLarge.value), contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_edit_pencil),
+                    contentDescription = null,
+                    tint = WooPosTheme.colors.onSurfaceVariantLowest,
+                    modifier = Modifier.size(WooPosIconSize.Medium.value),
+                )
+            }
+        }
     }
 }
 
 @Composable
-private fun DetailsLabel(text: String, modifier: Modifier = Modifier) {
-    WooPosText(
-        modifier = modifier,
-        text = text,
-        style = WooPosTypography.BodyLarge,
-        fontWeight = FontWeight.Bold,
+private fun DetailCard(content: @Composable () -> Unit) {
+    WooPosCard(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(WooPosCornerRadius.Large.value),
+        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        elevation = WooPosElevation.Medium,
+        shadowType = ShadowType.Soft,
+        content = content,
     )
 }
 
 @Composable
-private fun DetailsDivider() {
-    HorizontalDivider(
-        modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
-        color = WooPosTheme.colors.outlineVariant,
+private fun DetailLabel(text: String, modifier: Modifier = Modifier) {
+    WooPosText(
+        modifier = modifier,
+        text = text,
+        style = WooPosTypography.BodyLarge,
+        color = WooPosTheme.colors.onSurfaceVariantHighest,
     )
 }
 
@@ -168,9 +182,9 @@ private fun DetailsDivider() {
 fun WooPosCustomAmountDetailsScreenPreview() {
     WooPosTheme {
         WooPosCustomAmountDetailsScreen(
-            state = WooPosCustomAmountDialogState(amount = BigDecimal.TEN, currencySymbol = "$"),
+            state = WooPosCustomAmountDialogState(amount = BigDecimal("40.00"), currencySymbol = "$"),
             onEditAmount = {},
-            onNameChanged = {},
+            onEditName = {},
             onTaxableToggled = {},
             onSubmit = {},
             onBackClicked = {},

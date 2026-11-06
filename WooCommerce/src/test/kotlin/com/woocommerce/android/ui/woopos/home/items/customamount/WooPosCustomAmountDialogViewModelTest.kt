@@ -461,6 +461,83 @@ class WooPosCustomAmountDialogViewModelTest {
         assertThat(sut.state.value.isSubmitEnabled).isTrue()
     }
 
+    @Test
+    fun `given a name draft, when saved, then details receive it without submitting the cart`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(null)
+        sut.onAmountChanged(BigDecimal.TEN)
+        sut.onAmountConfirmed()
+        sut.onTaxableToggled(true)
+        sut.onEditName()
+        sut.onNameDraftChanged("Gift wrap")
+
+        // WHEN
+        sut.onNameConfirmed()
+
+        // THEN
+        assertThat(sut.state.value.screen).isEqualTo(WooPosCustomAmountDialogState.Screen.DETAILS)
+        assertThat(sut.state.value.name).isEqualTo("Gift wrap")
+        assertThat(sut.state.value.amount).isEqualByComparingTo(BigDecimal.TEN)
+        assertThat(sut.state.value.isTaxable).isTrue()
+        verify(childrenToParentEventSender, never()).sendToParent(any())
+    }
+
+    @Test
+    fun `given an existing name, when a name draft is cancelled, then the original name is kept`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(null)
+        sut.onNameChanged("Original")
+        sut.onEditName()
+        assertThat(sut.state.value.nameDraft).isEqualTo("Original")
+        sut.onNameDraftChanged("Discarded")
+
+        // WHEN
+        sut.onNameBack()
+        sut.onEditName()
+
+        // THEN
+        assertThat(sut.state.value.name).isEqualTo("Original")
+        assertThat(sut.state.value.nameDraft).isEqualTo("Original")
+        verify(childrenToParentEventSender, never()).sendToParent(any())
+    }
+
+    @Test
+    fun `given an existing item, when a blank name is saved and submitted, then default name and identity are preserved`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(
+            WooPosCartItemViewState.CustomAmount(
+                itemNumber = 7,
+                name = "Original",
+                amount = BigDecimal.TEN,
+                formattedAmount = "$10.00",
+                isTaxable = true,
+            )
+        )
+        sut.onEditName()
+        sut.onNameDraftChanged("   ")
+
+        // WHEN
+        sut.onNameConfirmed()
+        sut.onSubmit()
+        advanceUntilIdle()
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(
+            ChildToParentEvent.CustomAmountSubmitted(
+                name = DEFAULT_NAME,
+                amount = BigDecimal.TEN,
+                isTaxable = true,
+                editingItemNumber = 7,
+            )
+        )
+    }
+
     private fun createSut() = WooPosCustomAmountDialogViewModel(
         getCurrencyFormattingParameters = getCurrencyFormattingParameters,
         childrenToParentEventSender = childrenToParentEventSender,

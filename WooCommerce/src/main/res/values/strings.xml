@@ -4019,6 +4019,8 @@
     <string name="woopos_custom_amount_dialog_title_add">Add custom amount</string>
     <string name="woopos_custom_amount_dialog_title_edit">Edit custom amount</string>
     <string name="woopos_custom_amount_form_title">Custom amount</string>
+    <string name="woopos_custom_amount_details_title">Custom amount details</string>
+    <string name="woopos_custom_amount_name_optional">Name (optional)</string>
     <string name="woopos_custom_amount_dialog_amount_label">Amount</string>
     <string name="woopos_custom_amount_dialog_name_label">Name</string>
     <string name="woopos_custom_amount_dialog_name_placeholder">Custom amount</string>
