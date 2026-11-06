@@ -15,6 +15,6 @@ If applicable, mention key devices, scenarios, or edge cases to verify. -->
 
 <!-- Adds or changes a tool or command? Update docs/ai-tools.md. -->
 
-- [ ] I have considered if this change warrants release notes and have added them to `RELEASE-NOTES.txt` if necessary. Use the "[Internal]" label for non-user-facing changes.
+- [ ] I selected an impact label and checked my PR title against the [release notes guidelines](https://github.com/woocommerce/woocommerce-android/blob/trunk/docs/release-notes.md).
 
-<!-- Pull request guidelines: https://github.com/woocommerce/woocommerce-android/blob/develop/docs/pull-request-guidelines.md -->
+<!-- Pull request guidelines: https://github.com/woocommerce/woocommerce-android/blob/trunk/docs/pull-request-guidelines.md -->
