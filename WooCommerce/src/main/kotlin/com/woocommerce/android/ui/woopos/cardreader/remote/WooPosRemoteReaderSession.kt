@@ -132,6 +132,7 @@ class WooPosRemoteReaderSession @Inject constructor(
             fingerprintBase64 = reader.fingerprintBase64,
             deviceName = reader.name,
             siteHash = reader.siteHash,
+            siteUrlHash = reader.siteUrlHash,
             deviceId = reader.deviceId,
         )
         return when (val outcome = newClient.connect(discovered, token, locationId)) {

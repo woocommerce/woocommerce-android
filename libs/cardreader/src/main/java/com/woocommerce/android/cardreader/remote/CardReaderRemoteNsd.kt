@@ -29,11 +29,13 @@ internal class CardReaderRemoteNsd(
     private val nsdManager: NsdManager =
         context.applicationContext.getSystemService(Context.NSD_SERVICE) as NsdManager
 
+    @Suppress("LongParameterList")
     suspend fun advertise(
         port: Int,
         fingerprint: String,
         deviceName: String,
         siteHash: String,
+        siteUrlHash: String?,
         deviceId: String,
     ): CardReaderRemoteNsdRegistration =
         withContext(ioDispatcher) {
@@ -45,6 +47,7 @@ internal class CardReaderRemoteNsd(
                 setAttribute(TXT_KEY_VERSION, PROTOCOL_VERSION)
                 setAttribute(TXT_KEY_DEVICE_NAME, deviceName)
                 setAttribute(TXT_KEY_SITE_HASH, siteHash)
+                siteUrlHash?.let { setAttribute(TXT_KEY_SITE_URL_HASH, it) }
                 setAttribute(TXT_KEY_DEVICE_ID, deviceId)
             }
 
@@ -205,6 +208,7 @@ internal class CardReaderRemoteNsd(
             version = version,
             deviceName = deviceName,
             siteHash = siteHash,
+            siteUrlHash = attributes[TXT_KEY_SITE_URL_HASH]?.toString(Charsets.UTF_8)?.ifEmpty { null },
             deviceId = deviceId,
         )
     }
@@ -231,6 +235,7 @@ internal class CardReaderRemoteNsd(
         const val TXT_KEY_VERSION = "ver"
         const val TXT_KEY_DEVICE_NAME = "name"
         const val TXT_KEY_SITE_HASH = "siteHash"
+        const val TXT_KEY_SITE_URL_HASH = "siteUrlHash"
         const val TXT_KEY_DEVICE_ID = "did"
 
         // Bump when collect-payment messages change in ways that affect payment correctness.
@@ -259,6 +264,7 @@ internal data class CardReaderRemoteResolvedHost(
     val version: String,
     val deviceName: String?,
     val siteHash: String,
+    val siteUrlHash: String?,
     val deviceId: String,
 )
 

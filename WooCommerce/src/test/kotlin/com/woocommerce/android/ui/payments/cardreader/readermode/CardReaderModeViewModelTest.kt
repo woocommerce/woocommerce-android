@@ -100,7 +100,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     @Test
     fun `when view model initialized, then session is not started yet`() {
         // THEN
-        verify(session, never()).start(any(), any(), any(), any())
+        verify(session, never()).start(any(), any(), any(), any(), any())
     }
 
     @Test
@@ -164,7 +164,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
         viewModel.onPermissionsGranted()
 
         // THEN
-        verify(session).start(any(), any(), any(), any())
+        verify(session).start(any(), any(), any(), any(), any())
     }
 
     @Test
@@ -174,7 +174,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
         viewModel.onPermissionsGranted()
 
         // THEN
-        verify(session, times(1)).start(any(), any(), any(), any())
+        verify(session, times(1)).start(any(), any(), any(), any(), any())
     }
 
     @Test
@@ -185,7 +185,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(viewModel.viewState.value).isInstanceOf(RemoteTapToPayLocationPermissionExplainer::class.java)
-        verify(session, never()).start(any(), any(), any(), any())
+        verify(session, never()).start(any(), any(), any(), any(), any())
     }
 
     @Test
@@ -196,7 +196,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(viewModel.viewState.value).isInstanceOf(RemoteTapToPayLocationPermissionDenied::class.java)
-        verify(session, never()).start(any(), any(), any(), any())
+        verify(session, never()).start(any(), any(), any(), any(), any())
     }
 
     @Test
@@ -207,7 +207,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(viewModel.viewState.value).isInstanceOf(RemoteTapToPayLocalNetworkPermissionExplainer::class.java)
-        verify(session, never()).start(any(), any(), any(), any())
+        verify(session, never()).start(any(), any(), any(), any(), any())
     }
 
     @Test
@@ -219,7 +219,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.viewState.value).isInstanceOf(RemoteTapToPayLocalNetworkPermissionDenied::class.java)
-            verify(session, never()).start(any(), any(), any(), any())
+            verify(session, never()).start(any(), any(), any(), any(), any())
         }
 
     @Test
@@ -232,7 +232,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(viewModel.events.first()).isEqualTo(CardReaderModeEvent.OpenNfcSettings)
-        verify(session, never()).start(any(), any(), any(), any())
+        verify(session, never()).start(any(), any(), any(), any(), any())
     }
 
     @Test
