@@ -7,12 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
 fun WooPosCustomAmountScreen(
-    editing: WooPosCartItemViewState.CustomAmount?,
+    mode: WooPosCustomAmountDialogState.Mode,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -26,7 +25,7 @@ fun WooPosCustomAmountScreen(
             onBackClicked = close,
         )
         WooPosCustomAmountFormScreen(
-            editing = editing,
+            mode = mode,
             onBackClick = close,
             onSubmitted = close,
             modifier = Modifier.weight(1f),

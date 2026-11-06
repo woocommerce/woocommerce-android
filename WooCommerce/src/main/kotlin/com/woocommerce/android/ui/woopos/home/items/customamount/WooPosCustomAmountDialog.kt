@@ -47,20 +47,19 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import java.math.BigDecimal
 
 @Composable
 fun WooPosCustomAmountFormScreen(
-    editing: WooPosCartItemViewState.CustomAmount?,
+    mode: WooPosCustomAmountDialogState.Mode,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     onSubmitted: () -> Unit,
     submitButtonPadding: PaddingValues = defaultSubmitButtonPadding(),
     viewModel: WooPosCustomAmountDialogViewModel = hiltViewModel(),
 ) {
-    LaunchedEffect(editing?.itemNumber) {
-        viewModel.initializeFor(editing)
+    LaunchedEffect(mode) {
+        viewModel.initializeFor(mode)
     }
 
     // Reset the VM init sentinel whenever the form leaves composition — covers back gestures, submit

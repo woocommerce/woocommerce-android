@@ -8,7 +8,9 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.ExitPosClicked
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
+import com.woocommerce.android.ui.woopos.home.items.customamount.WooPosCustomAmountDialogState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitConfirmed
@@ -30,6 +32,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.math.BigDecimal
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
@@ -494,12 +497,47 @@ class WooPosHomeViewModelTest {
                 events.emit(ChildToParentEvent.CustomAmountDialogRequested())
 
                 // THEN
-                assertThat(awaitItem()).isEqualTo(ChildToParentEvent.NavigationEvent.ToCustomAmount(null))
+                assertThat(awaitItem()).isEqualTo(
+                    ChildToParentEvent.NavigationEvent.ToCustomAmount(WooPosCustomAmountDialogState.Mode.Add)
+                )
             }
             verify(parentToChildrenEventSender, never()).sendToChildren(
                 argThat { this is ParentToChildrenEvent.ShowCustomAmountForm }
             )
         }
+
+    @Test
+    fun `given full screen flag on, when editing custom amount, then navigation carries edit fields`() = runTest {
+        // GIVEN
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_CUSTOM_AMOUNT_FULL_SCREEN)).thenReturn(true)
+        val events = MutableSharedFlow<ChildToParentEvent>()
+        whenever(childrenToParentEventReceiver.events).thenReturn(events)
+        val viewModel = createViewModel()
+        val item = WooPosCartItemViewState.CustomAmount(
+            itemNumber = 42,
+            amount = BigDecimal("12.34"),
+            formattedAmount = "$12.34",
+            name = "Service & support?",
+            isTaxable = true,
+        )
+
+        viewModel.navigationEvent.test {
+            // WHEN
+            events.emit(ChildToParentEvent.CustomAmountDialogRequested(editing = item))
+
+            // THEN
+            assertThat(awaitItem()).isEqualTo(
+                ChildToParentEvent.NavigationEvent.ToCustomAmount(
+                    WooPosCustomAmountDialogState.Mode.Edit(
+                        itemNumber = 42,
+                        amount = BigDecimal("12.34"),
+                        name = "Service & support?",
+                        isTaxable = true,
+                    )
+                )
+            )
+        }
+    }
 
     @Test
     fun `given full screen flag off, when custom amount requested, then show in-pane form`() =

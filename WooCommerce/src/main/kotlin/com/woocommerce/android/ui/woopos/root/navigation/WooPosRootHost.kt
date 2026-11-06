@@ -32,7 +32,7 @@ fun WooPosRootHost(
                 is NavigationEvent.ToMarkOrderAsPaid -> onNavigationEvent(OpenMarkOrderAsPaid(it.orderId))
                 is NavigationEvent.ToScanToPay -> onNavigationEvent(OpenScanToPay(it.orderId))
                 is NavigationEvent.ToEmailReceipt -> onNavigationEvent(OpenEmailReceipt(it.orderId))
-                is NavigationEvent.ToCustomAmount -> onNavigationEvent(OpenCustomAmount(it.editing))
+                is NavigationEvent.ToCustomAmount -> onNavigationEvent(OpenCustomAmount(it.mode))
                 NavigationEvent.ExitPos -> onNavigationEvent(ExitPosClicked)
                 NavigationEvent.ReturnHomeFromCashWhenCardPaymentStarted -> onNavigationEvent(ReturnHomeFromCashPayment)
                 NavigationEvent.ToSettings -> onNavigationEvent(OpenSettings)

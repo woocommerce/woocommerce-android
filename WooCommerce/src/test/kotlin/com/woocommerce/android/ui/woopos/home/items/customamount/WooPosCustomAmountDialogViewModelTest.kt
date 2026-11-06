@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.home.items.customamount
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.CompletableDeferred
@@ -50,7 +49,7 @@ class WooPosCustomAmountDialogViewModelTest {
         val sut = createSut()
         advanceUntilIdle()
 
-        sut.initializeFor(editing = null)
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
 
         val state = sut.state.value
         assertThat(state.mode).isEqualTo(WooPosCustomAmountDialogState.Mode.Add)
@@ -67,17 +66,23 @@ class WooPosCustomAmountDialogViewModelTest {
         advanceUntilIdle()
 
         sut.initializeFor(
-            editing = WooPosCartItemViewState.CustomAmount(
+            mode = WooPosCustomAmountDialogState.Mode.Edit(
                 itemNumber = 42,
                 name = "Service",
                 amount = BigDecimal("25.00"),
-                formattedAmount = "$25.00",
                 isTaxable = true,
             )
         )
 
         val state = sut.state.value
-        assertThat(state.mode).isEqualTo(WooPosCustomAmountDialogState.Mode.Edit(itemNumber = 42))
+        assertThat(state.mode).isEqualTo(
+            WooPosCustomAmountDialogState.Mode.Edit(
+                itemNumber = 42,
+                amount = BigDecimal("25.00"),
+                name = "Service",
+                isTaxable = true,
+            )
+        )
         assertThat(state.amount).isEqualByComparingTo(BigDecimal("25.00"))
         assertThat(state.name).isEqualTo("Service")
         assertThat(state.isTaxable).isTrue()
@@ -88,7 +93,7 @@ class WooPosCustomAmountDialogViewModelTest {
         val sut = createSut()
         advanceUntilIdle()
 
-        sut.initializeFor(editing = null)
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
         sut.onAmountChanged(BigDecimal.ZERO)
 
         assertThat(sut.state.value.isSubmitEnabled).isFalse()
@@ -99,7 +104,7 @@ class WooPosCustomAmountDialogViewModelTest {
         val sut = createSut()
         advanceUntilIdle()
 
-        sut.initializeFor(editing = null)
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
         sut.onAmountChanged(BigDecimal("5.00"))
 
         assertThat(sut.state.value.isSubmitEnabled).isTrue()
@@ -109,7 +114,7 @@ class WooPosCustomAmountDialogViewModelTest {
     fun `given add mode with name and amount, when submitted, then event is sent to parent`() = runTest {
         val sut = createSut()
         advanceUntilIdle()
-        sut.initializeFor(editing = null)
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
         sut.onAmountChanged(BigDecimal("10.00"))
         sut.onNameChanged("Service fee")
         sut.onTaxableToggled(true)
@@ -131,7 +136,7 @@ class WooPosCustomAmountDialogViewModelTest {
     fun `given name is blank, when submitted, then default name is used`() = runTest {
         val sut = createSut()
         advanceUntilIdle()
-        sut.initializeFor(editing = null)
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
         sut.onAmountChanged(BigDecimal("10.00"))
         sut.onNameChanged("   ")
 
@@ -153,11 +158,10 @@ class WooPosCustomAmountDialogViewModelTest {
         val sut = createSut()
         advanceUntilIdle()
         sut.initializeFor(
-            editing = WooPosCartItemViewState.CustomAmount(
+            mode = WooPosCustomAmountDialogState.Mode.Edit(
                 itemNumber = 7,
                 name = "Old",
                 amount = BigDecimal("1.00"),
-                formattedAmount = "$1.00",
                 isTaxable = false,
             )
         )
@@ -185,7 +189,7 @@ class WooPosCustomAmountDialogViewModelTest {
         }
         val sut = createSut()
         advanceUntilIdle()
-        sut.initializeFor(editing = null)
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
         sut.onAmountChanged(BigDecimal("3.00"))
 
         sut.onSubmit()
@@ -207,7 +211,7 @@ class WooPosCustomAmountDialogViewModelTest {
     fun `given amount is null, when onSubmit called, then nothing is sent`() = runTest {
         val sut = createSut()
         advanceUntilIdle()
-        sut.initializeFor(editing = null)
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
 
         sut.onSubmit()
         advanceUntilIdle()
@@ -225,7 +229,7 @@ class WooPosCustomAmountDialogViewModelTest {
             Unit
         }
         advanceUntilIdle()
-        sut.initializeFor(editing = null)
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
         sut.onAmountChanged(BigDecimal("5.00"))
 
         // WHEN
@@ -243,7 +247,7 @@ class WooPosCustomAmountDialogViewModelTest {
         // GIVEN
         val sut = createSut()
         advanceUntilIdle()
-        sut.initializeFor(editing = null)
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
 
         // WHEN
         sut.onSubmit()
@@ -258,7 +262,7 @@ class WooPosCustomAmountDialogViewModelTest {
         // GIVEN
         val sut = createSut()
         advanceUntilIdle()
-        sut.initializeFor(editing = null)
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
         sut.onAmountChanged(BigDecimal("3.00"))
         sut.onSubmit()
         advanceUntilIdle()
@@ -276,14 +280,14 @@ class WooPosCustomAmountDialogViewModelTest {
         // GIVEN
         val sut = createSut()
         advanceUntilIdle()
-        sut.initializeFor(editing = null)
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
         sut.onAmountChanged(BigDecimal("3.00"))
         sut.onSubmit()
         advanceUntilIdle()
 
         // WHEN
         sut.onDismissed()
-        sut.initializeFor(editing = null)
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
         sut.onAmountChanged(BigDecimal("4.00"))
         sut.onSubmit()
         advanceUntilIdle()
@@ -297,11 +301,10 @@ class WooPosCustomAmountDialogViewModelTest {
     fun `given same editing item, when initializeFor called twice, then state is set once`() = runTest {
         val sut = createSut()
         advanceUntilIdle()
-        val item = WooPosCartItemViewState.CustomAmount(
+        val item = WooPosCustomAmountDialogState.Mode.Edit(
             itemNumber = 1,
             name = "Original",
             amount = BigDecimal("5.00"),
-            formattedAmount = "$5.00",
             isTaxable = false,
         )
 

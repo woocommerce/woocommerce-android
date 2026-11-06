@@ -10,7 +10,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.woocommerce.android.ui.woopos.home.HOME_ROUTE
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 private const val CUSTOM_AMOUNT_ROUTE_BASE = "$HOME_ROUTE/custom_amount"
@@ -26,17 +25,17 @@ const val CUSTOM_AMOUNT_ROUTE = "$CUSTOM_AMOUNT_ROUTE_BASE?" +
     "$NAME_KEY={$NAME_KEY}&" +
     "$IS_TAXABLE_KEY={$IS_TAXABLE_KEY}"
 
-fun NavController.navigateToCustomAmountScreen(editing: WooPosCartItemViewState.CustomAmount?) {
+fun NavController.navigateToCustomAmountScreen(mode: WooPosCustomAmountDialogState.Mode) {
     if (currentDestination?.route == CUSTOM_AMOUNT_ROUTE) return
 
-    val route = if (editing == null) {
-        CUSTOM_AMOUNT_ROUTE_BASE
-    } else {
-        "$CUSTOM_AMOUNT_ROUTE_BASE?" +
-            "$ITEM_NUMBER_KEY=${editing.itemNumber}&" +
-            "$AMOUNT_KEY=${Uri.encode(editing.amount.toPlainString())}&" +
-            "$NAME_KEY=${Uri.encode(editing.name)}&" +
-            "$IS_TAXABLE_KEY=${editing.isTaxable}"
+    val route = when (mode) {
+        WooPosCustomAmountDialogState.Mode.Add -> CUSTOM_AMOUNT_ROUTE_BASE
+        is WooPosCustomAmountDialogState.Mode.Edit ->
+            "$CUSTOM_AMOUNT_ROUTE_BASE?" +
+                "$ITEM_NUMBER_KEY=${mode.itemNumber}&" +
+                "$AMOUNT_KEY=${Uri.encode(mode.amount.toPlainString())}&" +
+                "$NAME_KEY=${Uri.encode(mode.name)}&" +
+                "$IS_TAXABLE_KEY=${mode.isTaxable}"
     }
     navigate(route) { launchSingleTop = true }
 }
@@ -80,22 +79,21 @@ fun NavGraphBuilder.customAmountScreen(
         },
     ) { backStackEntry ->
         WooPosCustomAmountScreen(
-            editing = backStackEntry.toEditingItem(),
+            mode = backStackEntry.toMode(),
             onNavigationEvent = onNavigationEvent,
         )
     }
 }
 
-private fun NavBackStackEntry.toEditingItem(): WooPosCartItemViewState.CustomAmount? {
-    val args = arguments ?: return null
+private fun NavBackStackEntry.toMode(): WooPosCustomAmountDialogState.Mode {
+    val args = arguments ?: return WooPosCustomAmountDialogState.Mode.Add
     val itemNumber = args.getInt(ITEM_NUMBER_KEY, NO_ITEM_NUMBER)
     val amount = args.getString(AMOUNT_KEY)?.toBigDecimalOrNull()
-    if (itemNumber == NO_ITEM_NUMBER || amount == null) return null
-    return WooPosCartItemViewState.CustomAmount(
+    if (itemNumber == NO_ITEM_NUMBER || amount == null) return WooPosCustomAmountDialogState.Mode.Add
+    return WooPosCustomAmountDialogState.Mode.Edit(
         itemNumber = itemNumber,
         name = args.getString(NAME_KEY).orEmpty(),
         amount = amount,
-        formattedAmount = "",
         isTaxable = args.getBoolean(IS_TAXABLE_KEY),
     )
 }

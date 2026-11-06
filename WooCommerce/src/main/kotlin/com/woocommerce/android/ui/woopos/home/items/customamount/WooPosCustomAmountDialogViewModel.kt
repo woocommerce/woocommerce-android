@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,12 +38,10 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
         }
     }
 
-    fun initializeFor(editing: WooPosCartItemViewState.CustomAmount?) {
-        val mode = editing
-            ?.let { WooPosCustomAmountDialogState.Mode.Edit(it.itemNumber) }
-            ?: WooPosCustomAmountDialogState.Mode.Add
+    fun initializeFor(mode: WooPosCustomAmountDialogState.Mode) {
         if (hasInitializedFor == mode) return
         hasInitializedFor = mode
+        val editing = mode as? WooPosCustomAmountDialogState.Mode.Edit
 
         _state.value = _state.value.copy(
             mode = mode,

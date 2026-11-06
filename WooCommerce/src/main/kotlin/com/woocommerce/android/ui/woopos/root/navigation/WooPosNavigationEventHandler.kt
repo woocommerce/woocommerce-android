@@ -67,7 +67,7 @@ fun NavHostController.handleNavigationEvent(
             navigateToSettingsScreen()
 
         is WooPosNavigationEvent.OpenCustomAmount ->
-            navigateToCustomAmountScreen(event.editing)
+            navigateToCustomAmountScreen(event.mode)
 
         is WooPosNavigationEvent.CloseCustomAmount ->
             closeCustomAmountScreen()

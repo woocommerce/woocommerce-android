@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.customamount
 
 import android.os.Parcelable
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import java.math.BigDecimal
@@ -30,6 +31,16 @@ data class WooPosCustomAmountDialogState(
         @Parcelize
         data class Edit(
             val itemNumber: Int,
+            val amount: BigDecimal,
+            val name: String,
+            val isTaxable: Boolean,
         ) : Mode()
     }
 }
+
+fun WooPosCartItemViewState.CustomAmount.toEditMode() = WooPosCustomAmountDialogState.Mode.Edit(
+    itemNumber = itemNumber,
+    amount = amount,
+    name = name,
+    isTaxable = isTaxable,
+)
