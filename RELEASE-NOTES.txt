@@ -4,6 +4,7 @@
 
 26.1
 -----
+- [*] [POS] The tablet now lists a phone as a card reader when the two devices are logged in to the same store in different ways [https://github.com/woocommerce/woocommerce-android/pull/16829]
 - [*] If you add a photo to a product and remove it before saving, it now stays removed [https://github.com/woocommerce/woocommerce-android/pull/16822]
 - [*] Custom date ranges now show the right stats around daylight saving changes [https://github.com/woocommerce/woocommerce-android/pull/16821]
 - [*] Product names with line breaks now show every line on product details, and long names wrap instead of being cut off [https://github.com/woocommerce/woocommerce-android/pull/16818]
