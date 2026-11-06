@@ -66,6 +66,7 @@ import com.woocommerce.android.ui.login.qrlogin.QrLoginPrologueFragment
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerFragment
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
+import com.woocommerce.android.ui.login.storesuggestion.SuggestedHostMatcher
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.util.ActivityUtils
@@ -161,6 +162,7 @@ class LoginActivity :
         private const val KEY_UNIFIED_TRACKER_SOURCE = "KEY_UNIFIED_TRACKER_SOURCE"
         private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
         private const val KEY_CONNECT_SITE_INFO = "KEY_CONNECT_SITE_INFO"
+        private const val KEY_STORE_SUGGESTION_HOST = "KEY_STORE_SUGGESTION_HOST"
 
         const val LOGIN_WITH_SITE_ADDRESS_ACTION = "login_with_site_address"
         const val LOGIN_WITH_WPCOM_EMAIL_ACTION = "login_with_wpcom_email"
@@ -216,6 +218,7 @@ class LoginActivity :
 
     private var connectSiteInfo: ConnectSiteInfo? = null
     private var pendingSiteAddressWasNormalizedToHttps = false
+    private var storeSuggestionHost: String? = null
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
@@ -285,6 +288,7 @@ class LoginActivity :
             )
             unifiedLoginTracker.setFlow(savedInstanceState.getString(KEY_UNIFIED_TRACKER_FLOW))
             connectSiteInfo = savedInstanceState.parcelable(KEY_CONNECT_SITE_INFO)
+            storeSuggestionHost = savedInstanceState.getString(KEY_STORE_SUGGESTION_HOST)
         }
 
         keepTrackOfAgeEligibility()
@@ -353,6 +357,7 @@ class LoginActivity :
 
         outState.putString(KEY_UNIFIED_TRACKER_SOURCE, unifiedLoginTracker.getSource().value)
         outState.putParcelable(KEY_CONNECT_SITE_INFO, connectSiteInfo)
+        outState.putString(KEY_STORE_SUGGESTION_HOST, storeSuggestionHost)
         unifiedLoginTracker.getFlow()?.value?.let {
             outState.putString(KEY_UNIFIED_TRACKER_FLOW, it)
         }
@@ -622,6 +627,7 @@ class LoginActivity :
     override fun loginViaSiteAddress() = loginViaSiteAddress(prefilledSiteUrl = null)
 
     private fun loginViaSiteAddress(prefilledSiteUrl: String?) {
+        storeSuggestionHost = null
         unifiedLoginTracker.setFlowAndStep(LOGIN_SITE_ADDRESS, ENTER_SITE_ADDRESS)
         val loginSiteAddressFragment = getLoginViaSiteAddressFragment()
             ?: WooLoginSiteAddressFragment.newInstance(prefilledSiteUrl)
@@ -780,6 +786,20 @@ class LoginActivity :
     }
 
     override fun gotConnectSiteInfo(result: ConnectSiteInfoResult) {
+        val suggestedHost = storeSuggestionHost
+        if (suggestedHost != null && SuggestedHostMatcher.isSameHost(suggestedHost, result.url)) {
+            storeSuggestionHost = null
+            val finalUrl = result.urlAfterRedirects ?: result.url
+            if (!SuggestedHostMatcher.isSameHost(submittedUrl = result.url, finalUrl = finalUrl)) {
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_STORE_SUGGESTION_HOST_CHANGED)
+                (getLoginViaSiteAddressFragment() as? WooLoginSiteAddressFragment)?.showRedirectedSiteAddress(
+                    siteAddress = finalUrl,
+                    message = getString(R.string.login_store_suggestion_redirected),
+                )
+                return
+            }
+        }
+
         // If the redirect url is available, use that as the preferred url. Pass this url to the other fragments
         // with the protocol since it is needed for initiating forgot password flow etc in the login process.
         val inputSiteAddress = urlUtils.sanitiseUrl(result.urlAfterRedirects ?: result.url)
@@ -1116,6 +1136,16 @@ class LoginActivity :
 
     override fun onCarouselFinished() {
         showPrologueFragment()
+    }
+
+    override fun isStoreSuggestionAllowed() = getLoginMode() == LoginMode.WOO_LOGIN_MODE
+
+    override fun onStoreSuggestionAccepted(siteUrl: String, host: String) {
+        if (!isStoreSuggestionAllowed()) return
+        appPrefsWrapper.setOnboardingCarouselDisplayed(true)
+        disableDynamicEdgeToEdge()
+        loginViaSiteAddress(prefilledSiteUrl = siteUrl)
+        storeSuggestionHost = host
     }
 
     @SuppressWarnings("unused")
