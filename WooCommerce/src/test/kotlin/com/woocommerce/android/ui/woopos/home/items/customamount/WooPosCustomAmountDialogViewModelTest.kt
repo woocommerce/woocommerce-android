@@ -216,54 +216,81 @@ class WooPosCustomAmountDialogViewModelTest {
     }
 
     @Test
-    fun `given valid amount, when submitted, then onSubmitted is invoked after event is sent`() = runTest {
-        val order = mutableListOf<String>()
+    fun `given valid amount, when submitted, then state is marked as submitted after event is sent`() = runTest {
+        // GIVEN
+        val submittedWhenSent = mutableListOf<Boolean>()
+        val sut = createSut()
         whenever(childrenToParentEventSender.sendToParent(any())).doSuspendableAnswer {
-            order.add("sent")
+            submittedWhenSent.add(sut.state.value.isSubmitted)
             Unit
         }
-        val sut = createSut()
         advanceUntilIdle()
         sut.initializeFor(editing = null)
         sut.onAmountChanged(BigDecimal("5.00"))
 
-        sut.onSubmit(onSubmitted = { order.add("callback") })
+        // WHEN
+        sut.onSubmit()
         advanceUntilIdle()
 
-        assertThat(order).containsExactly("sent", "callback")
+        // THEN
+        assertThat(submittedWhenSent).containsExactly(false)
+        assertThat(sut.state.value.isSubmitted).isTrue()
+        assertThat(sut.state.value.isSubmitEnabled).isFalse()
     }
 
     @Test
-    fun `given amount is null, when onSubmit called, then onSubmitted is not invoked`() = runTest {
-        var invocations = 0
+    fun `given amount is null, when onSubmit called, then state is not marked as submitted`() = runTest {
+        // GIVEN
         val sut = createSut()
         advanceUntilIdle()
         sut.initializeFor(editing = null)
 
-        sut.onSubmit(onSubmitted = { invocations++ })
+        // WHEN
+        sut.onSubmit()
         advanceUntilIdle()
 
-        assertThat(invocations).isZero()
+        // THEN
+        assertThat(sut.state.value.isSubmitted).isFalse()
     }
 
     @Test
-    fun `given submission in flight, when onSubmit called again, then onSubmitted is invoked once`() = runTest {
-        var invocations = 0
-        val sendGate = CompletableDeferred<Unit>()
-        whenever(childrenToParentEventSender.sendToParent(any())).doSuspendableAnswer {
-            sendGate.await()
-        }
+    fun `given submission completed, when onSubmit called again, then event is sent once`() = runTest {
+        // GIVEN
         val sut = createSut()
         advanceUntilIdle()
         sut.initializeFor(editing = null)
         sut.onAmountChanged(BigDecimal("3.00"))
-
-        sut.onSubmit(onSubmitted = { invocations++ })
-        sut.onSubmit(onSubmitted = { invocations++ })
-        sendGate.complete(Unit)
+        sut.onSubmit()
         advanceUntilIdle()
 
-        assertThat(invocations).isEqualTo(1)
+        // WHEN
+        sut.onSubmit()
+        advanceUntilIdle()
+
+        // THEN
+        verify(childrenToParentEventSender, times(1)).sendToParent(any())
+    }
+
+    @Test
+    fun `given submitted, when dismissed and reopened, then form can be submitted again`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(editing = null)
+        sut.onAmountChanged(BigDecimal("3.00"))
+        sut.onSubmit()
+        advanceUntilIdle()
+
+        // WHEN
+        sut.onDismissed()
+        sut.initializeFor(editing = null)
+        sut.onAmountChanged(BigDecimal("4.00"))
+        sut.onSubmit()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(sut.state.value.isSubmitted).isTrue()
+        verify(childrenToParentEventSender, times(2)).sendToParent(any())
     }
 
     @Test

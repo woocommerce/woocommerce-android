@@ -52,6 +52,7 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
             name = editing?.name.orEmpty(),
             isTaxable = editing?.isTaxable ?: false,
             isSubmitting = false,
+            isSubmitted = false,
         )
     }
 
@@ -67,7 +68,7 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
         _state.value = _state.value.copy(isTaxable = value)
     }
 
-    fun onSubmit(onSubmitted: () -> Unit = {}) {
+    fun onSubmit() {
         val current = _state.value
         if (!current.isSubmitEnabled) return
         val amount = current.amount ?: return
@@ -85,7 +86,7 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
                     )
                 )
                 hasInitializedFor = null
-                onSubmitted()
+                _state.value = _state.value.copy(isSubmitted = true)
             } finally {
                 _state.value = _state.value.copy(isSubmitting = false)
             }
@@ -94,6 +95,7 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
 
     fun onDismissed() {
         hasInitializedFor = null
+        _state.value = _state.value.copy(isSubmitted = false)
     }
 
     private fun defaultName(): String =

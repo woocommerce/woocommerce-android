@@ -18,7 +18,7 @@ fun WooPosCustomAmountScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val goBack = { onNavigationEvent(WooPosNavigationEvent.GoBack) }
+    val close = { onNavigationEvent(WooPosNavigationEvent.CloseCustomAmount) }
 
     Column(
         modifier = modifier
@@ -27,12 +27,12 @@ fun WooPosCustomAmountScreen(
     ) {
         WooPosToolbar(
             titleText = stringResource(R.string.woopos_custom_amount_form_title),
-            onBackClicked = goBack,
+            onBackClicked = close,
         )
         WooPosCustomAmountFormScreen(
             editing = editing,
-            onBackClick = goBack,
-            onSubmitted = goBack,
+            onBackClick = close,
+            onSubmitted = close,
             modifier = Modifier.weight(1f),
         )
     }

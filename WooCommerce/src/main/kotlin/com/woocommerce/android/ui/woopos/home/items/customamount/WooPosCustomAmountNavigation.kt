@@ -41,6 +41,10 @@ fun NavController.navigateToCustomAmountScreen(editing: WooPosCartItemViewState.
     navigate(route) { launchSingleTop = true }
 }
 
+fun NavController.closeCustomAmountScreen() {
+    popBackStack(CUSTOM_AMOUNT_ROUTE, inclusive = true)
+}
+
 fun NavGraphBuilder.customAmountScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {

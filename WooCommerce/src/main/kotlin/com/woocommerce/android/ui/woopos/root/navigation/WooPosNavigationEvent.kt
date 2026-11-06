@@ -30,6 +30,7 @@ sealed class WooPosNavigationEvent {
     ) : WooPosNavigationEvent()
     data object OpenSettings : WooPosNavigationEvent()
     data class OpenCustomAmount(val editing: WooPosCartItemViewState.CustomAmount?) : WooPosNavigationEvent()
+    data object CloseCustomAmount : WooPosNavigationEvent()
     data object OpenOrders : WooPosNavigationEvent()
     data class OpenOrderDetails(val orderId: Long) : WooPosNavigationEvent()
     data class NavigateToCashPayment(val orderId: Long) : WooPosNavigationEvent()

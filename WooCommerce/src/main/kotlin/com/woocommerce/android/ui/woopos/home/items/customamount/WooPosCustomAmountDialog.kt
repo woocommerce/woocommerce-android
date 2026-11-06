@@ -74,6 +74,10 @@ fun WooPosCustomAmountFormScreen(
 
     val state by viewModel.state.collectAsState()
 
+    LaunchedEffect(state.isSubmitted) {
+        if (state.isSubmitted) onSubmitted()
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -117,7 +121,7 @@ fun WooPosCustomAmountFormScreen(
                     .fillMaxWidth()
                     .padding(submitButtonPadding),
                 state = state,
-                onSubmit = { viewModel.onSubmit(onSubmitted) },
+                onSubmit = viewModel::onSubmit,
             )
         }
     }
