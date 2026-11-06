@@ -65,6 +65,7 @@ internal class CardReaderRemoteProtocol {
         private const val TYPE_CONNECT_REQUEST = "connect_request"
         private const val TYPE_CONNECT_ACK = "connect_ack"
         private const val TYPE_COLLECT_PAYMENT = "collect_payment"
+        private const val TYPE_CANCEL_PAYMENT = "cancel_payment"
         private const val TYPE_PAYMENT_INTENT_RESULT = "payment_intent_result"
         private const val TYPE_ERROR = "error"
         private const val TYPE_PING = "ping"
@@ -73,6 +74,7 @@ internal class CardReaderRemoteProtocol {
             CardReaderRemoteMessage.ConnectRequest::class.java -> TYPE_CONNECT_REQUEST
             CardReaderRemoteMessage.ConnectAck::class.java -> TYPE_CONNECT_ACK
             CardReaderRemoteMessage.CollectPaymentRequest::class.java -> TYPE_COLLECT_PAYMENT
+            CardReaderRemoteMessage.CancelPayment::class.java -> TYPE_CANCEL_PAYMENT
             CardReaderRemoteMessage.PaymentIntentResult::class.java -> TYPE_PAYMENT_INTENT_RESULT
             CardReaderRemoteMessage.ErrorMessage::class.java -> TYPE_ERROR
             CardReaderRemoteMessage.Ping::class.java -> TYPE_PING
@@ -83,6 +85,7 @@ internal class CardReaderRemoteProtocol {
             TYPE_CONNECT_REQUEST -> CardReaderRemoteMessage.ConnectRequest::class.java
             TYPE_CONNECT_ACK -> CardReaderRemoteMessage.ConnectAck::class.java
             TYPE_COLLECT_PAYMENT -> CardReaderRemoteMessage.CollectPaymentRequest::class.java
+            TYPE_CANCEL_PAYMENT -> CardReaderRemoteMessage.CancelPayment::class.java
             TYPE_PAYMENT_INTENT_RESULT -> CardReaderRemoteMessage.PaymentIntentResult::class.java
             TYPE_ERROR -> CardReaderRemoteMessage.ErrorMessage::class.java
             TYPE_PING -> CardReaderRemoteMessage.Ping::class.java

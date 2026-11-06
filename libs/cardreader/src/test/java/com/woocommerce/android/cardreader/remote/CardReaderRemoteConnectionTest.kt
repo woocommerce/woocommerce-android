@@ -43,7 +43,11 @@ class CardReaderRemoteConnectionTest {
             // GIVEN
             val sender = CardReaderRemoteConnection(acceptedSocket, mock<LogWrapper>(), ioDispatcher = Dispatchers.IO)
             val receiver = CardReaderRemoteConnection(clientSocket, mock<LogWrapper>(), ioDispatcher = Dispatchers.IO)
-            val ack = CardReaderRemoteMessage.ConnectAck(requestId = "a", readerSerial = "S1")
+            val ack = CardReaderRemoteMessage.ConnectAck(
+                requestId = "a",
+                readerSerial = "S1",
+                supportsCancelPayment = true,
+            )
             val result = CardReaderRemoteMessage.PaymentIntentResult(
                 requestId = "b",
                 paymentIntentId = "pi",
