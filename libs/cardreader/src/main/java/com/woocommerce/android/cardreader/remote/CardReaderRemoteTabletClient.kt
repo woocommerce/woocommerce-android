@@ -3,6 +3,7 @@ package com.woocommerce.android.cardreader.remote
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.CancelPayment
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.CollectPaymentRequest
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectAck
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectRequest
@@ -79,6 +80,7 @@ internal class DefaultCardReaderRemoteTabletClient(
     private var connection: CardReaderRemoteConnection? = null
     private var closedBridgeJob: Job? = null
     private var heartbeatJob: Job? = null
+    private var phoneSupportsCancelPayment = false
     private val _connectionClosed = MutableStateFlow(true)
     override val connectionClosed: StateFlow<Boolean> = _connectionClosed.asStateFlow()
 
@@ -103,6 +105,7 @@ internal class DefaultCardReaderRemoteTabletClient(
                     ?: throw IllegalStateException(CONNECT_FAILED_MESSAGE)
                 when (reply) {
                     is ConnectAck -> {
+                        phoneSupportsCancelPayment = reply.supportsCancelPayment
                         bridgeClosedSignal(opened)
                         startHeartbeat(opened)
                         ConnectOutcome.Success(reply.readerSerial)
@@ -111,6 +114,7 @@ internal class DefaultCardReaderRemoteTabletClient(
                         disconnect()
                         ConnectOutcome.Rejected(CardReaderRemoteError.fromCode(reply.code), reply.description)
                     }
+                    is CancelPayment,
                     is ConnectRequest,
                     is CollectPaymentRequest,
                     is Ping,
@@ -167,8 +171,8 @@ internal class DefaultCardReaderRemoteTabletClient(
         val active = connection ?: return CollectPaymentOutcome.Failed(
             IllegalStateException("Not connected to a remote reader"),
         )
+        val requestId = UUID.randomUUID().toString()
         return try {
-            val requestId = UUID.randomUUID().toString()
             active.send(paymentInfo.toCollectPaymentRequest(requestId))
             val reply = withTimeout(timeoutMillis) {
                 active.receive().firstOrNull { it.requestId == requestId }
@@ -182,6 +186,7 @@ internal class DefaultCardReaderRemoteTabletClient(
                 )
                 is ErrorMessage ->
                     CollectPaymentOutcome.Rejected(CardReaderRemoteError.fromCode(reply.code), reply.description)
+                is CancelPayment,
                 is ConnectAck,
                 is ConnectRequest,
                 is Ping,
@@ -194,9 +199,18 @@ internal class DefaultCardReaderRemoteTabletClient(
             disconnect()
             CollectPaymentOutcome.TimedOut
         } catch (cancel: CancellationException) {
+            cancelOnPhone(active, requestId)
             throw cancel
         } catch (@Suppress("TooGenericExceptionCaught") cause: Exception) {
             CollectPaymentOutcome.Failed(cause)
+        }
+    }
+
+    private fun cancelOnPhone(active: CardReaderRemoteConnection, requestId: String) {
+        if (!phoneSupportsCancelPayment) return
+        scope.launch {
+            runCatching { active.send(CancelPayment(requestId)) }
+                .onFailure { logWrapper.w(TAG, "Could not cancel the collect: ${it::class.java.simpleName}") }
         }
     }
 
