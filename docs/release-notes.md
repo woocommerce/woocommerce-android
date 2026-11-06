@@ -32,7 +32,6 @@ Regenerate only before editorial review: generation replaces the version's draft
 
 Before merging this workflow:
 
-- Release [release-toolkit#776](https://github.com/wordpress-mobile/release-toolkit/pull/776), replace the temporary Git dependency with that released gem version, and refresh `Gemfile.lock`.
 - Ensure `impact: user-visible`, `impact: internal`, and `testing: release smoke test` exist in the repository.
 - Review PRs already merged for the upcoming release and apply impact, Wear, and smoke-testing labels as appropriate. Unlabeled PRs are included in the generated notes.
 - Remove handwritten entries from open feature PRs and apply the new labels.
