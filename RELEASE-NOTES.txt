@@ -12,6 +12,7 @@
 - [*****] [Internal] Release builds are now obfuscated with R8 [https://github.com/woocommerce/woocommerce-android/pull/16788]
 - [Internal] Push notification handling no longer nests blocking calls when checking store visibility and Woo push registration [https://github.com/woocommerce/woocommerce-android/pull/16796]
 - [*] Order creation and customer details now show a saved customer's shipping phone [https://github.com/woocommerce/woocommerce-android/pull/16812]
+- [Internal] ListStore reads list items and state without runBlocking [https://github.com/woocommerce/woocommerce-android/pull/16819]
 
 26.0
 -----
