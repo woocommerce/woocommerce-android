@@ -6,7 +6,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.util.siteIdHash
+import com.woocommerce.android.util.pairingIdentity
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -129,8 +129,8 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
         phone: WooPosDiscoveredReader.Phone,
     ) {
         mutex.withLock {
-            val expectedSiteHash = selectedSite.getOrNull()?.remoteId()?.value?.let(::siteIdHash)
-            if (expectedSiteHash == null || phone.siteHash != expectedSiteHash) {
+            val identity = selectedSite.getOrNull()?.pairingIdentity()
+            if (identity == null || !identity.matches(phone.siteHash, phone.siteUrlHash)) {
                 logger.d("Dropping NSD phone with site mismatch")
                 return@withLock
             }
