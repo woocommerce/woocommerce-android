@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.home.items.customamount.WooPosCustomAmountDialogState
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
@@ -73,6 +74,7 @@ sealed class ChildToParentEvent {
         data class ToMarkOrderAsPaid(val orderId: Long) : NavigationEvent()
         data class ToScanToPay(val orderId: Long) : NavigationEvent()
         data class ToEmailReceipt(val orderId: Long) : NavigationEvent()
+        data class ToCustomAmount(val mode: WooPosCustomAmountDialogState.Mode) : NavigationEvent()
         data object ReturnHomeFromCashWhenCardPaymentStarted : NavigationEvent()
         data object ExitPos : NavigationEvent()
         data object ToSettings : NavigationEvent()

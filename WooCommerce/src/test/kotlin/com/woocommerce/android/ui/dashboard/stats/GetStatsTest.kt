@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.dashboard.stats
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.extensions.toDateAtStartOfDay
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.last
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -35,9 +37,11 @@ import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
+import java.time.LocalDate
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 @ExperimentalCoroutinesApi
 class GetStatsTest : BaseUnitTest() {
@@ -51,6 +55,7 @@ class GetStatsTest : BaseUnitTest() {
     private val statsRepository: StatsRepository = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val analyticsUpdateDataStore: AnalyticsUpdateDataStore = mock()
+    private val defaultTimeZone: TimeZone = TimeZone.getDefault()
 
     private val getStats = GetStats(
         selectedSite = selectedSite,
@@ -70,6 +75,11 @@ class GetStatsTest : BaseUnitTest() {
         givenGetRevenueStats(Result.success(ANY_REVENUE_STATS))
         givenGetTotalVisitorStats(ANY_TOTAL_VISITOR_COUNT)
         givenGetNewVisitorStats(Result.success(ANY_VISITOR_STATS))
+    }
+
+    @After
+    fun tearDown() {
+        TimeZone.setDefault(defaultTimeZone)
     }
 
     @Test
@@ -168,6 +178,48 @@ class GetStatsTest : BaseUnitTest() {
                 .last()
 
             assertThat(result).isEqualTo(GetStats.LoadStatsResult.VisitorsStatsError)
+        }
+
+    @Test
+    fun `given a custom range of the 25-hour DST fall-back day, when get stats, then emits the total visitor count`() =
+        testBlocking {
+            // GIVEN
+            TimeZone.setDefault(TimeZone.getTimeZone("America/New_York"))
+            val fallBackDay = LocalDate.of(2026, 11, 1)
+            val selectedRange = givenCustomRange(fallBackDay, fallBackDay)
+
+            // WHEN
+            val result = getStats(refresh = false, selectedRange = selectedRange)
+                .filter { it is GetStats.LoadStatsResult.VisitorsStatsSuccess }
+                .last()
+
+            // THEN
+            assertThat(result).isEqualTo(
+                GetStats.LoadStatsResult.VisitorsStatsSuccess(
+                    ANY_VISITOR_STATS,
+                    ANY_TOTAL_VISITOR_COUNT
+                )
+            )
+        }
+
+    @Test
+    fun `given a custom range of two days, when get stats, then emits no total visitor count`() =
+        testBlocking {
+            // GIVEN
+            val selectedRange = givenCustomRange(LocalDate.of(2026, 11, 2), LocalDate.of(2026, 11, 3))
+
+            // WHEN
+            val result = getStats(refresh = false, selectedRange = selectedRange)
+                .filter { it is GetStats.LoadStatsResult.VisitorsStatsSuccess }
+                .last()
+
+            // THEN
+            assertThat(result).isEqualTo(
+                GetStats.LoadStatsResult.VisitorsStatsSuccess(
+                    ANY_VISITOR_STATS,
+                    totalVisitorCount = null
+                )
+            )
         }
 
     @Test
@@ -420,6 +472,13 @@ class GetStatsTest : BaseUnitTest() {
     private suspend fun givenGetNewVisitorStats(result: Result<Map<String, Int>>) {
         whenever(statsRepository.getNewVisitorStats(any(), any(), any())).thenReturn(result)
     }
+
+    private fun givenCustomRange(start: LocalDate, end: LocalDate) = StatsTimeRangeSelection.build(
+        rangeStart = start.toEpochDay().toDateAtStartOfDay(),
+        rangeEnd = end.toEpochDay().toDateAtStartOfDay(),
+        calendar = Calendar.getInstance(),
+        locale = Locale.US
+    )
 
     private companion object {
         const val ANY_ERROR_MESSAGE = "Error message"
