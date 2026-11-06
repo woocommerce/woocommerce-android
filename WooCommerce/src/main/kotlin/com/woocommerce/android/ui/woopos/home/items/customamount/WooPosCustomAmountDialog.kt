@@ -55,7 +55,7 @@ fun WooPosCustomAmountFormScreen(
     editing: WooPosCartItemViewState.CustomAmount?,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onSubmitted: () -> Unit = {},
+    onSubmitted: () -> Unit,
     submitButtonPadding: PaddingValues = defaultSubmitButtonPadding(),
     viewModel: WooPosCustomAmountDialogViewModel = hiltViewModel(),
 ) {

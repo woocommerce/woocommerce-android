@@ -148,6 +148,7 @@ private fun WooPosPhoneProductsContent(
                         onBackClick = {
                             onItemsUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked)
                         },
+                        onSubmitted = {},
                         submitButtonPadding = PaddingValues(
                             start = WooPosSpacing.Medium.value,
                             top = WooPosSpacing.Medium.value,

@@ -181,6 +181,7 @@ private fun MainItemsList(
                     WooPosCustomAmountFormScreen(
                         editing = editing,
                         onBackClick = onBackClicked,
+                        onSubmitted = {},
                     )
                 },
             )
