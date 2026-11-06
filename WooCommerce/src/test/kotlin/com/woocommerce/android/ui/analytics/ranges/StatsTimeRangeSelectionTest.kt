@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.util.LocalizedDatePatternsTestRule
 import com.woocommerce.commons.stats.StatsTimeRange
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -33,6 +34,7 @@ internal class StatsTimeRangeSelectionTest {
     @get:Rule
     val localizedDatePatterns = LocalizedDatePatternsTestRule()
 
+    private val defaultTimeZone: TimeZone = TimeZone.getDefault()
     private lateinit var testTimeZone: TimeZone
     private lateinit var testLocale: Locale
     private lateinit var testCalendar: Calendar
@@ -44,6 +46,11 @@ internal class StatsTimeRangeSelectionTest {
         testCalendar = Calendar.getInstance(testLocale)
         testCalendar.timeZone = testTimeZone
         testCalendar.firstDayOfWeek = Calendar.MONDAY
+    }
+
+    @After
+    fun tearDown() {
+        TimeZone.setDefault(defaultTimeZone)
     }
 
     @Test
@@ -347,6 +354,54 @@ internal class StatsTimeRangeSelectionTest {
     }
 
     @Test
+    fun `given a custom range crossing the DST spring-forward day, when generating selection data, then the previous range has the same number of days`() {
+        // GIVEN
+        givenDeviceTimeZone("America/New_York")
+        val rangeStart = dayStartFrom("2026-03-01")
+        val rangeEnd = dayStartFrom("2026-03-10")
+
+        // WHEN
+        val sut = CUSTOM.generateSelectionData(
+            referenceStartDate = rangeStart,
+            referenceEndDate = rangeEnd,
+            calendar = testCalendar,
+            locale = testLocale
+        )
+
+        // THEN
+        assertThat(sut.previousRange).isEqualTo(
+            StatsTimeRange(
+                start = dayStartFrom("2026-02-19"),
+                end = dayEndFrom("2026-02-28")
+            )
+        )
+    }
+
+    @Test
+    fun `given a previous range crossing the DST fall-back day, when generating selection data, then the previous range has the same number of days`() {
+        // GIVEN
+        givenDeviceTimeZone("America/New_York")
+        val rangeStart = dayStartFrom("2026-11-02")
+        val rangeEnd = dayStartFrom("2026-11-08")
+
+        // WHEN
+        val sut = CUSTOM.generateSelectionData(
+            referenceStartDate = rangeStart,
+            referenceEndDate = rangeEnd,
+            calendar = testCalendar,
+            locale = testLocale
+        )
+
+        // THEN
+        assertThat(sut.previousRange).isEqualTo(
+            StatsTimeRange(
+                start = dayStartFrom("2026-10-26"),
+                end = dayEndFrom("2026-11-01")
+            )
+        )
+    }
+
+    @Test
     fun `when selection type is today, then generate expected descriptions`() {
         // Given
         val today = midDayFrom("2022-07-01")
@@ -384,6 +439,12 @@ internal class StatsTimeRangeSelectionTest {
         // Then
         assertThat(currentRangeDescription).isEqualTo("Jul 1, 2022")
         assertThat(previousRangeDescription).isEqualTo("Jun 30, 2022")
+    }
+
+    private fun givenDeviceTimeZone(id: String) {
+        testTimeZone = TimeZone.getTimeZone(id)
+        TimeZone.setDefault(testTimeZone)
+        testCalendar.timeZone = testTimeZone
     }
 
     private fun midDayFrom(date: String): Date {

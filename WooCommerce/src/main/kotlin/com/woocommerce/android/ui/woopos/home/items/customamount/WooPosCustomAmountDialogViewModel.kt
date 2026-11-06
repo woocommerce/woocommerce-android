@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,12 +38,20 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
         }
     }
 
-    fun initializeFor(editing: WooPosCartItemViewState.CustomAmount?) {
-        val mode = editing
-            ?.let { WooPosCustomAmountDialogState.Mode.Edit(it.itemNumber) }
-            ?: WooPosCustomAmountDialogState.Mode.Add
+    fun onUIEvent(event: WooPosCustomAmountUIEvent) {
+        when (event) {
+            is WooPosCustomAmountUIEvent.AmountChanged -> onAmountChanged(event.amount)
+            is WooPosCustomAmountUIEvent.NameChanged -> onNameChanged(event.name)
+            is WooPosCustomAmountUIEvent.TaxableToggled -> onTaxableToggled(event.isTaxable)
+            WooPosCustomAmountUIEvent.SubmitClicked -> onSubmit()
+            WooPosCustomAmountUIEvent.Closed -> onDismissed()
+        }
+    }
+
+    fun initializeFor(mode: WooPosCustomAmountDialogState.Mode) {
         if (hasInitializedFor == mode) return
         hasInitializedFor = mode
+        val editing = mode as? WooPosCustomAmountDialogState.Mode.Edit
 
         _state.value = _state.value.copy(
             mode = mode,
@@ -52,22 +59,23 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
             name = editing?.name.orEmpty(),
             isTaxable = editing?.isTaxable ?: false,
             isSubmitting = false,
+            isSubmitted = false,
         )
     }
 
-    fun onAmountChanged(value: BigDecimal?) {
+    private fun onAmountChanged(value: BigDecimal?) {
         _state.value = _state.value.copy(amount = value)
     }
 
-    fun onNameChanged(value: String) {
+    private fun onNameChanged(value: String) {
         _state.value = _state.value.copy(name = value)
     }
 
-    fun onTaxableToggled(value: Boolean) {
+    private fun onTaxableToggled(value: Boolean) {
         _state.value = _state.value.copy(isTaxable = value)
     }
 
-    fun onSubmit() {
+    private fun onSubmit() {
         val current = _state.value
         if (!current.isSubmitEnabled) return
         val amount = current.amount ?: return
@@ -85,14 +93,16 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
                     )
                 )
                 hasInitializedFor = null
+                _state.value = _state.value.copy(isSubmitted = true)
             } finally {
                 _state.value = _state.value.copy(isSubmitting = false)
             }
         }
     }
 
-    fun onDismissed() {
+    private fun onDismissed() {
         hasInitializedFor = null
+        _state.value = _state.value.copy(isSubmitted = false)
     }
 
     private fun defaultName(): String =

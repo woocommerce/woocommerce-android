@@ -21,6 +21,10 @@ enum class FeatureFlag(
     WOO_POS_ALL_COUNTRIES("woo_pos_all_countries", localValue = PackageUtils.isDebugBuild()),
     WOO_POS_PHONE("woo_pos_phone", localValue = PackageUtils.isDebugBuild()),
     WOO_POS_TAP_TO_PAY("woo_pos_tap_to_pay", localValue = PackageUtils.isDebugBuild()),
+    WOO_POS_CUSTOM_AMOUNT_FULL_SCREEN(
+        "woo_pos_custom_amount_full_screen",
+        localValue = PackageUtils.isDebugBuild()
+    ),
     WOO_POS_SCAN_TO_PAY("woo_pos_scan_to_pay", localValue = PackageUtils.isDebugBuild()),
     WOO_POS_MARK_ORDER_AS_PAID("woo_pos_mark_order_as_complete", localValue = PackageUtils.isDebugBuild()),
     APP_PASSWORDS_FOR_JETPACK_SITES("woo_app_passwords_for_jetpack_sites"),

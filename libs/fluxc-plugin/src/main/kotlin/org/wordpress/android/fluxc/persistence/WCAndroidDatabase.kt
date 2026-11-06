@@ -145,7 +145,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 93
+const val WC_DATABASE_VERSION = 94
 
 // Matches the CursorWindow size used by WooWellSqlConfig; raises SQLite's ~2 MB default on API 28+.
 @Suppress("MagicNumber")
@@ -280,6 +280,7 @@ private val CURSOR_WINDOW_SIZE_BYTES = 1024L * 1024L * 10L
         AutoMigration(from = 90, to = 91),
         AutoMigration(from = 91, to = 92),
         AutoMigration(from = 92, to = 93),
+        AutoMigration(from = 93, to = 94),
     ]
 )
 @TypeConverters(
