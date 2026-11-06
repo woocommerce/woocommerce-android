@@ -38,6 +38,16 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
         }
     }
 
+    fun onUIEvent(event: WooPosCustomAmountUIEvent) {
+        when (event) {
+            is WooPosCustomAmountUIEvent.AmountChanged -> onAmountChanged(event.amount)
+            is WooPosCustomAmountUIEvent.NameChanged -> onNameChanged(event.name)
+            is WooPosCustomAmountUIEvent.TaxableToggled -> onTaxableToggled(event.isTaxable)
+            WooPosCustomAmountUIEvent.SubmitClicked -> onSubmit()
+            WooPosCustomAmountUIEvent.Closed -> onDismissed()
+        }
+    }
+
     fun initializeFor(mode: WooPosCustomAmountDialogState.Mode) {
         if (hasInitializedFor == mode) return
         hasInitializedFor = mode
@@ -53,19 +63,19 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
         )
     }
 
-    fun onAmountChanged(value: BigDecimal?) {
+    private fun onAmountChanged(value: BigDecimal?) {
         _state.value = _state.value.copy(amount = value)
     }
 
-    fun onNameChanged(value: String) {
+    private fun onNameChanged(value: String) {
         _state.value = _state.value.copy(name = value)
     }
 
-    fun onTaxableToggled(value: Boolean) {
+    private fun onTaxableToggled(value: Boolean) {
         _state.value = _state.value.copy(isTaxable = value)
     }
 
-    fun onSubmit() {
+    private fun onSubmit() {
         val current = _state.value
         if (!current.isSubmitEnabled) return
         val amount = current.amount ?: return
@@ -90,7 +100,7 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
         }
     }
 
-    fun onDismissed() {
+    private fun onDismissed() {
         hasInitializedFor = null
         _state.value = _state.value.copy(isSubmitted = false)
     }

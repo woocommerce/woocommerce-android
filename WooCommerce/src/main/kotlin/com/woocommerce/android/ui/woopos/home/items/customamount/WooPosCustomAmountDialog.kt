@@ -66,7 +66,7 @@ fun WooPosCustomAmountFormScreen(
     // success, and any external navigation. Without this, opening the form again for the same item
     // (or a fresh "add" after a cancel) would short-circuit `initializeFor` and reuse stale state.
     DisposableEffect(Unit) {
-        onDispose { viewModel.onDismissed() }
+        onDispose { viewModel.onUIEvent(WooPosCustomAmountUIEvent.Closed) }
     }
 
     BackHandler(enabled = true) { onBackClick() }
@@ -92,21 +92,24 @@ fun WooPosCustomAmountFormScreen(
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
             AmountSection(
                 state = state,
-                onAmountChanged = viewModel::onAmountChanged,
+                onAmountChanged = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(it)) },
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
             HorizontalDivider(
                 color = WooPosTheme.colors.outlineVariant,
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
-            TaxesToggle(isTaxable = state.isTaxable, onToggled = viewModel::onTaxableToggled)
+            TaxesToggle(
+                isTaxable = state.isTaxable,
+                onToggled = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.TaxableToggled(it)) },
+            )
             HorizontalDivider(
                 color = WooPosTheme.colors.outlineVariant,
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
             NameSection(
                 value = state.name,
-                onNameChanged = viewModel::onNameChanged,
+                onNameChanged = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.NameChanged(it)) },
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
         }
@@ -120,7 +123,7 @@ fun WooPosCustomAmountFormScreen(
                     .fillMaxWidth()
                     .padding(submitButtonPadding),
                 state = state,
-                onSubmit = viewModel::onSubmit,
+                onSubmit = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked) },
             )
         }
     }
