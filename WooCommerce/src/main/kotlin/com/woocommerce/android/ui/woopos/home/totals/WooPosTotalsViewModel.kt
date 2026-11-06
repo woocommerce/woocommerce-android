@@ -118,6 +118,7 @@ class WooPosTotalsViewModel @Inject constructor(
     val screenEvents: SharedFlow<WooPosTotalsScreenEvent> = _screenEvents.asSharedFlow()
 
     private var createDraftOrderJob: Job? = null
+    private var leaveFailedPaymentJob: Job? = null
     private var newOrder: Order? = null
     private var deletedVariationFromApiError: Long? = null
 
@@ -454,13 +455,34 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun handleGoBackToCheckoutClickedWhenPaymentFailed() {
-        viewModelScope.launch {
+        leaveFailedPayment {
             childrenToParentEventSender.sendToParent(ChildToParentEvent.GoBackToCheckoutAfterFailedPayment)
             if (lastFailedPaymentWasTapToPay()) {
                 returnToCheckoutAfterTapToPayFailed()
             } else {
                 retryPaymentCollectionFromScratch()
             }
+        }
+    }
+
+    private fun leaveFailedPayment(leave: suspend () -> Unit) {
+        if (leaveFailedPaymentJob?.isActive == true) return
+        val paymentStateWhenLeaving = cardReaderPaymentController?.paymentState?.value
+        leaveFailedPaymentJob = viewModelScope.launch {
+            val isAlreadyPaid = isUnconfirmedPaymentAlreadyPaid()
+            if (cardReaderPaymentController?.paymentState?.value !== paymentStateWhenLeaving) return@launch
+            when (isAlreadyPaid) {
+                true -> retryBluetoothFailedTransaction()
+                false -> leave()
+            }
+        }
+    }
+
+    private suspend fun isUnconfirmedPaymentAlreadyPaid(): Boolean {
+        val failedPayment = cardReaderPaymentController?.paymentState?.value as? CardReaderPaymentState.PaymentFailed
+        return when (failedPayment?.errorType == PaymentFlowError.CaptureOutcomeUnknown) {
+            true -> totalsRepository.fetchOrderById(dataState.value.orderId)?.isOrderPaid == true
+            false -> false
         }
     }
 
@@ -537,8 +559,12 @@ class WooPosTotalsViewModel @Inject constructor(
                 is PaymentFailed, is PaymentInProgress -> {
                     if (isPaymentInFlight()) return@launch
 
-                    childrenToParentEventSender.sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
-                    retryPaymentCollectionFromScratch()
+                    leaveFailedPayment {
+                        childrenToParentEventSender.sendToParent(
+                            ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout
+                        )
+                        retryPaymentCollectionFromScratch()
+                    }
                 }
 
                 is WooPosTotalsViewState.PaymentSuccess -> {
