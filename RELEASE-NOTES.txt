@@ -4,7 +4,7 @@
 
 26.1
 -----
-- [*] POS: When a phone is the card reader, it now stops waiting for a card after the cashier picks another payment method or leaves checkout [PR_URL]
+- [*] POS: When a phone is the card reader, it now stops waiting for a card after the cashier picks another payment method or leaves checkout [https://github.com/woocommerce/woocommerce-android/pull/16830]
 - [*] If you add a photo to a product and remove it before saving, it now stays removed [https://github.com/woocommerce/woocommerce-android/pull/16822]
 - [*] Custom date ranges now show the right stats around daylight saving changes [https://github.com/woocommerce/woocommerce-android/pull/16821]
 - [*] Product names with line breaks now show every line on product details, and long names wrap instead of being cut off [https://github.com/woocommerce/woocommerce-android/pull/16818]
