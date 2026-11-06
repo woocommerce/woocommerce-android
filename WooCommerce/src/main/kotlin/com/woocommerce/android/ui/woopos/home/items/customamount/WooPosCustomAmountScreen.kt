@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.customamount
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -21,9 +19,7 @@ fun WooPosCustomAmountScreen(
     val close = { onNavigationEvent(WooPosNavigationEvent.CloseCustomAmount) }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+        modifier = modifier.fillMaxSize()
     ) {
         WooPosToolbar(
             titleText = stringResource(R.string.woopos_custom_amount_form_title),
