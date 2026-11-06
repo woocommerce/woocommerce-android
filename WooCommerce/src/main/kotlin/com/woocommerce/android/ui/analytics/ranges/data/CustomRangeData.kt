@@ -5,6 +5,7 @@ import com.woocommerce.android.extensions.formatAsRangeWith
 import com.woocommerce.android.extensions.oneDayAgo
 import com.woocommerce.android.extensions.startOfCurrentDay
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeData
+import com.woocommerce.android.ui.analytics.ranges.dayCount
 import com.woocommerce.commons.stats.StatsTimeRange
 import java.util.Calendar
 import java.util.Date
@@ -41,12 +42,10 @@ class CustomRangeData(
         )
         formattedCurrentRange = currentStart.formatAsRangeWith(currentEnd, locale)
 
-        val dayDifference = selectedEndDate.time - selectedStartDate.time
-
         calendar.time = selectedStartDate.oneDayAgo()
         val previousEnd = calendar.endOfCurrentDay()
 
-        calendar.time = Date(previousEnd.time - dayDifference)
+        calendar.add(Calendar.DATE, 1 - currentRange.dayCount)
         val previousStart = calendar.startOfCurrentDay()
 
         previousRange = StatsTimeRange(
