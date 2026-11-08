@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -30,11 +29,10 @@ fun WooPosCustomAmountScreen(
 ) {
     val close = { onNavigationEvent(WooPosNavigationEvent.CloseCustomAmount) }
 
+    // The view model is scoped to this route's back stack entry, so each opening gets a fresh one. It must not be
+    // reset on dispose: rotation recreates the activity and would otherwise wipe the merchant's input and step.
     LaunchedEffect(mode) {
         viewModel.initializeFor(mode)
-    }
-    DisposableEffect(Unit) {
-        onDispose { viewModel.onUIEvent(WooPosCustomAmountUIEvent.Closed) }
     }
     val state by viewModel.state.collectAsState()
 
