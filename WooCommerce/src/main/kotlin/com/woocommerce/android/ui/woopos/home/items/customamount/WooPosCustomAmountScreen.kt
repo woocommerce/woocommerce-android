@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.customamount
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -16,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import kotlinx.coroutines.delay
 
@@ -77,6 +79,13 @@ fun WooPosCustomAmountScreen(
                     },
                     onBackClick = editAmount,
                     modifier = Modifier.weight(1f),
+                    // Matches WooPosFullScreenInputLayout on the amount step, so the button keeps its position.
+                    submitButtonPadding = PaddingValues(
+                        start = WooPosSpacing.Medium.value,
+                        top = WooPosSpacing.Medium.value,
+                        end = WooPosSpacing.Medium.value,
+                        bottom = WooPosSpacing.Medium.value + WooPosSpacing.Small.value,
+                    ),
                 )
             }
         }
