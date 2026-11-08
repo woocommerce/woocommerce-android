@@ -21,8 +21,11 @@ data class WooPosCustomAmountDialogState(
     val screen: Screen = Screen.AMOUNT,
 ) : Parcelable {
 
+    val isAmountValid: Boolean
+        get() = amount != null && amount > BigDecimal.ZERO
+
     val isSubmitEnabled: Boolean
-        get() = amount != null && amount > BigDecimal.ZERO && !isSubmitting && !isSubmitted
+        get() = isAmountValid && !isSubmitting && !isSubmitted
 
     enum class Screen { AMOUNT, FORM }
 

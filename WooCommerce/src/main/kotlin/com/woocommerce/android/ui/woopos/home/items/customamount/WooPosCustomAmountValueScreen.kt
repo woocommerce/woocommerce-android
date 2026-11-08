@@ -37,10 +37,9 @@ fun WooPosCustomAmountValueScreen(
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     val continueWithAmount = {
-        if (state.isSubmitEnabled) {
-            keyboardController?.hide()
-            onContinueClicked()
-        }
+        // The view model ignores an invalid amount; keep the keyboard open so the merchant can fix it.
+        if (state.isAmountValid) keyboardController?.hide()
+        onContinueClicked()
     }
 
     LaunchedEffect(Unit) {
@@ -77,7 +76,7 @@ fun WooPosCustomAmountValueScreen(
             }
         },
         buttonText = stringResource(R.string.continue_button),
-        buttonState = if (state.isSubmitEnabled) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED,
+        buttonState = if (state.isAmountValid) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED,
         onButtonClicked = continueWithAmount,
     )
 }

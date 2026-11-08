@@ -71,7 +71,7 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
     }
 
     private fun onAmountConfirmed() {
-        if (!_state.value.isSubmitEnabled) return
+        if (!_state.value.isAmountValid) return
         _state.value = _state.value.copy(screen = WooPosCustomAmountDialogState.Screen.FORM)
     }
 
