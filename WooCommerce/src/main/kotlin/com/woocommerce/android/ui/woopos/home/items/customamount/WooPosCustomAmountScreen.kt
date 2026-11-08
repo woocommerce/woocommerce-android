@@ -7,12 +7,17 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
+import kotlinx.coroutines.delay
 
 @Composable
 fun WooPosCustomAmountScreen(
@@ -48,6 +53,14 @@ fun WooPosCustomAmountScreen(
 
         WooPosCustomAmountDialogState.Screen.FORM -> {
             val editAmount = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.EditAmountClicked) }
+            // Continue and the submit button share a position, so the second tap of a fast double tap
+            // on Continue would land on submit and add the item before the merchant sees the form.
+            val doubleTapTimeoutMillis = LocalViewConfiguration.current.doubleTapTimeoutMillis
+            var acceptsSubmit by remember { mutableStateOf(false) }
+            LaunchedEffect(Unit) {
+                delay(doubleTapTimeoutMillis)
+                acceptsSubmit = true
+            }
             Column(
                 modifier = modifier.fillMaxSize()
             ) {
@@ -57,7 +70,11 @@ fun WooPosCustomAmountScreen(
                 )
                 WooPosCustomAmountFormScreen(
                     state = state,
-                    onUIEvent = viewModel::onUIEvent,
+                    onUIEvent = { event ->
+                        if (event != WooPosCustomAmountUIEvent.SubmitClicked || acceptsSubmit) {
+                            viewModel.onUIEvent(event)
+                        }
+                    },
                     onBackClick = editAmount,
                     modifier = Modifier.weight(1f),
                 )
