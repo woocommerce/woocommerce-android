@@ -1,21 +1,24 @@
 package com.woocommerce.android.ui.analytics.ranges
 
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.commons.stats.StatsTimeRange
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import java.lang.Exception
-import kotlin.time.Duration.Companion.days
+import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.DurationUnit
 
 @Suppress("MagicNumber")
 val StatsTimeRangeSelection.revenueStatsGranularity: StatsGranularity
     get() {
         fun calculateCustomRangeGranularity(): StatsGranularity {
-            val daysDifference = currentRange.end.time - currentRange.start.time
+            val dayCount = currentRange.dayCount
 
             return when {
-                daysDifference <= 1.days.inWholeMilliseconds -> StatsGranularity.HOURS
-                daysDifference <= 28.days.inWholeMilliseconds -> StatsGranularity.DAYS
-                daysDifference <= 90.days.inWholeMilliseconds -> StatsGranularity.WEEKS
-                daysDifference <= (3 * 365).days.inWholeMilliseconds -> StatsGranularity.MONTHS
+                dayCount <= 1 -> StatsGranularity.HOURS
+                dayCount <= 28 -> StatsGranularity.DAYS
+                dayCount <= 90 -> StatsGranularity.WEEKS
+                dayCount <= 3 * 365 -> StatsGranularity.MONTHS
                 else -> StatsGranularity.YEARS
             }
         }
@@ -47,16 +50,18 @@ val StatsTimeRangeSelection.visitorSummaryStatsGranularity: StatsGranularity
             throw NotSupportedGranularity("Summary visitor stats unsupported quarter ranges")
 
         SelectionType.CUSTOM -> {
-            val difference = currentRange.end.time - currentRange.start.time
-
             when {
-                difference <= 1.days.inWholeMilliseconds -> StatsGranularity.DAYS
+                currentRange.dayCount <= 1 -> StatsGranularity.DAYS
                 else -> throw NotSupportedGranularity(
                     "Summary visitor stats unsupported for custom ranges with more than 1 day"
                 )
             }
         }
     }
+
+// Rounds the range length to whole days, so the hour gained or lost on a DST change doesn't change the count
+val StatsTimeRange.dayCount: Int
+    get() = (end.time - start.time).milliseconds.toDouble(DurationUnit.DAYS).roundToInt()
 
 class NotSupportedGranularity(message: String) : Exception(message)
 

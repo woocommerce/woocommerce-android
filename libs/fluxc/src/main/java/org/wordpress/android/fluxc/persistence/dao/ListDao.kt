@@ -26,6 +26,18 @@ internal abstract class ListDao {
     )
     protected abstract suspend fun getList(uniqueIdentifier: Int, typeIdentifier: Int): ListModel?
 
+    fun getListBlocking(descriptor: ListDescriptor): ListModel? =
+        getListBlocking(descriptor.uniqueIdentifier.value, descriptor.typeIdentifier.value)
+
+    @Query(
+        """
+        SELECT * FROM ListEntity
+        WHERE descriptorUniqueIdentifierDbValue = :uniqueIdentifier
+        AND descriptorTypeIdentifierDbValue = :typeIdentifier
+        """
+    )
+    protected abstract fun getListBlocking(uniqueIdentifier: Int, typeIdentifier: Int): ListModel?
+
     @Transaction
     open suspend fun insertOrUpdateList(
         descriptor: ListDescriptor,
@@ -102,8 +114,8 @@ internal abstract class ListDao {
     )
     abstract suspend fun getListItems(listId: Int): List<ListItemModel>
 
-    suspend fun getListItems(descriptor: ListDescriptor): List<ListItemModel> =
-        getListItems(descriptor.uniqueIdentifier.value, descriptor.typeIdentifier.value)
+    fun getListItemsBlocking(descriptor: ListDescriptor): List<ListItemModel> =
+        getListItemsBlocking(descriptor.uniqueIdentifier.value, descriptor.typeIdentifier.value)
 
     @Query(
         """
@@ -114,7 +126,7 @@ internal abstract class ListDao {
         ORDER BY i.rowid ASC
         """
     )
-    protected abstract suspend fun getListItems(
+    protected abstract fun getListItemsBlocking(
         uniqueIdentifier: Int,
         typeIdentifier: Int
     ): List<ListItemModel>

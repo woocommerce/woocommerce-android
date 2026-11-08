@@ -15,6 +15,7 @@ data class CustomerListViewState(
     val showFab: Boolean,
     val searchFocused: Boolean,
     val partialLoading: Boolean = false,
+    val isAnalyticsUnavailable: Boolean = false,
     val body: CustomerList = CustomerList.Loading
 ) {
     sealed class CustomerList {

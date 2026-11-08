@@ -32,13 +32,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
@@ -299,16 +303,23 @@ private fun ProductDetailEditableField(
                 }
             }
             .onPreviewKeyEvent { event ->
-                if (event.key == Key.Enter) {
-                    finishEditing()
-                    true
-                } else {
-                    false
+                when {
+                    event.key == Key.Enter || event.key == Key.NumPadEnter -> {
+                        finishEditing()
+                        true
+                    }
+
+                    // Multi-line fields insert a tab character instead of moving focus.
+                    event.key == Key.Tab && !event.isShiftPressed -> {
+                        if (event.type == KeyEventType.KeyDown) focusManager.moveFocus(FocusDirection.Next)
+                        true
+                    }
+
+                    else -> false
                 }
             }
             .testTag(ProductDetailTestTags.TITLE),
         enabled = !property.isReadOnly,
-        singleLine = true,
         textStyle = WooTheme.text.titleLarge.regular.copy(color = WooTheme.colors.surface.onDefault),
         cursorBrush = SolidColor(WooTheme.colors.primary),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),

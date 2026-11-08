@@ -44,6 +44,7 @@ class WCCustomerMapper @Inject constructor() {
             shippingCountry = dto.shipping?.country ?: "",
             shippingFirstName = dto.shipping?.firstName ?: "",
             shippingLastName = dto.shipping?.lastName ?: "",
+            shippingPhone = dto.shipping?.phone ?: "",
             shippingPostcode = dto.shipping?.postcode ?: "",
             shippingState = dto.shipping?.state ?: ""
         )
@@ -72,7 +73,8 @@ class WCCustomerMapper @Inject constructor() {
             city = model.shippingCity,
             state = model.shippingState,
             postcode = model.shippingPostcode,
-            country = model.shippingCountry
+            country = model.shippingCountry,
+            phone = model.shippingPhone
         )
         return CustomerDTO(
             email = model.email,
