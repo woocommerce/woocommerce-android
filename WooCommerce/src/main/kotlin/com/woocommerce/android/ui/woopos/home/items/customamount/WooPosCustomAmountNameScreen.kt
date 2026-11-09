@@ -55,6 +55,7 @@ fun WooPosCustomAmountNameScreen(
                 textColor = MaterialTheme.colorScheme.onSurface,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { saveName() }),
+                preselectText = true,
             )
         }
     }

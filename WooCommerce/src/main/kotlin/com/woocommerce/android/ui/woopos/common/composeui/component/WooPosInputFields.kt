@@ -15,6 +15,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -196,8 +197,27 @@ fun WooPosInputField(
     contentAlignment: Alignment = Alignment.CenterStart,
     labelMaxLines: Int = 1,
     fillWidth: Boolean = false,
+    preselectText: Boolean = false,
 ) {
     var labelWidth by remember { mutableIntStateOf(0) }
+
+    // Mirrors the String overload of BasicTextField, but lets the initial selection cover the whole text.
+    var textFieldValueState by remember {
+        mutableStateOf(
+            TextFieldValue(
+                text = value,
+                selection = if (preselectText) TextRange(0, value.length) else TextRange.Zero,
+            )
+        )
+    }
+    val textFieldValue = textFieldValueState.copy(text = value)
+    SideEffect {
+        if (textFieldValue.selection != textFieldValueState.selection ||
+            textFieldValue.composition != textFieldValueState.composition
+        ) {
+            textFieldValueState = textFieldValue
+        }
+    }
 
     Box(
         modifier = modifier.background(WooPosTheme.colors.transparent),
@@ -226,8 +246,11 @@ fun WooPosInputField(
             else -> Modifier.width(IntrinsicSize.Min)
         }
         BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
+            value = textFieldValue,
+            onValueChange = { newValue ->
+                textFieldValueState = newValue
+                if (value != newValue.text) onValueChange(newValue.text)
+            },
             textStyle = textStyle.style.copy(color = textColor),
             singleLine = true,
             keyboardActions = keyboardActions,
