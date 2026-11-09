@@ -4231,6 +4231,7 @@
     <string name="woopos_totals_payment_not_confirmed_title">Payment not confirmed</string>
     <string name="woopos_totals_payment_not_confirmed_message">We couldn\'t confirm this payment, so the card may already have been charged. Check the payment status before taking another payment method.</string>
     <string name="woopos_totals_payment_not_confirmed_check_status">Check payment status</string>
+    <string name="woopos_payment_status_check_failed_message">We couldn\'t check the payment status. Check your internet connection and try again.</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">Try another payment method</string>
     <string name="woo_pos_payment_failed_try_again">Try payment again</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">Go back to checkout</string>

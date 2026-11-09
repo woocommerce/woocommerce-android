@@ -1628,6 +1628,30 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
+    fun `given payment not confirmed and order fetch fails, when go back to checkout clicked, then stays and shows toast`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(R.string.woopos_payment_status_check_failed_message))
+                .thenReturn("Check failed")
+            var retryCount = 0
+            val vm = givenPaymentNotConfirmed(
+                datePaidOnServer = null,
+                onRetry = { retryCount++ },
+                isFetchFailing = true,
+            )
+
+            // WHEN
+            vm.onUIEvent(WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(retryCount).isEqualTo(0)
+            verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ToastMessageDisplayed("Check failed"))
+            verify(childrenToParentEventSender, never())
+                .sendToParent(ChildToParentEvent.GoBackToCheckoutAfterFailedPayment)
+        }
+
+    @Test
     fun `given order fetch running, when payment status check starts, then does not go back to checkout after fetch`() =
         runTest {
             // GIVEN
@@ -3331,6 +3355,7 @@ class WooPosTotalsViewModelTest {
         ),
         datePaidOnServer: Date? = null,
         orderFetchFinished: Deferred<Unit> = CompletableDeferred(Unit),
+        isFetchFailing: Boolean = false,
     ): WooPosTotalsViewModel {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_error_reader_not_connected_title))
             .thenReturn("Reader not connected")
@@ -3386,7 +3411,10 @@ class WooPosTotalsViewModelTest {
         whenever(totalsRepository.getOrderById(orderId)).thenReturn(order)
         whenever(totalsRepository.fetchOrderById(orderId)).doSuspendableAnswer {
             orderFetchFinished.await()
-            order.copy(datePaid = datePaidOnServer)
+            when (isFetchFailing) {
+                true -> null
+                false -> order.copy(datePaid = datePaidOnServer)
+            }
         }
         whenever(totalsRepository.getCouponsByIds(any())).thenReturn(couponsByIds)
         return createViewModel(
@@ -3401,6 +3429,7 @@ class WooPosTotalsViewModelTest {
         datePaidOnServer: Date?,
         onRetry: () -> Unit,
         orderFetchFinished: Deferred<Unit> = CompletableDeferred(Unit),
+        isFetchFailing: Boolean = false,
         paymentState: MutableStateFlow<CardReaderPaymentOrRefundState> = MutableStateFlow(
             CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
         ),
@@ -3415,6 +3444,7 @@ class WooPosTotalsViewModelTest {
             controllerFactory = factory,
             datePaidOnServer = datePaidOnServer,
             orderFetchFinished = orderFetchFinished,
+            isFetchFailing = isFetchFailing,
         )
         paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.NonCancelable(
             errorType = PaymentFlowError.CaptureOutcomeUnknown,

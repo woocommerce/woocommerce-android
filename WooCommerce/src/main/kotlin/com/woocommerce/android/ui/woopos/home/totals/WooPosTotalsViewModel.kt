@@ -469,20 +469,36 @@ class WooPosTotalsViewModel @Inject constructor(
         if (leaveFailedPaymentJob?.isActive == true) return
         val paymentStateWhenLeaving = cardReaderPaymentController?.paymentState?.value
         leaveFailedPaymentJob = viewModelScope.launch {
-            val isAlreadyPaid = isUnconfirmedPaymentAlreadyPaid()
+            val unconfirmedPaymentStatus = fetchUnconfirmedPaymentStatus()
             if (cardReaderPaymentController?.paymentState?.value !== paymentStateWhenLeaving) return@launch
-            when (isAlreadyPaid) {
-                true -> retryBluetoothFailedTransaction()
-                false -> leave()
+            when (unconfirmedPaymentStatus) {
+                UnconfirmedPaymentStatus.PAID -> retryBluetoothFailedTransaction()
+                UnconfirmedPaymentStatus.NOT_PAID -> leave()
+                UnconfirmedPaymentStatus.UNKNOWN -> showPaymentStatusCheckFailedToast()
             }
         }
     }
 
-    private suspend fun isUnconfirmedPaymentAlreadyPaid(): Boolean {
+    private suspend fun showPaymentStatusCheckFailedToast() {
+        childrenToParentEventSender.sendToParent(
+            ToastMessageDisplayed(resourceProvider.getString(R.string.woopos_payment_status_check_failed_message))
+        )
+    }
+
+    private suspend fun fetchUnconfirmedPaymentStatus(): UnconfirmedPaymentStatus {
         val failedPayment = cardReaderPaymentController?.paymentState?.value as? CardReaderPaymentState.PaymentFailed
         return when (failedPayment?.errorType == PaymentFlowError.CaptureOutcomeUnknown) {
-            true -> totalsRepository.fetchOrderById(dataState.value.orderId)?.isOrderPaid == true
-            false -> false
+            true -> fetchServerPaymentStatus()
+            false -> UnconfirmedPaymentStatus.NOT_PAID
+        }
+    }
+
+    private suspend fun fetchServerPaymentStatus(): UnconfirmedPaymentStatus {
+        val orderOnServer = totalsRepository.fetchOrderById(dataState.value.orderId)
+        return when {
+            orderOnServer == null -> UnconfirmedPaymentStatus.UNKNOWN
+            orderOnServer.isOrderPaid -> UnconfirmedPaymentStatus.PAID
+            else -> UnconfirmedPaymentStatus.NOT_PAID
         }
     }
 
@@ -1287,5 +1303,11 @@ class WooPosTotalsViewModel @Inject constructor(
         CASH,
         SCAN_TO_PAY,
         MARK_ORDER_AS_PAID,
+    }
+
+    private enum class UnconfirmedPaymentStatus {
+        PAID,
+        NOT_PAID,
+        UNKNOWN,
     }
 }
