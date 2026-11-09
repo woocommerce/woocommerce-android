@@ -791,7 +791,8 @@ class LoginActivity :
     }
 
     override fun gotConnectSiteInfo(result: ConnectSiteInfoResult) {
-        if (suggestedStoreLogin.onAddressSubmitted(result.url)) {
+        val isSuggestedLogin = suggestedStoreLogin.onAddressSubmitted(result.url)
+        if (isSuggestedLogin) {
             val finalUrl = result.urlAfterRedirects ?: result.url
             if (!SuggestedHostMatcher.isSameHost(submittedUrl = result.url, finalUrl = finalUrl)) {
                 suggestedStoreLogin.start(finalUrl)
@@ -802,6 +803,12 @@ class LoginActivity :
                 )
                 return
             }
+        }
+
+        val logsInThroughWPCom = result.hasJetpack || connectSiteInfo?.shouldUseWPComAuth == true
+        if (isSuggestedLogin && !logsInThroughWPCom) {
+            returnToEmptySiteAddressScreen()
+            return
         }
 
         // If the redirect url is available, use that as the preferred url. Pass this url to the other fragments
@@ -815,7 +822,7 @@ class LoginActivity :
         val siteAddressClean = inputSiteAddress.replaceFirst(PROTOCOL_REGEX, "")
         appPrefsWrapper.setLoginSiteAddress(siteAddressClean)
         pendingSiteAddressWasNormalizedToHttps = result.wasUrlNormalizedToHttps
-        if (result.hasJetpack || connectSiteInfo?.shouldUseWPComAuth == true) {
+        if (logsInThroughWPCom) {
             showEmailLoginScreen(null)
         } else {
             appPrefsWrapper.isSiteWPComSuspended = result.isWPComSuspended
@@ -827,6 +834,12 @@ class LoginActivity :
             }
             loginViaSiteCredentials(inputSiteAddress)
         }
+    }
+
+    private fun returnToEmptySiteAddressScreen() {
+        suggestedStoreLogin.end()
+        appPrefsWrapper.removeLoginSiteAddress()
+        (getLoginViaSiteAddressFragment() as? WooLoginSiteAddressFragment)?.clearSiteAddress()
     }
 
     /**
@@ -1021,9 +1034,13 @@ class LoginActivity :
             ) ?: LoginEmailFragment.newInstance(siteAddress, true)
             changeFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG_SITE_CREDS_LAYOUT)
         } else {
+            val isSuggestedLogin = appPrefsWrapper.getLoginSiteAddress()
+                ?.let { suggestedStoreLogin.isActiveFor(it) } == true
             val loginEmailFragment = getLoginEmailFragment(
                 siteCredsLayout = false
-            ) ?: WooLoginEmailFragment.newInstance(showSiteCredentialsFallback = connectSiteInfo?.shouldUseWPComAuth == false)
+            ) ?: WooLoginEmailFragment.newInstance(
+                showSiteCredentialsFallback = connectSiteInfo?.shouldUseWPComAuth == false && !isSuggestedLogin
+            )
             changeFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
         }
     }
@@ -1117,9 +1134,13 @@ class LoginActivity :
         org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
         unifiedLoginTracker.onSiteAddressEntered(siteInfo.url)
         if (siteInfo.error?.wpApiDiscovery?.wpApiBaseUrl != null) {
-            pendingSiteAddressWasNormalizedToHttps = siteInfo.wasUrlNormalizedToHttps
-            LoginSiteInfoFallbackDialogFragment.newInstance(siteInfo.url)
-                .show(LoginSiteInfoFallbackDialogFragment.TAG)
+            if (suggestedStoreLogin.onAddressSubmitted(siteInfo.url)) {
+                returnToEmptySiteAddressScreen()
+            } else {
+                pendingSiteAddressWasNormalizedToHttps = siteInfo.wasUrlNormalizedToHttps
+                LoginSiteInfoFallbackDialogFragment.newInstance(siteInfo.url)
+                    .show(LoginSiteInfoFallbackDialogFragment.TAG)
+            }
         } else if (!siteInfo.isWordPress) {
             // show the "not WordPress error" screen
             LoginNotWPDialogFragment().show(LoginNotWPDialogFragment.TAG)

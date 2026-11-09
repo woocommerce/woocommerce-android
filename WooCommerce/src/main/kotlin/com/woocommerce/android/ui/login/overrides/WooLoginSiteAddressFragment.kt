@@ -32,6 +32,12 @@ class WooLoginSiteAddressFragment : LoginSiteAddressFragment() {
         siteAddressRow.setError(message)
     }
 
+    fun clearSiteAddress() {
+        val siteAddressRow = view?.findViewById<WPLoginInputRow>(R.id.login_site_address_row) ?: return
+        siteAddressRow.editText.setText("")
+        siteAddressRow.setError(null)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val prefilledSiteUrl = arguments?.getString(ARG_PREFILLED_SITE_URL)
