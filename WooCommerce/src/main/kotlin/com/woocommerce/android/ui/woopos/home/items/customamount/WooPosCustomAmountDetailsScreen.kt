@@ -67,7 +67,11 @@ fun WooPosCustomAmountDetailsScreen(
         Column(
             modifier = contentModifier
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = WooPosSpacing.XLarge.value),
+                .padding(
+                    start = WooPosSpacing.XLarge.value,
+                    top = WooPosSpacing.Medium.value,
+                    end = WooPosSpacing.XLarge.value,
+                ),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
         ) {
             EditableDetailCard(
