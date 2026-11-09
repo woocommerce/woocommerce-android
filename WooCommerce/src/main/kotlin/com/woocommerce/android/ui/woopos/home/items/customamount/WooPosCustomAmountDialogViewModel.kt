@@ -43,6 +43,8 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
             is WooPosCustomAmountUIEvent.AmountChanged -> onAmountChanged(event.amount)
             is WooPosCustomAmountUIEvent.NameChanged -> onNameChanged(event.name)
             is WooPosCustomAmountUIEvent.TaxableToggled -> onTaxableToggled(event.isTaxable)
+            WooPosCustomAmountUIEvent.AmountConfirmed -> onAmountConfirmed()
+            WooPosCustomAmountUIEvent.EditAmountClicked -> onEditAmount()
             WooPosCustomAmountUIEvent.SubmitClicked -> onSubmit()
             WooPosCustomAmountUIEvent.Closed -> onDismissed()
         }
@@ -60,11 +62,21 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
             isTaxable = editing?.isTaxable ?: false,
             isSubmitting = false,
             isSubmitted = false,
+            screen = WooPosCustomAmountDialogState.Screen.AMOUNT,
         )
     }
 
     private fun onAmountChanged(value: BigDecimal?) {
         _state.value = _state.value.copy(amount = value)
+    }
+
+    private fun onAmountConfirmed() {
+        if (!_state.value.isAmountValid) return
+        _state.value = _state.value.copy(screen = WooPosCustomAmountDialogState.Screen.FORM)
+    }
+
+    private fun onEditAmount() {
+        _state.value = _state.value.copy(screen = WooPosCustomAmountDialogState.Screen.AMOUNT)
     }
 
     private fun onNameChanged(value: String) {

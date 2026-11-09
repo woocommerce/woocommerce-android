@@ -349,6 +349,100 @@ class WooPosCustomAmountDialogViewModelTest {
         assertThat(sut.state.value.name).isEqualTo("User typed")
     }
 
+    @Test
+    fun `given invalid amount, when continued, then amount screen remains open`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+
+        listOf(null, BigDecimal.ZERO, BigDecimal("-1.00")).forEach { amount ->
+            // WHEN
+            sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(amount))
+            sut.onUIEvent(WooPosCustomAmountUIEvent.AmountConfirmed)
+
+            // THEN
+            assertThat(sut.state.value.screen).isEqualTo(WooPosCustomAmountDialogState.Screen.AMOUNT)
+        }
+        verify(childrenToParentEventSender, never()).sendToParent(any())
+    }
+
+    @Test
+    fun `given valid amount, when continued, then form opens without submitting to cart`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal("12.50")))
+
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountConfirmed)
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(sut.state.value.screen).isEqualTo(WooPosCustomAmountDialogState.Screen.FORM)
+        assertThat(sut.state.value.amount).isEqualByComparingTo("12.50")
+        verify(childrenToParentEventSender, never()).sendToParent(any())
+    }
+
+    @Test
+    fun `given edited form, when returning to amount and continuing, then name taxes and item identity are preserved`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(
+            WooPosCustomAmountDialogState.Mode.Edit(
+                itemNumber = 7,
+                amount = BigDecimal("10.00"),
+                name = "Original",
+                isTaxable = false,
+            )
+        )
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountConfirmed)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.NameChanged("Gift wrap"))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.TaxableToggled(true))
+
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.EditAmountClicked)
+        assertThat(sut.state.value.screen).isEqualTo(WooPosCustomAmountDialogState.Screen.AMOUNT)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal("15.00")))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountConfirmed)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
+        advanceUntilIdle()
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(
+            ChildToParentEvent.CustomAmountSubmitted(
+                name = "Gift wrap",
+                amount = BigDecimal("15.00"),
+                isTaxable = true,
+                editingItemNumber = 7,
+            )
+        )
+    }
+
+    @Test
+    fun `given dismissed form, when adding again, then amount screen opens with empty fields`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal("5.00")))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountConfirmed)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.NameChanged("Discarded"))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.TaxableToggled(true))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.Closed)
+
+        // WHEN
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+
+        // THEN
+        assertThat(sut.state.value.screen).isEqualTo(WooPosCustomAmountDialogState.Screen.AMOUNT)
+        assertThat(sut.state.value.amount).isNull()
+        assertThat(sut.state.value.name).isEmpty()
+        assertThat(sut.state.value.isTaxable).isFalse()
+    }
+
     private fun createSut() = WooPosCustomAmountDialogViewModel(
         getCurrencyFormattingParameters = getCurrencyFormattingParameters,
         childrenToParentEventSender = childrenToParentEventSender,

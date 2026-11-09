@@ -69,13 +69,30 @@ fun WooPosCustomAmountFormScreen(
         onDispose { viewModel.onUIEvent(WooPosCustomAmountUIEvent.Closed) }
     }
 
-    BackHandler(enabled = true) { onBackClick() }
-
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(state.isSubmitted) {
         if (state.isSubmitted) onSubmitted()
     }
+
+    WooPosCustomAmountFormScreen(
+        state = state,
+        onUIEvent = viewModel::onUIEvent,
+        onBackClick = onBackClick,
+        modifier = modifier,
+        submitButtonPadding = submitButtonPadding,
+    )
+}
+
+@Composable
+fun WooPosCustomAmountFormScreen(
+    state: WooPosCustomAmountDialogState,
+    onUIEvent: (WooPosCustomAmountUIEvent) -> Unit,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    submitButtonPadding: PaddingValues = defaultSubmitButtonPadding(),
+) {
+    BackHandler { onBackClick() }
 
     Column(
         modifier = modifier
@@ -92,7 +109,7 @@ fun WooPosCustomAmountFormScreen(
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
             AmountSection(
                 state = state,
-                onAmountChanged = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(it)) },
+                onAmountChanged = { onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(it)) },
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
             HorizontalDivider(
@@ -101,7 +118,7 @@ fun WooPosCustomAmountFormScreen(
             )
             TaxesToggle(
                 isTaxable = state.isTaxable,
-                onToggled = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.TaxableToggled(it)) },
+                onToggled = { onUIEvent(WooPosCustomAmountUIEvent.TaxableToggled(it)) },
             )
             HorizontalDivider(
                 color = WooPosTheme.colors.outlineVariant,
@@ -109,7 +126,7 @@ fun WooPosCustomAmountFormScreen(
             )
             NameSection(
                 value = state.name,
-                onNameChanged = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.NameChanged(it)) },
+                onNameChanged = { onUIEvent(WooPosCustomAmountUIEvent.NameChanged(it)) },
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
         }
@@ -123,7 +140,7 @@ fun WooPosCustomAmountFormScreen(
                     .fillMaxWidth()
                     .padding(submitButtonPadding),
                 state = state,
-                onSubmit = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked) },
+                onSubmit = { onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked) },
             )
         }
     }
