@@ -321,6 +321,7 @@ dependencies {
 
     implementation project(":libs:commons")
     implementation project(":libs:cardreader")
+    implementation project(":libs:receiptprinter")
 
     implementation(libs.facebook.shimmer)
     implementation(libs.photoview)
