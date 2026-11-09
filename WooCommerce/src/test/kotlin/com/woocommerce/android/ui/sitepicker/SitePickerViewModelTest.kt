@@ -16,6 +16,9 @@ import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.CONNECT_JETPACK
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.NONE
+import com.woocommerce.android.ui.login.storesuggestion.SuggestedStoreLogin
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseSupport
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker
@@ -54,6 +57,7 @@ import org.assertj.core.api.Assert
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.lenient
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
@@ -108,6 +112,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     private val registerDevice: RegisterDevice = mock()
     private val unexpectedResponseTracker: LoginUnexpectedResponseTracker = mock()
     private val unexpectedResponseSupport: LoginUnexpectedResponseSupport = mock()
+    private val suggestedStoreLogin: SuggestedStoreLogin = mock()
 
     private lateinit var viewModel: SitePickerViewModel
     private lateinit var savedState: SavedStateHandle
@@ -351,7 +356,8 @@ class SitePickerViewModelTest : BaseUnitTest() {
             visibleWooSitesDataStore = visibleWooSitesDataStore,
             registerDevice = registerDevice,
             unexpectedResponseTracker = unexpectedResponseTracker,
-            unexpectedResponseSupport = unexpectedResponseSupport
+            unexpectedResponseSupport = unexpectedResponseSupport,
+            suggestedStoreLogin = suggestedStoreLogin
         )
     }
 
@@ -821,6 +827,75 @@ class SitePickerViewModelTest : BaseUnitTest() {
             )
 
             assertThat(viewModel.event.value).isEqualTo(NavigateToAccountMismatchScreen(CONNECT_JETPACK, url))
+        }
+
+    @Test
+    fun `given a suggested login with a non-WordPress-com store, when the account does not match, then no primary button is offered`() =
+        testBlocking {
+            // GIVEN
+            val url = SitePickerTestUtils.loginSiteAddress
+            givenThatUserLoggedInFromEnteringSiteAddress(null)
+            givenSiteInfoFetchSucceeds()
+            whenever(suggestedStoreLogin.isActiveFor(url)).thenReturn(true)
+            whenSitesAreFetched()
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(NavigateToAccountMismatchScreen(NONE, url))
+        }
+
+    @Test
+    fun `given no suggested login, when the account does not match, then connect Jetpack is offered`() =
+        testBlocking {
+            // GIVEN
+            val url = SitePickerTestUtils.loginSiteAddress
+            givenThatUserLoggedInFromEnteringSiteAddress(null)
+            givenSiteInfoFetchSucceeds()
+            whenever(suggestedStoreLogin.isActiveFor(url)).thenReturn(false)
+            whenSitesAreFetched()
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(NavigateToAccountMismatchScreen(CONNECT_JETPACK, url))
+        }
+
+    @Test
+    fun `given a suggested login with a WordPress-com hosted store, when the account does not match, then connect site is offered`() =
+        testBlocking {
+            // GIVEN
+            val url = SitePickerTestUtils.loginSiteAddress
+            givenThatUserLoggedInFromEnteringSiteAddress(null)
+            whenever(repository.fetchSiteInfo(any())).thenReturn(
+                Result.success(ConnectSiteInfoPayload(url = url, isWordPress = true, isWPCom = true))
+            )
+            lenient().doReturn(true).whenever(suggestedStoreLogin).isActiveFor(url)
+            whenSitesAreFetched()
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(NavigateToAccountMismatchScreen(CONNECT_WPCOM_SITE, url))
+        }
+
+    @Test
+    fun `given a selected site that passes verification, when continue is tapped, then the suggested login ends`() =
+        testBlocking {
+            // GIVEN
+            givenThatSiteVerificationIsCompleted()
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+            viewModel.onSiteSelected(defaultExpectedSiteList[1])
+
+            // WHEN
+            viewModel.onContinueButtonClick()
+
+            // THEN
+            verify(suggestedStoreLogin).end()
         }
 
     @Test
