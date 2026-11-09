@@ -135,6 +135,25 @@ internal fun resolveLoginActivityActionDestination(
     else -> null
 }
 
+@VisibleForTesting
+internal enum class SiteCheckDestination { WPCOM_EMAIL, SITE_CREDENTIALS, EMPTY_SITE_ADDRESS }
+
+@VisibleForTesting
+internal fun resolveSiteCheckDestination(
+    isSuggestedLogin: Boolean,
+    logsInThroughWPCom: Boolean
+): SiteCheckDestination = when {
+    logsInThroughWPCom -> SiteCheckDestination.WPCOM_EMAIL
+    isSuggestedLogin -> SiteCheckDestination.EMPTY_SITE_ADDRESS
+    else -> SiteCheckDestination.SITE_CREDENTIALS
+}
+
+@VisibleForTesting
+internal fun shouldShowSiteCredentialsFallback(
+    shouldUseWPComAuth: Boolean?,
+    isSuggestedLogin: Boolean
+): Boolean = shouldUseWPComAuth == false && !isSuggestedLogin
+
 // TODO Extract logic out of LoginActivity to reduce size
 @Suppress("SameParameterValue", "LargeClass")
 @AndroidEntryPoint
@@ -805,8 +824,11 @@ class LoginActivity :
             }
         }
 
-        val logsInThroughWPCom = result.hasJetpack || connectSiteInfo?.shouldUseWPComAuth == true
-        if (isSuggestedLogin && !logsInThroughWPCom) {
+        val destination = resolveSiteCheckDestination(
+            isSuggestedLogin = isSuggestedLogin,
+            logsInThroughWPCom = result.hasJetpack || connectSiteInfo?.shouldUseWPComAuth == true
+        )
+        if (destination == SiteCheckDestination.EMPTY_SITE_ADDRESS) {
             returnToEmptySiteAddressScreen()
             return
         }
@@ -822,7 +844,7 @@ class LoginActivity :
         val siteAddressClean = inputSiteAddress.replaceFirst(PROTOCOL_REGEX, "")
         appPrefsWrapper.setLoginSiteAddress(siteAddressClean)
         pendingSiteAddressWasNormalizedToHttps = result.wasUrlNormalizedToHttps
-        if (logsInThroughWPCom) {
+        if (destination == SiteCheckDestination.WPCOM_EMAIL) {
             showEmailLoginScreen(null)
         } else {
             appPrefsWrapper.isSiteWPComSuspended = result.isWPComSuspended
@@ -1039,7 +1061,10 @@ class LoginActivity :
             val loginEmailFragment = getLoginEmailFragment(
                 siteCredsLayout = false
             ) ?: WooLoginEmailFragment.newInstance(
-                showSiteCredentialsFallback = connectSiteInfo?.shouldUseWPComAuth == false && !isSuggestedLogin
+                showSiteCredentialsFallback = shouldShowSiteCredentialsFallback(
+                    shouldUseWPComAuth = connectSiteInfo?.shouldUseWPComAuth,
+                    isSuggestedLogin = isSuggestedLogin
+                )
             )
             changeFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
         }
@@ -1134,7 +1159,11 @@ class LoginActivity :
         org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
         unifiedLoginTracker.onSiteAddressEntered(siteInfo.url)
         if (siteInfo.error?.wpApiDiscovery?.wpApiBaseUrl != null) {
-            if (suggestedStoreLogin.onAddressSubmitted(siteInfo.url)) {
+            val destination = resolveSiteCheckDestination(
+                isSuggestedLogin = suggestedStoreLogin.onAddressSubmitted(siteInfo.url),
+                logsInThroughWPCom = false
+            )
+            if (destination == SiteCheckDestination.EMPTY_SITE_ADDRESS) {
                 returnToEmptySiteAddressScreen()
             } else {
                 pendingSiteAddressWasNormalizedToHttps = siteInfo.wasUrlNormalizedToHttps
