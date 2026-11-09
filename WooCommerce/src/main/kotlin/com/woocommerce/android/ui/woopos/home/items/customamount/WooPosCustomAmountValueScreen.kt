@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.woopos.home.items.customamount
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,7 +52,7 @@ fun WooPosCustomAmountValueScreen(
         onBackClicked = onBackClicked,
         content = { contentModifier ->
             Box(
-                modifier = contentModifier,
+                modifier = contentModifier.verticalScroll(rememberScrollState()),
                 contentAlignment = Alignment.Center,
             ) {
                 WooPosMoneyInputField(
