@@ -150,8 +150,7 @@ private fun EditableDetailCard(label: String, value: String, enabled: Boolean, o
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_edit_pencil),
                     contentDescription = null,
-                    tint = WooPosTheme.colors.onSurfaceVariantLowest,
-                    modifier = Modifier.size(WooPosIconSize.Medium.value),
+                    tint = WooPosTheme.colors.onSurfaceVariantHighest,
                 )
             }
         }
