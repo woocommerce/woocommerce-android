@@ -2,8 +2,10 @@ package com.woocommerce.android.ui.woopos.home.items.customamount
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -23,7 +25,6 @@ internal fun WooPosCustomAmountLayout(
     onSaveClicked: () -> Unit,
     modifier: Modifier = Modifier,
     buttonState: WooPosButtonState = WooPosButtonState.ENABLED,
-    isEditor: Boolean = false,
     content: @Composable (Modifier) -> Unit,
 ) {
     BackHandler { onBackClicked() }
@@ -41,10 +42,11 @@ internal fun WooPosCustomAmountLayout(
         WooPosButton(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(if (isEditor) WooPosSpacing.Medium.value else WooPosSpacing.XLarge.value),
+                .padding(WooPosSpacing.Medium.value),
             text = stringResource(R.string.save),
             state = buttonState,
             onClick = onSaveClicked,
         )
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
     }
 }

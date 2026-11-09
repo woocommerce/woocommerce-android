@@ -73,7 +73,6 @@ fun WooPosCustomAmountValueScreen(
                 )
             }
         },
-        isEditor = true,
         buttonState = if (state.isAmountValid) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED,
         onSaveClicked = saveAmount,
     )

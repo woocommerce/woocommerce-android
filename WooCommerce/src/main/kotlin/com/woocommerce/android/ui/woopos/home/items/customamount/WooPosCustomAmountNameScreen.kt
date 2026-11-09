@@ -44,7 +44,6 @@ fun WooPosCustomAmountNameScreen(
         title = stringResource(R.string.woopos_custom_amount_dialog_name_label),
         onBackClicked = onBackClicked,
         onSaveClicked = saveName,
-        isEditor = true,
     ) { contentModifier ->
         Box(modifier = contentModifier, contentAlignment = Alignment.Center) {
             WooPosInputField(
