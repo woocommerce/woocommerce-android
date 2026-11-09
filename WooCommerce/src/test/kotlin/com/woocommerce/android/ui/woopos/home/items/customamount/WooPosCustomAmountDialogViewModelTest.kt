@@ -368,7 +368,7 @@ class WooPosCustomAmountDialogViewModelTest {
     }
 
     @Test
-    fun `given valid amount, when continued, then form opens without submitting to cart`() = runTest {
+    fun `given valid amount, when continued, then details open without submitting to cart`() = runTest {
         // GIVEN
         val sut = createSut()
         advanceUntilIdle()
@@ -380,7 +380,7 @@ class WooPosCustomAmountDialogViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        assertThat(sut.state.value.screen).isEqualTo(WooPosCustomAmountDialogState.Screen.FORM)
+        assertThat(sut.state.value.screen).isEqualTo(WooPosCustomAmountDialogState.Screen.DETAILS)
         assertThat(sut.state.value.amount).isEqualByComparingTo("12.50")
         verify(childrenToParentEventSender, never()).sendToParent(any())
     }
@@ -441,6 +441,216 @@ class WooPosCustomAmountDialogViewModelTest {
         assertThat(sut.state.value.amount).isNull()
         assertThat(sut.state.value.name).isEmpty()
         assertThat(sut.state.value.isTaxable).isFalse()
+    }
+
+    @Test
+    fun `given an existing item, when opened, then details are shown before amount editing`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+
+        // WHEN
+        sut.initializeFor(
+            WooPosCustomAmountDialogState.Mode.Edit(
+                itemNumber = 7,
+                amount = BigDecimal.TEN,
+                name = "Service",
+                isTaxable = true,
+            )
+        )
+
+        // THEN
+        assertThat(sut.state.value.screen).isEqualTo(WooPosCustomAmountDialogState.Screen.DETAILS)
+        verify(childrenToParentEventSender, never()).sendToParent(any())
+    }
+
+    @Test
+    fun `given amount edited from details, when cancelled, then original amount and other fields are retained`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal.TEN))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountConfirmed)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.NameChanged("Gift wrap"))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.TaxableToggled(true))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.EditAmountClicked)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal.ZERO))
+
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountBackClicked)
+
+        // THEN
+        assertThat(sut.state.value.isClosed).isFalse()
+        assertThat(sut.state.value.screen).isEqualTo(WooPosCustomAmountDialogState.Screen.DETAILS)
+        assertThat(sut.state.value.amount).isEqualByComparingTo(BigDecimal.TEN)
+        assertThat(sut.state.value.name).isEqualTo("Gift wrap")
+        assertThat(sut.state.value.isTaxable).isTrue()
+        verify(childrenToParentEventSender, never()).sendToParent(any())
+    }
+
+    @Test
+    fun `given initial amount entry, when back is clicked, then the flow is dismissed without submitting`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal.TEN))
+
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountBackClicked)
+
+        // THEN
+        assertThat(sut.state.value.isClosed).isTrue()
+        verify(childrenToParentEventSender, never()).sendToParent(any())
+    }
+
+    @Test
+    fun `given a confirmed amount change, when another edit is cancelled, then the last confirmed amount is restored`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal.TEN))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountConfirmed)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.EditAmountClicked)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal("15.00")))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountConfirmed)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.EditAmountClicked)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(null))
+
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountBackClicked)
+
+        // THEN
+        assertThat(sut.state.value.isClosed).isFalse()
+        assertThat(sut.state.value.amount).isEqualByComparingTo("15.00")
+        assertThat(sut.state.value.isSubmitEnabled).isTrue()
+    }
+
+    @Test
+    fun `given a name draft, when saved, then details receive it without submitting the cart`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal.TEN))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountConfirmed)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.TaxableToggled(true))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.EditNameClicked)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.NameDraftChanged("Gift wrap"))
+
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.NameConfirmed)
+
+        // THEN
+        assertThat(sut.state.value.screen).isEqualTo(WooPosCustomAmountDialogState.Screen.DETAILS)
+        assertThat(sut.state.value.name).isEqualTo("Gift wrap")
+        assertThat(sut.state.value.amount).isEqualByComparingTo(BigDecimal.TEN)
+        assertThat(sut.state.value.isTaxable).isTrue()
+        verify(childrenToParentEventSender, never()).sendToParent(any())
+    }
+
+    @Test
+    fun `given an existing name, when a name draft is cancelled, then the original name is kept`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.NameChanged("Original"))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.EditNameClicked)
+        assertThat(sut.state.value.nameDraft).isEqualTo("Original")
+        sut.onUIEvent(WooPosCustomAmountUIEvent.NameDraftChanged("Discarded"))
+
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.NameBackClicked)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.EditNameClicked)
+
+        // THEN
+        assertThat(sut.state.value.name).isEqualTo("Original")
+        assertThat(sut.state.value.nameDraft).isEqualTo("Original")
+        verify(childrenToParentEventSender, never()).sendToParent(any())
+    }
+
+    @Test
+    fun `given an existing item, when a blank name is saved and submitted, then default name and identity are preserved`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(
+            WooPosCustomAmountDialogState.Mode.Edit(
+                itemNumber = 7,
+                amount = BigDecimal.TEN,
+                name = "Original",
+                isTaxable = true,
+            )
+        )
+        sut.onUIEvent(WooPosCustomAmountUIEvent.EditNameClicked)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.NameDraftChanged("   "))
+
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.NameConfirmed)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
+        advanceUntilIdle()
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(
+            ChildToParentEvent.CustomAmountSubmitted(
+                name = DEFAULT_NAME,
+                amount = BigDecimal.TEN,
+                isTaxable = true,
+                editingItemNumber = 7,
+            )
+        )
+    }
+
+    @Test
+    fun `given an existing item with the default name, when opened, then the name is shown as unset`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+
+        // WHEN
+        sut.initializeFor(
+            WooPosCustomAmountDialogState.Mode.Edit(
+                itemNumber = 7,
+                amount = BigDecimal.TEN,
+                name = DEFAULT_NAME,
+                isTaxable = false,
+            )
+        )
+
+        // THEN
+        assertThat(sut.state.value.name).isEmpty()
+    }
+
+    @Test
+    fun `given an existing item with the default name, when submitted unchanged, then the default name is kept`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(
+            WooPosCustomAmountDialogState.Mode.Edit(
+                itemNumber = 7,
+                amount = BigDecimal.TEN,
+                name = DEFAULT_NAME,
+                isTaxable = false,
+            )
+        )
+
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
+        advanceUntilIdle()
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(
+            ChildToParentEvent.CustomAmountSubmitted(
+                name = DEFAULT_NAME,
+                amount = BigDecimal.TEN,
+                isTaxable = false,
+                editingItemNumber = 7,
+            )
+        )
     }
 
     private fun createSut() = WooPosCustomAmountDialogViewModel(

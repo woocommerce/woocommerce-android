@@ -1,8 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.items.customamount
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -12,11 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalViewConfiguration
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import kotlinx.coroutines.delay
 
@@ -36,8 +29,8 @@ fun WooPosCustomAmountScreen(
     }
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(state.isSubmitted) {
-        if (state.isSubmitted) close()
+    LaunchedEffect(state.isSubmitted, state.isClosed) {
+        if (state.isSubmitted || state.isClosed) close()
     }
 
     when (state.screen) {
@@ -45,47 +38,42 @@ fun WooPosCustomAmountScreen(
             WooPosCustomAmountValueScreen(
                 state = state,
                 onAmountChanged = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(it)) },
-                onContinueClicked = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.AmountConfirmed) },
-                onBackClicked = close,
+                onSaveClicked = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.AmountConfirmed) },
+                onBackClicked = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.AmountBackClicked) },
                 modifier = modifier,
             )
         }
 
-        WooPosCustomAmountDialogState.Screen.FORM -> {
-            val editAmount = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.EditAmountClicked) }
-            // Continue and the submit button share a position, so the second tap of a fast double tap
-            // on Continue would land on submit and add the item before the merchant sees the form.
+        WooPosCustomAmountDialogState.Screen.NAME -> {
+            WooPosCustomAmountNameScreen(
+                value = state.nameDraft,
+                onNameChanged = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.NameDraftChanged(it)) },
+                onSaveClicked = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.NameConfirmed) },
+                onBackClicked = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.NameBackClicked) },
+                modifier = modifier,
+            )
+        }
+
+        WooPosCustomAmountDialogState.Screen.DETAILS -> {
+            // The amount and name Save buttons share a position with this Save button, so the second tap of a fast
+            // double tap would land here and add the item before the merchant sees the details.
             val doubleTapTimeoutMillis = LocalViewConfiguration.current.doubleTapTimeoutMillis
             var acceptsSubmit by remember { mutableStateOf(false) }
             LaunchedEffect(Unit) {
                 delay(doubleTapTimeoutMillis)
                 acceptsSubmit = true
             }
-            Column(
-                modifier = modifier.fillMaxSize()
-            ) {
-                WooPosToolbar(
-                    titleText = stringResource(R.string.woopos_custom_amount_form_title),
-                    onBackClicked = editAmount,
-                )
-                WooPosCustomAmountFormScreen(
-                    state = state,
-                    onUIEvent = { event ->
-                        if (event != WooPosCustomAmountUIEvent.SubmitClicked || acceptsSubmit) {
-                            viewModel.onUIEvent(event)
-                        }
-                    },
-                    onBackClick = editAmount,
-                    modifier = Modifier.weight(1f),
-                    // Matches WooPosFullScreenInputLayout on the amount step, so the button keeps its position.
-                    submitButtonPadding = PaddingValues(
-                        start = WooPosSpacing.Medium.value,
-                        top = WooPosSpacing.Medium.value,
-                        end = WooPosSpacing.Medium.value,
-                        bottom = WooPosSpacing.Medium.value + WooPosSpacing.Small.value,
-                    ),
-                )
-            }
+            WooPosCustomAmountDetailsScreen(
+                state = state,
+                onEditAmount = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.EditAmountClicked) },
+                onEditName = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.EditNameClicked) },
+                onTaxableToggled = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.TaxableToggled(it)) },
+                onSubmit = {
+                    if (acceptsSubmit) viewModel.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
+                },
+                onBackClicked = close,
+                modifier = modifier,
+            )
         }
     }
 }

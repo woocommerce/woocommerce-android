@@ -8,6 +8,11 @@ sealed class WooPosCustomAmountUIEvent {
     data class TaxableToggled(val isTaxable: Boolean) : WooPosCustomAmountUIEvent()
     data object AmountConfirmed : WooPosCustomAmountUIEvent()
     data object EditAmountClicked : WooPosCustomAmountUIEvent()
+    data object AmountBackClicked : WooPosCustomAmountUIEvent()
+    data object EditNameClicked : WooPosCustomAmountUIEvent()
+    data class NameDraftChanged(val name: String) : WooPosCustomAmountUIEvent()
+    data object NameConfirmed : WooPosCustomAmountUIEvent()
+    data object NameBackClicked : WooPosCustomAmountUIEvent()
     data object SubmitClicked : WooPosCustomAmountUIEvent()
     data object Closed : WooPosCustomAmountUIEvent()
 }

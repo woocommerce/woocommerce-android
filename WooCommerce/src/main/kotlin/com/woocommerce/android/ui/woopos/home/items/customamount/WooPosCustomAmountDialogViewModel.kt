@@ -26,6 +26,9 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
 
     private var hasInitializedFor: WooPosCustomAmountDialogState.Mode? = null
 
+    private var amountBeforeEditing: BigDecimal? = null
+    private var returnToDetailsAfterAmount = false
+
     init {
         viewModelScope.launch {
             val params = getCurrencyFormattingParameters()
@@ -45,6 +48,11 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
             is WooPosCustomAmountUIEvent.TaxableToggled -> onTaxableToggled(event.isTaxable)
             WooPosCustomAmountUIEvent.AmountConfirmed -> onAmountConfirmed()
             WooPosCustomAmountUIEvent.EditAmountClicked -> onEditAmount()
+            WooPosCustomAmountUIEvent.AmountBackClicked -> onAmountBack()
+            WooPosCustomAmountUIEvent.EditNameClicked -> onEditName()
+            is WooPosCustomAmountUIEvent.NameDraftChanged -> onNameDraftChanged(event.name)
+            WooPosCustomAmountUIEvent.NameConfirmed -> onNameConfirmed()
+            WooPosCustomAmountUIEvent.NameBackClicked -> onNameBack()
             WooPosCustomAmountUIEvent.SubmitClicked -> onSubmit()
             WooPosCustomAmountUIEvent.Closed -> onDismissed()
         }
@@ -54,15 +62,24 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
         if (hasInitializedFor == mode) return
         hasInitializedFor = mode
         val editing = mode as? WooPosCustomAmountDialogState.Mode.Edit
+        amountBeforeEditing = null
+        returnToDetailsAfterAmount = false
 
         _state.value = _state.value.copy(
             mode = mode,
             amount = editing?.amount,
-            name = editing?.name.orEmpty(),
+            // A blank name is saved as the default name, so show it as unset again when editing.
+            name = editing?.name?.takeUnless { it == defaultName() }.orEmpty(),
+            nameDraft = "",
             isTaxable = editing?.isTaxable ?: false,
             isSubmitting = false,
             isSubmitted = false,
-            screen = WooPosCustomAmountDialogState.Screen.AMOUNT,
+            isClosed = false,
+            screen = if (editing == null) {
+                WooPosCustomAmountDialogState.Screen.AMOUNT
+            } else {
+                WooPosCustomAmountDialogState.Screen.DETAILS
+            },
         )
     }
 
@@ -72,15 +89,54 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
 
     private fun onAmountConfirmed() {
         if (!_state.value.isAmountValid) return
-        _state.value = _state.value.copy(screen = WooPosCustomAmountDialogState.Screen.FORM)
+        amountBeforeEditing = null
+        returnToDetailsAfterAmount = false
+        _state.value = _state.value.copy(screen = WooPosCustomAmountDialogState.Screen.DETAILS)
     }
 
     private fun onEditAmount() {
+        amountBeforeEditing = _state.value.amount
+        returnToDetailsAfterAmount = true
         _state.value = _state.value.copy(screen = WooPosCustomAmountDialogState.Screen.AMOUNT)
+    }
+
+    private fun onAmountBack() {
+        if (returnToDetailsAfterAmount) {
+            _state.value = _state.value.copy(
+                amount = amountBeforeEditing,
+                screen = WooPosCustomAmountDialogState.Screen.DETAILS,
+            )
+            amountBeforeEditing = null
+            returnToDetailsAfterAmount = false
+        } else {
+            _state.value = _state.value.copy(isClosed = true)
+        }
     }
 
     private fun onNameChanged(value: String) {
         _state.value = _state.value.copy(name = value)
+    }
+
+    private fun onEditName() {
+        _state.value = _state.value.copy(
+            screen = WooPosCustomAmountDialogState.Screen.NAME,
+            nameDraft = _state.value.name,
+        )
+    }
+
+    private fun onNameDraftChanged(value: String) {
+        _state.value = _state.value.copy(nameDraft = value)
+    }
+
+    private fun onNameConfirmed() {
+        _state.value = _state.value.copy(
+            name = _state.value.nameDraft,
+            screen = WooPosCustomAmountDialogState.Screen.DETAILS,
+        )
+    }
+
+    private fun onNameBack() {
+        _state.value = _state.value.copy(nameDraft = "", screen = WooPosCustomAmountDialogState.Screen.DETAILS)
     }
 
     private fun onTaxableToggled(value: Boolean) {
