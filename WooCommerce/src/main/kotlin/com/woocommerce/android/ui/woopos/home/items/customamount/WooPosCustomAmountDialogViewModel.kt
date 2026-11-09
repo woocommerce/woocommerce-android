@@ -68,7 +68,8 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
         _state.value = _state.value.copy(
             mode = mode,
             amount = editing?.amount,
-            name = editing?.name.orEmpty(),
+            // A blank name is saved as the default name, so show it as unset again when editing.
+            name = editing?.name?.takeUnless { it == defaultName() }.orEmpty(),
             nameDraft = "",
             isTaxable = editing?.isTaxable ?: false,
             isSubmitting = false,

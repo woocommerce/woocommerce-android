@@ -18,6 +18,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -84,6 +85,7 @@ fun WooPosCustomAmountDetailsScreen(
                 value = state.name.trim().ifBlank {
                     stringResource(R.string.woopos_custom_amount_dialog_name_placeholder)
                 },
+                isPlaceholder = state.name.isBlank(),
                 enabled = !state.isSubmitting,
                 onClick = onEditName,
             )
@@ -125,7 +127,13 @@ private fun formattedAmount(state: WooPosCustomAmountDialogState): String {
 }
 
 @Composable
-private fun EditableDetailCard(label: String, value: String, enabled: Boolean, onClick: () -> Unit) {
+private fun EditableDetailCard(
+    label: String,
+    value: String,
+    enabled: Boolean,
+    onClick: () -> Unit,
+    isPlaceholder: Boolean = false,
+) {
     val editLabel = stringResource(R.string.woopos_cart_custom_amount_edit_content_description, label)
     DetailCard {
         Row(
@@ -141,7 +149,8 @@ private fun EditableDetailCard(label: String, value: String, enabled: Boolean, o
                 modifier = Modifier.weight(2f),
                 text = value,
                 style = WooPosTypography.BodyXLarge,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = if (isPlaceholder) FontWeight.Normal else FontWeight.SemiBold,
+                color = if (isPlaceholder) WooPosTheme.colors.onDisabledContainer else Color.Unspecified,
                 textAlign = TextAlign.End,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

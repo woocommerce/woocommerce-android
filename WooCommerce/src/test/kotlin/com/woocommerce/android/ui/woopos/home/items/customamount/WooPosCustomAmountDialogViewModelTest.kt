@@ -604,6 +604,55 @@ class WooPosCustomAmountDialogViewModelTest {
         )
     }
 
+    @Test
+    fun `given an existing item with the default name, when opened, then the name is shown as unset`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+
+        // WHEN
+        sut.initializeFor(
+            WooPosCustomAmountDialogState.Mode.Edit(
+                itemNumber = 7,
+                amount = BigDecimal.TEN,
+                name = DEFAULT_NAME,
+                isTaxable = false,
+            )
+        )
+
+        // THEN
+        assertThat(sut.state.value.name).isEmpty()
+    }
+
+    @Test
+    fun `given an existing item with the default name, when submitted unchanged, then the default name is kept`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(
+            WooPosCustomAmountDialogState.Mode.Edit(
+                itemNumber = 7,
+                amount = BigDecimal.TEN,
+                name = DEFAULT_NAME,
+                isTaxable = false,
+            )
+        )
+
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
+        advanceUntilIdle()
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(
+            ChildToParentEvent.CustomAmountSubmitted(
+                name = DEFAULT_NAME,
+                amount = BigDecimal.TEN,
+                isTaxable = false,
+                editingItemNumber = 7,
+            )
+        )
+    }
+
     private fun createSut() = WooPosCustomAmountDialogViewModel(
         getCurrencyFormattingParameters = getCurrencyFormattingParameters,
         childrenToParentEventSender = childrenToParentEventSender,
