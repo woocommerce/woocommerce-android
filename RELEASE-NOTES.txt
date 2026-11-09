@@ -4,7 +4,7 @@
 
 26.1
 -----
-- [Internal] Added the Star Micronics StarIO10 SDK in a new receipt printer module behind an off feature flag, groundwork for POS receipt printing [https://github.com/woocommerce/woocommerce-android/pull/16834]
+- [Internal] Added the Star Micronics StarIO10 SDK in a new receipt printer module behind a disabled feature flag, groundwork for POS receipt printing [https://github.com/woocommerce/woocommerce-android/pull/16834]
 - [**] [Woo POS] Custom amounts now open on their own screen: enter the amount, then review the name and taxes before adding it to the cart [https://github.com/woocommerce/woocommerce-android/pull/16833]
 - [*] POS: When a phone is the card reader, it now stops waiting for a card after the cashier picks another payment method or leaves checkout [https://github.com/woocommerce/woocommerce-android/pull/16830]
 - [*] The Tap to Pay "Try a payment" screen now says the payment is live and that processing fees apply [https://github.com/woocommerce/woocommerce-android/pull/16828]

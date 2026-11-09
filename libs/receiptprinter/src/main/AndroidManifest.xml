@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    BLUETOOTH_SCAN and BLUETOOTH_CONNECT cover Android 12+ (API 31). On API 26 to 30 the merged manifest relies on
+    the legacy BLUETOOTH permission declared by the StarIO10 SDK's own manifest and BLUETOOTH_ADMIN declared by the
+    Stripe Terminal SDK (stripeterminal-core), so they are not duplicated here.
+-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
