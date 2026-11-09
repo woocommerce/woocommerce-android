@@ -6,6 +6,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.login.sitecredentials.ApplicationPasswordSiteMatcher
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -46,12 +47,30 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
             triggerEvent(ExitWithResult(url))
             return
         }
+        if (isForeignApprovalPage(url)) {
+            triggerEvent(ExitWithResult(FOREIGN_HOST_RESULT))
+            return
+        }
 
         recoverAuthorizationIfNeeded(url)
     }
 
     fun onWebNavigationRequested(url: String): Boolean {
+        if (isForeignApprovalPage(url)) {
+            triggerEvent(ExitWithResult(FOREIGN_HOST_RESULT))
+            return true
+        }
         return recoverAuthorizationIfNeeded(url)
+    }
+
+    // Logins may pass through other hosts (SSO, hosted 2FA). Only the approval page itself, which creates the
+    // password and hands it to the redirect, has to stay within the WordPress the app already checked.
+    private fun isForeignApprovalPage(url: String): Boolean {
+        if (!ApplicationPasswordSiteMatcher.isApprovalPage(url)) return false
+        val approvalSite = ApplicationPasswordSiteMatcher.approvalSiteUrl(
+            _viewState.value.applicationPasswordAuthorizationUrl
+        )
+        return !ApplicationPasswordSiteMatcher.isWithinSite(approvalSite, url)
     }
 
     fun onNavigationButtonClicked() {
@@ -157,5 +176,6 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
 
     companion object {
         private const val REDIRECTION_URL = "woocommerce://login"
+        const val FOREIGN_HOST_RESULT = "woomob-4508:foreign-host"
     }
 }

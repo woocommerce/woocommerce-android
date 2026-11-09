@@ -9,6 +9,7 @@ class RootWPAPIRestResponse(
     val name: String? = null,
     val description: String? = null,
     val url: String? = null,
+    val home: String? = null,
     @SerializedName("gmt_offset") val gmtOffset: String? = null,
     val namespaces: List<String>? = null,
     val authentication: Authentication? = null,

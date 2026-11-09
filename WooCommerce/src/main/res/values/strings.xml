@@ -420,6 +420,7 @@
     <string name="login_site_credentials_fetching_site_failed">An error occurred while fetching your website</string>
     <string name="login_site_credentials_fetching_site">Fetching site…</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Unable to login because application password creation is not approved.</string>
+    <string name="login_site_credentials_web_authorization_site_mismatch">This approval page belongs to a different site. For your safety, we stopped the login.</string>
     <string name="login_unexpected_response_title">Unable to log in</string>
     <string name="login_unexpected_response_message">Your store returned an unexpected response, so we couldn\'t finish logging you in. Try again or contact support for help.</string>
     <string name="login_app_login_malformed_link">We couldn\'t process your app login request</string>
