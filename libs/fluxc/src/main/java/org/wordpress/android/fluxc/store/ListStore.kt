@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import androidx.paging.PagedList.BoundaryCallback
-import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -148,16 +147,15 @@ class ListStore @Inject internal constructor(
     ): PagedListFactory<LIST_DESCRIPTOR, ITEM_IDENTIFIER, LIST_ITEM> {
         return PagedListFactory(
                 createDataSource = {
-                    runBlocking {
-                        val remoteItemIds = listDao.getListItems(listDescriptor)
-                        val isListFullyFetched = getListState(listDescriptor) == ListState.FETCHED
-                        InternalPagedListDataSource(
-                                listDescriptor = listDescriptor,
-                                remoteItemIds = remoteItemIds.map { RemoteId(value = it.remoteItemId) },
-                                isListFullyFetched = isListFullyFetched,
-                                itemDataSource = dataSource
-                        )
-                    }
+                    val remoteItemIds = listDao.getListItemsBlocking(listDescriptor)
+                    val isListFullyFetched =
+                        resolveListState(listDao.getListBlocking(listDescriptor)) == ListState.FETCHED
+                    InternalPagedListDataSource(
+                            listDescriptor = listDescriptor,
+                            remoteItemIds = remoteItemIds.map { RemoteId(value = it.remoteItemId) },
+                            isListFullyFetched = isListFullyFetched,
+                            itemDataSource = dataSource
+                    )
                 })
     }
 
@@ -288,8 +286,10 @@ class ListStore @Inject internal constructor(
     /**
      * A helper function that returns the [ListState] for the given [ListDescriptor].
      */
-    suspend fun getListState(listDescriptor: ListDescriptor): ListState {
-        val listModel = listDao.getList(listDescriptor)
+    suspend fun getListState(listDescriptor: ListDescriptor): ListState =
+        resolveListState(listDao.getList(listDescriptor))
+
+    private fun resolveListState(listModel: ListModel?): ListState {
         val currentState = listModel?.let {
             requireNotNull(ListState.entries.firstOrNull { it.value == listModel.stateDbValue }) {
                 "The stateDbValue of the ListModel didn't match any of the `ListState`s. This likely happened " +

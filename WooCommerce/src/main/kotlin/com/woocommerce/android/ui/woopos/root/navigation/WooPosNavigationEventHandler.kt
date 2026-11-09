@@ -6,6 +6,8 @@ import com.woocommerce.android.ui.woopos.cardpayment.navigateToCardPaymentScreen
 import com.woocommerce.android.ui.woopos.cashpayment.navigateToCashPaymentScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.authenticatedwebview.navigateToWebViewScreen
 import com.woocommerce.android.ui.woopos.emailreceipt.navigateToEmailReceipt
+import com.woocommerce.android.ui.woopos.home.items.customamount.closeCustomAmountScreen
+import com.woocommerce.android.ui.woopos.home.items.customamount.navigateToCustomAmountScreen
 import com.woocommerce.android.ui.woopos.home.navigateToEligibilityScreen
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreen
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreenAfterSuccessfulCashPayment
@@ -63,6 +65,12 @@ fun NavHostController.handleNavigationEvent(
 
         is WooPosNavigationEvent.OpenSettings ->
             navigateToSettingsScreen()
+
+        is WooPosNavigationEvent.OpenCustomAmount ->
+            navigateToCustomAmountScreen(event.mode)
+
+        is WooPosNavigationEvent.CloseCustomAmount ->
+            closeCustomAmountScreen()
 
         is WooPosNavigationEvent.OpenOrders ->
             navigateToOrdersScreen()
