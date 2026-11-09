@@ -98,10 +98,15 @@ object UnexpectedStoreResponseExcerpt {
 
     private class Tag(val name: String, val isClosing: Boolean, attributes: String, val start: Int, val end: Int) {
         val isEmpty = name in VOID_ELEMENTS || attributes.trimEnd().endsWith('/')
-        val isHiddenStart = !isClosing &&
-            (HIDDEN_ATTRIBUTE_PATTERN.containsMatchIn(attributes.replace(QUOTED_VALUE_PATTERN, "")) ||
-                HIDDEN_STYLE_PATTERN.containsMatchIn(attributes))
+        val isHiddenStart = !isClosing && (attributes.hasHiddenAttribute() || attributes.hasHiddenStyle())
     }
+
+    private fun String.hasHiddenAttribute(): Boolean =
+        contains("hidden", ignoreCase = true) &&
+            HIDDEN_ATTRIBUTE_PATTERN.containsMatchIn(replace(QUOTED_VALUE_PATTERN, ""))
+
+    private fun String.hasHiddenStyle(): Boolean =
+        contains("style", ignoreCase = true) && HIDDEN_STYLE_PATTERN.containsMatchIn(this)
 
     /**
      * Replaces each tag with a space. A tag that is never closed drops the rest of the page.
