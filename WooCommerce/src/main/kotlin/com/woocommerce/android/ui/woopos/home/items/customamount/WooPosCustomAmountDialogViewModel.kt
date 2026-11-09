@@ -54,7 +54,6 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
             WooPosCustomAmountUIEvent.NameConfirmed -> onNameConfirmed()
             WooPosCustomAmountUIEvent.NameBackClicked -> onNameBack()
             WooPosCustomAmountUIEvent.SubmitClicked -> onSubmit()
-            WooPosCustomAmountUIEvent.Closed -> onDismissed()
         }
     }
 
@@ -166,11 +165,6 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
                 _state.value = _state.value.copy(isSubmitting = false)
             }
         }
-    }
-
-    private fun onDismissed() {
-        hasInitializedFor = null
-        _state.value = _state.value.copy(isSubmitted = false)
     }
 
     private fun defaultName(): String =

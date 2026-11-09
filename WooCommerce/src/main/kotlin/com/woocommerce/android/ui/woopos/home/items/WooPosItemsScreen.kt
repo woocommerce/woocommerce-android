@@ -29,9 +29,6 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreen
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreenContentPreview
 import com.woocommerce.android.ui.woopos.home.items.coupons.search.WooPosCouponsSearchContentPreview
 import com.woocommerce.android.ui.woopos.home.items.coupons.search.WooPosCouponsSearchScreen
-import com.woocommerce.android.ui.woopos.home.items.customamount.WooPosCustomAmountDialogState
-import com.woocommerce.android.ui.woopos.home.items.customamount.WooPosCustomAmountFormScreen
-import com.woocommerce.android.ui.woopos.home.items.customamount.toEditMode
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosItemsScreenPreview
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreen
@@ -177,13 +174,6 @@ private fun MainItemsList(
                         modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
                         variableProductData = data,
                         onBackClicked = onBackClicked,
-                    )
-                },
-                customAmountFormContent = { editing ->
-                    WooPosCustomAmountFormScreen(
-                        mode = editing?.toEditMode() ?: WooPosCustomAmountDialogState.Mode.Add,
-                        onBackClick = onBackClicked,
-                        onSubmitted = {},
                     )
                 },
             )

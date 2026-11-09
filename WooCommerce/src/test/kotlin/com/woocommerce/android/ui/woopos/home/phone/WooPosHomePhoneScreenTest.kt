@@ -7,36 +7,27 @@ import org.junit.Test
 class WooPosHomePhoneScreenTest {
 
     @Test
-    fun `given Cart position and custom amount form closed, when mapping screen, then Cart`() {
+    fun `given Products position, when mapping screen, then Products`() {
         // WHEN
-        val result = phoneScreenFor(ScreenPositionState.Cart, isCustomAmountFormOpen = false)
+        val result = phoneScreenFor(ScreenPositionState.Products)
+
+        // THEN
+        assertThat(result).isEqualTo(WooPosPhoneScreen.Products)
+    }
+
+    @Test
+    fun `given Cart position, when mapping screen, then Cart`() {
+        // WHEN
+        val result = phoneScreenFor(ScreenPositionState.Cart)
 
         // THEN
         assertThat(result).isEqualTo(WooPosPhoneScreen.Cart)
     }
 
     @Test
-    fun `given Cart position and custom amount form open, when mapping screen, then Products`() {
+    fun `given Checkout position, when mapping screen, then Checkout`() {
         // WHEN
-        val result = phoneScreenFor(ScreenPositionState.Cart, isCustomAmountFormOpen = true)
-
-        // THEN
-        assertThat(result).isEqualTo(WooPosPhoneScreen.Products)
-    }
-
-    @Test
-    fun `given Products position and custom amount form open, when mapping screen, then Products`() {
-        // WHEN
-        val result = phoneScreenFor(ScreenPositionState.Products, isCustomAmountFormOpen = true)
-
-        // THEN
-        assertThat(result).isEqualTo(WooPosPhoneScreen.Products)
-    }
-
-    @Test
-    fun `given Checkout position and custom amount form open, when mapping screen, then Checkout`() {
-        // WHEN
-        val result = phoneScreenFor(ScreenPositionState.Checkout.CartWithTotals, isCustomAmountFormOpen = true)
+        val result = phoneScreenFor(ScreenPositionState.Checkout.CartWithTotals)
 
         // THEN
         assertThat(result).isEqualTo(WooPosPhoneScreen.Checkout)

@@ -91,8 +91,7 @@ class WooPosProductsViewModel @Inject constructor(
                     is ParentToChildrenEvent.MissingVariationEvent,
                     is ParentToChildrenEvent.ProductsRemoved,
                     is ParentToChildrenEvent.SettingsEvent,
-                    is ParentToChildrenEvent.CustomAmountSubmitted,
-                    is ParentToChildrenEvent.ShowCustomAmountForm -> Unit
+                    is ParentToChildrenEvent.CustomAmountSubmitted -> Unit
                 }
             }
         }

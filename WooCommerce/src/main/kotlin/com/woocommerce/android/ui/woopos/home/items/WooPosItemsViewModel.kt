@@ -3,13 +3,11 @@ package com.woocommerce.android.ui.woopos.home.items
 import android.os.Parcelable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.SearchState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
@@ -22,7 +20,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
-import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -45,7 +42,6 @@ class WooPosItemsViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
     private val dateTimeProvider: DateTimeProvider,
-    private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
     private var preservedStateBeforeOpeningSubScreen: WooPosItemsToolbarViewState? = null
     private val _viewState = MutableStateFlow<WooPosItemsToolbarViewState>(initialState())
@@ -147,15 +143,8 @@ class WooPosItemsViewModel @Inject constructor(
                     is ParentToChildrenEvent.BarcodeEvent,
                     is ParentToChildrenEvent.MissingVariationEvent,
                     is ParentToChildrenEvent.RemoveProductsClicked,
-                    is ParentToChildrenEvent.ProductsRemoved -> Unit
-
-                    is ParentToChildrenEvent.CustomAmountSubmitted -> {
-                        if (_viewState.value is WooPosItemsToolbarViewState.CustomAmountForm) {
-                            navigateBackFromSubScreen()
-                        }
-                    }
-
-                    is ParentToChildrenEvent.ShowCustomAmountForm -> openCustomAmountForm(event.editing)
+                    is ParentToChildrenEvent.ProductsRemoved,
+                    is ParentToChildrenEvent.CustomAmountSubmitted -> Unit
 
                     ParentToChildrenEvent.RefreshProductList,
                     is ParentToChildrenEvent.SettingsEvent.RetrySyncRequested -> refreshBannerState()
@@ -166,22 +155,6 @@ class WooPosItemsViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    private fun openCustomAmountForm(editing: WooPosCartItemViewState.CustomAmount?) {
-        searchHelper.updateLoadingState(isLoading = false)
-        if (_viewState.value !is WooPosItemsToolbarViewState.CustomAmountForm) {
-            preservedStateBeforeOpeningSubScreen = _viewState.value
-        }
-        _viewState.value = WooPosItemsToolbarViewState.CustomAmountForm(
-            tabs = listOf(
-                Tab.Variations(
-                    name = resourceProvider.getString(R.string.woopos_custom_amount_form_title),
-                    highlightLevel = Tab.HighlightLevel.Full,
-                )
-            ),
-            editing = editing,
-        )
     }
 
     private fun handleItemClicked(event: ParentToChildrenEvent.ItemClickedInItemsList) {
@@ -217,7 +190,6 @@ class WooPosItemsViewModel @Inject constructor(
                 is WooPosItemsToolbarViewState.ProductList -> WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT
                 is WooPosItemsToolbarViewState.CouponList -> WooPosAnalyticsEventConstant.ItemsListSource.COUPON
                 is WooPosItemsToolbarViewState.VariationList -> WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT
-                is WooPosItemsToolbarViewState.CustomAmountForm -> WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT
             }
             val event = SearchButtonTapped(source = source)
             analyticsTracker.track(event)
@@ -228,8 +200,7 @@ class WooPosItemsViewModel @Inject constructor(
         // No-op if we're not actually on a sub-screen — guards against races where a back-event arrives
         // after the items list has already been restored (e.g. submit + back fired in quick succession).
         when (_viewState.value) {
-            is WooPosItemsToolbarViewState.VariationList,
-            is WooPosItemsToolbarViewState.CustomAmountForm -> {
+            is WooPosItemsToolbarViewState.VariationList -> {
                 _viewState.value = preservedStateBeforeOpeningSubScreen ?: initialState()
                 preservedStateBeforeOpeningSubScreen = null
             }

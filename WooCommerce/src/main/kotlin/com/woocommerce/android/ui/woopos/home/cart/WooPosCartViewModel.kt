@@ -268,8 +268,6 @@ class WooPosCartViewModel @Inject constructor(
                     is ParentToChildrenEvent.ProductsRemoved -> Unit
 
                     is ParentToChildrenEvent.CustomAmountSubmitted -> handleCustomAmountSubmitted(event)
-
-                    is ParentToChildrenEvent.ShowCustomAmountForm -> Unit
                 }
             }
         }

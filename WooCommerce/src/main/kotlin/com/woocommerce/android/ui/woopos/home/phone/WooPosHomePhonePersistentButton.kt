@@ -43,12 +43,7 @@ class WooPosPhonePersistentButtonStateResolver(
     fun resolve(
         screenPositionState: WooPosHomeState.ScreenPositionState,
         cartState: WooPosCartState?,
-        isCustomAmountFormOpen: Boolean = false,
-    ): WooPosPhonePersistentButtonState = if (isCustomAmountFormOpen) {
-        WooPosPhonePersistentButtonState.Hidden
-    } else {
-        resolveForScreen(screenPositionState, cartState)
-    }
+    ): WooPosPhonePersistentButtonState = resolveForScreen(screenPositionState, cartState)
 
     private fun resolveForScreen(
         screenPositionState: WooPosHomeState.ScreenPositionState,
