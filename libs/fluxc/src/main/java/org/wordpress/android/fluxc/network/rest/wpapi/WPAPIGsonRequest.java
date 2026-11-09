@@ -92,7 +92,8 @@ public class WPAPIGsonRequest<T> extends GsonRequest<T> {
      * Volley calls this on the network thread, so the excerpt is built before the error reaches the main thread.
      */
     @Override
-    protected VolleyError parseNetworkError(VolleyError volleyError) {
+    @NonNull
+    protected VolleyError parseNetworkError(@NonNull VolleyError volleyError) {
         NetworkResponse response = volleyError.networkResponse;
         mUnexpectedStoreResponse =
                 response != null ? UnexpectedStoreResponse.from(response, getMethod(), getUrl()) : null;
