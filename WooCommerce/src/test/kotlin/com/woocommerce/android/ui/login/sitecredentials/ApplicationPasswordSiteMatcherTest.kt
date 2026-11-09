@@ -248,6 +248,17 @@ class ApplicationPasswordSiteMatcherTest {
     }
 
     @Test
+    fun `given an authorization URL with a user name, when approvalSiteUrl, then returns null`() {
+        // WHEN
+        val result = ApplicationPasswordSiteMatcher.approvalSiteUrl(
+            "https://x@site.example/wp-admin/authorize-application.php"
+        )
+
+        // THEN
+        assertThat(result).isNull()
+    }
+
+    @Test
     fun `given the approval page without an admin directory, when approvalSiteUrl, then returns null`() {
         // WHEN
         val result = ApplicationPasswordSiteMatcher.approvalSiteUrl("https://site.example/authorize-application.php")
@@ -350,6 +361,28 @@ class ApplicationPasswordSiteMatcherTest {
         // WHEN
         val result = ApplicationPasswordSiteMatcher.isApprovalPage(
             "https://site.example/wp-admin/authorize-application%2Ephp"
+        )
+
+        // THEN
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `given a user name before the host, when isApprovalPage, then returns true`() {
+        // WHEN
+        val result = ApplicationPasswordSiteMatcher.isApprovalPage(
+            "https://x@site.example/wp-admin/authorize-application.php"
+        )
+
+        // THEN
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `given a user name and password before the host, when isApprovalPage, then returns true`() {
+        // WHEN
+        val result = ApplicationPasswordSiteMatcher.isApprovalPage(
+            "https://x:y@site.example/wp-admin/authorize-application.php"
         )
 
         // THEN

@@ -334,6 +334,59 @@ class ApplicationPasswordTutorialViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given authorization page on a host, when its approval page is requested with a user name, then block it`() =
+        testBlocking {
+            setup()
+            givenWebViewData()
+            val urlWithUserName = "https://x@site.example/wp-admin/authorize-application.php?app_name=woo"
+
+            // WHEN
+            val event = viewModel.event.runAndCaptureValues {
+                val intercepted = viewModel.onWebNavigationRequested(urlWithUserName)
+
+                // THEN
+                assertThat(intercepted).isTrue()
+            }.last()
+            assertThat(event).isEqualTo(ExitWithResult(ApplicationPasswordTutorialViewModel.FOREIGN_HOST_RESULT))
+        }
+
+    @Test
+    fun `given authorization page on a host, when its approval page loads with a user name, then exit as foreign host`() =
+        testBlocking {
+            setup()
+            givenWebViewData()
+            val urlWithUserName = "https://x@site.example/wp-admin/authorize-application.php?app_name=woo"
+
+            // WHEN
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onWebPageLoaded(urlWithUserName)
+            }.last()
+
+            // THEN
+            assertThat(event).isEqualTo(ExitWithResult(ApplicationPasswordTutorialViewModel.FOREIGN_HOST_RESULT))
+        }
+
+    @Test
+    fun `given authorization page on another site, when the real store's approval page has a user name, then block it`() =
+        testBlocking {
+            setup()
+            givenWebViewData(
+                applicationPasswordAuthorizationUrl = "https://other.example/wp-admin/authorize-application.php"
+            )
+            val urlWithUserName = "https://x@site.example/wp-admin/authorize-application.php" +
+                "?success_url=https://other.example/"
+
+            // WHEN
+            val event = viewModel.event.runAndCaptureValues {
+                val intercepted = viewModel.onWebNavigationRequested(urlWithUserName)
+
+                // THEN
+                assertThat(intercepted).isTrue()
+            }.last()
+            assertThat(event).isEqualTo(ExitWithResult(ApplicationPasswordTutorialViewModel.FOREIGN_HOST_RESULT))
+        }
+
+    @Test
     fun `given a subsite's authorization page, when a sibling subsite's approval page is requested, then block it`() =
         testBlocking {
             setup()

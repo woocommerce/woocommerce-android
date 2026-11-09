@@ -26,10 +26,13 @@ object ApplicationPasswordSiteMatcher {
 
     /**
      * True for WordPress's approval page, also when the server is given extra path after it. Checked before `..` is
-     * resolved, because some servers run the page and pass the rest as extra path.
+     * resolved, because some servers run the page and pass the rest as extra path. Also true when the URL has a user
+     * name.
      */
     fun isApprovalPage(url: String?): Boolean =
-        url?.toSiteUrl()?.serverPath(resolveDots = false).orEmpty().any { it.equals(APPROVAL_PAGE, ignoreCase = true) }
+        url?.toUrlWithDefaultScheme()?.serverPath(resolveDots = false).orEmpty().any {
+            it.equals(APPROVAL_PAGE, ignoreCase = true)
+        }
 
     /**
      * The WordPress address that serves [authorizationUrl], which is that address followed by the admin
@@ -50,12 +53,14 @@ object ApplicationPasswordSiteMatcher {
             .trimEnd('/')
     }
 
-    private fun String.toSiteUrl(): HttpUrl? {
+    private fun String.toSiteUrl(): HttpUrl? =
+        toUrlWithDefaultScheme()?.takeIf { it.username.isEmpty() && it.password.isEmpty() }
+
+    private fun String.toUrlWithDefaultScheme(): HttpUrl? {
         val trimmed = trim()
         if (trimmed.isEmpty()) return null
         val withScheme = if (trimmed.contains("://")) trimmed else "https://$trimmed"
         return withScheme.toHttpUrlOrNull()
-            ?.takeIf { it.username.isEmpty() && it.password.isEmpty() }
     }
 
     private fun HttpUrl.comparableHost(): String = host.lowercase().removePrefix(WWW_PREFIX)
