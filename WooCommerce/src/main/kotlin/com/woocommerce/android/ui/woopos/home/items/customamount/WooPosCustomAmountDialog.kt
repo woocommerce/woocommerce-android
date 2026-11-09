@@ -47,37 +47,37 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import java.math.BigDecimal
 
 @Composable
 fun WooPosCustomAmountFormScreen(
-    editing: WooPosCartItemViewState.CustomAmount?,
+    mode: WooPosCustomAmountDialogState.Mode,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onSubmitted: () -> Unit = {},
+    onSubmitted: () -> Unit,
     submitButtonPadding: PaddingValues = defaultSubmitButtonPadding(),
     viewModel: WooPosCustomAmountDialogViewModel = hiltViewModel(),
 ) {
-    LaunchedEffect(editing?.itemNumber) {
-        viewModel.initializeFor(editing)
+    LaunchedEffect(mode) {
+        viewModel.initializeFor(mode)
     }
 
     // Reset the VM init sentinel whenever the form leaves composition — covers back gestures, submit
     // success, and any external navigation. Without this, opening the form again for the same item
     // (or a fresh "add" after a cancel) would short-circuit `initializeFor` and reuse stale state.
     DisposableEffect(Unit) {
-        onDispose { viewModel.onDismissed() }
+        onDispose { viewModel.onUIEvent(WooPosCustomAmountUIEvent.Closed) }
     }
 
     val state by viewModel.state.collectAsState()
 
+    LaunchedEffect(state.isSubmitted) {
+        if (state.isSubmitted) onSubmitted()
+    }
+
     WooPosCustomAmountFormScreen(
         state = state,
-        onAmountChanged = viewModel::onAmountChanged,
-        onNameChanged = viewModel::onNameChanged,
-        onTaxableToggled = viewModel::onTaxableToggled,
-        onSubmit = { viewModel.onSubmit(onSubmitted) },
+        onUIEvent = viewModel::onUIEvent,
         onBackClick = onBackClick,
         modifier = modifier,
         submitButtonPadding = submitButtonPadding,
@@ -87,10 +87,7 @@ fun WooPosCustomAmountFormScreen(
 @Composable
 fun WooPosCustomAmountFormScreen(
     state: WooPosCustomAmountDialogState,
-    onAmountChanged: (BigDecimal?) -> Unit,
-    onNameChanged: (String) -> Unit,
-    onTaxableToggled: (Boolean) -> Unit,
-    onSubmit: () -> Unit,
+    onUIEvent: (WooPosCustomAmountUIEvent) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     submitButtonPadding: PaddingValues = defaultSubmitButtonPadding(),
@@ -112,21 +109,24 @@ fun WooPosCustomAmountFormScreen(
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
             AmountSection(
                 state = state,
-                onAmountChanged = onAmountChanged,
+                onAmountChanged = { onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(it)) },
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
             HorizontalDivider(
                 color = WooPosTheme.colors.outlineVariant,
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
-            TaxesToggle(isTaxable = state.isTaxable, onToggled = onTaxableToggled)
+            TaxesToggle(
+                isTaxable = state.isTaxable,
+                onToggled = { onUIEvent(WooPosCustomAmountUIEvent.TaxableToggled(it)) },
+            )
             HorizontalDivider(
                 color = WooPosTheme.colors.outlineVariant,
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
             NameSection(
                 value = state.name,
-                onNameChanged = onNameChanged,
+                onNameChanged = { onUIEvent(WooPosCustomAmountUIEvent.NameChanged(it)) },
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
         }
@@ -140,7 +140,7 @@ fun WooPosCustomAmountFormScreen(
                     .fillMaxWidth()
                     .padding(submitButtonPadding),
                 state = state,
-                onSubmit = onSubmit,
+                onSubmit = { onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked) },
             )
         }
     }

@@ -57,6 +57,29 @@ class ListDaoTest {
 
     // endregion
 
+    // region getListBlocking
+    @Test
+    fun `given no list exists, when get list blocking, then returns null`() {
+        val result = dao.getListBlocking(testDescriptor)
+
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `given list inserted, when get list blocking, then returns list`() = runTest {
+        dao.insertOrUpdateList(testDescriptor, ListState.CAN_LOAD_MORE, LAST_MODIFIED)
+
+        val result = dao.getListBlocking(testDescriptor)
+
+        assertThat(result).isNotNull()
+        assertThat(result!!.descriptorUniqueIdentifierDbValue).isEqualTo(testDescriptor.uniqueIdentifier.value)
+        assertThat(result.descriptorTypeIdentifierDbValue).isEqualTo(testDescriptor.typeIdentifier.value)
+        assertThat(result.lastModified).isEqualTo(LAST_MODIFIED)
+        assertThat(result.stateDbValue).isEqualTo(ListState.CAN_LOAD_MORE.value)
+    }
+
+    // endregion
+
     // region insertOrUpdateList
     @Test
     fun `given existing list, when update list state, then state is updated`() = runTest {
@@ -128,7 +151,7 @@ class ListDaoTest {
             ListItemModel(listId = list.id, remoteItemId = 20L)
         ))
 
-        val result = dao.getListItems(testDescriptor)
+        val result = dao.getListItemsBlocking(testDescriptor)
 
         assertThat(result).hasSize(2)
         assertThat(result.map { it.remoteItemId }).containsExactly(10L, 20L)
@@ -136,7 +159,7 @@ class ListDaoTest {
 
     @Test
     fun `given no list exists, when get list items, then returns empty`() = runTest {
-        val result = dao.getListItems(testDescriptor)
+        val result = dao.getListItemsBlocking(testDescriptor)
 
         assertThat(result).isEmpty()
     }

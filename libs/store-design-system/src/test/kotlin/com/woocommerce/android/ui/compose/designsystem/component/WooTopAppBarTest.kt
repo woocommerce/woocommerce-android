@@ -230,6 +230,15 @@ class WooTopAppBarTest {
     }
 
     @Test
+    fun `given a title with line breaks, when rendered, then its lines are joined with spaces`() {
+        // GIVEN
+        givenHeader(title = "ACTOR NAME\nFilm Title (Year)")
+
+        // THEN
+        composeTestRule.onNodeWithText("ACTOR NAME Film Title (Year)").assertExists()
+    }
+
+    @Test
     fun `given fixed LTR header, when rendered, then title has a 16dp edge and action has a 48dp target`() {
         val density = givenHeader(showAction = true)
         val expectedEdge = LOGICAL_EDGE_DP * density

@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.products.images
 
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -11,11 +13,16 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Index
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.MediaModel
 
 @ExperimentalCoroutinesApi
 class ProductImagesViewModelTest : BaseUnitTest() {
@@ -32,22 +39,37 @@ class ProductImagesViewModelTest : BaseUnitTest() {
     private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
+    private val uploadedMedia = MediaModel(
+        0,
+        100L,
+        0L,
+        "2026-11-04T10:00:00+0000",
+        "https://example.com/uploaded.jpg",
+        "uploaded.jpg",
+        "image/jpeg",
+        null,
+        "",
+        ""
+    )
 
-    private fun savedState(productImages: List<Product.Image>) = ProductImagesFragmentArgs(
+    private fun savedState(productImages: List<Product.Image>, requestCode: Int) = ProductImagesFragmentArgs(
         remoteId = 0,
         images = productImages.toTypedArray(),
         selectedImage = null,
         showChooser = false,
-        requestCode = 123
+        requestCode = requestCode
     ).toSavedStateHandle()
 
-    private fun initialize(productImages: List<Product.Image> = DEFAULT_PRODUCT_IMAGES) {
+    private fun initialize(
+        productImages: List<Product.Image> = DEFAULT_PRODUCT_IMAGES,
+        requestCode: Int = 123
+    ) {
         viewModel = ProductImagesViewModel(
             networkStatus,
             mediaFileUploadHandler,
             resourceProvider,
             analyticsTracker,
-            savedState(productImages)
+            savedState(productImages, requestCode)
         ).apply {
             viewStateData.observeForever { _, _ -> }
         }
@@ -86,6 +108,22 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
         observeEvents { event ->
             assertThat(event).isEqualTo(MultiLiveEvent.Event.ExitWithResult(images - images[0]))
+        }
+    }
+
+    @Test
+    fun `given an image was uploaded, when it is removed and back is clicked, then exit with the remaining images`() {
+        // GIVEN
+        whenever(mediaFileUploadHandler.observeSuccessfulUploads(any())).thenReturn(flowOf(uploadedMedia))
+        initialize(requestCode = RequestCodes.PRODUCT_DETAIL_IMAGES)
+
+        // WHEN
+        viewModel.onImageRemoved(uploadedMedia.mediaId)
+        viewModel.onNavigateBackButtonClicked()
+
+        // THEN
+        observeEvents { event ->
+            assertThat(event).isEqualTo(MultiLiveEvent.Event.ExitWithResult(DEFAULT_PRODUCT_IMAGES))
         }
     }
 
@@ -246,6 +284,25 @@ class ProductImagesViewModelTest : BaseUnitTest() {
             assertThat(state.images).isEqualTo(images)
         }
     }
+
+    @Test
+    fun `given an image finished uploading while dragging, when dragging is cancelled, then the image is kept`() =
+        testBlocking {
+            // GIVEN
+            val successfulUploads = MutableSharedFlow<MediaModel>()
+            whenever(mediaFileUploadHandler.observeSuccessfulUploads(any())).thenReturn(successfulUploads)
+            initialize(requestCode = RequestCodes.PRODUCT_DETAIL_IMAGES)
+            viewModel.onGalleryImageDragStarted()
+            successfulUploads.emit(uploadedMedia)
+
+            // WHEN
+            viewModel.onNavigateBackButtonClicked()
+
+            // THEN
+            observeState { state ->
+                assertThat(state.images).isEqualTo(DEFAULT_PRODUCT_IMAGES + uploadedMedia.toAppModel())
+            }
+        }
 
     @Test
     fun `Send tracks event upon exit if there was no changes`() {
