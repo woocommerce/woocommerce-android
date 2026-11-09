@@ -73,6 +73,8 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var debugInstallReferrerClickTimestampSeconds by AppPrefs::debugInstallReferrerClickTimestampSeconds
 
+    var suggestedStoreLoginUrl by AppPrefs::suggestedStoreLoginUrl
+
     fun getAppInstallationDate() = AppPrefs.installationDate
 
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
