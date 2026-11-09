@@ -1113,6 +1113,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             verify(userEligibilityFetcher, times(1)).fetchUserInfo(any())
             verify(selectedSite, times(0)).set(any())
             verify(appPrefsWrapper, times(0)).removeLoginSiteAddress()
+            verify(suggestedStoreLogin, never()).end()
             assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
             assertThat(isProgressShown).containsExactly(false, true, false)
         }
@@ -1156,6 +1157,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             verify(selectedSite, times(0)).set(any())
             verify(userEligibilityFetcher, times(0)).fetchUserInfo(any())
             verify(appPrefsWrapper, times(0)).removeLoginSiteAddress()
+            verify(suggestedStoreLogin, never()).end()
 
             assertThat(viewModel.isWooUpgradeDialogVisible.value).isEqualTo(true)
             assertThat(isProgressShown).containsExactly(false, true, false)

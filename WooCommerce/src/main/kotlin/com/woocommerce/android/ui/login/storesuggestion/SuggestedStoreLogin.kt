@@ -24,4 +24,10 @@ class SuggestedStoreLogin @Inject constructor(
         if (!isActive) end()
         return isActive
     }
+
+    fun followRedirect(submittedUrl: String, finalUrl: String): Boolean {
+        val isRedirected = !SuggestedHostMatcher.isSameHost(submittedUrl = submittedUrl, finalUrl = finalUrl)
+        if (isRedirected) start(finalUrl)
+        return isRedirected
+    }
 }

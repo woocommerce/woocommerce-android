@@ -114,6 +114,40 @@ class SuggestedStoreLoginTest {
         assertThat(sut.isActiveFor(OTHER_HOST)).isTrue()
     }
 
+    @Test
+    fun `given login started, when followRedirect to a new host, then returns true`() {
+        sut.start(STORE_HOST)
+
+        assertThat(sut.followRedirect(submittedUrl = STORE_HOST, finalUrl = OTHER_HOST)).isTrue()
+    }
+
+    @Test
+    fun `given login started, when followRedirect to a new host, then only the target is active`() {
+        sut.start(STORE_HOST)
+
+        sut.followRedirect(submittedUrl = STORE_HOST, finalUrl = OTHER_HOST)
+
+        assertThat(sut.isActiveFor(STORE_HOST)).isFalse()
+        assertThat(sut.isActiveFor(OTHER_HOST)).isTrue()
+    }
+
+    @Test
+    fun `given login started, when followRedirect differs only by www, then returns false`() {
+        sut.start(STORE_HOST)
+
+        assertThat(sut.followRedirect(submittedUrl = STORE_HOST, finalUrl = "www.$STORE_HOST")).isFalse()
+    }
+
+    @Test
+    fun `given login started, when followRedirect differs only by www, then the original stays stored`() {
+        sut.start(STORE_HOST)
+
+        sut.followRedirect(submittedUrl = STORE_HOST, finalUrl = "www.$STORE_HOST")
+
+        assertThat(storedUrl).isEqualTo(STORE_HOST)
+        assertThat(sut.isActiveFor(STORE_HOST)).isTrue()
+    }
+
     private companion object {
         const val STORE_HOST = "store.com"
         const val OTHER_HOST = "other.com"

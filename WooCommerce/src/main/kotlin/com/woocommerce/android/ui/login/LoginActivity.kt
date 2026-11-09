@@ -66,7 +66,6 @@ import com.woocommerce.android.ui.login.qrlogin.QrLoginPrologueFragment
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerFragment
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
-import com.woocommerce.android.ui.login.storesuggestion.SuggestedHostMatcher
 import com.woocommerce.android.ui.login.storesuggestion.SuggestedStoreLogin
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.notifications.push.RegisterDevice
@@ -813,8 +812,7 @@ class LoginActivity :
         val isSuggestedLogin = suggestedStoreLogin.onAddressSubmitted(result.url)
         if (isSuggestedLogin) {
             val finalUrl = result.urlAfterRedirects ?: result.url
-            if (!SuggestedHostMatcher.isSameHost(submittedUrl = result.url, finalUrl = finalUrl)) {
-                suggestedStoreLogin.start(finalUrl)
+            if (suggestedStoreLogin.followRedirect(submittedUrl = result.url, finalUrl = finalUrl)) {
                 AnalyticsTracker.track(AnalyticsEvent.LOGIN_STORE_SUGGESTION_HOST_CHANGED)
                 (getLoginViaSiteAddressFragment() as? WooLoginSiteAddressFragment)?.showRedirectedSiteAddress(
                     siteAddress = finalUrl,
