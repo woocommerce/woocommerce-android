@@ -25,6 +25,7 @@ internal fun WooPosCustomAmountLayout(
     onSaveClicked: () -> Unit,
     modifier: Modifier = Modifier,
     buttonState: WooPosButtonState = WooPosButtonState.ENABLED,
+    buttonText: String = stringResource(R.string.save),
     content: @Composable (Modifier) -> Unit,
 ) {
     BackHandler { onBackClicked() }
@@ -43,7 +44,7 @@ internal fun WooPosCustomAmountLayout(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(WooPosSpacing.Medium.value),
-            text = stringResource(R.string.save),
+            text = buttonText,
             state = buttonState,
             onClick = onSaveClicked,
         )

@@ -56,6 +56,12 @@ fun WooPosCustomAmountDetailsScreen(
     WooPosCustomAmountLayout(
         modifier = modifier,
         title = stringResource(R.string.woopos_custom_amount_details_title),
+        buttonText = stringResource(
+            when (state.mode) {
+                is WooPosCustomAmountDialogState.Mode.Edit -> R.string.woopos_custom_amount_dialog_submit_edit
+                WooPosCustomAmountDialogState.Mode.Add -> R.string.woopos_custom_amount_dialog_submit_add
+            }
+        ),
         onBackClicked = onBackClicked,
         onSaveClicked = onSubmit,
         buttonState = when {
