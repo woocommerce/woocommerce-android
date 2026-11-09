@@ -344,6 +344,7 @@ dependencies {
     implementation(libs.bumptech.glide.volley.integration)
     implementation(libs.google.play.app.update)
     implementation(libs.google.play.review)
+    implementation(libs.google.play.install.referrer)
 
     implementation(libs.google.play.services.code.scanner)
 

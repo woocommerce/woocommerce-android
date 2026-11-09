@@ -244,6 +244,12 @@ object AppPrefs {
 
         QR_LOGIN_ROLLOUT_BUCKET,
 
+        INSTALL_REFERRER_CHECKED,
+
+        DEBUG_INSTALL_REFERRER_OVERRIDE,
+
+        DEBUG_INSTALL_REFERRER_CLICK_TIMESTAMP,
+
         // Anonymous device id sent in remote feature flag requests to keep rollout bucketing stable
         REMOTE_FEATURE_FLAGS_DEVICE_ID
     }
@@ -394,6 +400,18 @@ object AppPrefs {
     var remoteFeatureFlagsDeviceId: String
         get() = getString(UndeletablePrefKey.REMOTE_FEATURE_FLAGS_DEVICE_ID, "")
         set(value) = setString(UndeletablePrefKey.REMOTE_FEATURE_FLAGS_DEVICE_ID, value)
+
+    var isInstallReferrerChecked: Boolean
+        get() = getBoolean(UndeletablePrefKey.INSTALL_REFERRER_CHECKED, false)
+        set(value) = setBoolean(UndeletablePrefKey.INSTALL_REFERRER_CHECKED, value)
+
+    var debugInstallReferrerOverride: String
+        get() = getString(UndeletablePrefKey.DEBUG_INSTALL_REFERRER_OVERRIDE, "")
+        set(value) = setString(UndeletablePrefKey.DEBUG_INSTALL_REFERRER_OVERRIDE, value)
+
+    var debugInstallReferrerClickTimestampSeconds: Long
+        get() = getLong(UndeletablePrefKey.DEBUG_INSTALL_REFERRER_CLICK_TIMESTAMP)
+        set(value) = setLong(UndeletablePrefKey.DEBUG_INSTALL_REFERRER_CLICK_TIMESTAMP, value)
 
     var isUserAgeEligibleForAppUse: Boolean
         get() = getBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, default = true)

@@ -571,6 +571,10 @@ class AnalyticsTracker private constructor(
         // -- Onboarding
         const val VALUE_LOGIN_ONBOARDING_IS_FINAL_PAGE = "is_final_page"
 
+        // -- Login store suggestion
+        const val KEY_UTM_CAMPAIGN = "utm_campaign"
+        const val KEY_HAS_SITE_HOST = "has_site_host"
+
         // -- Jetpack Installation
         const val VALUE_JETPACK_INSTALLATION_SOURCE_WEB = "web"
 
