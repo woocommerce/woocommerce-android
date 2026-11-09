@@ -4016,9 +4016,6 @@
     <string name="woopos_cart_item_discount_applied">Discount applied</string>
     <string name="woopos_custom_amount_entry_title">Custom amount</string>
     <string name="woopos_custom_amount_entry_subtitle">Add a one-off charge</string>
-    <string name="woopos_custom_amount_dialog_title_add">Add custom amount</string>
-    <string name="woopos_custom_amount_dialog_title_edit">Edit custom amount</string>
-    <string name="woopos_custom_amount_form_title">Custom amount</string>
     <string name="woopos_custom_amount_details_title">Custom amount details</string>
     <string name="woopos_custom_amount_name_optional">Name (optional)</string>
     <string name="woopos_custom_amount_dialog_amount_label">Amount</string>
@@ -4027,7 +4024,6 @@
     <string name="woopos_custom_amount_dialog_charge_taxes">Charge taxes</string>
     <string name="woopos_custom_amount_dialog_submit_add">Add custom amount</string>
     <string name="woopos_custom_amount_dialog_submit_edit">Update custom amount</string>
-    <string name="woopos_custom_amount_dialog_cancel">Cancel</string>
     <string name="woopos_cart_title">Cart</string>
     <string name="woopos_cart_changes_in_the_cart">There are changes in the cart</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">Unknown scanned item</string>

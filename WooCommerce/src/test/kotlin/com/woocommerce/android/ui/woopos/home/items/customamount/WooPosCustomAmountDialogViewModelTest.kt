@@ -306,28 +306,6 @@ class WooPosCustomAmountDialogViewModelTest {
     }
 
     @Test
-    fun `given submitted, when dismissed and reopened, then form can be submitted again`() = runTest {
-        // GIVEN
-        val sut = createSut()
-        advanceUntilIdle()
-        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
-        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal("3.00")))
-        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
-        advanceUntilIdle()
-
-        // WHEN
-        sut.onUIEvent(WooPosCustomAmountUIEvent.Closed)
-        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
-        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal("4.00")))
-        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
-        advanceUntilIdle()
-
-        // THEN
-        assertThat(sut.state.value.isSubmitted).isTrue()
-        verify(childrenToParentEventSender, times(2)).sendToParent(any())
-    }
-
-    @Test
     fun `given same editing item, when initializeFor called twice, then state is set once`() = runTest {
         // GIVEN
         val sut = createSut()
@@ -419,28 +397,6 @@ class WooPosCustomAmountDialogViewModelTest {
                 editingItemNumber = 7,
             )
         )
-    }
-
-    @Test
-    fun `given dismissed form, when adding again, then amount screen opens with empty fields`() = runTest {
-        // GIVEN
-        val sut = createSut()
-        advanceUntilIdle()
-        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
-        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal("5.00")))
-        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountConfirmed)
-        sut.onUIEvent(WooPosCustomAmountUIEvent.NameChanged("Discarded"))
-        sut.onUIEvent(WooPosCustomAmountUIEvent.TaxableToggled(true))
-        sut.onUIEvent(WooPosCustomAmountUIEvent.Closed)
-
-        // WHEN
-        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
-
-        // THEN
-        assertThat(sut.state.value.screen).isEqualTo(WooPosCustomAmountDialogState.Screen.AMOUNT)
-        assertThat(sut.state.value.amount).isNull()
-        assertThat(sut.state.value.name).isEmpty()
-        assertThat(sut.state.value.isTaxable).isFalse()
     }
 
     @Test

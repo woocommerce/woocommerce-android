@@ -16,8 +16,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitConfirmed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -52,8 +50,6 @@ class WooPosHomeViewModelTest {
     private val preferencesRepository: WooPosPreferencesRepository = mock {
         on { isPaymentSuccessSoundEnabled } doReturn flowOf(true)
     }
-
-    private val featureFlagRepository: FeatureFlagRepository = mock()
 
     private var viewModel: WooPosHomeViewModel? = null
 
@@ -484,10 +480,9 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
-    fun `given full screen flag on, when custom amount requested, then navigate to custom amount screen`() =
+    fun `when custom amount requested, then navigate to custom amount screen`() =
         runTest {
             // GIVEN
-            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_CUSTOM_AMOUNT_FULL_SCREEN)).thenReturn(true)
             val events = MutableSharedFlow<ChildToParentEvent>()
             whenever(childrenToParentEventReceiver.events).thenReturn(events)
             val viewModel = createViewModel()
@@ -501,15 +496,11 @@ class WooPosHomeViewModelTest {
                     ChildToParentEvent.NavigationEvent.ToCustomAmount(WooPosCustomAmountDialogState.Mode.Add)
                 )
             }
-            verify(parentToChildrenEventSender, never()).sendToChildren(
-                argThat { this is ParentToChildrenEvent.ShowCustomAmountForm }
-            )
         }
 
     @Test
-    fun `given full screen flag on, when editing custom amount, then navigation carries edit fields`() = runTest {
+    fun `when editing custom amount, then navigation carries edit fields`() = runTest {
         // GIVEN
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_CUSTOM_AMOUNT_FULL_SCREEN)).thenReturn(true)
         val events = MutableSharedFlow<ChildToParentEvent>()
         whenever(childrenToParentEventReceiver.events).thenReturn(events)
         val viewModel = createViewModel()
@@ -539,24 +530,6 @@ class WooPosHomeViewModelTest {
         }
     }
 
-    @Test
-    fun `given full screen flag off, when custom amount requested, then show in-pane form`() =
-        runTest {
-            // GIVEN
-            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_CUSTOM_AMOUNT_FULL_SCREEN)).thenReturn(false)
-            whenever(childrenToParentEventReceiver.events).thenReturn(
-                flowOf(ChildToParentEvent.CustomAmountDialogRequested())
-            )
-
-            // WHEN
-            createViewModel()
-
-            // THEN
-            verify(parentToChildrenEventSender).sendToChildren(
-                argThat { this is ParentToChildrenEvent.ShowCustomAmountForm }
-            )
-        }
-
     private fun createViewModel(): WooPosHomeViewModel {
         return WooPosHomeViewModel(
             childrenToParentEventReceiver,
@@ -564,7 +537,6 @@ class WooPosHomeViewModelTest {
             analyticsTracker,
             soundHelper,
             preferencesRepository,
-            featureFlagRepository,
             SavedStateHandle()
         ).also { viewModel = it }
     }

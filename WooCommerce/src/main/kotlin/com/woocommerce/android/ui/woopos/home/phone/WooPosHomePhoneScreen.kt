@@ -35,7 +35,6 @@ import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent
 import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewModel
 import com.woocommerce.android.ui.woopos.home.wooPosHomeRootContainer
@@ -77,8 +76,6 @@ private fun WooPosHomePhoneContent(
     val totalsViewModel: WooPosTotalsViewModel = hiltViewModel()
 
     val cartState by cartViewModel.state.observeAsState()
-    val itemsState by itemsViewModel.viewState.collectAsState()
-    val isCustomAmountFormOpen = itemsState is WooPosItemsToolbarViewState.CustomAmountForm
 
     BackHandler {
         when (state.screenPositionState) {
@@ -103,14 +100,13 @@ private fun WooPosHomePhoneContent(
     val persistentButtonState = resolver.resolve(
         screenPositionState = state.screenPositionState,
         cartState = cartState,
-        isCustomAmountFormOpen = isCustomAmountFormOpen,
     )
 
     Box(
         modifier = Modifier.wooPosHomeRootContainer(state, onHomeUIEvent)
     ) {
         AnimatedContent(
-            targetState = phoneScreenFor(state.screenPositionState, isCustomAmountFormOpen),
+            targetState = phoneScreenFor(state.screenPositionState),
             transitionSpec = { screenTransitionFor(initialState, targetState) },
             modifier = Modifier.fillMaxSize(),
             label = "phone_screen_transition",
@@ -151,14 +147,11 @@ private fun WooPosHomePhoneContent(
 
 internal enum class WooPosPhoneScreen { Products, Cart, Checkout }
 
-// The custom amount form lives in the products screen, so it is shown there even when editing from the cart.
 internal fun phoneScreenFor(
     state: WooPosHomeState.ScreenPositionState,
-    isCustomAmountFormOpen: Boolean,
 ): WooPosPhoneScreen = when (state) {
     WooPosHomeState.ScreenPositionState.Products -> WooPosPhoneScreen.Products
-    WooPosHomeState.ScreenPositionState.Cart ->
-        if (isCustomAmountFormOpen) WooPosPhoneScreen.Products else WooPosPhoneScreen.Cart
+    WooPosHomeState.ScreenPositionState.Cart -> WooPosPhoneScreen.Cart
     is WooPosHomeState.ScreenPositionState.Checkout -> WooPosPhoneScreen.Checkout
 }
 

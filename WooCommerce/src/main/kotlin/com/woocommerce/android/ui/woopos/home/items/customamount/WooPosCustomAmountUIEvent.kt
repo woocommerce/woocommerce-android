@@ -14,5 +14,4 @@ sealed class WooPosCustomAmountUIEvent {
     data object NameConfirmed : WooPosCustomAmountUIEvent()
     data object NameBackClicked : WooPosCustomAmountUIEvent()
     data object SubmitClicked : WooPosCustomAmountUIEvent()
-    data object Closed : WooPosCustomAmountUIEvent()
 }
