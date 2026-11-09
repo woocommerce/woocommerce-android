@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayRead
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStarting
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
+import com.woocommerce.android.util.pairingIdentity
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -159,12 +160,15 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given all permissions granted, when reported, then session started`() {
+    fun `given all permissions granted, when reported, then session started with the site pairing identity`() {
+        // GIVEN
+        val identity = requireNotNull(requireNotNull(selectedSite.getOrNull()).pairingIdentity())
+
         // WHEN
         viewModel.onPermissionsGranted()
 
         // THEN
-        verify(session).start(any(), any(), any(), any(), any())
+        verify(session).start(any(), eq(identity.siteHash), eq(identity.siteUrlHash), any(), any())
     }
 
     @Test
