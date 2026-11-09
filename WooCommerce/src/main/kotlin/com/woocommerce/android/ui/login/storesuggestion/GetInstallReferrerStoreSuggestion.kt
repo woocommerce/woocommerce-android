@@ -5,10 +5,12 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.sitepicker.SitePickerRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.BuildConfigWrapper
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.parcelize.Parcelize
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
@@ -24,6 +26,7 @@ class GetInstallReferrerStoreSuggestion @Inject constructor(
     private val currentTimeProvider: CurrentTimeProvider,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val dispatchers: CoroutineDispatchers,
+    private val sitePickerRepository: SitePickerRepository,
 ) {
     suspend operator fun invoke(): StoreSuggestion? {
         if (!buildConfigWrapper.debug) return null
@@ -32,18 +35,37 @@ class GetInstallReferrerStoreSuggestion @Inject constructor(
 
         return withContext(NonCancellable + dispatchers.io) {
             val outcome = evaluate(installReferrerSource.fetch())
-            track(outcome)
-            (outcome.parsed?.siteHost as? SiteHost.Valid)
-                ?.takeIf { outcome.status == Status.VALID }
-                ?.let { (host) ->
-                    StoreSuggestion(
-                        siteUrl = "https://$host",
-                        host = host,
-                        registrableDomain = registrableDomainResolver.resolve(host),
-                    )
-                }
+            val suggestion = suggestionFor(outcome)
+            val wpComLoginCheck = suggestion?.let { checkWPComLogin(it.siteUrl) }
+            track(outcome, wpComLoginCheck)
+            suggestion?.takeIf { wpComLoginCheck == WPComLoginCheck.QUALIFIED }
         }
     }
+
+    private fun suggestionFor(outcome: Outcome): StoreSuggestion? =
+        (outcome.parsed?.siteHost as? SiteHost.Valid)
+            ?.takeIf { outcome.status == Status.VALID }
+            ?.let { (host) ->
+                StoreSuggestion(
+                    siteUrl = "https://$host",
+                    host = host,
+                    registrableDomain = registrableDomainResolver.resolve(host),
+                )
+            }
+
+    private suspend fun checkWPComLogin(siteUrl: String): WPComLoginCheck =
+        withTimeoutOrNull(WPCOM_LOGIN_CHECK_TIMEOUT_MILLIS) { sitePickerRepository.fetchSiteInfo(siteUrl) }
+            ?.fold(
+                onSuccess = { siteInfo ->
+                    if (siteInfo.isWPCom || siteInfo.isJetpackConnected) {
+                        WPComLoginCheck.QUALIFIED
+                    } else {
+                        WPComLoginCheck.NOT_QUALIFIED
+                    }
+                },
+                onFailure = { WPComLoginCheck.FAILED },
+            )
+            ?: WPComLoginCheck.TIMED_OUT
 
     private fun evaluate(result: InstallReferrerResult): Outcome = when (result) {
         InstallReferrerResult.Unavailable -> Outcome(Status.UNAVAILABLE)
@@ -70,7 +92,7 @@ class GetInstallReferrerStoreSuggestion @Inject constructor(
             result.installBeginTimestampSeconds < click
     }
 
-    private fun track(outcome: Outcome) {
+    private fun track(outcome: Outcome, wpComLoginCheck: WPComLoginCheck?) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.LOGIN_INSTALL_REFERRER_CHECKED,
             buildMap {
@@ -79,6 +101,7 @@ class GetInstallReferrerStoreSuggestion @Inject constructor(
                 outcome.parsed?.campaign?.let {
                     put(AnalyticsTracker.KEY_UTM_CAMPAIGN, it.takeIf { it in KNOWN_CAMPAIGNS } ?: OTHER_CAMPAIGN)
                 }
+                wpComLoginCheck?.let { put(AnalyticsTracker.KEY_WPCOM_LOGIN_CHECK, it.value) }
             }
         )
     }
@@ -96,8 +119,16 @@ class GetInstallReferrerStoreSuggestion @Inject constructor(
         ERROR("error"),
     }
 
+    private enum class WPComLoginCheck(val value: String) {
+        QUALIFIED("qualified"),
+        NOT_QUALIFIED("not_qualified"),
+        FAILED("failed"),
+        TIMED_OUT("timed_out"),
+    }
+
     private companion object {
         const val MAX_REFERRER_LENGTH = 2_048
+        const val WPCOM_LOGIN_CHECK_TIMEOUT_MILLIS = 3_000L
         val MAX_REFERRER_AGE_SECONDS = TimeUnit.HOURS.toSeconds(24)
         val MAX_CLOCK_SKEW_SECONDS = TimeUnit.MINUTES.toSeconds(5)
         val KNOWN_CAMPAIGNS = setOf("deeplinks_promote_app", "deeplinks_payments", "deeplinks_orders_details")

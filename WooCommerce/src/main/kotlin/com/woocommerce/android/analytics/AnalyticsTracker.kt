@@ -574,6 +574,7 @@ class AnalyticsTracker private constructor(
         // -- Login store suggestion
         const val KEY_UTM_CAMPAIGN = "utm_campaign"
         const val KEY_HAS_SITE_HOST = "has_site_host"
+        const val KEY_WPCOM_LOGIN_CHECK = "wpcom_login_check"
 
         // -- Jetpack Installation
         const val VALUE_JETPACK_INSTALLATION_SOURCE_WEB = "web"
