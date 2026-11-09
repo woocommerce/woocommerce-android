@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.items.customamount
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,7 +53,7 @@ fun WooPosCustomAmountDetailsScreen(
     modifier: Modifier = Modifier,
 ) {
     WooPosCustomAmountLayout(
-        modifier = modifier.background(MaterialTheme.colorScheme.surface),
+        modifier = modifier,
         title = stringResource(R.string.woopos_custom_amount_details_title),
         onBackClicked = onBackClicked,
         onSaveClicked = onSubmit,

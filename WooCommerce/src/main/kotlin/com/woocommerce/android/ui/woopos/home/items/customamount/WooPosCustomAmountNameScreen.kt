@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.items.customamount
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -40,7 +39,7 @@ fun WooPosCustomAmountNameScreen(
         keyboardController?.show()
     }
     WooPosCustomAmountLayout(
-        modifier = modifier.background(MaterialTheme.colorScheme.surfaceBright),
+        modifier = modifier,
         title = stringResource(R.string.woopos_custom_amount_dialog_name_label),
         onBackClicked = onBackClicked,
         onSaveClicked = saveName,
