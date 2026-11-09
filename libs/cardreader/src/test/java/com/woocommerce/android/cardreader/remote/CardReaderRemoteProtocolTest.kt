@@ -34,6 +34,7 @@ class CardReaderRemoteProtocolTest {
         val original = CardReaderRemoteMessage.ConnectAck(
             requestId = "req-2",
             readerSerial = "SN-42",
+            supportsCancelPayment = true,
         )
 
         // WHEN
@@ -148,6 +149,27 @@ class CardReaderRemoteProtocolTest {
 
         // THEN
         assertThat(decoded).isEqualTo(original)
+    }
+
+    @Test
+    fun `given a CancelPayment, when written and read back, then fields match`() {
+        // GIVEN
+        val original = CardReaderRemoteMessage.CancelPayment(requestId = "req-9")
+
+        // WHEN
+        val decoded = roundTrip(original)
+
+        // THEN
+        assertThat(decoded).isEqualTo(original)
+    }
+
+    @Test
+    fun `given a ConnectAck from an older phone, when read, then cancel is not supported`() {
+        // WHEN
+        val decoded = readRaw("""{"type":"connect_ack","requestId":"req-2","readerSerial":"SN-42"}""")
+
+        // THEN
+        assertThat((decoded as CardReaderRemoteMessage.ConnectAck).supportsCancelPayment).isFalse()
     }
 
     private fun roundTrip(msg: CardReaderRemoteMessage): CardReaderRemoteMessage {
