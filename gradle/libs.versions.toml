@@ -4,6 +4,7 @@ android-desugar = '2.1.5'
 android-security-lint = '1.0.4'
 androidx-activity = '1.13.0'
 androidx-appcompat = '1.8.0'
+androidx-appfunctions = '1.0.0-rc01'
 androidx-arch-core = '2.2.0'
 androidx-annotation = '1.11.0'
 androidx-browser = '1.10.0'
@@ -120,6 +121,8 @@ android-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", vers
 android-security-lint = { group = "com.android.security.lint", name = "lint", version.ref = "android-security-lint" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
+androidx-appfunctions-compiler = { group = "androidx.appfunctions", name = "appfunctions-compiler", version.ref = "androidx-appfunctions" }
+androidx-appfunctions-main = { group = "androidx.appfunctions", name = "appfunctions", version.ref = "androidx-appfunctions" }
 androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidx-arch-core" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidx-annotation" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "androidx-browser" }
