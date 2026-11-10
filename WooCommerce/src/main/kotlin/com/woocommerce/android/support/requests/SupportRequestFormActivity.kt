@@ -22,6 +22,7 @@ import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.requests.SupportRequestFormViewModel.AskSupportIdentityOnOpen
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.ShowSupportIdentityInputDialog
@@ -102,6 +103,9 @@ class SupportRequestFormActivity : AppCompatActivity() {
             }
         }
         viewModel.onViewCreated()
+        if (savedInstanceState == null) {
+            viewModel.onFormOpened()
+        }
 
         if (isPOS()) {
             adjustActivityTransition(
@@ -177,6 +181,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
                 is RequestCreationSucceeded -> showRequestCreationSuccessDialog()
                 is RequestCreationFailed -> showRequestCreationFailureDialog()
                 is ShowSupportIdentityInputDialog -> showSupportIdentityInputDialog(it.emailSuggestion)
+                is AskSupportIdentityOnOpen -> askSupportIdentityOnOpen(it.emailSuggestion)
             }
         }
     }
@@ -236,6 +241,13 @@ class SupportRequestFormActivity : AppCompatActivity() {
                 selectedName = name,
                 aiSupportChatTicketAnalyticsContext = aiSupportChatTicketAnalyticsContext
             )
+        }
+        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
+    }
+
+    private fun askSupportIdentityOnOpen(emailSuggestion: String) {
+        supportHelper.showSupportIdentityInputDialog(this, emailSuggestion) { email, name ->
+            viewModel.onSupportIdentityEntered(selectedEmail = email, selectedName = name)
         }
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
     }

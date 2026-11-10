@@ -62,6 +62,16 @@ class SupportRequestFormViewModel @Inject constructor(
         tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_VIEWED)
     }
 
+    fun onFormOpened() {
+        if (zendeskSettings.isIdentitySet.not()) {
+            triggerEvent(AskSupportIdentityOnOpen(emailSuggestion = zendeskSettings.supportEmail.orEmpty()))
+        }
+    }
+
+    fun onSupportIdentityEntered(selectedEmail: String, selectedName: String) {
+        saveSupportIdentity(selectedEmail, selectedName)
+    }
+
     fun onPrefillReceived(prefill: Prefill) {
         viewState.update {
             it.copy(
@@ -196,6 +206,7 @@ class SupportRequestFormViewModel @Inject constructor(
 
     object RequestCreationSucceeded : Event()
     object RequestCreationFailed : Event()
+    data class AskSupportIdentityOnOpen(val emailSuggestion: String) : Event()
     data class ShowSupportIdentityInputDialog(
         val emailSuggestion: String,
         val nameSuggestion: String
