@@ -7,6 +7,7 @@
 - [**] [Woo POS] Custom amounts now open on their own screen: enter the amount, then review the name and taxes before adding it to the cart [https://github.com/woocommerce/woocommerce-android/pull/16833]
 - [*] POS: When a phone is the card reader, it now stops waiting for a card after the cashier picks another payment method or leaves checkout [https://github.com/woocommerce/woocommerce-android/pull/16830]
 - [*] The Tap to Pay "Try a payment" screen now says the payment is live and that processing fees apply [https://github.com/woocommerce/woocommerce-android/pull/16828]
+- [*] POS: "Go back to checkout" on "Payment not confirmed" now shows "Payment successful" when the card payment already went through [https://github.com/woocommerce/woocommerce-android/pull/16831]
 - [*] If you add a photo to a product and remove it before saving, it now stays removed [https://github.com/woocommerce/woocommerce-android/pull/16822]
 - [*] Custom date ranges now show the right stats around daylight saving changes [https://github.com/woocommerce/woocommerce-android/pull/16821]
 - [*] Product names with line breaks now show every line on product details, and long names wrap instead of being cut off [https://github.com/woocommerce/woocommerce-android/pull/16818]
