@@ -277,8 +277,7 @@ class LoginActivity :
                 if (qrLoginAvailability.isAvailableForDeepLink()) {
                     intent.data?.let { uri -> handleQrLoginUri(uri) }
                 } else {
-                    loginAnalyticsListener.trackLoginAccessed()
-                    showPrologue()
+                    showFreshLoginPrologue()
                 }
                 // Replace the activity intent so a process restart from recents cannot replay
                 // the single-use token. Mutating fields on the in-memory Intent is not enough —
@@ -294,10 +293,7 @@ class LoginActivity :
                 startLoginViaWPCom()
             }
 
-            savedInstanceState == null -> {
-                loginAnalyticsListener.trackLoginAccessed()
-                showPrologue()
-            }
+            savedInstanceState == null -> showFreshLoginPrologue()
         }
 
         if (savedInstanceState == null) {
@@ -379,6 +375,12 @@ class LoginActivity :
         unifiedLoginTracker.getFlow()?.value?.let {
             outState.putString(KEY_UNIFIED_TRACKER_FLOW, it)
         }
+    }
+
+    private fun showFreshLoginPrologue() {
+        loginAnalyticsListener.trackLoginAccessed()
+        suggestedStoreLogin.end()
+        showPrologue()
     }
 
     private fun showPrologue() {
