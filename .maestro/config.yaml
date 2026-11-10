@@ -75,3 +75,4 @@ executionOrder:
     # ── POS (tablet only) ────────────────────────────────────────────────
     - flows/pos_search_and_coupons.yaml
     - flows/pos_cash_payment.yaml
+    - flows/pos_custom_amount.yaml

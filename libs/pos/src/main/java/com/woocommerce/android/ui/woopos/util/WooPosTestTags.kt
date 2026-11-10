@@ -23,4 +23,11 @@ object WooPosTestTags {
     const val CART_ITEMS_COUNT = "woo_pos_cart_items_count"
     const val CLEAR_CART_BUTTON = "woo_pos_clear_cart_button"
     const val CART_COUPON_ITEM = "woo_pos_cart_coupon_item"
+    const val CART_CUSTOM_AMOUNT_ITEM = "woo_pos_cart_custom_amount_item"
+    const val CUSTOM_AMOUNT_ENTRY_ROW = "woo_pos_custom_amount_entry_row"
+    const val CUSTOM_AMOUNT_INPUT = "woo_pos_custom_amount_input"
+    const val CUSTOM_AMOUNT_NAME_INPUT = "woo_pos_custom_amount_name_input"
+    const val CUSTOM_AMOUNT_DETAILS_AMOUNT = "woo_pos_custom_amount_details_amount"
+    const val CUSTOM_AMOUNT_DETAILS_NAME = "woo_pos_custom_amount_details_name"
+    const val CUSTOM_AMOUNT_PRIMARY_BUTTON = "woo_pos_custom_amount_primary_button"
 }

@@ -302,6 +302,9 @@ items:
   - id: pos.pay-cash
     title: POS pay with cash
     flow: .maestro/flows/pos_cash_payment.yaml
+  - id: pos.custom-amount
+    title: POS add and edit a custom amount
+    flow: .maestro/flows/pos_custom_amount.yaml
   - id: pos.email-receipts
     title: POS send and check email receipts
     manual: "Requires sending and checking a real receipt email."

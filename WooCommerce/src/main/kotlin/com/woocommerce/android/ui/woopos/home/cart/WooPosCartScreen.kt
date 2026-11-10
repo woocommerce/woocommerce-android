@@ -786,6 +786,7 @@ private fun CustomAmountItem(
         Row(
             modifier = Modifier
                 .height(IntrinsicSize.Min)
+                .testTag(WooPosTestTags.CART_CUSTOM_AMOUNT_ITEM)
                 .clickable(enabled = canRemoveItems, onClickLabel = editClickLabel) {
                     onUIEvent(WooPosCartUIEvent.EditCustomAmountClicked(item))
                 }

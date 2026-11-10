@@ -70,6 +70,7 @@ P2_ORDERED_FLOW_NAMES = (
     "google_for_woo.yaml",
     "pos_search_and_coupons.yaml",
     "pos_cash_payment.yaml",
+    "pos_custom_amount.yaml",
     "android_quick_actions.yaml",
     "other_home_widget.yaml",
 )

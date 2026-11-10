@@ -1,0 +1,191 @@
+# Smoke Test: POS - Custom amount flow (Tablet)
+# p2: pos.custom-amount
+# P2 ref: POS > Add a custom amount, Edit it from the cart, Pay with Cash
+#
+# POS exposes Compose test tags as resource IDs (WooPosTheme enables
+# testTagsAsResourceId at the root of the Compose tree).
+#
+# NOTE: The full-screen custom amount flow ships in 26.1. Against an older
+# release, run with `--apk` and a local Vanilla release build.
+#
+# Verifies (on tablet):
+#   - The custom amount row opens the Amount screen
+#   - Amount, Name and Details screens add a custom amount to the cart
+#   - Tapping the cart row edits the same item, without adding a new one
+#   - An order with a custom amount can be paid with cash
+appId: com.woocommerce.android
+name: "POS - Custom amount flow"
+tags:
+  - pos_tablet
+  - destructive
+---
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+- extendedWaitUntil:
+    visible:
+      id: "point_of_sale"
+    timeout: 10000
+    label: "Require real POS eligibility"
+
+- tapOn:
+    id: "point_of_sale"
+    label: "Tap POS tab"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_product_item"
+    timeout: 20000
+
+- runFlow:
+    when:
+      visible:
+        id: "woo_pos_clear_cart_button"
+    commands:
+      - tapOn:
+          id: "woo_pos_clear_cart_button"
+          label: "Open clear-cart menu"
+      - tapOn:
+          text: "Clear cart"
+          label: "Own an empty POS cart"
+
+# Add: Amount -> Details -> Name -> Details -> cart.
+- tapOn:
+    id: "woo_pos_custom_amount_entry_row"
+    label: "Open custom amount"
+
+# The amount field opens focused, so typing goes straight into it.
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_custom_amount_input"
+    timeout: 10000
+- inputText: "15"
+- tapOn:
+    id: "woo_pos_custom_amount_primary_button"
+    label: "Continue to details"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_custom_amount_details_name"
+    timeout: 10000
+- tapOn:
+    id: "woo_pos_custom_amount_details_name"
+    label: "Open name"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_custom_amount_name_input"
+    timeout: 10000
+- inputText: "Maestro fee"
+- tapOn:
+    id: "woo_pos_custom_amount_primary_button"
+    label: "Save name"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_custom_amount_details_amount"
+    timeout: 10000
+- tapOn:
+    id: "woo_pos_custom_amount_primary_button"
+    label: "Add custom amount"
+
+- extendedWaitUntil:
+    visible:
+      text: ".*Maestro fee, .*15.*"
+      childOf:
+        id: "woo_pos_cart_custom_amount_item"
+    timeout: 10000
+    label: "Cart shows the new custom amount"
+
+# Edit from the cart: Details -> Amount -> Details -> cart.
+- tapOn:
+    id: "woo_pos_cart_custom_amount_item"
+    label: "Edit custom amount from the cart"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_custom_amount_details_amount"
+    timeout: 10000
+- tapOn:
+    id: "woo_pos_custom_amount_details_amount"
+    label: "Open amount"
+
+# The current amount opens preselected, so typing replaces it.
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_custom_amount_input"
+    timeout: 10000
+- inputText: "20"
+- tapOn:
+    id: "woo_pos_custom_amount_primary_button"
+    label: "Save amount"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_custom_amount_details_amount"
+    timeout: 10000
+- tapOn:
+    id: "woo_pos_custom_amount_primary_button"
+    label: "Update custom amount"
+
+# The row's accessibility text ("<name>, <amount>") sits on a child of the tagged row.
+- extendedWaitUntil:
+    visible:
+      text: ".*Maestro fee, .*20.*"
+      childOf:
+        id: "woo_pos_cart_custom_amount_item"
+    timeout: 10000
+    label: "Cart shows the edited custom amount"
+- assertNotVisible:
+    text: ".*Maestro fee, .*15.*"
+    label: "Edit replaced the item instead of adding a new one"
+
+# The seeded product's name carries the run id, so cleanup finds the POS order.
+- runFlow:
+    file: ../subflows/pos_add_variable_product.yaml
+    env:
+      POS_PRODUCT_NAME: ${MAESTRO_FIXTURE_VARIABLE_PRODUCT}
+
+- copyTextFrom:
+    id: "woo_pos_cart_items_count"
+- assertTrue:
+    condition: ${parseInt(maestro.copiedText, 10) === 2}
+    label: Cart holds one custom amount and the product
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_checkout_button"
+    timeout: 10000
+- tapOn:
+    id: "woo_pos_checkout_button"
+    label: "Tap Checkout"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_cash_payment_button"
+    timeout: 15000
+- tapOn:
+    id: "woo_pos_cash_payment_button"
+    label: "Select Cash payment"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_complete_payment_button"
+    timeout: 10000
+- tapOn:
+    id: "woo_pos_complete_payment_button"
+    label: "Complete payment"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_new_order_button"
+    timeout: 15000
+- assertVisible:
+    id: "woo_pos_success_checkmark_icon"
+    label: "Payment success checkmark visible"
+
+- takeScreenshot: pos_custom_amount_payment_success
+
+- tapOn:
+    id: "woo_pos_new_order_button"
+    label: "Start new order"
