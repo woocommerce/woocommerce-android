@@ -58,18 +58,30 @@ class SupportRequestFormViewModel @Inject constructor(
         .distinctUntilChanged()
         .asLiveData()
 
+    val supportIdentityPrompt = viewState
+        .map { it.supportIdentityPrompt }
+        .distinctUntilChanged()
+        .asLiveData()
+
     fun onViewCreated() {
         tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_VIEWED)
     }
 
     fun onFormOpened() {
         if (zendeskSettings.isIdentitySet.not()) {
-            triggerEvent(AskSupportIdentityOnOpen(emailSuggestion = zendeskSettings.supportEmail.orEmpty()))
+            val prompt = SupportIdentityPrompt(emailSuggestion = zendeskSettings.supportEmail.orEmpty())
+            viewState.update { it.copy(supportIdentityPrompt = prompt) }
+            tracks.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
         }
     }
 
     fun onSupportIdentityEntered(selectedEmail: String, selectedName: String) {
+        viewState.update { it.copy(supportIdentityPrompt = null) }
         saveSupportIdentity(selectedEmail, selectedName)
+    }
+
+    fun onSupportIdentityPromptCancelled() {
+        viewState.update { it.copy(supportIdentityPrompt = null) }
     }
 
     fun onPrefillReceived(prefill: Prefill) {
@@ -204,7 +216,6 @@ class SupportRequestFormViewModel @Inject constructor(
 
     object RequestCreationSucceeded : Event()
     object RequestCreationFailed : Event()
-    data class AskSupportIdentityOnOpen(val emailSuggestion: String) : Event()
     data class ShowSupportIdentityInputDialog(
         val emailSuggestion: String,
         val nameSuggestion: String
@@ -220,6 +231,9 @@ class SupportRequestFormViewModel @Inject constructor(
     )
 
     @Parcelize
+    data class SupportIdentityPrompt(val emailSuggestion: String) : Parcelable
+
+    @Parcelize
     data class ViewState(
         val ticketType: TicketType?,
         val subject: String,
@@ -227,7 +241,8 @@ class SupportRequestFormViewModel @Inject constructor(
         val message: String,
         val aiChatId: Long?,
         val aiSupportChatTranscript: String?,
-        val isLoading: Boolean
+        val isLoading: Boolean,
+        val supportIdentityPrompt: SupportIdentityPrompt?
     ) : Parcelable {
         val dataIsValid
             get() = ticketType != null && subject.isNotBlank() && siteAddress.isNotBlank() && message.isNotBlank()
@@ -240,7 +255,8 @@ class SupportRequestFormViewModel @Inject constructor(
                 message = "",
                 aiChatId = null,
                 aiSupportChatTranscript = null,
-                isLoading = false
+                isLoading = false,
+                supportIdentityPrompt = null
             )
         }
     }

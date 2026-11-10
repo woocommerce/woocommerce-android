@@ -4,10 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.support.requests.SupportRequestFormViewModel.AskSupportIdentityOnOpen
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.ShowSupportIdentityInputDialog
+import com.woocommerce.android.support.requests.SupportRequestFormViewModel.SupportIdentityPrompt
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
 import com.woocommerce.android.support.zendesk.ZendeskSettings
@@ -356,10 +356,11 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         whenever(zendeskSettings.supportEmail).thenReturn("email@test.com")
 
         // When
-        val events = sut.event.runAndCaptureValues { sut.onFormOpened() }
+        val prompts = sut.supportIdentityPrompt.runAndCaptureValues { sut.onFormOpened() }
 
         // Then
-        assertThat(events).containsExactly(AskSupportIdentityOnOpen(emailSuggestion = "email@test.com"))
+        assertThat(prompts.last()).isEqualTo(SupportIdentityPrompt(emailSuggestion = "email@test.com"))
+        verify(tracks).track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
     }
 
     @Test
@@ -368,24 +369,42 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         whenever(zendeskSettings.isIdentitySet).thenReturn(true)
 
         // When
-        val events = sut.event.runAndCaptureValues { sut.onFormOpened() }
+        val prompts = sut.supportIdentityPrompt.runAndCaptureValues { sut.onFormOpened() }
 
         // Then
-        assertThat(events).isEmpty()
+        assertThat(prompts.last()).isNull()
     }
 
     @Test
-    fun `when onSupportIdentityEntered is called, then save the identity without submitting a request`() =
+    fun `given the support identity prompt is shown, when it is cancelled, then the prompt is closed`() {
+        // Given
+        whenever(zendeskSettings.isIdentitySet).thenReturn(false)
+        sut.onFormOpened()
+
+        // When
+        val prompts = sut.supportIdentityPrompt.runAndCaptureValues { sut.onSupportIdentityPromptCancelled() }
+
+        // Then
+        assertThat(prompts.last()).isNull()
+    }
+
+    @Test
+    fun `when onSupportIdentityEntered is called, then save the identity and close the prompt without submitting a request`() =
         testBlocking {
             // Given
             val email = "email@test.com"
             val name = "test name"
+            whenever(zendeskSettings.isIdentitySet).thenReturn(false)
+            sut.onFormOpened()
 
             // When
             sut.onHelpOptionSelected(TicketType.MobileApp)
-            sut.onSupportIdentityEntered(selectedEmail = email, selectedName = name)
+            val prompts = sut.supportIdentityPrompt.runAndCaptureValues {
+                sut.onSupportIdentityEntered(selectedEmail = email, selectedName = name)
+            }
 
             // Then
+            assertThat(prompts.last()).isNull()
             verify(zendeskSettings).supportEmail = email
             verify(zendeskSettings).supportName = name
             verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
