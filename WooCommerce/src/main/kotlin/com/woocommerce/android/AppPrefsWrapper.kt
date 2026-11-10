@@ -63,6 +63,8 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var wooPosLocalCatalogEnabled by AppPrefs::wooPosLocalCatalogEnabled
 
+    var isAppFunctionsEnabled by AppPrefs::isAppFunctionsEnabled
+
     var wooCorePushDeviceUUID by AppPrefs::wooCorePushDeviceUUID
 
     var remoteFeatureFlagsDeviceId by AppPrefs::remoteFeatureFlagsDeviceId

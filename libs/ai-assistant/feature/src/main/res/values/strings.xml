@@ -2,6 +2,18 @@
 <resources>
     <string name="ai_assistant_confirmation_field_manage_stock">Stock management</string>
     <string name="ai_assistant_confirmation_field_value_on">On</string>
+
+    <string name="ai_assistant_app_functions_display_description" translatable="false">Look up sales, orders and products in the store that is open in WooCommerce, and prepare stock changes for you to confirm.</string>
+    <string name="ai_assistant_app_functions_confirmation_title" translatable="false">Confirm this change</string>
+    <string name="ai_assistant_app_functions_confirmation_store" translatable="false">Store: %1$s</string>
+    <string name="ai_assistant_app_functions_confirmation_saving" translatable="false">Saving…</string>
+    <string name="ai_assistant_app_functions_confirmation_done" translatable="false">Done. The change is saved.</string>
+    <string name="ai_assistant_app_functions_confirmation_check_in_app" translatable="false">We couldn\'t confirm that the change was saved. Check it in WooCommerce before trying again.</string>
+    <string name="ai_assistant_app_functions_confirmation_store_changed" translatable="false">This change was requested for %1$s, but another store is open in WooCommerce now. Nothing was changed.</string>
+    <string name="ai_assistant_app_functions_confirmation_unavailable" translatable="false">This request is no longer available. Nothing was changed. Open WooCommerce, check that you\'re logged in and that Assistant access is on, then ask again.</string>
+    <string name="ai_assistant_app_functions_open_order_wrong_store" translatable="false">This order is in %1$s. Switch to that store in WooCommerce to open it.</string>
+    <string name="ai_assistant_app_functions_open_order_unavailable" translatable="false">This order can\'t be opened right now. Open WooCommerce, check that you\'re logged in and that Assistant access is on, then ask again.</string>
+    <string name="ai_assistant_app_functions_close" translatable="false">Close</string>
     <string name="ai_assistant_confirmation_order_update_generic">Update an order</string>
     <string name="ai_assistant_confirmation_order_update_title">Update order #%1$s</string>
     <string name="ai_assistant_confirmation_order_update_title_with_name">Update order #%1$s (%2$s)</string>
