@@ -252,6 +252,8 @@ object AppPrefs {
 
         SUGGESTED_STORE_LOGIN_URL,
 
+        STORE_SUGGESTION_ROLLOUT_BUCKET,
+
         // Anonymous device id sent in remote feature flag requests to keep rollout bucketing stable
         REMOTE_FEATURE_FLAGS_DEVICE_ID
     }
@@ -453,6 +455,14 @@ object AppPrefs {
             ?.let { getInt(it) }
         set(value) {
             value?.let { setInt(UndeletablePrefKey.QR_LOGIN_ROLLOUT_BUCKET, it) }
+        }
+
+    var storeSuggestionRolloutBucket: Int?
+        get() = UndeletablePrefKey.STORE_SUGGESTION_ROLLOUT_BUCKET
+            .takeIf { exists(it) }
+            ?.let { getInt(it) }
+        set(value) {
+            value?.let { setInt(UndeletablePrefKey.STORE_SUGGESTION_ROLLOUT_BUCKET, it) }
         }
 
     private const val FEATURE_FLAG_OVERRIDE_PREFIX = "feature_flag_override"
