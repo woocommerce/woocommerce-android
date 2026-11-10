@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="ai_assistant_confirmation_field_manage_stock">Stock management</string>
+    <string name="ai_assistant_confirmation_field_value_on">On</string>
     <string name="ai_assistant_confirmation_order_update_generic">Update an order</string>
     <string name="ai_assistant_confirmation_order_update_title">Update order #%1$s</string>
     <string name="ai_assistant_confirmation_order_update_title_with_name">Update order #%1$s (%2$s)</string>
