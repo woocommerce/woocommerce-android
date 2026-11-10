@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.customamount
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,6 +21,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosInputField
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
@@ -48,7 +50,9 @@ fun WooPosCustomAmountNameScreen(
         onSaveClicked = saveName,
     ) { contentModifier ->
         Box(
-            modifier = contentModifier.verticalScroll(rememberScrollState()),
+            modifier = contentModifier
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = WooPosSpacing.XLarge.value),
             contentAlignment = Alignment.Center,
         ) {
             WooPosInputField(
