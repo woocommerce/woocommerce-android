@@ -4,6 +4,7 @@
 
 26.1
 -----
+- [*] Login: merchants who install the app from the New Order email can log in to their store in one tap (rolling out to some new installs)
 - [**] [Woo POS] Custom amounts now open on their own screen: enter the amount, then review the name and taxes before adding it to the cart [https://github.com/woocommerce/woocommerce-android/pull/16833]
 - [*] POS: When a phone is the card reader, it now stops waiting for a card after the cashier picks another payment method or leaves checkout [https://github.com/woocommerce/woocommerce-android/pull/16830]
 - [*] The Tap to Pay "Try a payment" screen now says the payment is live and that processing fees apply [https://github.com/woocommerce/woocommerce-android/pull/16828]

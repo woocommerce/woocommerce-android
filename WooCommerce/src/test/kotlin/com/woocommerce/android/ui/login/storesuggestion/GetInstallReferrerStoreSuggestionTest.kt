@@ -5,7 +5,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.sitepicker.SitePickerRepository
-import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,7 +23,7 @@ import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
@@ -35,7 +34,6 @@ import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetInstallReferrerStoreSuggestionTest : BaseUnitTest() {
-    private val buildConfigWrapper: BuildConfigWrapper = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val installReferrerSource: InstallReferrerSource = mock()
     private val registrableDomainResolver: RegistrableDomainResolver = mock {
@@ -46,9 +44,9 @@ class GetInstallReferrerStoreSuggestionTest : BaseUnitTest() {
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val sitePickerRepository: SitePickerRepository = mock()
+    private val storeSuggestionRollout: StoreSuggestionRollout = mock()
 
     private val sut = GetInstallReferrerStoreSuggestion(
-        buildConfigWrapper = buildConfigWrapper,
         appPrefsWrapper = appPrefsWrapper,
         installReferrerSource = installReferrerSource,
         installReferrerParser = InstallReferrerParser(),
@@ -57,28 +55,89 @@ class GetInstallReferrerStoreSuggestionTest : BaseUnitTest() {
         analyticsTrackerWrapper = analyticsTrackerWrapper,
         dispatchers = coroutinesTestRule.testDispatchers,
         sitePickerRepository = sitePickerRepository,
+        storeSuggestionRollout = storeSuggestionRollout,
     )
 
     @Before
     fun setUp() = testBlocking {
-        whenever(buildConfigWrapper.debug).thenReturn(true)
+        whenever(storeSuggestionRollout.isInRollout()).thenReturn(true)
         whenever(appPrefsWrapper.isInstallReferrerChecked).thenReturn(false)
         givenReferrer(referrer())
         givenSiteInfo(Result.success(siteInfo(isJetpackConnected = true)))
     }
 
     @Test
-    fun `given release build, when invoked, then nothing is read, marked or tracked`() = testBlocking {
+    fun `given referrer not checked yet, when invoked, then referrer is read and tracked without a build type check`() =
+        testBlocking {
+            // WHEN
+            sut()
+
+            // THEN
+            verify(installReferrerSource).fetch()
+            verify(appPrefsWrapper).isInstallReferrerChecked = true
+            assertThat(trackedResult()).isEqualTo("valid")
+        }
+
+    @Test
+    fun `given out of rollout and qualified store, when invoked, then no suggestion but tracked with is_in_rollout false and wpcom_login_check qualified`() =
+        testBlocking {
+            // GIVEN
+            whenever(storeSuggestionRollout.isInRollout()).thenReturn(false)
+
+            // WHEN
+            val result = sut()
+
+            // THEN
+            assertThat(result).isNull()
+            verify(sitePickerRepository).fetchSiteInfo(SITE_URL)
+            verifyTracked(
+                result = "valid",
+                hasSiteHost = true,
+                campaign = CAMPAIGN,
+                wpComLoginCheck = "qualified",
+                isInRollout = false,
+            )
+        }
+
+    @Test
+    fun `given in rollout and qualified store, when invoked, then returns suggestion and tracks is_in_rollout true`() =
+        testBlocking {
+            // GIVEN
+            whenever(storeSuggestionRollout.isInRollout()).thenReturn(true)
+
+            // WHEN
+            val result = sut()
+
+            // THEN
+            assertThat(result?.siteUrl).isEqualTo(SITE_URL)
+            verify(storeSuggestionRollout, times(1)).isInRollout()
+            verifyTracked(
+                result = "valid",
+                hasSiteHost = true,
+                campaign = CAMPAIGN,
+                wpComLoginCheck = "qualified",
+                isInRollout = true,
+            )
+        }
+
+    @Test
+    fun `given out of rollout and non valid referrer, when invoked, then tracks is_in_rollout false`() = testBlocking {
         // GIVEN
-        whenever(buildConfigWrapper.debug).thenReturn(false)
+        whenever(storeSuggestionRollout.isInRollout()).thenReturn(false)
+        whenever(installReferrerSource.fetch()).thenReturn(InstallReferrerResult.Unavailable)
 
         // WHEN
         val result = sut()
 
         // THEN
         assertThat(result).isNull()
-        verifyNoInteractions(installReferrerSource, analyticsTrackerWrapper)
-        verify(appPrefsWrapper, never()).isInstallReferrerChecked = true
+        verifyTracked(
+            result = "unavailable",
+            hasSiteHost = false,
+            campaign = null,
+            wpComLoginCheck = null,
+            isInRollout = false,
+        )
     }
 
     @Test
@@ -91,7 +150,7 @@ class GetInstallReferrerStoreSuggestionTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isNull()
-        verifyNoInteractions(installReferrerSource, analyticsTrackerWrapper)
+        verifyNoInteractions(installReferrerSource, analyticsTrackerWrapper, storeSuggestionRollout)
     }
 
     @Test
@@ -331,7 +390,13 @@ class GetInstallReferrerStoreSuggestionTest : BaseUnitTest() {
         return captor.firstValue
     }
 
-    private fun verifyTracked(result: String, hasSiteHost: Boolean, campaign: String?, wpComLoginCheck: String?) {
+    private fun verifyTracked(
+        result: String,
+        hasSiteHost: Boolean,
+        campaign: String?,
+        wpComLoginCheck: String?,
+        isInRollout: Boolean = true,
+    ) {
         verify(analyticsTrackerWrapper).track(
             eq(AnalyticsEvent.LOGIN_INSTALL_REFERRER_CHECKED),
             eq(
@@ -340,6 +405,7 @@ class GetInstallReferrerStoreSuggestionTest : BaseUnitTest() {
                     put(AnalyticsTracker.KEY_HAS_SITE_HOST, hasSiteHost)
                     campaign?.let { put(AnalyticsTracker.KEY_UTM_CAMPAIGN, it) }
                     wpComLoginCheck?.let { put(AnalyticsTracker.KEY_WPCOM_LOGIN_CHECK, it) }
+                    put(AnalyticsTracker.KEY_IS_IN_ROLLOUT, isInRollout)
                 }
             )
         )
