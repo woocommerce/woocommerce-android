@@ -228,6 +228,7 @@
     <string name="login_store_suggestion_log_in">Log in to this store</string>
     <string name="login_store_suggestion_use_different_store">Use a different store</string>
     <string name="login_store_suggestion_redirected">This address leads to a different site. Only continue if it\'s your store.</string>
+    <string name="login_store_suggestion_unavailable">We couldn\'t confirm this store from the link. Enter your store address to continue.</string>
 
     <!-- QR login prologue -->
     <string name="login_qr_prologue_title">Scan to log in</string>

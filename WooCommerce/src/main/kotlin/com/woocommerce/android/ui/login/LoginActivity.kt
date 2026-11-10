@@ -861,7 +861,9 @@ class LoginActivity :
     private fun returnToEmptySiteAddressScreen() {
         suggestedStoreLogin.end()
         appPrefsWrapper.removeLoginSiteAddress()
-        (getLoginViaSiteAddressFragment() as? WooLoginSiteAddressFragment)?.clearSiteAddress()
+        (getLoginViaSiteAddressFragment() as? WooLoginSiteAddressFragment)?.clearSiteAddressWithMessage(
+            getString(R.string.login_store_suggestion_unavailable)
+        )
     }
 
     /**
