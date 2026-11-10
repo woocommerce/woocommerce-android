@@ -11,12 +11,14 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 @Composable
 internal fun WooPosCustomAmountLayout(
@@ -43,7 +45,8 @@ internal fun WooPosCustomAmountLayout(
         WooPosButton(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(WooPosSpacing.Medium.value),
+                .padding(WooPosSpacing.Medium.value)
+                .testTag(WooPosTestTags.CUSTOM_AMOUNT_PRIMARY_BUTTON),
             text = buttonText,
             state = buttonState,
             onClick = onSaveClicked,

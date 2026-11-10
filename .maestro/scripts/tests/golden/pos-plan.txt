@@ -5,8 +5,9 @@ Maestro smoke plan
   include: pos_tablet
   exclude: quarantine
   seed:    yes
-  flows:   2
+  flows:   3
 
 Selected flows:
   - .maestro/flows/pos_search_and_coupons.yaml
   - .maestro/flows/pos_cash_payment.yaml
+  - .maestro/flows/pos_custom_amount.yaml

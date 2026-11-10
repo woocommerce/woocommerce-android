@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.AnnotatedString
@@ -35,6 +36,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosEle
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 import java.math.BigDecimal
 
 @Composable
@@ -79,6 +81,7 @@ fun WooPosCustomAmountDetailsScreen(
                 value = formattedAmount(state),
                 enabled = !state.isSubmitting,
                 onClick = onEditAmount,
+                testTag = WooPosTestTags.CUSTOM_AMOUNT_DETAILS_AMOUNT,
             )
             EditableDetailCard(
                 label = stringResource(R.string.woopos_custom_amount_name_optional),
@@ -88,6 +91,7 @@ fun WooPosCustomAmountDetailsScreen(
                 isPlaceholder = state.name.isBlank(),
                 enabled = !state.isSubmitting,
                 onClick = onEditName,
+                testTag = WooPosTestTags.CUSTOM_AMOUNT_DETAILS_NAME,
             )
             DetailCard {
                 Row(
@@ -132,6 +136,7 @@ private fun EditableDetailCard(
     value: String,
     enabled: Boolean,
     onClick: () -> Unit,
+    testTag: String,
     isPlaceholder: Boolean = false,
 ) {
     val editLabel = stringResource(R.string.woopos_cart_custom_amount_edit_content_description, label)
@@ -139,6 +144,7 @@ private fun EditableDetailCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .testTag(testTag)
                 .clickable(enabled = enabled, role = Role.Button, onClickLabel = editLabel, onClick = onClick)
                 .padding(WooPosSpacing.XLarge.value),
             horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value),

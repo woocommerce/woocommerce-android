@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -23,6 +24,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosMoneyInputField
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 import java.math.BigDecimal
 
 @Composable
@@ -64,7 +66,9 @@ fun WooPosCustomAmountValueScreen(
                 contentAlignment = Alignment.Center,
             ) {
                 WooPosMoneyInputField(
-                    modifier = Modifier.focusRequester(focusRequester),
+                    modifier = Modifier
+                        .focusRequester(focusRequester)
+                        .testTag(WooPosTestTags.CUSTOM_AMOUNT_INPUT),
                     value = state.amount,
                     onValueChange = onAmountChanged,
                     currencySymbol = state.currencySymbol,

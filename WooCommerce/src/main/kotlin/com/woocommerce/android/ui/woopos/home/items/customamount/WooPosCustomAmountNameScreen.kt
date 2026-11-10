@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -24,6 +25,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosInputF
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 @Composable
 fun WooPosCustomAmountNameScreen(
@@ -56,7 +58,9 @@ fun WooPosCustomAmountNameScreen(
             contentAlignment = Alignment.Center,
         ) {
             WooPosInputField(
-                modifier = Modifier.focusRequester(focusRequester),
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .testTag(WooPosTestTags.CUSTOM_AMOUNT_NAME_INPUT),
                 value = value,
                 onValueChange = onNameChanged,
                 label = stringResource(R.string.woopos_custom_amount_dialog_name_placeholder),
