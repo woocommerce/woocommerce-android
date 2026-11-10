@@ -505,6 +505,7 @@ dependencies {
     testImplementation(testFixtures(project(":libs:fluxc")))
     testImplementation(testFixtures(project(":libs:fluxc-plugin")))
     testImplementation(testFixtures(project(":libs:commons")))
+    testImplementation(testFixtures(project(":libs:receiptprinter")))
 
     androidTestImplementation libs.androidx.test.main.runner
     androidTestUtil libs.androidx.test.orchestrator

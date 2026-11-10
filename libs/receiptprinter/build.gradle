@@ -23,13 +23,18 @@ android {
         sourceCompatibility = libs.versions.java.get()
         targetCompatibility = libs.versions.java.get()
     }
+
+    testFixtures.enable = true
 }
 
 dependencies {
+    api(libs.kotlinx.coroutines.core)
     implementation(libs.starmicronics.stario10)
 
     implementation(libs.google.dagger.hilt.android.main)
     ksp(libs.google.dagger.hilt.compiler)
+
+    testFixturesImplementation(libs.kotlinx.coroutines.core)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
