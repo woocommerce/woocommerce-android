@@ -354,12 +354,14 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // Given
         whenever(zendeskSettings.isIdentitySet).thenReturn(false)
         whenever(zendeskSettings.supportEmail).thenReturn("email@test.com")
+        whenever(zendeskSettings.supportName).thenReturn("test name")
 
         // When
         val prompts = sut.supportIdentityPrompt.runAndCaptureValues { sut.onFormOpened() }
 
         // Then
-        assertThat(prompts.last()).isEqualTo(SupportIdentityPrompt(emailSuggestion = "email@test.com"))
+        assertThat(prompts.last())
+            .isEqualTo(SupportIdentityPrompt(emailSuggestion = "email@test.com", nameSuggestion = "test name"))
         verify(tracks).track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
     }
 

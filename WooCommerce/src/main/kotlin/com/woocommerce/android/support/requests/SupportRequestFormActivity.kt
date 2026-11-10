@@ -251,6 +251,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
         supportHelper.showSupportIdentityInputDialog(
             context = this,
             email = prompt.emailSuggestion,
+            name = prompt.nameSuggestion,
             onCancel = viewModel::onSupportIdentityPromptCancelled
         ) { email, name ->
             viewModel.onSupportIdentityEntered(selectedEmail = email, selectedName = name)

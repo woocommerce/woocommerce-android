@@ -69,7 +69,10 @@ class SupportRequestFormViewModel @Inject constructor(
 
     fun onFormOpened() {
         if (zendeskSettings.isIdentitySet.not()) {
-            val prompt = SupportIdentityPrompt(emailSuggestion = zendeskSettings.supportEmail.orEmpty())
+            val prompt = SupportIdentityPrompt(
+                emailSuggestion = zendeskSettings.supportEmail.orEmpty(),
+                nameSuggestion = zendeskSettings.supportName.orEmpty()
+            )
             viewState.update { it.copy(supportIdentityPrompt = prompt) }
             tracks.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
         }
@@ -231,7 +234,10 @@ class SupportRequestFormViewModel @Inject constructor(
     )
 
     @Parcelize
-    data class SupportIdentityPrompt(val emailSuggestion: String) : Parcelable
+    data class SupportIdentityPrompt(
+        val emailSuggestion: String,
+        val nameSuggestion: String
+    ) : Parcelable
 
     @Parcelize
     data class ViewState(
