@@ -101,9 +101,7 @@ class SupportRequestFormViewModel @Inject constructor(
         selectedName: String,
         aiSupportChatTicketAnalyticsContext: AiSupportChatTicketAnalyticsContext? = null
     ) {
-        zendeskSettings.supportEmail = selectedEmail
-        zendeskSettings.supportName = selectedName
-        tracks.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
+        saveSupportIdentity(selectedEmail, selectedName)
         submitSupportRequest(
             context = context,
             helpOrigin = helpOrigin,
@@ -137,6 +135,12 @@ class SupportRequestFormViewModel @Inject constructor(
                 aiChatId = viewState.value.aiChatId
             ).collect { it.handleCreateRequestResult(aiSupportChatTicketAnalyticsContext) }
         }
+    }
+
+    private fun saveSupportIdentity(email: String, name: String) {
+        zendeskSettings.supportEmail = email
+        zendeskSettings.supportName = name
+        tracks.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
     }
 
     private fun handleEmptyCredentials() {
