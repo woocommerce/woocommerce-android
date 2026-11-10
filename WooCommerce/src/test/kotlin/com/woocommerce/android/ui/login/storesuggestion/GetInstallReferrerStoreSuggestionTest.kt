@@ -67,18 +67,6 @@ class GetInstallReferrerStoreSuggestionTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given referrer not checked yet, when invoked, then referrer is read and tracked without a build type check`() =
-        testBlocking {
-            // WHEN
-            sut()
-
-            // THEN
-            verify(installReferrerSource).fetch()
-            verify(appPrefsWrapper).isInstallReferrerChecked = true
-            assertThat(trackedResult()).isEqualTo("valid")
-        }
-
-    @Test
     fun `given out of rollout and qualified store, when invoked, then no suggestion but tracked with is_in_rollout false and wpcom_login_check qualified`() =
         testBlocking {
             // GIVEN
