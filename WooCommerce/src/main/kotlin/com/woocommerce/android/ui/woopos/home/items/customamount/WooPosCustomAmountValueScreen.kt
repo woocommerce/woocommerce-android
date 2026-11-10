@@ -49,6 +49,8 @@ fun WooPosCustomAmountValueScreen(
     WooPosCustomAmountLayout(
         modifier = modifier,
         title = stringResource(R.string.woopos_custom_amount_dialog_amount_label),
+        // A new amount only opens details; nothing is saved to the cart until details are submitted.
+        buttonText = stringResource(if (state.returnsToDetails) R.string.save else R.string.continue_button),
         onBackClicked = onBackClicked,
         content = { contentModifier ->
             Box(

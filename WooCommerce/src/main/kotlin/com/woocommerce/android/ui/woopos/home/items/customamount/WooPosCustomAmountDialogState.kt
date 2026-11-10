@@ -21,6 +21,7 @@ data class WooPosCustomAmountDialogState(
     val decimalSeparator: String = ".",
     val numberOfDecimals: Int = 2,
     val screen: Screen = Screen.AMOUNT,
+    val returnsToDetails: Boolean = false,
 ) : Parcelable {
 
     val isAmountValid: Boolean

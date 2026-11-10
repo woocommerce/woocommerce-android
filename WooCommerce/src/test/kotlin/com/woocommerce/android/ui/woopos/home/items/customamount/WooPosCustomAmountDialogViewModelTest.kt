@@ -364,6 +364,38 @@ class WooPosCustomAmountDialogViewModelTest {
     }
 
     @Test
+    fun `given a new custom amount, when amount entry opens, then it does not return to details`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+
+        // WHEN
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+
+        // THEN
+        assertThat(sut.state.value.screen).isEqualTo(WooPosCustomAmountDialogState.Screen.AMOUNT)
+        assertThat(sut.state.value.returnsToDetails).isFalse()
+    }
+
+    @Test
+    fun `given details, when amount is edited, then amount entry returns to details until confirmed`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(WooPosCustomAmountDialogState.Mode.Add)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal.TEN))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountConfirmed)
+
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.EditAmountClicked)
+
+        // THEN
+        assertThat(sut.state.value.returnsToDetails).isTrue()
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountConfirmed)
+        assertThat(sut.state.value.returnsToDetails).isFalse()
+    }
+
+    @Test
     fun `given edited form, when returning to amount and continuing, then name taxes and item identity are preserved`() = runTest {
         // GIVEN
         val sut = createSut()

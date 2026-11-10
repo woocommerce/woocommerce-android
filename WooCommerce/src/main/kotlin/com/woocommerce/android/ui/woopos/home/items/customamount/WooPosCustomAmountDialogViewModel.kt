@@ -27,7 +27,6 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
     private var hasInitializedFor: WooPosCustomAmountDialogState.Mode? = null
 
     private var amountBeforeEditing: BigDecimal? = null
-    private var returnToDetailsAfterAmount = false
 
     init {
         viewModelScope.launch {
@@ -62,7 +61,6 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
         hasInitializedFor = mode
         val editing = mode as? WooPosCustomAmountDialogState.Mode.Edit
         amountBeforeEditing = null
-        returnToDetailsAfterAmount = false
 
         _state.value = _state.value.copy(
             mode = mode,
@@ -79,6 +77,7 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
             } else {
                 WooPosCustomAmountDialogState.Screen.DETAILS
             },
+            returnsToDetails = false,
         )
     }
 
@@ -89,24 +88,28 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
     private fun onAmountConfirmed() {
         if (!_state.value.isAmountValid) return
         amountBeforeEditing = null
-        returnToDetailsAfterAmount = false
-        _state.value = _state.value.copy(screen = WooPosCustomAmountDialogState.Screen.DETAILS)
+        _state.value = _state.value.copy(
+            screen = WooPosCustomAmountDialogState.Screen.DETAILS,
+            returnsToDetails = false,
+        )
     }
 
     private fun onEditAmount() {
         amountBeforeEditing = _state.value.amount
-        returnToDetailsAfterAmount = true
-        _state.value = _state.value.copy(screen = WooPosCustomAmountDialogState.Screen.AMOUNT)
+        _state.value = _state.value.copy(
+            screen = WooPosCustomAmountDialogState.Screen.AMOUNT,
+            returnsToDetails = true,
+        )
     }
 
     private fun onAmountBack() {
-        if (returnToDetailsAfterAmount) {
+        if (_state.value.returnsToDetails) {
             _state.value = _state.value.copy(
                 amount = amountBeforeEditing,
                 screen = WooPosCustomAmountDialogState.Screen.DETAILS,
+                returnsToDetails = false,
             )
             amountBeforeEditing = null
-            returnToDetailsAfterAmount = false
         } else {
             _state.value = _state.value.copy(isClosed = true)
         }
