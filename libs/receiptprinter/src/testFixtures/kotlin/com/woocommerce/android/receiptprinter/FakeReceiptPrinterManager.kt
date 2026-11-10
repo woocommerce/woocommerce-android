@@ -1,10 +1,13 @@
 package com.woocommerce.android.receiptprinter
 
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 
 class FakeReceiptPrinterManager(
     initialStatus: ReceiptPrinterConnectionStatus = ReceiptPrinterConnectionStatus.Idle,
@@ -23,14 +26,24 @@ class FakeReceiptPrinterManager(
     var disconnectCalls: Int = 0
         private set
 
-    override fun discover(): Flow<ReceiptPrinterDevice> = flow {
-        isDiscovering = true
-        discoveryError?.let { throw ReceiptPrinterException(it) }
-        discoveredDevices.forEach { emit(it) }
+    private var discoveryChannel: Channel<ReceiptPrinterDevice>? = null
+
+    override fun discover(): Flow<ReceiptPrinterDevice> {
+        discoveryChannel?.close()
+        val channel = Channel<ReceiptPrinterDevice>(Channel.UNLIMITED)
+        discoveryChannel = channel
+        return channel.receiveAsFlow()
+            .onStart {
+                isDiscovering = true
+                discoveryError?.let { throw ReceiptPrinterException(it) }
+                discoveredDevices.forEach { channel.send(it) }
+            }
+            .onCompletion { isDiscovering = false }
     }
 
     override fun stopDiscovery() {
-        isDiscovering = false
+        discoveryChannel?.close()
+        discoveryChannel = null
     }
 
     override suspend fun connect(device: ReceiptPrinterDevice) {
@@ -48,12 +61,16 @@ class FakeReceiptPrinterManager(
         _connectionStatus.value = ReceiptPrinterConnectionStatus.Disconnected
     }
 
-    override suspend fun print(text: String) {
+    override suspend fun printReceipt(text: String) {
         if (connectionStatus.value !is ReceiptPrinterConnectionStatus.Connected) {
             throw ReceiptPrinterException(ReceiptPrinterError.PrinterNotConnected)
         }
         printError?.let { throw ReceiptPrinterException(it) }
         printedTexts += text
+    }
+
+    fun emitDiscoveredDevice(device: ReceiptPrinterDevice) {
+        discoveryChannel?.trySend(device)
     }
 
     fun setConnectionStatus(status: ReceiptPrinterConnectionStatus) {

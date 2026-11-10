@@ -28,7 +28,7 @@ class WooPosReceiptPrinterFacade @Inject constructor(
         receiptPrinterManager.disconnect()
     }
 
-    suspend fun print(text: String) {
-        receiptPrinterManager.print(text)
+    suspend fun printReceipt(text: String) {
+        receiptPrinterManager.printReceipt(text)
     }
 }

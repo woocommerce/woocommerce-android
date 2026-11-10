@@ -8,6 +8,8 @@ import com.woocommerce.android.receiptprinter.ReceiptPrinterException
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -36,24 +38,43 @@ class WooPosReceiptPrinterFacadeTest {
     fun `given the manager discovers devices, when discover is collected, then the devices are emitted`() = runTest {
         // GIVEN
         receiptPrinterManager.discoveredDevices = listOf(DEVICE)
+        val devices = mutableListOf<ReceiptPrinterDevice>()
 
         // WHEN
-        val devices = sut.discover().toList()
+        val collection = launch { sut.discover().toList(devices) }
+        advanceUntilIdle()
 
         // THEN
         assertThat(devices).containsExactly(DEVICE)
+        collection.cancel()
     }
 
     @Test
-    fun `given discovery is running, when stopDiscovery is called, then the manager stops discovering`() = runTest {
+    fun `given discovery is in flight, when stopDiscovery is called, then the collection completes`() = runTest {
         // GIVEN
-        sut.discover().toList()
+        val collection = launch { sut.discover().toList(mutableListOf()) }
+        advanceUntilIdle()
+        assertThat(receiptPrinterManager.isDiscovering).isTrue()
 
         // WHEN
         sut.stopDiscovery()
+        advanceUntilIdle()
 
         // THEN
+        assertThat(collection.isCompleted).isTrue()
         assertThat(receiptPrinterManager.isDiscovering).isFalse()
+    }
+
+    @Test
+    fun `given the manager fails to discover, when discover is collected, then the error is propagated`() = runTest {
+        // GIVEN
+        receiptPrinterManager.discoveryError = ReceiptPrinterError.DiscoveryFailure
+
+        // WHEN
+        val exception = assertFailsWith<ReceiptPrinterException> { sut.discover().toList() }
+
+        // THEN
+        assertThat(exception.error).isEqualTo(ReceiptPrinterError.DiscoveryFailure)
     }
 
     @Test
@@ -92,28 +113,28 @@ class WooPosReceiptPrinterFacadeTest {
     }
 
     @Test
-    fun `given a connected printer, when print is called, then the text reaches the manager`() = runTest {
+    fun `given a connected printer, when printReceipt is called, then the text reaches the manager`() = runTest {
         // GIVEN
         sut.connect(DEVICE)
 
         // WHEN
-        sut.print(RECEIPT_TEXT)
+        sut.printReceipt(RECEIPT_TEXT)
 
         // THEN
         assertThat(receiptPrinterManager.printedTexts).containsExactly(RECEIPT_TEXT)
     }
 
     @Test
-    fun `given the manager fails to print, when print is called, then the error is propagated`() = runTest {
+    fun `given the manager fails to print, when printReceipt is called, then the error is propagated`() = runTest {
         // GIVEN
         sut.connect(DEVICE)
-        receiptPrinterManager.printError = ReceiptPrinterError.PaperEmpty
+        receiptPrinterManager.printError = ReceiptPrinterError.PrintFailed(detail = "Printer offline")
 
         // WHEN
-        val exception = assertFailsWith<ReceiptPrinterException> { sut.print(RECEIPT_TEXT) }
+        val exception = assertFailsWith<ReceiptPrinterException> { sut.printReceipt(RECEIPT_TEXT) }
 
         // THEN
-        assertThat(exception.error).isEqualTo(ReceiptPrinterError.PaperEmpty)
+        assertThat(exception.error).isEqualTo(ReceiptPrinterError.PrintFailed(detail = "Printer offline"))
     }
 
     private companion object {
