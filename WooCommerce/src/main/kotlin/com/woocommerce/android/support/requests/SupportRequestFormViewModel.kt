@@ -179,16 +179,18 @@ class SupportRequestFormViewModel @Inject constructor(
             WooLog.e(WooLog.T.AI, "Support chat ticket creation failed via support form", error)
         }
         tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_FAILED)
-        aiSupportChatTicketAnalyticsContext?.let {
-            aiSupportChatAnalyticsTracker.trackTicketCreationFailed(
-                route = AiSupportChatTicketRoute.SUPPORT_FORM,
-                context = it,
-                error = error
-            )
-        }
         when (error) {
             is IdentityNotSetException -> handleEmptyCredentials()
-            else -> triggerEvent(RequestCreationFailed)
+            else -> {
+                aiSupportChatTicketAnalyticsContext?.let {
+                    aiSupportChatAnalyticsTracker.trackTicketCreationFailed(
+                        route = AiSupportChatTicketRoute.SUPPORT_FORM,
+                        context = it,
+                        error = error
+                    )
+                }
+                triggerEvent(RequestCreationFailed)
+            }
         }
     }
 
