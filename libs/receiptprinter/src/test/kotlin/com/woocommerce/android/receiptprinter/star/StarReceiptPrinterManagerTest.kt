@@ -195,6 +195,26 @@ class StarReceiptPrinterManagerTest {
         }
 
     @Test
+    fun `given the discovery time passes while a failure is being reported, when a printer name cannot be read, then a single discovery failure is emitted`() =
+        runTest {
+            // GIVEN
+            val events = mutableListOf<ReceiptPrinterDiscoveryEvent>()
+            val job = collectDiscovery(events)
+            whenever(discoveryManager.stopDiscovery()).doAnswer { testScheduler.advanceTimeBy(35_001) }
+            val printer = mock<StarPrinter> {
+                on { connectionSettings } doReturn StarConnectionSettings(InterfaceType.Bluetooth, PRINTER_ID)
+                on { information } doThrow SecurityException("BLUETOOTH_CONNECT")
+            }
+
+            // WHEN
+            discoveryManager.capturedCallback().onPrinterFound(printer)
+
+            // THEN
+            assertThat(events).containsExactly(Failed(ReceiptPrinterError.DiscoveryFailure))
+            assertThat(job.isCompleted).isTrue()
+        }
+
+    @Test
     fun `given a collector slower than the SDK, when many printers are found, then none is dropped`() = runTest {
         // GIVEN
         val collectorCanProceed = CompletableDeferred<Unit>()
@@ -214,6 +234,34 @@ class StarReceiptPrinterManagerTest {
         // THEN
         assertThat(events).hasSize(PRINTERS_BEYOND_DEFAULT_BUFFER)
     }
+
+    @Test
+    fun `given printers still waiting for a slow collector, when discovery fails, then they are delivered before the failure`() =
+        runTest {
+            // GIVEN
+            val collectorCanProceed = CompletableDeferred<Unit>()
+            val events = mutableListOf<ReceiptPrinterDiscoveryEvent>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                sut.discover().collect {
+                    collectorCanProceed.await()
+                    events += it
+                }
+            }
+            val callback = discoveryManager.capturedCallback()
+            callback.onPrinterFound(starPrinter(identifier = PRINTER_ID))
+            callback.onPrinterFound(starPrinter(identifier = OTHER_PRINTER_ID))
+
+            // WHEN
+            advanceTimeBy(35_001)
+            collectorCanProceed.complete(Unit)
+
+            // THEN
+            assertThat(events).containsExactly(
+                PrinterFound(ReceiptPrinterDevice(id = PRINTER_ID, name = PRINTER_ID)),
+                PrinterFound(ReceiptPrinterDevice(id = OTHER_PRINTER_ID, name = OTHER_PRINTER_ID)),
+                Failed(ReceiptPrinterError.DiscoveryFailure),
+            )
+        }
 
     @Test
     fun `given the SDK never reports that discovery finished, when the discovery time has passed, then discovery fails and stops`() =

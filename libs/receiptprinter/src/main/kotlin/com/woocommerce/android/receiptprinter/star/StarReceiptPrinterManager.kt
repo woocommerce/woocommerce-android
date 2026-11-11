@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
@@ -56,7 +57,10 @@ internal class StarReceiptPrinterManager @Inject constructor(
             timeout.cancel()
             session.stopDiscovery()
         }
-    }.buffer(Channel.UNLIMITED)
+    }.buffer(Channel.UNLIMITED).catch { cause ->
+        if (cause !is DiscoveryFailedException) throw cause
+        emit(ReceiptPrinterDiscoveryEvent.Failed(ReceiptPrinterError.DiscoveryFailure))
+    }
 
     override suspend fun connect(device: ReceiptPrinterDevice): ReceiptPrinterResult =
         ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotConnected)
@@ -128,8 +132,8 @@ internal class StarReceiptPrinterManager @Inject constructor(
         }
 
         fun fail() {
-            events.trySend(ReceiptPrinterDiscoveryEvent.Failed(ReceiptPrinterError.DiscoveryFailure))
-            end()
+            stopDiscovery()
+            events.close(DiscoveryFailedException())
         }
     }
 
@@ -138,6 +142,8 @@ internal class StarReceiptPrinterManager @Inject constructor(
         const val DISCOVERY_TIMEOUT_MS = DISCOVERY_TIME_MS + 5_000L
     }
 }
+
+private class DiscoveryFailedException : Exception()
 
 private fun StarPrinter.toReceiptPrinterDevice(): ReceiptPrinterDevice {
     val identifier = connectionSettings.identifier
