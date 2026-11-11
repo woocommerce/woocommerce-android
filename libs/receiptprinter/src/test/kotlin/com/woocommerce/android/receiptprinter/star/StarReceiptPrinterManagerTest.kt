@@ -201,7 +201,7 @@ class StarReceiptPrinterManagerTest {
     }
 
     @Test
-    fun `given the SDK never reports that discovery finished, when the discovery time has passed, then the flow completes and discovery stops`() =
+    fun `given the SDK never reports that discovery finished, when the discovery time has passed, then discovery fails and stops`() =
         runTest {
             // GIVEN
             val events = mutableListOf<ReceiptPrinterDiscoveryEvent>()
@@ -214,8 +214,8 @@ class StarReceiptPrinterManagerTest {
 
             // THEN
             assertThat(wasActiveAtDiscoveryTime).isTrue()
+            assertThat(events).containsExactly(Failed(ReceiptPrinterError.DiscoveryFailure))
             assertThat(job.isCompleted).isTrue()
-            assertThat(events).isEmpty()
             verify(discoveryManager).stopDiscovery()
         }
 

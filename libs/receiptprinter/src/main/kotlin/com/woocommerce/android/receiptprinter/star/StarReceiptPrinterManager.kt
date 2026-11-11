@@ -50,7 +50,7 @@ internal class StarReceiptPrinterManager @Inject constructor(
         }
         val timeout = launch {
             delay(DISCOVERY_TIMEOUT_MS)
-            session.end()
+            session.fail()
         }
         awaitClose {
             timeout.cancel()
@@ -127,7 +127,7 @@ internal class StarReceiptPrinterManager @Inject constructor(
             events.close()
         }
 
-        private fun fail() {
+        fun fail() {
             events.trySend(ReceiptPrinterDiscoveryEvent.Failed(ReceiptPrinterError.DiscoveryFailure))
             end()
         }
