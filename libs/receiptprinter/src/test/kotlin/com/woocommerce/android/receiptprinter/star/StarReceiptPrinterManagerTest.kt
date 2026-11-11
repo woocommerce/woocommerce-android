@@ -215,6 +215,23 @@ class StarReceiptPrinterManagerTest {
         }
 
     @Test
+    fun `given the SDK reports that discovery finished as soon as it is stopped, when discovery fails, then the failure is still emitted`() =
+        runTest {
+            // GIVEN
+            val events = mutableListOf<ReceiptPrinterDiscoveryEvent>()
+            val job = collectDiscovery(events)
+            val callback = discoveryManager.capturedCallback()
+            whenever(discoveryManager.stopDiscovery()).doAnswer { callback.onDiscoveryFinished() }
+
+            // WHEN
+            advanceTimeBy(35_001)
+
+            // THEN
+            assertThat(events).containsExactly(Failed(ReceiptPrinterError.DiscoveryFailure))
+            assertThat(job.isCompleted).isTrue()
+        }
+
+    @Test
     fun `given a collector slower than the SDK, when many printers are found, then none is dropped`() = runTest {
         // GIVEN
         val collectorCanProceed = CompletableDeferred<Unit>()

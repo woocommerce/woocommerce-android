@@ -132,8 +132,8 @@ internal class StarReceiptPrinterManager @Inject constructor(
         }
 
         fun fail() {
-            stopDiscovery()
             events.close(DiscoveryFailedException())
+            stopDiscovery()
         }
     }
 
