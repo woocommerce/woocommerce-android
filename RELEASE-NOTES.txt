@@ -19,6 +19,7 @@
 - [*] Order creation and customer details now show a saved customer's shipping phone [https://github.com/woocommerce/woocommerce-android/pull/16812]
 - [Internal] ListStore reads list items and state without runBlocking [https://github.com/woocommerce/woocommerce-android/pull/16819]
 - [*] The support form now asks for your email as soon as it opens [https://github.com/woocommerce/woocommerce-android/pull/16842]
+- [Internal] Support session debug builds no longer create application passwords on Jetpack stores [https://github.com/woocommerce/woocommerce-android/pull/16848]
 
 26.0
 -----
