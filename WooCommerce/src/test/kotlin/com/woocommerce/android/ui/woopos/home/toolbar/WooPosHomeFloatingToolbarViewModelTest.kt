@@ -90,8 +90,9 @@ class WooPosHomeFloatingToolbarViewModelTest {
     }
 
     @Test
-    fun `when OnToolbarMenuClicked passed, then menu should be visible with settings`() = runTest {
+    fun `given lock flag disabled, when menu opens, then only Orders Settings and Exit are shown`() = runTest {
         // GIVEN
+        whenever(lockSession.isEnabled).thenReturn(false)
         val viewModel = createViewModel()
 
         // WHEN

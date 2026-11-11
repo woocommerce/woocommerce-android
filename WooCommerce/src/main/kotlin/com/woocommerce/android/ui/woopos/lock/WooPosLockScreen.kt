@@ -164,7 +164,7 @@ private fun PinKey(enabled: Boolean = true, onClick: () -> Unit, content: @Compo
         enabled = enabled,
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
         color = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurface,
+        contentColor = if (enabled) MaterialTheme.colorScheme.onSurface else WooPosTheme.colors.onDisabledContainer,
         modifier = Modifier.size(WooPosComponentSize.Small.value),
     ) {
         Box(contentAlignment = Alignment.Center) { content() }
