@@ -10,7 +10,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.ExitPosClicked
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
-import com.woocommerce.android.ui.woopos.home.items.customamount.WooPosCustomAmountDialogState
+import com.woocommerce.android.ui.woopos.home.items.customamount.WooPosCustomAmountFormState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitConfirmed
@@ -489,11 +489,11 @@ class WooPosHomeViewModelTest {
 
             viewModel.navigationEvent.test {
                 // WHEN
-                events.emit(ChildToParentEvent.CustomAmountDialogRequested())
+                events.emit(ChildToParentEvent.CustomAmountFormRequested())
 
                 // THEN
                 assertThat(awaitItem()).isEqualTo(
-                    ChildToParentEvent.NavigationEvent.ToCustomAmount(WooPosCustomAmountDialogState.Mode.Add)
+                    ChildToParentEvent.NavigationEvent.ToCustomAmount(WooPosCustomAmountFormState.Mode.Add)
                 )
             }
         }
@@ -514,12 +514,12 @@ class WooPosHomeViewModelTest {
 
         viewModel.navigationEvent.test {
             // WHEN
-            events.emit(ChildToParentEvent.CustomAmountDialogRequested(editing = item))
+            events.emit(ChildToParentEvent.CustomAmountFormRequested(editing = item))
 
             // THEN
             assertThat(awaitItem()).isEqualTo(
                 ChildToParentEvent.NavigationEvent.ToCustomAmount(
-                    WooPosCustomAmountDialogState.Mode.Edit(
+                    WooPosCustomAmountFormState.Mode.Edit(
                         itemNumber = 42,
                         amount = BigDecimal("12.34"),
                         name = "Service & support?",

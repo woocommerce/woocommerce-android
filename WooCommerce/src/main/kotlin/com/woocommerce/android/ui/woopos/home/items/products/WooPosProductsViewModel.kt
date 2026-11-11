@@ -111,7 +111,7 @@ class WooPosProductsViewModel @Inject constructor(
                 viewModelScope.launch {
                     analyticsTracker.track(WooPosAnalyticsEvent.Event.CustomAmountEntryRowTapped)
                 }
-                sendEventToParent(ChildToParentEvent.CustomAmountDialogRequested())
+                sendEventToParent(ChildToParentEvent.CustomAmountFormRequested())
             }
 
             WooPosProductsUIEvent.PullToRefreshTriggered -> {

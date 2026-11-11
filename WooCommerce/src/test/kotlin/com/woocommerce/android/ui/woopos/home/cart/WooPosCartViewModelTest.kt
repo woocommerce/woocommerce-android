@@ -2110,7 +2110,7 @@ class WooPosCartViewModelTest {
         }
 
     @Test
-    fun `given custom amount in cart, when EditCustomAmountClicked, then dialog request event is sent`() = runTest {
+    fun `given custom amount in cart, when EditCustomAmountClicked, then form request event is sent`() = runTest {
         // GIVEN
         whenever(formatPrice(BigDecimal("4.00"))).thenReturn("$4.00")
         val sut = createSut()
@@ -2138,7 +2138,7 @@ class WooPosCartViewModelTest {
 
         // THEN
         verify(childrenToParentEventSender).sendToParent(
-            ChildToParentEvent.CustomAmountDialogRequested(editing = customAmountItem)
+            ChildToParentEvent.CustomAmountFormRequested(editing = customAmountItem)
         )
     }
 

@@ -122,7 +122,7 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             is WooPosCartUIEvent.EditCustomAmountClicked -> {
-                sendEventToParent(ChildToParentEvent.CustomAmountDialogRequested(editing = event.item))
+                sendEventToParent(ChildToParentEvent.CustomAmountFormRequested(editing = event.item))
             }
 
             WooPosCartUIEvent.BackClicked -> {
