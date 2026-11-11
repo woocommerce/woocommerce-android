@@ -1,0 +1,132 @@
+package com.woocommerce.android.receiptprinter.star
+
+import android.os.Build
+import com.starmicronics.stario10.InterfaceType
+import com.starmicronics.stario10.StarDeviceDiscoveryManager
+import com.starmicronics.stario10.StarIO10Exception
+import com.starmicronics.stario10.StarPrinter
+import com.starmicronics.stario10.StarPrinterModel
+import com.woocommerce.android.receiptprinter.ReceiptPrinterConnectionStatus
+import com.woocommerce.android.receiptprinter.ReceiptPrinterDevice
+import com.woocommerce.android.receiptprinter.ReceiptPrinterDiscoveryEvent
+import com.woocommerce.android.receiptprinter.ReceiptPrinterError
+import com.woocommerce.android.receiptprinter.ReceiptPrinterManager
+import com.woocommerce.android.receiptprinter.ReceiptPrinterResult
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.callbackFlow
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicReference
+import javax.inject.Inject
+
+internal class StarReceiptPrinterManager @Inject constructor(
+    private val starIO10: StarIO10Wrapper,
+) : ReceiptPrinterManager {
+    private val _connectionStatus =
+        MutableStateFlow<ReceiptPrinterConnectionStatus>(ReceiptPrinterConnectionStatus.Disconnected)
+    override val connectionStatus: StateFlow<ReceiptPrinterConnectionStatus> = _connectionStatus.asStateFlow()
+
+    private val discoveredPrinters = ConcurrentHashMap<String, StarPrinter>()
+    private val sessionLock = Any()
+    private var activeSession: DiscoverySession? = null
+
+    init {
+        starIO10.disableDiagnosticsUpload()
+    }
+
+    override fun discover(): Flow<ReceiptPrinterDiscoveryEvent> = callbackFlow {
+        val session = DiscoverySession(channel)
+        synchronized(sessionLock) {
+            activeSession?.end()
+            activeSession = session
+            session.start()
+        }
+        awaitClose { session.stopDiscovery() }
+    }
+
+    override suspend fun connect(device: ReceiptPrinterDevice): ReceiptPrinterResult =
+        ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotConnected)
+
+    override suspend fun disconnect() = Unit
+
+    override suspend fun printReceipt(text: String): ReceiptPrinterResult =
+        ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotConnected)
+
+    private fun bluetoothInterfaceTypes(): List<InterfaceType> =
+        if (starIO10.androidSdkVersion >= Build.VERSION_CODES.S) {
+            listOf(InterfaceType.Bluetooth, InterfaceType.BluetoothLE)
+        } else {
+            listOf(InterfaceType.Bluetooth)
+        }
+
+    private inner class DiscoverySession(
+        private val events: SendChannel<ReceiptPrinterDiscoveryEvent>,
+    ) : StarDeviceDiscoveryManager.Callback {
+        private val discoveryManager = AtomicReference<StarDeviceDiscoveryManager?>(null)
+
+        fun start() {
+            try {
+                val manager = starIO10.createDiscoveryManager(bluetoothInterfaceTypes())
+                discoveryManager.set(manager)
+                manager.discoveryTime = DISCOVERY_TIME_MS
+                manager.callback = this
+                manager.startDiscovery()
+            } catch (expected: StarIO10Exception) {
+                fail()
+            } catch (expected: SecurityException) {
+                fail()
+            }
+        }
+
+        fun end() {
+            stopDiscovery()
+            events.close()
+        }
+
+        fun stopDiscovery() {
+            try {
+                discoveryManager.getAndSet(null)?.stopDiscovery()
+            } catch (expected: StarIO10Exception) {
+                return
+            } catch (expected: SecurityException) {
+                return
+            }
+        }
+
+        override fun onPrinterFound(printer: StarPrinter) {
+            val device = printer.toReceiptPrinterDevice()
+            discoveredPrinters[device.id] = printer
+            events.trySend(ReceiptPrinterDiscoveryEvent.PrinterFound(device))
+        }
+
+        override fun onDiscoveryFinished() {
+            events.close()
+        }
+
+        private fun fail() {
+            events.trySend(ReceiptPrinterDiscoveryEvent.Failed(ReceiptPrinterError.DiscoveryFailure))
+            events.close()
+        }
+    }
+
+    private fun StarPrinter.toReceiptPrinterDevice(): ReceiptPrinterDevice {
+        val identifier = connectionSettings.identifier
+        val bluetoothName = information?.detail?.let { detail ->
+            when (connectionSettings.interfaceType) {
+                InterfaceType.BluetoothLE -> detail.bluetoothLE.deviceName
+                else -> detail.bluetooth.deviceName
+            }
+        }
+        val modelName = information?.model?.takeIf { it != StarPrinterModel.Unknown }?.modelName
+        val name = listOfNotNull(bluetoothName, modelName).firstOrNull { it.isNotBlank() } ?: identifier
+        return ReceiptPrinterDevice(id = identifier, name = name)
+    }
+
+    private companion object {
+        const val DISCOVERY_TIME_MS = 30_000
+    }
+}
