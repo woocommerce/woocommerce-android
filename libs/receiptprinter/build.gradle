@@ -26,6 +26,7 @@ android {
 }
 
 dependencies {
+    api(libs.kotlinx.coroutines.core)
     implementation(libs.starmicronics.stario10)
 
     implementation(libs.google.dagger.hilt.android.main)
