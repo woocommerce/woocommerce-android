@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -60,8 +61,8 @@ class SupportRequestFormViewModel @Inject constructor(
 
     val supportIdentityPrompt = viewState
         .map { it.supportIdentityPrompt }
-        .distinctUntilChanged()
         .asLiveData()
+        .distinctUntilChanged()
 
     fun onViewCreated() {
         tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_VIEWED)
