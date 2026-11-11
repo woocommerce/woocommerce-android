@@ -13,5 +13,6 @@ store_local_build_cache=false
 # The type of in app update FLEXIBLE = 0; IMMEDIATE = 1
 wc.in_app_update_type=0
 wc.jitm_testing_json_file_name=
+# Support sessions: passwordless accounts get the password screen and Jetpack stores are reached without application passwords
 wc.force_password_login=false
 enable_leak_canary=false
