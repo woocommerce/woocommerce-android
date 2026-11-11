@@ -15,16 +15,16 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
-class WooPosCustomAmountDialogViewModel @Inject constructor(
+class WooPosCustomAmountFormViewModel @Inject constructor(
     private val getCurrencyFormattingParameters: WooPosGetCurrencyFormattingParameters,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(WooPosCustomAmountDialogState())
-    val state: StateFlow<WooPosCustomAmountDialogState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(WooPosCustomAmountFormState())
+    val state: StateFlow<WooPosCustomAmountFormState> = _state.asStateFlow()
 
-    private var hasInitializedFor: WooPosCustomAmountDialogState.Mode? = null
+    private var hasInitializedFor: WooPosCustomAmountFormState.Mode? = null
 
     private var amountBeforeEditing: BigDecimal? = null
 
@@ -56,10 +56,10 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
         }
     }
 
-    fun initializeFor(mode: WooPosCustomAmountDialogState.Mode) {
+    fun initializeFor(mode: WooPosCustomAmountFormState.Mode) {
         if (hasInitializedFor == mode) return
         hasInitializedFor = mode
-        val editing = mode as? WooPosCustomAmountDialogState.Mode.Edit
+        val editing = mode as? WooPosCustomAmountFormState.Mode.Edit
         amountBeforeEditing = null
 
         _state.value = _state.value.copy(
@@ -73,9 +73,9 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
             isSubmitted = false,
             isClosed = false,
             screen = if (editing == null) {
-                WooPosCustomAmountDialogState.Screen.AMOUNT
+                WooPosCustomAmountFormState.Screen.AMOUNT
             } else {
-                WooPosCustomAmountDialogState.Screen.DETAILS
+                WooPosCustomAmountFormState.Screen.DETAILS
             },
             returnsToDetails = false,
         )
@@ -89,7 +89,7 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
         if (!_state.value.isAmountValid) return
         amountBeforeEditing = null
         _state.value = _state.value.copy(
-            screen = WooPosCustomAmountDialogState.Screen.DETAILS,
+            screen = WooPosCustomAmountFormState.Screen.DETAILS,
             returnsToDetails = false,
         )
     }
@@ -97,7 +97,7 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
     private fun onEditAmount() {
         amountBeforeEditing = _state.value.amount
         _state.value = _state.value.copy(
-            screen = WooPosCustomAmountDialogState.Screen.AMOUNT,
+            screen = WooPosCustomAmountFormState.Screen.AMOUNT,
             returnsToDetails = true,
         )
     }
@@ -106,7 +106,7 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
         if (_state.value.returnsToDetails) {
             _state.value = _state.value.copy(
                 amount = amountBeforeEditing,
-                screen = WooPosCustomAmountDialogState.Screen.DETAILS,
+                screen = WooPosCustomAmountFormState.Screen.DETAILS,
                 returnsToDetails = false,
             )
             amountBeforeEditing = null
@@ -121,7 +121,7 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
 
     private fun onEditName() {
         _state.value = _state.value.copy(
-            screen = WooPosCustomAmountDialogState.Screen.NAME,
+            screen = WooPosCustomAmountFormState.Screen.NAME,
             nameDraft = _state.value.name,
         )
     }
@@ -133,12 +133,12 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
     private fun onNameConfirmed() {
         _state.value = _state.value.copy(
             name = _state.value.nameDraft,
-            screen = WooPosCustomAmountDialogState.Screen.DETAILS,
+            screen = WooPosCustomAmountFormState.Screen.DETAILS,
         )
     }
 
     private fun onNameBack() {
-        _state.value = _state.value.copy(nameDraft = "", screen = WooPosCustomAmountDialogState.Screen.DETAILS)
+        _state.value = _state.value.copy(nameDraft = "", screen = WooPosCustomAmountFormState.Screen.DETAILS)
     }
 
     private fun onTaxableToggled(value: Boolean) {
@@ -149,7 +149,7 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
         val current = _state.value
         if (!current.isSubmitEnabled) return
         val amount = current.amount ?: return
-        val editingItemNumber = (current.mode as? WooPosCustomAmountDialogState.Mode.Edit)?.itemNumber
+        val editingItemNumber = (current.mode as? WooPosCustomAmountFormState.Mode.Edit)?.itemNumber
 
         _state.value = current.copy(isSubmitting = true)
         viewModelScope.launch {

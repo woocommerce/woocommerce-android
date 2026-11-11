@@ -27,7 +27,7 @@ import java.math.BigDecimal
 
 @Composable
 fun WooPosCustomAmountValueScreen(
-    state: WooPosCustomAmountDialogState,
+    state: WooPosCustomAmountFormState,
     onAmountChanged: (BigDecimal?) -> Unit,
     onSaveClicked: () -> Unit,
     onBackClicked: () -> Unit,
@@ -92,7 +92,7 @@ fun WooPosCustomAmountValueScreen(
 fun WooPosCustomAmountValueScreenPreview() {
     WooPosTheme {
         WooPosCustomAmountValueScreen(
-            state = WooPosCustomAmountDialogState(amount = BigDecimal("10.00"), currencySymbol = "$"),
+            state = WooPosCustomAmountFormState(amount = BigDecimal("10.00"), currencySymbol = "$"),
             onAmountChanged = {},
             onSaveClicked = {},
             onBackClicked = {},
