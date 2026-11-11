@@ -1,17 +1,21 @@
 package com.woocommerce.android.ui.woopos.root
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.lifecycleScope
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.gesturesOrButtonsNavigationPadding
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
+import com.woocommerce.android.ui.woopos.lock.WooPosLockSession
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEntryPointKeeper
 import com.woocommerce.android.ui.woopos.util.ext.lockWooPosOrientation
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -28,6 +32,9 @@ class WooPosActivity : AppCompatActivity() {
     @Inject
     lateinit var analyticsEntryPointKeeper: WooPosAnalyticsEntryPointKeeper
 
+    @Inject
+    lateinit var lockSession: WooPosLockSession
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // POS is session-based: cart, product cache, order cache, and data source selection
         // all live in in-memory singletons set up by the splash flow. On a config change
@@ -40,6 +47,15 @@ class WooPosActivity : AppCompatActivity() {
         // scoped: it's reset to false in a new process, true after the first onCreate.
         super.onCreate(if (hasInitializedSession) savedInstanceState else null)
         hasInitializedSession = true
+        lifecycleScope.launch {
+            lockSession.state.collect { state ->
+                if (state.isLocked) {
+                    window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+                } else {
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+                }
+            }
+        }
         WindowCompat.setDecorFitsSystemWindows(window, false)
         lockWooPosOrientation()
 

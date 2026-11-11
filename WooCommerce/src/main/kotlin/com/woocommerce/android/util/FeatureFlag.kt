@@ -28,7 +28,7 @@ enum class FeatureFlag(
     WOO_POS_TABLET_PROMO_BANNER("woo_pos_tablet_promo_banner"),
     WOO_POS_RECEIPT_PRINTING("woo_pos_receipt_printing", localValue = PackageUtils.isDebugBuild()),
 
-    // Internal testing only: keep the remote flag disabled until WOOMOB-4605 adds PIN validation.
+    // Internal testing only: keep disabled until all required M1 safeguards and integrations are ready.
     WOO_POS_MANUAL_LOCK("woo_pos_manual_lock", localValue = false),
 
     WC_SHIPPING_BANNER("wc_shipping_banner", localValue = PackageUtils.isDebugBuild()),
