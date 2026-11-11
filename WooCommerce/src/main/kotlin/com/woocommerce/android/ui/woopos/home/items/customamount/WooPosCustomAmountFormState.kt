@@ -7,7 +7,7 @@ import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import java.math.BigDecimal
 
 @Parcelize
-data class WooPosCustomAmountDialogState(
+data class WooPosCustomAmountFormState(
     val mode: Mode = Mode.Add,
     val amount: BigDecimal? = null,
     val name: String = "",
@@ -47,7 +47,7 @@ data class WooPosCustomAmountDialogState(
     }
 }
 
-fun WooPosCartItemViewState.CustomAmount.toEditMode() = WooPosCustomAmountDialogState.Mode.Edit(
+fun WooPosCartItemViewState.CustomAmount.toEditMode() = WooPosCustomAmountFormState.Mode.Edit(
     itemNumber = itemNumber,
     amount = amount,
     name = name,

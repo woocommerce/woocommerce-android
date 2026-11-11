@@ -4,7 +4,6 @@
 
 26.1
 -----
-- [*] The support form now asks for your email as soon as it opens [https://github.com/woocommerce/woocommerce-android/pull/16842]
 - [**] [Woo POS] Custom amounts now open on their own screen: enter the amount, then review the name and taxes before adding it to the cart [https://github.com/woocommerce/woocommerce-android/pull/16833]
 - [*] POS: When a phone is the card reader, it now stops waiting for a card after the cashier picks another payment method or leaves checkout [https://github.com/woocommerce/woocommerce-android/pull/16830]
 - [*] The Tap to Pay "Try a payment" screen now says the payment is live and that processing fees apply [https://github.com/woocommerce/woocommerce-android/pull/16828]
@@ -19,6 +18,7 @@
 - [Internal] Push notification handling no longer nests blocking calls when checking store visibility and Woo push registration [https://github.com/woocommerce/woocommerce-android/pull/16796]
 - [*] Order creation and customer details now show a saved customer's shipping phone [https://github.com/woocommerce/woocommerce-android/pull/16812]
 - [Internal] ListStore reads list items and state without runBlocking [https://github.com/woocommerce/woocommerce-android/pull/16819]
+- [*] The support form now asks for your email as soon as it opens [https://github.com/woocommerce/woocommerce-android/pull/16842]
 
 26.0
 -----
