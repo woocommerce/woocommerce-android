@@ -17,6 +17,7 @@ import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.sitepicker.sitevisibility.VisibleWooSitesDataStore
+import com.woocommerce.android.ui.woopos.lock.WooPosPINAccess
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalPINStore
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
@@ -56,6 +57,7 @@ class AccountRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.WOO_POS) private val posDataStore: DataStore<Preferences>,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val localPINStore: WooPosLocalPINStore,
+    private val pinAccess: WooPosPINAccess,
 ) {
     fun getUserAccount(): AccountModel? = accountStore.account.takeIf { it.userId != 0L }
 
@@ -126,6 +128,9 @@ class AccountRepository @Inject constructor(
     private suspend fun clearLocalPINs() {
         localPINStore.clearAll().onFailure {
             WooLog.e(LOGIN, "Unable to clear local POS PINs")
+        }
+        pinAccess.clearAllAttempts().onFailure {
+            WooLog.e(LOGIN, "Unable to clear local POS PIN attempts")
         }
     }
 
