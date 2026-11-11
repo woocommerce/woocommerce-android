@@ -33,10 +33,12 @@ internal class WooPosPINAccessTestFixture(private val dispatchers: CoroutineDisp
         override fun now() = WooPosPINTime(boot, elapsed)
     }
     val records = mutableMapOf<Int, WooPosPINAttemptState>()
+    var attemptReads = 0
     var readError = false
     var writeError = false
     val storage = object : WooPosPINAttemptStorage {
         override fun read(localSiteId: Int): WooPosPINAttemptState {
+            attemptReads++
             check(!readError)
             return records[localSiteId] ?: WooPosPINAttemptState()
         }

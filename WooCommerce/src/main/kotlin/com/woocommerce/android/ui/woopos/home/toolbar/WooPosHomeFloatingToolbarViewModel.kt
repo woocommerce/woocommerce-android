@@ -117,7 +117,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
         hideMenu()
 
         when (event.menuItem.title) {
-            R.string.woopos_lock_pos -> lockSession.lock()
+            R.string.woopos_lock_pos -> viewModelScope.launch { lockSession.lock() }
 
             R.string.woopos_orders_title -> {
                 viewModelScope.launch {

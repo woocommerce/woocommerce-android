@@ -67,11 +67,18 @@ class WooPosLockSession @Inject constructor(
         if (_state.value.isLocked) refreshWait()
     }
 
-    fun lock() {
+    suspend fun lock() {
         if (!isEnabled || isExiting || hasExited) return
-        generation++
+        val request = ++generation
+        val id = localSiteId
         pin = ""
-        _state.value = WooPosLockScreenState(isLocked = true, remainingSeconds = _state.value.remainingSeconds)
+        _state.value = WooPosLockScreenState(isLocked = true, isChecking = true)
+        if (id == null) {
+            _state.value = WooPosLockScreenState(isLocked = true, error = WooPosLockError.STORAGE)
+            return
+        }
+        refreshWait()
+        if (isCurrent(request, id)) _state.value = _state.value.copy(isChecking = false)
     }
 
     suspend fun enterDigit(digit: Int) {

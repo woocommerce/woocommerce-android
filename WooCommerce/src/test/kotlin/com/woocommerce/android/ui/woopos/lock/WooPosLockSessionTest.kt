@@ -233,9 +233,15 @@ class WooPosLockSessionTest {
         assertThat(session.state.value.isChecking).isTrue()
 
         // WHEN
-        session.lock()
+        val lock = async { session.lock() }
+        runCurrent()
+        assertThat(session.state.value.activeOperator).isNull()
+        assertThat(session.state.value.isLocked).isTrue()
+        assertThat(session.state.value.isChecking).isTrue()
+        assertThat(session.state.value.canEnterPIN).isFalse()
         gate.complete(Unit)
         unlock.await()
+        lock.await()
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()

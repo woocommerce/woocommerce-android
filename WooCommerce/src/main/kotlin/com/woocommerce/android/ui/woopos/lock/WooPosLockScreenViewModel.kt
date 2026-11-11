@@ -55,7 +55,7 @@ class WooPosLockScreenViewModel @Inject constructor(
     }
 
     companion object {
-        private const val COUNTDOWN_INTERVAL_MILLIS = 250L
+        private const val COUNTDOWN_INTERVAL_MILLIS = 1000L
     }
 }
 
