@@ -192,6 +192,7 @@ class WooPosPINAccessTest {
         // THEN
         assertThat(access.authenticate(1, "1234")).isEqualTo(WooPosPINAccessResult.Unavailable)
         assertThat(access.remainingSeconds(1).isFailure).isTrue()
+        fixture.readError = false
         val badClock = object : WooPosPINClock {
             override fun now(): WooPosPINTime = error("Unavailable boot identity")
         }
@@ -207,6 +208,7 @@ class WooPosPINAccessTest {
             coroutineRule.testDispatchers,
         )
         assertThat(clockFailure.authenticate(1, "1234")).isEqualTo(WooPosPINAccessResult.Unavailable)
+        assertThat(fixture.records).isEmpty()
     }
 
     @Test
