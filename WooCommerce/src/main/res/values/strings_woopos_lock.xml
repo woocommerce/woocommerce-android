@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="woopos_lock_pos">Lock POS</string>
+    <string name="woopos_lock_enter_pin">Enter your PIN</string>
+    <string name="woopos_lock_delete_digit">Delete</string>
+    <string name="woopos_lock_pin_entry">PIN entry</string>
+    <string name="woopos_lock_digits_entered">%1$d of %2$d digits entered</string>
+</resources>
