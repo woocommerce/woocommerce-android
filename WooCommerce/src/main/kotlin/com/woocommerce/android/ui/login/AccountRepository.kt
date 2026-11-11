@@ -17,12 +17,14 @@ import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.sitepicker.sitevisibility.VisibleWooSitesDataStore
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalPINStore
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.LOGIN
 import com.woocommerce.android.util.dispatchAndAwait
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
@@ -52,7 +54,8 @@ class AccountRepository @Inject constructor(
     private val pushNotificationRepository: PushNotificationRepository,
     private val registerDevice: RegisterDevice,
     @DataStoreQualifier(DataStoreType.WOO_POS) private val posDataStore: DataStore<Preferences>,
-    private val analyticsTracker: AnalyticsTrackerWrapper
+    private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val localPINStore: WooPosLocalPINStore,
 ) {
     fun getUserAccount(): AccountModel? = accountStore.account.takeIf { it.userId != 0L }
 
@@ -71,7 +74,10 @@ class AccountRepository @Inject constructor(
     }
 
     suspend fun logout(): Boolean {
-        if (!isUserLoggedIn()) return true
+        if (!isUserLoggedIn()) {
+            clearLocalPINs()
+            return true
+        }
 
         // Capture the site before the suspension points below, it may be reset while we are suspended.
         val applicationPasswordSite = selectedSite.getOrNull()
@@ -87,7 +93,7 @@ class AccountRepository @Inject constructor(
     }
 
     suspend fun logoutInvoluntarily(reason: InvoluntaryLogoutReason): Boolean {
-        if (!isUserLoggedIn()) return true
+        if (!isUserLoggedIn()) return logout()
 
         analyticsTracker.track(
             AnalyticsEvent.ACCOUNT_INVOLUNTARY_LOGOUT,
@@ -104,18 +110,28 @@ class AccountRepository @Inject constructor(
                 CloseAccountErrorType.GENERIC_ERROR -> CloseAccountResult.Error(hasActiveStores = false)
             }
         } else {
-            val event: OnAccountChanged = dispatcher.dispatchAndAwait(AccountActionBuilder.newSignOutAction())
-            if (event.isError) {
-                WooLog.d(LOGIN, "Error while trying to log out after successfully closing the account")
-                CloseAccountResult.Error(hasActiveStores = false)
-            } else {
-                cleanup()
-                CloseAccountResult.Success
+            withContext(NonCancellable) {
+                val event: OnAccountChanged = dispatcher.dispatchAndAwait(AccountActionBuilder.newSignOutAction())
+                if (event.isError) {
+                    WooLog.d(LOGIN, "Error while trying to log out after successfully closing the account")
+                    CloseAccountResult.Error(hasActiveStores = false)
+                } else {
+                    cleanup()
+                    CloseAccountResult.Success
+                }
             }
         }
     }
 
-    private fun cleanup() {
+    private suspend fun clearLocalPINs() {
+        localPINStore.clearAll().onFailure {
+            WooLog.e(LOGIN, "Unable to clear local POS PINs")
+        }
+    }
+
+    private suspend fun cleanup() = withContext(NonCancellable) {
+        clearLocalPINs()
+
         // Reset analytics
         AnalyticsTracker.flush()
         AnalyticsTracker.clearAllData()
@@ -134,7 +150,7 @@ class AccountRepository @Inject constructor(
         dispatcher.dispatch(SiteActionBuilder.newRemoveAllSitesAction())
     }
 
-    private suspend fun logoutWpComAccount(): Boolean {
+    private suspend fun logoutWpComAccount(): Boolean = withContext(NonCancellable) {
         val event: OnAccountChanged = dispatcher.dispatchAndAwait(AccountActionBuilder.newSignOutAction())
         if (event.isError) {
             WooLog.e(
@@ -142,15 +158,15 @@ class AccountRepository @Inject constructor(
                 "Account error [type = ${event.causeOfChange}] : " +
                     "${event.error.type} > ${event.error.message}"
             )
-            return false
+            return@withContext false
         }
 
         deleteApplicationPasswordsOfUserSites()
         completeLogout()
-        return true
+        true
     }
 
-    private suspend fun logoutApplicationPasswordAccount(site: SiteModel?): Boolean {
+    private suspend fun logoutApplicationPasswordAccount(site: SiteModel?): Boolean = withContext(NonCancellable) {
         if (site != null) {
             // Wait for the deletion before the cleanup resets the selected site, which can kill the process.
             withTimeoutOrNull(APP_PASSWORD_DELETION_TIMEOUT_MS) { deleteApplicationPassword(site).join() }
@@ -159,10 +175,10 @@ class AccountRepository @Inject constructor(
             WooLog.w(LOGIN, "Skipping application password deletion, the selected site is not available")
         }
         completeLogout()
-        return true
+        true
     }
 
-    private fun completeLogout() {
+    private suspend fun completeLogout() {
         AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
         cleanup()
     }

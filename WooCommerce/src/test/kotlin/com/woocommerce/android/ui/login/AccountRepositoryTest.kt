@@ -13,12 +13,16 @@ import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.sitepicker.sitevisibility.VisibleWooSitesDataStore
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalPINStore
+import com.woocommerce.android.ui.woopos.roles.WooPosPINError
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
@@ -41,6 +45,8 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnApplicationPasswordDeleted
 import org.wordpress.android.fluxc.store.account.CloseAccountStore
+import org.wordpress.android.fluxc.store.AccountStore.AccountError
+import org.wordpress.android.fluxc.store.AccountStore.AccountErrorType
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -56,6 +62,9 @@ class AccountRepositoryTest : BaseUnitTest() {
     private val registerDevice: RegisterDevice = mock()
     private val posDataStore: DataStore<Preferences> = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
+    private val localPINStore: WooPosLocalPINStore = mock {
+        on { clearAll() } doReturn Result.success(Unit)
+    }
     private val appCoroutineScope = CoroutineScope(coroutinesTestRule.testDispatcher)
     private val dispatcher = FakeDispatcher().apply {
         registerActionHandler(AccountAction.SIGN_OUT) {
@@ -80,8 +89,138 @@ class AccountRepositoryTest : BaseUnitTest() {
         pushNotificationRepository = pushNotificationRepository,
         registerDevice = registerDevice,
         posDataStore = posDataStore,
-        analyticsTracker = analyticsTracker
+        analyticsTracker = analyticsTracker,
+        localPINStore = localPINStore,
     )
+
+    @Test
+    fun `when logging out without a session, then stale local PINs are cleared`() = testBlocking {
+        // WHEN
+        assertThat(repository.logout()).isTrue()
+
+        // THEN
+        verify(localPINStore).clearAll()
+    }
+
+    @Test
+    fun `given PIN erasure fails after sign out, when logging out, then logout still succeeds`() = testBlocking {
+        // GIVEN
+        given(accountStore.hasAccessToken()).willReturn(true)
+        whenever(localPINStore.clearAll()).thenReturn(Result.failure(WooPosPINError.StorageFailure))
+
+        // WHEN
+        assertThat(repository.logout()).isTrue()
+
+        // THEN
+        verify(localPINStore).clearAll()
+        verify(selectedSite).reset()
+    }
+
+    @Test
+    fun `given sign out fails, when logging out, then local PIN protection is preserved`() = testBlocking {
+        // GIVEN
+        given(accountStore.hasAccessToken()).willReturn(true)
+        dispatcher.registerActionHandler(AccountAction.SIGN_OUT) {
+            appCoroutineScope.launch {
+                yield()
+                emitChange(AccountStore.OnAccountChanged().apply {
+                    error = AccountError(AccountErrorType.GENERIC_ERROR, "Sign out failed")
+                    causeOfChange = AccountAction.SIGN_OUT
+                })
+            }
+        }
+
+        // WHEN
+        assertThat(repository.logout()).isFalse()
+
+        // THEN
+        verify(localPINStore, never()).clearAll()
+        verify(selectedSite, never()).reset()
+    }
+
+    @Test
+    fun `given account closes but PIN erasure fails, when closing account, then closure remains successful`() = testBlocking {
+        // GIVEN
+        whenever(closeAccountStore.closeAccount()).thenReturn(CloseAccountStore.CloseAccountResult())
+        whenever(localPINStore.clearAll()).thenReturn(Result.failure(WooPosPINError.StorageFailure))
+
+        // WHEN
+        assertThat(repository.closeAccount()).isEqualTo(AccountRepository.CloseAccountResult.Success)
+
+        // THEN
+        verify(localPINStore).clearAll()
+        verify(selectedSite).reset()
+    }
+
+    @Test
+    fun `given successful sign out, when caller is cancelled during password cleanup, then PINs are still cleared`() = testBlocking {
+        // GIVEN
+        given(accountStore.hasAccessToken()).willReturn(true)
+        lateinit var logout: Job
+        given(siteStore.sitesAccessedViaWPComRest).willAnswer {
+            logout.cancel()
+            emptyList<SiteModel>()
+        }
+
+        // WHEN
+        logout = launch(start = CoroutineStart.LAZY) { repository.logout() }
+        logout.start()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(logout.isCancelled).isTrue()
+        verify(localPINStore).clearAll()
+        verify(selectedSite).reset()
+    }
+
+    @Test
+    fun `given sign out was dispatched, when caller is cancelled before its result, then PIN cleanup completes`() = testBlocking {
+        // GIVEN
+        given(accountStore.hasAccessToken()).willReturn(true)
+        val signOutGate = CompletableDeferred<Unit>()
+        dispatcher.registerActionHandler(AccountAction.SIGN_OUT) {
+            appCoroutineScope.launch {
+                signOutGate.await()
+                emitChange(AccountStore.OnAccountChanged())
+            }
+        }
+
+        // WHEN
+        val logout = launch { repository.logout() }
+        runCurrent()
+        logout.cancel()
+        signOutGate.complete(Unit)
+        advanceUntilIdle()
+
+        // THEN
+        verify(localPINStore).clearAll()
+        verify(selectedSite).reset()
+    }
+
+    @Test
+    fun `given PIN erasure is suspended, when logging out, then site removal waits for erasure`() = testBlocking {
+        // GIVEN
+        given(accountStore.hasAccessToken()).willReturn(true)
+        val gate = CompletableDeferred<Unit>()
+        whenever(localPINStore.clearAll()).doSuspendableAnswer {
+            gate.await()
+            Result.success(Unit)
+        }
+
+        // WHEN
+        val result = async { repository.logout() }
+        runCurrent()
+
+        // THEN
+        assertThat(result.isCompleted).isFalse()
+        verify(selectedSite, never()).reset()
+        gate.complete(Unit)
+        assertThat(result.await()).isTrue()
+        inOrder(localPINStore, selectedSite) {
+            verify(localPINStore).clearAll()
+            verify(selectedSite).reset()
+        }
+    }
 
     @Test
     fun `given user is logged in, when logged out involuntarily, then track the event with the reason`() =
