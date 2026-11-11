@@ -35,6 +35,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -66,6 +67,20 @@ class StarReceiptPrinterManagerTest {
             verify(starIO10).createDiscoveryManager(listOf(InterfaceType.Bluetooth, InterfaceType.BluetoothLE))
             verify(discoveryManager).discoveryTime = 30_000
             verify(discoveryManager).startDiscovery()
+        }
+
+    @Test
+    fun `when discover is collected, then the discovery time and the callback are set before the SDK discovery starts`() =
+        runTest {
+            // WHEN
+            collectDiscovery()
+
+            // THEN
+            inOrder(discoveryManager) {
+                verify(discoveryManager).discoveryTime = 30_000
+                verify(discoveryManager).callback = any()
+                verify(discoveryManager).startDiscovery()
+            }
         }
 
     @Test
@@ -286,6 +301,27 @@ class StarReceiptPrinterManagerTest {
         }
 
     @Test
+    fun `given a superseded discovery, when its SDK reports that it finished, then the newer discovery keeps running`() =
+        runTest {
+            // GIVEN
+            collectDiscovery()
+            val earlierCallback = discoveryManager.capturedCallback()
+            val newerEvents = mutableListOf<ReceiptPrinterDiscoveryEvent>()
+            val newerJob = collectDiscovery(newerEvents)
+
+            // WHEN
+            earlierCallback.onDiscoveryFinished()
+            newerDiscoveryManager.capturedCallback().onPrinterFound(starPrinter(identifier = OTHER_PRINTER_ID))
+
+            // THEN
+            assertThat(newerJob.isActive).isTrue()
+            verify(newerDiscoveryManager, never()).stopDiscovery()
+            assertThat(newerEvents).containsExactly(
+                PrinterFound(ReceiptPrinterDevice(id = OTHER_PRINTER_ID, name = OTHER_PRINTER_ID))
+            )
+        }
+
+    @Test
     fun `given Bluetooth is unavailable, when discover is collected, then it emits a discovery failure and completes`() =
         runTest {
             // GIVEN
@@ -301,7 +337,7 @@ class StarReceiptPrinterManagerTest {
         }
 
     @Test
-    fun `given the Bluetooth permission is missing, when discover is collected, then it emits a discovery failure and completes`() =
+    fun `given starting discovery throws a SecurityException, when discover is collected, then it emits a discovery failure and completes`() =
         runTest {
             // GIVEN
             whenever(discoveryManager.startDiscovery()).doAnswer { throw SecurityException("BLUETOOTH_SCAN") }
