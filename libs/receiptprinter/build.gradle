@@ -23,8 +23,6 @@ android {
         sourceCompatibility = libs.versions.java.get()
         targetCompatibility = libs.versions.java.get()
     }
-
-    testFixtures.enable = true
 }
 
 dependencies {
@@ -33,8 +31,6 @@ dependencies {
 
     implementation(libs.google.dagger.hilt.android.main)
     ksp(libs.google.dagger.hilt.compiler)
-
-    testFixturesImplementation(libs.kotlinx.coroutines.core)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)

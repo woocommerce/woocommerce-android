@@ -6,11 +6,6 @@ sealed interface ReceiptPrinterError {
     data object PrinterNotConnected : ReceiptPrinterError
     data object PaperEmpty : ReceiptPrinterError
     data object CoverOpen : ReceiptPrinterError
-    data class ConnectionLost(val detail: String?) : ReceiptPrinterError
-    data class PrintFailed(val detail: String?) : ReceiptPrinterError
+    data class ConnectionLost(val cause: Throwable? = null) : ReceiptPrinterError
+    data class PrintFailed(val cause: Throwable? = null) : ReceiptPrinterError
 }
-
-class ReceiptPrinterException(
-    val error: ReceiptPrinterError,
-    cause: Throwable? = null,
-) : Exception("Receipt printer error: $error", cause)

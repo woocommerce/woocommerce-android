@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.woopos.receiptprinting
 
 import com.woocommerce.android.receiptprinter.ReceiptPrinterConnectionStatus
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDevice
+import com.woocommerce.android.receiptprinter.ReceiptPrinterDiscoveryEvent
 import com.woocommerce.android.receiptprinter.ReceiptPrinterManager
+import com.woocommerce.android.receiptprinter.ReceiptPrinterResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
@@ -14,21 +16,13 @@ class WooPosReceiptPrinterFacade @Inject constructor(
 ) {
     val connectionStatus: StateFlow<ReceiptPrinterConnectionStatus> = receiptPrinterManager.connectionStatus
 
-    fun discover(): Flow<ReceiptPrinterDevice> = receiptPrinterManager.discover()
+    fun discover(): Flow<ReceiptPrinterDiscoveryEvent> = receiptPrinterManager.discover()
 
-    fun stopDiscovery() {
-        receiptPrinterManager.stopDiscovery()
-    }
-
-    suspend fun connect(device: ReceiptPrinterDevice) {
-        receiptPrinterManager.connect(device)
-    }
+    suspend fun connect(device: ReceiptPrinterDevice): ReceiptPrinterResult = receiptPrinterManager.connect(device)
 
     suspend fun disconnect() {
         receiptPrinterManager.disconnect()
     }
 
-    suspend fun printReceipt(text: String) {
-        receiptPrinterManager.printReceipt(text)
-    }
+    suspend fun printReceipt(text: String): ReceiptPrinterResult = receiptPrinterManager.printReceipt(text)
 }
