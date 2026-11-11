@@ -39,11 +39,11 @@ internal class StarReceiptPrinterManager @Inject constructor(
     }
 
     override fun discover(): Flow<ReceiptPrinterDiscoveryEvent> = callbackFlow {
-        val session = DiscoverySession(channel)
+        val session = DiscoverySession(starIO10, discoveredPrinters, channel)
         synchronized(sessionLock) {
             activeSession?.end()
             activeSession = session
-            session.start()
+            session.start(bluetoothInterfaceTypes())
         }
         awaitClose { session.stopDiscovery() }
     }
@@ -63,14 +63,16 @@ internal class StarReceiptPrinterManager @Inject constructor(
             listOf(InterfaceType.Bluetooth)
         }
 
-    private inner class DiscoverySession(
+    private class DiscoverySession(
+        private val starIO10: StarIO10Wrapper,
+        private val discoveredPrinters: MutableMap<String, StarPrinter>,
         private val events: SendChannel<ReceiptPrinterDiscoveryEvent>,
     ) : StarDeviceDiscoveryManager.Callback {
         private val discoveryManager = AtomicReference<StarDeviceDiscoveryManager?>(null)
 
-        fun start() {
+        fun start(interfaceTypes: List<InterfaceType>) {
             try {
-                val manager = starIO10.createDiscoveryManager(bluetoothInterfaceTypes())
+                val manager = starIO10.createDiscoveryManager(interfaceTypes)
                 discoveryManager.set(manager)
                 manager.discoveryTime = DISCOVERY_TIME_MS
                 manager.callback = this
@@ -113,20 +115,20 @@ internal class StarReceiptPrinterManager @Inject constructor(
         }
     }
 
-    private fun StarPrinter.toReceiptPrinterDevice(): ReceiptPrinterDevice {
-        val identifier = connectionSettings.identifier
-        val bluetoothName = information?.detail?.let { detail ->
-            when (connectionSettings.interfaceType) {
-                InterfaceType.BluetoothLE -> detail.bluetoothLE.deviceName
-                else -> detail.bluetooth.deviceName
-            }
-        }
-        val modelName = information?.model?.takeIf { it != StarPrinterModel.Unknown }?.modelName
-        val name = listOfNotNull(bluetoothName, modelName).firstOrNull { it.isNotBlank() } ?: identifier
-        return ReceiptPrinterDevice(id = identifier, name = name)
-    }
-
     private companion object {
         const val DISCOVERY_TIME_MS = 30_000
     }
+}
+
+private fun StarPrinter.toReceiptPrinterDevice(): ReceiptPrinterDevice {
+    val identifier = connectionSettings.identifier
+    val bluetoothName = information?.detail?.let { detail ->
+        when (connectionSettings.interfaceType) {
+            InterfaceType.BluetoothLE -> detail.bluetoothLE.deviceName
+            else -> detail.bluetooth.deviceName
+        }
+    }
+    val modelName = information?.model?.takeIf { it != StarPrinterModel.Unknown }?.modelName
+    val name = listOfNotNull(bluetoothName, modelName).firstOrNull { it.isNotBlank() } ?: identifier
+    return ReceiptPrinterDevice(id = identifier, name = name)
 }
