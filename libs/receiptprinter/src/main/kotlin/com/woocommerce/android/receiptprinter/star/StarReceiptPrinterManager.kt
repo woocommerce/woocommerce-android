@@ -12,15 +12,18 @@ import com.woocommerce.android.receiptprinter.ReceiptPrinterDiscoveryEvent
 import com.woocommerce.android.receiptprinter.ReceiptPrinterError
 import com.woocommerce.android.receiptprinter.ReceiptPrinterManager
 import com.woocommerce.android.receiptprinter.ReceiptPrinterResult
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 
 internal class StarReceiptPrinterManager @Inject constructor(
@@ -45,8 +48,15 @@ internal class StarReceiptPrinterManager @Inject constructor(
             activeSession = session
             session.start(bluetoothInterfaceTypes())
         }
-        awaitClose { session.stopDiscovery() }
-    }
+        val timeout = launch {
+            delay(DISCOVERY_TIMEOUT_MS)
+            session.end()
+        }
+        awaitClose {
+            timeout.cancel()
+            session.stopDiscovery()
+        }
+    }.buffer(Channel.UNLIMITED)
 
     override suspend fun connect(device: ReceiptPrinterDevice): ReceiptPrinterResult =
         ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotConnected)
@@ -68,12 +78,13 @@ internal class StarReceiptPrinterManager @Inject constructor(
         private val discoveredPrinters: MutableMap<String, StarPrinter>,
         private val events: SendChannel<ReceiptPrinterDiscoveryEvent>,
     ) : StarDeviceDiscoveryManager.Callback {
-        private val discoveryManager = AtomicReference<StarDeviceDiscoveryManager?>(null)
+        private val lock = Any()
+        private var discoveryManager: StarDeviceDiscoveryManager? = null
 
         fun start(interfaceTypes: List<InterfaceType>) {
             try {
                 val manager = starIO10.createDiscoveryManager(interfaceTypes)
-                discoveryManager.set(manager)
+                synchronized(lock) { discoveryManager = manager }
                 manager.discoveryTime = DISCOVERY_TIME_MS
                 manager.callback = this
                 manager.startDiscovery()
@@ -90,8 +101,9 @@ internal class StarReceiptPrinterManager @Inject constructor(
         }
 
         fun stopDiscovery() {
+            val manager = synchronized(lock) { discoveryManager.also { discoveryManager = null } }
             try {
-                discoveryManager.getAndSet(null)?.stopDiscovery()
+                manager?.stopDiscovery()
             } catch (expected: StarIO10Exception) {
                 return
             } catch (expected: SecurityException) {
@@ -100,9 +112,15 @@ internal class StarReceiptPrinterManager @Inject constructor(
         }
 
         override fun onPrinterFound(printer: StarPrinter) {
-            val device = printer.toReceiptPrinterDevice()
-            discoveredPrinters[device.id] = printer
-            events.trySend(ReceiptPrinterDiscoveryEvent.PrinterFound(device))
+            try {
+                val device = synchronized(lock) {
+                    if (discoveryManager == null) return
+                    printer.toReceiptPrinterDevice().also { discoveredPrinters[it.id] = printer }
+                }
+                events.trySend(ReceiptPrinterDiscoveryEvent.PrinterFound(device))
+            } catch (expected: SecurityException) {
+                fail()
+            }
         }
 
         override fun onDiscoveryFinished() {
@@ -111,12 +129,13 @@ internal class StarReceiptPrinterManager @Inject constructor(
 
         private fun fail() {
             events.trySend(ReceiptPrinterDiscoveryEvent.Failed(ReceiptPrinterError.DiscoveryFailure))
-            events.close()
+            end()
         }
     }
 
     private companion object {
         const val DISCOVERY_TIME_MS = 30_000
+        const val DISCOVERY_TIMEOUT_MS = DISCOVERY_TIME_MS + 5_000L
     }
 }
 

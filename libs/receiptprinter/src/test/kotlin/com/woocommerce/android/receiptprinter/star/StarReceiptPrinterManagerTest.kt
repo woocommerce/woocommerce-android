@@ -19,12 +19,14 @@ import com.woocommerce.android.receiptprinter.ReceiptPrinterDiscoveryEvent.Faile
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDiscoveryEvent.PrinterFound
 import com.woocommerce.android.receiptprinter.ReceiptPrinterError
 import com.woocommerce.android.receiptprinter.ReceiptPrinterResult
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -32,6 +34,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -157,6 +160,66 @@ class StarReceiptPrinterManagerTest {
         }
 
     @Test
+    fun `given reading the printer name needs a missing permission, when a printer is found, then discovery fails and stops`() =
+        runTest {
+            // GIVEN
+            val events = mutableListOf<ReceiptPrinterDiscoveryEvent>()
+            val job = collectDiscovery(events)
+            val printer = mock<StarPrinter> {
+                on { connectionSettings } doReturn StarConnectionSettings(InterfaceType.Bluetooth, PRINTER_ID)
+                on { information } doThrow SecurityException("BLUETOOTH_CONNECT")
+            }
+
+            // WHEN
+            discoveryManager.capturedCallback().onPrinterFound(printer)
+
+            // THEN
+            assertThat(events).containsExactly(Failed(ReceiptPrinterError.DiscoveryFailure))
+            assertThat(job.isCompleted).isTrue()
+            verify(discoveryManager).stopDiscovery()
+        }
+
+    @Test
+    fun `given a collector slower than the SDK, when many printers are found, then none is dropped`() = runTest {
+        // GIVEN
+        val collectorCanProceed = CompletableDeferred<Unit>()
+        val events = mutableListOf<ReceiptPrinterDiscoveryEvent>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            sut.discover().collect {
+                collectorCanProceed.await()
+                events += it
+            }
+        }
+        val callback = discoveryManager.capturedCallback()
+
+        // WHEN
+        repeat(PRINTERS_BEYOND_DEFAULT_BUFFER) { callback.onPrinterFound(starPrinter(identifier = "printer-$it")) }
+        collectorCanProceed.complete(Unit)
+
+        // THEN
+        assertThat(events).hasSize(PRINTERS_BEYOND_DEFAULT_BUFFER)
+    }
+
+    @Test
+    fun `given the SDK never reports that discovery finished, when the discovery time has passed, then the flow completes and discovery stops`() =
+        runTest {
+            // GIVEN
+            val events = mutableListOf<ReceiptPrinterDiscoveryEvent>()
+            val job = collectDiscovery(events)
+
+            // WHEN
+            advanceTimeBy(30_000)
+            val wasActiveAtDiscoveryTime = job.isActive
+            advanceTimeBy(5_001)
+
+            // THEN
+            assertThat(wasActiveAtDiscoveryTime).isTrue()
+            assertThat(job.isCompleted).isTrue()
+            assertThat(events).isEmpty()
+            verify(discoveryManager).stopDiscovery()
+        }
+
+    @Test
     fun `given discover is collected, when the SDK finishes discovery, then the flow completes`() = runTest {
         // GIVEN
         val job = collectDiscovery()
@@ -205,13 +268,15 @@ class StarReceiptPrinterManagerTest {
             // WHEN
             val newerEvents = mutableListOf<ReceiptPrinterDiscoveryEvent>()
             val newerJob = collectDiscovery(newerEvents)
-            earlierCallback.onPrinterFound(starPrinter(identifier = PRINTER_ID))
+            val latePrinter = starPrinter(identifier = PRINTER_ID)
+            earlierCallback.onPrinterFound(latePrinter)
             newerDiscoveryManager.capturedCallback().onPrinterFound(starPrinter(identifier = OTHER_PRINTER_ID))
 
             // THEN
             verify(discoveryManager).stopDiscovery()
             assertThat(earlierJob.isCompleted).isTrue()
             assertThat(earlierEvents).isEmpty()
+            verify(latePrinter, never()).connectionSettings
             verify(newerDiscoveryManager).startDiscovery()
             verify(newerDiscoveryManager, never()).stopDiscovery()
             assertThat(newerJob.isActive).isTrue()
@@ -334,5 +399,6 @@ class StarReceiptPrinterManagerTest {
     private companion object {
         const val PRINTER_ID = "00:11:62:AA:BB:01"
         const val OTHER_PRINTER_ID = "00:11:62:AA:BB:02"
+        const val PRINTERS_BEYOND_DEFAULT_BUFFER = 100
     }
 }
