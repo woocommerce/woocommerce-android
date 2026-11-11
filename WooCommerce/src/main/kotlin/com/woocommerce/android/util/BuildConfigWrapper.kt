@@ -8,4 +8,5 @@ import javax.inject.Inject
 class BuildConfigWrapper @Inject constructor() {
     val debug = BuildConfig.DEBUG
     val versionName = BuildConfig.VERSION_NAME
+    val isSupportSession = BuildConfig.DEBUG && BuildConfig.FORCE_PASSWORD_LOGIN
 }
