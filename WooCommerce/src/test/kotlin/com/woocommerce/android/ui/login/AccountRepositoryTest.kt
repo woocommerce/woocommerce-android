@@ -19,10 +19,10 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
@@ -42,11 +42,11 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.AccountStore.AccountError
+import org.wordpress.android.fluxc.store.AccountStore.AccountErrorType
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnApplicationPasswordDeleted
 import org.wordpress.android.fluxc.store.account.CloseAccountStore
-import org.wordpress.android.fluxc.store.AccountStore.AccountError
-import org.wordpress.android.fluxc.store.AccountStore.AccountErrorType
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)

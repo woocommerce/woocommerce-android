@@ -4,9 +4,8 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
 import java.io.DataOutputStream
-import javax.inject.Inject
 
-internal class WooPosPINCodec @Inject constructor() {
+internal class WooPosPINCodec {
     fun decode(bytes: ByteArray): Map<WooPosRole, WooPosPINHash> =
         DataInputStream(ByteArrayInputStream(bytes)).use { input ->
             require(bytes.size <= MAX_BYTES && input.readInt() == VERSION)

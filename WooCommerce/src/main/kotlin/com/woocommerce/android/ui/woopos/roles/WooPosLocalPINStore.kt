@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.roles
 
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -47,6 +48,7 @@ class WooPosLocalPINStore @Inject constructor(
         return storage.read(localSiteId)?.let(codec::decode).orEmpty()
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private suspend fun <T> operation(block: () -> T): Result<T> = withContext(dispatchers.io) {
         mutex.withLock {
             try {
@@ -55,7 +57,8 @@ class WooPosLocalPINStore @Inject constructor(
                 throw e
             } catch (e: WooPosPINError) {
                 Result.failure(e)
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                WooLog.e(WooLog.T.POS, "Local PIN storage operation failed: ${e.javaClass.simpleName}")
                 Result.failure(WooPosPINError.StorageFailure)
             }
         }
