@@ -179,6 +179,10 @@
             android:exported="false"
             android:theme="@style/Theme.Woo.DayNight" />
         <activity
+            android:name="com.woocommerce.android.ui.woopos.lock.WooPosRestoreActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Woo.Splash" />
+        <activity
             android:name="com.woocommerce.android.ui.woopos.root.WooPosActivity"
             android:exported="false"
             android:theme="@style/Theme.WooPos"

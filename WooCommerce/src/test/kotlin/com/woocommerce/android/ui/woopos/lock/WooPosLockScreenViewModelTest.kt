@@ -1,70 +1,64 @@
 package com.woocommerce.android.ui.woopos.lock
 
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosLockScreenViewModelTest {
-    @Rule
-    @JvmField
-    val coroutineTestRule = WooPosCoroutineTestRule()
-
-    private val featureFlagRepository: FeatureFlagRepository = mock {
-        on { isEnabled(FeatureFlag.WOO_POS_MANUAL_LOCK) }.thenReturn(true)
-    }
-    private val session = WooPosLockSession(featureFlagRepository)
-    private val viewModel = WooPosLockScreenViewModel(session)
+    @get:Rule
+    val coroutineRule = WooPosCoroutineTestRule()
 
     @Test
-    fun `given locked, when UI submits four digits, then exposed state unlocks on fourth digit`() = runTest {
+    fun `given wrong entries, when wait starts, then countdown updates live and Forgot PIN remains available`() = runTest {
         // GIVEN
-        session.lock()
+        val fixture = WooPosPINAccessTestFixture(coroutineRule.testDispatchers)
+        val site = SiteModel().apply { id = 1 }
+        val selectedSite: SelectedSite = mock {
+            on { getOrNull() }.thenReturn(site)
+            on { observe() }.thenReturn(MutableStateFlow(site))
+        }
+        val flags: FeatureFlagRepository = mock {
+            on { isEnabled(FeatureFlag.WOO_POS_MANUAL_LOCK) }.thenReturn(true)
+        }
+        val viewModel = WooPosLockScreenViewModel(
+            WooPosLockSession(flags, selectedSite, fixture.access(), fixture.lockedPOS),
+            selectedSite
+        )
+        repeat(5) {
+            repeat(4) { viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(0)) }
+        }
+        assertThat(viewModel.state.value.remainingSeconds).isEqualTo(30)
 
         // WHEN
-        listOf(9, 0, 7).forEach { viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(it)) }
+        fixture.elapsed += 1000
+        advanceTimeBy(1000)
+        runCurrent()
+        viewModel.onUIEvent(WooPosLockScreenUIEvent.ForgotPINTapped)
 
         // THEN
-        assertThat(viewModel.state.value).isEqualTo(WooPosLockScreenState(isLocked = true, enteredDigits = 3))
+        assertThat(viewModel.state.value.remainingSeconds).isEqualTo(29)
+        assertThat(viewModel.state.value.error).isEqualTo(WooPosLockError.RECOVERY_UNAVAILABLE)
+        assertThat(viewModel.state.value.isLocked).isTrue()
 
         // WHEN
-        viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(8))
+        fixture.elapsed += 29_000
+        advanceTimeBy(29_000)
+        runCurrent()
 
         // THEN
-        assertThat(viewModel.state.value).isEqualTo(WooPosLockScreenState())
-    }
-
-    @Test
-    fun `given partial entry, when UI deletes a digit, then exposed entry loses only the last digit`() = runTest {
-        // GIVEN
-        session.lock()
-        viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(1))
-        viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(2))
-
-        // WHEN
-        viewModel.onUIEvent(WooPosLockScreenUIEvent.DeleteTapped)
-
-        // THEN
-        assertThat(viewModel.state.value).isEqualTo(WooPosLockScreenState(isLocked = true, enteredDigits = 1))
-    }
-
-    @Test
-    fun `given another ViewModel shares the locked session, when created, then partial entry is retained`() = runTest {
-        // GIVEN
-        session.lock()
-        viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(1))
-
-        // WHEN
-        val anotherViewModel = WooPosLockScreenViewModel(session)
-
-        // THEN
-        assertThat(anotherViewModel.state.value)
-            .isEqualTo(WooPosLockScreenState(isLocked = true, enteredDigits = 1))
+        assertThat(viewModel.state.value.remainingSeconds).isZero()
+        assertThat(viewModel.state.value.canEnterPIN).isTrue()
     }
 }

@@ -133,6 +133,8 @@ import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.ui.products.list.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerFragmentArgs
+import com.woocommerce.android.ui.woopos.lock.WooPosRestoreActivity
+import com.woocommerce.android.ui.woopos.lock.WooPosRestoreLockedPOS
 import com.woocommerce.android.ui.woopos.tab.WooPosTabController
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
@@ -370,6 +372,9 @@ class MainActivity :
         return super.onCreateOptionsMenu(menu)
     }
 
+    @Inject
+    lateinit var restoreLockedPOS: WooPosRestoreLockedPOS
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         // Drop stale main-flow state when no site is selected so login can take over cleanly.
@@ -382,6 +387,8 @@ class MainActivity :
             showLoginScreen()
             return
         }
+
+        if (restoreLockedPOSIfNeeded()) return
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -456,6 +463,14 @@ class MainActivity :
         viewModel.showFeatureAnnouncementIfNeeded()
     }
 
+    private fun restoreLockedPOSIfNeeded(): Boolean {
+        val normalLaunch = intent.action == Intent.ACTION_MAIN && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
+        if (!normalLaunch || !restoreLockedPOS.needsCheck()) return false
+        startActivity(Intent(this, WooPosRestoreActivity::class.java))
+        finish()
+        return true
+    }
+
     private fun handleIncomingImages() {
         viewModel.handleIncomingImages(
             intent?.clipData?.let {
@@ -480,6 +495,7 @@ class MainActivity :
 
     override fun onResume() {
         super.onResume()
+        if (!::binding.isInitialized) return
         AnalyticsTracker.trackViewShown(this)
 
         // Track if App was opened from a widget
@@ -504,7 +520,7 @@ class MainActivity :
     }
 
     override fun onPause() {
-        binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
+        if (::binding.isInitialized) binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
         super.onPause()
     }
 
@@ -518,6 +534,7 @@ class MainActivity :
         }
 
         setIntent(intent)
+        if (!::binding.isInitialized) return
         initFragment(null)
 
         viewModel.handleIncomingAppLink(intent.data)
@@ -532,6 +549,10 @@ class MainActivity :
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        if (!::binding.isInitialized) {
+            super.onSaveInstanceState(outState)
+            return
+        }
         outState.putInt(KEY_BOTTOM_NAV_POSITION, binding.bottomNav.currentPosition.id)
         outState.putInt(KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
         super.onSaveInstanceState(outState)

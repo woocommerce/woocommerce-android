@@ -46,6 +46,23 @@ internal class WooPosPINAccessTestFixture(private val dispatchers: CoroutineDisp
         }
         override fun clearAll() { records.clear() }
     }
+    val markedStores = mutableSetOf<Int>()
+    var markerError = false
+    val lockedPOS = object : WooPosLockedPOSStore {
+        override fun isMarked(localSiteId: Int): Result<Boolean> = runCatching {
+            check(!markerError)
+            localSiteId in markedStores
+        }
+        override suspend fun mark(localSiteId: Int): Result<Unit> = runCatching {
+            check(!markerError)
+            markedStores += localSiteId
+        }
+        override suspend fun clear(localSiteId: Int): Result<Unit> = runCatching {
+            check(!markerError)
+            markedStores -= localSiteId
+        }
+        override suspend fun clearAll(): Result<Unit> = Result.success(Unit).also { markedStores.clear() }
+    }
     var recoveryResult: Result<WooPosOperator> = Result.failure(IllegalStateException())
     val recovery = object : WooPosPINRecovery {
         override suspend fun authenticate(localSiteId: Int) = recoveryResult
