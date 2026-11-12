@@ -85,6 +85,27 @@ class WooPosPINCodecTest {
     }
 
     @Test
+    fun `given a stored JSON fixture, when decoded and encoded, then its schema and PIN are preserved`() {
+        // GIVEN
+        val stored = """
+            {"version":1,"pins":[{"role":"admin","iterations":100000,
+            "salt":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            "hash":[-122,-98,108,-125,80,-59,-66,-80,-84,-61,-103,-5,-86,-61,-74,13,
+            34,4,51,-119,107,38,-90,71,115,77,13,-113,21,-122,-31,-6]}]}
+        """.trimIndent()
+
+        // WHEN
+        val decoded = codec.decode(stored.encodeToByteArray())
+        val encoded = codec.encode(decoded)
+
+        // THEN
+        assertThat(decoded.keys).containsExactly(WooPosRole.ADMIN)
+        assertThat(decoded.getValue(WooPosRole.ADMIN).matches("1234")).isTrue()
+        assertThat(Json.parseToJsonElement(encoded.decodeToString()))
+            .isEqualTo(Json.parseToJsonElement(stored))
+    }
+
+    @Test
     fun `given legacy PINs, when decoded and encoded, then JSON preserves both PIN hashes`() {
         // WHEN
         val decoded = codec.decode(legacyPINRecord())
@@ -114,7 +135,6 @@ class WooPosPINCodecTest {
         // THEN
         assertThat(encoded.size).isLessThanOrEqualTo(WooPosPINStorage.MAX_RECORD_BYTES)
         assertThat(codec.decode(encoded).keys).containsExactlyElementsOf(WooPosRole.entries)
-        println("Largest current JSON fixture: ${encoded.size} bytes")
     }
 
     @Test
