@@ -49,6 +49,7 @@ import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -920,24 +921,68 @@ class StarReceiptPrinterManagerTest {
         }
 
     @Test
-    fun `given the caller is cancelled at the moment connected is reported, when connect returns, then it succeeds and the printer stays connected`() =
+    fun `given a connect for an unknown device superseded by a status collector, when it ends, then it fails with printer not found and the newer printer stays connected`() =
         runTest {
             // GIVEN
             val printer = starPrinter()
             discover(printer)
-            var result: ReceiptPrinterResult? = null
-            val caller = backgroundScope.launch { result = sut.connect(DEVICE) }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                sut.connectionStatus.first { it == Connecting(OTHER_DEVICE) }
+                sut.connect(DEVICE)
+            }
+
+            // WHEN
+            val result = sut.connect(OTHER_DEVICE)
+
+            // THEN
+            assertThat(result).isEqualTo(ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotFound))
+            verify(printer, never()).closeAsync()
+            assertThat(sut.connectionStatus.value).isEqualTo(Connected(DEVICE))
+        }
+
+    @Test
+    fun `given the caller is cancelled while connected is being reported, when connect ends, then it is cancelled, the printer is closed and the status is disconnected`() =
+        runTest {
+            // GIVEN
+            val printer = starPrinter()
+            discover(printer)
+            val result = backgroundScope.async { sut.connect(DEVICE) }
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
                 sut.connectionStatus.first { it == Connected(DEVICE) }
-                caller.cancel()
+                result.cancel()
             }
 
             // WHEN
             runCurrent()
 
             // THEN
+            assertThat(result.isCompleted).isTrue()
+            assertThat(result.isCancelled).isTrue()
+            verify(printer).closeAsync()
+            assertThat(sut.connectionStatus.value).isEqualTo(Disconnected)
+        }
+
+    @Test
+    fun `given closing the printer failed, when it is connected again, then the close is retried before the printer is reopened`() =
+        runTest {
+            // GIVEN
+            val printer = starPrinter()
+            whenever(printer.closeAsync())
+                .doReturn(failed(StarIO10CommunicationException("close failed")), CompletableDeferred(Unit))
+            discover(printer)
+            sut.connect(DEVICE)
+            sut.disconnect()
+
+            // WHEN
+            val result = sut.connect(DEVICE)
+
+            // THEN
+            inOrder(printer) {
+                verify(printer).openAsync()
+                verify(printer, times(2)).closeAsync()
+                verify(printer).openAsync()
+            }
             assertThat(result).isEqualTo(ReceiptPrinterResult.Success)
-            verify(printer, never()).closeAsync()
             assertThat(sut.connectionStatus.value).isEqualTo(Connected(DEVICE))
         }
 
