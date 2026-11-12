@@ -250,6 +250,8 @@ object AppPrefs {
 
         DEBUG_INSTALL_REFERRER_CLICK_TIMESTAMP,
 
+        SUGGESTED_STORE_LOGIN_URL,
+
         // Anonymous device id sent in remote feature flag requests to keep rollout bucketing stable
         REMOTE_FEATURE_FLAGS_DEVICE_ID
     }
@@ -412,6 +414,10 @@ object AppPrefs {
     var debugInstallReferrerClickTimestampSeconds: Long
         get() = getLong(UndeletablePrefKey.DEBUG_INSTALL_REFERRER_CLICK_TIMESTAMP)
         set(value) = setLong(UndeletablePrefKey.DEBUG_INSTALL_REFERRER_CLICK_TIMESTAMP, value)
+
+    var suggestedStoreLoginUrl: String
+        get() = getString(UndeletablePrefKey.SUGGESTED_STORE_LOGIN_URL, "")
+        set(value) = setString(UndeletablePrefKey.SUGGESTED_STORE_LOGIN_URL, value)
 
     var isUserAgeEligibleForAppUse: Boolean
         get() = getBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, default = true)
