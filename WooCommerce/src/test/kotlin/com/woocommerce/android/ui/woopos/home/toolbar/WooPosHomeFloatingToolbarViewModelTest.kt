@@ -411,7 +411,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
     }
 
     @Test
-    fun `given lock flag enabled, when menu opens, then Lock POS is available`() = runTest {
+    fun `given lock flag enabled, when menu reopens, then Lock POS appears once directly before Exit POS`() = runTest {
         // GIVEN
         whenever(lockSession.isEnabled).thenReturn(true)
         val viewModel = createViewModel()
@@ -419,9 +419,17 @@ class WooPosHomeFloatingToolbarViewModelTest {
         // WHEN
         viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked)
 
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnOutsideOfToolbarMenuClicked)
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked)
+
         // THEN
         val menu = viewModel.state.value.menu as WooPosHomeFloatingToolbarState.Menu.Visible
-        assertThat(menu.items.map { it.title }).contains(R.string.woopos_lock_pos)
+        assertThat(menu.items.map { it.title }).containsExactly(
+            R.string.woopos_orders_title,
+            R.string.woopos_settings_title,
+            R.string.woopos_lock_pos,
+            R.string.woopos_exit_confirmation_title,
+        )
     }
 
     @Test

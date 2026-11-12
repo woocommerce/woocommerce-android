@@ -81,7 +81,7 @@ class WooPosLockScreenDialogTest {
     }
 
     companion object {
-        private const val LOCK_TITLE = "Enter your PIN"
+        private const val LOCK_TITLE = "Enter your PIN to unlock POS"
         private const val PROTECTED_TITLE = "Protected POS content"
     }
 }
