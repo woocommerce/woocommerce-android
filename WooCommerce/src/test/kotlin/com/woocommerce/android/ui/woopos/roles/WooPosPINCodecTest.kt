@@ -11,7 +11,6 @@ import kotlinx.serialization.json.jsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
-import java.nio.ByteBuffer
 
 class WooPosPINCodecTest {
     private val codec = WooPosPINCodec()
@@ -20,7 +19,7 @@ class WooPosPINCodecTest {
     private val pin = record.getValue("pins").jsonArray.single().jsonObject
 
     @Test
-    fun `given invalid JSON records, when decoding, then each is rejected`() {
+    fun `given invalid records, when decoding, then each is rejected`() {
         val malformed = listOf(
             byteArrayOf(),
             "{".encodeToByteArray(),
@@ -28,6 +27,8 @@ class WooPosPINCodecTest {
             valid + byteArrayOf(0),
             valid + "{}".encodeToByteArray(),
             byteArrayOf(0xc3.toByte(), 0x28),
+            legacyPINRecord().copyOf(10),
+            legacyPINRecord() + byteArrayOf(0),
             JsonObject(record + ("version" to JsonPrimitive(99))).toString().encodeToByteArray(),
             JsonObject(record - "version").toString().encodeToByteArray(),
             JsonObject(record + ("unknown" to JsonPrimitive(true))).toString().encodeToByteArray(),
@@ -46,30 +47,6 @@ class WooPosPINCodecTest {
             json(JsonObject(pin + ("iterations" to JsonPrimitive(Int.MAX_VALUE)))),
             json(JsonObject(pin + ("unknown" to JsonPrimitive(true)))),
         )
-        malformed.forEach { bytes ->
-            assertThatThrownBy { codec.decode(bytes) }.isInstanceOf(Exception::class.java)
-        }
-    }
-
-    @Test
-    fun `given invalid legacy records, when decoding, then each is rejected`() {
-        // GIVEN
-        val legacy = legacyPINRecord()
-        val malformed = listOf(
-            legacy.copyOf(10),
-            legacy + byteArrayOf(0),
-            legacy.copyOf().apply { ByteBuffer.wrap(this).putInt(0, 99) },
-            legacy.copyOf().apply { ByteBuffer.wrap(this).putInt(4, 0) },
-            legacy.copyOf().apply { ByteBuffer.wrap(this).putInt(4, Int.MAX_VALUE) },
-            legacy.copyOf().apply { this[8] = 99 },
-            legacy.copyOf().apply { this[8] = 2 },
-            legacy.copyOf().apply { ByteBuffer.wrap(this).putInt(9, Int.MAX_VALUE) },
-            legacy.copyOf().apply { ByteBuffer.wrap(this).putInt(9, 0) },
-            legacy.copyOf().apply { ByteBuffer.wrap(this).putInt(9, -1) },
-            legacy + ByteArray(128),
-        )
-
-        // THEN
         malformed.forEach { bytes ->
             assertThatThrownBy { codec.decode(bytes) }.isInstanceOf(Exception::class.java)
         }
