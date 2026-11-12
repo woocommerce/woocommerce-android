@@ -130,10 +130,24 @@ class WooPosLocalPINStoreTest {
     }
 
     @Test
-    fun `given invalid site identity, when setting PINs, then no shared fallback identity is used`() = runTest {
-        assertThat(store.setPIN(0, WooPosRole.ADMIN, "1234").isFailure).isTrue()
-        assertThat(store.setPIN(-1, WooPosRole.ADMIN, "1234").isFailure).isTrue()
-        assertThat(storage.entries).isEmpty()
+    fun `given invalid site identity, when changing PINs, then storage is unchanged`() = runTest {
+        // GIVEN
+        val records = mapOf(0 to byteArrayOf(0), -1 to byteArrayOf(-1), 1 to byteArrayOf(1))
+        storage.entries.putAll(records)
+
+        // WHEN
+        listOf(0, -1).forEach { siteId ->
+            WooPosRole.entries.forEach { role ->
+                assertThat(store.setPIN(siteId, role, "1234").exceptionOrNull())
+                    .isEqualTo(WooPosPINError.StorageFailure)
+                assertThat(store.removePIN(siteId, role).exceptionOrNull())
+                    .isEqualTo(WooPosPINError.StorageFailure)
+            }
+        }
+
+        // THEN
+        assertThat(storage.writtenSiteIds).isEmpty()
+        assertThat(storage.entries).isEqualTo(records)
     }
 
     @Test
@@ -177,8 +191,10 @@ class WooPosLocalPINStoreTest {
 
     private class MemoryStorage : WooPosPINStorage {
         val entries = mutableMapOf<Int, ByteArray>()
+        val writtenSiteIds = mutableListOf<Int>()
         override fun read(localSiteId: Int): ByteArray? = entries[localSiteId]
         override fun write(localSiteId: Int, bytes: ByteArray?) {
+            writtenSiteIds.add(localSiteId)
             if (bytes == null) entries.remove(localSiteId) else entries[localSiteId] = bytes
         }
         override fun clearAll() = entries.clear()

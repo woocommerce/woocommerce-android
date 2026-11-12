@@ -33,6 +33,7 @@ class WooPosLocalPINStore @Inject constructor(
     }
 
     suspend fun removePIN(localSiteId: Int, role: WooPosRole): Result<Unit> = operation {
+        require(localSiteId > 0)
         if (role == WooPosRole.ADMIN) {
             storage.write(localSiteId, null)
         } else {
