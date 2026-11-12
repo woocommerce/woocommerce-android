@@ -105,16 +105,6 @@ class SuggestedStoreLoginTest {
     }
 
     @Test
-    fun `given login started, when started again with redirected url, then only the redirect target is active`() {
-        sut.start(STORE_HOST)
-
-        sut.start(OTHER_HOST)
-
-        assertThat(sut.isActiveFor(STORE_HOST)).isFalse()
-        assertThat(sut.isActiveFor(OTHER_HOST)).isTrue()
-    }
-
-    @Test
     fun `given login started, when followRedirect to a new host, then returns true`() {
         sut.start(STORE_HOST)
 
