@@ -10,4 +10,8 @@ interface WooPosPINStorage {
 
     /** A successful return makes all prior records unusable; otherwise this must throw. */
     fun clearAll()
+
+    companion object {
+        const val MAX_RECORD_BYTES = 1024
+    }
 }
