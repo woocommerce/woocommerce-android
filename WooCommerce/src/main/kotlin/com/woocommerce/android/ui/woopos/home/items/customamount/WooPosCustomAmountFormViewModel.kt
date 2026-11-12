@@ -19,6 +19,7 @@ class WooPosCustomAmountFormViewModel @Inject constructor(
     private val getCurrencyFormattingParameters: WooPosGetCurrencyFormattingParameters,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val resourceProvider: ResourceProvider,
+    private val taxableRepository: WooPosCustomAmountTaxableRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(WooPosCustomAmountFormState())
@@ -68,7 +69,7 @@ class WooPosCustomAmountFormViewModel @Inject constructor(
             // A blank name is saved as the default name, so show it as unset again when editing.
             name = editing?.name?.takeUnless { it == defaultName() }.orEmpty(),
             nameDraft = "",
-            isTaxable = editing?.isTaxable ?: false,
+            isTaxable = editing?.isTaxable ?: taxableRepository.getLastIsTaxable(),
             isSubmitting = false,
             isSubmitted = false,
             isClosed = false,
@@ -162,6 +163,7 @@ class WooPosCustomAmountFormViewModel @Inject constructor(
                         editingItemNumber = editingItemNumber,
                     )
                 )
+                taxableRepository.saveLastIsTaxable(current.isTaxable)
                 hasInitializedFor = null
                 _state.value = _state.value.copy(isSubmitted = true)
             } finally {
