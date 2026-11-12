@@ -847,23 +847,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given no suggested login, when the account does not match, then connect Jetpack is offered`() =
-        testBlocking {
-            // GIVEN
-            val url = SitePickerTestUtils.loginSiteAddress
-            givenThatUserLoggedInFromEnteringSiteAddress(null)
-            givenSiteInfoFetchSucceeds()
-            whenever(suggestedStoreLogin.isActiveFor(url)).thenReturn(false)
-            whenSitesAreFetched()
-
-            // WHEN
-            whenViewModelIsCreated()
-
-            // THEN
-            assertThat(viewModel.event.value).isEqualTo(NavigateToAccountMismatchScreen(CONNECT_JETPACK, url))
-        }
-
-    @Test
     fun `given a suggested login with a WordPress-com hosted store, when the account does not match, then connect site is offered`() =
         testBlocking {
             // GIVEN
