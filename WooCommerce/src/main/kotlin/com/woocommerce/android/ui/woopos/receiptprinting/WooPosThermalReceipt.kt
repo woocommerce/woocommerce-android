@@ -41,7 +41,6 @@ data class WooPosThermalReceipt(
 
     data class Labels(
         val datePaid: String,
-        val orderNumber: String,
         val paymentMethod: String,
         val subtotal: String,
         val discount: String,

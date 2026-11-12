@@ -17,7 +17,7 @@ class WooPosThermalReceiptRenderer @Inject constructor() {
             payment(receipt, labels),
             receipt.lineItems.flatMap(::lineItem),
             totals(receipt.totals, labels),
-            note(receipt.orderNote, labels),
+            labeled(labels.notes, receipt.orderNote),
             wrap(receipt.returnsPolicy),
         )
             .filter { it.isNotEmpty() }
@@ -28,11 +28,10 @@ class WooPosThermalReceiptRenderer @Inject constructor() {
             .flatMap(::wrap)
             .map { it.padStart((LINE_WIDTH + it.length) / 2) }
 
-    private fun payment(receipt: WooPosThermalReceipt, labels: Labels): List<String> {
-        val order = listOf(labels.datePaid, receipt.datePaid, labels.orderNumber.format(receipt.orderNumber))
-        val card = receipt.card?.let { listOf(labels.paymentMethod, cardDescription(it)) }.orEmpty()
-        return (order + card).flatMap(::wrap)
-    }
+    private fun payment(receipt: WooPosThermalReceipt, labels: Labels): List<String> =
+        labeled(labels.datePaid, receipt.datePaid) +
+            wrap(receipt.orderNumber) +
+            receipt.card?.let { labeled(labels.paymentMethod, cardDescription(it)) }.orEmpty()
 
     private fun cardDescription(card: Card): String =
         listOf(card.brand, card.last4).filter { it.isNotBlank() }.joinToString(" - ")
@@ -55,16 +54,18 @@ class WooPosThermalReceiptRenderer @Inject constructor() {
     private fun discountLabel(label: String, discount: Discount): String =
         if (discount.couponCodes.isEmpty()) label else "$label (${discount.couponCodes.joinToString()})"
 
-    private fun note(orderNote: String, labels: Labels): List<String> =
-        wrap(orderNote).let { if (it.isEmpty()) it else wrap(labels.notes) + it }
+    private fun labeled(label: String, text: String): List<String> =
+        wrap(text).let { if (it.isEmpty()) it else wrap(label) + it }
 
     private fun twoColumns(left: String, right: String): List<String> {
         val leftLines = wrap(left)
+        val rightLines = wrap(right)
         val lastLine = leftLines.lastOrNull().orEmpty()
-        return if (lastLine.length + 1 + right.length <= LINE_WIDTH) {
-            leftLines.dropLast(1) + (lastLine + right.padStart(LINE_WIDTH - lastLine.length))
+        val amount = rightLines.singleOrNull()
+        return if (amount != null && lastLine.length + 1 + amount.length <= LINE_WIDTH) {
+            leftLines.dropLast(1) + (lastLine + amount.padStart(LINE_WIDTH - lastLine.length))
         } else {
-            leftLines + wrap(right).map { it.padStart(LINE_WIDTH) }
+            leftLines + rightLines.map { it.padStart(LINE_WIDTH) }
         }
     }
 
@@ -73,7 +74,7 @@ class WooPosThermalReceiptRenderer @Inject constructor() {
     private fun wrapLine(line: String): List<String> =
         line.split(WHITESPACE)
             .filter { it.isNotEmpty() }
-            .flatMap { it.chunked(LINE_WIDTH) }
+            .flatMap(::hardSplit)
             .fold(emptyList<String>()) { lines, word ->
                 val lastLine = lines.lastOrNull()
                 if (lastLine != null && lastLine.length + 1 + word.length <= LINE_WIDTH) {
@@ -82,6 +83,14 @@ class WooPosThermalReceiptRenderer @Inject constructor() {
                     lines + word
                 }
             }
+
+    private fun hardSplit(word: String): List<String> =
+        generateSequence(word) { it.drop(splitIndex(it)).ifEmpty { null } }
+            .map { it.take(splitIndex(it)) }
+            .toList()
+
+    private fun splitIndex(word: String): Int =
+        if (word.length > LINE_WIDTH && word[LINE_WIDTH - 1].isHighSurrogate()) LINE_WIDTH - 1 else LINE_WIDTH
 
     private companion object {
         const val LINE_WIDTH = 48
