@@ -29,7 +29,7 @@ enum class FeatureFlag(
     WOO_POS_RECEIPT_PRINTING("woo_pos_receipt_printing", localValue = PackageUtils.isDebugBuild()),
 
     // Internal testing only: keep the remote flag disabled until WOOMOB-4605 adds PIN validation.
-    WOO_POS_MANUAL_LOCK("woo_pos_manual_lock", localValue = false),
+    WOO_POS_ROLES("woo_pos_roles", localValue = false),
 
     WC_SHIPPING_BANNER("wc_shipping_banner", localValue = PackageUtils.isDebugBuild()),
     BETTER_CUSTOMER_SEARCH_M2("better_customer_search_m2", localValue = PackageUtils.isDebugBuild()),

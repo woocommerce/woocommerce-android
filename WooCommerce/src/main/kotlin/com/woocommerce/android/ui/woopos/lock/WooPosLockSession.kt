@@ -16,7 +16,7 @@ class WooPosLockSession @Inject constructor(
     val state = _state.asStateFlow()
 
     val isEnabled: Boolean
-        get() = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_MANUAL_LOCK)
+        get() = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ROLES)
 
     fun lock() {
         if (isEnabled) _state.value = WooPosLockScreenState(isLocked = true)

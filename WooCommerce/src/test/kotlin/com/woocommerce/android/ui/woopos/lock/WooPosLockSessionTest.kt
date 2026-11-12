@@ -18,7 +18,7 @@ class WooPosLockSessionTest {
 
         // THEN
         assertThat(session.state.value.isLocked).isFalse()
-        assertThat(FeatureFlag.WOO_POS_MANUAL_LOCK.localValue).isFalse()
+        assertThat(FeatureFlag.WOO_POS_ROLES.localValue).isFalse()
     }
 
     @Test
@@ -117,6 +117,6 @@ class WooPosLockSessionTest {
     }
 
     private fun enableLock() {
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_MANUAL_LOCK)).thenReturn(true)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ROLES)).thenReturn(true)
     }
 }
