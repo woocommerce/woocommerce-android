@@ -77,17 +77,22 @@ internal class StarReceiptPrinterManager @Inject constructor(
     }
 
     override suspend fun connect(device: ReceiptPrinterDevice): ReceiptPrinterResult {
-        val printer = discoveredPrinters[device.id]
-            ?: return ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotFound)
         val caller = currentCoroutineContext()
         caller.ensureActive()
+        val printer = discoveredPrinters[device.id]
         val attempt = startAttempt(ReceiptPrinterConnectionStatus.Connecting(device))
         // The SDK keeps opening after a cancellation, so the attempt always runs to the end to close what it opened.
         val result = withContext(NonCancellable) {
             connectionMutex.withLock {
+                if (!isLatest(attempt)) {
+                    return@withLock ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotConnected)
+                }
                 closeOpenPrinter()
-                val isWanted = caller.isActive && isLatest(attempt)
-                val error = if (isWanted) open(printer) else ReceiptPrinterError.PrinterNotConnected
+                val error = when {
+                    !caller.isActive -> ReceiptPrinterError.PrinterNotConnected
+                    printer == null -> ReceiptPrinterError.PrinterNotFound
+                    else -> open(printer)
+                }
                 val connected = ReceiptPrinterConnectionStatus.Connected(device)
                 if (error == null && caller.isActive && finishAttempt(attempt, connected)) {
                     ReceiptPrinterResult.Success
@@ -98,7 +103,7 @@ internal class StarReceiptPrinterManager @Inject constructor(
                 }
             }
         }
-        caller.ensureActive()
+        if (result is ReceiptPrinterResult.Failure) caller.ensureActive()
         return result
     }
 
@@ -109,8 +114,10 @@ internal class StarReceiptPrinterManager @Inject constructor(
         }
         withContext(NonCancellable) {
             connectionMutex.withLock {
-                closeOpenPrinter()
-                finishAttempt(attempt, ReceiptPrinterConnectionStatus.Disconnected)
+                if (isLatest(attempt)) {
+                    closeOpenPrinter()
+                    finishAttempt(attempt, ReceiptPrinterConnectionStatus.Disconnected)
+                }
             }
         }
     }
@@ -119,8 +126,10 @@ internal class StarReceiptPrinterManager @Inject constructor(
         ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotConnected)
 
     private fun startAttempt(status: ReceiptPrinterConnectionStatus): Any = synchronized(attemptLock) {
-        _connectionStatus.value = status
-        Any().also { latestAttempt = it }
+        Any().also {
+            latestAttempt = it
+            _connectionStatus.value = status
+        }
     }
 
     private fun isLatest(attempt: Any): Boolean = synchronized(attemptLock) { latestAttempt === attempt }
@@ -138,10 +147,8 @@ internal class StarReceiptPrinterManager @Inject constructor(
             null
         } catch (expected: StarIO10NotFoundException) {
             ReceiptPrinterError.PrinterNotFound
-        } catch (expected: StarIO10Exception) {
-            ReceiptPrinterError.ConnectionLost(expected)
-        } catch (expected: SecurityException) {
-            ReceiptPrinterError.ConnectionLost(expected)
+        } catch (@Suppress("TooGenericExceptionCaught") cause: Exception) {
+            ReceiptPrinterError.ConnectionLost(cause)
         }
 
     private suspend fun closeOpenPrinter() {
@@ -149,9 +156,7 @@ internal class StarReceiptPrinterManager @Inject constructor(
         openPrinter = null
         try {
             printer.closeAsync().await()
-        } catch (expected: StarIO10Exception) {
-            return
-        } catch (expected: SecurityException) {
+        } catch (@Suppress("TooGenericExceptionCaught") expected: Exception) {
             return
         }
     }
