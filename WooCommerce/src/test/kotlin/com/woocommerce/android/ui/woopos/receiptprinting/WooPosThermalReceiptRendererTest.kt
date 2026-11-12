@@ -268,6 +268,48 @@ class WooPosThermalReceiptRendererTest {
     }
 
     @Test
+    fun `given a label that leaves one space before the amount, when rendering, then they share the row`() {
+        // GIVEN
+        val receipt = MINIMAL_RECEIPT.copy(
+            lineItems = listOf(
+                LineItem(title = "a".repeat(38), attributes = "", quantity = "1", amount = "$12.00"),
+                LineItem(title = "b".repeat(39), attributes = "", quantity = "1", amount = "$12.00"),
+            ),
+        )
+
+        // WHEN
+        val text = sut.render(receipt, LABELS)
+
+        // THEN
+        assertThat(text).contains(
+            "${"a".repeat(38)} x1 $12.00\n" +
+                "${"b".repeat(39)} x1\n" +
+                "${" ".repeat(42)}$12.00\n"
+        )
+    }
+
+    @Test
+    fun `given a receipt with only blank text, when rendering, then only the totals labels are printed`() {
+        // GIVEN
+        val receipt = MINIMAL_RECEIPT.copy(
+            storeName = " ",
+            datePaid = "",
+            orderNumber = "",
+            lineItems = emptyList(),
+            totals = MINIMAL_RECEIPT.totals.copy(subtotal = "", amountPaid = ""),
+            orderNote = "\n",
+            card = Card(brand = "", last4 = " "),
+            returnsPolicy = "\t",
+        )
+
+        // WHEN
+        val text = sut.render(receipt, LABELS)
+
+        // THEN
+        assertThat(text).isEqualTo("Subtotal\nAmount Paid\n")
+    }
+
+    @Test
     fun `given no store details, items, note or returns policy, when rendering, then their sections are skipped`() {
         // GIVEN
         val receipt = MINIMAL_RECEIPT.copy(storeName = "", lineItems = emptyList())
