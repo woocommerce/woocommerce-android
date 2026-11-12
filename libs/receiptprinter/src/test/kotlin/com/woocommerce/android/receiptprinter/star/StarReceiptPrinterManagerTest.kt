@@ -960,6 +960,30 @@ class StarReceiptPrinterManagerTest {
         }
 
     @Test
+    fun `given closing the connected printer fails, when a second printer is connected, then the second printer still connects`() =
+        runTest {
+            // GIVEN
+            val first = starPrinter(
+                identifier = PRINTER_ID,
+                close = failed(StarIO10CommunicationException("close failed")),
+            )
+            val second = starPrinter(identifier = OTHER_PRINTER_ID)
+            discover(first, second)
+            sut.connect(DEVICE)
+
+            // WHEN
+            val result = sut.connect(OTHER_DEVICE)
+
+            // THEN
+            inOrder(first, second) {
+                verify(first).closeAsync()
+                verify(second).openAsync()
+            }
+            assertThat(result).isEqualTo(ReceiptPrinterResult.Success)
+            assertThat(sut.connectionStatus.value).isEqualTo(Connected(OTHER_DEVICE))
+        }
+
+    @Test
     fun `given closing the printer failed, when it is connected again, then the close is retried before the printer is reopened`() =
         runTest {
             // GIVEN
