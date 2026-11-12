@@ -24,8 +24,11 @@ class WooPosLocalPINStoreTest {
     fun `given no Admin PIN, when reading credentials, then protection is off`() = runTest {
         assertThat(store.credentials(1).getOrThrow()).isEmpty()
         assertThat(authenticator.authenticate(1, "1234").getOrThrow()).isNull()
-        assertThat(store.setPIN(1, WooPosRole.CASHIER, "5678").exceptionOrNull())
-            .isEqualTo(WooPosPINError.AdminRequired)
+        WooPosRole.entries.filter { it != WooPosRole.ADMIN }.forEach { role ->
+            assertThat(store.setPIN(1, role, "5678").exceptionOrNull())
+                .isEqualTo(WooPosPINError.AdminRequired)
+        }
+        assertThat(storage.writtenSiteIds).isEmpty()
     }
 
     @Test
@@ -78,17 +81,20 @@ class WooPosLocalPINStoreTest {
     }
 
     @Test
-    fun `given both PINs, when Cashier PIN is removed, then only Admin remains`() = runTest {
+    fun `given a non-Admin PIN, when it is removed, then only Admin remains`() = runTest {
         // GIVEN
         store.setPIN(1, WooPosRole.ADMIN, "1234").getOrThrow()
-        store.setPIN(1, WooPosRole.CASHIER, "5678").getOrThrow()
+        WooPosRole.entries.filter { it != WooPosRole.ADMIN }.forEach { role ->
+            store.setPIN(1, role, "5678").getOrThrow()
 
-        // WHEN
-        store.removePIN(1, WooPosRole.CASHIER).getOrThrow()
+            // WHEN
+            store.removePIN(1, role).getOrThrow()
 
-        // THEN
-        assertThat(authenticator.authenticate(1, "1234").getOrThrow()).isNotNull()
-        assertThat(authenticator.authenticate(1, "5678").getOrThrow()).isNull()
+            // THEN
+            assertThat(authenticator.authenticate(1, "1234").getOrThrow()).isNotNull()
+            assertThat(authenticator.authenticate(1, "5678").getOrThrow()).isNull()
+            assertThat(store.credentials(1).getOrThrow()).hasSize(1)
+        }
     }
 
     @Test

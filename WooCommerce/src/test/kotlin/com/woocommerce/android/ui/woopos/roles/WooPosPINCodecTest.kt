@@ -37,4 +37,27 @@ class WooPosPINCodecTest {
         assertThat(decoded.getValue(WooPosRole.ADMIN).matches("1234")).isTrue()
         assertThat(decoded.getValue(WooPosRole.ADMIN).matches("5678")).isFalse()
     }
+
+    @Test
+    fun `given a version one record, when decoded and encoded, then role identifiers and bytes are preserved`() {
+        // GIVEN
+        val legacyRecord = (
+            "0000000100000002" +
+                "01000186a0" +
+                "000102030405060708090a0b0c0d0e0f" +
+                "101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f" +
+                "02000186a0" +
+                "303132333435363738393a3b3c3d3e3f" +
+                "404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f"
+            ).chunked(2).map { it.toInt(16).toByte() }.toByteArray()
+
+        // WHEN
+        val decoded = codec.decode(legacyRecord)
+
+        // THEN
+        assertThat(decoded.keys).containsExactly(WooPosRole.ADMIN, WooPosRole.CASHIER)
+        assertThat(decoded.getValue(WooPosRole.ADMIN).hash).containsExactly(*ByteArray(32) { (it + 0x10).toByte() })
+        assertThat(decoded.getValue(WooPosRole.CASHIER).hash).containsExactly(*ByteArray(32) { (it + 0x40).toByte() })
+        assertThat(codec.encode(decoded)).containsExactly(*legacyRecord)
+    }
 }

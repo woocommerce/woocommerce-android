@@ -13,11 +13,9 @@ internal class WooPosPINCodec {
             require(count in 1..WooPosRole.entries.size)
             val pins = buildMap {
                 repeat(count) {
-                    val role = when (input.readByte().toInt()) {
-                        ADMIN -> WooPosRole.ADMIN
-                        CASHIER -> WooPosRole.CASHIER
-                        else -> error("Unsupported PIN role")
-                    }
+                    val persistedId = input.readByte().toInt()
+                    val role = WooPosRole.entries.singleOrNull { it.persistedId == persistedId }
+                        ?: error("Unsupported PIN role")
                     require(!containsKey(role))
                     put(
                         role,
@@ -38,7 +36,7 @@ internal class WooPosPINCodec {
             output.writeInt(VERSION)
             output.writeInt(pins.size)
             pins.forEach { (role, hash) ->
-                output.writeByte(if (role == WooPosRole.ADMIN) ADMIN else CASHIER)
+                output.writeByte(role.persistedId)
                 output.writeInt(hash.iterations)
                 output.write(hash.salt)
                 output.write(hash.hash)
@@ -49,8 +47,6 @@ internal class WooPosPINCodec {
 
     companion object {
         private const val VERSION = 1
-        private const val ADMIN = 1
-        private const val CASHIER = 2
         private const val MAX_BYTES = 128
     }
 }

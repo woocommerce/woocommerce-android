@@ -10,19 +10,22 @@ enum class WooPosPermission(val identifier: String) {
     MANAGE_STORE_SETTINGS("woocommerce_pos_manage_store_settings"),
 }
 
-enum class WooPosRole {
-    ADMIN,
-    CASHIER;
-
-    val permissions: Set<WooPosPermission>
-        get() = when (this) {
-            ADMIN -> WooPosPermission.entries.toSet()
-            CASHIER -> setOf(
-                WooPosPermission.PROCESS_SALES,
-                WooPosPermission.VIEW_ORDERS,
-                WooPosPermission.APPLY_COUPONS,
-            )
-        }
+enum class WooPosRole(
+    internal val persistedId: Int,
+    val permissions: Set<WooPosPermission>,
+) {
+    ADMIN(
+        persistedId = 1,
+        permissions = WooPosPermission.entries.toSet(),
+    ),
+    CASHIER(
+        persistedId = 2,
+        permissions = setOf(
+            WooPosPermission.PROCESS_SALES,
+            WooPosPermission.VIEW_ORDERS,
+            WooPosPermission.APPLY_COUPONS,
+        ),
+    ),
 }
 
 data class WooPosOperator(val permissions: Set<WooPosPermission>) {
