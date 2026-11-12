@@ -24,7 +24,7 @@ class WooPosLocalPINStore @Inject constructor(
     suspend fun setPIN(localSiteId: Int, role: WooPosRole, pin: String): Result<Unit> = operation {
         if (!WooPosPINHash.isValidPIN(pin)) throw WooPosPINError.InvalidFormat
         val pins = load(localSiteId).toMutableMap()
-        if (role == WooPosRole.CASHIER && WooPosRole.ADMIN !in pins) throw WooPosPINError.AdminRequired
+        if (role != WooPosRole.ADMIN && WooPosRole.ADMIN !in pins) throw WooPosPINError.AdminRequired
         if (pins.any { (storedRole, hash) -> storedRole != role && hash.matches(pin) }) {
             throw WooPosPINError.MatchesOtherRole
         }
@@ -37,7 +37,7 @@ class WooPosLocalPINStore @Inject constructor(
         if (role == WooPosRole.ADMIN) {
             storage.write(localSiteId, null)
         } else {
-            val pins = load(localSiteId) - WooPosRole.CASHIER
+            val pins = load(localSiteId) - role
             storage.write(localSiteId, pins.takeIf { it.isNotEmpty() }?.let(codec::encode))
         }
     }

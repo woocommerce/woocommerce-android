@@ -24,8 +24,11 @@ class WooPosLocalPINStoreTest {
     fun `given no Admin PIN, when reading credentials, then protection is off`() = runTest {
         assertThat(store.credentials(1).getOrThrow()).isEmpty()
         assertThat(authenticator.authenticate(1, "1234").getOrThrow()).isNull()
-        assertThat(store.setPIN(1, WooPosRole.CASHIER, "5678").exceptionOrNull())
-            .isEqualTo(WooPosPINError.AdminRequired)
+        WooPosRole.entries.filter { it != WooPosRole.ADMIN }.forEach { role ->
+            assertThat(store.setPIN(1, role, "5678").exceptionOrNull())
+                .isEqualTo(WooPosPINError.AdminRequired)
+        }
+        assertThat(storage.writtenSiteIds).isEmpty()
     }
 
     @Test
@@ -78,17 +81,20 @@ class WooPosLocalPINStoreTest {
     }
 
     @Test
-    fun `given both PINs, when Cashier PIN is removed, then only Admin remains`() = runTest {
+    fun `given a non-Admin PIN, when it is removed, then only Admin remains`() = runTest {
         // GIVEN
         store.setPIN(1, WooPosRole.ADMIN, "1234").getOrThrow()
-        store.setPIN(1, WooPosRole.CASHIER, "5678").getOrThrow()
+        WooPosRole.entries.filter { it != WooPosRole.ADMIN }.forEach { role ->
+            store.setPIN(1, role, "5678").getOrThrow()
 
-        // WHEN
-        store.removePIN(1, WooPosRole.CASHIER).getOrThrow()
+            // WHEN
+            store.removePIN(1, role).getOrThrow()
 
-        // THEN
-        assertThat(authenticator.authenticate(1, "1234").getOrThrow()).isNotNull()
-        assertThat(authenticator.authenticate(1, "5678").getOrThrow()).isNull()
+            // THEN
+            assertThat(authenticator.authenticate(1, "1234").getOrThrow()).isNotNull()
+            assertThat(authenticator.authenticate(1, "5678").getOrThrow()).isNull()
+            assertThat(store.credentials(1).getOrThrow()).hasSize(1)
+        }
     }
 
     @Test
@@ -187,6 +193,45 @@ class WooPosLocalPINStoreTest {
 
         // THEN
         assertThat(failure).isInstanceOf(CancellationException::class.java)
+    }
+
+    @Test
+    fun `given legacy records, when reading then changing a PIN, then only the changed store is written as JSON`() = runTest {
+        // GIVEN
+        val legacy = legacyPINRecord()
+        storage.entries[1] = legacy.copyOf()
+        storage.entries[2] = legacy.copyOf()
+
+        // WHEN
+        assertThat(authenticator.authenticate(1, "1234").getOrThrow()).isNotNull()
+        assertThat(authenticator.authenticate(1, "5678").getOrThrow()).isNotNull()
+
+        // THEN
+        assertThat(storage.writtenSiteIds).isEmpty()
+        assertThat(storage.entries.getValue(1)).containsExactly(*legacy)
+
+        // WHEN
+        store.setPIN(1, WooPosRole.CASHIER, "7890").getOrThrow()
+
+        // THEN
+        assertThat(storage.entries.getValue(1).decodeToString()).startsWith("{")
+        assertThat(storage.entries.getValue(2)).containsExactly(*legacy)
+        assertThat(authenticator.authenticate(1, "1234").getOrThrow()).isNotNull()
+        assertThat(authenticator.authenticate(1, "7890").getOrThrow()).isNotNull()
+        assertThat(authenticator.authenticate(1, "5678").getOrThrow()).isNull()
+        assertThat(authenticator.authenticate(2, "5678").getOrThrow()).isNotNull()
+    }
+
+    @Test
+    fun `given an unreadable record, when removing Admin PIN, then it can still be erased`() = runTest {
+        // GIVEN
+        storage.entries[1] = byteArrayOf(1, 2, 3)
+
+        // WHEN
+        store.removePIN(1, WooPosRole.ADMIN).getOrThrow()
+
+        // THEN
+        assertThat(storage.entries).isEmpty()
     }
 
     private class MemoryStorage : WooPosPINStorage {
