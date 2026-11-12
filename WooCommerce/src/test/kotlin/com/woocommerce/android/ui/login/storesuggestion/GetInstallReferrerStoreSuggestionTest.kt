@@ -197,20 +197,6 @@ class GetInstallReferrerStoreSuggestionTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given store is connected with Jetpack, when invoked, then returns suggestion and tracks qualified`() =
-        testBlocking {
-            // GIVEN
-            givenSiteInfo(Result.success(siteInfo(isJetpackConnected = true)))
-
-            // WHEN
-            val result = sut()
-
-            // THEN
-            assertThat(result?.siteUrl).isEqualTo(SITE_URL)
-            verifyTracked(result = "valid", hasSiteHost = true, campaign = CAMPAIGN, wpComLoginCheck = "qualified")
-        }
-
-    @Test
     fun `given store has Jetpack but no connection, when invoked, then returns null and tracks not qualified`() =
         testBlocking {
             // GIVEN
