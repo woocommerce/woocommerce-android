@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
+import com.woocommerce.android.ui.login.storesuggestion.SuggestedStoreLogin
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseFailure
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseSupport
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseTracker
@@ -85,7 +86,8 @@ class SitePickerViewModel @Inject constructor(
     private val visibleWooSitesDataStore: VisibleWooSitesDataStore,
     private val registerDevice: RegisterDevice,
     private val unexpectedResponseTracker: LoginUnexpectedResponseTracker,
-    private val unexpectedResponseSupport: LoginUnexpectedResponseSupport
+    private val unexpectedResponseSupport: LoginUnexpectedResponseSupport,
+    private val suggestedStoreLogin: SuggestedStoreLogin
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
@@ -440,6 +442,7 @@ class SitePickerViewModel @Inject constructor(
             onSuccess = {
                 val primaryButton = when {
                     it.isWPCom -> AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE
+                    suggestedStoreLogin.isActiveFor(url) -> AccountMismatchPrimaryButton.NONE
                     else -> AccountMismatchPrimaryButton.CONNECT_JETPACK
                 }
                 if (event.value !is NavigateToAccountMismatchScreen) {
@@ -702,6 +705,7 @@ class SitePickerViewModel @Inject constructor(
                         selectedSite.set(siteVerificationModel.siteModel)
                         trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SUCCESS)
                         appPrefsWrapper.removeLoginSiteAddress()
+                        suggestedStoreLogin.end()
                         val registerDeviceTrigger = if (navArgs.openedFromLogin) {
                             RegisterDevice.Trigger.LOGIN_SUCCESS
                         } else {
