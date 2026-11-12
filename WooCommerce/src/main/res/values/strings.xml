@@ -2636,6 +2636,7 @@
     <string name="ai_support_chat_history_delete_error">Unable to delete chat history.</string>
     <string name="ai_support_chat_history_default_title">Support conversation</string>
     <string name="ai_support_chat_placeholder">Coming soon</string>
+    <string name="ai_support_chat_ai_disclosure">You’re chatting with AI from Woo Support.</string>
     <string name="ai_support_chat_greeting">Hello! I\'m your Woo Mobile Support Bot. Is there anything I can help you with today?</string>
     <string name="ai_support_chat_input_hint">Type a message…</string>
     <string name="ai_support_chat_send">Send</string>
