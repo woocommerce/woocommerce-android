@@ -2,8 +2,10 @@ package com.woocommerce.android.receiptprinter.star
 
 import android.os.Build
 import com.starmicronics.stario10.InterfaceType
+import com.starmicronics.stario10.PrinterDelegate
 import com.starmicronics.stario10.StarDeviceDiscoveryManager
 import com.starmicronics.stario10.StarIO10Exception
+import com.starmicronics.stario10.StarIO10NotFoundException
 import com.starmicronics.stario10.StarPrinter
 import com.starmicronics.stario10.StarPrinterModel
 import com.woocommerce.android.receiptprinter.ReceiptPrinterConnectionStatus
@@ -12,10 +14,13 @@ import com.woocommerce.android.receiptprinter.ReceiptPrinterDiscoveryEvent
 import com.woocommerce.android.receiptprinter.ReceiptPrinterError
 import com.woocommerce.android.receiptprinter.ReceiptPrinterManager
 import com.woocommerce.android.receiptprinter.ReceiptPrinterResult
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +28,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
@@ -37,6 +46,11 @@ internal class StarReceiptPrinterManager @Inject constructor(
     private val discoveredPrinters = ConcurrentHashMap<String, StarPrinter>()
     private val sessionLock = Any()
     private var activeSession: DiscoverySession? = null
+
+    private val connectionMutex = Mutex()
+    private val attemptLock = Any()
+    private var latestAttempt: Any? = null
+    private var openPrinter: StarPrinter? = null
 
     init {
         starIO10.disableDiagnosticsUpload()
@@ -62,13 +76,85 @@ internal class StarReceiptPrinterManager @Inject constructor(
         emit(ReceiptPrinterDiscoveryEvent.Failed(ReceiptPrinterError.DiscoveryFailure))
     }
 
-    override suspend fun connect(device: ReceiptPrinterDevice): ReceiptPrinterResult =
-        ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotConnected)
+    override suspend fun connect(device: ReceiptPrinterDevice): ReceiptPrinterResult {
+        val printer = discoveredPrinters[device.id]
+            ?: return ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotFound)
+        val caller = currentCoroutineContext()
+        caller.ensureActive()
+        val attempt = startAttempt(ReceiptPrinterConnectionStatus.Connecting(device))
+        // The SDK keeps opening after a cancellation, so the attempt always runs to the end to close what it opened.
+        val result = withContext(NonCancellable) {
+            connectionMutex.withLock {
+                closeOpenPrinter()
+                val isWanted = caller.isActive && isLatest(attempt)
+                val error = if (isWanted) open(printer) else ReceiptPrinterError.PrinterNotConnected
+                val connected = ReceiptPrinterConnectionStatus.Connected(device)
+                if (error == null && caller.isActive && finishAttempt(attempt, connected)) {
+                    ReceiptPrinterResult.Success
+                } else {
+                    closeOpenPrinter()
+                    finishAttempt(attempt, ReceiptPrinterConnectionStatus.Disconnected)
+                    ReceiptPrinterResult.Failure(error ?: ReceiptPrinterError.PrinterNotConnected)
+                }
+            }
+        }
+        caller.ensureActive()
+        return result
+    }
 
-    override suspend fun disconnect() = Unit
+    override suspend fun disconnect() {
+        val attempt = synchronized(attemptLock) {
+            if (_connectionStatus.value == ReceiptPrinterConnectionStatus.Disconnected) return
+            startAttempt(ReceiptPrinterConnectionStatus.Disconnecting)
+        }
+        withContext(NonCancellable) {
+            connectionMutex.withLock {
+                closeOpenPrinter()
+                finishAttempt(attempt, ReceiptPrinterConnectionStatus.Disconnected)
+            }
+        }
+    }
 
     override suspend fun printReceipt(text: String): ReceiptPrinterResult =
         ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotConnected)
+
+    private fun startAttempt(status: ReceiptPrinterConnectionStatus): Any = synchronized(attemptLock) {
+        _connectionStatus.value = status
+        Any().also { latestAttempt = it }
+    }
+
+    private fun isLatest(attempt: Any): Boolean = synchronized(attemptLock) { latestAttempt === attempt }
+
+    private fun finishAttempt(attempt: Any, status: ReceiptPrinterConnectionStatus): Boolean =
+        synchronized(attemptLock) {
+            (latestAttempt === attempt).also { isLatest -> if (isLatest) _connectionStatus.value = status }
+        }
+
+    private suspend fun open(printer: StarPrinter): ReceiptPrinterError? =
+        try {
+            printer.printerDelegate = object : PrinterDelegate() {}
+            printer.openAsync().await()
+            openPrinter = printer
+            null
+        } catch (expected: StarIO10NotFoundException) {
+            ReceiptPrinterError.PrinterNotFound
+        } catch (expected: StarIO10Exception) {
+            ReceiptPrinterError.ConnectionLost(expected)
+        } catch (expected: SecurityException) {
+            ReceiptPrinterError.ConnectionLost(expected)
+        }
+
+    private suspend fun closeOpenPrinter() {
+        val printer = openPrinter ?: return
+        openPrinter = null
+        try {
+            printer.closeAsync().await()
+        } catch (expected: StarIO10Exception) {
+            return
+        } catch (expected: SecurityException) {
+            return
+        }
+    }
 
     private fun bluetoothInterfaceTypes(): List<InterfaceType> =
         if (starIO10.androidSdkVersion >= Build.VERSION_CODES.S) {
