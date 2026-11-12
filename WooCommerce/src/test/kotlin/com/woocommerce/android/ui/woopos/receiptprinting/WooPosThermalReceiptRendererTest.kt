@@ -197,6 +197,77 @@ class WooPosThermalReceiptRendererTest {
     }
 
     @Test
+    fun `given a store name longer than 48 characters, when rendering, then each wrapped line is centered`() {
+        // GIVEN
+        val receipt = MINIMAL_RECEIPT.copy(
+            storeName = "The Everyday Pay Flagship Store and Coffee Roasters of Springfield",
+        )
+
+        // WHEN
+        val text = sut.render(receipt, LABELS)
+
+        // THEN
+        assertThat(text).startsWith(
+            """
+               The Everyday Pay Flagship Store and Coffee
+                        Roasters of Springfield
+            ------------------------------------------------
+            """.trimIndent() + "\n"
+        )
+    }
+
+    @Test
+    fun `given an amount longer than 48 characters, when rendering, then it wraps below its label right aligned`() {
+        // GIVEN
+        val totals = MINIMAL_RECEIPT.totals.copy(subtotal = "9".repeat(60))
+
+        // WHEN
+        val text = sut.render(MINIMAL_RECEIPT.copy(totals = totals), LABELS)
+
+        // THEN
+        assertThat(text).endsWith(
+            """
+            Subtotal
+            999999999999999999999999999999999999999999999999
+                                                999999999999
+            Amount Paid                               $12.00
+            """.trimIndent() + "\n"
+        )
+    }
+
+    @Test
+    fun `given an amount with a line break, when rendering, then each amount line is right aligned`() {
+        // GIVEN
+        val totals = MINIMAL_RECEIPT.totals.copy(subtotal = "$10.00\n$2.00")
+
+        // WHEN
+        val text = sut.render(MINIMAL_RECEIPT.copy(totals = totals), LABELS)
+
+        // THEN
+        assertThat(text).endsWith(
+            """
+            Subtotal
+                                                      $10.00
+                                                       $2.00
+            Amount Paid                               $12.00
+            """.trimIndent() + "\n"
+        )
+    }
+
+    @Test
+    fun `given a split that would fall inside an emoji, when rendering, then the emoji moves to the next line`() {
+        // GIVEN
+        val emoji = "\uD83D\uDE00"
+        val receipt = MINIMAL_RECEIPT.copy(orderNote = "a".repeat(47) + emoji)
+
+        // WHEN
+        val text = sut.render(receipt, LABELS)
+
+        // THEN
+        assertThat(text).endsWith("Notes\n${"a".repeat(47)}\n$emoji\n")
+    }
+
+    @Test
     fun `given no store details, items, note or returns policy, when rendering, then their sections are skipped`() {
         // GIVEN
         val receipt = MINIMAL_RECEIPT.copy(storeName = "", lineItems = emptyList())
@@ -276,7 +347,6 @@ class WooPosThermalReceiptRendererTest {
         )
         val labels = Labels(
             datePaid = wide,
-            orderNumber = "$wide %1\$s",
             paymentMethod = wide,
             subtotal = wide,
             discount = wide,
@@ -297,7 +367,6 @@ class WooPosThermalReceiptRendererTest {
     private companion object {
         val LABELS = Labels(
             datePaid = "Date Paid",
-            orderNumber = "Order #%1\$s",
             paymentMethod = "Payment Method",
             subtotal = "Subtotal",
             discount = "Discount",
@@ -314,7 +383,7 @@ class WooPosThermalReceiptRendererTest {
             storePhone = "",
             storeEmail = "",
             datePaid = "Nov 12, 2026, 2:30 PM",
-            orderNumber = "1042",
+            orderNumber = "Order #1042",
             lineItems = listOf(LineItem(title = "Coffee Mug", attributes = "", quantity = "1", amount = "$12.00")),
             totals = Totals(
                 subtotal = "$12.00",
