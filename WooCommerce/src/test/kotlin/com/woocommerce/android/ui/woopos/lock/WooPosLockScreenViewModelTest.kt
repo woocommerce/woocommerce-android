@@ -17,7 +17,7 @@ class WooPosLockScreenViewModelTest {
     val coroutineTestRule = WooPosCoroutineTestRule()
 
     private val featureFlagRepository: FeatureFlagRepository = mock {
-        on { isEnabled(FeatureFlag.WOO_POS_MANUAL_LOCK) }.thenReturn(true)
+        on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
     }
     private val session = WooPosLockSession(featureFlagRepository)
     private val viewModel = WooPosLockScreenViewModel(session)
