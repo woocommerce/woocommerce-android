@@ -4125,6 +4125,11 @@
     <string name="woopos_get_support_title">Get Support</string>
     <string name="woopos_product_limitations_title">Where are my products?</string>
     <string name="woopos_documentation_title">Documentation</string>
+    <string name="woopos_lock_pos">Lock POS</string>
+    <string name="woopos_lock_enter_pin">Enter your PIN to unlock POS</string>
+    <string name="woopos_lock_delete_digit">Delete</string>
+    <string name="woopos_lock_pin_entry">PIN entry</string>
+    <string name="woopos_lock_digits_entered">%1$d of %2$d digits entered</string>
     <string name="woopos_orders_title">Orders</string>
     <string name="woopos_order_title">Order %s</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
