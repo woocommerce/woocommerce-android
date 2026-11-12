@@ -188,14 +188,6 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
 
     private val toolbarMenuItems: List<WooPosHomeFloatingToolbarState.Menu.MenuItem>
         get() = buildList {
-            if (lockSession.isEnabled) {
-                add(
-                    WooPosHomeFloatingToolbarState.Menu.MenuItem(
-                        title = R.string.woopos_lock_pos,
-                        icon = R.drawable.ic_lock,
-                    )
-                )
-            }
             addAll(
                 listOf(
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
@@ -206,10 +198,20 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                         title = R.string.woopos_settings_title,
                         icon = R.drawable.ic_settings_filled_24dp,
                     ),
+                )
+            )
+            if (lockSession.isEnabled) {
+                add(
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
-                        title = R.string.woopos_exit_confirmation_title,
-                        icon = R.drawable.ic_exit_to_app_24dp,
-                    ),
+                        title = R.string.woopos_lock_pos,
+                        icon = R.drawable.ic_lock,
+                    )
+                )
+            }
+            add(
+                WooPosHomeFloatingToolbarState.Menu.MenuItem(
+                    title = R.string.woopos_exit_confirmation_title,
+                    icon = R.drawable.ic_exit_to_app_24dp,
                 )
             )
         }
