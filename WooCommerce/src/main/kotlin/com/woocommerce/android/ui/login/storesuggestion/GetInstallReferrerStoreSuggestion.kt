@@ -7,7 +7,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.sitepicker.SitePickerRepository
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.BuildConfigWrapper
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
@@ -18,7 +17,6 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class GetInstallReferrerStoreSuggestion @Inject constructor(
-    private val buildConfigWrapper: BuildConfigWrapper,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val installReferrerSource: InstallReferrerSource,
     private val installReferrerParser: InstallReferrerParser,
@@ -27,18 +25,19 @@ class GetInstallReferrerStoreSuggestion @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val dispatchers: CoroutineDispatchers,
     private val sitePickerRepository: SitePickerRepository,
+    private val storeSuggestionRollout: StoreSuggestionRollout,
 ) {
     suspend operator fun invoke(): StoreSuggestion? {
-        if (!buildConfigWrapper.debug) return null
         if (appPrefsWrapper.isInstallReferrerChecked) return null
         appPrefsWrapper.isInstallReferrerChecked = true
+        val isInRollout = storeSuggestionRollout.isInRollout()
 
         return withContext(NonCancellable + dispatchers.io) {
             val outcome = evaluate(installReferrerSource.fetch())
             val suggestion = suggestionFor(outcome)
             val wpComLoginCheck = suggestion?.let { checkWPComLogin(it.siteUrl) }
-            track(outcome, wpComLoginCheck)
-            suggestion?.takeIf { wpComLoginCheck == WPComLoginCheck.QUALIFIED }
+            track(outcome, wpComLoginCheck, isInRollout)
+            suggestion?.takeIf { wpComLoginCheck == WPComLoginCheck.QUALIFIED && isInRollout }
         }
     }
 
@@ -92,7 +91,7 @@ class GetInstallReferrerStoreSuggestion @Inject constructor(
             result.installBeginTimestampSeconds < click
     }
 
-    private fun track(outcome: Outcome, wpComLoginCheck: WPComLoginCheck?) {
+    private fun track(outcome: Outcome, wpComLoginCheck: WPComLoginCheck?, isInRollout: Boolean) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.LOGIN_INSTALL_REFERRER_CHECKED,
             buildMap {
@@ -102,6 +101,7 @@ class GetInstallReferrerStoreSuggestion @Inject constructor(
                     put(AnalyticsTracker.KEY_UTM_CAMPAIGN, it.takeIf { it in KNOWN_CAMPAIGNS } ?: OTHER_CAMPAIGN)
                 }
                 wpComLoginCheck?.let { put(AnalyticsTracker.KEY_WPCOM_LOGIN_CHECK, it.value) }
+                put(AnalyticsTracker.KEY_IS_IN_ROLLOUT, isInRollout)
             }
         )
     }
