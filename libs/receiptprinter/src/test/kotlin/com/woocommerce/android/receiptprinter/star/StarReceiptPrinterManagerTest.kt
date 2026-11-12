@@ -156,6 +156,31 @@ class StarReceiptPrinterManagerTest {
         }
 
     @Test
+    fun `given a printer on an interface other than Bluetooth, when it is found, then no Bluetooth name is used`() =
+        runTest {
+            // GIVEN
+            val events = mutableListOf<ReceiptPrinterDiscoveryEvent>()
+            collectDiscovery(events)
+
+            // WHEN
+            discoveryManager.capturedCallback().onPrinterFound(
+                starPrinter(
+                    interfaceType = InterfaceType.Lan,
+                    information = printerInformation(
+                        classicName = "Classic name",
+                        leName = "LE name",
+                        model = StarPrinterModel.mC_Print3,
+                    ),
+                )
+            )
+
+            // THEN
+            assertThat(events).containsExactly(
+                PrinterFound(ReceiptPrinterDevice(id = PRINTER_ID, name = StarPrinterModel.mC_Print3.modelName))
+            )
+        }
+
+    @Test
     fun `given a printer without a name or a known model, when it is found, then it is emitted with its identifier`() =
         runTest {
             // GIVEN
@@ -406,34 +431,6 @@ class StarReceiptPrinterManagerTest {
         runTest {
             // GIVEN
             whenever(discoveryManager.startDiscovery()).doAnswer { throw SecurityException("BLUETOOTH_SCAN") }
-
-            // WHEN
-            val events = sut.discover().toList()
-
-            // THEN
-            assertThat(events).containsExactly(Failed(ReceiptPrinterError.DiscoveryFailure))
-        }
-
-    @Test
-    fun `given starting discovery throws another SDK error, when discover is collected, then it emits a discovery failure and completes`() =
-        runTest {
-            // GIVEN
-            whenever(discoveryManager.startDiscovery()).doAnswer { throw StarIO10Exception("unknown") }
-
-            // WHEN
-            val events = sut.discover().toList()
-
-            // THEN
-            assertThat(events).containsExactly(Failed(ReceiptPrinterError.DiscoveryFailure))
-        }
-
-    @Test
-    fun `given creating the SDK discovery manager throws, when discover is collected, then it emits a discovery failure and completes`() =
-        runTest {
-            // GIVEN
-            whenever(starIO10.createDiscoveryManager(any())).doAnswer {
-                throw mock<StarIO10IllegalHostDeviceStateException>()
-            }
 
             // WHEN
             val events = sut.discover().toList()

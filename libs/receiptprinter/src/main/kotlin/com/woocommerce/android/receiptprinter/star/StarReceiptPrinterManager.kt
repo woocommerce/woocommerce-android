@@ -149,8 +149,9 @@ private fun StarPrinter.toReceiptPrinterDevice(): ReceiptPrinterDevice {
     val identifier = connectionSettings.identifier
     val bluetoothName = information?.detail?.let { detail ->
         when (connectionSettings.interfaceType) {
+            InterfaceType.Bluetooth -> detail.bluetooth.deviceName
             InterfaceType.BluetoothLE -> detail.bluetoothLE.deviceName
-            else -> detail.bluetooth.deviceName
+            else -> null
         }
     }
     val modelName = information?.model?.takeIf { it != StarPrinterModel.Unknown }?.modelName
