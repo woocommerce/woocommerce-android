@@ -100,6 +100,7 @@ class WooPosEncryptedPINStorageTest {
         val file = File(directory, "1.pins")
         file.writeBytes(file.readBytes().copyOf(WooPosPINStorage.MAX_RECORD_BYTES + 12 + 16 + 1))
 
+        assertThatThrownBy { storage.read(1) }.isInstanceOf(IllegalArgumentException::class.java)
         assertThat(store.credentials(1).exceptionOrNull()).isEqualTo(WooPosPINError.StorageFailure)
     }
 
