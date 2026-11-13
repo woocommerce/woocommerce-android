@@ -18,11 +18,20 @@ class WooPosPINAuthenticator @Inject constructor(
 ) {
     // Check credentials() separately for protection status; null here means no unique matching operator.
     suspend fun authenticate(localSiteId: Int, pin: String): Result<WooPosOperator?> =
+        source.credentials(localSiteId).fold(
+            onSuccess = { authenticate(it, pin) },
+            onFailure = { Result.failure(it) },
+        )
+
+    // Authenticate one source snapshot so protection status and matching cannot use different records.
+    suspend fun authenticate(credentials: List<WooPosPINCredential>, pin: String): Result<WooPosOperator?> =
         withContext(dispatchers.computation) {
-            if (!WooPosPINHash.isValidPIN(pin)) return@withContext Result.success(null)
-            source.credentials(localSiteId).mapCatching { credentials ->
-                val matches = credentials.filter { it.pinHash.matches(pin) }
-                matches.singleOrNull()?.operator
+            runCatching {
+                if (!WooPosPINHash.isValidPIN(pin)) {
+                    null
+                } else {
+                    credentials.filter { it.pinHash.matches(pin) }.singleOrNull()?.operator
+                }
             }
         }
 }
