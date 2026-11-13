@@ -1,2 +1,0 @@
-26.0:
-Kini Anda dapat menambahkan dan mengedit atribut pada setiap jenis produk, serta memilih apakah setiap atribut tersebut akan ditampilkan pada halaman produk atau digunakan untuk variasi. Label pengiriman menampilkan pemberitahuan gangguan layanan kurir, login dua langkah akan menjelaskan pilihan verifikasi Anda, dan POS berhenti menunggu kartu saat Anda menerima pembayaran tunai. Serta perbaikan tambahan untuk kendala crash, pengembalian dana, variasi, dan mode gelap.

@@ -1,2 +1,0 @@
-26.0:
-Artık her ürün türüne nitelik ekleyip düzenleyebilir ve her birinin ürün sayfasında görüntülenip görüntülenmeyeceğini veya varyasyonlar için kullanılıp kullanılmayacağını seçebilirsiniz. Gönderim etiketleri kargo şirketi kesinti bildirimlerini gösterir, iki aşamalı oturum açma doğrulama seçeneklerinizi açıklar ve POS siz nakit para alırken kart beklemeyi durdurur. Ayrıca çökmeler, para iadeleri, varyasyonlar ve karanlık mod için düzeltmeler.

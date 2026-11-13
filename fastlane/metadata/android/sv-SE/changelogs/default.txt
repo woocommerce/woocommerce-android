@@ -1,2 +1,0 @@
-26.0:
-Du kan nu lägga till och redigera attribut för varje produkttyp och välja om var och en visas på produktsidan eller används för variationer. Fraktetiketter visar meddelanden om transportavbrott, tvåstegsinloggning förklarar dina verifieringsalternativ och POS slutar vänta på ett kort när du tar kontanter. Dessutom har vi gjort korrigeringar för krascher, återbetalningar, variationer och mörkt läge.
