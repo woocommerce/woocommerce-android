@@ -8,27 +8,19 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class WooPosLockScreenPresentationTest {
-    @get:Rule(order = 0)
-    val hiltRule = HiltAndroidRule(this)
-
-    @get:Rule(order = 1)
+    @get:Rule
     val composeTestRule = createComposeRule()
 
-    @Before
-    fun setUp() {
-        hiltRule.inject()
-    }
+    private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
     @Test
     fun waitDisablesKeysAndKeepsRecoveryAvailable() {
@@ -44,9 +36,15 @@ class WooPosLockScreenPresentationTest {
         }
 
         composeTestRule.onNodeWithText("1").assertIsNotEnabled()
-        composeTestRule.onNodeWithText("Forgot PIN?").assertIsEnabled().performClick()
-        composeTestRule.onNodeWithText("Too many incorrect attempts.\nTry again in 0:30.").assertIsDisplayed()
-        composeTestRule.onNodeWithText("PIN recovery is not available yet.").assertIsDisplayed()
+        composeTestRule.onNodeWithText(
+            context.getString(R.string.woopos_lock_forgot_pin)
+        ).assertIsEnabled().performClick()
+        composeTestRule.onNodeWithText(
+            context.getString(R.string.woopos_lock_wait, 0, 30)
+        ).assertIsDisplayed()
+        composeTestRule.onNodeWithText(
+            context.getString(R.string.woopos_lock_recovery_pending)
+        ).assertIsDisplayed()
         composeTestRule.onNodeWithText("1").assertIsNotEnabled()
     }
 
@@ -61,7 +59,7 @@ class WooPosLockScreenPresentationTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Checking PIN…").assertIsDisplayed()
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_lock_checking)).assertIsDisplayed()
         composeTestRule.onNodeWithText("1").assertIsNotEnabled()
     }
 }

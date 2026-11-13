@@ -37,8 +37,6 @@ import com.woocommerce.android.ui.woopos.lock.WooPosLockScreenState
 @Composable
 fun WooPosSettingsSecurityScreen(viewModel: WooPosSettingsSecurityViewModel = hiltViewModel()) {
     if (!viewModel.isEnabled) return
-    val state by viewModel.state.collectAsState()
-    val setupState by viewModel.setupState.collectAsState()
     Column(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(WooPosSpacing.Medium.value),
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value),
@@ -88,11 +86,19 @@ fun WooPosSettingsSecurityScreen(viewModel: WooPosSettingsSecurityViewModel = hi
             ),
         )
     }
-    if (state.showSetup) {
-        Dialog(onDismissRequest = viewModel::close, properties = DialogProperties(usePlatformDefaultWidth = false)) {
-            WooPosPinSetupDialog(setupState, viewModel::onSetupEvent, viewModel::close)
-        }
-    }
+}
+
+@Composable
+fun WooPosSettingsSecurityDialogs(viewModel: WooPosSettingsSecurityViewModel = hiltViewModel()) {
+    if (!viewModel.isEnabled) return
+    val state by viewModel.state.collectAsState()
+    val setupState by viewModel.setupState.collectAsState()
+    WooPosPinSetupDialog(
+        state = setupState,
+        isVisible = state.showSetup,
+        onUIEvent = viewModel::onSetupEvent,
+        onClose = viewModel::close,
+    )
     state.lock?.let { lock ->
         Dialog(onDismissRequest = viewModel::close, properties = DialogProperties(usePlatformDefaultWidth = false)) {
             Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)) {

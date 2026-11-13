@@ -32,11 +32,12 @@ import com.woocommerce.android.ui.woopos.common.pin.WooPosPinPad
 @Composable
 fun WooPosPinSetupDialog(
     state: WooPosPinSetupState,
+    isVisible: Boolean,
     onUIEvent: (WooPosPinSetupUIEvent) -> Unit,
     onClose: () -> Unit,
 ) {
     WooPosDialogWrapper(
-        isVisible = true,
+        isVisible = isVisible,
         dialogBackgroundContentDescription = stringResource(R.string.woopos_security_setup),
         onCloseClick = onClose,
         onDismissRequest = onClose,
