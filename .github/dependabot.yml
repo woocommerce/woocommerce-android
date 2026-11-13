@@ -7,6 +7,7 @@ updates:
       interval: "daily"
     labels:
       - "bot: dependencies update"
+      - "impact: internal"
     groups:
       kotlin-ksp:
         applies-to: version-updates
@@ -47,6 +48,7 @@ updates:
       interval: "daily"
     labels:
       - "bot: dependencies update"
+      - "impact: internal"
     groups:
       ruby-minor-and-patch:
         update-types: [minor, patch]
