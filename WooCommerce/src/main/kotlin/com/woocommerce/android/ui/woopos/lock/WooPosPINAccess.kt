@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.woopos.roles.WooPosPINAuthenticator
 import com.woocommerce.android.ui.woopos.roles.WooPosPINCredentialSource
 import com.woocommerce.android.ui.woopos.roles.WooPosPermission
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.sync.Mutex
@@ -85,7 +86,7 @@ class WooPosPINAccess @Inject internal constructor(
         return current to time
     }
 
-    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+    @Suppress("TooGenericExceptionCaught")
     private suspend fun <T> operation(block: suspend () -> T): Result<T> =
         withContext(dispatchers.io + NonCancellable) {
             mutex.withLock {
@@ -94,6 +95,7 @@ class WooPosPINAccess @Inject internal constructor(
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
+                    WooLog.e(WooLog.T.POS, "PIN access operation failed: ${e.javaClass.simpleName}")
                     Result.failure(e)
                 }
             }
