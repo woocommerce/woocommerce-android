@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCateg
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPaneScreen
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSyncErrorDialog
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityDialogs
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialog
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialogState
 import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
@@ -58,35 +59,38 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
 
     val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
 
-    if (isPhoneLayout) {
-        WooPosSettingsPhoneContent(
-            state = state,
-            onBackClicked = backHandler,
-            onCategorySelected = containerViewModel::onCategorySelected,
-            onNavigate = containerViewModel::navigateToDetail,
-            onBack = containerViewModel::navigateBack,
-            onDismissDetail = containerViewModel::dismissDetail,
-            onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
-            onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
-            onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
-            onDismissDialog = containerViewModel::hideDialog,
-            onNavigationEvent = onNavigationEvent
-        )
-    } else {
-        BackHandler { backHandler() }
+    Box(Modifier.fillMaxSize()) {
+        if (isPhoneLayout) {
+            WooPosSettingsPhoneContent(
+                state = state,
+                onBackClicked = backHandler,
+                onCategorySelected = containerViewModel::onCategorySelected,
+                onNavigate = containerViewModel::navigateToDetail,
+                onBack = containerViewModel::navigateBack,
+                onDismissDetail = containerViewModel::dismissDetail,
+                onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
+                onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
+                onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
+                onDismissDialog = containerViewModel::hideDialog,
+                onNavigationEvent = onNavigationEvent
+            )
+        } else {
+            BackHandler { backHandler() }
 
-        WooPosSettingsTabletContent(
-            state = state,
-            onBackClicked = backHandler,
-            onCategorySelected = containerViewModel::onCategorySelected,
-            onNavigate = containerViewModel::navigateToDetail,
-            onBack = containerViewModel::navigateBack,
-            onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
-            onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
-            onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
-            onDismissDialog = containerViewModel::hideDialog,
-            onNavigationEvent = onNavigationEvent
-        )
+            WooPosSettingsTabletContent(
+                state = state,
+                onBackClicked = backHandler,
+                onCategorySelected = containerViewModel::onCategorySelected,
+                onNavigate = containerViewModel::navigateToDetail,
+                onBack = containerViewModel::navigateBack,
+                onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
+                onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
+                onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
+                onDismissDialog = containerViewModel::hideDialog,
+                onNavigationEvent = onNavigationEvent
+            )
+        }
+        WooPosSettingsSecurityDialogs()
     }
 }
 
