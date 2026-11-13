@@ -240,7 +240,12 @@ class ListStore @Inject internal constructor(
         val listItems = remoteItemIds.map { remoteItemId ->
             ListItemModel(listModel.id, remoteItemId)
         }
-        listDao.replaceFirstPage(listModel.id, listItems)
+        if (canLoadMore) {
+            listDao.replaceFirstPage(listModel.id, listItems)
+        } else {
+            // Without more pages, the fetched page is the whole list.
+            listDao.deleteAndInsertItems(listModel.id, shouldDelete = true, items = listItems)
+        }
         emitChange(OnListChanged(listOf(listDescriptor), CauseOfListChange.FIRST_PAGE_FETCHED, error = null))
         emitChange(OnListRequiresRefresh(listDescriptor.typeIdentifier, upToDateList = listDescriptor))
     }
