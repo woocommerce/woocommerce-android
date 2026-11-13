@@ -4,7 +4,7 @@
 
 26.2
 -----
-
+- [Internal] Support session debug builds no longer create application passwords on Jetpack stores [https://github.com/woocommerce/woocommerce-android/pull/16848]
 
 26.1
 -----
