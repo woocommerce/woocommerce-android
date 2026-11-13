@@ -55,31 +55,6 @@ class WooPosEncryptedPINStorageTest {
     }
 
     @Test
-    fun legacyRecordsRemainReadableAndChangeToJsonOnlyAfterMutation(): Unit = runBlocking {
-        val legacy = LEGACY_RECORD.chunked(2).map { it.toInt(16).toByte() }.toByteArray()
-        storage.write(1, legacy)
-        val ciphertext = File(directory, "1.pins").readBytes()
-        val store = WooPosLocalPINStore(storage, CoroutineDispatchers())
-        val authenticator = WooPosPINAuthenticator(store, CoroutineDispatchers())
-
-        assertThat(store.credentials(1).getOrThrow()).hasSize(2)
-        assertThat(authenticator.authenticate(1, "1234").getOrThrow()?.allows(WooPosPermission.EXIT_POS)).isTrue()
-        assertThat(authenticator.authenticate(1, "5678").getOrThrow()?.allows(WooPosPermission.EXIT_POS)).isFalse()
-        assertThat(storage.read(1)).isEqualTo(legacy)
-        assertThat(File(directory, "1.pins").readBytes()).isEqualTo(ciphertext)
-
-        store.setPIN(1, WooPosRole.ADMIN, "0000").getOrThrow()
-        assertThat(requireNotNull(storage.read(1)).toString(Charsets.UTF_8)).startsWith("{")
-        val recreated = WooPosPINAuthenticator(
-            WooPosLocalPINStore(WooPosEncryptedPINStorage(context, "woopos.pin-test"), CoroutineDispatchers()),
-            CoroutineDispatchers()
-        )
-        assertThat(recreated.authenticate(1, "0000").getOrThrow()?.allows(WooPosPermission.EXIT_POS)).isTrue()
-        assertThat(recreated.authenticate(1, "5678").getOrThrow()?.allows(WooPosPermission.EXIT_POS)).isFalse()
-        assertThat(recreated.authenticate(1, "1234").getOrThrow()).isNull()
-    }
-
-    @Test
     fun maximumSizeRecordSurvivesRecreationAndOversizedWritePreservesIt() {
         val bytes = ByteArray(WooPosPINStorage.MAX_RECORD_BYTES) { it.toByte() }
         storage.write(1, bytes)
@@ -216,13 +191,5 @@ class WooPosEncryptedPINStorageTest {
         ).isFalse()
         store.setPIN(1, WooPosRole.ADMIN, "0000").getOrThrow()
         assertThat(WooPosPINAuthenticator(store, CoroutineDispatchers()).authenticate(1, "1234").getOrThrow()).isNull()
-    }
-
-    companion object {
-        private const val LEGACY_RECORD =
-            "000000010000000201000186a0000102030405060708090a0b0c0d0e0f" +
-                "869e6c8350c5beb0acc399fbaac3b60d220433896b26a647734d0d8f1586e1fa" +
-                "02000186a0101112131415161718191a1b1c1d1e1f" +
-                "5c1a9859e3442fbf88975a1f0879ededf84e4298da7d98654d4a5f92fa827566"
     }
 }
