@@ -177,6 +177,18 @@ class ListStoreTest {
             assertThat(refresh.type).isEqualTo(testListDescriptor.typeIdentifier)
             assertThat(refresh.upToDateList).isEqualTo(testListDescriptor)
         }
+
+    @Test
+    fun `when save list fetched, then the list state is emitted without an error`() = runTest {
+        store.saveListFetched(testListDescriptor, listOf(1L), canLoadMore = false)
+
+        val captor = argumentCaptor<OnChanged<*>>()
+        verify(dispatcher, times(3)).emitChange(captor.capture())
+        val stateChanged = captor.allValues.filterIsInstance<ListStore.OnListStateChanged>().single()
+        assertThat(stateChanged.listDescriptor).isEqualTo(testListDescriptor)
+        assertThat(stateChanged.newState).isEqualTo(ListState.FETCHED)
+        assertThat(stateChanged.error).isNull()
+    }
     // endregion
 
     // region onAction - FETCHED_LIST_ITEMS (first page)
