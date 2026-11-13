@@ -4,6 +4,7 @@ import com.woocommerce.android.tools.ResolveSiteBySiteId
 import com.woocommerce.android.ui.orders.filters.data.DateRange
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
+import com.woocommerce.android.ui.orders.filters.data.SalesChannel
 import com.woocommerce.android.ui.orders.filters.domain.getBeforeAndAfterFrom
 import com.woocommerce.android.util.DateUtils
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
@@ -24,6 +25,10 @@ class GetWCOrderListDescriptorWithFiltersBySiteId @Inject constructor(
             .getCurrentFilterSelection(OrderListFilterCategory.ORDER_STATUS)
             .joinToString(separator = ",")
 
+        val createdViaFilter = orderFiltersRepository
+            .getCurrentFilterSelection(OrderListFilterCategory.SALES_CHANNEL)
+            .firstNotNullOfOrNull { key -> SalesChannel.fromKey(key)?.apiValue }
+
         val site = resolveSiteBySiteId(siteId) ?: return null
 
         return WCOrderListDescriptor(
@@ -32,7 +37,8 @@ class GetWCOrderListDescriptorWithFiltersBySiteId @Inject constructor(
             beforeFilter = rangeStartAndEnd.second,
             afterFilter = rangeStartAndEnd.first,
             productId = orderFiltersRepository.productFilter,
-            customerId = orderFiltersRepository.customerFilter
+            customerId = orderFiltersRepository.customerFilter,
+            createdViaFilter = createdViaFilter
         )
     }
 }
