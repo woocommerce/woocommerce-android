@@ -246,6 +246,42 @@ class ListDaoTest {
 
     // endregion
 
+    // region replaceFirstPage
+    @Test
+    fun `given more items than the first page, when replace first page, then later items are kept`() = runTest {
+        val list = dao.insertOrUpdateList(testDescriptor, ListState.CAN_LOAD_MORE, LAST_MODIFIED)
+        dao.insertItems(listOf(4L, 3L, 2L, 1L).map { ListItemModel(list.id, it) })
+
+        dao.replaceFirstPage(list.id, listOf(5L, 4L, 3L).map { ListItemModel(list.id, it) })
+
+        val result = dao.getListItems(list.id)
+        assertThat(result.map { it.remoteItemId }).containsExactly(5L, 4L, 3L, 2L, 1L)
+    }
+
+    @Test
+    fun `given an item missing from the first page, when replace first page, then that item is removed`() = runTest {
+        val list = dao.insertOrUpdateList(testDescriptor, ListState.CAN_LOAD_MORE, LAST_MODIFIED)
+        dao.insertItems(listOf(4L, 3L, 2L, 1L).map { ListItemModel(list.id, it) })
+
+        dao.replaceFirstPage(list.id, listOf(4L, 2L).map { ListItemModel(list.id, it) })
+
+        val result = dao.getListItems(list.id)
+        assertThat(result.map { it.remoteItemId }).containsExactly(4L, 2L, 1L)
+    }
+
+    @Test
+    fun `given a first page that ends before the saved items, when replace first page, then saved items are dropped`() =
+        runTest {
+            val list = dao.insertOrUpdateList(testDescriptor, ListState.CAN_LOAD_MORE, LAST_MODIFIED)
+            dao.insertItems(listOf(2L, 1L).map { ListItemModel(list.id, it) })
+
+            dao.replaceFirstPage(list.id, listOf(9L, 8L, 7L).map { ListItemModel(list.id, it) })
+
+            val result = dao.getListItems(list.id)
+            assertThat(result.map { it.remoteItemId }).containsExactly(9L, 8L, 7L)
+        }
+    // endregion
+
     private companion object {
         const val LAST_MODIFIED = "2025-01-01T00:00:00Z"
     }
