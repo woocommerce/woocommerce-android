@@ -27,8 +27,6 @@ class WooPosPINCodecTest {
             valid + byteArrayOf(0),
             valid + "{}".encodeToByteArray(),
             byteArrayOf(0xc3.toByte(), 0x28),
-            legacyPINRecord().copyOf(10),
-            legacyPINRecord() + byteArrayOf(0),
             JsonObject(record + ("version" to JsonPrimitive(99))).toString().encodeToByteArray(),
             JsonObject(record - "version").toString().encodeToByteArray(),
             JsonObject(record + ("unknown" to JsonPrimitive(true))).toString().encodeToByteArray(),
@@ -83,20 +81,6 @@ class WooPosPINCodecTest {
     }
 
     @Test
-    fun `given legacy PINs, when decoded and encoded, then JSON preserves both PIN hashes`() {
-        // WHEN
-        val decoded = codec.decode(legacyPINRecord())
-        val encoded = codec.encode(decoded)
-        val roundTrip = codec.decode(encoded)
-
-        // THEN
-        assertThat(encoded.decodeToString()).startsWith("{")
-        assertThat(roundTrip.keys).containsExactly(WooPosRole.ADMIN, WooPosRole.CASHIER)
-        assertThat(roundTrip.getValue(WooPosRole.ADMIN).matches("1234")).isTrue()
-        assertThat(roundTrip.getValue(WooPosRole.CASHIER).matches("5678")).isTrue()
-    }
-
-    @Test
     fun `given all presets with largest byte values, when encoding, then JSON fits the storage limit`() {
         // GIVEN
         val hash = WooPosPINHash(
@@ -136,13 +120,3 @@ class WooPosPINCodecTest {
         mapOf("version" to JsonPrimitive(1), "pins" to JsonArray(pins.toList()))
     ).toString().encodeToByteArray()
 }
-
-internal fun legacyPINRecord(): ByteArray = (
-    "0000000100000002" +
-        "01000186a0" +
-        "000102030405060708090a0b0c0d0e0f" +
-        "869e6c8350c5beb0acc399fbaac3b60d220433896b26a647734d0d8f1586e1fa" +
-        "02000186a0" +
-        "303132333435363738393a3b3c3d3e3f" +
-        "a396ff5c0688c3c6775e73bf934141c0a54e73ebc40cb674b05821b84511c2ca"
-    ).chunked(2).map { it.toInt(16).toByte() }.toByteArray()

@@ -7,7 +7,6 @@ import kotlinx.serialization.json.Json
 internal class WooPosPINCodec {
     fun decode(bytes: ByteArray): Map<WooPosRole, WooPosPINHash> {
         require(bytes.size <= WooPosPINStorage.MAX_RECORD_BYTES)
-        if (bytes.take(LEGACY_HEADER.size) == LEGACY_HEADER) return WooPosLegacyPINDecoder().decode(bytes)
 
         val record = Json.decodeFromString<PINRecord>(bytes.decodeToString(throwOnInvalidSequence = true))
         require(record.version == VERSION && record.pins.size in 1..WooPosRole.entries.size)
@@ -45,6 +44,5 @@ internal class WooPosPINCodec {
 
     companion object {
         private const val VERSION = 1
-        private val LEGACY_HEADER = listOf<Byte>(0, 0, 0, 1)
     }
 }
