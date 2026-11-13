@@ -30,12 +30,6 @@ class FetchRefundPreview @Inject constructor(
                 Result.FallbackToLocal
             }
 
-            // Earlier non-item refunds can leave less than the lines are worth; only the local flow caps at that.
-            response.isError && response.error.apiErrorCode == PREVIEW_EXCEEDS_MAX_REFUNDABLE -> {
-                WooLog.i(WooLog.T.ORDERS, "Refund: preview exceeds the remaining amount, using local calculation")
-                Result.FallbackToLocal
-            }
-
             response.isError -> {
                 WooLog.e(
                     WooLog.T.ORDERS,
@@ -59,10 +53,6 @@ class FetchRefundPreview @Inject constructor(
         data object FallbackToLocal : Result
 
         data class Error(val storeMessage: String?) : Result
-    }
-
-    companion object {
-        private const val PREVIEW_EXCEEDS_MAX_REFUNDABLE = "woocommerce_rest_preview_exceeds_max_refundable"
     }
 }
 

@@ -102,19 +102,21 @@ class FetchRefundPreviewTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given preview exceeds what is left to refund, when fetching, then local calculation is used`() =
+    fun `given preview exceeds what is left to refund, when fetching, then store message is returned`() =
         testBlocking {
             // GIVEN
+            val storeMessage = "Requested refund preview (50.00) exceeds the remaining refundable amount (30.00)."
             givenPreviewError(
                 WooErrorType.INVALID_RESPONSE,
-                apiErrorCode = "woocommerce_rest_preview_exceeds_max_refundable"
+                apiErrorCode = "woocommerce_rest_preview_exceeds_max_refundable",
+                message = storeMessage
             )
 
             // WHEN
             val result = sut(ORDER_ID, selectedItems)
 
             // THEN
-            assertThat(result).isEqualTo(FetchRefundPreview.Result.FallbackToLocal)
+            assertThat(result).isEqualTo(FetchRefundPreview.Result.Error(storeMessage = storeMessage))
             assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID, WOO_VERSION)).isNull()
         }
 
