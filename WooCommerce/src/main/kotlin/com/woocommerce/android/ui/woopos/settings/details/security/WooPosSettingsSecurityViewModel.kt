@@ -61,7 +61,7 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
         _state.update { current ->
             val lock = current.lock ?: return@update current
             val updated = when {
-                event == WooPosLockScreenUIEvent.ForgotPINTapped -> lock.copy(
+                event == WooPosLockScreenUIEvent.ForgotPINTapped && lock.error != WooPosLockError.STORAGE -> lock.copy(
                     error = WooPosLockError.RECOVERY_UNAVAILABLE
                 )
                 !lock.canEnterPIN -> lock
