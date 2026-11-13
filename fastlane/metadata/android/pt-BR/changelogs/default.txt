@@ -1,0 +1,2 @@
+26.0:
+Agora você pode adicionar e editar atributos em cada tipo de produto e escolher se cada um é exibido na página do produto ou usado para variações. As etiquetas de envio mostram avisos de interrupção da transportadora, o login em duas etapas explica suas opções de verificação e o ponto de venda para de esperar por um cartão enquanto você recebe dinheiro. Além disso, corrige falhas, reembolsos, variações e o modo escuro.
