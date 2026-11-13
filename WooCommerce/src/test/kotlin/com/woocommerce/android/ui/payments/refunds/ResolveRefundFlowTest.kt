@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders.details.refund
+package com.woocommerce.android.ui.payments.refunds
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
@@ -9,21 +9,21 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
-class WooPosResolveRefundFlowTest {
+class ResolveRefundFlowTest {
 
     private val selectedSite: SelectedSite = mock()
-    private val availabilityCache = WooPosServerRefundAvailabilityCache()
+    private val availabilityCache = ServerRefundAvailabilityCache()
 
     // Defaults to a version that supports server refunds; version-gating tests override it.
     // An unknown (null) version fails closed to the local flow.
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock {
-        on { invoke() } doReturn WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
+        on { invoke() } doReturn ResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
     }
     private val site = SiteModel().apply { id = LOCAL_SITE_ID }
 
     private val sut by lazy {
         whenever(selectedSite.get()).thenReturn(site)
-        WooPosResolveRefundFlow(selectedSite, availabilityCache, getWooCoreVersion)
+        ResolveRefundFlow(selectedSite, availabilityCache, getWooCoreVersion)
     }
 
     @Test
@@ -32,7 +32,7 @@ class WooPosResolveRefundFlowTest {
         whenever(getWooCoreVersion.invoke()).thenReturn("11.0.5")
 
         // THEN
-        assertThat(sut()).isEqualTo(WooPosRefundFlow.LocalComputed)
+        assertThat(sut()).isEqualTo(RefundCalculationFlow.LocalComputed)
     }
 
     @Test
@@ -41,7 +41,7 @@ class WooPosResolveRefundFlowTest {
         whenever(getWooCoreVersion.invoke()).thenReturn("11.1.0")
 
         // THEN
-        assertThat(sut()).isEqualTo(WooPosRefundFlow.ServerComputed("11.1.0"))
+        assertThat(sut()).isEqualTo(RefundCalculationFlow.ServerComputed("11.1.0"))
     }
 
     @Test
@@ -50,7 +50,7 @@ class WooPosResolveRefundFlowTest {
         whenever(getWooCoreVersion.invoke()).thenReturn("11.2.0")
 
         // THEN
-        assertThat(sut()).isEqualTo(WooPosRefundFlow.ServerComputed("11.2.0"))
+        assertThat(sut()).isEqualTo(RefundCalculationFlow.ServerComputed("11.2.0"))
     }
 
     @Test
@@ -59,7 +59,7 @@ class WooPosResolveRefundFlowTest {
         whenever(getWooCoreVersion.invoke()).thenReturn(null)
 
         // THEN
-        assertThat(sut()).isEqualTo(WooPosRefundFlow.LocalComputed)
+        assertThat(sut()).isEqualTo(RefundCalculationFlow.LocalComputed)
     }
 
     @Test
@@ -69,7 +69,7 @@ class WooPosResolveRefundFlowTest {
         availabilityCache.markAvailable(LOCAL_SITE_ID, MIN_VERSION)
 
         // THEN
-        assertThat(sut()).isEqualTo(WooPosRefundFlow.LocalComputed)
+        assertThat(sut()).isEqualTo(RefundCalculationFlow.LocalComputed)
     }
 
     @Test
@@ -78,7 +78,7 @@ class WooPosResolveRefundFlowTest {
         availabilityCache.markUnavailable(LOCAL_SITE_ID, MIN_VERSION)
 
         // THEN
-        assertThat(sut()).isEqualTo(WooPosRefundFlow.LocalComputed)
+        assertThat(sut()).isEqualTo(RefundCalculationFlow.LocalComputed)
     }
 
     @Test
@@ -87,7 +87,7 @@ class WooPosResolveRefundFlowTest {
         availabilityCache.markAvailable(LOCAL_SITE_ID, MIN_VERSION)
 
         // THEN
-        assertThat(sut()).isEqualTo(WooPosRefundFlow.ServerComputed(MIN_VERSION))
+        assertThat(sut()).isEqualTo(RefundCalculationFlow.ServerComputed(MIN_VERSION))
     }
 
     @Test
@@ -97,7 +97,7 @@ class WooPosResolveRefundFlowTest {
         whenever(getWooCoreVersion.invoke()).thenReturn("11.1.0-dev")
 
         // THEN
-        assertThat(sut()).isEqualTo(WooPosRefundFlow.ServerComputed("11.1.0-dev"))
+        assertThat(sut()).isEqualTo(RefundCalculationFlow.ServerComputed("11.1.0-dev"))
     }
 
     @Test
@@ -109,7 +109,7 @@ class WooPosResolveRefundFlowTest {
         whenever(getWooCoreVersion.invoke()).thenReturn(MIN_VERSION)
 
         // THEN the stale verdict does not pin it to local calculation for the rest of the process
-        assertThat(sut()).isEqualTo(WooPosRefundFlow.ServerComputed(MIN_VERSION))
+        assertThat(sut()).isEqualTo(RefundCalculationFlow.ServerComputed(MIN_VERSION))
     }
 
     @Test
@@ -118,11 +118,11 @@ class WooPosResolveRefundFlowTest {
         availabilityCache.markUnavailable(LOCAL_SITE_ID + 1, MIN_VERSION)
 
         // THEN
-        assertThat(sut()).isEqualTo(WooPosRefundFlow.ServerComputed(MIN_VERSION))
+        assertThat(sut()).isEqualTo(RefundCalculationFlow.ServerComputed(MIN_VERSION))
     }
 
     private companion object {
         private const val LOCAL_SITE_ID = 11
-        private const val MIN_VERSION = WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
+        private const val MIN_VERSION = ResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
     }
 }

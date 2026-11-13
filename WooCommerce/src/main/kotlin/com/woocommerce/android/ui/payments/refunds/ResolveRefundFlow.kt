@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders.details.refund
+package com.woocommerce.android.ui.payments.refunds
 
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
@@ -15,31 +15,31 @@ import javax.inject.Inject
  * the classic v3 item refund is sent. It goes away once every supported store ships the server
  * endpoints.
  */
-sealed interface WooPosRefundFlow {
+sealed interface RefundCalculationFlow {
     /**
      * [wooVersion] is the version this decision was made against. Callers pass it back to
-     * [WooPosServerRefundAvailabilityCache] so a probe result is never reused on another version.
+     * [ServerRefundAvailabilityCache] so a probe result is never reused on another version.
      */
-    data class ServerComputed(val wooVersion: String) : WooPosRefundFlow
-    data object LocalComputed : WooPosRefundFlow
+    data class ServerComputed(val wooVersion: String) : RefundCalculationFlow
+    data object LocalComputed : RefundCalculationFlow
 }
 
 /**
  * Decides which refund flow the selected store uses. Server calculation needs a known WooCommerce
  * version of at least [MIN_WC_VERSION_FOR_SERVER_REFUNDS] and no earlier preview probe that found
- * the endpoints missing (see [WooPosServerRefundAvailabilityCache]). Anything else falls back to
+ * the endpoints missing (see [ServerRefundAvailabilityCache]). Anything else falls back to
  * [LocalComputed].
  *
- * [WooPosRefundFlow.ServerComputed] means eligible, not confirmed. Only a successful preview sets
+ * [RefundCalculationFlow.ServerComputed] means eligible, not confirmed. Only a successful preview sets
  * the availability cache to `true`, and only that permits the computed create (see
- * [WooPosRefundViewModel.buildSubmissionRequest]).
+ * `WooPosRefundViewModel.buildSubmissionRequest`).
  */
-class WooPosResolveRefundFlow @Inject constructor(
+class ResolveRefundFlow @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val availabilityCache: WooPosServerRefundAvailabilityCache,
+    private val availabilityCache: ServerRefundAvailabilityCache,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
 ) {
-    operator fun invoke(): WooPosRefundFlow {
+    operator fun invoke(): RefundCalculationFlow {
         val wooVersion = getWooCoreVersion()
         val eligibleVersion = when {
             // An unknown version means the plugin info was never fetched. Fail closed.
@@ -52,14 +52,14 @@ class WooPosResolveRefundFlow @Inject constructor(
         }
 
         return eligibleVersion?.let {
-            WooLog.i(WooLog.T.POS, "WooPosRefund: server calculation eligible on WooCommerce $it")
-            WooPosRefundFlow.ServerComputed(it)
-        } ?: WooPosRefundFlow.LocalComputed
+            WooLog.i(WooLog.T.ORDERS, "Refund: server calculation eligible on WooCommerce $it")
+            RefundCalculationFlow.ServerComputed(it)
+        } ?: RefundCalculationFlow.LocalComputed
     }
 
     /** Logs the reason, then reports "no eligible version" so a fallback is never silent. */
     private fun fallBackToLocal(reason: String): String? {
-        WooLog.i(WooLog.T.POS, "WooPosRefund: using local calculation, $reason")
+        WooLog.i(WooLog.T.ORDERS, "Refund: using local calculation, $reason")
         return null
     }
 

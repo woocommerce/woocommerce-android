@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders.details.refund
+package com.woocommerce.android.ui.payments.refunds
 
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
@@ -22,7 +22,7 @@ import javax.inject.Singleton
  * `0` for self-hosted/WPAPI stores and would collide across them.
  */
 @Singleton
-class WooPosServerRefundAvailabilityCache @Inject constructor() {
+class ServerRefundAvailabilityCache @Inject constructor() {
     private val verdictByLocalSiteId = ConcurrentHashMap<Int, Verdict>()
 
     /**

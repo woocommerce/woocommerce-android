@@ -2,6 +2,10 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+26.2
+-----
+- [**] Order refunds: on stores with WooCommerce 11.1 or newer, the refund amount now comes from the store, so it matches what the store refunds [https://github.com/woocommerce/woocommerce-android/pull/16863]
+
 26.1
 -----
 - [*] Login: merchants who install the app from the New Order email can log in to their store in one tap (rolling out to some new installs) [https://github.com/woocommerce/woocommerce-android/pull/16843]
