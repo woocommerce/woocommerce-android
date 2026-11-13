@@ -25,6 +25,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.extensions.withOldValue
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.FeesRefundSection
@@ -55,6 +56,9 @@ class IssueRefundFragment :
 
     @Inject
     lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
+
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private var _binding: FragmentIssueRefundBinding? = null
     private val binding get() = _binding!!
@@ -219,6 +223,10 @@ class IssueRefundFragment :
                 is Event.LaunchUrlInAuthenticatedWebView -> {
                     authenticatedWebViewLauncher.showAuthenticatedWebView(event)
                 }
+
+                is Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+
+                is Event.ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
 
                 else -> event.isHandled = false
             }
