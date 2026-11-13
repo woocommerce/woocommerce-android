@@ -100,6 +100,7 @@ object AppPrefs {
         USER_EMAIL,
         RECEIPT_PREFIX,
         POS_FEATURE_SWITCH_ENABLED,
+        POS_CUSTOM_AMOUNT_LAST_TAXABLE,
         CARD_READER_ONBOARDING_COMPLETED_STATUS_V2,
         CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED,
         CARD_READER_PREFERRED_PLUGIN,
@@ -1485,6 +1486,32 @@ object AppPrefs {
 
     private val POS_FEATURE_SWITCH_ENABLED_PREFIX = "${DeletablePrefKey.POS_FEATURE_SWITCH_ENABLED}:"
 
+    fun setPOSCustomAmountLastTaxableForSite(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        isTaxable: Boolean
+    ) {
+        setBoolean(
+            key = posCustomAmountLastTaxableKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            value = isTaxable
+        )
+    }
+
+    fun getPOSCustomAmountLastTaxableForSite(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ): Boolean = getBoolean(
+        key = posCustomAmountLastTaxableKey(localSiteId, remoteSiteId, selfHostedSiteId),
+        default = false
+    )
+
+    private fun posCustomAmountLastTaxableKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
+        PrefKeyString("$POS_CUSTOM_AMOUNT_LAST_TAXABLE_PREFIX$localSiteId:$remoteSiteId:$selfHostedSiteId")
+
+    private val POS_CUSTOM_AMOUNT_LAST_TAXABLE_PREFIX = "${DeletablePrefKey.POS_CUSTOM_AMOUNT_LAST_TAXABLE}:"
+
     /**
      * Remove all user and site-related preferences.
      */
@@ -1514,6 +1541,7 @@ object AppPrefs {
             .filter {
                 it.key.contains(RECEIPT_PREFIX.toString(), ignoreCase = true) ||
                     it.key.contains(POS_FEATURE_SWITCH_ENABLED_PREFIX, ignoreCase = true) ||
+                    it.key.contains(POS_CUSTOM_AMOUNT_LAST_TAXABLE_PREFIX, ignoreCase = true) ||
                     it.key.startsWith(HTTPS_CONFIGURATION_WARNING_DISMISSAL_PREFIX)
             }
             .forEach {
