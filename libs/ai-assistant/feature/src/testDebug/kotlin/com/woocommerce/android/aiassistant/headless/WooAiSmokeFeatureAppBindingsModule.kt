@@ -1,8 +1,11 @@
 package com.woocommerce.android.aiassistant.headless
 
 import android.content.Context
+import android.content.Intent
 import com.automattic.eventhorizon.Trackable
 import com.woocommerce.android.aiassistant.BuildConfig
+import com.woocommerce.android.aiassistant.appfunctions.AppFunctionsAccessPolicy
+import com.woocommerce.android.aiassistant.appfunctions.AppFunctionsHostNavigation
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryTracker
 import dagger.Module
 import dagger.Provides
@@ -42,6 +45,12 @@ object WooAiSmokeFeatureAppBindingsModule {
         object : AssistantTelemetryTracker {
             override fun track(event: Trackable) = Unit
         }
+
+    @Provides
+    fun provideAppFunctionsAccessPolicy(): AppFunctionsAccessPolicy = AppFunctionsAccessPolicy { false }
+
+    @Provides
+    fun provideAppFunctionsHostNavigation(): AppFunctionsHostNavigation = AppFunctionsHostNavigation { Intent() }
 
     @Provides
     @Singleton

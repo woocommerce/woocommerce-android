@@ -22,6 +22,9 @@ Android library. The implementation home for the assistant:
 - Tool adapters and assistant-specific repository/wiring
 - Result cards and assistant UI components
 - Telemetry hooks
+- AppFunctions entry point that lets system agents such as Gemini use the store open in the app (proof of concept,
+  debug builds).
+  See [docs/appfunctions.md](docs/appfunctions.md).
 - Navigation targets or host callbacks emitted outward to `:WooCommerce`
 
 ### `:libs:ai-assistant:core`

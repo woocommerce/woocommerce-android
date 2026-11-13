@@ -126,6 +126,19 @@ private fun MutableList<ConfirmationPreviewField>.addOptionalStockQuantityField(
                 beforeValue = currentValues?.get("stock_quantity"),
             )
         )
+        val currentManageStock = currentValues?.get("manage_stock")
+        if (currentManageStock != true.toString()) {
+            add(
+                messageField(
+                    name = "manage_stock",
+                    value = string(R.string.ai_assistant_confirmation_field_value_on),
+                    label = R.string.ai_assistant_confirmation_field_manage_stock,
+                    beforeValue = currentManageStock?.let {
+                        string(R.string.ai_assistant_confirmation_field_value_off)
+                    },
+                )
+            )
+        }
     }
 }
 

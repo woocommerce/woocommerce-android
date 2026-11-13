@@ -48,8 +48,56 @@ class ProductsConfirmationPreviewProviderTest {
                 value = raw("100"),
                 label = label(R.string.ai_assistant_confirmation_field_stock_quantity),
             ),
+            ConfirmationPreviewField(
+                name = "manage_stock",
+                value = string(R.string.ai_assistant_confirmation_field_value_on),
+                label = label(R.string.ai_assistant_confirmation_field_manage_stock),
+            ),
         )
     }
+
+    @Test
+    fun `given stock update for a product that already manages stock, when preview is built, then no management row appears`() =
+        runTest {
+            val dataSource: AIProductsDataSource = mock()
+            whenever(dataSource.getProduct(7L)).thenReturn(Result.success(product(manageStock = true)))
+
+            val preview = preview(
+                toolName = "products_update",
+                arguments = buildJsonObject {
+                    put("id", 7)
+                    put("stock_quantity", 8)
+                },
+                dataSource = dataSource,
+            )
+
+            assertThat(preview.fields.map { it.name }).containsExactly("stock_quantity")
+        }
+
+    @Test
+    fun `given stock update for an unmanaged product, when preview is built, then management changes from off to on`() =
+        runTest {
+            val dataSource: AIProductsDataSource = mock()
+            whenever(dataSource.getProduct(7L)).thenReturn(Result.success(product(manageStock = false)))
+
+            val preview = preview(
+                toolName = "products_update",
+                arguments = buildJsonObject {
+                    put("id", 7)
+                    put("stock_quantity", 8)
+                },
+                dataSource = dataSource,
+            )
+
+            assertThat(preview.fields.last()).isEqualTo(
+                ConfirmationPreviewField(
+                    name = "manage_stock",
+                    value = string(R.string.ai_assistant_confirmation_field_value_on),
+                    label = label(R.string.ai_assistant_confirmation_field_manage_stock),
+                    beforeValue = string(R.string.ai_assistant_confirmation_field_value_off),
+                ),
+            )
+        }
 
     @Test
     fun `given product update has unsupported stock status, when preview is built, then it is ignored`() =
@@ -495,12 +543,14 @@ class ProductsConfirmationPreviewProviderTest {
         regularPrice: String = "19.99",
         salePrice: String = "",
         stockQuantity: Double = 5.5,
+        manageStock: Boolean = false,
         status: String = "publish",
     ) = WCProductModel(
         remoteId = RemoteId(remoteId),
         regularPrice = regularPrice,
         salePrice = salePrice,
         stockQuantity = stockQuantity,
+        manageStock = manageStock,
         status = status,
         name = name,
     )

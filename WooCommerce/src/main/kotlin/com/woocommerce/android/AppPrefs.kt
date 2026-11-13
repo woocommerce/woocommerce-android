@@ -255,7 +255,9 @@ object AppPrefs {
         STORE_SUGGESTION_ROLLOUT_BUCKET,
 
         // Anonymous device id sent in remote feature flag requests to keep rollout bucketing stable
-        REMOTE_FEATURE_FLAGS_DEVICE_ID
+        REMOTE_FEATURE_FLAGS_DEVICE_ID,
+
+        APP_FUNCTIONS_ENABLED
     }
 
     fun init(context: Context) {
@@ -388,6 +390,10 @@ object AppPrefs {
     var wooPosLocalCatalogEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.WOO_POS_LOCAL_CATALOG_ENABLED, true)
         set(value) = setBoolean(DeletablePrefKey.WOO_POS_LOCAL_CATALOG_ENABLED, value)
+
+    var isAppFunctionsEnabled: Boolean
+        get() = getBoolean(UndeletablePrefKey.APP_FUNCTIONS_ENABLED, true)
+        set(value) = setBoolean(UndeletablePrefKey.APP_FUNCTIONS_ENABLED, value)
 
     var isWooPosSurveyNotificationCurrentUserShown: Boolean
         get() = getBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_CURRENT_USER_SHOWN, false)

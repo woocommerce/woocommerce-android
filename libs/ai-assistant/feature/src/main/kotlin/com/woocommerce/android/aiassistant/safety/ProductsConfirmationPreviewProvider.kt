@@ -73,6 +73,7 @@ internal class ProductsConfirmationPreviewProvider @Inject constructor(
                         put("regular_price", product.regularPrice)
                         put("sale_price", product.salePrice)
                         put("stock_quantity", product.stockQuantity.formatStockQuantity())
+                        put("manage_stock", product.manageStock.toString())
                         put("status", product.status)
                     },
                     displayName = displayName,

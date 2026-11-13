@@ -358,7 +358,8 @@ class MobileStatusProvider @Inject constructor(
     private fun experimentalFeaturesSection() = listOf(
         entry("Product add-ons", appPrefs.isProductAddonsEnabled),
         entry("Jetpack app passwords", appPrefs.jetpackAppPasswordsEnabled),
-        entry("POS local catalog", appPrefs.wooPosLocalCatalogEnabled)
+        entry("POS local catalog", appPrefs.wooPosLocalCatalogEnabled),
+        entry("Assistant access (AppFunctions)", appPrefs.isAppFunctionsEnabled)
     )
 
     // A missing installer of record means the APK was sideloaded; a failed lookup means we could not tell.
