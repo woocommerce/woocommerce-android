@@ -4,7 +4,7 @@
 
 26.2
 -----
-
+- [Internal] The excerpt logged for a store's error page is now built off the main thread [https://github.com/woocommerce/woocommerce-android/pull/16836]
 
 26.1
 -----
