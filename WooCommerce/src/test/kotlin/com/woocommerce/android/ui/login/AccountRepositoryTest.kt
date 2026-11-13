@@ -13,6 +13,7 @@ import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.sitepicker.sitevisibility.VisibleWooSitesDataStore
+import com.woocommerce.android.ui.woopos.lock.WooPosLockedPOSStore
 import com.woocommerce.android.ui.woopos.lock.WooPosPINAccess
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.roles.WooPosPINError
@@ -69,6 +70,9 @@ class AccountRepositoryTest : BaseUnitTest() {
     private val pinAccess: WooPosPINAccess = mock {
         on { clearAllAttempts() } doReturn Result.success(Unit)
     }
+    private val lockedPOS: WooPosLockedPOSStore = mock {
+        on { clearAll() } doReturn Result.success(Unit)
+    }
     private val appCoroutineScope = CoroutineScope(coroutinesTestRule.testDispatcher)
     private val dispatcher = FakeDispatcher().apply {
         registerActionHandler(AccountAction.SIGN_OUT) {
@@ -96,6 +100,7 @@ class AccountRepositoryTest : BaseUnitTest() {
         analyticsTracker = analyticsTracker,
         localPINStore = localPINStore,
         pinAccess = pinAccess,
+        lockedPOS = lockedPOS,
     )
 
     @Test
@@ -106,6 +111,7 @@ class AccountRepositoryTest : BaseUnitTest() {
         // THEN
         verify(localPINStore).clearAll()
         verify(pinAccess).clearAllAttempts()
+        verify(lockedPOS).clearAll()
     }
 
     @Test
@@ -120,6 +126,7 @@ class AccountRepositoryTest : BaseUnitTest() {
         // THEN
         verify(localPINStore).clearAll()
         verify(pinAccess).clearAllAttempts()
+        verify(lockedPOS).clearAll()
         verify(selectedSite).reset()
     }
 
@@ -142,7 +149,22 @@ class AccountRepositoryTest : BaseUnitTest() {
 
         // THEN
         verify(localPINStore, never()).clearAll()
+        verify(lockedPOS, never()).clearAll()
         verify(selectedSite, never()).reset()
+    }
+
+    @Test
+    fun `given marker erasure fails after sign out, when logging out, then logout still succeeds`() = testBlocking {
+        // GIVEN
+        given(accountStore.hasAccessToken()).willReturn(true)
+        whenever(lockedPOS.clearAll()).thenReturn(Result.failure(IllegalStateException()))
+
+        // WHEN
+        assertThat(repository.logout()).isTrue()
+
+        // THEN
+        verify(lockedPOS).clearAll()
+        verify(selectedSite).reset()
     }
 
     @Test
@@ -157,6 +179,7 @@ class AccountRepositoryTest : BaseUnitTest() {
         // THEN
         verify(localPINStore).clearAll()
         verify(pinAccess).clearAllAttempts()
+        verify(lockedPOS).clearAll()
         verify(selectedSite).reset()
     }
 
@@ -179,6 +202,7 @@ class AccountRepositoryTest : BaseUnitTest() {
         assertThat(logout.isCancelled).isTrue()
         verify(localPINStore).clearAll()
         verify(pinAccess).clearAllAttempts()
+        verify(lockedPOS).clearAll()
         verify(selectedSite).reset()
     }
 
@@ -204,6 +228,7 @@ class AccountRepositoryTest : BaseUnitTest() {
         // THEN
         verify(localPINStore).clearAll()
         verify(pinAccess).clearAllAttempts()
+        verify(lockedPOS).clearAll()
         verify(selectedSite).reset()
     }
 
@@ -226,9 +251,10 @@ class AccountRepositoryTest : BaseUnitTest() {
         verify(selectedSite, never()).reset()
         gate.complete(Unit)
         assertThat(result.await()).isTrue()
-        inOrder(localPINStore, pinAccess, selectedSite) {
+        inOrder(localPINStore, pinAccess, lockedPOS, selectedSite) {
             verify(localPINStore).clearAll()
             verify(pinAccess).clearAllAttempts()
+            verify(lockedPOS).clearAll()
             verify(selectedSite).reset()
         }
     }
