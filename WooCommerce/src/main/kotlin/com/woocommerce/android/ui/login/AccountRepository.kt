@@ -123,7 +123,7 @@ class AccountRepository @Inject constructor(
         }
     }
 
-    private suspend fun clearLocalPINs() {
+    private suspend fun clearLocalPINs() = withContext(NonCancellable) {
         localPINStore.clearAll().onFailure {
             WooLog.e(LOGIN, "Unable to clear local POS PINs")
         }

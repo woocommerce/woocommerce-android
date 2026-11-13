@@ -103,6 +103,28 @@ class AccountRepositoryTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given no session, when caller is cancelled during PIN erasure, then erasure completes`() = testBlocking {
+        // GIVEN
+        val gate = CompletableDeferred<Unit>()
+        var erased = false
+        whenever(localPINStore.clearAll()).doSuspendableAnswer {
+            gate.await()
+            erased = true
+            Result.success(Unit)
+        }
+
+        // WHEN
+        val logout = launch { repository.logout() }
+        runCurrent()
+        logout.cancel()
+        gate.complete(Unit)
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(erased).isTrue()
+    }
+
+    @Test
     fun `given PIN erasure fails after sign out, when logging out, then logout still succeeds`() = testBlocking {
         // GIVEN
         given(accountStore.hasAccessToken()).willReturn(true)
