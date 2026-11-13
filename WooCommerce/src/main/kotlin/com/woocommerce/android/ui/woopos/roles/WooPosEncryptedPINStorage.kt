@@ -51,7 +51,7 @@ class WooPosEncryptedPINStorage internal constructor(
             check(!exists(file))
             return
         }
-        require(bytes.size <= MAX_BYTES)
+        require(bytes.size <= WooPosPINStorage.MAX_RECORD_BYTES)
         check(directory.isDirectory || directory.mkdirs())
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(Cipher.ENCRYPT_MODE, getOrCreateKey())
@@ -107,7 +107,7 @@ class WooPosEncryptedPINStorage internal constructor(
     }
 
     private fun java.io.InputStream.readBytesBounded(): ByteArray {
-        val bytes = ByteArray(MAX_BYTES + IV_BYTES + TAG_BYTES + 1)
+        val bytes = ByteArray(WooPosPINStorage.MAX_RECORD_BYTES + IV_BYTES + TAG_BYTES + 1)
         var count = 0
         while (count < bytes.size) {
             val read = read(bytes, count, bytes.size - count)
@@ -125,6 +125,5 @@ class WooPosEncryptedPINStorage internal constructor(
         private const val IV_BYTES = 12
         private const val TAG_BYTES = 16
         private const val KEY_BITS = 256
-        private const val MAX_BYTES = 128
     }
 }

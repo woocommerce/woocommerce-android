@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.woopos.roles
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 enum class WooPosPermission(val identifier: String) {
     PROCESS_SALES("woocommerce_pos_process_sales"),
     VIEW_ORDERS("woocommerce_pos_view_orders"),
@@ -10,19 +13,23 @@ enum class WooPosPermission(val identifier: String) {
     MANAGE_STORE_SETTINGS("woocommerce_pos_manage_store_settings"),
 }
 
-enum class WooPosRole {
-    ADMIN,
-    CASHIER;
+@Serializable
+enum class WooPosRole(
+    val permissions: Set<WooPosPermission>,
+) {
+    @SerialName("admin")
+    ADMIN(
+        permissions = WooPosPermission.entries.toSet(),
+    ),
 
-    val permissions: Set<WooPosPermission>
-        get() = when (this) {
-            ADMIN -> WooPosPermission.entries.toSet()
-            CASHIER -> setOf(
-                WooPosPermission.PROCESS_SALES,
-                WooPosPermission.VIEW_ORDERS,
-                WooPosPermission.APPLY_COUPONS,
-            )
-        }
+    @SerialName("cashier")
+    CASHIER(
+        permissions = setOf(
+            WooPosPermission.PROCESS_SALES,
+            WooPosPermission.VIEW_ORDERS,
+            WooPosPermission.APPLY_COUPONS,
+        ),
+    ),
 }
 
 data class WooPosOperator(val permissions: Set<WooPosPermission>) {
