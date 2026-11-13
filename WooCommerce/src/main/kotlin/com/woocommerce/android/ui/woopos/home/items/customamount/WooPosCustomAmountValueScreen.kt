@@ -27,7 +27,7 @@ import java.math.BigDecimal
 
 @Composable
 fun WooPosCustomAmountValueScreen(
-    state: WooPosCustomAmountDialogState,
+    state: WooPosCustomAmountFormState,
     onAmountChanged: (BigDecimal?) -> Unit,
     onSaveClicked: () -> Unit,
     onBackClicked: () -> Unit,
@@ -48,7 +48,15 @@ fun WooPosCustomAmountValueScreen(
 
     WooPosCustomAmountLayout(
         modifier = modifier,
-        title = stringResource(R.string.woopos_custom_amount_dialog_amount_label),
+        title = stringResource(
+            if (state.returnsToDetails) {
+                R.string.woopos_custom_amount_edit_amount_title
+            } else {
+                R.string.woopos_custom_amount_dialog_amount_label
+            }
+        ),
+        // A new amount only opens details; nothing is saved to the cart until details are submitted.
+        buttonText = stringResource(if (state.returnsToDetails) R.string.save else R.string.continue_button),
         onBackClicked = onBackClicked,
         content = { contentModifier ->
             Box(
@@ -84,7 +92,7 @@ fun WooPosCustomAmountValueScreen(
 fun WooPosCustomAmountValueScreenPreview() {
     WooPosTheme {
         WooPosCustomAmountValueScreen(
-            state = WooPosCustomAmountDialogState(amount = BigDecimal("10.00"), currencySymbol = "$"),
+            state = WooPosCustomAmountFormState(amount = BigDecimal("10.00"), currencySymbol = "$"),
             onAmountChanged = {},
             onSaveClicked = {},
             onBackClicked = {},

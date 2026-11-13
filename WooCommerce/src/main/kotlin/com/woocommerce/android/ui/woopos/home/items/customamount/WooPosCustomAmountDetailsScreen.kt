@@ -45,7 +45,7 @@ import java.math.BigDecimal
 
 @Composable
 fun WooPosCustomAmountDetailsScreen(
-    state: WooPosCustomAmountDialogState,
+    state: WooPosCustomAmountFormState,
     onEditAmount: () -> Unit,
     onEditName: () -> Unit,
     onTaxableToggled: (Boolean) -> Unit,
@@ -58,8 +58,8 @@ fun WooPosCustomAmountDetailsScreen(
         title = stringResource(R.string.woopos_custom_amount_details_title),
         buttonText = stringResource(
             when (state.mode) {
-                is WooPosCustomAmountDialogState.Mode.Edit -> R.string.woopos_custom_amount_dialog_submit_edit
-                WooPosCustomAmountDialogState.Mode.Add -> R.string.woopos_custom_amount_dialog_submit_add
+                is WooPosCustomAmountFormState.Mode.Edit -> R.string.woopos_custom_amount_dialog_submit_edit
+                WooPosCustomAmountFormState.Mode.Add -> R.string.woopos_custom_amount_dialog_submit_add
             }
         ),
         onBackClicked = onBackClicked,
@@ -121,7 +121,7 @@ fun WooPosCustomAmountDetailsScreen(
 }
 
 @Composable
-private fun formattedAmount(state: WooPosCustomAmountDialogState): String {
+private fun formattedAmount(state: WooPosCustomAmountFormState): String {
     val valueMapper = NullableCurrencyTextFieldValueMapper.create(
         decimalSeparator = state.decimalSeparator,
         numberOfDecimals = state.numberOfDecimals,
@@ -163,9 +163,9 @@ private fun EditableDetailCard(
             )
             Box(modifier = Modifier.size(WooPosIconSize.XLarge.value), contentAlignment = Alignment.Center) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_edit_pencil),
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_woopos_edit_square),
                     contentDescription = null,
-                    tint = WooPosTheme.colors.onSurfaceVariantHighest,
+                    tint = MaterialTheme.colorScheme.onSurface,
                 )
             }
         }
@@ -199,7 +199,7 @@ private fun DetailLabel(text: String, modifier: Modifier = Modifier) {
 fun WooPosCustomAmountDetailsScreenPreview() {
     WooPosTheme {
         WooPosCustomAmountDetailsScreen(
-            state = WooPosCustomAmountDialogState(amount = BigDecimal("40.00"), currencySymbol = "$"),
+            state = WooPosCustomAmountFormState(amount = BigDecimal("40.00"), currencySymbol = "$"),
             onEditAmount = {},
             onEditName = {},
             onTaxableToggled = {},

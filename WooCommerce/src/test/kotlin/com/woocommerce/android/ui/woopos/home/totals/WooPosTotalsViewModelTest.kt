@@ -76,6 +76,8 @@ import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.util.WooErrorTestUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import junit.framework.TestCase.assertTrue
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
@@ -1574,6 +1576,107 @@ class WooPosTotalsViewModelTest {
 
             // THEN
             verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.GoBackToCheckoutAfterFailedPayment)
+        }
+
+    @Test
+    fun `given payment not confirmed and order paid on server, when go back to checkout clicked, then checks payment status`() =
+        runTest {
+            // GIVEN
+            var retryCount = 0
+            val vm = givenPaymentNotConfirmed(datePaidOnServer = Date(), onRetry = { retryCount++ })
+
+            // WHEN
+            vm.onUIEvent(WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(retryCount).isEqualTo(1)
+            verify(childrenToParentEventSender, never())
+                .sendToParent(ChildToParentEvent.GoBackToCheckoutAfterFailedPayment)
+        }
+
+    @Test
+    fun `given payment not confirmed and order paid on server, when back clicked, then checks payment status`() =
+        runTest {
+            // GIVEN
+            var retryCount = 0
+            val vm = givenPaymentNotConfirmed(datePaidOnServer = Date(), onRetry = { retryCount++ })
+
+            // WHEN
+            vm.onUIEvent(OnBackClicked)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(retryCount).isEqualTo(1)
+            verify(childrenToParentEventSender, never()).sendToParent(ReturnedFromCardReaderPaymentToCheckout)
+        }
+
+    @Test
+    fun `given payment not confirmed and order not paid on server, when go back to checkout clicked, then goes back`() =
+        runTest {
+            // GIVEN
+            var retryCount = 0
+            val vm = givenPaymentNotConfirmed(datePaidOnServer = null, onRetry = { retryCount++ })
+
+            // WHEN
+            vm.onUIEvent(WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(retryCount).isEqualTo(0)
+            verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.GoBackToCheckoutAfterFailedPayment)
+        }
+
+    @Test
+    fun `given payment not confirmed and order fetch fails, when go back to checkout clicked, then stays and shows toast`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(R.string.woopos_payment_status_check_failed_message))
+                .thenReturn("Check failed")
+            var retryCount = 0
+            val vm = givenPaymentNotConfirmed(
+                datePaidOnServer = null,
+                onRetry = { retryCount++ },
+                isFetchFailing = true,
+            )
+
+            // WHEN
+            vm.onUIEvent(WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(retryCount).isEqualTo(0)
+            verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ToastMessageDisplayed("Check failed"))
+            verify(childrenToParentEventSender, never())
+                .sendToParent(ChildToParentEvent.GoBackToCheckoutAfterFailedPayment)
+        }
+
+    @Test
+    fun `given order fetch running, when payment status check starts, then does not go back to checkout after fetch`() =
+        runTest {
+            // GIVEN
+            val orderFetchFinished = CompletableDeferred<Unit>()
+            val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
+                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
+            )
+            val vm = givenPaymentNotConfirmed(
+                datePaidOnServer = null,
+                onRetry = { paymentState.value = CardReaderPaymentState.LoadingData {} },
+                orderFetchFinished = orderFetchFinished,
+                paymentState = paymentState,
+            )
+            vm.onUIEvent(WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment)
+            advanceUntilIdle()
+
+            // WHEN
+            vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
+            advanceUntilIdle()
+            orderFetchFinished.complete(Unit)
+            advanceUntilIdle()
+
+            // THEN
+            verify(childrenToParentEventSender, never())
+                .sendToParent(ChildToParentEvent.GoBackToCheckoutAfterFailedPayment)
         }
 
     @Test
@@ -3250,6 +3353,9 @@ class WooPosTotalsViewModelTest {
                 subtotal = BigDecimal("1.00"),
             )
         ),
+        datePaidOnServer: Date? = null,
+        orderFetchFinished: Deferred<Unit> = CompletableDeferred(Unit),
+        isFetchFailing: Boolean = false,
     ): WooPosTotalsViewModel {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_error_reader_not_connected_title))
             .thenReturn("Reader not connected")
@@ -3303,6 +3409,13 @@ class WooPosTotalsViewModelTest {
             on { events }.thenReturn(parentToChildrenEventFlow)
         }
         whenever(totalsRepository.getOrderById(orderId)).thenReturn(order)
+        whenever(totalsRepository.fetchOrderById(orderId)).doSuspendableAnswer {
+            orderFetchFinished.await()
+            when (isFetchFailing) {
+                true -> null
+                false -> order.copy(datePaid = datePaidOnServer)
+            }
+        }
         whenever(totalsRepository.getCouponsByIds(any())).thenReturn(couponsByIds)
         return createViewModel(
             totalsRepository = totalsRepository,
@@ -3310,6 +3423,35 @@ class WooPosTotalsViewModelTest {
             parentToChildrenEventReceiver = parentToChildrenEventReceiver,
             cardReaderPaymentControllerFactory = controllerFactory,
         )
+    }
+
+    private suspend fun TestScope.givenPaymentNotConfirmed(
+        datePaidOnServer: Date?,
+        onRetry: () -> Unit,
+        orderFetchFinished: Deferred<Unit> = CompletableDeferred(Unit),
+        isFetchFailing: Boolean = false,
+        paymentState: MutableStateFlow<CardReaderPaymentOrRefundState> = MutableStateFlow(
+            CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
+        ),
+    ): WooPosTotalsViewModel {
+        mockPaymentFailedTexts()
+        givenCardReaderConnectedAndNetworkAvailable()
+        val controller: CardReaderPaymentController = mock()
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
+        whenever(factory.create(any(), any(), any(), any())).thenReturn(controller)
+        whenever(controller.paymentState).thenReturn(paymentState)
+        val vm = createViewModelAndSetupForSuccessfulOrderCreation(
+            controllerFactory = factory,
+            datePaidOnServer = datePaidOnServer,
+            orderFetchFinished = orderFetchFinished,
+            isFetchFailing = isFetchFailing,
+        )
+        paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.NonCancelable(
+            errorType = PaymentFlowError.CaptureOutcomeUnknown,
+            onRetry = onRetry,
+        )
+        advanceUntilIdle()
+        return vm
     }
 
     private fun createViewModel(

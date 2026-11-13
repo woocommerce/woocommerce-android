@@ -7,6 +7,7 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.ShowSupportIdentityInputDialog
+import com.woocommerce.android.support.requests.SupportRequestFormViewModel.SupportIdentityPrompt
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
 import com.woocommerce.android.support.zendesk.ZendeskSettings
@@ -15,6 +16,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.aisupportchat.AiSupportChatAnalyticsTracker
 import com.woocommerce.android.ui.aisupportchat.AiSupportChatTicketAnalyticsContext
 import com.woocommerce.android.ui.aisupportchat.AiSupportChatTicketRoute
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,6 +32,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import zendesk.support.Request
 
@@ -345,6 +348,90 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // Then
         assertThat(shouldShowDisclosure).containsExactly(false)
     }
+
+    @Test
+    fun `given identity is not set, when the form is opened, then ask for the support identity`() {
+        // Given
+        whenever(zendeskSettings.isIdentitySet).thenReturn(false)
+        whenever(zendeskSettings.supportEmail).thenReturn("email@test.com")
+        whenever(zendeskSettings.supportName).thenReturn("test name")
+
+        // When
+        val prompts = sut.supportIdentityPrompt.runAndCaptureValues { sut.onFormOpened() }
+
+        // Then
+        assertThat(prompts.last())
+            .isEqualTo(SupportIdentityPrompt(emailSuggestion = "email@test.com", nameSuggestion = "test name"))
+        verify(tracks).track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
+    }
+
+    @Test
+    fun `given identity is set, when the form is opened, then do not ask for the support identity`() {
+        // Given
+        whenever(zendeskSettings.isIdentitySet).thenReturn(true)
+
+        // When
+        val prompts = sut.supportIdentityPrompt.runAndCaptureValues { sut.onFormOpened() }
+
+        // Then
+        assertThat(prompts.last()).isNull()
+    }
+
+    @Test
+    fun `given the support identity prompt is shown, when it is cancelled, then the prompt is closed`() {
+        // Given
+        whenever(zendeskSettings.isIdentitySet).thenReturn(false)
+        sut.onFormOpened()
+
+        // When
+        val prompts = sut.supportIdentityPrompt.runAndCaptureValues { sut.onSupportIdentityPromptCancelled() }
+
+        // Then
+        assertThat(prompts.last()).isNull()
+    }
+
+    @Test
+    fun `when onSupportIdentityEntered is called, then save the identity and close the prompt without submitting a request`() =
+        testBlocking {
+            // Given
+            val email = "email@test.com"
+            val name = "test name"
+            whenever(zendeskSettings.isIdentitySet).thenReturn(false)
+            sut.onFormOpened()
+
+            // When
+            sut.onHelpOptionSelected(TicketType.MobileApp)
+            val prompts = sut.supportIdentityPrompt.runAndCaptureValues {
+                sut.onSupportIdentityEntered(selectedEmail = email, selectedName = name)
+            }
+
+            // Then
+            assertThat(prompts.last()).isNull()
+            verify(zendeskSettings).supportEmail = email
+            verify(zendeskSettings).supportName = name
+            verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
+            verify(zendeskTicketRepository, never())
+                .createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull())
+        }
+
+    @Test
+    fun `given ai support chat context, when submit request fails with identity error, then ticket failed analytics are not tracked`() =
+        testBlocking {
+            // Given
+            configureMocks(requestResult = Result.failure(IdentityNotSetException))
+
+            // When
+            sut.onHelpOptionSelected(TicketType.MobileApp)
+            sut.submitSupportRequest(
+                context = mock(),
+                helpOrigin = HelpOrigin.AI_TROUBLESHOOTING,
+                extraTags = listOf("in_app_support_escalate"),
+                aiSupportChatTicketAnalyticsContext = AI_SUPPORT_CHAT_ANALYTICS_CONTEXT
+            )
+
+            // Then
+            verify(aiSupportChatAnalyticsTracker, never()).trackTicketCreationFailed(any(), any(), any())
+        }
 
     @Test
     fun `when onUserIdentitySet is called, then run the expected actions`() = testBlocking {
