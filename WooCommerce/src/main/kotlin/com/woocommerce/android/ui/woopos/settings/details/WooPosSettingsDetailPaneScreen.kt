@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.settings.details
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -28,6 +30,7 @@ import com.woocommerce.android.ui.woopos.settings.details.hardware.cardreader.Wo
 import com.woocommerce.android.ui.woopos.settings.details.help.WooPosHelpDetailScreen
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSettingsLocalCatalogScreen
 import com.woocommerce.android.ui.woopos.settings.details.payments.WooPosSettingsPaymentsScreen
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityScreen
 import com.woocommerce.android.ui.woopos.settings.details.store.WooPosSettingsStoreScreen
 
 @Composable
@@ -69,23 +72,14 @@ fun WooPosSettingsDetailPaneScreen(
 
         AnimatedContent(
             targetState = currentDestination,
-            transitionSpec = {
-                val isNavigatingForward = targetState.parentDestination == initialState
-                val isCategorySwitch = initialState.parentDestination == null && targetState.parentDestination == null
-
-                if (isCategorySwitch) {
-                    fadeIn() togetherWith fadeOut()
-                } else if (isNavigatingForward) {
-                    (slideInHorizontally(initialOffsetX = { it }) + fadeIn()) togetherWith
-                        (slideOutHorizontally(targetOffsetX = { -it }) + fadeOut())
-                } else {
-                    (slideInHorizontally(initialOffsetX = { -it }) + fadeIn()) togetherWith
-                        (slideOutHorizontally(targetOffsetX = { it }) + fadeOut())
-                }
-            },
+            transitionSpec = { settingsDetailTransition() },
             label = "settings_detail_animation"
         ) { destination ->
             when (destination) {
+                is WooPosSettingsDetailDestination.Security.Overview -> {
+                    WooPosSettingsSecurityScreen()
+                }
+
                 is WooPosSettingsDetailDestination.Hardware.Overview -> {
                     WooPosHardwareSettingsScreen(onNavigate = onNavigate)
                 }
@@ -117,5 +111,21 @@ fun WooPosSettingsDetailPaneScreen(
                 }
             }
         }
+    }
+}
+
+private fun AnimatedContentTransitionScope<WooPosSettingsDetailDestination>.settingsDetailTransition():
+    ContentTransform {
+    val isNavigatingForward = targetState.parentDestination == initialState
+    val isCategorySwitch = initialState.parentDestination == null && targetState.parentDestination == null
+
+    return if (isCategorySwitch) {
+        fadeIn() togetherWith fadeOut()
+    } else if (isNavigatingForward) {
+        (slideInHorizontally(initialOffsetX = { it }) + fadeIn()) togetherWith
+            (slideOutHorizontally(targetOffsetX = { -it }) + fadeOut())
+    } else {
+        (slideInHorizontally(initialOffsetX = { -it }) + fadeIn()) togetherWith
+            (slideOutHorizontally(targetOffsetX = { it }) + fadeOut())
     }
 }
