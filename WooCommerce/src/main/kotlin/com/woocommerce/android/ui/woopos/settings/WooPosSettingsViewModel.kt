@@ -88,6 +88,7 @@ class WooPosSettingsViewModel @Inject constructor(
 
     private fun trackCategorySelection(category: WooPosSettingsCategory) {
         val event = when (category) {
+            WooPosSettingsCategory.SECURITY -> return
             WooPosSettingsCategory.STORE -> StoreDetailsTapped
             WooPosSettingsCategory.PAYMENTS -> PaymentsTapped
             WooPosSettingsCategory.LOCAL_CATALOG -> LocalCatalogTapped

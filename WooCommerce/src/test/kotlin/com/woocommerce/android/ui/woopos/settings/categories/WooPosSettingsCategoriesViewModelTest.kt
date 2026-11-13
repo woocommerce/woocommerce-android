@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.settings.categories
 
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -18,6 +20,8 @@ class WooPosSettingsCategoriesViewModelTest {
     val coroutineTestRule = WooPosCoroutineTestRule()
 
     private val productDataSource: WooPosProductsDataSource = mock()
+
+    private val featureFlagRepository: FeatureFlagRepository = mock()
 
     private lateinit var sut: WooPosSettingsCategoriesViewModel
 
@@ -96,7 +100,29 @@ class WooPosSettingsCategoriesViewModelTest {
         assertThat(initialState.categories).doesNotContain(WooPosSettingsCategory.LOCAL_CATALOG)
     }
 
+    @Test
+    fun `given Roles off, when categories load, then Security is hidden`() {
+        // WHEN
+        val state = createViewModel().state.value
+
+        // THEN
+        assertThat(state.categories).doesNotContain(WooPosSettingsCategory.SECURITY)
+    }
+
+    @Test
+    fun `given Roles on, when categories load, then Security is visible`() {
+        // GIVEN
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ROLES)).thenReturn(true)
+
+        // WHEN
+        val state = createViewModel().state.value
+
+        // THEN
+        assertThat(state.categories).contains(WooPosSettingsCategory.SECURITY)
+    }
+
     private fun createViewModel() = WooPosSettingsCategoriesViewModel(
         productsDataSource = productDataSource,
+        featureFlagRepository = featureFlagRepository,
     )
 }

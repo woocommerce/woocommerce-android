@@ -43,12 +43,3 @@ class WooPosLockSession @Inject constructor(
         private const val MAX_DIGIT = 9
     }
 }
-
-data class WooPosLockScreenState(
-    val isLocked: Boolean = false,
-    val enteredDigits: Int = 0,
-) {
-    companion object {
-        const val PIN_LENGTH = 4
-    }
-}
