@@ -80,24 +80,24 @@ internal class StarReceiptPrinterManager @Inject constructor(
         val caller = currentCoroutineContext()
         caller.ensureActive()
         val printer = discoveredPrinters[device.id]
-        val notConnected =
-            if (printer == null) ReceiptPrinterError.PrinterNotFound else ReceiptPrinterError.PrinterNotConnected
+            ?: return ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotFound)
         val attempt = startAttempt(ReceiptPrinterConnectionStatus.Connecting(device))
         // The SDK keeps opening after a cancellation, so the attempt always runs to the end to close what it opened.
         val result = withContext(NonCancellable) {
             connectionMutex.withLock {
-                if (!isLatest(attempt)) return@withLock ReceiptPrinterResult.Failure(notConnected)
+                if (!isLatest(attempt)) {
+                    return@withLock ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotConnected)
+                }
                 closeOpenPrinter()
-                val error = if (printer != null && caller.isActive) open(printer) else notConnected
+                val error = if (caller.isActive) open(printer) else ReceiptPrinterError.PrinterNotConnected
                 val connected = error == null && caller.isActive &&
                     finishAttempt(attempt, ReceiptPrinterConnectionStatus.Connected(device))
-                // A status collector can cancel the caller while Connected is being published.
-                if (connected && caller.isActive) {
+                if (connected) {
                     ReceiptPrinterResult.Success
                 } else {
                     closeOpenPrinter()
                     finishAttempt(attempt, ReceiptPrinterConnectionStatus.Disconnected)
-                    ReceiptPrinterResult.Failure(error ?: notConnected)
+                    ReceiptPrinterResult.Failure(error ?: ReceiptPrinterError.PrinterNotConnected)
                 }
             }
         }

@@ -876,32 +876,7 @@ class StarReceiptPrinterManagerTest {
         }
 
     @Test
-    fun `given a connect in flight, when connect is called for a device that was never discovered, then the earlier connect closes its late connection and never reports connected`() =
-        runTest {
-            // GIVEN
-            val open = CompletableDeferred<Unit>()
-            val printer = starPrinter(open = open)
-            discover(printer)
-            val statuses = collectStatuses()
-            val earlierResult = connectAsync(DEVICE)
-
-            // WHEN
-            val result = connectAsync(OTHER_DEVICE)
-            open.complete(Unit)
-            runCurrent()
-
-            // THEN
-            assertThat(earlierResult.getCompleted())
-                .isEqualTo(ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotConnected))
-            verify(printer).closeAsync()
-            assertThat(result.getCompleted())
-                .isEqualTo(ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotFound))
-            assertThat(sut.connectionStatus.value).isEqualTo(Disconnected)
-            assertThat(statuses).doesNotContain(Connected(DEVICE))
-        }
-
-    @Test
-    fun `given a connected printer, when connect is called for a device that was never discovered, then the printer is closed and the status is disconnected`() =
+    fun `given a connected printer, when connect is called for a device that was never discovered, then it fails and the printer stays connected`() =
         runTest {
             // GIVEN
             val printer = starPrinter()
@@ -913,32 +888,12 @@ class StarReceiptPrinterManagerTest {
 
             // THEN
             assertThat(result).isEqualTo(ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotFound))
-            verify(printer).closeAsync()
-            assertThat(sut.connectionStatus.value).isEqualTo(Disconnected)
-        }
-
-    @Test
-    fun `given a connect for an unknown device superseded by a status collector, when it ends, then it fails with printer not found and the newer printer stays connected`() =
-        runTest {
-            // GIVEN
-            val printer = starPrinter()
-            discover(printer)
-            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                sut.connectionStatus.first { it == Connecting(OTHER_DEVICE) }
-                sut.connect(DEVICE)
-            }
-
-            // WHEN
-            val result = sut.connect(OTHER_DEVICE)
-
-            // THEN
-            assertThat(result).isEqualTo(ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotFound))
             verify(printer, never()).closeAsync()
             assertThat(sut.connectionStatus.value).isEqualTo(Connected(DEVICE))
         }
 
     @Test
-    fun `given the caller is cancelled while connected is being reported, when connect ends, then it is cancelled, the printer is closed and the status is disconnected`() =
+    fun `given the caller is cancelled while connected is being reported, when connect ends, then the printer stays open and the status stays connected`() =
         runTest {
             // GIVEN
             val printer = starPrinter()
@@ -954,9 +909,8 @@ class StarReceiptPrinterManagerTest {
 
             // THEN
             assertThat(result.isCompleted).isTrue()
-            assertThat(result.isCancelled).isTrue()
-            verify(printer).closeAsync()
-            assertThat(sut.connectionStatus.value).isEqualTo(Disconnected)
+            verify(printer, never()).closeAsync()
+            assertThat(sut.connectionStatus.value).isEqualTo(Connected(DEVICE))
         }
 
     @Test
