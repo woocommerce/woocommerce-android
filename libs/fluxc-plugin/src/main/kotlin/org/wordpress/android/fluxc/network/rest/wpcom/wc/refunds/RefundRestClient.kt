@@ -64,7 +64,7 @@ class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
      *
      * A store without `compute_totals` drops the param and books a zero-amount refund, and
      * restocks when [apiRestock] is true. Only call this on a store known to support it: POS checks
-     * the version in `WooPosResolveRefundFlow` and the preview result in
+     * the version in `ResolveRefundFlow` and the preview result in
      * `WooPosRefundViewModel.buildSubmissionRequest`.
      */
     @Suppress("LongParameterList")

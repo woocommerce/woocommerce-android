@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.refunds.ResolveRefundFlow
+import com.woocommerce.android.ui.payments.refunds.ServerRefundAvailabilityCache
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
@@ -31,12 +33,12 @@ class WooPosRefundPreviewTest {
 
     private val refundStore: WCRefundStore = mock()
     private val selectedSite: SelectedSite = mock()
-    private val availabilityCache = WooPosServerRefundAvailabilityCache()
+    private val availabilityCache = ServerRefundAvailabilityCache()
 
     // Defaults to a version that supports server refunds; version-gating tests override it.
     // An unknown (null) version fails closed to the local flow.
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock {
-        on { invoke() } doReturn WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
+        on { invoke() } doReturn ResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
     }
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
@@ -57,7 +59,7 @@ class WooPosRefundPreviewTest {
         )
     }
 
-    private fun resolveRefundFlowFor(selectedSite: SelectedSite) = WooPosResolveRefundFlow(
+    private fun resolveRefundFlowFor(selectedSite: SelectedSite) = ResolveRefundFlow(
         selectedSite = selectedSite,
         availabilityCache = availabilityCache,
         getWooCoreVersion = getWooCoreVersion,
@@ -327,6 +329,6 @@ class WooPosRefundPreviewTest {
         private const val LOCAL_SITE_ID = 11
         private const val SITE_ID = 7L
         private const val ORDER_ID = 123L
-        private const val MIN_VERSION = WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
+        private const val MIN_VERSION = ResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
     }
 }
