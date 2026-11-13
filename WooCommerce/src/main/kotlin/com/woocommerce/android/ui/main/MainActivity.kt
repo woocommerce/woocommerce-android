@@ -230,6 +230,9 @@ class MainActivity :
     lateinit var posTabController: WooPosTabController
 
     @Inject
+    lateinit var restoreLockedPOS: WooPosRestoreLockedPOS
+
+    @Inject
     lateinit var hardwareBarcodeScanner: HardwareBarcodeScanner
 
     @Inject
@@ -371,9 +374,6 @@ class MainActivity :
         this.menu = menu
         return super.onCreateOptionsMenu(menu)
     }
-
-    @Inject
-    lateinit var restoreLockedPOS: WooPosRestoreLockedPOS
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
