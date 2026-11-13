@@ -1,2 +1,0 @@
-26.0:
-Je kunt nu eigenschappen toevoegen en bewerken voor elk producttype en kiezen of ze worden weergegeven op de productpagina of worden gebruikt voor variaties. Verzendlabels tonen meldingen over uitval van vervoerders, in twee stappen inloggen legt je verificatieopties uit en POS stopt met wachten op een kaart terwijl je contant geld afneemt. Plus oplossingen voor crashes, terugbetalingen, variaties en donkere modus.

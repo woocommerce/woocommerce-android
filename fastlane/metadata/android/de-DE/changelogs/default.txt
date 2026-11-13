@@ -1,2 +1,0 @@
-26.0:
-Du kannst jetzt Attribute zu jedem Produkttyp hinzufügen und bearbeiten, und auswählen, ob die jeweiligen Attribute auf der Produktseite angezeigt oder für Varianten verwendet werden. Versandetiketten zeigen Hinweise über Ausfälle von Versanddienstleistern an, die Zwei-Schritt-Anmeldung erklärt deine Verifizierungsoptionen und POS wartet bei Barzahlungen nicht mehr auf eine Karte. Außerdem gibt es Fehlerbehebungen für Abstürze, Rückerstattungen, Varianten und den Dunkelmodus.

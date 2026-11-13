@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 26.1
+Custom amounts in Woo POS now open on their own screen, so you can set the amount, name, and taxes before adding them to the cart. Orders show the customer's shipping phone with the shipping address, and long product names wrap instead of being cut off. Plus fixes for POS card payments, product photos, custom date range stats, and sign-in.
+
 ## 26.0
 You can now add and edit attributes on every product type, and choose if each one shows on the product page or is used for variations. Shipping labels show carrier outage notices, two-step login explains your verification options, and POS stops waiting for a card while you take cash. Plus fixes for crashes, refunds, variations, and dark mode.
 

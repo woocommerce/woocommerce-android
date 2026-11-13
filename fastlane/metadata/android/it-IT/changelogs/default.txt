@@ -1,2 +1,0 @@
-26.0:
-Ora puoi aggiungere e modificare gli attributi su ogni tipo di prodotto e scegliere se mostrare ciascuno di essi nella pagina del prodotto o utilizzarlo per le variazioni. Le etichette di spedizione mostrano gli avvisi di disservizio del corriere, l'accesso in due passaggi illustra le opzioni di verifica e POS smette di attendere la carta mentre incassi in contanti. In più, correzioni per arresti anomali, rimborsi, variazioni e modalità scura.

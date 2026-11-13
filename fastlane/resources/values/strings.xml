@@ -222,6 +222,14 @@
 
     <string name="login_prologue_start_new_store">Starting a new store?</string>
 
+    <!-- Login store suggestion -->
+    <string name="login_store_suggestion_title">Log in to this store?</string>
+    <string name="login_store_suggestion_description">Only continue if this is your store\'s address.</string>
+    <string name="login_store_suggestion_log_in">Log in to this store</string>
+    <string name="login_store_suggestion_use_different_store">Use a different store</string>
+    <string name="login_store_suggestion_redirected">This address leads to a different site. Only continue if it\'s your store.</string>
+    <string name="login_store_suggestion_unavailable">We couldn\'t confirm this store from the link. Enter your store address to continue.</string>
+
     <!-- QR login prologue -->
     <string name="login_qr_prologue_title">Scan to log in</string>
     <string name="login_qr_prologue_subtitle">On your computer, visit:</string>
@@ -237,7 +245,6 @@
     <string name="login_qr_prologue_camera_blocked_title">Camera access is turned off</string>
     <string name="login_qr_prologue_camera_blocked_body">Enable camera access in Settings or cancel to sign in with your store address instead.</string>
     <string name="login_qr_prologue_camera_blocked_settings_button">Open Permissions Settings</string>
-    <string name="login_qr_scanner_hint">Center the QR code in the frame</string>
     <string name="login_qr_scanner_visit_url">Visit %1$s</string>
     <string name="login_qr_scanner_authenticating">Signing you in…</string>
     <string name="login_qr_endpoint_missing_title">This store can\'t complete QR login</string>
@@ -414,6 +421,7 @@
     <string name="login_site_credentials_fetching_site_failed">An error occurred while fetching your website</string>
     <string name="login_site_credentials_fetching_site">Fetching site…</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Unable to login because application password creation is not approved.</string>
+    <string name="login_site_credentials_web_authorization_site_mismatch">This approval page belongs to a different site. For your safety, we stopped the login.</string>
     <string name="login_unexpected_response_title">Unable to log in</string>
     <string name="login_unexpected_response_message">Your store returned an unexpected response, so we couldn\'t finish logging you in. Try again or contact support for help.</string>
     <string name="login_app_login_malformed_link">We couldn\'t process your app login request</string>
@@ -865,6 +873,15 @@
     <string name="barcode_scanning_alert_dialog_dismiss_label">Cancel</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Go to settings</string>
     <string name="barcode_scanning_scan_product_barcode_label">Scan Product Barcode</string>
+    <string name="barcode_scanning_hardware_scanner_info_link">Use an external scanner</string>
+    <string name="barcode_scanning_or">or</string>
+    <string name="barcode_scanning_hardware_scanner_info_title">Use a Bluetooth or USB scanner</string>
+    <string name="barcode_scanning_hardware_scanner_info_setup">Pair your scanner in your device\'s Bluetooth settings, or connect it with USB. Set it to keyboard (HID) mode.</string>
+    <string name="barcode_scanning_hardware_scanner_info_usage">Scan on the Orders and Products screens, or while creating an order. You don\'t need to open the camera.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_title">Test your scanner</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_success">Your scanner works</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_instruction">Scan this barcode with your scanner.</string>
+    <string name="barcode_scanning_hardware_scanner_wrong_value">The scanned code doesn\'t match. Set your scanner to the same keyboard layout as your device.</string>
 
     <!--
         Order Editing
@@ -1573,7 +1590,7 @@
     <string name="card_reader_tap_to_pay_explanation_title">Collect card payments\nwith your phone</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Accept all types of in-person payments, right\non your phone. No extra hardware needed.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">It’s easy, secure, and private.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Try a %s payment with your debit or credit card.\nThe payment will be refunded when you’re done.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Try a %s live payment with your debit or credit card.\nThe payment will be refunded when you’re done; processing fees apply.</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find">Choose the Tap to Pay from the Collect Payment options in\nOrder Details or Menu &gt; Payments.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Try a payment</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
@@ -1667,6 +1684,7 @@
     <string name="card_reader_payment_capturing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
     <string name="card_reader_payment_completed_payment_header">Payment successful</string>
     <string name="card_reader_payment_payment_failed_header">Payment failed</string>
+    <string name="card_reader_payment_not_confirmed_header">Payment not confirmed</string>
     <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Buy a card reader</string>
 
@@ -1697,6 +1715,7 @@
     <string name="card_reader_payment_failed_test_mode_live_card">A live card was used on a site in test mode</string>
     <string name="card_reader_payment_failed_unknown">Payment was declined for an unknown reason</string>
     <string name="card_reader_payment_failed_canceled">Transaction was canceled</string>
+    <string name="card_reader_payment_failed_capture_outcome_unknown">The card may already have been charged. Try again to check the payment status.</string>
 
     <string name="card_reader_mode_ready_to_pair_header">Ready to pair</string>
     <string name="card_reader_mode_ready_to_pair_subtitle">Open Woo POS on your tablet and pick this phone.</string>
@@ -2618,6 +2637,7 @@
     <string name="ai_support_chat_history_delete_error">Unable to delete chat history.</string>
     <string name="ai_support_chat_history_default_title">Support conversation</string>
     <string name="ai_support_chat_placeholder">Coming soon</string>
+    <string name="ai_support_chat_ai_disclosure">You’re chatting with AI from Woo Support.</string>
     <string name="ai_support_chat_greeting">Hello! I\'m your Woo Mobile Support Bot. Is there anything I can help you with today?</string>
     <string name="ai_support_chat_input_hint">Type a message…</string>
     <string name="ai_support_chat_send">Send</string>
@@ -4004,20 +4024,17 @@
     <string name="woopos_cart_custom_amount_includes_tax">Tax included</string>
     <string name="woopos_cart_custom_amount_discount_not_applied">Discount not applied</string>
     <string name="woopos_cart_item_discount_applied">Discount applied</string>
-    <string name="woopos_cart_custom_amount_menu_edit">Edit</string>
-    <string name="woopos_cart_custom_amount_menu_remove">Remove</string>
     <string name="woopos_custom_amount_entry_title">Custom amount</string>
     <string name="woopos_custom_amount_entry_subtitle">Add a one-off charge</string>
-    <string name="woopos_custom_amount_dialog_title_add">Add custom amount</string>
-    <string name="woopos_custom_amount_dialog_title_edit">Edit custom amount</string>
-    <string name="woopos_custom_amount_form_title">Custom amount</string>
+    <string name="woopos_custom_amount_details_title">Custom amount details</string>
+    <string name="woopos_custom_amount_name_optional">Name (optional)</string>
+    <string name="woopos_custom_amount_edit_amount_title">Edit amount</string>
     <string name="woopos_custom_amount_dialog_amount_label">Amount</string>
     <string name="woopos_custom_amount_dialog_name_label">Name</string>
     <string name="woopos_custom_amount_dialog_name_placeholder">Custom amount</string>
     <string name="woopos_custom_amount_dialog_charge_taxes">Charge taxes</string>
     <string name="woopos_custom_amount_dialog_submit_add">Add custom amount</string>
     <string name="woopos_custom_amount_dialog_submit_edit">Update custom amount</string>
-    <string name="woopos_custom_amount_dialog_cancel">Cancel</string>
     <string name="woopos_cart_title">Cart</string>
     <string name="woopos_cart_changes_in_the_cart">There are changes in the cart</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">Unknown scanned item</string>
@@ -4108,6 +4125,11 @@
     <string name="woopos_get_support_title">Get Support</string>
     <string name="woopos_product_limitations_title">Where are my products?</string>
     <string name="woopos_documentation_title">Documentation</string>
+    <string name="woopos_lock_pos">Lock POS</string>
+    <string name="woopos_lock_enter_pin">Enter your PIN to unlock POS</string>
+    <string name="woopos_lock_delete_digit">Delete</string>
+    <string name="woopos_lock_pin_entry">PIN entry</string>
+    <string name="woopos_lock_digits_entered">%1$d of %2$d digits entered</string>
     <string name="woopos_orders_title">Orders</string>
     <string name="woopos_order_title">Order %s</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
@@ -4222,6 +4244,10 @@
     <string name="woopos_success_totals_payment_processing_title">Processing payment</string>
     <string name="woopos_success_totals_payment_processing_subtitle">Please wait…</string>
     <string name="woopos_success_totals_payment_failed_title">Payment failed</string>
+    <string name="woopos_totals_payment_not_confirmed_title">Payment not confirmed</string>
+    <string name="woopos_totals_payment_not_confirmed_message">We couldn\'t confirm this payment, so the card may already have been charged. Check the payment status before taking another payment method.</string>
+    <string name="woopos_totals_payment_not_confirmed_check_status">Check payment status</string>
+    <string name="woopos_payment_status_check_failed_message">We couldn\'t check the payment status. Check your internet connection and try again.</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">Try another payment method</string>
     <string name="woo_pos_payment_failed_try_again">Try payment again</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">Go back to checkout</string>
