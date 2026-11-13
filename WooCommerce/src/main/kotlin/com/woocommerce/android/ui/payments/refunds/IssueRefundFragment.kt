@@ -291,8 +291,7 @@ class IssueRefundFragment :
         }
     }
 
-    // A plain dialog rather than a DialogFragment: the fragment manager would restore a DialogFragment after
-    // recreation, and it could outlive the preview. This one goes away with the view and is shown again from state.
+    // Not a DialogFragment: one would be restored after rotation and could outlive the preview.
     private fun showProgressDialog() {
         if (calculatingDialog != null) return
         val dialogView = View.inflate(requireContext(), R.layout.view_progress_dialog, null)

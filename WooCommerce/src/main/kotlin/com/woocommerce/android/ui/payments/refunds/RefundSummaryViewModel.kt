@@ -98,12 +98,7 @@ class RefundSummaryViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Whether the refund is created with `compute_totals`. Read once, so the request that is sent and the flow reported
-     * to analytics can't disagree. Needs both a server preview behind the amount on this screen and a successful preview
-     * in this process: a store without `compute_totals` ignores the flag and would book a zero-amount refund. After a
-     * process restart the availability is unknown, so the refund falls back to the local calculation of the same amount.
-     */
+    // A store without `compute_totals` ignores the flag and books a zero refund, so it needs a preview in this process.
     private val isServerComputedRefund: Boolean by lazy {
         val flow = resolveRefundFlow()
         navArgs.isServerComputed &&
@@ -328,8 +323,7 @@ class RefundSummaryViewModel @Inject constructor(
     private suspend fun initiateRefund(order: Order): WooResult<WCRefundModel> {
         val amount = refundSummaryState.refundAmount
         if (isServerComputedRefund) {
-            // Pinning the previewed amount makes the store reject the refund if its total changed since the preview,
-            // instead of refunding something other than what the merchant confirmed.
+            // Pinned so the store rejects the refund if its total changed since the preview.
             return refundStore.createComputedItemsRefund(
                 site = selectedSite.get(),
                 orderId = order.id,

@@ -32,7 +32,7 @@ sealed interface RefundCalculationFlow {
  *
  * [RefundCalculationFlow.ServerComputed] means eligible, not confirmed. Only a successful preview sets
  * the availability cache to `true`, and only that permits the computed create (see
- * `WooPosRefundViewModel.buildSubmissionRequest` and [RefundSummaryViewModel]).
+ * `WooPosRefundViewModel.buildSubmissionRequest`).
  */
 class ResolveRefundFlow @Inject constructor(
     private val selectedSite: SelectedSite,

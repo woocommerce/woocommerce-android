@@ -356,7 +356,7 @@ class IssueRefundViewModel @Inject constructor(
         )
 
         if (previewJob?.isActive == true) return
-        // The summary must refund exactly what was previewed, so the selection is read once, before the preview.
+        // Read before the preview so the summary refunds exactly what was previewed.
         val state = requireNotNull(viewState.value) { "View state is not ready yet" }
         previewJob = launch {
             isCalculatingRefundFlow.value = true
