@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarU
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.OnOutsideOfToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked
+import com.woocommerce.android.ui.woopos.lock.WooPosLockSession
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.GoToOrdersTapped
@@ -41,6 +42,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val effectiveReaderStatusProvider: WooPosEffectiveReaderStatusProvider,
     controllerFactory: WooPosCardReaderConnectionControllerFactory,
+    private val lockSession: WooPosLockSession,
 ) : ViewModel() {
 
     private val controller: WooPosCardReaderConnectionController by lazy {
@@ -115,6 +117,8 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
         hideMenu()
 
         when (event.menuItem.title) {
+            R.string.woopos_lock_pos -> lockSession.lock()
+
             R.string.woopos_orders_title -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.NavigationEvent.ToOrders)
@@ -182,8 +186,8 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
         }
     }
 
-    private val toolbarMenuItems by lazy {
-        buildList {
+    private val toolbarMenuItems: List<WooPosHomeFloatingToolbarState.Menu.MenuItem>
+        get() = buildList {
             addAll(
                 listOf(
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
@@ -194,12 +198,21 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                         title = R.string.woopos_settings_title,
                         icon = R.drawable.ic_settings_filled_24dp,
                     ),
+                )
+            )
+            if (lockSession.isEnabled) {
+                add(
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
-                        title = R.string.woopos_exit_confirmation_title,
-                        icon = R.drawable.ic_exit_to_app_24dp,
-                    ),
+                        title = R.string.woopos_lock_pos,
+                        icon = R.drawable.ic_lock,
+                    )
+                )
+            }
+            add(
+                WooPosHomeFloatingToolbarState.Menu.MenuItem(
+                    title = R.string.woopos_exit_confirmation_title,
+                    icon = R.drawable.ic_exit_to_app_24dp,
                 )
             )
         }
-    }
 }

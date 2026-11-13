@@ -30,6 +30,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -52,6 +53,7 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -121,6 +123,7 @@ fun AiSupportChatScreen(
             .fillMaxSize()
             .imePadding()
     ) {
+        AiDisclosureBanner(modifier = Modifier.fillMaxWidth())
         MessageList(
             messages = viewState.messages,
             messageRatings = viewState.messageRatings,
@@ -859,6 +862,31 @@ private fun AnimatedTypingText() {
         color = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier.alpha(alpha)
     )
+}
+
+@Composable
+private fun AiDisclosureBanner(modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.surface
+    ) {
+        Column {
+            Text(
+                text = stringResource(R.string.ai_support_chat_ai_disclosure),
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = dimensionResource(R.dimen.major_100),
+                        vertical = dimensionResource(R.dimen.minor_100)
+                    )
+            )
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        }
+    }
 }
 
 @Composable

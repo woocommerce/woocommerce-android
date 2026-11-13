@@ -2,8 +2,13 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+26.2
+-----
+
+
 26.1
 -----
+- [*] Login: merchants who install the app from the New Order email can log in to their store in one tap (rolling out to some new installs) [https://github.com/woocommerce/woocommerce-android/pull/16843]
 - [**] [Woo POS] Custom amounts now open on their own screen: enter the amount, then review the name and taxes before adding it to the cart [https://github.com/woocommerce/woocommerce-android/pull/16833]
 - [*] POS: When a phone is the card reader, it now stops waiting for a card after the cashier picks another payment method or leaves checkout [https://github.com/woocommerce/woocommerce-android/pull/16830]
 - [*] The Tap to Pay "Try a payment" screen now says the payment is live and that processing fees apply [https://github.com/woocommerce/woocommerce-android/pull/16828]
@@ -23,6 +28,7 @@
 
 26.0
 -----
+- [*] Fixed the app freezing when a store returns a large error page [https://github.com/woocommerce/woocommerce-android/pull/16826]
 - [*] You can now use a Bluetooth or USB barcode scanner on the Orders and Products screens [https://github.com/woocommerce/woocommerce-android/pull/16756]
 - [*] Shipping labels: carrier outage notices from WooCommerce Shipping now show on the label creation screen, and a purchase that fails during an outage explains the incident instead of showing a generic error [https://github.com/woocommerce/woocommerce-android/pull/16778]
 - [*] The gaps between sections on product details are no longer pure black in dark mode [https://github.com/woocommerce/woocommerce-android/pull/16781]

@@ -27,6 +27,7 @@ enum class FeatureFlag(
     WOO_POS_LOCAL_CATALOG_M1("woo_pos_local_catalog_m1"),
     WOO_POS_TABLET_PROMO_BANNER("woo_pos_tablet_promo_banner"),
     WOO_POS_RECEIPT_PRINTING("woo_pos_receipt_printing", localValue = PackageUtils.isDebugBuild()),
+    WOO_POS_ROLES("woo_pos_roles", localValue = false),
     WC_SHIPPING_BANNER("wc_shipping_banner", localValue = PackageUtils.isDebugBuild()),
     BETTER_CUSTOMER_SEARCH_M2("better_customer_search_m2", localValue = PackageUtils.isDebugBuild()),
     ORDER_CREATION_AUTO_TAX_RATE("order_creation_auto_tax_rate", localValue = PackageUtils.isDebugBuild()),

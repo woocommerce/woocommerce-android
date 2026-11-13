@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-20 15:58:41+0000
+Translation-Revision-Date: 2026-11-03 15:57:13+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_service_status_severity_info">Informatie</string>
+    <string name="woo_shipping_labels_service_status_severity_warning">Waarschuwing</string>
+    <string name="woo_shipping_labels_service_status_severity_error">Fout</string>
+    <string name="woo_shipping_labels_service_status_dismiss">Verberg melding: %1$s</string>
+    <string name="woo_shipping_labels_service_status_view_status_page">Statuspagina bekijken</string>
+    <string name="woo_shipping_labels_purchase_service_status_error">We kunnen het verzendlabel niet aanschaffen wegens een probleem met de vervoerder: %1$s</string>
+    <string name="woopos_remote_ttp_explainer_local_network_body">Sta lokale netwerktoegang toe, zodat POS je telefoon op dezelfde wifi kan vinden.</string>
+    <string name="woopos_remote_ttp_explainer_local_network_heading">Laat POS je telefoon vinden</string>
+    <string name="woopos_remote_ttp_explainer_allow_local_network">Toegang tot lokaal netwerk toestaan</string>
+    <string name="woopos_remote_reader_failed_insecure_environment">Tap to Pay is om veiligheidsredenen geblokkeerd op de telefoon. Controleer op de telefoon of toegankelijkheidsdiensten en schermopnames zijn uitgeschakeld.</string>
+    <string name="login_text_backup_code">Gebruik in plaats daarvan een back-upcode</string>
+    <string name="support_request_ai_chat_transcript_disclosure">De transcriptie van je AI-ondersteuningschat wordt ook bij dit verzoek gevoegd.</string>
+    <string name="enter_verification_code_backup">Voer een back-upcode in om door te gaan.</string>
+    <string name="enter_verification_code_email">Controleer je e-mail voor een verificatiecode van WordPress.com en voer deze vervolgens in om door te gaan.</string>
+    <string name="enter_verification_code_authenticator">Voer de verificatiecode uit je Authenticator-app in.</string>
+    <string name="ai_support_chat_escalation_consent_message_v2">Beide opties bevatten deze chattranscriptie. Stuur het verzoek nu of open het contactformulier om eerst meer details toe te voegen.</string>
+    <string name="ai_support_chat_login_unexpected_response_message">Ik kan niet inloggen bij mijn winkel. De app zegt dat mijn winkel een onverwachte reactie heeft gegeven. Hoe kan ik dit oplossen?</string>
+    <string name="card_reader_payment_failed_insecure_environment">Tap to Pay is om veiligheidsredenen geblokkeerd. Controleer of toegankelijkheidsservices en schermopnames zijn uitgeschakeld.</string>
+    <string name="barcode_scanning_hardware_scanner_no_enter_suffix">Scan niet voltooid Stel je scanner in om Enter na elke streepjescode te verzenden.</string>
+    <string name="customer_list_enable_analytics_error">WooCommerce Analytics kon niet worden ingeschakeld. Probeer het nog eens.</string>
+    <string name="customer_list_enable_analytics_confirmation_action">Inschakelen</string>
+    <string name="customer_list_enable_analytics_confirmation_message">Dit wijzigt een instelling voor je hele winkel. Het blijft aan totdat iemand het uitschakelt in WooCommerce › Instellingen › Geavanceerde › Functies. Klanten uit de tijd dat Analytics was uitgeschakeld, worden mogelijk alleen weergegeven nadat je historische gegevens hebt geïmporteerd in WooCommerce › Analytics › Instellingen.</string>
+    <string name="customer_list_enable_analytics_confirmation_title">WooCommerce Analytics inschakelen?</string>
+    <string name="customer_list_enable_analytics">Analyses inschakelen</string>
+    <string name="customer_list_analytics_unavailable_message">Voor klantenlijsten is WooCommerce Analytics nodig, wat momenteel niet beschikbaar is in deze winkel. Vraag een winkelbeheerder om te controleren of het is ingeschakeld.</string>
+    <string name="customer_list_analytics_permission_denied_message">Voor klantenlijsten is WooCommerce Analytics nodig, wat niet beschikbaar is in deze winkel. Vraag een winkelbeheerder om het in te schakelen in WooCommerce › Instellingen › Geavanceerde › Functies.</string>
+    <string name="customer_list_analytics_disabled_message">Voor klantenlijsten is WooCommerce Analytics nodig, wat is uitgeschakeld voor deze winkel. Je kunt het hier inschakelen, of in je winkelbeheer onder WooCommerce › Instellingen › Geavanceerde › Functies en vervolgens op Opnieuw proberen tikken.</string>
+    <string name="customer_list_analytics_unavailable_title">Klanten kunnen niet worden geladen</string>
+    <string name="login_unexpected_response_message">Je winkel heeft een onverwachte reactie gegeven, dus we konden het inloggen niet voltooien. Probeer het opnieuw of neem contact op met ondersteuning voor hulp.</string>
+    <string name="login_unexpected_response_title">Kan niet inloggen</string>
     <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s vereist een telefoonnummer van de ontvanger.</string>
     <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">Mag uit maximaal %1$s tekens bestaan.</string>
     <string name="woo_shipping_labels_customs_product_details_gtin_required">Voer de GTIN/EAN in of selecteer \"Geen streepjescode\"</string>
@@ -354,7 +384,6 @@ Language: nl
     <string name="ai_support_chat_escalation_transcript_header">Hieronder volgt de transcriptie van een in-app AI-ondersteuningschatsessie:</string>
     <string name="ai_support_chat_escalation_consent_contact_form">Contactformulier</string>
     <string name="ai_support_chat_escalation_consent_send_request">Aanvraag versturen</string>
-    <string name="ai_support_chat_escalation_consent_message">We kunnen een ondersteuningsverzoek aanmaken met behulp van deze chattranscriptie, of je kunt het contactformulier openen en de gegevens zelf invoeren.</string>
     <string name="ai_support_chat_support_request_subject_woo_payments">Ondersteuningsverzoek WooPayments</string>
     <string name="ai_support_chat_escalation_consent_title">Deze chat naar ondersteuning sturen?</string>
     <string name="ai_support_chat_mark_resolved_confirmation_message">Hiermee worden de chatacties voor dit gesprek gesloten.</string>
@@ -3273,7 +3302,6 @@ Language: nl
     <string name="empty_order_list_message">Bekijk hoe je de verkoop van je winkel kunt verhogen.</string>
     <string name="empty_product_message">Begin vandaag te verkopen door het eerste product aan de winkel toe te voegen.</string>
     <string name="empty_product_add_product_button">Product toevoegen</string>
-    <string name="variable_product_attributes">Variatie-eigenschappen</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Zet de Bluetooth aan op je mobiele apparaat</string>
     <string name="card_reader_payment_receipt_email_subject">Je kwitantie van %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Bestelling aan het vernieuwen…</string>
@@ -3707,7 +3735,6 @@ Language: nl
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_refund_title">%1$s label-terugbetaling aangevraagd</string>
     <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
-    <string name="product_variation_options">%1$s (%2$s opties)</string>
     <string name="shipping_labels">Verzendlabels</string>
     <string name="product_add_category_dialog_message">Een moment geduld…</string>
     <string name="product_add_category_dialog_title">Categorie wordt toegevoegd</string>
@@ -3846,7 +3873,6 @@ Language: nl
     <string name="order_refunds_select_quantity">Selecteer hoeveelheid</string>
     <string name="order_refunds_shipping_refund">Verzendkostenvergoeding</string>
     <string name="order_refunds_products_refund">Productvergoeding</string>
-    <string name="order_refunds_items_selected">%d items geselecteerd</string>
     <string name="order_refunds_items_select_none">Niets selecteren</string>
     <string name="order_refunds_items_select_all">Alles selecteren</string>
     <string name="order_refunds_amount_refund_confirmation_message">Wachten op bevestiging vergoeding…</string>
@@ -4083,7 +4109,6 @@ Language: nl
     <string name="login_error_sms_throttled">We hebben te vaak geprobeerd om een sms-verificatiecode te versturen. Even geduld en vraag er over een minuut nog een aan.</string>
     <string name="login_error_email_not_found_v2">Er is geen WordPress.com-account gekoppeld aan dit Google-account.</string>
     <string name="login_to_to_connect_jetpack">Log in op het WordPress.com-account dat je gebruikte om verbinding te maken met Jetpack.</string>
-    <string name="signup_with_google_progress">Inschrijven bij Google …</string>
     <string name="signup_magic_link_progress">E-mail versturen</string>
     <string name="signup_magic_link_error_button_negative">Sluit</string>
     <string name="notification_login_failed">Er is een fout opgetreden.</string>
@@ -4096,7 +4121,6 @@ Language: nl
     <string name="notification_login_title_success">Ingelogd!</string>
     <string name="login_error_generic_start">Inloggen via Google kon niet worden gestart.</string>
     <string name="login_empty_password">Voer een wachtwoord in</string>
-    <string name="login_error_suffix">\nMisschien een ander account proberen?</string>
     <string name="login_error_generic">Er kon geen verbinding worden gemaakt met het Google-account.</string>
     <string name="login_error_button">Sluit</string>
     <string name="error_generic_network">Er is een netwerkfout opgetreden. Controleer je verbinding en probeer het nogmaals.</string>
@@ -4125,7 +4149,6 @@ Language: nl
     <string name="email_address_login_title">Inloggen e-mailadres</string>
     <string name="enter_wpcom_or_jetpack_site">Voer een WordPress.com-site of een aan Jetpack gekoppelde zelf-gehoste WordPress-site in</string>
     <string name="xmlrpc_endpoint_forbidden_error">Kan geen verbinding maken. Er is een 403-fout opgetreden tijdens onze poging om het XMLRPC-eindpunt van je\n site te openen. De app heeft dat nodig om met je site te communiceren. Neem contact op met je host voor een oplossing voor\n dit probleem.</string>
-    <string name="google_error_timeout">Reactie van Google duurde te lang. Je moet mogelijk wachten tot je een sterkere internetverbinding hebt.</string>
     <string name="signup_magic_link_error_button_positive">Opnieuw proberen</string>
     <string name="signup_magic_link_error">Er is een fout opgetreden bij het verzenden van de e-mail. Je kunt het nu opnieuw proberen of het venster sluiten en later opnieuw proberen.</string>
     <string name="default_web_client_id" a8c-src-lib="module:login">placeholder</string>
@@ -4266,6 +4289,10 @@ Language: nl
     <plurals name="more_menu_unseen_reviews_state_description">
         <item quantity="one">%d niet-gelezen beoordeling</item>
         <item quantity="other">%d niet-gelezen beoordelingen</item>
+    </plurals>
+    <plurals name="order_refunds_items_selected_count">
+        <item quantity="one">%d item geselecteerd</item>
+        <item quantity="other">%d items geselecteerd</item>
     </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Subtotaal artikelen (%d artikel)</item>

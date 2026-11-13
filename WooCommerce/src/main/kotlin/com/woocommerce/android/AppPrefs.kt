@@ -250,6 +250,10 @@ object AppPrefs {
 
         DEBUG_INSTALL_REFERRER_CLICK_TIMESTAMP,
 
+        SUGGESTED_STORE_LOGIN_URL,
+
+        STORE_SUGGESTION_ROLLOUT_BUCKET,
+
         // Anonymous device id sent in remote feature flag requests to keep rollout bucketing stable
         REMOTE_FEATURE_FLAGS_DEVICE_ID
     }
@@ -413,6 +417,10 @@ object AppPrefs {
         get() = getLong(UndeletablePrefKey.DEBUG_INSTALL_REFERRER_CLICK_TIMESTAMP)
         set(value) = setLong(UndeletablePrefKey.DEBUG_INSTALL_REFERRER_CLICK_TIMESTAMP, value)
 
+    var suggestedStoreLoginUrl: String
+        get() = getString(UndeletablePrefKey.SUGGESTED_STORE_LOGIN_URL, "")
+        set(value) = setString(UndeletablePrefKey.SUGGESTED_STORE_LOGIN_URL, value)
+
     var isUserAgeEligibleForAppUse: Boolean
         get() = getBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, default = true)
         set(value) = setBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, value = value)
@@ -447,6 +455,14 @@ object AppPrefs {
             ?.let { getInt(it) }
         set(value) {
             value?.let { setInt(UndeletablePrefKey.QR_LOGIN_ROLLOUT_BUCKET, it) }
+        }
+
+    var storeSuggestionRolloutBucket: Int?
+        get() = UndeletablePrefKey.STORE_SUGGESTION_ROLLOUT_BUCKET
+            .takeIf { exists(it) }
+            ?.let { getInt(it) }
+        set(value) {
+            value?.let { setInt(UndeletablePrefKey.STORE_SUGGESTION_ROLLOUT_BUCKET, it) }
         }
 
     private const val FEATURE_FLAG_OVERRIDE_PREFIX = "feature_flag_override"

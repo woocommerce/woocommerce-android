@@ -228,6 +228,7 @@
     <string name="login_store_suggestion_log_in">Log in to this store</string>
     <string name="login_store_suggestion_use_different_store">Use a different store</string>
     <string name="login_store_suggestion_redirected">This address leads to a different site. Only continue if it\'s your store.</string>
+    <string name="login_store_suggestion_unavailable">We couldn\'t confirm this store from the link. Enter your store address to continue.</string>
 
     <!-- QR login prologue -->
     <string name="login_qr_prologue_title">Scan to log in</string>
@@ -2636,6 +2637,7 @@
     <string name="ai_support_chat_history_delete_error">Unable to delete chat history.</string>
     <string name="ai_support_chat_history_default_title">Support conversation</string>
     <string name="ai_support_chat_placeholder">Coming soon</string>
+    <string name="ai_support_chat_ai_disclosure">You’re chatting with AI from Woo Support.</string>
     <string name="ai_support_chat_greeting">Hello! I\'m your Woo Mobile Support Bot. Is there anything I can help you with today?</string>
     <string name="ai_support_chat_input_hint">Type a message…</string>
     <string name="ai_support_chat_send">Send</string>
@@ -4123,6 +4125,11 @@
     <string name="woopos_get_support_title">Get Support</string>
     <string name="woopos_product_limitations_title">Where are my products?</string>
     <string name="woopos_documentation_title">Documentation</string>
+    <string name="woopos_lock_pos">Lock POS</string>
+    <string name="woopos_lock_enter_pin">Enter your PIN to unlock POS</string>
+    <string name="woopos_lock_delete_digit">Delete</string>
+    <string name="woopos_lock_pin_entry">PIN entry</string>
+    <string name="woopos_lock_digits_entered">%1$d of %2$d digits entered</string>
     <string name="woopos_orders_title">Orders</string>
     <string name="woopos_order_title">Order %s</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
