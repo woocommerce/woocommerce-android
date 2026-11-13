@@ -7,6 +7,7 @@ import android.util.AtomicFile
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import java.io.IOException
+import java.io.InputStream
 import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
@@ -23,7 +24,7 @@ class WooPosEncryptedPINStorage internal constructor(
 ) : WooPosPINStorage {
     @Inject constructor(@ApplicationContext context: Context) : this(context, KEY_ALIAS)
 
-    private val directory = File(context.noBackupFilesDir, "woopos-pins")
+    private val directory by lazy { File(context.noBackupFilesDir, "woopos-pins") }
 
     @Synchronized
     override fun read(localSiteId: Int): ByteArray? {
@@ -35,7 +36,7 @@ class WooPosEncryptedPINStorage internal constructor(
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(
             Cipher.DECRYPT_MODE,
-            requireNotNull(keyStore().getKey(keyAlias, null)),
+            requireNotNull(keyStoreProvider().getKey(keyAlias, null)),
             GCMParameterSpec(TAG_BYTES * Byte.SIZE_BITS, bytes.copyOfRange(0, IV_BYTES))
         )
         cipher.updateAAD(localSiteId.toString().toByteArray(Charsets.UTF_8))
@@ -73,7 +74,7 @@ class WooPosEncryptedPINStorage internal constructor(
     override fun clearAll() {
         if (!directory.exists()) return
         // Erase the key first: even interrupted file cleanup must not leave usable PIN records.
-        val keyErased = runCatching { keyStore().deleteEntry(keyAlias) }.isSuccess
+        val keyErased = runCatching { keyStoreProvider().deleteEntry(keyAlias) }.isSuccess
         val filesErased = runCatching { directory.deleteRecursively() }.getOrDefault(false)
         check(keyErased || filesErased)
     }
@@ -90,10 +91,8 @@ class WooPosEncryptedPINStorage internal constructor(
         return AtomicFile(File(directory, "$localSiteId.pins"))
     }
 
-    private fun keyStore(): KeyStore = keyStoreProvider()
-
     private fun getOrCreateKey(): SecretKey {
-        val store = keyStore()
+        val store = keyStoreProvider()
         if (store.containsAlias(keyAlias)) return store.getKey(keyAlias, null) as SecretKey
         return KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, KEYSTORE).apply {
             init(
@@ -106,7 +105,7 @@ class WooPosEncryptedPINStorage internal constructor(
         }.generateKey()
     }
 
-    private fun java.io.InputStream.readBytesBounded(): ByteArray {
+    private fun InputStream.readBytesBounded(): ByteArray {
         val bytes = ByteArray(WooPosPINStorage.MAX_RECORD_BYTES + IV_BYTES + TAG_BYTES + 1)
         var count = 0
         while (count < bytes.size) {

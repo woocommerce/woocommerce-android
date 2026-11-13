@@ -129,7 +129,7 @@ class AccountRepository @Inject constructor(
         }
     }
 
-    private suspend fun cleanup() = withContext(NonCancellable) {
+    private suspend fun cleanup() {
         clearLocalPINs()
 
         // Reset analytics
