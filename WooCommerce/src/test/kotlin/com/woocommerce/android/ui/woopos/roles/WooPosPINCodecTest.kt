@@ -40,9 +40,6 @@ class WooPosPINCodecTest {
             json(JsonObject(pin + ("hash" to JsonNull))),
             json(JsonObject(pin + ("hash" to JsonArray(emptyList())))),
             json(JsonObject(pin + ("salt" to JsonArray(emptyList())))),
-            json(JsonObject(pin + ("iterations" to JsonPrimitive(0)))),
-            json(JsonObject(pin + ("iterations" to JsonPrimitive(-1)))),
-            json(JsonObject(pin + ("iterations" to JsonPrimitive(Int.MAX_VALUE)))),
             json(JsonObject(pin + ("unknown" to JsonPrimitive(true)))),
         )
         malformed.forEach { bytes ->
@@ -63,7 +60,7 @@ class WooPosPINCodecTest {
     fun `given a stored JSON fixture, when decoded and encoded, then its schema and PIN are preserved`() {
         // GIVEN
         val stored = """
-            {"version":1,"pins":[{"role":"admin","iterations":100000,
+            {"version":1,"pins":[{"role":"admin",
             "salt":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
             "hash":[-122,-98,108,-125,80,-59,-66,-80,-84,-61,-103,-5,-86,-61,-74,13,
             34,4,51,-119,107,38,-90,71,115,77,13,-113,21,-122,-31,-6]}]}
@@ -84,7 +81,6 @@ class WooPosPINCodecTest {
     fun `given all presets with largest byte values, when encoding, then JSON fits the storage limit`() {
         // GIVEN
         val hash = WooPosPINHash(
-            WooPosPINHash.ITERATIONS,
             ByteArray(WooPosPINHash.SALT_BYTES) { Byte.MIN_VALUE },
             ByteArray(WooPosPINHash.HASH_BYTES) { Byte.MIN_VALUE },
         )

@@ -19,7 +19,6 @@ class WooPosPINHashTest {
     @Test
     fun `given a known PBKDF2 SHA256 vector, when matching, then the derived hash agrees`() {
         val hash = WooPosPINHash(
-            100_000,
             ByteArray(16) { it.toByte() },
             "869e6c8350c5beb0acc399fbaac3b60d220433896b26a647734d0d8f1586e1fa".chunked(2)
                 .map { it.toInt(16).toByte() }.toByteArray()
@@ -28,14 +27,10 @@ class WooPosPINHashTest {
     }
 
     @Test
-    fun `given unsafe hash parameters, when constructing a hash, then they are rejected before derivation`() {
-        listOf(0, -1, 1, Int.MAX_VALUE).forEach { rounds ->
-            assertThatThrownBy { WooPosPINHash(rounds, ByteArray(16), ByteArray(32)) }
-                .isInstanceOf(IllegalArgumentException::class.java)
-        }
-        assertThatThrownBy { WooPosPINHash(100_000, byteArrayOf(), ByteArray(32)) }
+    fun `given invalid hash sizes, when constructing a hash, then they are rejected before derivation`() {
+        assertThatThrownBy { WooPosPINHash(byteArrayOf(), ByteArray(32)) }
             .isInstanceOf(IllegalArgumentException::class.java)
-        assertThatThrownBy { WooPosPINHash(100_000, ByteArray(16), byteArrayOf()) }
+        assertThatThrownBy { WooPosPINHash(ByteArray(16), byteArrayOf()) }
             .isInstanceOf(IllegalArgumentException::class.java)
     }
 }

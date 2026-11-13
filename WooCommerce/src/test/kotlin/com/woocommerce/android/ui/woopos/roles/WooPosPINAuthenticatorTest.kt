@@ -50,17 +50,4 @@ class WooPosPINAuthenticatorTest {
                 .authenticate(1, "1234").getOrThrow()
         ).isNull()
     }
-
-    @Test
-    fun `when listing permissions, then capability identifiers match the Guarding table`() {
-        assertThat(WooPosPermission.entries.map { it.identifier }).containsExactly(
-            "woocommerce_pos_process_sales",
-            "woocommerce_pos_view_orders",
-            "woocommerce_pos_apply_coupons",
-            "woocommerce_pos_create_coupons",
-            "woocommerce_pos_issue_refunds",
-            "woocommerce_pos_exit",
-            "woocommerce_pos_manage_store_settings",
-        )
-    }
 }

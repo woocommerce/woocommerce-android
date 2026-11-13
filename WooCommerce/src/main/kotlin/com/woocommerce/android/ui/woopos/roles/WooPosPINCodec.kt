@@ -13,7 +13,7 @@ internal class WooPosPINCodec {
         val pins = buildMap {
             record.pins.forEach { pin ->
                 require(!containsKey(pin.role))
-                put(pin.role, WooPosPINHash(pin.iterations, pin.salt, pin.hash))
+                put(pin.role, WooPosPINHash(pin.salt, pin.hash))
             }
         }
         require(WooPosRole.ADMIN in pins)
@@ -24,7 +24,7 @@ internal class WooPosPINCodec {
         require(WooPosRole.ADMIN in pins)
         val record = PINRecord(
             version = VERSION,
-            pins = pins.map { (role, hash) -> StoredPIN(role, hash.iterations, hash.salt, hash.hash) },
+            pins = pins.map { (role, hash) -> StoredPIN(role, hash.salt, hash.hash) },
         )
         return Json.encodeToString(record).encodeToByteArray().also {
             require(it.size <= WooPosPINStorage.MAX_RECORD_BYTES)
@@ -37,7 +37,6 @@ internal class WooPosPINCodec {
     @Serializable
     private data class StoredPIN(
         val role: WooPosRole,
-        val iterations: Int,
         val salt: ByteArray,
         val hash: ByteArray,
     )

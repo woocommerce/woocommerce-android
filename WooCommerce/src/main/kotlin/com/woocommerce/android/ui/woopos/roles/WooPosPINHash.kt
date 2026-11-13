@@ -6,12 +6,11 @@ import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 
 class WooPosPINHash internal constructor(
-    internal val iterations: Int,
     internal val salt: ByteArray,
     internal val hash: ByteArray,
 ) {
     init {
-        require(iterations == ITERATIONS && salt.size == SALT_BYTES && hash.size == HASH_BYTES)
+        require(salt.size == SALT_BYTES && hash.size == HASH_BYTES)
     }
 
     fun matches(pin: String): Boolean = isValidPIN(pin) && MessageDigest.isEqual(hash, derive(pin, salt))
@@ -27,7 +26,7 @@ class WooPosPINHash internal constructor(
         internal fun create(pin: String): WooPosPINHash {
             require(isValidPIN(pin))
             val salt = ByteArray(SALT_BYTES).also { SecureRandom().nextBytes(it) }
-            return WooPosPINHash(ITERATIONS, salt, derive(pin, salt))
+            return WooPosPINHash(salt, derive(pin, salt))
         }
 
         private fun derive(pin: String, salt: ByteArray): ByteArray {
