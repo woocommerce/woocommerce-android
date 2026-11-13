@@ -151,6 +151,18 @@ class ListStoreTest {
     }
 
     @Test
+    fun `given no more pages and a longer saved list, when save list fetched, then later items are dropped`() =
+        runTest {
+            store.saveListFetched(testListDescriptor, listOf(3L, 2L, 1L), canLoadMore = true)
+
+            store.saveListFetched(testListDescriptor, listOf(3L, 2L), canLoadMore = false)
+
+            val listModel = databaseRule.db.listDao().getList(testListDescriptor)!!
+            val items = databaseRule.db.listDao().getListItems(listModel.id)
+            assertThat(items.map { it.remoteItemId }).containsExactly(3L, 2L)
+        }
+
+    @Test
     fun `when save list fetched, then the saved list changes and only the other lists are asked to refresh`() =
         runTest {
             store.saveListFetched(testListDescriptor, listOf(1L), canLoadMore = false)
