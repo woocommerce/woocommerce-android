@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.lock
+package com.woocommerce.android.ui.woopos.roles.lock
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

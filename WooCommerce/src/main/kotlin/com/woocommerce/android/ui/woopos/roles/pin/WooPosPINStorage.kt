@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.roles
+package com.woocommerce.android.ui.woopos.roles.pin
 
 /**
  * Production implementations must encrypt records with a device-bound key and exclude them from backup and transfer.

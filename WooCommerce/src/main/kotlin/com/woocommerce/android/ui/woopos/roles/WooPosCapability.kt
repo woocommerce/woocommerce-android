@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.roles
 
-enum class WooPosPermission {
+enum class WooPosCapability {
     PROCESS_SALES,
     VIEW_ORDERS,
     APPLY_COUPONS,

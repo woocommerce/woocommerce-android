@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.roles
+package com.woocommerce.android.ui.woopos.roles.pin
 
 sealed class WooPosPINError : Exception() {
     data object InvalidFormat : WooPosPINError()

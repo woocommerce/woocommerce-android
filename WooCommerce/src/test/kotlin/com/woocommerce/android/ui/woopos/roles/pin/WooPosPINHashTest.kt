@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.roles
+package com.woocommerce.android.ui.woopos.roles.pin
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.roles
+package com.woocommerce.android.ui.woopos.roles.pin
 
 import java.security.MessageDigest
 import java.security.SecureRandom

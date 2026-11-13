@@ -1,5 +1,7 @@
-package com.woocommerce.android.ui.woopos.roles
+package com.woocommerce.android.ui.woopos.roles.pin
 
+import com.woocommerce.android.ui.woopos.roles.WooPosCapability
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,7 +26,7 @@ class WooPosLocalPINStoreTest {
     fun `given no Admin PIN, when reading credentials, then protection is off`() = runTest {
         assertThat(store.credentials(1).getOrThrow()).isEmpty()
         assertThat(authenticator.authenticate(1, "1234").getOrThrow()).isNull()
-        WooPosRole.entries.filter { it != WooPosRole.ADMIN }.forEach { role ->
+        WooPosLocalRole.entries.filter { it != WooPosLocalRole.ADMIN }.forEach { role ->
             assertThat(store.setPIN(1, role, "5678").exceptionOrNull())
                 .isEqualTo(WooPosPINError.AdminRequired)
         }
@@ -34,17 +36,17 @@ class WooPosLocalPINStoreTest {
     @Test
     fun `given Admin and Cashier PINs, when authenticating, then each has its permission set`() = runTest {
         // GIVEN
-        store.setPIN(1, WooPosRole.ADMIN, "1234").getOrThrow()
-        store.setPIN(1, WooPosRole.CASHIER, "5678").getOrThrow()
+        store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+        store.setPIN(1, WooPosLocalRole.CASHIER, "5678").getOrThrow()
 
         // THEN
-        assertThat(authenticator.authenticate(1, "1234").getOrThrow()?.permissions)
-            .containsExactlyInAnyOrderElementsOf(WooPosPermission.entries)
-        assertThat(authenticator.authenticate(1, "5678").getOrThrow()?.permissions)
+        assertThat(authenticator.authenticate(1, "1234").getOrThrow()?.capabilities)
+            .containsExactlyInAnyOrderElementsOf(WooPosCapability.entries)
+        assertThat(authenticator.authenticate(1, "5678").getOrThrow()?.capabilities)
             .containsExactlyInAnyOrder(
-                WooPosPermission.PROCESS_SALES,
-                WooPosPermission.VIEW_ORDERS,
-                WooPosPermission.APPLY_COUPONS
+                WooPosCapability.PROCESS_SALES,
+                WooPosCapability.VIEW_ORDERS,
+                WooPosCapability.APPLY_COUPONS
             )
         assertThat(authenticator.authenticate(1, "9999").getOrThrow()).isNull()
     }
@@ -52,13 +54,13 @@ class WooPosLocalPINStoreTest {
     @Test
     fun `given same PIN for both roles, when setting either role, then the existing PINs remain`() = runTest {
         // GIVEN
-        store.setPIN(1, WooPosRole.ADMIN, "1234").getOrThrow()
-        store.setPIN(1, WooPosRole.CASHIER, "5678").getOrThrow()
+        store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+        store.setPIN(1, WooPosLocalRole.CASHIER, "5678").getOrThrow()
 
         // THEN
-        assertThat(store.setPIN(1, WooPosRole.CASHIER, "1234").exceptionOrNull())
+        assertThat(store.setPIN(1, WooPosLocalRole.CASHIER, "1234").exceptionOrNull())
             .isEqualTo(WooPosPINError.MatchesOtherRole)
-        assertThat(store.setPIN(1, WooPosRole.ADMIN, "5678").exceptionOrNull())
+        assertThat(store.setPIN(1, WooPosLocalRole.ADMIN, "5678").exceptionOrNull())
             .isEqualTo(WooPosPINError.MatchesOtherRole)
         assertThat(authenticator.authenticate(1, "1234").getOrThrow()).isNotNull()
         assertThat(authenticator.authenticate(1, "5678").getOrThrow()).isNotNull()
@@ -67,8 +69,8 @@ class WooPosLocalPINStoreTest {
     @Test
     fun `given a configured store, when switching stores and recreating repository, then PINs stay separate`() = runTest {
         // GIVEN
-        store.setPIN(1, WooPosRole.ADMIN, "1234").getOrThrow()
-        store.setPIN(2, WooPosRole.ADMIN, "5678").getOrThrow()
+        store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+        store.setPIN(2, WooPosLocalRole.ADMIN, "5678").getOrThrow()
         val recreated = WooPosPINAuthenticator(
             WooPosLocalPINStore(storage, coroutineRule.testDispatchers),
             coroutineRule.testDispatchers
@@ -83,8 +85,8 @@ class WooPosLocalPINStoreTest {
     @Test
     fun `given a non-Admin PIN, when it is removed, then only Admin remains`() = runTest {
         // GIVEN
-        store.setPIN(1, WooPosRole.ADMIN, "1234").getOrThrow()
-        WooPosRole.entries.filter { it != WooPosRole.ADMIN }.forEach { role ->
+        store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+        WooPosLocalRole.entries.filter { it != WooPosLocalRole.ADMIN }.forEach { role ->
             store.setPIN(1, role, "5678").getOrThrow()
 
             // WHEN
@@ -100,12 +102,12 @@ class WooPosLocalPINStoreTest {
     @Test
     fun `given both PINs, when Admin PIN is removed, then both PINs are removed only from that store`() = runTest {
         // GIVEN
-        store.setPIN(1, WooPosRole.ADMIN, "1234").getOrThrow()
-        store.setPIN(1, WooPosRole.CASHIER, "5678").getOrThrow()
-        store.setPIN(2, WooPosRole.ADMIN, "0000").getOrThrow()
+        store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+        store.setPIN(1, WooPosLocalRole.CASHIER, "5678").getOrThrow()
+        store.setPIN(2, WooPosLocalRole.ADMIN, "0000").getOrThrow()
 
         // WHEN
-        store.removePIN(1, WooPosRole.ADMIN).getOrThrow()
+        store.removePIN(1, WooPosLocalRole.ADMIN).getOrThrow()
 
         // THEN
         assertThat(store.credentials(1).getOrThrow()).isEmpty()
@@ -115,8 +117,8 @@ class WooPosLocalPINStoreTest {
     @Test
     fun `given multiple stores, when clearing for logout, then all local credentials are removed`() = runTest {
         // GIVEN
-        store.setPIN(1, WooPosRole.ADMIN, "1234").getOrThrow()
-        store.setPIN(2, WooPosRole.ADMIN, "5678").getOrThrow()
+        store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+        store.setPIN(2, WooPosLocalRole.ADMIN, "5678").getOrThrow()
 
         // WHEN
         store.clearAll().getOrThrow()
@@ -129,7 +131,7 @@ class WooPosLocalPINStoreTest {
     @Test
     fun `given invalid PIN formats, when setting PINs, then each is rejected without storage writes`() = runTest {
         listOf("", "123", "12345", "12a4", "１２３４", "١٢٣٤", " 123", "123\n").forEach { pin ->
-            assertThat(store.setPIN(1, WooPosRole.ADMIN, pin).exceptionOrNull())
+            assertThat(store.setPIN(1, WooPosLocalRole.ADMIN, pin).exceptionOrNull())
                 .isEqualTo(WooPosPINError.InvalidFormat)
         }
         assertThat(storage.entries).isEmpty()
@@ -143,7 +145,7 @@ class WooPosLocalPINStoreTest {
 
         // WHEN
         listOf(0, -1).forEach { siteId ->
-            WooPosRole.entries.forEach { role ->
+            WooPosLocalRole.entries.forEach { role ->
                 assertThat(store.setPIN(siteId, role, "1234").exceptionOrNull())
                     .isEqualTo(WooPosPINError.StorageFailure)
                 assertThat(store.removePIN(siteId, role).exceptionOrNull())
@@ -164,7 +166,7 @@ class WooPosLocalPINStoreTest {
         // THEN
         assertThat(store.credentials(1).exceptionOrNull()).isEqualTo(WooPosPINError.StorageFailure)
         assertThat(authenticator.authenticate(1, "1234").exceptionOrNull()).isEqualTo(WooPosPINError.StorageFailure)
-        assertThat(store.setPIN(1, WooPosRole.ADMIN, "1234").exceptionOrNull())
+        assertThat(store.setPIN(1, WooPosLocalRole.ADMIN, "1234").exceptionOrNull())
             .isEqualTo(WooPosPINError.StorageFailure)
         assertThat(storage.entries[1]).containsExactly(1, 2, 3)
     }
@@ -201,7 +203,7 @@ class WooPosLocalPINStoreTest {
         storage.entries[1] = byteArrayOf(1, 2, 3)
 
         // WHEN
-        store.removePIN(1, WooPosRole.ADMIN).getOrThrow()
+        store.removePIN(1, WooPosLocalRole.ADMIN).getOrThrow()
 
         // THEN
         assertThat(storage.entries).isEmpty()

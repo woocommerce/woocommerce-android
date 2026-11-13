@@ -1,5 +1,6 @@
-package com.woocommerce.android.ui.woopos.roles
+package com.woocommerce.android.ui.woopos.roles.pin
 
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -14,7 +15,7 @@ import org.junit.Test
 
 class WooPosPINCodecTest {
     private val codec = WooPosPINCodec()
-    private val valid = codec.encode(mapOf(WooPosRole.ADMIN to WooPosPINHash.create("1234")))
+    private val valid = codec.encode(mapOf(WooPosLocalRole.ADMIN to WooPosPINHash.create("1234")))
     private val record = Json.parseToJsonElement(valid.decodeToString()).jsonObject
     private val pin = record.getValue("pins").jsonArray.single().jsonObject
 
@@ -50,8 +51,8 @@ class WooPosPINCodecTest {
     @Test
     fun `given valid JSON records, when decoded, then their hashes still verify`() {
         val decoded = codec.decode(valid)
-        assertThat(decoded.getValue(WooPosRole.ADMIN).matches("1234")).isTrue()
-        assertThat(decoded.getValue(WooPosRole.ADMIN).matches("5678")).isFalse()
+        assertThat(decoded.getValue(WooPosLocalRole.ADMIN).matches("1234")).isTrue()
+        assertThat(decoded.getValue(WooPosLocalRole.ADMIN).matches("5678")).isFalse()
         assertThat(record.getValue("pins").jsonArray.single().jsonObject.getValue("role"))
             .isEqualTo(JsonPrimitive("admin"))
     }
@@ -71,8 +72,8 @@ class WooPosPINCodecTest {
         val encoded = codec.encode(decoded)
 
         // THEN
-        assertThat(decoded.keys).containsExactly(WooPosRole.ADMIN)
-        assertThat(decoded.getValue(WooPosRole.ADMIN).matches("1234")).isTrue()
+        assertThat(decoded.keys).containsExactly(WooPosLocalRole.ADMIN)
+        assertThat(decoded.getValue(WooPosLocalRole.ADMIN).matches("1234")).isTrue()
         assertThat(Json.parseToJsonElement(encoded.decodeToString()))
             .isEqualTo(Json.parseToJsonElement(stored))
     }
@@ -84,14 +85,14 @@ class WooPosPINCodecTest {
             ByteArray(WooPosPINHash.SALT_BYTES) { Byte.MIN_VALUE },
             ByteArray(WooPosPINHash.HASH_BYTES) { Byte.MIN_VALUE },
         )
-        val pins = WooPosRole.entries.associateWith { hash }
+        val pins = WooPosLocalRole.entries.associateWith { hash }
 
         // WHEN
         val encoded = codec.encode(pins)
 
         // THEN
         assertThat(encoded.size).isLessThanOrEqualTo(WooPosPINStorage.MAX_RECORD_BYTES)
-        assertThat(codec.decode(encoded).keys).containsExactlyElementsOf(WooPosRole.entries)
+        assertThat(codec.decode(encoded).keys).containsExactlyElementsOf(WooPosLocalRole.entries)
     }
 
     @Test
@@ -100,7 +101,7 @@ class WooPosPINCodecTest {
         val atLimit = valid + ByteArray(WooPosPINStorage.MAX_RECORD_BYTES - valid.size) { ' '.code.toByte() }
 
         // THEN
-        assertThat(codec.decode(atLimit).getValue(WooPosRole.ADMIN).matches("1234")).isTrue()
+        assertThat(codec.decode(atLimit).getValue(WooPosLocalRole.ADMIN).matches("1234")).isTrue()
         assertThatThrownBy { codec.decode(atLimit + byteArrayOf(' '.code.toByte())) }
             .isInstanceOf(IllegalArgumentException::class.java)
     }
@@ -108,7 +109,7 @@ class WooPosPINCodecTest {
     @Test
     fun `given no Admin record, when encoding, then the record is rejected`() {
         assertThatThrownBy { codec.encode(emptyMap()) }.isInstanceOf(IllegalArgumentException::class.java)
-        assertThatThrownBy { codec.encode(mapOf(WooPosRole.CASHIER to WooPosPINHash.create("5678"))) }
+        assertThatThrownBy { codec.encode(mapOf(WooPosLocalRole.CASHIER to WooPosPINHash.create("5678"))) }
             .isInstanceOf(IllegalArgumentException::class.java)
     }
 

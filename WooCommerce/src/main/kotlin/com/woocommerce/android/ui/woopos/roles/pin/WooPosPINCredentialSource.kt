@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.roles
+package com.woocommerce.android.ui.woopos.roles.pin
 
 interface WooPosPINCredentialSource {
     // Use the database's local site ID, including for stores without a WordPress.com site ID.

@@ -11,8 +11,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
-import com.woocommerce.android.ui.woopos.lock.WooPosLockScreenDialog
-import com.woocommerce.android.ui.woopos.lock.WooPosLockScreenViewModel
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenDialog
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenViewModel
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosRootHost
 import com.woocommerce.android.ui.woopos.root.navigation.handleNavigationEvent
 

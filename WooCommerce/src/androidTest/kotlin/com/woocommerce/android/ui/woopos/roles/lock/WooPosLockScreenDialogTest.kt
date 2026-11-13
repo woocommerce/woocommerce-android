@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.lock
+package com.woocommerce.android.ui.woopos.roles.lock
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api

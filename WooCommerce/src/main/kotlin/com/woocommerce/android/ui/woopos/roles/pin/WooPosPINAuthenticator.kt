@@ -1,5 +1,6 @@
-package com.woocommerce.android.ui.woopos.roles
+package com.woocommerce.android.ui.woopos.roles.pin
 
+import com.woocommerce.android.ui.woopos.roles.WooPosStaff
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -8,13 +9,13 @@ class WooPosPINAuthenticator @Inject constructor(
     private val source: WooPosPINCredentialSource,
     private val dispatchers: CoroutineDispatchers,
 ) {
-    // Check credentials() separately for protection status; null here means no unique matching operator.
-    suspend fun authenticate(localSiteId: Int, pin: String): Result<WooPosOperator?> =
+    // Check credentials() separately for protection status; null here means no unique matching staff.
+    suspend fun authenticate(localSiteId: Int, pin: String): Result<WooPosStaff?> =
         withContext(dispatchers.computation) {
             if (!WooPosPINHash.isValidPIN(pin)) return@withContext Result.success(null)
             source.credentials(localSiteId).mapCatching { credentials ->
                 val matches = credentials.filter { it.pinHash.matches(pin) }
-                matches.singleOrNull()?.operator
+                matches.singleOrNull()?.staff
             }
         }
 }

@@ -1,5 +1,7 @@
-package com.woocommerce.android.ui.woopos.roles
+package com.woocommerce.android.ui.woopos.roles.pin
 
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
+import com.woocommerce.android.ui.woopos.roles.WooPosStaff
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CancellationException
@@ -18,13 +20,13 @@ class WooPosLocalPINStore @Inject constructor(
     private val codec = WooPosPINCodec()
 
     override suspend fun credentials(localSiteId: Int): Result<List<WooPosPINCredential>> = operation {
-        load(localSiteId).map { (role, hash) -> WooPosPINCredential(WooPosOperator(role.permissions), hash) }
+        load(localSiteId).map { (role, hash) -> WooPosPINCredential(WooPosStaff(role.capabilities), hash) }
     }
 
-    suspend fun setPIN(localSiteId: Int, role: WooPosRole, pin: String): Result<Unit> = operation {
+    suspend fun setPIN(localSiteId: Int, role: WooPosLocalRole, pin: String): Result<Unit> = operation {
         if (!WooPosPINHash.isValidPIN(pin)) throw WooPosPINError.InvalidFormat
         val pins = load(localSiteId).toMutableMap()
-        if (role != WooPosRole.ADMIN && WooPosRole.ADMIN !in pins) throw WooPosPINError.AdminRequired
+        if (role != WooPosLocalRole.ADMIN && WooPosLocalRole.ADMIN !in pins) throw WooPosPINError.AdminRequired
         if (pins.any { (storedRole, hash) -> storedRole != role && hash.matches(pin) }) {
             throw WooPosPINError.MatchesOtherRole
         }
@@ -32,9 +34,9 @@ class WooPosLocalPINStore @Inject constructor(
         storage.write(localSiteId, codec.encode(pins))
     }
 
-    suspend fun removePIN(localSiteId: Int, role: WooPosRole): Result<Unit> = operation {
+    suspend fun removePIN(localSiteId: Int, role: WooPosLocalRole): Result<Unit> = operation {
         require(localSiteId > 0)
-        if (role == WooPosRole.ADMIN) {
+        if (role == WooPosLocalRole.ADMIN) {
             storage.write(localSiteId, null)
         } else {
             val pins = load(localSiteId) - role
@@ -44,7 +46,7 @@ class WooPosLocalPINStore @Inject constructor(
 
     suspend fun clearAll(): Result<Unit> = operation { storage.clearAll() }
 
-    private fun load(localSiteId: Int): Map<WooPosRole, WooPosPINHash> {
+    private fun load(localSiteId: Int): Map<WooPosLocalRole, WooPosPINHash> {
         require(localSiteId > 0)
         return storage.read(localSiteId)?.let(codec::decode).orEmpty()
     }
