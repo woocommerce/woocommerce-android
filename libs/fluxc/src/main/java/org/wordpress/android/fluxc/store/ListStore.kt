@@ -240,8 +240,9 @@ class ListStore @Inject internal constructor(
         val listItems = remoteItemIds.map { remoteItemId ->
             ListItemModel(listModel.id, remoteItemId)
         }
-        listDao.insertItems(listItems)
-        emitChange(OnListRequiresRefresh(listDescriptor.typeIdentifier))
+        listDao.replaceFirstPage(listModel.id, listItems)
+        emitChange(OnListChanged(listOf(listDescriptor), CauseOfListChange.FIRST_PAGE_FETCHED, error = null))
+        emitChange(OnListRequiresRefresh(listDescriptor.typeIdentifier, upToDateList = listDescriptor))
     }
 
     /**
@@ -350,8 +351,12 @@ class ListStore @Inject internal constructor(
 
     /**
      * The event to be emitted when a list needs to be refresh for a specific [ListDescriptorTypeIdentifier].
+     * [upToDateList] is the one list of that type that already has its first page and must not fetch it again.
      */
-    class OnListRequiresRefresh(val type: ListDescriptorTypeIdentifier) : OnChanged<ListError>()
+    class OnListRequiresRefresh(
+        val type: ListDescriptorTypeIdentifier,
+        val upToDateList: ListDescriptor? = null
+    ) : OnChanged<ListError>()
 
     /**
      * The event to be emitted when a list's data is invalidated for a specific [ListDescriptorTypeIdentifier].
