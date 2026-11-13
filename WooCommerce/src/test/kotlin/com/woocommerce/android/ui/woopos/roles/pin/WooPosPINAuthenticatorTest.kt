@@ -9,11 +9,33 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verifyNoInteractions
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosPINAuthenticatorTest {
     @get:Rule
     val coroutineRule = WooPosCoroutineTestRule()
+
+    @Test
+    fun `given invalid PIN formats, when authenticating, then no hashes are compared`() = runTest {
+        // GIVEN
+        val hash: WooPosPINHash = mock()
+        val source = object : WooPosPINCredentialSource {
+            override suspend fun credentials(localSiteId: Int) = Result.success(
+                listOf(WooPosPINCredential(WooPosStaff(setOf(WooPosCapability.VIEW_ORDERS)), hash))
+            )
+        }
+        val authenticator = WooPosPINAuthenticator(source, coroutineRule.testDispatchers)
+
+        // WHEN
+        listOf("", "123", "12345", "12a4", "１２３４", "١٢٣٤", " 123", "123\n").forEach { pin ->
+            assertThat(authenticator.authenticate(1, pin).getOrThrow()).isNull()
+        }
+
+        // THEN
+        verifyNoInteractions(hash)
+    }
 
     @Test
     fun `given a replacement source, when authenticating, then supplied capabilities are used`() = runTest {

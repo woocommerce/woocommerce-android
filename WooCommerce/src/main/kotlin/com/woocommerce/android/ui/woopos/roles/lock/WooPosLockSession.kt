@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import dagger.hilt.android.scopes.ActivityRetainedScoped
@@ -28,7 +29,7 @@ class WooPosLockSession @Inject constructor(
         _state.update { current ->
             when {
                 !current.isLocked -> current
-                current.enteredDigits == WooPosLockScreenState.PIN_LENGTH - 1 -> WooPosLockScreenState()
+                current.enteredDigits == WooPosPINHash.PIN_LENGTH - 1 -> WooPosLockScreenState()
                 else -> current.copy(enteredDigits = current.enteredDigits + 1)
             }
         }
@@ -47,8 +48,4 @@ class WooPosLockSession @Inject constructor(
 data class WooPosLockScreenState(
     val isLocked: Boolean = false,
     val enteredDigits: Int = 0,
-) {
-    companion object {
-        const val PIN_LENGTH = 4
-    }
-}
+)

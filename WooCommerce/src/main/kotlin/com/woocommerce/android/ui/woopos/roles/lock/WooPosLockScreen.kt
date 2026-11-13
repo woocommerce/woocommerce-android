@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 
 @Composable
 fun WooPosLockScreenDialog(
@@ -125,7 +126,7 @@ private fun PinDots(enteredDigits: Int) {
     val description = stringResource(
         R.string.woopos_lock_digits_entered,
         enteredDigits,
-        WooPosLockScreenState.PIN_LENGTH,
+        WooPosPINHash.PIN_LENGTH,
     )
     Row(
         horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
@@ -134,7 +135,7 @@ private fun PinDots(enteredDigits: Int) {
             stateDescription = description
         },
     ) {
-        repeat(WooPosLockScreenState.PIN_LENGTH) { index ->
+        repeat(WooPosPINHash.PIN_LENGTH) { index ->
             val filled = index < enteredDigits
             Box(
                 Modifier

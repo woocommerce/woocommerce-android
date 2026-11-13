@@ -12,7 +12,6 @@ class WooPosPINHashTest {
         assertThat(first.salt).isNotEqualTo(second.salt)
         assertThat(first.hash).isNotEqualTo(second.hash)
         assertThat(first.matches("0123")).isTrue()
-        assertThat(first.matches("123")).isFalse()
         assertThat(first.matches("9999")).isFalse()
     }
 

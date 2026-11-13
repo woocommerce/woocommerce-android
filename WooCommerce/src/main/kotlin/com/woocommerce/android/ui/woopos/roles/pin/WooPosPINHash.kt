@@ -13,10 +13,10 @@ class WooPosPINHash internal constructor(
         require(salt.size == SALT_BYTES && hash.size == HASH_BYTES)
     }
 
-    fun matches(pin: String): Boolean = isValidPIN(pin) && MessageDigest.isEqual(hash, derive(pin, salt))
+    internal fun matches(pin: String): Boolean = MessageDigest.isEqual(hash, derive(pin, salt))
 
     companion object {
-        private const val PIN_LENGTH = 4
+        const val PIN_LENGTH = 4
         internal const val ITERATIONS = 100_000
         internal const val SALT_BYTES = 16
         internal const val HASH_BYTES = 32
@@ -24,7 +24,6 @@ class WooPosPINHash internal constructor(
         fun isValidPIN(pin: String): Boolean = pin.length == PIN_LENGTH && pin.all { it in '0'..'9' }
 
         internal fun create(pin: String): WooPosPINHash {
-            require(isValidPIN(pin))
             val salt = ByteArray(SALT_BYTES).also { SecureRandom().nextBytes(it) }
             return WooPosPINHash(salt, derive(pin, salt))
         }

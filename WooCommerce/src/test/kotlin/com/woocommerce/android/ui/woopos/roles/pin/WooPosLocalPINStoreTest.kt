@@ -130,11 +130,14 @@ class WooPosLocalPINStoreTest {
 
     @Test
     fun `given invalid PIN formats, when setting PINs, then each is rejected without storage writes`() = runTest {
+        val unreadable = byteArrayOf(1, 2, 3)
+        storage.entries[1] = unreadable
         listOf("", "123", "12345", "12a4", "１２３４", "١٢٣٤", " 123", "123\n").forEach { pin ->
             assertThat(store.setPIN(1, WooPosLocalRole.ADMIN, pin).exceptionOrNull())
                 .isEqualTo(WooPosPINError.InvalidFormat)
         }
-        assertThat(storage.entries).isEmpty()
+        assertThat(storage.writtenSiteIds).isEmpty()
+        assertThat(storage.entries.getValue(1)).containsExactly(*unreadable)
     }
 
     @Test
