@@ -50,12 +50,14 @@ class GetCustomerWithStatsTest : BaseUnitTest() {
         billingCountry = "Customer Country",
         billingPostcode = "10000",
         billingState = "Customer State",
+        billingPhone = "2125550100",
 
         shippingAddress1 = "default address",
         shippingCity = "Customer City",
         shippingCountry = "Customer Country",
         shippingPostcode = "10000",
         shippingState = "Customer State",
+        shippingPhone = "2125550199",
     )
 
     private val defaultCustomerFromAnalytics = WCCustomerFromAnalytics(
@@ -114,6 +116,27 @@ class GetCustomerWithStatsTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given customer and analytics, when invoke, then shipping address phone is the customer shipping phone`() = runTest {
+        // GIVEN
+        val remoteCustomerId = 1L
+        val analyticsCustomerId = 2L
+        whenever(customerRepository.getCustomerByRemoteId(remoteCustomerId)).thenReturn(defaultCustomer)
+        whenever(customerRepository.getCustomerByAnalyticsCustomerId(analyticsCustomerId))
+            .thenReturn(defaultCustomerFromAnalytics)
+        whenever(getLocations.invoke(any(), any())).thenReturn(Pair(defaultCountryLocation, defaultStateLocation))
+        whenever(dateUtils.getShortMonthDayAndYearStringFromFullIsoDate(anyString())).thenReturn("01-01-2024")
+
+        // WHEN
+        val result = sut.invoke(remoteCustomerId, analyticsCustomerId)
+
+        // THEN
+        val customerWithAnalytics = result.getOrNull()
+        assertNotNull(customerWithAnalytics)
+        assertThat(customerWithAnalytics.shippingAddress.phone).isEqualTo(defaultCustomer.shippingPhone)
+        assertThat(customerWithAnalytics.billingAddress.phone).isEqualTo(defaultCustomer.billingPhone)
+    }
+
+    @Test
     fun `when invoke without customer and with analytics then use analytics info`() = runTest {
         val remoteCustomerId = 1L
         val analyticsCustomerId = 2L
@@ -163,6 +186,25 @@ class GetCustomerWithStatsTest : BaseUnitTest() {
         assertThat(customerWithAnalytics.ordersCount).isNull()
         assertThat(customerWithAnalytics.totalSpend).isNull()
         assertThat(customerWithAnalytics.averageOrderValue).isNull()
+    }
+
+    @Test
+    fun `given customer without analytics, when invoke, then shipping address phone is the customer shipping phone`() = runTest {
+        // GIVEN
+        val remoteCustomerId = 1L
+        val analyticsCustomerId = 2L
+        whenever(customerRepository.getCustomerByRemoteId(remoteCustomerId)).thenReturn(defaultCustomer)
+        whenever(customerRepository.getCustomerByAnalyticsCustomerId(analyticsCustomerId)).thenReturn(null)
+        whenever(getLocations.invoke(any(), any())).thenReturn(Pair(defaultCountryLocation, defaultStateLocation))
+
+        // WHEN
+        val result = sut.invoke(remoteCustomerId, analyticsCustomerId)
+
+        // THEN
+        val customerWithAnalytics = result.getOrNull()
+        assertNotNull(customerWithAnalytics)
+        assertThat(customerWithAnalytics.shippingAddress.phone).isEqualTo(defaultCustomer.shippingPhone)
+        assertThat(customerWithAnalytics.billingAddress.phone).isEqualTo(defaultCustomer.billingPhone)
     }
 
     @Test

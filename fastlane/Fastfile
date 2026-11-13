@@ -68,7 +68,6 @@ GLOTPRESS_APP_STRINGS_PROJECT_URL = 'https://translate.wordpress.com/projects/wo
 GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL = "#{GLOTPRESS_APP_STRINGS_PROJECT_URL}/release-notes/".freeze
 
 APP_PACKAGE_NAME = 'com.woocommerce.android'
-GOOGLE_FIREBASE_SECRETS_PATH = File.join(PROJECT_ROOT_FOLDER, '.configure-files', 'firebase.secrets.json')
 
 # Instantiate versioning classes
 VERSION_CALCULATOR = Fastlane::Wpmreleasetoolkit::Versioning::MarketingVersionCalculator.new
@@ -96,7 +95,9 @@ REPOSITORY_NAME = 'woocommerce-android'
 GH_ORG_NAME = 'woocommerce'
 GITHUB_REPO = "#{GH_ORG_NAME}/#{REPOSITORY_NAME}".freeze
 
-UPLOAD_TO_PLAY_STORE_JSON_KEY = File.join(Dir.home, '.configure', 'woocommerce-android', 'secrets', 'google-upload-credentials.json')
+# Mirrors `a8c-secrets which`, without spawning the command
+A8C_SECRETS_FOLDER = File.join(Dir.home, '.a8c-secrets', File.read(File.join(PROJECT_ROOT_FOLDER, '.a8c-secrets', 'repo-id')).strip)
+UPLOAD_TO_PLAY_STORE_JSON_KEY = File.join(A8C_SECRETS_FOLDER, 'google-upload-credentials.json')
 
 SUPPORTED_LOCALES = [
   { glotpress: 'ar', android: 'ar', google_play: 'ar', promo_config: {} },
@@ -516,8 +517,6 @@ platform :android do
     UI.important("Downloading latest translations for release: #{release_version_current}")
     UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
-    configure_apply(force: is_ci)
-
     # Don't check translation coverage in CI
     check_translation_progress_all unless is_ci
     download_translations
@@ -550,8 +549,6 @@ platform :android do
 
     UI.important("Finalizing release: #{release_version_current}")
     UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
-
-    configure_apply(force: is_ci)
 
     # Bump the release version and build code
     UI.message 'Bumping final release version and build code...'
@@ -1549,13 +1546,6 @@ platform :android do
 
   def beta_version?(version)
     version.include? '-rc-'
-  end
-
-  def firebase_secret(name:)
-    UI.user_error!('Unable to locale Firebase Secrets File – did you run `configure apply`?') unless File.file? GOOGLE_FIREBASE_SECRETS_PATH
-    key_file_secrets = JSON.parse(File.read(GOOGLE_FIREBASE_SECRETS_PATH))
-    UI.user_error!("Unable to find key `#{name}` in #{GOOGLE_FIREBASE_SECRETS_PATH}") if key_file_secrets[name].nil?
-    key_file_secrets[name]
   end
 
   def annotate_sentry_mapping_uuid(app:, aab_file:)

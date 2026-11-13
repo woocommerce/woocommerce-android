@@ -14,6 +14,7 @@ import com.woocommerce.android.cardreader.payments.CreatePaymentIntentResult
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RetrieveAndCollectResult
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.CancelPayment
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.CollectPaymentRequest
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectAck
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectRequest
@@ -181,7 +182,7 @@ class CardReaderRemoteSession internal constructor(
         }
     }
 
-    private suspend fun acceptAndRunProtocolLoop(server: CardReaderRemoteTlsServer) = coroutineScope {
+    private suspend fun acceptAndRunProtocolLoop(server: CardReaderRemoteTlsServer) {
         logWrapper.d(LOG_TAG, "Waiting for TLS accept...")
         val accepted = server.acceptOne()
         logWrapper.d(LOG_TAG, "TLS accepted, starting protocol loop")
@@ -191,14 +192,23 @@ class CardReaderRemoteSession internal constructor(
         remoteTokenProvider = tokenProvider
         cardReaderManager.connectionTokenProvider.useRemote(tokenProvider)
 
+        runProtocolLoop(accepted, tokenProvider)
+    }
+
+    internal suspend fun runProtocolLoop(
+        accepted: CardReaderRemoteConnection,
+        tokenProvider: RemoteTokenChannelProvider,
+    ) = coroutineScope {
         val pingJob = launchHeartbeat(accepted, logWrapper)
+        val collectQueue = CardReaderRemoteCollectQueue(this, logWrapper)
         try {
             accepted.receive().collect { message ->
                 logWrapper.d(LOG_TAG, "Received message: ${message::class.java.simpleName}")
-                handleMessage(message, accepted, tokenProvider)
+                handleMessage(message, accepted, tokenProvider, collectQueue)
             }
         } finally {
             pingJob.cancel()
+            collectQueue.cancelAll()
         }
     }
 
@@ -206,10 +216,14 @@ class CardReaderRemoteSession internal constructor(
         message: CardReaderRemoteMessage,
         accepted: CardReaderRemoteConnection,
         tokenProvider: RemoteTokenChannelProvider,
+        collectQueue: CardReaderRemoteCollectQueue,
     ) {
         when (message) {
             is ConnectRequest -> handleConnectRequest(message, accepted, tokenProvider)
-            is CollectPaymentRequest -> handleCollectPaymentRequest(message, accepted)
+            is CollectPaymentRequest -> collectQueue.enqueue(message.requestId) {
+                handleCollectPaymentRequest(message, accepted)
+            }
+            is CancelPayment -> collectQueue.cancel(message.requestId)
             is Ping,
             is ConnectAck,
             is PaymentIntentResult,
@@ -235,7 +249,13 @@ class CardReaderRemoteSession internal constructor(
             }.onSuccess { reader ->
                 readerWasConnected = true
                 logWrapper.d(LOG_TAG, "Sending ConnectAck...")
-                accepted.send(ConnectAck(requestId = request.requestId, readerSerial = reader.id))
+                accepted.send(
+                    ConnectAck(
+                        requestId = request.requestId,
+                        readerSerial = reader.id,
+                        supportsCancelPayment = true,
+                    )
+                )
                 logWrapper.d(LOG_TAG, "ConnectAck sent, transitioning to WaitingForPayment")
                 _state.value = CardReaderRemoteSessionState.WaitingForPayment(tabletName = null)
             }.onFailure { err ->

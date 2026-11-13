@@ -3,6 +3,7 @@ package com.woocommerce.android.model
 import android.os.Parcelable
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListViewModelMapper
+import com.woocommerce.android.util.PhoneUtils
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 
@@ -25,7 +26,10 @@ data class CustomerWithAnalytics(
 ) : Parcelable {
     fun getFullName() = "$firstName $lastName"
 
-    fun getShippingAddress(): String = shippingAddress.getFullAddress()
+    fun getShippingAddress(formatPhone: (String) -> String = PhoneUtils::formatPhone): String {
+        val phone = shippingAddress.phone.takeIf { it.isNotBlank() }?.let(formatPhone)
+        return listOfNotNull(shippingAddress.getFullAddress().ifEmpty { null }, phone).joinToString("\n")
+    }
 
     fun getBillingAddress(): String = billingAddress.getFullAddress()
 }

@@ -38,8 +38,8 @@
     $ cd woocommerce-android
     ```
 
-1. Copy `defaults.properties` to the secrets directory: `cp defaults.properties ~/.configure/woocommerce-android/secrets/secrets.properties`. See the [Configuration Files](docs/project-overview.md#configuration-files) section for a breakdown of the properties.
-1. Generate the developer oauth2 tokens. These values get copied into the `~/.configure/woocommerce-android/secrets.properties` file in the next step. See the [OAuth2 Authentication](docs/project-overview.md#oauth2-authentication) section for details.
+1. Copy `defaults.properties` to the secrets directory: `mkdir -p "$HOME/.a8c-secrets/$(cat .a8c-secrets/repo-id)" && cp defaults.properties "$HOME/.a8c-secrets/$(cat .a8c-secrets/repo-id)/secrets.properties"`. See the [Configuration Files](docs/project-overview.md#configuration-files) section for a breakdown of the properties.
+1. Generate the developer oauth2 tokens. These values get copied into the `secrets.properties` file from the previous step. See the [OAuth2 Authentication](docs/project-overview.md#oauth2-authentication) section for details.
 1. In Android Studio, open the project from the local repository. This will auto-generate `local.properties` with the SDK location.
 1. Optional: Go to Tools → Device Manager and create an emulated device.
 1. Run. (Creates a default virtual device if you skipped the previous step)
@@ -63,6 +63,7 @@ $ ./gradlew :WooCommerce:connectedVanillaDebugAndroidTest # assemble, install an
     - [Configuration Files](docs/project-overview.md#configuration-files)
     - [Using Detekt](docs/project-overview.md#using-detekt)
     - [Google Configuration](docs/project-overview.md#google-configuration)
+    - [Reading Stack Traces in App Logs](docs/project-overview.md#reading-stack-traces-in-app-logs)
 - Development Practices
     - [Coding Style Practices](docs/coding-style.md)
     - [Pull Request Guidelines](docs/pull-request-guidelines.md)

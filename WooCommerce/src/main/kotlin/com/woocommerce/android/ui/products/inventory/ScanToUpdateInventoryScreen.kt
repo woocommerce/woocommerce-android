@@ -10,6 +10,9 @@ import androidx.compose.ui.res.colorResource
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
+import com.woocommerce.android.ui.barcodescanner.DefaultScannerOverlay
+import com.woocommerce.android.ui.barcodescanner.HardwareBarcodeScannerInfoSheet
+import com.woocommerce.android.ui.barcodescanner.HardwareBarcodeScannerTestFailure
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
@@ -28,13 +31,30 @@ fun ScanToUpdateInventoryScreen(
     onViewProductDetailsClicked: () -> Unit,
     onManualQuantityEntered: (String) -> Unit,
     onManageStockClicked: () -> Unit,
+    isHardwareScannerInfoVisible: State<Boolean>,
+    onHardwareScannerInfoClicked: () -> Unit,
+    onHardwareScannerTestScanSucceeded: () -> Unit,
+    onHardwareScannerTestScanFailed: (HardwareBarcodeScannerTestFailure) -> Unit,
+    onHardwareScannerInfoDismissed: () -> Unit,
 ) = LegacyWooThemeWithBackground {
     BarcodeScannerScreen(
         onNewFrame = onNewFrame,
         onBindingException = onBindingException,
         permissionState = permissionState,
         onResult = onCameraPermissionResult,
+        overlayContent = {
+            DefaultScannerOverlay(
+                onHardwareScannerInfoClicked = onHardwareScannerInfoClicked,
+            )
+        },
     )
+    if (isHardwareScannerInfoVisible.value) {
+        HardwareBarcodeScannerInfoSheet(
+            onTestScanSucceeded = onHardwareScannerTestScanSucceeded,
+            onTestScanFailed = onHardwareScannerTestScanFailed,
+            onDismissRequest = onHardwareScannerInfoDismissed,
+        )
+    }
     if (viewState.value is ScanToUpdateInventoryViewModel.ViewState.Loading) {
         ProgressIndicator(backgroundColor = colorResource(id = R.color.color_scrim_background))
     }

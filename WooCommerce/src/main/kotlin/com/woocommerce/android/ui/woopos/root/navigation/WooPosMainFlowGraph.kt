@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.woopos.emailreceipt.emailReceiptScreen
 import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
 import com.woocommerce.android.ui.woopos.home.eligibilityScreen
 import com.woocommerce.android.ui.woopos.home.homeScreen
+import com.woocommerce.android.ui.woopos.home.items.customamount.customAmountScreen
 import com.woocommerce.android.ui.woopos.markorderascomplete.markOrderAsCompleteScreen
 import com.woocommerce.android.ui.woopos.orders.details.refund.refundReasonScreen
 import com.woocommerce.android.ui.woopos.orders.ordersScreen
@@ -32,6 +33,7 @@ fun NavGraphBuilder.mainGraph(
         homeScreen(homeViewModel = homeViewModel)
         cardPaymentScreen(onNavigationEvent = onNavigationEvent)
         cashPaymentScreen(onNavigationEvent = onNavigationEvent)
+        customAmountScreen(onNavigationEvent = onNavigationEvent)
         markOrderAsCompleteScreen(onNavigationEvent = onNavigationEvent)
         scanToPayScreen(onNavigationEvent = onNavigationEvent)
         emailReceiptScreen(onNavigationEvent = onNavigationEvent)

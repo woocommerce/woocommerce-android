@@ -23,8 +23,8 @@ ext {
 
 gradle.ext {
     isCi = System.getenv('CI')?.toBoolean() ?: false
-    decryptedSecretsDir = file("${System.getProperty("user.home")}/.configure/woocommerce-android/secrets")
-    secretsPath = new File(decryptedSecretsDir, "secrets.properties").path
+    a8cSecretsDir = resolveA8cSecretsDir(file("${rootDir}/.a8c-secrets/repo-id"))
+    secretsPath = new File(a8cSecretsDir, "secrets.properties").path
     secretProperties = loadPropertiesWithFallback(
             logger,
             file("${rootDir}/defaults.properties"),
@@ -35,6 +35,11 @@ gradle.ext {
             file("${rootDir}/developer.properties-example"),
             file("${rootDir}/developer.properties")
     )
+}
+
+// Mirrors `a8c-secrets which`, without spawning the command
+static def resolveA8cSecretsDir(File repoIdFile) {
+    new File("${System.getProperty("user.home")}/.a8c-secrets/${repoIdFile.text.trim()}")
 }
 
 static def loadPropertiesWithFallback(Logger logger, File fallbackFile, File primaryFile) {
@@ -102,7 +107,7 @@ buildCache {
     } else if (remoteCacheRequested) {
         // The flag is only true via the developer.properties-example fallback (a fresh
         // clone) — skip the remote build cache instead of failing.
-        logger.warn("\n⚠️ The build requested remote build cache, but secrets are not applied on this machine, so it stays disabled. The build continues without it; this only affects build speed. Run `bundle exec fastlane run configure_apply` to apply secrets and enable it.")
+        logger.warn("\n⚠️ The build requested remote build cache, but secrets are not applied on this machine, so it stays disabled. The build continues without it; this only affects build speed. Run `a8c-secrets decrypt` to apply secrets and enable it.")
     } else {
         logger.warn("\nℹ️ Remote build cache is disabled. If you have stable internet connection, consider enabling it via `developer.properties`.")
     }
@@ -119,7 +124,7 @@ def assertSecretsApplied() {
 }
 
 static def throwSecretsNotApplied() {
-    throw new GradleException("The build requested remote build cache, but secrets file is not found. Please run `bundle exec fastlane run configure_apply` to apply secrets.")
+    throw new GradleException("The build requested remote build cache, but secrets file is not found. Please run `a8c-secrets decrypt` to apply secrets.")
 }
 
 def secretsApplied() {
@@ -201,6 +206,7 @@ dependencyResolutionManagement {
 rootProject.name = 'WCAndroid'
 
 include ':libs:commons', ':libs:cardreader', ':libs:apifaker', ':libs:pos', ':libs:store-design-system'
+include ':libs:receiptprinter'
 include ':libs:ai-assistant:feature', ':libs:ai-assistant:core'
 include ':libs:fluxc', ':libs:fluxc-annotations', ':libs:fluxc-processor', ':libs:fluxc-plugin', ':libs:fluxc-tests'
 include ':libs:login'

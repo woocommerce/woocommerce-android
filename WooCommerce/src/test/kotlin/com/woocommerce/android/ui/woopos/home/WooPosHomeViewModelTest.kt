@@ -8,7 +8,9 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.ExitPosClicked
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
+import com.woocommerce.android.ui.woopos.home.items.customamount.WooPosCustomAmountFormState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitConfirmed
@@ -28,6 +30,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.math.BigDecimal
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
@@ -474,6 +477,57 @@ class WooPosHomeViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.Hidden)
+    }
+
+    @Test
+    fun `when custom amount requested, then navigate to custom amount screen`() =
+        runTest {
+            // GIVEN
+            val events = MutableSharedFlow<ChildToParentEvent>()
+            whenever(childrenToParentEventReceiver.events).thenReturn(events)
+            val viewModel = createViewModel()
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                events.emit(ChildToParentEvent.CustomAmountFormRequested())
+
+                // THEN
+                assertThat(awaitItem()).isEqualTo(
+                    ChildToParentEvent.NavigationEvent.ToCustomAmount(WooPosCustomAmountFormState.Mode.Add)
+                )
+            }
+        }
+
+    @Test
+    fun `when editing custom amount, then navigation carries edit fields`() = runTest {
+        // GIVEN
+        val events = MutableSharedFlow<ChildToParentEvent>()
+        whenever(childrenToParentEventReceiver.events).thenReturn(events)
+        val viewModel = createViewModel()
+        val item = WooPosCartItemViewState.CustomAmount(
+            itemNumber = 42,
+            amount = BigDecimal("12.34"),
+            formattedAmount = "$12.34",
+            name = "Service & support?",
+            isTaxable = true,
+        )
+
+        viewModel.navigationEvent.test {
+            // WHEN
+            events.emit(ChildToParentEvent.CustomAmountFormRequested(editing = item))
+
+            // THEN
+            assertThat(awaitItem()).isEqualTo(
+                ChildToParentEvent.NavigationEvent.ToCustomAmount(
+                    WooPosCustomAmountFormState.Mode.Edit(
+                        itemNumber = 42,
+                        amount = BigDecimal("12.34"),
+                        name = "Service & support?",
+                        isTaxable = true,
+                    )
+                )
+            )
+        }
     }
 
     private fun createViewModel(): WooPosHomeViewModel {

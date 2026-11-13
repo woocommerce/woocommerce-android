@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.model.customer
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -52,6 +53,8 @@ data class WCCustomerModel internal constructor(
     val shippingCountry: String = "",
     val shippingFirstName: String = "",
     val shippingLastName: String = "",
+    @ColumnInfo(defaultValue = "")
+    val shippingPhone: String = "",
     val shippingPostcode: String = "",
     val shippingState: String = "",
     val analyticsCustomerId: Long? = 0
@@ -91,6 +94,7 @@ data class WCCustomerModel internal constructor(
         shippingCountry: String = "",
         shippingFirstName: String = "",
         shippingLastName: String = "",
+        shippingPhone: String = "",
         shippingPostcode: String = "",
         shippingState: String = "",
         analyticsCustomerId: Long? = 0,
@@ -127,6 +131,7 @@ data class WCCustomerModel internal constructor(
         shippingCountry = shippingCountry,
         shippingFirstName = shippingFirstName,
         shippingLastName = shippingLastName,
+        shippingPhone = shippingPhone,
         shippingPostcode = shippingPostcode,
         shippingState = shippingState,
         analyticsCustomerId = analyticsCustomerId,

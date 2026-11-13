@@ -35,7 +35,7 @@ Read more about [OAuth2][oauth] and the [WordPress.com REST endpoint][wp-api].
 
 #### `secrets.properties`
 
-The `secrets.properties` file is used to store sensitive information that should not be checked into version control. This file is located at `~/.configure/woocommerce-android/secrets/secrets.properties`.
+The `secrets.properties` file is used to store sensitive information that should not be checked into version control. This file is located at `~/.a8c-secrets/<repo-id>/secrets.properties`, where `<repo-id>` is the content of `.a8c-secrets/repo-id`.
 
 | Property                   | Description |
 |:---------------------------|:------------|
@@ -57,6 +57,14 @@ Contributors can build and run the app without issue, but Google Sign-In will al
 Google Sign-In requires configuration files which contain client and server information
 that can't be shared publicly. More documentation and guides can be found on the
 [Google Identity Platform website][google-ident].
+
+### Reading Stack Traces in App Logs
+
+Release builds are obfuscated, so stack traces in app logs show renamed methods. To restore them, run the script with the app version and the log file. It needs the Android SDK Command-line Tools.
+
+```bash
+tools/retrace/retrace.sh 26.0 ~/Downloads/woo-log.txt
+```
 
 
 

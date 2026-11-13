@@ -71,6 +71,7 @@ import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
 import java.net.URI
+import java.net.URLDecoder
 import javax.inject.Inject
 
 @HiltViewModel
@@ -100,11 +101,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         private const val SUCCESS_PARAMETER = "success"
         private const val USERNAME_PARAMETER = "user_login"
         private const val PASSWORD_PARAMETER = "password"
+        private const val SITE_URL_PARAMETER = "site_url"
         private const val HAS_RECONCILED_SITE_URL_KEY = "has-reconciled-site-url"
         private const val LOGIN_ENTRY_URL_KEY = "login-entry-url"
         private const val ADMIN_BASE_URL_KEY = "admin-base-url"
         private const val TUTORIAL_AFTER_ALERT_KEY = "tutorial-after-alert"
         private const val BROWSER_LOGIN_ON_FORM_KEY = "browser-login-on-form"
+        private const val APPROVAL_SITE_URL_KEY = "approval-site-url"
     }
 
     private val wasSiteAddressNormalizedToHttps =
@@ -136,6 +139,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         get() = savedStateHandle[HAS_RECONCILED_SITE_URL_KEY] ?: false
         set(value) {
             savedStateHandle[HAS_RECONCILED_SITE_URL_KEY] = value
+        }
+
+    private var approvalSiteUrl: String?
+        get() = savedStateHandle[APPROVAL_SITE_URL_KEY]
+        set(value) {
+            savedStateHandle[APPROVAL_SITE_URL_KEY] = value
         }
 
     private val authError = savedStateHandle.getNullableStateFlow(
@@ -382,10 +391,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     fun onWebAuthorizationUrlLoaded(url: String) {
         if (url.startsWith(REDIRECTION_URL)) {
             launch {
-                val uri = URI.create(url)
-                val params = uri.query!!.split("&")
-                    .map { it.split("=") }
-                    .associate { it[0] to it[1] }
+                val params = url.redirectionQueryParameters()
 
                 val isSuccess = params[SUCCESS_PARAMETER]?.toBoolean() ?: true
                 if (!isSuccess) {
@@ -396,15 +402,57 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     return@launch
                 }
 
-                analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_APPROVED)
-                val username = requireNotNull(params[USERNAME_PARAMETER])
-                val password = requireNotNull(params[PASSWORD_PARAMETER])
+                if (!isApprovedByThisStore(params[SITE_URL_PARAMETER])) {
+                    onAuthorizationSiteMismatch(AnalyticsTracker.VALUE_STEP_AFTER_APPROVAL)
+                    return@launch
+                }
 
+                val username = params[USERNAME_PARAMETER]
+                val password = params[PASSWORD_PARAMETER]
+                if (username.isNullOrEmpty() || password.isNullOrEmpty()) {
+                    fetchedSiteId.value = -1
+                    showErrorSnackbar(R.string.error_generic)
+                    return@launch
+                }
+
+                analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_APPROVED)
                 wpApiSiteRepository.saveApplicationPassword(fetchedSiteId.value, username, password)
                 credentialsLoginFlow.value = UnexpectedResponseFlow.APP_PASSWORD
                 fetchUserInfo()
             }
         }
+    }
+
+    private fun isApprovedByThisStore(redirectSiteUrl: String?): Boolean =
+        ApplicationPasswordSiteMatcher.isWithinSite(siteAddress, redirectSiteUrl) ||
+            ApplicationPasswordSiteMatcher.isWithinSite(approvalSiteUrl, redirectSiteUrl)
+
+    fun onWebAuthorizationForeignHost() {
+        onAuthorizationSiteMismatch(AnalyticsTracker.VALUE_STEP_DURING_APPROVAL)
+    }
+
+    private fun onAuthorizationSiteMismatch(step: String) {
+        fetchedSiteId.value = -1
+        loadingMessage.value = 0
+        analyticsTracker.track(
+            AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_SITE_MISMATCH,
+            properties = mapOf(AnalyticsTracker.KEY_STEP to step)
+        )
+        showErrorSnackbar(R.string.login_site_credentials_web_authorization_site_mismatch)
+    }
+
+    private fun String.redirectionQueryParameters(): Map<String, String> {
+        val query = runCatching { URI(this).rawQuery }.getOrNull() ?: return emptyMap()
+        return query.split("&")
+            .mapNotNull { parameter ->
+                val name = parameter.substringBefore("=", missingDelimiterValue = "")
+                if (name.isEmpty()) return@mapNotNull null
+                runCatching {
+                    URLDecoder.decode(name, Charsets.UTF_8.name()) to
+                        URLDecoder.decode(parameter.substringAfter("="), Charsets.UTF_8.name())
+                }.getOrNull()
+            }
+            .toMap()
     }
 
     fun onWooInstallationAttempted() = launch {
@@ -648,25 +696,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     val errorMessage = detectedErrorMessage
                         ?.toPresentableString()
                         ?: resourceProvider.getString(R.string.error_generic)
-                    val applicationPasswordAuthorizationUrl = site.applicationPasswordAuthorizationUrl
-                    if (!applicationPasswordAuthorizationUrl.isNullOrEmpty()) {
-                        showApplicationPasswordTutorial(
-                            ApplicationPasswordTutorial(
-                                verifiedLoginUrl = savedStateHandle.get<String>(LOGIN_ENTRY_URL_KEY),
-                                applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
-                                errorMessage = errorMessage
-                            )
-                        )
-                    } else {
-                        pendingUnexpectedResponse = null
-                        analyticsTracker.track(
-                            AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_URL_NOT_AVAILABLE,
-                            properties = mapOf(
-                                AnalyticsTracker.KEY_SITE_URL to siteAddress
-                            )
-                        )
-                        triggerEvent(ShowApplicationPasswordsUnavailableScreen(siteAddress, site.isJetpackConnected))
-                    }
+                    showAuthorizationFor(site, errorMessage)
                 } else {
                     pendingUnexpectedResponse = null
                     triggerEvent(ShowNonWooErrorScreen(siteAddress))
@@ -683,6 +713,53 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             }
         )
         return !result.getOrNull()?.applicationPasswordsAuthorizeUrl.isNullOrEmpty()
+    }
+
+    private suspend fun showAuthorizationFor(site: SiteModel, errorMessage: String) {
+        val applicationPasswordAuthorizationUrl = site.applicationPasswordAuthorizationUrl
+        if (applicationPasswordAuthorizationUrl.isNullOrEmpty()) {
+            pendingUnexpectedResponse = null
+            analyticsTracker.track(
+                AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_URL_NOT_AVAILABLE,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_SITE_URL to siteAddress
+                )
+            )
+            triggerEvent(ShowApplicationPasswordsUnavailableScreen(siteAddress, site.isJetpackConnected))
+        } else if (!isApprovalPageOfThisStore(site.applicationPasswordsAuthorizeUrl)) {
+            onAuthorizationSiteMismatch(AnalyticsTracker.VALUE_STEP_BEFORE_APPROVAL)
+            // The snackbar explains why login stopped, so skip the generic alert but keep Contact support on the
+            // form for a store whose authorization page is legitimately on another host.
+            pendingUnexpectedResponse?.let { failure ->
+                pendingUnexpectedResponse = null
+                formUnexpectedResponse.value = failure
+            }
+        } else {
+            showApplicationPasswordTutorial(
+                ApplicationPasswordTutorial(
+                    verifiedLoginUrl = savedStateHandle.get<String>(LOGIN_ENTRY_URL_KEY),
+                    applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
+                    errorMessage = errorMessage
+                )
+            )
+        }
+    }
+
+    /**
+     * The approval page belongs to this store when it sits within the store's address, or when the WordPress
+     * serving it reports the store's address as its home. A lookalike store can't make another store's WordPress
+     * report that.
+     */
+    private suspend fun isApprovalPageOfThisStore(authorizationUrl: String?): Boolean {
+        approvalSiteUrl = null
+        val candidate = ApplicationPasswordSiteMatcher.approvalSiteUrl(authorizationUrl) ?: return false
+        if (ApplicationPasswordSiteMatcher.isWithinSite(siteAddress, authorizationUrl)) return true
+        loadingMessage.value = R.string.login_site_credentials_fetching_site
+        val candidateHome = wpApiSiteRepository.fetchSiteHomeUrl(candidate)
+        loadingMessage.value = 0
+        return ApplicationPasswordSiteMatcher.isSameSiteAddress(siteAddress, candidateHome).also { verified ->
+            if (verified) approvalSiteUrl = candidate
+        }
     }
 
     private suspend fun fetchSite(): Boolean {
@@ -767,6 +844,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     private suspend fun checkEligibilityAndCompleteLogin(site: SiteModel): Result<Boolean> {
+        val applicationPasswordException = wpApiSiteRepository.ensureApplicationPassword(site).exceptionOrNull()
+        if (applicationPasswordException != null) {
+            handleUserInfoFailure(applicationPasswordException)
+            return Result.failure(applicationPasswordException)
+        }
+
         val result = wpApiSiteRepository.checkIfUserIsEligible(site)
         result.fold(
             onSuccess = { isEligible ->
@@ -829,8 +912,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     /**
-     * When app password generation fails, the user request fails too, with a prefixed error code. If WordPress
-     * reports app passwords as unavailable, only that error arrives here, and the unavailable screen handles it.
+     * A failed password creation arrives as an ApplicationPasswordGenerationException, before any user request.
+     * A prefixed WooException means the user request hit a rejected saved password and couldn't replace it.
+     * When app passwords are disabled, the unavailable screen handles the error instead.
      */
     private fun Throwable.toUserInfoUnexpectedResponseFailure(): LoginUnexpectedResponseFailure? = when {
         this is ApplicationPasswordGenerationException -> networkError.unexpectedStoreResponse?.let {

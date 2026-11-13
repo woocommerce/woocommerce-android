@@ -42,6 +42,7 @@ class WCCustomerMapperTest {
             country = "shippingCountry",
             firstName = "shippingFirstName",
             lastName = "shippingLastName",
+            phone = "shippingPhone",
             postcode = "shippingPostcode",
             state = "shippingState"
         )
@@ -87,6 +88,7 @@ class WCCustomerMapperTest {
             assertEquals("shippingCountry", shippingCountry)
             assertEquals("shippingFirstName", shippingFirstName)
             assertEquals("shippingLastName", shippingLastName)
+            assertEquals("shippingPhone", shippingPhone)
             assertEquals("shippingPostcode", shippingPostcode)
             assertEquals("shippingState", shippingState)
 
@@ -140,6 +142,7 @@ class WCCustomerMapperTest {
             shippingCountry = "shippingCountry",
             shippingFirstName = "shippingFirstName",
             shippingLastName = "shippingLastName",
+            shippingPhone = "shippingPhone",
             shippingPostcode = "shippingPostcode",
             shippingState = "shippingState",
         )
@@ -168,6 +171,7 @@ class WCCustomerMapperTest {
             assertEquals("shippingCountry", shipping?.country)
             assertEquals("shippingFirstName", shipping?.firstName)
             assertEquals("shippingLastName", shipping?.lastName)
+            assertEquals("shippingPhone", shipping?.phone)
             assertEquals("shippingPostcode", shipping?.postcode)
             assertEquals("shippingState", shipping?.state)
 
@@ -183,6 +187,19 @@ class WCCustomerMapperTest {
             assertEquals("billingEmail", billing?.email)
             assertEquals("billingPhone", billing?.phone)
         }
+    }
+
+    @Test
+    fun `given shipping phone is null, when mapToModel, then shipping phone is empty`() {
+        // GIVEN
+        val site = SiteModel().apply { id = 23 }
+        val response = CustomerDTO(id = 13L, shipping = CustomerDTO.Shipping(phone = null))
+
+        // WHEN
+        val result = mapper.mapToModel(site, response)
+
+        // THEN
+        assertEquals("", result.shippingPhone)
     }
 
     @Test

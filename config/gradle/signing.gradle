@@ -1,5 +1,5 @@
 def secretProperties = gradle.ext.secretProperties
-def uploadKeystore = new File(gradle.ext.decryptedSecretsDir, "upload.jks")
+def uploadKeystore = new File(gradle.ext.a8cSecretsDir, "upload.jks")
 def uploadCredentials = ["uploadStorePassword", "uploadKeyAlias", "uploadKeyPassword"]
 def uploadKeyAvailable = uploadKeystore.exists() && uploadCredentials.every { secretProperties.containsKey(it) }
 
@@ -16,7 +16,7 @@ android {
             android.buildTypes.release.signingConfig = android.signingConfigs.release
         }
 
-        def debugKeystore = new File(gradle.ext.decryptedSecretsDir, "debug.keystore")
+        def debugKeystore = new File(gradle.ext.a8cSecretsDir, "debug.keystore")
         if (debugKeystore.exists()) {
             logger.info("Shared debug keystore found, configuring signing for debug builds.")
             debug {
@@ -32,8 +32,8 @@ tasks.matching { it.name ==~ /package\w+Release(Bundle|UniversalApk)?/ }.configu
     doFirst {
         if (!uploadKeyAvailable) {
             throw new GradleException(
-                "The upload keystore is missing, so this release build would not be signed. " +
-                    "Please run `bundle exec fastlane run configure_apply` to apply secrets."
+                "The upload keystore or its credentials are missing, so this release build would not be signed. " +
+                    "Please run `a8c-secrets decrypt` to apply secrets."
             )
         }
     }

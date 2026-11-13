@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsView
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowNonWooErrorScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowResetPasswordScreen
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
+import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialViewModel
 import com.woocommerce.android.ui.login.unexpectedresponse.LoginUnexpectedResponseSupport
 import com.woocommerce.android.ui.login.unexpectedresponse.openAiSupportChat
 import com.woocommerce.android.ui.login.unexpectedresponse.openSupportForm
@@ -128,10 +129,11 @@ class LoginSiteCredentialsFragment : Fragment() {
             ApplicationPasswordTutorialFragment.WEB_NAVIGATION_RESULT,
             viewLifecycleOwner
         ) { _, result ->
-            result.getString(ApplicationPasswordTutorialFragment.WEB_NAVIGATION_RESULT_URL_KEY)
-                ?.takeIf { it.isNotEmpty() }
-                ?.let { viewModel.onWebAuthorizationUrlLoaded(it) }
-                ?: viewModel.onPasswordTutorialAborted()
+            when (val url = result.getString(ApplicationPasswordTutorialFragment.WEB_NAVIGATION_RESULT_URL_KEY)) {
+                null, "" -> viewModel.onPasswordTutorialAborted()
+                ApplicationPasswordTutorialViewModel.FOREIGN_HOST_RESULT -> viewModel.onWebAuthorizationForeignHost()
+                else -> viewModel.onWebAuthorizationUrlLoaded(url)
+            }
         }
     }
 

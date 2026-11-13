@@ -52,6 +52,8 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
+import com.woocommerce.android.ui.barcodescanner.HardwareBarcodeScanner
+import com.woocommerce.android.ui.barcodescanner.listenForHardwareBarcodes
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.component.FeedbackDialog
@@ -130,6 +132,9 @@ class OrderCreateEditFormFragment :
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    lateinit var hardwareBarcodeScanner: HardwareBarcodeScanner
 
     @Inject
     lateinit var uiHelper: OrderCreateEditFormAddInfoButtonsStatusHelper
@@ -1181,6 +1186,11 @@ class OrderCreateEditFormFragment :
         handleResult<CodeScannerStatus>(BarcodeScanningFragment.KEY_BARCODE_SCANNING_SCAN_STATUS) { status ->
             viewModel.handleBarcodeScannedStatus(status)
         }
+        listenForHardwareBarcodes(
+            hardwareBarcodeScanner = hardwareBarcodeScanner,
+            source = ScanningSource.ORDER_CREATION,
+            onBarcodeScanned = viewModel::onHardwareBarcodeScanned,
+        )
         handleResult<EditProductConfigurationResult>(
             ProductConfigurationFragment.PRODUCT_CONFIGURATION_EDITED_RESULT
         ) { result ->

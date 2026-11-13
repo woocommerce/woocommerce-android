@@ -298,7 +298,7 @@ private fun TopAppBarTitle(
     }
     Column(modifier = titleModifier.semantics { heading() }) {
         Text(
-            text = title,
+            text = title.lines().joinToString(" "),
             color = WooTheme.colors.surface.onDefault,
             style = LocalTextStyle.current,
             textAlign = textAlign,

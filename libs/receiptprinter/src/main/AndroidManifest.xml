@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    BLUETOOTH_SCAN and BLUETOOTH_CONNECT cover Android 12+ (API 31). On API 26 to 30 the legacy BLUETOOTH permission
+    comes from the StarIO10 SDK's own manifest. It is not redeclared here with maxSdkVersion="30" because the merger
+    would then cap it for the whole app, including the Stripe Terminal SDK, which declares it without a limit.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation"
+        tools:targetApi="s" />
+
+</manifest>

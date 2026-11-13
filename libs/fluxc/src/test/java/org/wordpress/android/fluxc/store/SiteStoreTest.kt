@@ -21,6 +21,11 @@ import org.wordpress.android.fluxc.model.asDomainModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.PARSE_ERROR
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.SERVER_ERROR
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordCreationResult
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordCredentials
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsManager
 import org.wordpress.android.fluxc.network.rest.wpapi.site.SiteWPAPIRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response
@@ -31,6 +36,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.SiteStorePersistence
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
+import org.wordpress.android.fluxc.store.SiteStore.EnsureApplicationPasswordResult
 import org.wordpress.android.fluxc.store.SiteStore.FetchConnectSiteInfoPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedDomainsPayload
@@ -42,6 +48,7 @@ import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.SiteStore.SiteFilter.WPCOM
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
+import javax.inject.Provider
 
 @Suppress("DoNotMockDataClass", "UnitTestNamingRule")
 class SiteStoreTest {
@@ -50,6 +57,7 @@ class SiteStoreTest {
     private val siteWPAPIClient: SiteWPAPIRestClient = mock()
     private val siteSqlUtils: SiteSqlUtils = mock()
     private val domainsDao: DomainDao = mock()
+    private val applicationPasswordsManager: ApplicationPasswordsManager = mock()
     private val domainsSuccessResponse: Response.Success<DomainsResponse> = mock()
     private val plansSuccessResponse: Response.Success<PlansResponse> = mock()
     private val domainsErrorResponse: Response.Error<DomainsResponse> = mock()
@@ -72,6 +80,47 @@ class SiteStoreTest {
             domainsDao,
             initCoroutineEngine()
         ) { crashLogger }
+        siteStore.applicationPasswordsManagerProvider = Provider { applicationPasswordsManager }
+    }
+
+    @Test
+    fun `given existing credentials, when ensuring application password, then return available`() = test {
+        whenever(applicationPasswordsManager.ensureApplicationPassword(any())).thenReturn(
+            ApplicationPasswordCreationResult.Existing(ApplicationPasswordCredentials("user", "pass", "uuid"))
+        )
+
+        val result = siteStore.ensureApplicationPassword(SiteModel())
+
+        assertThat(result).isEqualTo(EnsureApplicationPasswordResult.Available)
+    }
+
+    @Test
+    fun `given password creation fails, when ensuring application password, then return network error`() = test {
+        val error = BaseNetworkError(SERVER_ERROR, "failed")
+
+        assertApplicationPasswordFailure(ApplicationPasswordCreationResult.Failure(error), error)
+    }
+
+    @Test
+    fun `given password creation is unsupported, when ensuring application password, then return original error`() = test {
+        val error = WPAPINetworkError(BaseNetworkError(SERVER_ERROR, "unsupported"), "unsupported_error")
+
+        assertApplicationPasswordFailure(ApplicationPasswordCreationResult.NotSupported(error), error)
+    }
+
+    private suspend fun assertApplicationPasswordFailure(
+        creationResult: ApplicationPasswordCreationResult,
+        expectedError: BaseNetworkError
+    ) {
+        whenever(applicationPasswordsManager.ensureApplicationPassword(any())).thenReturn(creationResult)
+
+        val result = siteStore.ensureApplicationPassword(SiteModel())
+
+        assertThat(result).isInstanceOf(EnsureApplicationPasswordResult.Failed::class.java)
+        val actualError = (result as EnsureApplicationPasswordResult.Failed).error
+        assertThat(actualError.type).isEqualTo(expectedError.type)
+        assertThat(actualError.message).isEqualTo(expectedError.message)
+        assertThat(actualError.errorCode).isEqualTo((expectedError as? WPAPINetworkError)?.errorCode)
     }
 
     @Test

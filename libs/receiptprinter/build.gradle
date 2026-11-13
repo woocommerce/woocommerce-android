@@ -1,0 +1,40 @@
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.google.dagger.hilt)
+    alias(libs.plugins.dependency.analysis)
+}
+
+android {
+    namespace = "com.woocommerce.android.receiptprinter"
+
+    compileSdk = gradle.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion gradle.ext.minSdkVersion
+        targetSdkVersion gradle.ext.targetSdkVersion
+    }
+
+    buildFeatures {
+        buildConfig = false
+    }
+
+    compileOptions {
+        sourceCompatibility = libs.versions.java.get()
+        targetCompatibility = libs.versions.java.get()
+    }
+}
+
+dependencies {
+    api(libs.kotlinx.coroutines.core)
+    implementation(libs.starmicronics.stario10)
+
+    implementation(libs.google.dagger.hilt.android.main)
+    ksp(libs.google.dagger.hilt.compiler)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.kotlinx.coroutines.test)
+}

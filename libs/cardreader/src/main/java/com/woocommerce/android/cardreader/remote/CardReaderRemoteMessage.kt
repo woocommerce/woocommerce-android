@@ -16,6 +16,7 @@ internal sealed class CardReaderRemoteMessage {
     data class ConnectAck(
         override val requestId: String,
         val readerSerial: String?,
+        val supportsCancelPayment: Boolean,
     ) : CardReaderRemoteMessage()
 
     data class CollectPaymentRequest(
@@ -35,6 +36,10 @@ internal sealed class CardReaderRemoteMessage {
         val countryCode: String?,
         val cardPresentCaptureMethod: PaymentInfo.CardPresentCaptureMethod?,
         val terminalPaymentPreparation: PaymentInfo.TerminalPaymentPreparation?,
+    ) : CardReaderRemoteMessage()
+
+    data class CancelPayment(
+        override val requestId: String,
     ) : CardReaderRemoteMessage()
 
     data class PaymentIntentResult(

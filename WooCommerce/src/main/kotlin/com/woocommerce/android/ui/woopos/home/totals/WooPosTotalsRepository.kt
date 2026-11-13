@@ -171,6 +171,13 @@ class WooPosTotalsRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchOrderById(orderId: Long): Order? = withContext(IO) {
+        when (orderStore.fetchSingleOrder(selectedSite.get(), orderId).isError) {
+            true -> null
+            false -> getOrderById(orderId)
+        }
+    }
+
     private companion object {
         /**
          * This magic value used to indicate that we don't want to send subtotals and totals

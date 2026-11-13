@@ -228,6 +228,7 @@ abstract class CustomerListViewModel(
             _viewState.value = _viewState.value!!.copy(
                 body = CustomerListViewState.CustomerList.Error(R.string.error_generic),
                 showFab = allowCustomerCreation,
+                isAnalyticsUnavailable = false,
             )
         }
     }
@@ -274,6 +275,7 @@ abstract class CustomerListViewModel(
                 canEnableAnalytics = isAnalyticsDisabled && !justEnabledAnalytics,
             ),
             showFab = allowCustomerCreation,
+            isAnalyticsUnavailable = true,
         )
         analyticsTracker.track(
             AnalyticsEvent.CUSTOMER_LIST_ANALYTICS_UNAVAILABLE_ERROR_SHOWN,
@@ -371,6 +373,7 @@ abstract class CustomerListViewModel(
                     button = button,
                 ),
                 showFab = false,
+                isAnalyticsUnavailable = false,
             )
         } else {
             _viewState.value = _viewState.value!!.copy(
@@ -381,6 +384,7 @@ abstract class CustomerListViewModel(
                     shouldResetScrollPosition = true
                 ),
                 showFab = allowCustomerCreation,
+                isAnalyticsUnavailable = false,
             )
         }
     }

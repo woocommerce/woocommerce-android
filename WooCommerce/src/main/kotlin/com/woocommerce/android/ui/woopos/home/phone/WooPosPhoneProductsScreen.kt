@@ -7,7 +7,6 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -47,7 +46,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreen
 import com.woocommerce.android.ui.woopos.home.items.coupons.search.WooPosCouponsSearchScreen
-import com.woocommerce.android.ui.woopos.home.items.customamount.WooPosCustomAmountFormScreen
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreen
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsScreen
@@ -140,20 +138,6 @@ private fun WooPosPhoneProductsContent(
                         onBackClicked = {
                             onItemsUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked)
                         },
-                    )
-                },
-                customAmountFormContent = { editing ->
-                    WooPosCustomAmountFormScreen(
-                        editing = editing,
-                        onBackClick = {
-                            onItemsUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked)
-                        },
-                        submitButtonPadding = PaddingValues(
-                            start = WooPosSpacing.Medium.value,
-                            top = WooPosSpacing.Medium.value,
-                            end = WooPosSpacing.Medium.value,
-                            bottom = WooPosSpacing.Medium.value + WooPosSpacing.Small.value,
-                        ),
                     )
                 },
                 modifier = Modifier.weight(1f),

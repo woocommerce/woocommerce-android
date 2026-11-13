@@ -571,6 +571,12 @@ class AnalyticsTracker private constructor(
         // -- Onboarding
         const val VALUE_LOGIN_ONBOARDING_IS_FINAL_PAGE = "is_final_page"
 
+        // -- Login store suggestion
+        const val KEY_UTM_CAMPAIGN = "utm_campaign"
+        const val KEY_HAS_SITE_HOST = "has_site_host"
+        const val KEY_WPCOM_LOGIN_CHECK = "wpcom_login_check"
+        const val KEY_IS_IN_ROLLOUT = "is_in_rollout"
+
         // -- Jetpack Installation
         const val VALUE_JETPACK_INSTALLATION_SOURCE_WEB = "web"
 
@@ -613,6 +619,12 @@ class AnalyticsTracker private constructor(
 
         // -- App links
         const val KEY_PATH = "path"
+
+        // -- Application passwords
+        const val KEY_IS_APP_IN_FOREGROUND = "is_app_in_foreground"
+        const val VALUE_STEP_BEFORE_APPROVAL = "before_approval"
+        const val VALUE_STEP_DURING_APPROVAL = "during_approval"
+        const val VALUE_STEP_AFTER_APPROVAL = "after_approval"
 
         const val VALUE_OTHER = "other"
         const val VALUE_STEP_WEB_CHECKOUT = "web_checkout"
