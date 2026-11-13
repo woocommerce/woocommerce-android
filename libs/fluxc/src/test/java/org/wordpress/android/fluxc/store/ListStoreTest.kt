@@ -168,12 +168,12 @@ class ListStoreTest {
             store.saveListFetched(testListDescriptor, listOf(1L), canLoadMore = false)
 
             val captor = argumentCaptor<OnChanged<*>>()
-            verify(dispatcher, times(2)).emitChange(captor.capture())
-            val listChanged = captor.firstValue as ListStore.OnListChanged
+            verify(dispatcher, times(3)).emitChange(captor.capture())
+            val listChanged = captor.allValues.filterIsInstance<ListStore.OnListChanged>().single()
             assertThat(listChanged.listDescriptors).containsExactly(testListDescriptor)
             assertThat(listChanged.causeOfChange)
                 .isEqualTo(ListStore.OnListChanged.CauseOfListChange.FIRST_PAGE_FETCHED)
-            val refresh = captor.secondValue as ListStore.OnListRequiresRefresh
+            val refresh = captor.allValues.filterIsInstance<ListStore.OnListRequiresRefresh>().single()
             assertThat(refresh.type).isEqualTo(testListDescriptor.typeIdentifier)
             assertThat(refresh.upToDateList).isEqualTo(testListDescriptor)
         }

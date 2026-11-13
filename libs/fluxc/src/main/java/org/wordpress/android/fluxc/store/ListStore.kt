@@ -247,6 +247,7 @@ class ListStore @Inject internal constructor(
             listDao.deleteAndInsertItems(listModel.id, shouldDelete = true, items = listItems)
         }
         emitChange(OnListChanged(listOf(listDescriptor), CauseOfListChange.FIRST_PAGE_FETCHED, error = null))
+        handleListStateChange(listDescriptor, newState)
         emitChange(OnListRequiresRefresh(listDescriptor.typeIdentifier, upToDateList = listDescriptor))
     }
 
