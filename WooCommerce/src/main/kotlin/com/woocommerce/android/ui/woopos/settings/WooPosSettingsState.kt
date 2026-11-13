@@ -104,6 +104,20 @@ sealed class WooPosSettingsDetailDestination : Parcelable {
         }
     }
 
+    sealed class Security : WooPosSettingsDetailDestination() {
+        @Parcelize
+        data object Overview : Security() {
+            @IgnoredOnParcel
+            override val titleRes: Int = R.string.woopos_settings_security_category
+
+            @IgnoredOnParcel
+            override val parentDestination: WooPosSettingsDetailDestination? = null
+
+            @IgnoredOnParcel
+            override val childDestinations: List<WooPosSettingsDetailDestination> = emptyList()
+        }
+    }
+
     sealed class Help : WooPosSettingsDetailDestination() {
         @Parcelize
         data object Overview : Help() {
