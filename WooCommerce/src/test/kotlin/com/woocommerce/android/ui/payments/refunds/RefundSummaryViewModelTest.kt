@@ -29,12 +29,14 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
+import org.wordpress.android.fluxc.model.refunds.ComputedRefundLineItem
 import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition
@@ -52,6 +54,10 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_ID = 1L
         private const val STORE_REJECTION_MESSAGE = "Refund amount cannot be less than the total of line items."
+        private const val WOO_VERSION = "11.3.0"
+        private const val LOCAL_SITE_ID = 0
+        private const val PRODUCT_LINE_ID = 21L
+        private const val SHIPPING_LINE_ID = 22L
     }
 
     private val selectedSite: SelectedSite = mock()
@@ -85,9 +91,14 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
         )
     }
 
+    private val resolveRefundFlow: ResolveRefundFlow = mock {
+        on { invoke() } doReturn RefundCalculationFlow.ServerComputed(WOO_VERSION)
+    }
+    private val serverRefundAvailabilityCache = ServerRefundAvailabilityCache()
+
     private lateinit var viewModel: RefundSummaryViewModel
 
-    private fun initViewModel(refundItems: Array<RefundItem> = emptyArray()) {
+    private fun initViewModel(refundItems: Array<RefundItem> = emptyArray(), isServerComputed: Boolean = false) {
         whenever(selectedSite.get()).thenReturn(SiteModel())
         whenever(currencyFormatter.buildBigDecimalFormatter(any())).thenReturn { "" }
 
@@ -95,7 +106,8 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             savedStateHandle = RefundSummaryFragmentArgs(
                 orderId = ORDER_ID,
                 refundAmount = "10",
-                refundItems = refundItems
+                refundItems = refundItems,
+                isServerComputed = isServerComputed
             ).toSavedStateHandle(),
             selectedSite = selectedSite,
             orderDetailRepository = orderDetailRepository,
@@ -108,7 +120,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             refundStore = refundStore,
             coroutineDispatchers = coroutinesTestRule.testDispatchers,
             refreshProductsSignal = refreshProductsSignal,
-            parameterRepository = parameterRepository
+            parameterRepository = parameterRepository,
+            resolveRefundFlow = resolveRefundFlow,
+            serverRefundAvailabilityCache = serverRefundAvailabilityCache
         )
     }
 
@@ -640,7 +654,8 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_ORDER_ID to ORDER_ID,
                     AnalyticsTracker.KEY_REFUND_IS_FULL to false.toString(),
                     AnalyticsTracker.KEY_REFUND_METHOD to "manual",
-                    AnalyticsTracker.KEY_AMOUNT to (state).refundAmount.toString()
+                    AnalyticsTracker.KEY_AMOUNT to (state).refundAmount.toString(),
+                    AnalyticsTracker.KEY_REFUND_FLOW to AnalyticsTracker.VALUE_REFUND_FLOW_LOCAL
                 )
             )
         }
@@ -723,7 +738,8 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_ORDER_ID to ORDER_ID,
                     AnalyticsTracker.KEY_ERROR_CONTEXT to RefundSummaryViewModel::class.java.simpleName,
                     AnalyticsTracker.KEY_ERROR_TYPE to "GENERIC_ERROR",
-                    AnalyticsTracker.KEY_ERROR_DESC to null
+                    AnalyticsTracker.KEY_ERROR_DESC to null,
+                    AnalyticsTracker.KEY_REFUND_FLOW to AnalyticsTracker.VALUE_REFUND_FLOW_LOCAL
                 )
             )
         }
@@ -781,7 +797,8 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.REFUND_CREATE_SUCCESS,
                 mapOf(
                     AnalyticsTracker.KEY_ORDER_ID to ORDER_ID,
-                    AnalyticsTracker.KEY_ID to 1L
+                    AnalyticsTracker.KEY_ID to 1L,
+                    AnalyticsTracker.KEY_REFUND_FLOW to AnalyticsTracker.VALUE_REFUND_FLOW_LOCAL
                 )
             )
         }
@@ -941,6 +958,146 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             assertThat(events).contains(ShowSnackbar(R.string.order_refunds_amount_refund_error))
         }
     }
+
+    @Test
+    fun `given server preview confirmed, when refunding, then refund is created with computed totals`() = testBlocking {
+        // GIVEN
+        val order = createTestOrder(paymentMethod = "cod")
+        whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(order)
+        serverRefundAvailabilityCache.markAvailable(LOCAL_SITE_ID, WOO_VERSION)
+        givenComputedRefundResult(WooResult(model = createRefundModel()))
+
+        // WHEN
+        initViewModel(
+            refundItems = arrayOf(givenProductItem(quantity = 2), givenShippingItem()),
+            isServerComputed = true
+        )
+        viewModel.refund()
+
+        // THEN
+        verify(refundStore).createComputedItemsRefund(
+            site = any(),
+            orderId = eq(ORDER_ID),
+            reason = eq(""),
+            autoRefund = eq(false),
+            restockItems = eq(true),
+            amount = eq(BigDecimal("10")),
+            items = eq(
+                listOf(
+                    ComputedRefundLineItem.quantityBased(lineItemId = PRODUCT_LINE_ID, quantity = 2),
+                    ComputedRefundLineItem.quantityBased(lineItemId = SHIPPING_LINE_ID, quantity = 1)
+                )
+            )
+        )
+        verify(refundStore, never()).createItemsRefund(any(), any(), anyOrNull(), any(), any(), any(), any())
+    }
+
+    @Test
+    fun `given server preview not confirmed in this process, when refunding, then refund is calculated locally`() =
+        testBlocking {
+            // GIVEN
+            val order = createTestOrder(paymentMethod = "cod")
+            whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(order)
+            givenRefundResult(WooResult(model = createRefundModel()))
+            val item = givenProductItem(quantity = 1).copy(subtotal = BigDecimal("20.00"))
+
+            // WHEN
+            initViewModel(refundItems = arrayOf(item), isServerComputed = true)
+            viewModel.refund()
+
+            // THEN
+            val itemsCaptor = argumentCaptor<List<RefundRequestItem>>()
+            verify(refundStore).createItemsRefund(
+                site = any(),
+                orderId = any(),
+                amount = eq(BigDecimal("10")),
+                reason = any(),
+                restockItems = any(),
+                autoRefund = any(),
+                items = itemsCaptor.capture()
+            )
+            assertThat(itemsCaptor.firstValue.single().total).isEqualByComparingTo("10")
+            verify(
+                refundStore,
+                never()
+            ).createComputedItemsRefund(any(), any(), any(), any(), any(), anyOrNull(), any())
+        }
+
+    @Test
+    fun `given amount was calculated locally, when refunding on a server capable store, then refund is calculated locally`() =
+        testBlocking {
+            // GIVEN
+            val order = createTestOrder(paymentMethod = "cod")
+            whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(order)
+            serverRefundAvailabilityCache.markAvailable(LOCAL_SITE_ID, WOO_VERSION)
+            givenRefundResult(WooResult(model = createRefundModel()))
+
+            // WHEN
+            initViewModel(refundItems = arrayOf(givenProductItem(quantity = 1)), isServerComputed = false)
+            viewModel.refund()
+
+            // THEN
+            verify(refundStore).createItemsRefund(any(), any(), anyOrNull(), any(), any(), any(), any())
+            verify(
+                refundStore,
+                never()
+            ).createComputedItemsRefund(any(), any(), any(), any(), any(), anyOrNull(), any())
+        }
+
+    @Test
+    fun `given server computed refund, when refund succeeds, then server computed flow is tracked`() = testBlocking {
+        // GIVEN
+        val order = createTestOrder(paymentMethod = "cod")
+        whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(order)
+        serverRefundAvailabilityCache.markAvailable(LOCAL_SITE_ID, WOO_VERSION)
+        givenComputedRefundResult(WooResult(model = createRefundModel()))
+
+        // WHEN
+        initViewModel(refundItems = arrayOf(givenProductItem(quantity = 1)), isServerComputed = true)
+        viewModel.refund()
+
+        // THEN
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.REFUND_CREATE_SUCCESS,
+            mapOf(
+                AnalyticsTracker.KEY_ORDER_ID to ORDER_ID,
+                AnalyticsTracker.KEY_ID to 1L,
+                AnalyticsTracker.KEY_REFUND_FLOW to AnalyticsTracker.VALUE_REFUND_FLOW_SERVER_COMPUTED
+            )
+        )
+    }
+
+    private suspend fun givenComputedRefundResult(result: WooResult<WCRefundModel>) {
+        whenever(
+            refundStore.createComputedItemsRefund(
+                site = any(),
+                orderId = any(),
+                reason = any(),
+                autoRefund = any(),
+                restockItems = any(),
+                amount = anyOrNull(),
+                items = any()
+            )
+        ).thenReturn(result)
+    }
+
+    private fun givenProductItem(quantity: Int) = ProductRefundListItem(
+        orderItem = OrderTestUtils.generateTestOrderItems(productId = 101L).first().copy(itemId = PRODUCT_LINE_ID),
+        quantity = quantity,
+        subtotal = BigDecimal("5.00")
+    )
+
+    private fun givenShippingItem() = ShippingRefundListItem(
+        shippingLine = Order.ShippingLine(
+            itemId = SHIPPING_LINE_ID,
+            methodId = "flat_rate",
+            methodTitle = "Flat rate",
+            totalTax = BigDecimal.ZERO,
+            total = BigDecimal("5.00"),
+            taxes = emptyList()
+        ),
+        isSelected = true
+    )
 
     private suspend fun givenRefundResult(result: WooResult<WCRefundModel>) {
         whenever(

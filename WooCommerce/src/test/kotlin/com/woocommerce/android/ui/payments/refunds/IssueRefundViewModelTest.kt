@@ -9,6 +9,7 @@ import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -17,15 +18,22 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyVararg
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -33,6 +41,7 @@ import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.model.order.WCLineTaxEntry
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
+import org.wordpress.android.fluxc.model.refunds.WCRefundPreview
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -92,6 +101,10 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         mock()
     )
 
+    private val fetchRefundPreview: FetchRefundPreview = mock {
+        on { invoke(any(), any()) } doReturn FetchRefundPreview.Result.FallbackToLocal
+    }
+
     private val savedState = IssueRefundFragmentArgs(ORDER_ID).toSavedStateHandle()
 
     private lateinit var viewModel: IssueRefundViewModel
@@ -112,6 +125,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             orderMapper = orderMapper,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
             parameterRepository = parameterRepository,
+            fetchRefundPreview = fetchRefundPreview,
         )
     }
 
@@ -773,6 +787,132 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewState.getOrAwaitValue().productsSection.selectedItemsHeader)
                 .isEqualTo("3 items selected")
         }
+
+    @Test
+    fun `given server preview succeeds, when next is tapped, then summary refunds the preview total`() = testBlocking {
+        // GIVEN
+        givenItemSelected()
+        whenever(fetchRefundPreview.invoke(any(), any()))
+            .thenReturn(FetchRefundPreview.Result.ServerCalculated(givenPreview(total = "10.48")))
+
+        // WHEN
+        viewModel.onNextButtonTappedFromItems()
+
+        // THEN
+        val event = viewModel.event.getOrAwaitValue() as IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
+        assertThat(event.refundAmount).isEqualByComparingTo("10.48")
+        assertTrue(event.isServerComputed)
+    }
+
+    @Test
+    fun `given preview falls back to local, when next is tapped, then summary refunds the local total`() = testBlocking {
+        // GIVEN
+        givenItemSelected()
+        val viewState = viewModel.viewState.getOrAwaitValue()
+
+        // WHEN
+        viewModel.onNextButtonTappedFromItems()
+
+        // THEN
+        val event = viewModel.event.getOrAwaitValue() as IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
+        assertThat(event.refundAmount).isEqualByComparingTo(viewState.grandTotalRefund)
+        assertFalse(event.isServerComputed)
+    }
+
+    @Test
+    fun `when next is tapped, then preview is asked for the selected items`() = testBlocking {
+        // GIVEN
+        givenItemSelected()
+        val selectedItems = viewModel.viewState.getOrAwaitValue().selectedRefundItems
+
+        // WHEN
+        viewModel.onNextButtonTappedFromItems()
+
+        // THEN
+        val captor = argumentCaptor<List<RefundItem>>()
+        verify(fetchRefundPreview).invoke(eq(ORDER_ID), captor.capture())
+        assertThat(captor.firstValue).isEqualTo(selectedItems)
+    }
+
+    @Test
+    fun `given store rejects the preview, when next is tapped, then store message is shown`() = testBlocking {
+        // GIVEN
+        givenItemSelected()
+        whenever(fetchRefundPreview.invoke(any(), any()))
+            .thenReturn(FetchRefundPreview.Result.Error(storeMessage = "Already refunded"))
+
+        // WHEN
+        viewModel.onNextButtonTappedFromItems()
+
+        // THEN
+        assertThat(viewModel.event.getOrAwaitValue()).isEqualTo(ShowUiStringSnackbar(UiStringText("Already refunded")))
+    }
+
+    @Test
+    fun `given preview fails without store message, when next is tapped, then generic error is shown`() =
+        testBlocking {
+            // GIVEN
+            givenItemSelected()
+            whenever(fetchRefundPreview.invoke(any(), any()))
+                .thenReturn(FetchRefundPreview.Result.Error(storeMessage = null))
+
+            // WHEN
+            viewModel.onNextButtonTappedFromItems()
+
+            // THEN
+            assertThat(viewModel.event.getOrAwaitValue())
+                .isEqualTo(ShowSnackbar(R.string.order_refunds_amount_refund_error))
+        }
+
+    @Test
+    fun `given preview in progress, when next is tapped again, then preview is asked once`() = testBlocking {
+        // GIVEN
+        givenItemSelected()
+        val pendingResult = CompletableDeferred<FetchRefundPreview.Result>()
+        whenever(fetchRefundPreview.invoke(any(), any())).doSuspendableAnswer { pendingResult.await() }
+        viewModel.onNextButtonTappedFromItems()
+
+        // WHEN
+        viewModel.onNextButtonTappedFromItems()
+
+        // THEN
+        verify(fetchRefundPreview, times(1)).invoke(any(), any())
+        pendingResult.complete(FetchRefundPreview.Result.FallbackToLocal)
+    }
+
+    @Test
+    fun `when next is tapped, then refund is shown as calculating until the preview ends`() = testBlocking {
+        // GIVEN
+        givenItemSelected()
+        val pendingResult = CompletableDeferred<FetchRefundPreview.Result>()
+        whenever(fetchRefundPreview.invoke(any(), any())).doSuspendableAnswer { pendingResult.await() }
+
+        // WHEN
+        viewModel.onNextButtonTappedFromItems()
+
+        // THEN
+        assertTrue(viewModel.isCalculatingRefund.getOrAwaitValue())
+        pendingResult.complete(FetchRefundPreview.Result.FallbackToLocal)
+        assertFalse(viewModel.isCalculatingRefund.getOrAwaitValue())
+    }
+
+    private suspend fun givenItemSelected() {
+        initViewModel(givenOrder(items = listOf(givenOrderItem()), maxRefund = BigDecimal("50.00")))
+        viewModel.viewState.getOrAwaitValue()
+        viewModel.onSelectButtonTapped()
+        viewModel.viewState.getOrAwaitValue()
+    }
+
+    private fun givenPreview(total: String): WCRefundPreview {
+        val emptySection = WCRefundPreview.Section(emptyList(), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO)
+        return WCRefundPreview(
+            subtotal = BigDecimal(total),
+            tax = BigDecimal.ZERO,
+            total = BigDecimal(total),
+            maxRefundable = BigDecimal(total),
+            breakdown = WCRefundPreview.Breakdown(emptySection, emptySection, emptySection)
+        )
+    }
 
     private suspend fun givenOrder(
         items: List<Order.Item>,
