@@ -86,16 +86,20 @@ class WooPosSettingsSecurityViewModelTest {
     }
 
     @Test
-    fun `given storage unavailable, when input is attempted, then no digit is entered`() {
+    fun `given storage unavailable, when recovery and input are attempted, then storage remains unavailable`() {
         // GIVEN
         val sut = createViewModel()
         sut.showLock(WooPosLockScreenState(error = WooPosLockError.STORAGE))
 
         // WHEN
+        sut.onLockEvent(WooPosLockScreenUIEvent.ForgotPINTapped)
         sut.onLockEvent(WooPosLockScreenUIEvent.DigitTapped(1))
 
         // THEN
-        assertThat(sut.state.value.lock?.enteredDigits).isZero()
+        assertThat(sut.state.value.lock).isEqualTo(
+            WooPosLockScreenState(isLocked = true, error = WooPosLockError.STORAGE)
+        )
+        assertThat(sut.state.value.lock?.canEnterPIN).isFalse()
     }
 
     @Test
