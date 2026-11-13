@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-20 11:58:07+0000
+Translation-Revision-Date: 2026-11-03 10:57:23+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_service_status_severity_info">Informasi</string>
+    <string name="woo_shipping_labels_service_status_severity_warning">Peringatan</string>
+    <string name="woo_shipping_labels_service_status_severity_error">Error</string>
+    <string name="woo_shipping_labels_service_status_dismiss">Tutup pemberitahuan: %1$s</string>
+    <string name="woo_shipping_labels_service_status_view_status_page">Lihat halaman status</string>
+    <string name="woo_shipping_labels_purchase_service_status_error">Kami tidak dapat membeli label pengiriman karena adanya masalah pada layanan kurir: %1$s</string>
+    <string name="woopos_remote_ttp_explainer_local_network_body">Izinkan akses jaringan lokal agar POS dapat menemukan ponsel Anda di Wi-Fi yang sama.</string>
+    <string name="woopos_remote_ttp_explainer_local_network_heading">Izinkan POS menemukan ponsel Anda</string>
+    <string name="woopos_remote_ttp_explainer_allow_local_network">Izinkan akses jaringan lokal</string>
+    <string name="woopos_remote_reader_failed_insecure_environment">Tap to Pay diblokir di ponsel ini karena alasan keamanan. Di ponsel, pastikan layanan aksesibilitas dan perekaman layar telah dimatikan.</string>
+    <string name="login_text_backup_code">Gunakan kode cadangan sebagai gantinya</string>
+    <string name="support_request_ai_chat_transcript_disclosure">Transkrip obrolan dukungan AI Anda juga akan disertakan dengan permintaan ini.</string>
+    <string name="enter_verification_code_backup">Masukkan kode cadangan untuk melanjutkan.</string>
+    <string name="enter_verification_code_email">Periksa email Anda untuk melihat kode verifikasi dari WordPress.com, lalu masukkan kode untuk melanjutkan.</string>
+    <string name="enter_verification_code_authenticator">Masukkan kode verifikasi dari aplikasi pengautentikasi Anda.</string>
+    <string name="ai_support_chat_escalation_consent_message_v2">Kedua opsi tersebut mencakup transkrip obrolan ini. Kirim permintaan sekarang, atau buka formulir kontak untuk menambahkan detail lainnya terlebih dahulu.</string>
+    <string name="ai_support_chat_login_unexpected_response_message">Saya tidak dapat login ke toko saya. Aplikasi mengatakan bahwa toko saya memberikan respons yang tidak terduga. Bagaimana cara memperbaiki ini?</string>
+    <string name="card_reader_payment_failed_insecure_environment">Tap to Pay diblokir karena alasan keamanan. Pastikan bahwa layanan aksesibilitas dan perekaman layar telah dimatikan.</string>
+    <string name="barcode_scanning_hardware_scanner_no_enter_suffix">Pemindaian belum selesai. Atur pemindai Anda untuk mengirimkan Enter setelah setiap barcode.</string>
+    <string name="customer_list_enable_analytics_error">WooCommerce Analytics tidak dapat diaktifkan. Coba lagi.</string>
+    <string name="customer_list_enable_analytics_confirmation_action">Aktifkan</string>
+    <string name="customer_list_enable_analytics_confirmation_message">Hal ini akan mengubah pengaturan untuk seluruh toko Anda. Fitur ini akan tetap aktif sampai seseorang menonaktifkannya di WooCommerce › Pengaturan › Lanjutan › Fitur. Pelanggan di saat Analytics tidak aktif mungkin baru akan muncul setelah Anda mengimpor data riwayat di WooCommerce › Analytics › Pengaturan.</string>
+    <string name="customer_list_enable_analytics_confirmation_title">Aktifkan WooCommerce Analytics?</string>
+    <string name="customer_list_enable_analytics">Aktifkan Analytics</string>
+    <string name="customer_list_analytics_unavailable_message">Daftar pelanggan memerlukan WooCommerce Analytics yang saat ini tidak tersedia di toko ini. Mintalah administrator toko untuk memeriksa apakah fitur ini sudah diaktifkan.</string>
+    <string name="customer_list_analytics_permission_denied_message">Daftar pelanggan memerlukan WooCommerce Analytics yang tidak tersedia di toko ini. Minta administrator toko untuk mengaktifkannya di WooCommerce › Pengaturan › Lanjutan › Fitur.</string>
+    <string name="customer_list_analytics_disabled_message">Daftar pelanggan memerlukan WooCommerce Analytics yang sedang dimatikan untuk toko ini. Anda dapat mengaktifkannya di sini, atau di admin toko Anda di WooCommerce › Pengaturan › Lanjutan › Fitur lalu ketuk Coba lagi.</string>
+    <string name="customer_list_analytics_unavailable_title">Pelanggan tidak dapat dimuat</string>
+    <string name="login_unexpected_response_message">Toko Anda memberikan respons yang tidak terduga, sehingga kami tidak dapat menyelesaikan proses masuk Anda. Coba lagi atau hubungi dukungan untuk mendapatkan bantuan.</string>
+    <string name="login_unexpected_response_title">Tidak dapat login</string>
     <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s memerlukan nomor telepon penerima.</string>
     <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">Harus berjumlah %1$s atau lebih sedikit karakter.</string>
     <string name="woo_shipping_labels_customs_product_details_gtin_required">Masukkan kode GTIN/EAN, atau pilih \"Tanpa barcode\"</string>
@@ -355,7 +385,6 @@ Language: id
     <string name="ai_support_chat_escalation_transcript_header">Berikut adalah transkrip sesi obrolan dukungan AI dalam aplikasi:</string>
     <string name="ai_support_chat_escalation_consent_contact_form">Formulir Kontak</string>
     <string name="ai_support_chat_escalation_consent_send_request">Kirim Permintaan</string>
-    <string name="ai_support_chat_escalation_consent_message">Kami bisa membuatkan permintaan bantuan berdasarkan transkrip obrolan ini, atau Anda bisa membuka formulir kontak dan memasukkan detailnya sendiri.</string>
     <string name="ai_support_chat_escalation_consent_title">Kirim obrolan ini ke dukungan?</string>
     <string name="ai_support_chat_mark_resolved_confirmation_message">Tindakan ini akan menutup tindakan obrolan untuk percakapan ini.</string>
     <string name="ai_support_chat_mark_resolved_confirmation_title">Tandai obrolan selesai?</string>
@@ -1811,12 +1840,12 @@ Language: id
     <string name="blaze_campaign_edit_ad_change_image_button">Ganti gambar</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Terapkan</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s hari</string>
-    <string name="blaze_campaign_budget_impressions_info">Tayangan menunjukkan frekuensi iklan ditampilkan kepada calon pembeli.\n\n\n        Meskipun jumlah persisnya tidak dapat dijamin karena fluktuasi lalu lintas online dan perilaku pengguna, kami berupaya agar tayangan aktual iklan Anda sedekat mungkin dengan jumlah yang Anda targetkan.\n\n\n        Jangan lupa, tayangan berhubungan dengan visibilitas, bukan tindakan yang dilakukan pembaca.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Selesai</string>
     <string name="blaze_campaign_budget_impressions_title">Tayangan</string>
     <string name="blaze_campaign_budget_update_button">Perbarui</string>
     <string name="blaze_campaign_budget_edit_duration_button">Edit</string>
     <string name="blaze_campaign_budget_reach_forecast">Estimasi orang yang dijangkau per hari</string>
+    <string name="blaze_campaign_budget_impressions_info">Tayangan menunjukkan frekuensi iklan ditampilkan kepada calon pembeli.\n\n\n        Meskipun jumlah persisnya tidak dapat dijamin karena fluktuasi lalu lintas online dan perilaku pengguna, kami berupaya agar tayangan aktual iklan Anda sedekat mungkin dengan jumlah yang Anda targetkan.\n\n\n        Jangan lupa, tayangan berhubungan dengan visibilitas, bukan tindakan yang dilakukan pembaca.</string>
     <string name="blaze_campaign_budget_days_duration">selama %1$s hari</string>
     <string name="blaze_campaign_budget_toolbar_title">Tentukan anggaran</string>
     <string name="blaze_campaign_preview_target_default_value">Semua</string>
@@ -3273,7 +3302,6 @@ Language: id
     <string name="empty_order_list_message">Cari tahu bagaimana Anda dapat meningkatkan penjualan toko Anda.</string>
     <string name="empty_product_message">Mulai berjualan hari ini dengan menambahkan produk pertama ke toko Anda.</string>
     <string name="empty_product_add_product_button">Tambahkan produk</string>
-    <string name="variable_product_attributes">Atribut variasi</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Aktifkan bluetooth perangkat seluler</string>
     <string name="card_reader_payment_receipt_email_subject">Tanda terima Anda dari %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Menyegarkan pesanan</string>
@@ -3707,7 +3735,6 @@ Language: id
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_refund_title">Label %1$s diminta pengembalian dananya</string>
     <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
-    <string name="product_variation_options">%1$s (%2$s opsi)</string>
     <string name="shipping_labels">Label Pengiriman</string>
     <string name="product_add_category_dialog_message">Harap tunggu…</string>
     <string name="product_add_category_dialog_title">Menambahkan kategori</string>
@@ -3845,7 +3872,6 @@ Language: id
     <string name="order_refunds_select_quantity">Pilih jumlah</string>
     <string name="order_refunds_shipping_refund">Pengembalian dana pengiriman</string>
     <string name="order_refunds_products_refund">Pengembalian dana produk</string>
-    <string name="order_refunds_items_selected">%d item terpilih</string>
     <string name="order_refunds_items_select_none">Tidak memilih</string>
     <string name="order_refunds_items_select_all">Pilih semua</string>
     <string name="order_refunds_amount_refund_confirmation_message">Menunggu konfirmasi pengembalian dana…</string>
@@ -4090,8 +4116,6 @@ Language: id
     <string name="magic_link_login_title">Login tautan ajaib</string>
     <string name="site_address_login_title">Login alamat situs</string>
     <string name="email_address_login_title">Login alamat email</string>
-    <string name="signup_with_google_progress">Mendaftar dengan Google…</string>
-    <string name="google_error_timeout">Google terlalu lama dalam merespons. Anda mungkin harus menunggu sampai memiliki koneksi internet yang lebih kuat.</string>
     <string name="signup_magic_link_progress">Mengirim email</string>
     <string name="signup_magic_link_error_button_positive">Coba lagi</string>
     <string name="signup_magic_link_error_button_negative">Tutup</string>
@@ -4105,7 +4129,6 @@ Language: id
     <string name="notification_login_title_success">Sudah login!</string>
     <string name="login_error_generic_start">Login Google tidak dapat dimulai.</string>
     <string name="login_empty_password">Masukkan kata sandi</string>
-    <string name="login_error_suffix">\nCoba masuk dengan akun lain?</string>
     <string name="login_error_generic">Ada masalah saat menyambungkan ke akun Google.</string>
     <string name="login_error_button">Tutup</string>
     <string name="error_generic_network">Terjadi error jaringan. Periksa koneksi Anda dan coba lagi.</string>
@@ -4263,6 +4286,9 @@ Language: id
     </plurals>
     <plurals name="more_menu_unseen_reviews_state_description">
         <item quantity="other">%d tinjauan belum dilihat</item>
+    </plurals>
+    <plurals name="order_refunds_items_selected_count">
+        <item quantity="other">%d item dipilih</item>
     </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">Subtotal item (%d item)</item>

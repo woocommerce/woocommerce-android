@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-21 09:56:44+0000
+Translation-Revision-Date: 2026-11-03 13:57:44+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_service_status_severity_info">資訊</string>
+    <string name="woo_shipping_labels_service_status_severity_warning">警告</string>
+    <string name="woo_shipping_labels_service_status_severity_error">錯誤</string>
+    <string name="woo_shipping_labels_service_status_dismiss">關閉通知：%1$s</string>
+    <string name="woo_shipping_labels_service_status_view_status_page">檢視狀態頁面</string>
+    <string name="woo_shipping_labels_purchase_service_status_error">由於發生貨運服務問題，所以無法購買運送標籤：%1$s</string>
+    <string name="woopos_remote_ttp_explainer_local_network_body">允許本機網路存取，以便 POS 用相同的 Wi-Fi 上找到你的手機。</string>
+    <string name="woopos_remote_ttp_explainer_local_network_heading">讓 POS 找到你的手機</string>
+    <string name="woopos_remote_ttp_explainer_allow_local_network">允許本機網路存取</string>
+    <string name="woopos_remote_reader_failed_insecure_environment">基於安全性考量，已封鎖手機上的「感應支付」。 檢查手機上的無障礙服務和螢幕錄製功能是否關閉。</string>
+    <string name="login_text_backup_code">請改用備用密碼</string>
+    <string name="support_request_ai_chat_transcript_disclosure">此要求也會包含你的 AI 支援聊天逐字稿。</string>
+    <string name="enter_verification_code_backup">輸入備用密碼以繼續。</string>
+    <string name="enter_verification_code_email">請檢查電子郵件信箱是否有來自 WordPress.com 的驗證碼，然後輸入驗證碼以繼續。</string>
+    <string name="enter_verification_code_authenticator">輸入驗證器應用程式上的驗證碼。</string>
+    <string name="ai_support_chat_escalation_consent_message_v2">兩個選項都包含此聊天逐字稿。 立即傳送要求，或開啟聯絡表單以先行新增詳細資料。</string>
+    <string name="ai_support_chat_login_unexpected_response_message">我無法登入自己的商店。 應用程式表示我的商店傳回意外回應。 如何修正這項問題？</string>
+    <string name="card_reader_payment_failed_insecure_environment">基於安全性考量，已封鎖「感應支付」。 檢查無障礙服務和螢幕錄製功能是否關閉。</string>
+    <string name="barcode_scanning_hardware_scanner_no_enter_suffix">掃描並未完成。 設定掃描器，掃完每個條碼後傳送 Enter。</string>
+    <string name="customer_list_enable_analytics_error">無法啟用 WooCommerce Analytics， 請再試一次。</string>
+    <string name="customer_list_enable_analytics_confirmation_action">啟用</string>
+    <string name="customer_list_enable_analytics_confirmation_message">這會變更整個商店的設定。 除非有人依序從「WooCommerce」›「設定」›「進階」›「功能」關閉此功能，否則功能會保持開啟。 Analytics 關閉期間的顧客資料，只會在你依序從「WooCommerce」›「Analytics 」›「設定」匯入記錄資料後，才會顯示出來。</string>
+    <string name="customer_list_enable_analytics_confirmation_title">要啟用 WooCommerce Analytics 嗎？</string>
+    <string name="customer_list_enable_analytics">啟用 Analytics</string>
+    <string name="customer_list_analytics_unavailable_message">顧客清單需要 WooCommerce Analytics，但目前此商店無法使用 Analytics。 請商店管理員檢查是否已開啟。</string>
+    <string name="customer_list_analytics_permission_denied_message">顧客清單需要 WooCommerce Analytics，但此商店無法使用 Analytics。 請商店管理員依序從「WooCommerce」›「設定」›「進階」›「功能」開啟。</string>
+    <string name="customer_list_analytics_disabled_message">顧客清單需要 WooCommerce Analytics，但此商店已將 Analytics 關閉。 你可以在此啟用，或是在商店管理員中依序前往「WooCommerce」›「設定」›「進階」›「功能」，然後點選「重試」。</string>
+    <string name="customer_list_analytics_unavailable_title">無法載入顧客</string>
+    <string name="login_unexpected_response_message">你的商店傳回意外回應，因此我們無法完成你的登入。 請再試一次，或聯絡支援團隊尋求協助。</string>
+    <string name="login_unexpected_response_title">無法登入</string>
     <string name="woo_shipping_labels_purchase_phone_required_by_service">「%1$s」要求提供收件者電話號碼。</string>
     <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">不可超過 %1$s 個字元。</string>
     <string name="woo_shipping_labels_customs_product_details_gtin_required">請輸入 GTIN/EAN，或選取「無條碼」</string>
@@ -355,7 +385,6 @@ Language: zh_TW
     <string name="ai_support_chat_escalation_transcript_header">以下是應用程式內 AI 線上對談支援的記錄：</string>
     <string name="ai_support_chat_escalation_consent_contact_form">聯絡表單</string>
     <string name="ai_support_chat_escalation_consent_send_request">傳送要求</string>
-    <string name="ai_support_chat_escalation_consent_message">我們可以使用此聊天記錄建立支援要求；或者，你也可以開啟聯絡表單，自行輸入詳細資料。</string>
     <string name="ai_support_chat_escalation_consent_title">要將此聊天傳送給支援團隊嗎？</string>
     <string name="ai_support_chat_mark_resolved_confirmation_message">這會關閉此對話的聊天動作。</string>
     <string name="ai_support_chat_mark_resolved_confirmation_title">要將聊天標示為已解決嗎？</string>
@@ -3272,7 +3301,6 @@ Language: zh_TW
     <string name="orderdetail_shipping_label_print_customs_form">列印海關表格</string>
     <string name="empty_product_message">為商店新增第一個產品，立即開始銷售。</string>
     <string name="empty_product_add_product_button">新增商品</string>
-    <string name="variable_product_attributes">款式屬性</string>
     <string name="card_reader_detail_not_connected_third_hint_label">開啟行動裝置的藍牙</string>
     <string name="card_reader_payment_receipt_email_subject">你的 %s 收據</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">正在重新整理訂單</string>
@@ -3707,7 +3735,6 @@ Language: zh_TW
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_refund_title">已提出 %1$s 標籤退款要求</string>
     <string name="orderdetail_product_lineitem_sku_value">貨號：%1$s</string>
-    <string name="product_variation_options">%1$s (%2$s 個選項)</string>
     <string name="shipping_labels">運送標籤</string>
     <string name="product_add_category_dialog_message">請稍候…</string>
     <string name="product_add_category_dialog_title">新增類別中</string>
@@ -3846,7 +3873,6 @@ Language: zh_TW
     <string name="order_refunds_select_quantity">選取數量</string>
     <string name="order_refunds_shipping_refund">運費退款</string>
     <string name="order_refunds_products_refund">產品退款</string>
-    <string name="order_refunds_items_selected">已選取 %d 個項目</string>
     <string name="order_refunds_items_select_none">全部不選</string>
     <string name="order_refunds_items_select_all">全部選取</string>
     <string name="order_refunds_amount_refund_confirmation_message">正在等候退款確認…</string>
@@ -4090,8 +4116,6 @@ Language: zh_TW
     <string name="magic_link_login_title">神奇連結登入</string>
     <string name="site_address_login_title">網站位址登入</string>
     <string name="email_address_login_title">電子郵件地址登入</string>
-    <string name="signup_with_google_progress">透過 Google 註冊…</string>
-    <string name="google_error_timeout">Google 太久沒有回應。你可能需要等到網際網路連線變強。</string>
     <string name="signup_magic_link_progress">正在傳送電子郵件</string>
     <string name="signup_magic_link_error_button_positive">重試</string>
     <string name="signup_magic_link_error_button_negative">關閉</string>
@@ -4105,7 +4129,6 @@ Language: zh_TW
     <string name="notification_login_title_success">已登入！</string>
     <string name="login_error_generic_start">無法啟動 Google 登入程序。</string>
     <string name="login_empty_password">請輸入密碼。</string>
-    <string name="login_error_suffix">\n要嘗試其他帳號嗎？</string>
     <string name="login_error_generic">連線 Google 帳號時發生一些問題。</string>
     <string name="login_error_button">關閉</string>
     <string name="error_generic_network">網路發生錯誤。請檢查你的連線並再試一次。</string>
@@ -4263,6 +4286,9 @@ Language: zh_TW
     </plurals>
     <plurals name="more_menu_unseen_reviews_state_description">
         <item quantity="other">%d 則還沒看過的評論</item>
+    </plurals>
+    <plurals name="order_refunds_items_selected_count">
+        <item quantity="other">已選取 %d 個項目</item>
     </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">項目小計 (%d 個商品)</item>

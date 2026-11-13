@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-20 11:55:32+0000
+Translation-Revision-Date: 2026-11-03 10:56:39+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_service_status_severity_info">信息</string>
+    <string name="woo_shipping_labels_service_status_severity_warning">警告</string>
+    <string name="woo_shipping_labels_service_status_severity_error">错误</string>
+    <string name="woo_shipping_labels_service_status_dismiss">忽略通知：%1$s</string>
+    <string name="woo_shipping_labels_service_status_view_status_page">查看状态页</string>
+    <string name="woo_shipping_labels_purchase_service_status_error">由于承运商服务问题，我们无法购买配送标签：%1$s</string>
+    <string name="woopos_remote_ttp_explainer_local_network_body">请允许本地网络访问，以便 POS 能在同一 Wi-Fi 网络中找到您的手机。</string>
+    <string name="woopos_remote_ttp_explainer_local_network_heading">让 POS 找到您的手机</string>
+    <string name="woopos_remote_ttp_explainer_allow_local_network">允许访问本地网络</string>
+    <string name="woopos_remote_reader_failed_insecure_environment">出于安全原因，手机上的“点按付款”功能已被屏蔽。 在手机上，请确认无障碍服务和屏幕录制功能已关闭。</string>
+    <string name="login_text_backup_code">请改用备份代码</string>
+    <string name="support_request_ai_chat_transcript_disclosure">您的 AI 支持聊天记录也将包含在此请求中。</string>
+    <string name="enter_verification_code_backup">请输入备份代码以继续。</string>
+    <string name="enter_verification_code_email">请查看您的电子邮箱，获取来自 WordPress.com 的验证码，然后输入该验证码以继续。</string>
+    <string name="enter_verification_code_authenticator">请输入验证器应用程序中的验证码。</string>
+    <string name="ai_support_chat_escalation_consent_message_v2">两个选项均包含此聊天记录。 立即发送请求，或先打开联系表单以添加更多详细信息。</string>
+    <string name="ai_support_chat_login_unexpected_response_message">我无法登录我的商店。 该应用程序表示我的商店返回了意外响应。 如何解决此问题？</string>
+    <string name="card_reader_payment_failed_insecure_environment">出于安全原因，“点按付款”功能已被屏蔽。 请确认无障碍服务和屏幕录制功能已关闭。</string>
+    <string name="barcode_scanning_hardware_scanner_no_enter_suffix">扫描未完成。 将您的扫描程序设置为在扫描每个条形码后发送 Enter。</string>
+    <string name="customer_list_enable_analytics_error">无法启用 WooCommerce Analytics。 请重试。</string>
+    <string name="customer_list_enable_analytics_confirmation_action">启用</string>
+    <string name="customer_list_enable_analytics_confirmation_message">这将更改您整个商店的设置。 该功能将保持启用状态，直至有人在“WooCommerce › 设置 › 高级 › 功能”中将其关闭。 在 Analytics 关闭期间产生的客户数据，可能只有在您通过“WooCommerce › Analytics › 设置”导入历史数据后才会显示。</string>
+    <string name="customer_list_enable_analytics_confirmation_title">启用 WooCommerce Analytics？</string>
+    <string name="customer_list_enable_analytics">启用 Analytics</string>
+    <string name="customer_list_analytics_unavailable_message">客户列表需要使用 WooCommerce Analytics，但此商店目前尚不提供该功能。 请让商店管理员确认该功能是否已开启。</string>
+    <string name="customer_list_analytics_permission_denied_message">客户列表需要使用 WooCommerce Analytics，但此商店尚不提供该功能。 请让商店管理员在“WooCommerce › 设置 › 高级 › 功能”中将其启用。</string>
+    <string name="customer_list_analytics_disabled_message">客户列表需要使用 WooCommerce Analytics，但此商店已关闭该功能。 您可以在此处启用该功能，也可以在商店管理页面中的“WooCommerce › 设置 › 高级 › 功能”下启用，然后点击“重试”。</string>
+    <string name="customer_list_analytics_unavailable_title">无法加载客户数据</string>
+    <string name="login_unexpected_response_message">您的商店返回了意外响应，因此我们无法完成您的登录。 请重试，或联系支持人员寻求帮助。</string>
+    <string name="login_unexpected_response_title">无法登录</string>
     <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s 要求提供收件人电话号码。</string>
     <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">不得超过 %1$s 个字符。</string>
     <string name="woo_shipping_labels_customs_product_details_gtin_required">请输入 GTIN/EAN，或选择“无条形码”</string>
@@ -355,7 +385,6 @@ Language: zh_CN
     <string name="ai_support_chat_escalation_transcript_header">以下是应用程序内 AI 支持聊天会话的文字转录稿：</string>
     <string name="ai_support_chat_escalation_consent_contact_form">联系表单</string>
     <string name="ai_support_chat_escalation_consent_send_request">发送请求</string>
-    <string name="ai_support_chat_escalation_consent_message">我们可以使用此聊天记录创建支持请求，或者您可以打开联系表单，自行填写详细信息。</string>
     <string name="ai_support_chat_escalation_consent_title">将此聊天发送给支持人员？</string>
     <string name="ai_support_chat_mark_resolved_confirmation_message">这将关闭此对话的聊天操作。</string>
     <string name="ai_support_chat_mark_resolved_confirmation_title">将聊天标记为已解决？</string>
@@ -1787,9 +1816,9 @@ Language: zh_CN
     <string name="blaze_campaign_edit_ad_destination_product_url_option">产品 URL</string>
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL 参数</string>
     <string name="blaze_campaign_creation_location_search_message">开始键入国家/地区、州或城市，查看可用选项</string>
-    <string name="blaze_campaign_payment_summary_terms_and_conditions">点击“提交广告活动”即表示您同意&lt;a href=\'termsOfService\'&gt;&lt;u&gt;服务条款&lt;/u&gt;&lt;/a&gt;和&lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;广告政策&lt;/u&gt;&lt;/a&gt;，并授权您的付款方式，以便按照您选择的预算和持续时间收费。 &lt;a href=\'learnMore\'&gt;&lt;u&gt;详细了解&lt;/u&gt;&lt;/a&gt; Promoted Posts 的预算和付款的运作方式。</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">目标 URL</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">手动输入</string>
+    <string name="blaze_campaign_payment_summary_terms_and_conditions">点击“提交广告活动”即表示您同意&lt;a href=\'termsOfService\'&gt;&lt;u&gt;服务条款&lt;/u&gt;&lt;/a&gt;和&lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;广告政策&lt;/u&gt;&lt;/a&gt;，并授权您的付款方式，以便按照您选择的预算和持续时间收费。 &lt;a href=\'learnMore\'&gt;&lt;u&gt;详细了解&lt;/u&gt;&lt;/a&gt; Promoted Posts 的预算和付款的运作方式。</string>
     <string name="blaze_campaign_creation_location_search_failed_message">搜索失败。\n请重试</string>
     <string name="blaze_campaign_payment_summary_add_payment_method">添加付款方式</string>
     <string name="blaze_campaign_payment_summary_total_budget">总计</string>
@@ -3273,7 +3302,6 @@ Language: zh_CN
     <string name="empty_order_list_message">探索如何提高您商店的销售额</string>
     <string name="empty_product_message">通过在您的商店中添加第一款商品，立即开始销售。</string>
     <string name="empty_product_add_product_button">添加产品</string>
-    <string name="variable_product_attributes">变体属性</string>
     <string name="card_reader_detail_not_connected_third_hint_label">打开移动设备蓝牙</string>
     <string name="card_reader_payment_receipt_email_subject">来自 %s 的收据</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">刷新订单</string>
@@ -3707,7 +3735,6 @@ Language: zh_CN
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_refund_title">已申请 %1$s 标签退款</string>
     <string name="orderdetail_product_lineitem_sku_value">SKU： %1$s</string>
-    <string name="product_variation_options">%1$s（%2$s 选项）</string>
     <string name="shipping_labels">配送标签</string>
     <string name="product_add_category_dialog_message">请稍候…</string>
     <string name="product_add_category_dialog_title">添加类别</string>
@@ -3846,7 +3873,6 @@ Language: zh_CN
     <string name="order_refunds_select_quantity">选择数量</string>
     <string name="order_refunds_shipping_refund">配送费用退款</string>
     <string name="order_refunds_products_refund">产品退款</string>
-    <string name="order_refunds_items_selected">已选择 %d 项</string>
     <string name="order_refunds_items_select_none">全部不选</string>
     <string name="order_refunds_items_select_all">全选</string>
     <string name="order_refunds_amount_refund_confirmation_message">正在等待退款确认…</string>
@@ -4090,8 +4116,6 @@ Language: zh_CN
     <string name="magic_link_login_title">使用免密登录链接登录</string>
     <string name="site_address_login_title">使用站点地址登录</string>
     <string name="email_address_login_title">使用电子邮件地址登录</string>
-    <string name="signup_with_google_progress">使用 Google 注册…</string>
-    <string name="google_error_timeout">Google 响应时间过长。您可能需要等到网络连接状况更好时才能继续。</string>
     <string name="signup_magic_link_progress">正在发送电子邮件</string>
     <string name="signup_magic_link_error_button_positive">重试</string>
     <string name="signup_magic_link_error_button_negative">关闭</string>
@@ -4105,7 +4129,6 @@ Language: zh_CN
     <string name="notification_login_title_success">登录成功！</string>
     <string name="login_error_generic_start">无法启动 Google 登录。</string>
     <string name="login_empty_password">请输入密码</string>
-    <string name="login_error_suffix">\n换个账户试试?</string>
     <string name="login_error_generic">连接到 Google 帐户时出现问题。</string>
     <string name="login_error_button">关闭</string>
     <string name="error_generic_network">发生网络错误。请检查您的连接，然后再试一次。</string>
@@ -4263,6 +4286,9 @@ Language: zh_CN
     </plurals>
     <plurals name="more_menu_unseen_reviews_state_description">
         <item quantity="other">%d 条未查看的评价</item>
+    </plurals>
+    <plurals name="order_refunds_items_selected_count">
+        <item quantity="other">已选择 %d 件商品</item>
     </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">商品小计（共 %d 件商品）</item>
