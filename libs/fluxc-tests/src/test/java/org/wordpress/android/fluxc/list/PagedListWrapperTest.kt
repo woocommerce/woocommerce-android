@@ -14,6 +14,7 @@ import org.mockito.ArgumentCaptor
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.firstValue
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
@@ -130,6 +131,18 @@ class PagedListWrapperTest {
     fun `onListRequiresRefresh invokes refresh`() {
         triggerOnListRequiresRefresh()
         verify(mockRefresh).invoke()
+    }
+
+    @Test
+    fun `given the list is the up to date one, when list requires refresh, then it is not refreshed`() {
+        val pagedListWrapper = createPagedListWrapper()
+        whenever(mockListDescriptor.typeIdentifier).thenReturn(ListDescriptorTypeIdentifier(0))
+
+        pagedListWrapper.onListRequiresRefresh(
+            OnListRequiresRefresh(type = mockListDescriptor.typeIdentifier, upToDateList = mockListDescriptor)
+        )
+
+        verify(mockRefresh, never()).invoke()
     }
 
     @Test

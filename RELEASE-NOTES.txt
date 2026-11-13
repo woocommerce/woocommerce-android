@@ -4,6 +4,7 @@
 
 26.2
 -----
+- [*] Orders: the list no longer jumps away from where you scrolled when a new order arrives [https://github.com/woocommerce/woocommerce-android/pull/16868]
 
 
 26.1

@@ -137,7 +137,7 @@ class PagedListWrapper<T>(
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     @Suppress("unused")
     fun onListRequiresRefresh(event: OnListRequiresRefresh) {
-        if (listDescriptor.typeIdentifier == event.type) {
+        if (listDescriptor.typeIdentifier == event.type && listDescriptor != event.upToDateList) {
             fetchFirstPage()
         }
     }

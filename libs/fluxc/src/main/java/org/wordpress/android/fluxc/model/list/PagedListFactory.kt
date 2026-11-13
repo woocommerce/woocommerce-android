@@ -3,6 +3,7 @@ package org.wordpress.android.fluxc.model.list
 import androidx.paging.DataSource
 import androidx.paging.PositionalDataSource
 import org.wordpress.android.fluxc.model.list.datasource.InternalPagedListDataSource
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * A [DataSource.Factory] instance for `ListStore` lists.
@@ -12,15 +13,21 @@ import org.wordpress.android.fluxc.model.list.datasource.InternalPagedListDataSo
 class PagedListFactory<LIST_DESCRIPTOR : ListDescriptor, ITEM_IDENTIFIER, LIST_ITEM>(
     private val createDataSource: () -> InternalPagedListDataSource<LIST_DESCRIPTOR, ITEM_IDENTIFIER, LIST_ITEM>
 ) : DataSource.Factory<Int, LIST_ITEM>() {
+    @Volatile
     private var currentSource: PagedListPositionalDataSource<LIST_DESCRIPTOR, ITEM_IDENTIFIER, LIST_ITEM>? = null
+    private val invalidationCount = AtomicInteger()
 
     override fun create(): DataSource<Int, LIST_ITEM> {
+        val invalidationCountBeforeCreate = invalidationCount.get()
         val source = PagedListPositionalDataSource(dataSource = createDataSource.invoke())
         currentSource = source
+        // An invalidation that arrived while the source was being created reached the previous source only.
+        if (invalidationCount.get() != invalidationCountBeforeCreate) source.invalidate()
         return source
     }
 
     fun invalidate() {
+        invalidationCount.incrementAndGet()
         currentSource?.invalidate()
     }
 }
