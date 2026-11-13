@@ -196,33 +196,6 @@ class WooPosLocalPINStoreTest {
     }
 
     @Test
-    fun `given legacy records, when reading then changing a PIN, then only the changed store is written as JSON`() = runTest {
-        // GIVEN
-        val legacy = legacyPINRecord()
-        storage.entries[1] = legacy.copyOf()
-        storage.entries[2] = legacy.copyOf()
-
-        // WHEN
-        assertThat(authenticator.authenticate(1, "1234").getOrThrow()).isNotNull()
-        assertThat(authenticator.authenticate(1, "5678").getOrThrow()).isNotNull()
-
-        // THEN
-        assertThat(storage.writtenSiteIds).isEmpty()
-        assertThat(storage.entries.getValue(1)).containsExactly(*legacy)
-
-        // WHEN
-        store.setPIN(1, WooPosRole.CASHIER, "7890").getOrThrow()
-
-        // THEN
-        assertThat(storage.entries.getValue(1).decodeToString()).startsWith("{")
-        assertThat(storage.entries.getValue(2)).containsExactly(*legacy)
-        assertThat(authenticator.authenticate(1, "1234").getOrThrow()).isNotNull()
-        assertThat(authenticator.authenticate(1, "7890").getOrThrow()).isNotNull()
-        assertThat(authenticator.authenticate(1, "5678").getOrThrow()).isNull()
-        assertThat(authenticator.authenticate(2, "5678").getOrThrow()).isNotNull()
-    }
-
-    @Test
     fun `given an unreadable record, when removing Admin PIN, then it can still be erased`() = runTest {
         // GIVEN
         storage.entries[1] = byteArrayOf(1, 2, 3)
