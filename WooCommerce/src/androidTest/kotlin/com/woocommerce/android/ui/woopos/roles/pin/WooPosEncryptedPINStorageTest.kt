@@ -138,12 +138,16 @@ class WooPosEncryptedPINStorageTest {
     fun keyErasureFailureStillDeletesRecords(): Unit = runBlocking {
         val store = WooPosLocalPINStore(storage, CoroutineDispatchers())
         store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
-        val failingKeyStore = WooPosEncryptedPINStorage(context, "woopos.pin-test") {
-            error("Keystore unavailable")
-        }
+        val reported = mutableListOf<String>()
+        val failingKeyStore = WooPosEncryptedPINStorage(
+            context,
+            "woopos.pin-test",
+            reportFailure = { operation, _ -> reported += operation },
+        ) { error("Keystore unavailable") }
         WooPosLocalPINStore(failingKeyStore, CoroutineDispatchers()).clearAll().getOrThrow()
         assertThat(store.getPINs(1).getOrThrow()).isEmpty()
         assertThat(directory.exists()).isFalse()
+        assertThat(reported).containsExactly("deleteKey")
     }
 
     @Test

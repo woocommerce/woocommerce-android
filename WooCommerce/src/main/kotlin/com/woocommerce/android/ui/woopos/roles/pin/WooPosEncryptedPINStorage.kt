@@ -50,7 +50,9 @@ class WooPosEncryptedPINStorage internal constructor(
     override fun clearAll() = reporting("clearAll") {
         if (!directory.exists()) return@reporting
         // Erase the key first: even interrupted file cleanup must not leave usable PIN records.
-        val keyErased = runCatching { retryingTransientFailure { keyStoreProvider().deleteEntry(keyAlias) } }.isSuccess
+        val keyErasure = runCatching { retryingTransientFailure { keyStoreProvider().deleteEntry(keyAlias) } }
+        keyErasure.exceptionOrNull()?.let { report("deleteKey", it) }
+        val keyErased = keyErasure.isSuccess
         val filesErased = runCatching { directory.deleteRecursively() }.getOrDefault(false)
         check(keyErased || filesErased)
     }
@@ -107,9 +109,13 @@ class WooPosEncryptedPINStorage internal constructor(
         try {
             block()
         } catch (e: Exception) {
-            reportFailure(operation, e)
+            report(operation, e)
             throw e
         }
+
+    private fun report(operation: String, failure: Throwable) {
+        runCatching { reportFailure(operation, failure) }
+    }
 
     private fun checkDirectoryAccess() {
         check(!directory.exists() || (directory.isDirectory && directory.canRead() && directory.canExecute()))
