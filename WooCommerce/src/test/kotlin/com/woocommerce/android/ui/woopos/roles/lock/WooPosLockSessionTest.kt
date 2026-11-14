@@ -13,12 +13,14 @@ class WooPosLockSessionTest {
 
     @Test
     fun `given flag off, when lock requested, then POS stays unlocked`() {
+        // GIVEN
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ROLES)).thenReturn(false)
+
         // WHEN
         session.lock()
 
         // THEN
         assertThat(session.state.value.isLocked).isFalse()
-        assertThat(FeatureFlag.WOO_POS_ROLES.localValue).isFalse()
     }
 
     @Test

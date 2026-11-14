@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-20 15:55:37+0000
+Translation-Revision-Date: 2026-11-03 15:57:54+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_service_status_severity_info">Информация</string>
+    <string name="woo_shipping_labels_service_status_severity_warning">Предупреждение</string>
+    <string name="woo_shipping_labels_service_status_severity_error">Ошибка</string>
+    <string name="woo_shipping_labels_service_status_dismiss">Закрыть уведомление: %1$s</string>
+    <string name="woo_shipping_labels_service_status_view_status_page">Просмотр страницы состояния</string>
+    <string name="woo_shipping_labels_purchase_service_status_error">Не удалось приобрести транспортную этикетку из-за ошибки в сервисе перевозчика: %1$s</string>
+    <string name="woopos_remote_ttp_explainer_local_network_body">Разрешите доступ к локальной сети, чтобы POS мог найти ваш телефон в той же сети Wi-Fi.</string>
+    <string name="woopos_remote_ttp_explainer_local_network_heading">Разрешить POS найти телефон</string>
+    <string name="woopos_remote_ttp_explainer_allow_local_network">Разрешить доступ к локальной сети</string>
+    <string name="woopos_remote_reader_failed_insecure_environment">Оплата в касание заблокирована на телефоне по соображениям безопасности. Убедитесь, что на телефоне отключены специальные возможности и запись экрана.</string>
+    <string name="login_text_backup_code">Используйте резервный код</string>
+    <string name="support_request_ai_chat_transcript_disclosure">История вашего чата со службой поддержки на базе ИИ также будет включена в этот запрос.</string>
+    <string name="enter_verification_code_backup">Чтобы продолжить, введите резервный код.</string>
+    <string name="enter_verification_code_email">Введите проверочный код от WordPress.com, отправленный вам по электронной почте, чтобы продолжить.</string>
+    <string name="enter_verification_code_authenticator">Введите проверочный код из приложения Authenticator.</string>
+    <string name="ai_support_chat_escalation_consent_message_v2">Обе опции включают историю чата. Отправьте запрос сейчас или откройте форму обратной связи, чтобы добавить дополнительные сведения.</string>
+    <string name="ai_support_chat_login_unexpected_response_message">Не удалось войти в мой магазин. Приложение сообщает, что мой магазин вернул неожиданный ответ. Как решить эту проблему?</string>
+    <string name="card_reader_payment_failed_insecure_environment">Оплата в касание заблокирована по соображениям безопасности. Убедитесь, что специальные возможности и запись экрана отключены.</string>
+    <string name="barcode_scanning_hardware_scanner_no_enter_suffix">Сканирование не завершено. Настройте сканер для отправки команды ВВОД после каждого штрихкода.</string>
+    <string name="customer_list_enable_analytics_error">Не удалось активировать WooCommerce Analytics. Повторите попытку.</string>
+    <string name="customer_list_enable_analytics_confirmation_action">Включить</string>
+    <string name="customer_list_enable_analytics_confirmation_message">Будут изменены настройки всего вашего магазина. Функция останется включённой до тех пор, пока кто-то не отключит её в разделе «WooCommerce &gt; Настройки &gt; Расширенные &gt; Функции». Клиенты, у которых была отключена функция Analytics, могут отображаться только после импорта архивных данных в разделе «WooCommerce › Analytics › Настройки».</string>
+    <string name="customer_list_enable_analytics_confirmation_title">Включить WooCommerce Analytics?</string>
+    <string name="customer_list_enable_analytics">Включить Analytics</string>
+    <string name="customer_list_analytics_unavailable_message">Для просмотра списков клиентов требуется функция WooCommerce Analytics, которая сейчас недоступна в этом магазине. Попросите администратора магазина проверить, включена ли эта функция.</string>
+    <string name="customer_list_analytics_permission_denied_message">Для просмотра списков клиентов требуется функция WooCommerce Analytics, которая недоступна в этом магазине. Попросите администратора магазина включить её в разделе «WooCommerce &gt; Настройки &gt; Расширенные &gt; Функции».</string>
+    <string name="customer_list_analytics_disabled_message">Для просмотра списков клиентов требуется функция WooCommerce Analytics, которая отключена для этого магазина. Вы можете включить её здесь или в консоли магазина в разделе «WooCommerce › Настройки › Расширенные › Функции», а затем нажмите «Повторить».</string>
+    <string name="customer_list_analytics_unavailable_title">Не удаётся загрузить клиентов</string>
+    <string name="login_unexpected_response_message">Магазин вернул непредвиденный ответ, поэтому не удалось завершить вход. Повторите попытку или обратитесь в службу поддержки.</string>
+    <string name="login_unexpected_response_title">Не удалось войти</string>
     <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s требуется номер телефона получателя.</string>
     <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">Должно быть не более %1$s симв.</string>
     <string name="woo_shipping_labels_customs_product_details_gtin_required">Введите GTIN/EAN или выберите «Без штрихкода»</string>
@@ -355,7 +385,6 @@ Language: ru
     <string name="ai_support_chat_escalation_transcript_header">Ниже приводится расшифровка сеанса ИИ-чата поддержки в приложении:</string>
     <string name="ai_support_chat_escalation_consent_contact_form">Форма обратной связи</string>
     <string name="ai_support_chat_escalation_consent_send_request">Отправить запрос</string>
-    <string name="ai_support_chat_escalation_consent_message">Мы можем создать запрос в службу поддержки на основе расшифровки этого чата, а также вы можете открыть форму обратной связи и ввести данные самостоятельно.</string>
     <string name="ai_support_chat_escalation_consent_title">Отправить этот чат в службу поддержки?</string>
     <string name="ai_support_chat_mark_resolved_confirmation_message">Это закроет действия чата в этой беседе.</string>
     <string name="ai_support_chat_mark_resolved_confirmation_title">Отметить чат как решённый?</string>
@@ -3273,7 +3302,6 @@ Language: ru
     <string name="empty_order_list_message">Узнайте о том, как увеличить продажи своего магазина.</string>
     <string name="empty_product_message">Добавьте в магазин первый продукт, чтобы уже сегодня приступить к продаже товаров.</string>
     <string name="empty_product_add_product_button">Добавить товар</string>
-    <string name="variable_product_attributes">Атрибуты вариантов</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Включите Bluetooth на мобильном устройстве</string>
     <string name="card_reader_payment_receipt_email_subject">Ваша квитанция от %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Обновление заказа</string>
@@ -3707,7 +3735,6 @@ Language: ru
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_refund_title">Запрошен возврат оплаты транспортной этикетки %1$s</string>
     <string name="orderdetail_product_lineitem_sku_value">Артикул: %1$s</string>
-    <string name="product_variation_options">%1$s (%2$s пар.)</string>
     <string name="shipping_labels">Транспортные этикетки</string>
     <string name="product_add_category_dialog_message">Пожалуйста, подождите…</string>
     <string name="product_add_category_dialog_title">Добавление категории</string>
@@ -3846,7 +3873,6 @@ Language: ru
     <string name="order_refunds_select_quantity">Выбрать количество</string>
     <string name="order_refunds_shipping_refund">Возврат средств за доставку</string>
     <string name="order_refunds_products_refund">Возврат средств за продукты</string>
-    <string name="order_refunds_items_selected">Выбрано элементов: %d</string>
     <string name="order_refunds_items_select_none">Ничего не выбирать</string>
     <string name="order_refunds_items_select_all">Выбрать все</string>
     <string name="order_refunds_amount_refund_confirmation_message">Ожидается подтверждение возврата средств…</string>
@@ -4090,8 +4116,6 @@ Language: ru
     <string name="magic_link_login_title">Вход по магической ссылке</string>
     <string name="site_address_login_title">Вход по адресу сайта</string>
     <string name="email_address_login_title">Вход по email адресу</string>
-    <string name="signup_with_google_progress">Регистрация через Google…</string>
-    <string name="google_error_timeout">Google отвечает слишком долго. Возможно вам стоит подождать пока ваше подключение к Интернет станет лучше.</string>
     <string name="signup_magic_link_progress">Отправка email</string>
     <string name="signup_magic_link_error_button_positive">Повторить</string>
     <string name="signup_magic_link_error_button_negative">Закрыть</string>
@@ -4106,7 +4130,6 @@ Language: ru
     <string name="notification_login_title_success">Вход успешен!</string>
     <string name="login_error_generic_start">Процесс входа в Google не может быть запущен.</string>
     <string name="login_empty_password">Пожалуйста, введите пароль</string>
-    <string name="login_error_suffix">\nВозможно попробуете другую учетную запись?</string>
     <string name="login_error_generic">Возникла ошибка подключения к учетной записи Google.</string>
     <string name="login_error_button">Закрыть</string>
     <string name="error_generic_network">Возникла ошибка сети. Проверьте ваше подключение и попробуйте снова.</string>
@@ -4269,6 +4292,11 @@ Language: ru
         <item quantity="one">Непрочитанные отзывы: %d</item>
         <item quantity="few">Непрочитанные отзывы: %d</item>
         <item quantity="many">Непрочитанные отзывы: %d</item>
+    </plurals>
+    <plurals name="order_refunds_items_selected_count">
+        <item quantity="one">Выбрано элементов: %d</item>
+        <item quantity="few">%d выбрано объектов</item>
+        <item quantity="many">Выбрано элементов: %d</item>
     </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Промежуточный итог по товарам (позиций: %d)</item>

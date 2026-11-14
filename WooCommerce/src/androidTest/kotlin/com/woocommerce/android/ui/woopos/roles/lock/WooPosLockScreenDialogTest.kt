@@ -9,6 +9,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -23,6 +24,8 @@ class WooPosLockScreenDialogTest {
     val composeTestRule = createComposeRule()
 
     private val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+    private val lockTitle: String
+        get() = InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.woopos_lock_enter_pin)
 
     @Test
     fun lockCoversOpenDialogAndConsumesBack() {
@@ -48,7 +51,7 @@ class WooPosLockScreenDialogTest {
         composeTestRule.waitForIdle()
 
         // THEN
-        assertThat(device.findObject(By.text(LOCK_TITLE))).isNotNull()
+        assertThat(device.findObject(By.text(lockTitle))).describedAs("Lock title: %s", lockTitle).isNotNull()
         assertThat(device.findObject(By.text(PROTECTED_TITLE))).isNull()
         assertThat(protectedDialogDismissed).isFalse()
     }
@@ -75,13 +78,12 @@ class WooPosLockScreenDialogTest {
         composeTestRule.waitForIdle()
 
         // THEN
-        assertThat(device.findObject(By.text(LOCK_TITLE))).isNotNull()
+        assertThat(device.findObject(By.text(lockTitle))).describedAs("Lock title: %s", lockTitle).isNotNull()
         assertThat(device.findObject(By.text(PROTECTED_TITLE))).isNull()
         assertThat(protectedSheetDismissed).isFalse()
     }
 
     companion object {
-        private const val LOCK_TITLE = "Enter your PIN to unlock POS"
         private const val PROTECTED_TITLE = "Protected POS content"
     }
 }

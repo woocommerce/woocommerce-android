@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-20 09:54:09+0000
+Translation-Revision-Date: 2026-11-04 09:56:17+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_service_status_severity_info">情報</string>
+    <string name="woo_shipping_labels_service_status_severity_warning">警告</string>
+    <string name="woo_shipping_labels_service_status_severity_error">エラー</string>
+    <string name="woo_shipping_labels_service_status_dismiss">次の通知を非表示: %1$s</string>
+    <string name="woo_shipping_labels_service_status_view_status_page">ステータスページを見る</string>
+    <string name="woo_shipping_labels_purchase_service_status_error">配送業者側の問題のため、配送ラベルを購入できません。%1$s</string>
+    <string name="woopos_remote_ttp_explainer_local_network_body">ローカルネットワークアクセスを許可して、同じ Wi-Fi に接続しているスマートフォンを、POS が検索できるようにします。</string>
+    <string name="woopos_remote_ttp_explainer_local_network_heading">POS によるスマートフォン検索</string>
+    <string name="woopos_remote_ttp_explainer_allow_local_network">ローカルネットワークアクセスを許可</string>
+    <string name="woopos_remote_reader_failed_insecure_environment">セキュリティ上の理由から、Tap to Pay はスマートフォンでブロックされました。 スマートフォンで、アクセシビリティサービスと画面記録がオフになっていることを確認してください。</string>
+    <string name="login_text_backup_code">代わりにバックアップコードを使用</string>
+    <string name="support_request_ai_chat_transcript_disclosure">AI サポートチャットのトランスクリプトもこのリクエストに含まれます。</string>
+    <string name="enter_verification_code_backup">バックアップコードを入力して続行します。</string>
+    <string name="enter_verification_code_email">WordPress.com からの認証コードをメールで確認し、入力して続行します。</string>
+    <string name="enter_verification_code_authenticator">認証アプリから認証コードを入力してください。</string>
+    <string name="ai_support_chat_escalation_consent_message_v2">両方のオプションにこのチャットのトランスクリプトが含まれます。 今すぐリクエストを送信するか、まずお問い合わせフォームを開いて詳細を追加します。</string>
+    <string name="ai_support_chat_login_unexpected_response_message">ストアにログインできません。 ストアが予期しない応答を返したとアプリに通知されました。 これを修正するにはどうすればよいですか？</string>
+    <string name="card_reader_payment_failed_insecure_environment">セキュリティ上の理由から、Tap to Pay はブロックされました。 アクセシビリティサービスと画面記録がオフになっていることを確認してください。</string>
+    <string name="barcode_scanning_hardware_scanner_no_enter_suffix">スキャンが完了しませんでした。 各バーコードの後に Enter を送信するようにスキャナーを設定します。</string>
+    <string name="customer_list_enable_analytics_error">WooCommerce Analytics を有効にできませんでした。 もう一度お試しください。</string>
+    <string name="customer_list_enable_analytics_confirmation_action">有効化</string>
+    <string name="customer_list_enable_analytics_confirmation_message">この操作により、ストア全体の設定が変更されます。 「WooCommerce」 ›「設定」›「詳細設定」›「機能」で誰かがオフにするまでオンのままになります。 Analytics がオフだったときの顧客は、「WooCommerce」 ›「Analytics」 ›「設定」で履歴データをインポートした後にのみ表示されます。</string>
+    <string name="customer_list_enable_analytics_confirmation_title">WooCommerce Analytics を有効にしますか？</string>
+    <string name="customer_list_enable_analytics">Analytics を有効化</string>
+    <string name="customer_list_analytics_unavailable_message">顧客リストには WooCommerce Analytics が必要ですが、現在このストアでは利用できません。 ストアの管理者に、オンになっていることを確認してください。</string>
+    <string name="customer_list_analytics_permission_denied_message">顧客リストには WooCommerce Analytics が必要ですが、このストアでは利用できません。 「WooCommerce」›「設定」›「詳細設定」›「機能」でオンにするようストア管理者に依頼します。</string>
+    <string name="customer_list_analytics_disabled_message">顧客リストには WooCommerce Analytics が必要ですが、このストアではオフになっています。 こちらで有効にするか、ストア管理画面の「WooCommerce」 ›「設定」›「詳細設定」›「機能」で「再試行」をタップします。</string>
+    <string name="customer_list_analytics_unavailable_title">顧客を読み込めません</string>
+    <string name="login_unexpected_response_message">ストアから予期しない応答が返されたため、ログインを完了できませんでした。 後でもう一度やり直すか、サポートにお問い合わせください。</string>
+    <string name="login_unexpected_response_title">ログインできません</string>
     <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s には受取人の電話番号が必要です。</string>
     <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">%1$s文字以下にしてください。</string>
     <string name="woo_shipping_labels_customs_product_details_gtin_required">GTIN/EAN を入力するか、「バーコードなし」を選択</string>
@@ -355,7 +385,6 @@ Language: ja_JP
     <string name="ai_support_chat_escalation_transcript_header">以下は、アプリ内 AI サポートチャットセッションのトランスクリプトです。</string>
     <string name="ai_support_chat_escalation_consent_contact_form">お問い合わせフォーム</string>
     <string name="ai_support_chat_escalation_consent_send_request">リクエストを送信</string>
-    <string name="ai_support_chat_escalation_consent_message">このチャットトランスクリプトをもとにサポートリクエストを作成するか、お問い合わせフォームを開いて詳細をご入力いただくことも可能です。</string>
     <string name="ai_support_chat_escalation_consent_title">このチャットをサポートに送信しますか ?</string>
     <string name="ai_support_chat_mark_resolved_confirmation_message">この会話のチャットアクションを閉じます。</string>
     <string name="ai_support_chat_mark_resolved_confirmation_title">チャットを解決済みとしてマークしますか ?</string>
@@ -3273,7 +3302,6 @@ Language: ja_JP
     <string name="empty_order_list_message">ストアの売り上げを伸ばす方法を見つけましょう。</string>
     <string name="empty_product_message">今すぐ販売を開始するには、最初の商品をストアに追加してください。</string>
     <string name="empty_product_add_product_button">商品を追加</string>
-    <string name="variable_product_attributes">バリエーション属性</string>
     <string name="card_reader_detail_not_connected_third_hint_label">モバイルデバイスの Bluetooth をオンにする</string>
     <string name="card_reader_refetching_order_failed">注文を取得する際にエラーが発生しました。 アプリの注文状態が古い可能性があります。</string>
     <string name="card_reader_payment_receipt_email_subject">%s のレシート</string>
@@ -3707,7 +3735,6 @@ Language: ja_JP
     <string name="orderdetail_shipping_label_item_shipfrom">出荷元</string>
     <string name="orderdetail_shipping_label_item_header">荷物 %d</string>
     <string name="orderdetail_product_lineitem_sku_value">商品コード :  %1$s</string>
-    <string name="product_variation_options">%1$s (%2$s 個のオプション)</string>
     <string name="shipping_labels">配送ラベル</string>
     <string name="product_add_category_dialog_message">しばらくお待ちください…</string>
     <string name="product_add_category_dialog_title">カテゴリーを追加しています</string>
@@ -3847,7 +3874,6 @@ Language: ja_JP
     <string name="order_refunds_shipping_refund">配送料の返金</string>
     <string name="order_refunds_products_refund">商品の返金</string>
     <string name="order_refunds_item_description">各 %1$s x %2$s</string>
-    <string name="order_refunds_items_selected">%d項目を選択済み</string>
     <string name="order_refunds_items_select_none">選択しない</string>
     <string name="order_refunds_items_select_all">すべて選択</string>
     <string name="order_refunds_amount_refund_confirmation_message">返金の確認を待っています…</string>
@@ -4114,13 +4140,10 @@ Language: ja_JP
     <string name="duplicate_site_detected">重複サイトが検出されました。</string>
     <string name="cannot_add_duplicate_site">このサイトはすでにアプリに存在します。新たに追加することはできません。</string>
     <string name="username_or_password_incorrect">入力されたユーザー名またはパスワードが間違っています</string>
-    <string name="google_error_timeout">Google が応答するのに時間がかかりすぎました。インターネット接続が安定するまで時間がかかる場合があります。</string>
-    <string name="signup_with_google_progress">Google アカウントを作成…</string>
     <string name="signup_magic_link_progress">メールを送信中</string>
     <string name="signup_magic_link_error_button_positive">再試行</string>
     <string name="signup_magic_link_error_button_negative">閉じる</string>
     <string name="signup_magic_link_error">メールの送信中にエラーが発生しました。今すぐ再試行するか、しばらくしてからもう一度お試しください。</string>
-    <string name="login_error_suffix">\n別のアカウントを試してみますか ?</string>
     <string name="login_error_generic_start">Google ログインを開始できませんでした。</string>
     <string name="login_error_sms_throttled">SMS 認証コードの送信試行回数が多すぎます。しばらくしてから、新しい認証コードをリクエストしてください。</string>
     <string name="login_error_generic">Google アカウントへの接続で何らかの問題が発生しました。</string>
@@ -4263,6 +4286,9 @@ Language: ja_JP
     </plurals>
     <plurals name="more_menu_unseen_reviews_state_description">
         <item quantity="other">%d件の未読のレビュー</item>
+    </plurals>
+    <plurals name="order_refunds_items_selected_count">
+        <item quantity="other">%d個のアイテムを選択済み</item>
     </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">商品小計 (%d点の商品)</item>

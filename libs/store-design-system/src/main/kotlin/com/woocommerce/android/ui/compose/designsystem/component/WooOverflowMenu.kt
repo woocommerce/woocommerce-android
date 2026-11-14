@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.compose.designsystem.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.DropdownMenu
@@ -40,6 +41,7 @@ fun WooOverflowMenu(
             expanded = isExpanded,
             onDismissRequest = { isExpanded = false },
             containerColor = WooTheme.colors.surface.default,
+            border = BorderStroke(WooTheme.stroke.regular, WooTheme.colors.outlineVariant),
         ) {
             content { isExpanded = false }
         }
