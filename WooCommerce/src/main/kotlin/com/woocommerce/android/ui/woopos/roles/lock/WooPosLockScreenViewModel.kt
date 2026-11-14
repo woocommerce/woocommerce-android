@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.lock
+package com.woocommerce.android.ui.woopos.roles.lock
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
