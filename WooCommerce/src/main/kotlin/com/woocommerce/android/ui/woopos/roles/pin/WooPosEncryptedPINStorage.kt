@@ -61,17 +61,20 @@ class WooPosEncryptedPINStorage internal constructor(
         checkDirectoryAccess()
         val file = file(localSiteId)
         if (!exists(file)) return null
-        val bytes = file.openRead().use { input -> input.readBytesBounded() }
-        require(bytes.size > IV_BYTES + TAG_BYTES)
+        return decrypt(localSiteId, file.openRead().use { input -> input.readBytesBounded() })
+    }
+
+    private fun decrypt(localSiteId: Int, encrypted: ByteArray): ByteArray {
+        require(encrypted.size > IV_BYTES + TAG_BYTES)
         return retryingTransientFailure {
             val cipher = Cipher.getInstance(TRANSFORMATION)
             cipher.init(
                 Cipher.DECRYPT_MODE,
                 requireNotNull(keyStoreProvider().getKey(keyAlias, null)),
-                GCMParameterSpec(TAG_BYTES * Byte.SIZE_BITS, bytes.copyOfRange(0, IV_BYTES))
+                GCMParameterSpec(TAG_BYTES * Byte.SIZE_BITS, encrypted.copyOfRange(0, IV_BYTES))
             )
             cipher.updateAAD(localSiteId.toString().toByteArray(Charsets.UTF_8))
-            cipher.doFinal(bytes, IV_BYTES, bytes.size - IV_BYTES)
+            cipher.doFinal(encrypted, IV_BYTES, encrypted.size - IV_BYTES)
         }
     }
 
@@ -91,6 +94,8 @@ class WooPosEncryptedPINStorage internal constructor(
             cipher.updateAAD(localSiteId.toString().toByteArray(Charsets.UTF_8))
             cipher.iv + cipher.doFinal(bytes)
         }
+        // Decrypting before commit catches devices that can encrypt but not decrypt, without replacing the record.
+        check(decrypt(localSiteId, encrypted).contentEquals(bytes))
         val stream = file.startWrite()
         try {
             stream.write(encrypted)
@@ -100,8 +105,7 @@ class WooPosEncryptedPINStorage internal constructor(
             file.failWrite(stream)
             throw e
         }
-        // Decrypting once catches devices that can encrypt but not decrypt before the PIN is relied on.
-        check(readRecord(localSiteId)?.contentEquals(bytes) == true)
+        check(file.openRead().use { it.readBytesBounded() }.contentEquals(encrypted))
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -175,11 +179,12 @@ class WooPosEncryptedPINStorage internal constructor(
         private const val TAG_BYTES = 16
         private const val KEY_BITS = 256
         private const val RETRY_DELAY_MS = 100L
-        private const val MAX_REPORTED_CAUSES = 5
+        private const val MAX_CAUSE_DEPTH = 5
 
         // KeyStoreException.isTransientFailure() is public from API 33; older versions can't tell, so retry once.
         internal fun isTransientFailure(failure: Throwable): Boolean = when {
-            failure is AEADBadTagException -> false
+            failure is AEADBadTagException || failure is IllegalArgumentException || failure is IllegalStateException ->
+                false
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ->
                 causes(failure).any { it is KeyStoreException && it.isTransientFailure }
             else -> true
@@ -200,6 +205,6 @@ class WooPosEncryptedPINStorage internal constructor(
             }
         }
 
-        private fun causes(failure: Throwable) = generateSequence(failure) { it.cause }.take(MAX_REPORTED_CAUSES)
+        private fun causes(failure: Throwable) = generateSequence(failure) { it.cause }.take(MAX_CAUSE_DEPTH)
     }
 }

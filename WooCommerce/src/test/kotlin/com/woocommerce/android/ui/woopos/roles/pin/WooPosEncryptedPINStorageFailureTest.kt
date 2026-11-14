@@ -12,6 +12,12 @@ class WooPosEncryptedPINStorageFailureTest {
     }
 
     @Test
+    fun `given a missing key or invalid input, when checking the failure, then it is not retried`() {
+        assertThat(WooPosEncryptedPINStorage.isTransientFailure(IllegalArgumentException())).isFalse()
+        assertThat(WooPosEncryptedPINStorage.isTransientFailure(IllegalStateException())).isFalse()
+    }
+
+    @Test
     fun `given Android before 13, when a Keystore operation fails, then it is retried`() {
         assertThat(WooPosEncryptedPINStorage.isTransientFailure(ProviderException())).isTrue()
     }

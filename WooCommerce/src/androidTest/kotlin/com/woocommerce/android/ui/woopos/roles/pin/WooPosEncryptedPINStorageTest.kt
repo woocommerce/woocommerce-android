@@ -14,6 +14,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
 import java.security.KeyStore
+import java.security.ProviderException
 
 @RunWith(AndroidJUnit4::class)
 class WooPosEncryptedPINStorageTest {
@@ -208,6 +209,7 @@ class WooPosEncryptedPINStorageTest {
         val store = WooPosLocalPINStore(decryptFailing, CoroutineDispatchers())
         assertThat(store.setPIN(1, WooPosLocalRole.ADMIN, "1234").exceptionOrNull())
             .isEqualTo(WooPosPINError.StorageFailure)
+        assertThat(WooPosLocalPINStore(storage, CoroutineDispatchers()).getPINs(1).getOrThrow()).isEmpty()
     }
 
     @Test
@@ -220,5 +222,16 @@ class WooPosEncryptedPINStorageTest {
         assertThat(WooPosLocalPINStore(failing, CoroutineDispatchers()).getPINs(1).exceptionOrNull())
             .isEqualTo(WooPosPINError.StorageFailure)
         assertThat(reported).containsExactly("read")
+    }
+
+    @Test
+    fun failingReportDoesNotReplaceTheStorageFailure() {
+        WooPosEncryptedPINStorage(context, "woopos.pin-test").write(1, byteArrayOf(1))
+        val failing = WooPosEncryptedPINStorage(
+            context,
+            "woopos.pin-test",
+            reportFailure = { _, _ -> error("Report failed") },
+        ) { throw ProviderException("Keystore unavailable") }
+        assertThatThrownBy { failing.read(1) }.isInstanceOf(ProviderException::class.java)
     }
 }
