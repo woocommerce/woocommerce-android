@@ -88,6 +88,7 @@ class WooPosSettingsViewModel @Inject constructor(
 
     private fun trackCategorySelection(category: WooPosSettingsCategory) {
         val event = when (category) {
+            // TODO WOOMOB-4602: Add Security tracking with PIN setup integration.
             WooPosSettingsCategory.SECURITY -> return
             WooPosSettingsCategory.STORE -> StoreDetailsTapped
             WooPosSettingsCategory.PAYMENTS -> PaymentsTapped
@@ -115,6 +116,10 @@ class WooPosSettingsViewModel @Inject constructor(
                 currentState
             }
         }
+    }
+
+    fun showPinSetupDialog() {
+        _state.update { it.copy(dialogState = WooPosSettingsDialogState.PinSetupDialog) }
     }
 
     fun showProductInfoDialog() {

@@ -66,11 +66,6 @@ fun WooPosPinSetupDialog(
                     liveRegion = LiveRegionMode.Polite
                 },
             )
-            WooPosText(
-                text = stringResource(R.string.woopos_security_mock_notice),
-                style = WooPosTypography.BodyMedium,
-                textAlign = TextAlign.Center,
-            )
             if (state.canEnterPIN) {
                 WooPosPinDots(state.enteredDigits)
                 if (state.mismatch) {

@@ -38,7 +38,8 @@ import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCateg
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPaneScreen
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSyncErrorDialog
-import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityDialogs
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosPinSetupDialog
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosPinSetupState
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialog
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialogState
 import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
@@ -59,38 +60,37 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
 
     val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
 
-    Box(Modifier.fillMaxSize()) {
-        if (isPhoneLayout) {
-            WooPosSettingsPhoneContent(
-                state = state,
-                onBackClicked = backHandler,
-                onCategorySelected = containerViewModel::onCategorySelected,
-                onNavigate = containerViewModel::navigateToDetail,
-                onBack = containerViewModel::navigateBack,
-                onDismissDetail = containerViewModel::dismissDetail,
-                onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
-                onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
-                onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
-                onDismissDialog = containerViewModel::hideDialog,
-                onNavigationEvent = onNavigationEvent
-            )
-        } else {
-            BackHandler { backHandler() }
+    if (isPhoneLayout) {
+        WooPosSettingsPhoneContent(
+            state = state,
+            onBackClicked = backHandler,
+            onCategorySelected = containerViewModel::onCategorySelected,
+            onNavigate = containerViewModel::navigateToDetail,
+            onBack = containerViewModel::navigateBack,
+            onDismissDetail = containerViewModel::dismissDetail,
+            onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
+            onShowPinSetupDialog = containerViewModel::showPinSetupDialog,
+            onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
+            onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
+            onDismissDialog = containerViewModel::hideDialog,
+            onNavigationEvent = onNavigationEvent
+        )
+    } else {
+        BackHandler { backHandler() }
 
-            WooPosSettingsTabletContent(
-                state = state,
-                onBackClicked = backHandler,
-                onCategorySelected = containerViewModel::onCategorySelected,
-                onNavigate = containerViewModel::navigateToDetail,
-                onBack = containerViewModel::navigateBack,
-                onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
-                onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
-                onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
-                onDismissDialog = containerViewModel::hideDialog,
-                onNavigationEvent = onNavigationEvent
-            )
-        }
-        WooPosSettingsSecurityDialogs()
+        WooPosSettingsTabletContent(
+            state = state,
+            onBackClicked = backHandler,
+            onCategorySelected = containerViewModel::onCategorySelected,
+            onNavigate = containerViewModel::navigateToDetail,
+            onBack = containerViewModel::navigateBack,
+            onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
+            onShowPinSetupDialog = containerViewModel::showPinSetupDialog,
+            onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
+            onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
+            onDismissDialog = containerViewModel::hideDialog,
+            onNavigationEvent = onNavigationEvent
+        )
     }
 }
 
@@ -103,6 +103,7 @@ private fun WooPosSettingsPhoneContent(
     onBack: () -> Unit,
     onDismissDetail: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
+    onShowPinSetupDialog: () -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit,
@@ -147,6 +148,7 @@ private fun WooPosSettingsPhoneContent(
                 onNavigate = onNavigate,
                 onBack = handleDetailBack,
                 onShowProductInfoDialog = onShowProductInfoDialog,
+                onShowPinSetupDialog = onShowPinSetupDialog,
                 onShowScanningSetupDialog = onShowScanningSetupDialog,
                 onNavigationEvent = onNavigationEvent,
                 modifier = Modifier
@@ -173,6 +175,7 @@ private fun WooPosSettingsTabletContent(
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
+    onShowPinSetupDialog: () -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit,
@@ -203,6 +206,7 @@ private fun WooPosSettingsTabletContent(
             onNavigate = onNavigate,
             onBack = onBack,
             onShowProductInfoDialog = onShowProductInfoDialog,
+            onShowPinSetupDialog = onShowPinSetupDialog,
             onShowScanningSetupDialog = onShowScanningSetupDialog,
             onNavigationEvent = onNavigationEvent,
             modifier = Modifier
@@ -228,6 +232,13 @@ private fun SettingsDialogs(
         state = WooPosSettingsProductInfoDialogState,
         isVisible = dialogState is WooPosSettingsDialogState.ProductsInfoDialog,
         onDismissRequest = onDismissDialog
+    )
+
+    WooPosPinSetupDialog(
+        state = WooPosPinSetupState(),
+        isVisible = dialogState is WooPosSettingsDialogState.PinSetupDialog,
+        onUIEvent = {},
+        onClose = onDismissDialog,
     )
 
     WooPosScanningSetupDialog(

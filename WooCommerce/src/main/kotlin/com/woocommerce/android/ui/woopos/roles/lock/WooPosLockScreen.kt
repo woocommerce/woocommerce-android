@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.roles.lock
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -58,37 +57,33 @@ fun WooPosLockScreen(
     onUIEvent: (WooPosLockScreenUIEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
+    Column(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
             .safeDrawingPadding()
             .verticalScroll(rememberScrollState())
             .padding(WooPosSpacing.XLarge.value),
-        contentAlignment = Alignment.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value, Alignment.CenterVertically),
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value),
-        ) {
-            WooPosText(
-                text = stringResource(R.string.woopos_lock_enter_pin),
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.semantics { heading() },
-            )
-            WooPosPinDots(state.enteredDigits)
-            LockStatus(state)
-            WooPosPinPad(
-                enteredDigits = state.enteredDigits,
-                enabled = state.canEnterPIN,
-                onDigit = { onUIEvent(WooPosLockScreenUIEvent.DigitTapped(it)) },
-                onDelete = { onUIEvent(WooPosLockScreenUIEvent.DeleteTapped) },
-            )
-            TextButton(onClick = { onUIEvent(WooPosLockScreenUIEvent.ForgotPINTapped) }) {
-                WooPosText(stringResource(R.string.woopos_lock_forgot_pin), style = WooPosTypography.BodyLarge)
-            }
+        WooPosText(
+            text = stringResource(R.string.woopos_lock_enter_pin),
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.semantics { heading() },
+        )
+        WooPosPinDots(state.enteredDigits)
+        LockStatus(state)
+        WooPosPinPad(
+            enteredDigits = state.enteredDigits,
+            enabled = state.canEnterPIN,
+            onDigit = { onUIEvent(WooPosLockScreenUIEvent.DigitTapped(it)) },
+            onDelete = { onUIEvent(WooPosLockScreenUIEvent.DeleteTapped) },
+        )
+        TextButton(onClick = { onUIEvent(WooPosLockScreenUIEvent.ForgotPINTapped) }) {
+            WooPosText(stringResource(R.string.woopos_lock_forgot_pin), style = WooPosTypography.BodyLarge)
         }
     }
 }

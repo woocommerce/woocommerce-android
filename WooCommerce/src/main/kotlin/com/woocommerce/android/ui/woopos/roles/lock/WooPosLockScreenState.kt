@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
-import com.woocommerce.android.ui.woopos.common.pin.WOO_POS_PIN_LENGTH
-
 data class WooPosLockScreenState(
     val isLocked: Boolean = false,
     val enteredDigits: Int = 0,
@@ -11,10 +9,6 @@ data class WooPosLockScreenState(
 ) {
     val canEnterPIN: Boolean
         get() = isLocked && !isChecking && remainingSeconds == 0L && error != WooPosLockError.STORAGE
-
-    companion object {
-        const val PIN_LENGTH = WOO_POS_PIN_LENGTH
-    }
 }
 
 enum class WooPosLockError { INCORRECT, STORAGE, RECOVERY_UNAVAILABLE }

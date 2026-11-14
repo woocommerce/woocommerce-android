@@ -39,6 +39,7 @@ fun WooPosSettingsDetailPaneScreen(
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
+    onShowPinSetupDialog: () -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -77,7 +78,7 @@ fun WooPosSettingsDetailPaneScreen(
         ) { destination ->
             when (destination) {
                 is WooPosSettingsDetailDestination.Security.Overview -> {
-                    WooPosSettingsSecurityScreen()
+                    WooPosSettingsSecurityScreen(onGetStartedClicked = onShowPinSetupDialog)
                 }
 
                 is WooPosSettingsDetailDestination.Hardware.Overview -> {

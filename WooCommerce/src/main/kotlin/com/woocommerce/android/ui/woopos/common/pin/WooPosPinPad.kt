@@ -38,8 +38,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-
-const val WOO_POS_PIN_LENGTH = 4
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 
 @Composable
 fun WooPosPinPad(
@@ -82,7 +81,7 @@ fun WooPosPinDots(enteredDigits: Int) {
     val description = stringResource(
         R.string.woopos_lock_digits_entered,
         enteredDigits,
-        WOO_POS_PIN_LENGTH,
+        WooPosPINHash.PIN_LENGTH,
     )
     Row(
         horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
@@ -91,7 +90,7 @@ fun WooPosPinDots(enteredDigits: Int) {
             stateDescription = description
         },
     ) {
-        repeat(WOO_POS_PIN_LENGTH) { index ->
+        repeat(WooPosPINHash.PIN_LENGTH) { index ->
             val filled = index < enteredDigits
             Box(
                 Modifier
