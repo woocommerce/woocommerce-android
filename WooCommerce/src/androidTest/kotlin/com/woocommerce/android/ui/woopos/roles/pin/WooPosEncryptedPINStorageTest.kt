@@ -193,4 +193,28 @@ class WooPosEncryptedPINStorageTest {
         store.setPIN(1, WooPosLocalRole.ADMIN, "0000").getOrThrow()
         assertThat(WooPosPINAuthenticator(store, CoroutineDispatchers()).authenticate(1, "1234").getOrThrow()).isNull()
     }
+
+    @Test
+    fun recordThatCannotBeDecryptedFailsSetupInsteadOfFirstUnlock(): Unit = runBlocking {
+        var keyStoreCalls = 0
+        val decryptFailing = WooPosEncryptedPINStorage(context, "woopos.pin-test") {
+            check(keyStoreCalls++ == 0) { "Keystore unavailable" }
+            KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
+        }
+        val store = WooPosLocalPINStore(decryptFailing, CoroutineDispatchers())
+        assertThat(store.setPIN(1, WooPosLocalRole.ADMIN, "1234").exceptionOrNull())
+            .isEqualTo(WooPosPINError.StorageFailure)
+    }
+
+    @Test
+    fun storageFailureIsReportedWithItsOperation(): Unit = runBlocking {
+        WooPosLocalPINStore(storage, CoroutineDispatchers()).setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+        val reported = mutableListOf<String>()
+        val failing = WooPosEncryptedPINStorage(context, "woopos.pin-test", { operation, _ -> reported += operation }) {
+            error("Keystore unavailable")
+        }
+        assertThat(WooPosLocalPINStore(failing, CoroutineDispatchers()).getPINs(1).exceptionOrNull())
+            .isEqualTo(WooPosPINError.StorageFailure)
+        assertThat(reported).containsExactly("read")
+    }
 }
