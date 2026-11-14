@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.roles.pin
 
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
-import com.woocommerce.android.ui.woopos.roles.WooPosStaff
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CancellationException
@@ -15,12 +14,12 @@ import javax.inject.Singleton
 class WooPosLocalPINStore @Inject constructor(
     private val storage: WooPosPINStorage,
     private val dispatchers: CoroutineDispatchers,
-) : WooPosPINCredentialSource {
+) {
     private val mutex = Mutex()
     private val codec = WooPosPINCodec()
 
-    override suspend fun credentials(localSiteId: Int): Result<List<WooPosPINCredential>> = operation {
-        load(localSiteId).map { (role, hash) -> WooPosPINCredential(WooPosStaff(role.capabilities), hash) }
+    suspend fun getPINs(localSiteId: Int): Result<Map<WooPosLocalRole, WooPosPINHash>> = operation {
+        load(localSiteId)
     }
 
     suspend fun setPIN(localSiteId: Int, role: WooPosLocalRole, pin: String): Result<Unit> = operation {

@@ -19,5 +19,7 @@ enum class WooPosLocalRole(
             WooPosCapability.VIEW_ORDERS,
             WooPosCapability.APPLY_COUPONS,
         ),
-    ),
+    );
+
+    fun hasCapability(capability: WooPosCapability): Boolean = capability in capabilities
 }

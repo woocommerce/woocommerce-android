@@ -23,8 +23,8 @@ class WooPosLocalPINStoreTest {
     private val authenticator = WooPosPINAuthenticator(store, coroutineRule.testDispatchers)
 
     @Test
-    fun `given no Admin PIN, when reading credentials, then protection is off`() = runTest {
-        assertThat(store.credentials(1).getOrThrow()).isEmpty()
+    fun `given no Admin PIN, when reading PINs, then protection is off`() = runTest {
+        assertThat(store.getPINs(1).getOrThrow()).isEmpty()
         assertThat(authenticator.authenticate(1, "1234").getOrThrow()).isNull()
         WooPosLocalRole.entries.filter { it != WooPosLocalRole.ADMIN }.forEach { role ->
             assertThat(store.setPIN(1, role, "5678").exceptionOrNull())
@@ -95,7 +95,7 @@ class WooPosLocalPINStoreTest {
             // THEN
             assertThat(authenticator.authenticate(1, "1234").getOrThrow()).isNotNull()
             assertThat(authenticator.authenticate(1, "5678").getOrThrow()).isNull()
-            assertThat(store.credentials(1).getOrThrow()).hasSize(1)
+            assertThat(store.getPINs(1).getOrThrow()).hasSize(1)
         }
     }
 
@@ -110,12 +110,12 @@ class WooPosLocalPINStoreTest {
         store.removePIN(1, WooPosLocalRole.ADMIN).getOrThrow()
 
         // THEN
-        assertThat(store.credentials(1).getOrThrow()).isEmpty()
-        assertThat(store.credentials(2).getOrThrow()).hasSize(1)
+        assertThat(store.getPINs(1).getOrThrow()).isEmpty()
+        assertThat(store.getPINs(2).getOrThrow()).hasSize(1)
     }
 
     @Test
-    fun `given multiple stores, when clearing for logout, then all local credentials are removed`() = runTest {
+    fun `given multiple stores, when clearing for logout, then all local PINs are removed`() = runTest {
         // GIVEN
         store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
         store.setPIN(2, WooPosLocalRole.ADMIN, "5678").getOrThrow()
@@ -124,8 +124,8 @@ class WooPosLocalPINStoreTest {
         store.clearAll().getOrThrow()
 
         // THEN
-        assertThat(store.credentials(1).getOrThrow()).isEmpty()
-        assertThat(store.credentials(2).getOrThrow()).isEmpty()
+        assertThat(store.getPINs(1).getOrThrow()).isEmpty()
+        assertThat(store.getPINs(2).getOrThrow()).isEmpty()
     }
 
     @Test
@@ -167,7 +167,7 @@ class WooPosLocalPINStoreTest {
         storage.entries[1] = byteArrayOf(1, 2, 3)
 
         // THEN
-        assertThat(store.credentials(1).exceptionOrNull()).isEqualTo(WooPosPINError.StorageFailure)
+        assertThat(store.getPINs(1).exceptionOrNull()).isEqualTo(WooPosPINError.StorageFailure)
         assertThat(authenticator.authenticate(1, "1234").exceptionOrNull()).isEqualTo(WooPosPINError.StorageFailure)
         assertThat(store.setPIN(1, WooPosLocalRole.ADMIN, "1234").exceptionOrNull())
             .isEqualTo(WooPosPINError.StorageFailure)
@@ -175,7 +175,7 @@ class WooPosLocalPINStoreTest {
     }
 
     @Test
-    fun `given unreadable secure storage, when reading credentials, then failure is not protection off`() = runTest {
+    fun `given unreadable secure storage, when reading PINs, then failure is not protection off`() = runTest {
         // GIVEN
         val failingStorage: WooPosPINStorage = mock {
             on { read(any()) } doThrow IllegalStateException("Keystore unavailable")
@@ -183,18 +183,18 @@ class WooPosLocalPINStoreTest {
         val failingStore = WooPosLocalPINStore(failingStorage, coroutineRule.testDispatchers)
 
         // THEN
-        assertThat(failingStore.credentials(1).exceptionOrNull()).isEqualTo(WooPosPINError.StorageFailure)
+        assertThat(failingStore.getPINs(1).exceptionOrNull()).isEqualTo(WooPosPINError.StorageFailure)
     }
 
     @Test
-    fun `given cancelled storage operation, when reading credentials, then cancellation propagates`() = runTest {
+    fun `given cancelled storage operation, when reading PINs, then cancellation propagates`() = runTest {
         // GIVEN
         val cancelledStorage: WooPosPINStorage = mock()
         whenever(cancelledStorage.read(1)).thenThrow(CancellationException())
         val cancelledStore = WooPosLocalPINStore(cancelledStorage, coroutineRule.testDispatchers)
 
         // WHEN
-        val failure = runCatching { cancelledStore.credentials(1) }.exceptionOrNull()
+        val failure = runCatching { cancelledStore.getPINs(1) }.exceptionOrNull()
 
         // THEN
         assertThat(failure).isInstanceOf(CancellationException::class.java)
