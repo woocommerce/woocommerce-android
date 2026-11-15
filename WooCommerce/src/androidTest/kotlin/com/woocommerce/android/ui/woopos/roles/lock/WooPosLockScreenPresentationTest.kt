@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -39,7 +41,7 @@ class WooPosLockScreenPresentationTest {
     }
 
     @Test
-    fun checkingDisablesKeysAndDisplaysStatus() {
+    fun checkingDisablesKeysAndDisplaysProgress() {
         composeTestRule.setContent {
             WooPosTheme {
                 WooPosLockScreen(
@@ -49,7 +51,7 @@ class WooPosLockScreenPresentationTest {
             }
         }
 
-        composeTestRule.onNodeWithText(context.getString(R.string.woopos_lock_checking)).assertIsDisplayed()
+        composeTestRule.onNode(hasProgressBarRangeInfo(ProgressBarRangeInfo.Indeterminate)).assertIsDisplayed()
         composeTestRule.onNodeWithText("1").assertIsNotEnabled()
     }
 }

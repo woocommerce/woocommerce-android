@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.progressSemantics
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -24,7 +26,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -104,13 +108,15 @@ private fun LockStatus(state: WooPosLockScreenState) {
             state.remainingSeconds / 60,
             state.remainingSeconds % 60,
         )
-        state.isChecking -> stringResource(R.string.woopos_lock_checking)
+        state.isChecking -> null
         state.error == WooPosLockError.INCORRECT -> stringResource(R.string.woopos_lock_incorrect)
         state.error == WooPosLockError.STORAGE -> stringResource(R.string.woopos_lock_storage_error)
         else -> null
     }
     val isError = state.error != null && state.remainingSeconds == 0L && !state.isChecking
-    if (message != null) {
+    if (state.isChecking && state.remainingSeconds == 0L) {
+        WooPosCircularLoadingIndicator(Modifier.size(WooPosIconSize.Large.value).progressSemantics())
+    } else if (message != null) {
         WooPosText(
             text = message,
             style = WooPosTypography.BodyLarge,

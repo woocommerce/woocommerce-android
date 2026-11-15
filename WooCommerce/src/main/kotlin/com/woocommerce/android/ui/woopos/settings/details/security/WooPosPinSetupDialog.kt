@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.progressSemantics
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -52,8 +53,8 @@ fun WooPosPinSetupDialog(
         ) {
             val title = when (state.stage) {
                 WooPosPinSetupState.Stage.CHOOSE -> R.string.woopos_security_choose_pin
-                WooPosPinSetupState.Stage.CONFIRM -> R.string.woopos_security_confirm_pin
-                WooPosPinSetupState.Stage.CHECKING -> R.string.woopos_security_saving
+                WooPosPinSetupState.Stage.CONFIRM,
+                WooPosPinSetupState.Stage.CHECKING -> R.string.woopos_security_confirm_pin
                 WooPosPinSetupState.Stage.SUCCESS -> R.string.woopos_security_success
             }
             WooPosText(
@@ -90,7 +91,7 @@ fun WooPosPinSetupDialog(
                     )
                 }
             } else if (state.stage == WooPosPinSetupState.Stage.CHECKING) {
-                WooPosCircularLoadingIndicator(Modifier.size(WooPosIconSize.Large.value))
+                WooPosCircularLoadingIndicator(Modifier.size(WooPosIconSize.Large.value).progressSemantics())
             } else {
                 WooPosOutlinedButton(text = stringResource(R.string.done), onClick = onClose)
             }
