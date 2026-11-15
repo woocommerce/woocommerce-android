@@ -11,4 +11,4 @@ data class WooPosLockScreenState(
         get() = isLocked && !isChecking && remainingSeconds == 0L && error != WooPosLockError.STORAGE
 }
 
-enum class WooPosLockError { INCORRECT, STORAGE, RECOVERY_UNAVAILABLE }
+enum class WooPosLockError { INCORRECT, STORAGE }

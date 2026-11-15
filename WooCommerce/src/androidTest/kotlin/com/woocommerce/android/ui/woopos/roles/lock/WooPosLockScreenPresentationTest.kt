@@ -1,12 +1,10 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.R
@@ -23,29 +21,21 @@ class WooPosLockScreenPresentationTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
     @Test
-    fun waitDisablesKeysAndKeepsRecoveryAvailable() {
-        val state = mutableStateOf(WooPosLockScreenState(isLocked = true, remainingSeconds = 30))
+    fun waitDisablesKeysAndKeepsForgotPINEnabled() {
+        val state = WooPosLockScreenState(isLocked = true, remainingSeconds = 30)
         composeTestRule.setContent {
             WooPosTheme {
-                WooPosLockScreen(state.value, onUIEvent = { event ->
-                    if (event == WooPosLockScreenUIEvent.ForgotPINTapped) {
-                        state.value = state.value.copy(error = WooPosLockError.RECOVERY_UNAVAILABLE)
-                    }
-                })
+                WooPosLockScreen(state, onUIEvent = {})
             }
         }
 
         composeTestRule.onNodeWithText("1").assertIsNotEnabled()
         composeTestRule.onNodeWithText(
             context.getString(R.string.woopos_lock_forgot_pin)
-        ).assertIsEnabled().performClick()
+        ).assertIsEnabled()
         composeTestRule.onNodeWithText(
             context.getString(R.string.woopos_lock_wait, 0, 30)
         ).assertIsDisplayed()
-        composeTestRule.onNodeWithText(
-            context.getString(R.string.woopos_lock_recovery_pending)
-        ).assertIsDisplayed()
-        composeTestRule.onNodeWithText("1").assertIsNotEnabled()
     }
 
     @Test

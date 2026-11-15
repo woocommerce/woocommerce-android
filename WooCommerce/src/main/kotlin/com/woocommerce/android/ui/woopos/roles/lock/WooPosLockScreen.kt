@@ -107,11 +107,9 @@ private fun LockStatus(state: WooPosLockScreenState) {
         state.isChecking -> stringResource(R.string.woopos_lock_checking)
         state.error == WooPosLockError.INCORRECT -> stringResource(R.string.woopos_lock_incorrect)
         state.error == WooPosLockError.STORAGE -> stringResource(R.string.woopos_lock_storage_error)
-        state.error == WooPosLockError.RECOVERY_UNAVAILABLE -> stringResource(R.string.woopos_lock_recovery_pending)
         else -> null
     }
-    val isError = state.remainingSeconds == 0L && !state.isChecking &&
-        (state.error == WooPosLockError.INCORRECT || state.error == WooPosLockError.STORAGE)
+    val isError = state.error != null && state.remainingSeconds == 0L && !state.isChecking
     if (message != null) {
         WooPosText(
             text = message,
@@ -119,14 +117,6 @@ private fun LockStatus(state: WooPosLockScreenState) {
             color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-        )
-    }
-    if (state.remainingSeconds > 0 && state.error == WooPosLockError.RECOVERY_UNAVAILABLE) {
-        WooPosText(
-            text = stringResource(R.string.woopos_lock_recovery_pending),
-            style = WooPosTypography.BodyLarge,
-            color = MaterialTheme.colorScheme.error,
-            textAlign = TextAlign.Center,
         )
     }
 }

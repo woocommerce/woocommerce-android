@@ -50,9 +50,7 @@ enum class WooPosSettingsCategory(
 }
 
 data class WooPosSettingsCategoriesState(
-    val categories: List<WooPosSettingsCategory> = WooPosSettingsCategory.entries.filter {
-        it != WooPosSettingsCategory.SECURITY
-    }
+    val categories: List<WooPosSettingsCategory> = WooPosSettingsCategory.entries
 ) {
     val scrollableCategories: List<WooPosSettingsCategory>
         get() = categories.filter { !it.isFixedAtBottom }
