@@ -29,7 +29,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
@@ -594,6 +596,79 @@ class WooPosReceiptPrinterConnectionControllerTest {
         }
 
     @Test
+    fun `given setup is cancelled as soon as it is searching, when setup starts, then no search is started`() = runTest {
+        // GIVEN
+        val sut = createController()
+        onEachStateInline(sut) { if (it is Searching) sut.cancelSetup() }
+
+        // WHEN
+        sut.startSetup()
+        runCurrent()
+
+        // THEN
+        assertThat(sut.state.value).isEqualTo(Idle)
+        assertThat(searchesStarted).isEqualTo(0)
+    }
+
+    @Test
+    fun `given setup is cancelled as soon as it is connecting, when connecting, then no connection is started`() =
+        runTest {
+            // GIVEN
+            val sut = createController()
+            sut.startSetup()
+            find(PRINTER)
+            onEachStateInline(sut) { if (it is Connecting) sut.cancelSetup() }
+
+            // WHEN
+            sut.connect(PRINTER)
+            runCurrent()
+
+            // THEN
+            assertThat(sut.state.value).isEqualTo(Idle)
+            verify(receiptPrinterFacade, never()).connect(PRINTER)
+        }
+
+    @Test
+    fun `given setup restarts as soon as it is connecting, when setup is cancelled, then the restarted search stops`() =
+        runTest {
+            // GIVEN
+            val sut = createController()
+            sut.startSetup()
+            find(PRINTER)
+            onEachStateInline(sut) { if (it is Connecting) sut.startSetup() }
+            sut.connect(PRINTER)
+            runCurrent()
+
+            // WHEN
+            sut.cancelSetup()
+            runCurrent()
+
+            // THEN
+            assertThat(sut.state.value).isEqualTo(Idle)
+            assertThat(isDiscovering).isFalse()
+            verify(receiptPrinterFacade, never()).connect(PRINTER)
+        }
+
+    @Test
+    fun `given setup restarts as soon as the search fails, when the failed search ends, then the new search is kept`() =
+        runTest {
+            // GIVEN
+            whenever(receiptPrinterFacade.discover()).thenReturn(
+                flowOf(ReceiptPrinterDiscoveryEvent.Failed(ReceiptPrinterError.DiscoveryFailure)),
+                discoveryEvents.receiveAsFlow(),
+            )
+            val sut = createController()
+            onEachStateInline(sut) { if (it is DiscoveryFailed) sut.startSetup() }
+
+            // WHEN
+            sut.startSetup()
+            runCurrent()
+
+            // THEN
+            assertThat(sut.state.value).isEqualTo(Searching)
+        }
+
+    @Test
     fun `given setup was cancelled, when it starts again, then the new search is not affected`() = runTest {
         // GIVEN
         val sut = createController()
@@ -639,6 +714,13 @@ class WooPosReceiptPrinterConnectionControllerTest {
         permissionUtils = permissionUtils,
         scope = backgroundScope,
     )
+
+    private fun TestScope.onEachStateInline(
+        sut: WooPosReceiptPrinterConnectionController,
+        action: (WooPosReceiptPrinterConnectionState) -> Unit,
+    ) {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { sut.state.collect { action(it) } }
+    }
 
     private fun TestScope.find(device: ReceiptPrinterDevice) {
         discoveryEvents.trySend(ReceiptPrinterDiscoveryEvent.PrinterFound(device))

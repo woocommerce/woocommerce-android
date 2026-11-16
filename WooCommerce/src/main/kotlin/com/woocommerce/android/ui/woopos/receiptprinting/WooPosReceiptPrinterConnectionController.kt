@@ -19,6 +19,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
@@ -75,8 +76,7 @@ class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
 
     fun connect(device: ReceiptPrinterDevice) {
         val discoveryJob = setupJob?.apply { cancel() }
-        _state.value = Connecting(device)
-        setupJob = scope.launch {
+        launchSetup(Connecting(device)) {
             discoveryJob?.join()
             val result = receiptPrinterFacade.connect(device)
             ensureActive()
@@ -100,16 +100,28 @@ class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
             return
         }
         foundDevices = emptyList()
-        _state.value = Searching
-        setupJob = scope.launch {
+        launchSetup(Searching) {
             receiptPrinterFacade.discover().collect { event ->
                 when (event) {
                     is ReceiptPrinterDiscoveryEvent.PrinterFound -> onPrinterFound(event.device)
                     is ReceiptPrinterDiscoveryEvent.Failed -> _state.value = DiscoveryFailed
                 }
             }
+            ensureActive()
             if (_state.value is Searching) _state.value = NoPrintersFound
         }
+    }
+
+    // A state collector can call back into the controller while the state is published, so the job is registered
+    // first: whatever that collector cancels or replaces is then this setup and not the previous one.
+    private fun launchSetup(
+        initialState: WooPosReceiptPrinterConnectionState,
+        block: suspend CoroutineScope.() -> Unit,
+    ) {
+        val job = scope.launch(start = CoroutineStart.LAZY, block = block)
+        setupJob = job
+        _state.value = initialState
+        job.start()
     }
 
     private fun unmetBluetoothRequirement(): WooPosReceiptPrinterConnectionState? = when {
