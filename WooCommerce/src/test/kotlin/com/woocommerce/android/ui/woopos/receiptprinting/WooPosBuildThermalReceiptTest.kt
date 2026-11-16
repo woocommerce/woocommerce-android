@@ -356,10 +356,15 @@ class WooPosBuildThermalReceiptTest {
     }
 
     @Test
-    fun `given the selected site changes while building, when building the receipt, then there is no receipt`() =
+    fun `given the selected site changes during the last read, when building the receipt, then there is no receipt`() =
         runTest {
             // GIVEN
-            whenever(selectedSite.getSelectedSiteId()).thenReturn(SITE_ID, SITE_ID + 1)
+            var siteId = SITE_ID
+            whenever(selectedSite.getSelectedSiteId()).thenAnswer { siteId }
+            whenever(storeRepository.getStoreInfo()).doAnswer {
+                siteId = SITE_ID + 1
+                STORE_INFO
+            }
 
             // WHEN
             val receipt = sut(ORDER_ID)
