@@ -81,13 +81,15 @@ class ScanToUpdateInventoryScreenTest {
                 ViewState.QuickInventoryBottomSheetHidden
             }
         )
+        val permissionState = mutableStateOf(BarcodeScanningViewModel.PermissionState.Unknown)
+        val isHardwareScannerInfoVisible = mutableStateOf(false)
         composeTestRule.setContent {
             CompositionLocalProvider(LocalActivityResultRegistryOwner provides owner) {
                 ScanToUpdateInventoryScreen(
                     cameraScanningEnabled = cameraScanningEnabled,
                     onNewFrame = {},
                     onBindingException = {},
-                    permissionState = mutableStateOf(BarcodeScanningViewModel.PermissionState.Unknown),
+                    permissionState = permissionState,
                     onCameraPermissionResult = {},
                     viewState = viewState,
                     onBottomSheetDismissed = {},
@@ -96,7 +98,7 @@ class ScanToUpdateInventoryScreenTest {
                     onViewProductDetailsClicked = { productDetailsOpened = true },
                     onManualQuantityEntered = {},
                     onManageStockClicked = {},
-                    isHardwareScannerInfoVisible = mutableStateOf(false),
+                    isHardwareScannerInfoVisible = isHardwareScannerInfoVisible,
                     onHardwareScannerInfoClicked = {},
                     onHardwareScannerTestScanSucceeded = {},
                     onHardwareScannerTestScanFailed = {},
