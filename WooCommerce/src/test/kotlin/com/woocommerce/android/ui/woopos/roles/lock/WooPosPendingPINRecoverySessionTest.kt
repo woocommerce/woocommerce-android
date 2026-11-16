@@ -58,7 +58,10 @@ class WooPosPendingPINRecoverySessionTest {
             assertThat(session.state.value.isLocked).isFalse()
         }
 
-    private fun access(fixture: WooPosLocalRateLimiterTestFixture, recovery: WooPosPINRecovery) = WooPosLocalRateLimiter(
+    private fun access(
+        fixture: WooPosLocalRateLimiterTestFixture,
+        recovery: WooPosPINRecovery,
+    ) = WooPosLocalRateLimiter(
         fixture.store,
         WooPosPINAuthenticator(fixture.store, coroutineRule.testDispatchers),
         fixture.storage,
