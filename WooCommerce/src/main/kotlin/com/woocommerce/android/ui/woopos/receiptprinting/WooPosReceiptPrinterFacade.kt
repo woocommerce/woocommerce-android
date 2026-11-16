@@ -3,8 +3,10 @@ package com.woocommerce.android.ui.woopos.receiptprinting
 import com.woocommerce.android.receiptprinter.ReceiptPrinterConnectionStatus
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDevice
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDiscoveryEvent
+import com.woocommerce.android.receiptprinter.ReceiptPrinterError
 import com.woocommerce.android.receiptprinter.ReceiptPrinterManager
 import com.woocommerce.android.receiptprinter.ReceiptPrinterResult
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
@@ -13,6 +15,8 @@ import javax.inject.Singleton
 @Singleton
 class WooPosReceiptPrinterFacade @Inject constructor(
     private val receiptPrinterManager: ReceiptPrinterManager,
+    private val buildThermalReceipt: WooPosBuildThermalReceipt,
+    private val thermalReceiptRenderer: WooPosThermalReceiptRenderer,
 ) {
     val connectionStatus: StateFlow<ReceiptPrinterConnectionStatus> = receiptPrinterManager.connectionStatus
 
@@ -24,5 +28,16 @@ class WooPosReceiptPrinterFacade @Inject constructor(
         receiptPrinterManager.disconnect()
     }
 
-    suspend fun printReceipt(text: String): ReceiptPrinterResult = receiptPrinterManager.printReceipt(text)
+    suspend fun printReceipt(orderId: Long): ReceiptPrinterResult {
+        val text = try {
+            val receipt = buildThermalReceipt(orderId)
+                ?: return ReceiptPrinterResult.Failure(ReceiptPrinterError.PrintFailed())
+            thermalReceiptRenderer.render(receipt, buildThermalReceipt.labels())
+        } catch (cancellation: CancellationException) {
+            throw cancellation
+        } catch (@Suppress("TooGenericExceptionCaught") cause: Exception) {
+            return ReceiptPrinterResult.Failure(ReceiptPrinterError.PrintFailed(cause))
+        }
+        return receiptPrinterManager.printReceipt(text)
+    }
 }

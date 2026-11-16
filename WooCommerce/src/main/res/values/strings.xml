@@ -4555,6 +4555,20 @@
     <string name="woopos_remote_ttp_explainer_local_network_heading">Let POS find your phone</string>
     <string name="woopos_remote_ttp_explainer_local_network_body">Allow local network access so POS can find your phone on the same Wi-Fi.</string>
 
+    <string name="woopos_receipt_date_paid">Date Paid</string>
+    <string name="woopos_receipt_order_number">Order #%1$s</string>
+    <string name="woopos_receipt_payment_method">Payment Method</string>
+    <string name="woopos_receipt_item_with_attributes">%1$s. %2$s</string>
+    <string name="woopos_receipt_item_and_quantity">%1$s x%2$s</string>
+    <string name="woopos_receipt_subtotal">Subtotal</string>
+    <string name="woopos_receipt_discount">Discount</string>
+    <string name="woopos_receipt_discount_with_coupons">Discount (%1$s)</string>
+    <string name="woopos_receipt_fees">Fees</string>
+    <string name="woopos_receipt_shipping">Shipping</string>
+    <string name="woopos_receipt_taxes">Taxes</string>
+    <string name="woopos_receipt_amount_paid">Amount Paid</string>
+    <string name="woopos_receipt_notes">Notes</string>
+
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
     <string name="customers_details_registration_section">Registration</string>
