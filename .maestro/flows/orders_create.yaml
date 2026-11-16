@@ -424,6 +424,7 @@ tags:
       id: "add_shipping_button"
     direction: DOWN
     timeout: 10000
+    centerElement: true
     label: "Scroll to Add shipping"
 
 - tapOn:
