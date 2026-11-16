@@ -13,7 +13,7 @@ import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSes
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarState.BatteryState
-import com.woocommerce.android.ui.woopos.lock.WooPosLockSession
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockSession
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped

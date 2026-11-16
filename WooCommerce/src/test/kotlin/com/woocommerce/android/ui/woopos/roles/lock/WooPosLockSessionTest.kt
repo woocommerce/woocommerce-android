@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.lock
+package com.woocommerce.android.ui.woopos.roles.lock
 
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository

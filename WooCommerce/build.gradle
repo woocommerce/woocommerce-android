@@ -304,6 +304,7 @@ dependencies {
     implementation(project(":libs:pos"))
     implementation(project(":libs:store-design-system"))
     implementation(project(":libs:ai-assistant:feature"))
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.wordpress.aztec.main) {
         exclude group: "com.android.volley"
