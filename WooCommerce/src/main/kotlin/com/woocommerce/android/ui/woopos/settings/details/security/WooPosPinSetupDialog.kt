@@ -20,12 +20,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPinDots
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPinPad
@@ -96,5 +98,42 @@ fun WooPosPinSetupDialog(
                 WooPosOutlinedButton(text = stringResource(R.string.done), onClick = onClose)
             }
         }
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosPinSetupChoosePreview() {
+    PinSetupDialogPreview(WooPosPinSetupState())
+}
+
+@WooPosPreview
+@Composable
+fun WooPosPinSetupConfirmPreview() {
+    PinSetupDialogPreview(WooPosPinSetupState(stage = WooPosPinSetupState.Stage.CONFIRM))
+}
+
+@WooPosPreview
+@Composable
+fun WooPosPinSetupMismatchPreview() {
+    PinSetupDialogPreview(WooPosPinSetupState(stage = WooPosPinSetupState.Stage.CONFIRM, mismatch = true))
+}
+
+@WooPosPreview
+@Composable
+fun WooPosPinSetupCheckingPreview() {
+    PinSetupDialogPreview(WooPosPinSetupState(stage = WooPosPinSetupState.Stage.CHECKING))
+}
+
+@WooPosPreview
+@Composable
+fun WooPosPinSetupSuccessPreview() {
+    PinSetupDialogPreview(WooPosPinSetupState(stage = WooPosPinSetupState.Stage.SUCCESS))
+}
+
+@Composable
+private fun PinSetupDialogPreview(state: WooPosPinSetupState) {
+    WooPosTheme {
+        WooPosPinSetupDialog(state = state, isVisible = true, onUIEvent = {}, onClose = {})
     }
 }
