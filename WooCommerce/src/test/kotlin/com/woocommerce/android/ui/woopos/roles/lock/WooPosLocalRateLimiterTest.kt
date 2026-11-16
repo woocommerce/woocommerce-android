@@ -106,7 +106,8 @@ class WooPosLocalRateLimiterTest {
         // THEN
         assertThat(restarted.remainingSeconds(1).getOrThrow()).isEqualTo(18)
         assertThat(restarted.authenticate(1, "1234")).isEqualTo(WooPosLocalRateLimiterResult.Waiting(18))
-        assertThat(restarted.authenticate(2, "1234")).isInstanceOf(WooPosLocalRateLimiterResult.Authenticated::class.java)
+        assertThat(restarted.authenticate(2, "1234"))
+            .isInstanceOf(WooPosLocalRateLimiterResult.Authenticated::class.java)
     }
 
     @Test
