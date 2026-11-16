@@ -141,7 +141,7 @@ class WooPosBuildThermalReceiptTest {
             val receipt = sut(ORDER_ID)
 
             // THEN
-            assertThat(receipt?.datePaid).startsWith("Nov 12, 2026").contains("2:30").endsWith("PM")
+            assertThat(receipt?.datePaid).matches("Nov 12, 2026,? 2:30\\hPM")
         }
 
     @Test
@@ -154,7 +154,7 @@ class WooPosBuildThermalReceiptTest {
             val receipt = sut(ORDER_ID)
 
             // THEN
-            assertThat(receipt?.datePaid).startsWith("Nov 10, 2026").contains("9:05").endsWith("AM")
+            assertThat(receipt?.datePaid).matches("Nov 10, 2026,? 9:05\\hAM")
         }
 
     @Test
@@ -247,7 +247,7 @@ class WooPosBuildThermalReceiptTest {
     }
 
     @Test
-    fun `given an order note with only markup, when building the receipt, then the note is absent`() = runTest {
+    fun `given an order note that is blank once stripped, when building the receipt, then the note is absent`() = runTest {
         // GIVEN
         whenever(totalsRepository.getOrderById(ORDER_ID)).thenReturn(ORDER.copy(customerNote = "<p> </p>"))
 

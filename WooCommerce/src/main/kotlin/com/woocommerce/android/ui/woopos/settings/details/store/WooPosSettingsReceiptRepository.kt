@@ -51,7 +51,11 @@ class WooPosSettingsReceiptRepository @Inject constructor(
         }
 
     private fun formatReceiptAddress(address: String): String {
-        return address.lines().joinToString(", ").replace(Regex(",\\s*,"), ",").trim()
+        return address.lines()
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .joinToString(", ")
+            .replace(Regex(",\\s*,"), ",")
     }
 
     private fun isWooCommerceVersionAtLeast10(): Boolean {

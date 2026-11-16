@@ -173,6 +173,36 @@ class WooPosSettingsReceiptRepositoryTest {
     }
 
     @Test
+    fun `given an address with blank lines, when getReceiptInfo, then the blank lines are dropped`() = runTest {
+        // GIVEN
+        whenever(getWooCoreVersion()).thenReturn("10.0.0")
+        val settingsMap = mapOf("woocommerce_pos_store_address" to "123 Test Street,\n \r\nSpringfield, CA 90000\n")
+        whenever(wooCommerceStore.fetchPosSettings(siteModel)).thenReturn(WooResult(settingsMap))
+
+        // WHEN
+        val result = repository.getReceiptInfo()
+
+        // THEN
+        val successData = result as WooPosReceiptDataResult.Success
+        assertThat(successData.receiptInfo.address).isEqualTo("123 Test Street, Springfield, CA 90000")
+    }
+
+    @Test
+    fun `given an address with only line breaks and spaces, when getReceiptInfo, then the address is empty`() = runTest {
+        // GIVEN
+        whenever(getWooCoreVersion()).thenReturn("10.0.0")
+        val settingsMap = mapOf("woocommerce_pos_store_address" to " \r \r\n")
+        whenever(wooCommerceStore.fetchPosSettings(siteModel)).thenReturn(WooResult(settingsMap))
+
+        // WHEN
+        val result = repository.getReceiptInfo()
+
+        // THEN
+        val successData = result as WooPosReceiptDataResult.Success
+        assertThat(successData.receiptInfo.address).isEmpty()
+    }
+
+    @Test
     fun `given nothing was fetched, when getCachedReceiptInfo, then returns null`() {
         // WHEN
         val cached = repository.getCachedReceiptInfo()
