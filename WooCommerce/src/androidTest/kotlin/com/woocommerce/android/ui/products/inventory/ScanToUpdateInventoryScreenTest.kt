@@ -31,6 +31,7 @@ class ScanToUpdateInventoryScreenTest {
 
     private val registry = RecordingActivityResultRegistry()
     private var productDetailsOpened = false
+    private var hardwareScannerInfoOpened = false
 
     @Test
     fun given_external_scanner_input_when_inventory_is_shown_then_camera_permission_is_not_requested() {
@@ -58,6 +59,21 @@ class ScanToUpdateInventoryScreenTest {
         // THEN
         composeTestRule.runOnIdle {
             assertThat(registry.requestedPermissions).containsExactly(Manifest.permission.CAMERA)
+        }
+    }
+
+    @Test
+    fun given_external_scanner_input_without_product_when_screen_is_shown_then_scanner_help_is_available() {
+        // WHEN
+        givenScreen(cameraScanningEnabled = false, showProduct = false)
+
+        // THEN
+        val scannerHelpLabel = InstrumentationRegistry.getInstrumentation()
+            .targetContext.getString(R.string.barcode_scanning_hardware_scanner_info_link)
+        composeTestRule.onNodeWithText(scannerHelpLabel).assertIsDisplayed().performClick()
+        composeTestRule.runOnIdle {
+            assertThat(hardwareScannerInfoOpened).isTrue()
+            assertThat(registry.requestedPermissions).isEmpty()
         }
     }
 
@@ -99,7 +115,7 @@ class ScanToUpdateInventoryScreenTest {
                     onManualQuantityEntered = {},
                     onManageStockClicked = {},
                     isHardwareScannerInfoVisible = isHardwareScannerInfoVisible,
-                    onHardwareScannerInfoClicked = {},
+                    onHardwareScannerInfoClicked = { hardwareScannerInfoOpened = true },
                     onHardwareScannerTestScanSucceeded = {},
                     onHardwareScannerTestScanFailed = {},
                     onHardwareScannerInfoDismissed = {},
