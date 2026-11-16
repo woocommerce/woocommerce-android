@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanToUpdateInventoryScreen(
+    cameraScanningEnabled: Boolean,
     onNewFrame: (ImageProxy) -> Unit,
     onBindingException: (Exception) -> Unit,
     permissionState: State<BarcodeScanningViewModel.PermissionState>,
@@ -37,17 +38,19 @@ fun ScanToUpdateInventoryScreen(
     onHardwareScannerTestScanFailed: (HardwareBarcodeScannerTestFailure) -> Unit,
     onHardwareScannerInfoDismissed: () -> Unit,
 ) = LegacyWooThemeWithBackground {
-    BarcodeScannerScreen(
-        onNewFrame = onNewFrame,
-        onBindingException = onBindingException,
-        permissionState = permissionState,
-        onResult = onCameraPermissionResult,
-        overlayContent = {
-            DefaultScannerOverlay(
-                onHardwareScannerInfoClicked = onHardwareScannerInfoClicked,
-            )
-        },
-    )
+    if (cameraScanningEnabled) {
+        BarcodeScannerScreen(
+            onNewFrame = onNewFrame,
+            onBindingException = onBindingException,
+            permissionState = permissionState,
+            onResult = onCameraPermissionResult,
+            overlayContent = {
+                DefaultScannerOverlay(
+                    onHardwareScannerInfoClicked = onHardwareScannerInfoClicked,
+                )
+            },
+        )
+    }
     if (isHardwareScannerInfoVisible.value) {
         HardwareBarcodeScannerInfoSheet(
             onTestScanSucceeded = onHardwareScannerTestScanSucceeded,
