@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.settings.details.security
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockSession
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -33,7 +33,7 @@ class WooPosPinSetupViewModelTest {
         on { getOrNull() }.thenReturn(SiteModel().apply { id = 1 })
     }
     private val store: WooPosLocalPINStore = mock()
-    private val session: WooPosLockSession = mock()
+    private val session: WooPosAccessSession = mock()
     private val viewModel = WooPosPinSetupViewModel(selectedSite, store, session)
 
     @Test

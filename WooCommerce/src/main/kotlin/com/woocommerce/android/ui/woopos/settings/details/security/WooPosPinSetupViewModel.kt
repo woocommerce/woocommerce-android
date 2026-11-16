@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockSession
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +19,7 @@ import javax.inject.Inject
 class WooPosPinSetupViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val store: WooPosLocalPINStore,
-    private val lockSession: WooPosLockSession,
+    private val accessSession: WooPosAccessSession,
 ) : ViewModel() {
     private val _state = MutableStateFlow(WooPosPinSetupState())
     val state = _state.asStateFlow()
@@ -67,7 +67,7 @@ class WooPosPinSetupViewModel @Inject constructor(
             val setupSaved = withContext(NonCancellable) {
                 val pinSaved = canCreate && store.setPIN(id, WooPosLocalRole.ADMIN, submitted).isSuccess
                 if (pinSaved && id == selectedSite.getOrNull()?.id) {
-                    lockSession.initialize(unlockWith = submitted)
+                    accessSession.initialize(unlockWith = submitted)
                 }
                 pinSaved
             }

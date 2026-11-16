@@ -23,14 +23,14 @@ class WooPosPendingPINRecoverySessionTest {
     fun `given a waiting lock, when pending recovery is requested, then authority and durable protection stay unchanged`() =
         runTest {
             // GIVEN
-            val fixture = WooPosPINAccessTestFixture(coroutineRule.testDispatchers)
+            val fixture = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
             val pending = WooPosPendingPINRecovery()
             val access = access(fixture, pending)
             val flags: FeatureFlagRepository = mock {
                 on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
             }
             val site: SelectedSite = mock { on { getOrNull() }.thenReturn(SiteModel().apply { id = 1 }) }
-            val session = WooPosLockSession(flags, site, access)
+            val session = WooPosAccessSession(flags, site, access)
             session.initialize()
             repeat(5) {
                 repeat(WooPosPINHash.PIN_LENGTH) { session.enterDigit(0) }
@@ -58,7 +58,7 @@ class WooPosPendingPINRecoverySessionTest {
             assertThat(session.state.value.isLocked).isFalse()
         }
 
-    private fun access(fixture: WooPosPINAccessTestFixture, recovery: WooPosPINRecovery) = WooPosPINAccess(
+    private fun access(fixture: WooPosLocalRateLimiterTestFixture, recovery: WooPosPINRecovery) = WooPosLocalRateLimiter(
         fixture.store,
         WooPosPINAuthenticator(fixture.store, coroutineRule.testDispatchers),
         fixture.storage,
@@ -67,7 +67,7 @@ class WooPosPendingPINRecoverySessionTest {
         coroutineRule.testDispatchers,
     )
 
-    private fun assertUnavailable(session: WooPosLockSession) {
+    private fun assertUnavailable(session: WooPosAccessSession) {
         assertThat(session.state.value.isLocked).isTrue()
         assertThat(session.activeRole).isNull()
         assertThat(session.state.value.error).isNotEqualTo(WooPosLockError.STORAGE)

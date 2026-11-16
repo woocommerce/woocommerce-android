@@ -24,7 +24,7 @@ class WooPosLockScreenViewModelTest {
     @Test
     fun `given wrong entries, when wait starts, then countdown updates live and Forgot PIN remains available`() = runTest {
         // GIVEN
-        val fixture = WooPosPINAccessTestFixture(coroutineRule.testDispatchers)
+        val fixture = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
         val site = SiteModel().apply { id = 1 }
         val selectedSite: SelectedSite = mock {
             on { getOrNull() }.thenReturn(site)
@@ -34,7 +34,7 @@ class WooPosLockScreenViewModelTest {
             on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
         }
         val viewModel = WooPosLockScreenViewModel(
-            WooPosLockSession(flags, selectedSite, fixture.access()),
+            WooPosAccessSession(flags, selectedSite, fixture.access()),
             selectedSite
         )
         repeat(5) {
@@ -72,7 +72,7 @@ class WooPosLockScreenViewModelTest {
     fun `given shared approval wait while unlocked, when manually locked, then countdown appears without PIN entry`() =
         runTest {
             // GIVEN
-            val fixture = WooPosPINAccessTestFixture(coroutineRule.testDispatchers)
+            val fixture = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
             val site = SiteModel().apply { id = 1 }
             val selectedSite: SelectedSite = mock {
                 on { getOrNull() }.thenReturn(site)
@@ -82,7 +82,7 @@ class WooPosLockScreenViewModelTest {
                 on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
             }
             val access = fixture.access()
-            val session = WooPosLockSession(flags, selectedSite, access)
+            val session = WooPosAccessSession(flags, selectedSite, access)
             val viewModel = WooPosLockScreenViewModel(session, selectedSite)
             "5678".forEach { session.enterDigit(it.digitToInt()) }
             assertThat(session.activeRole).isEqualTo(fixture.cashier)

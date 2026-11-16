@@ -13,20 +13,20 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosLockScreenViewModel @Inject constructor(
-    private val lockSession: WooPosLockSession,
+    private val accessSession: WooPosAccessSession,
     selectedSite: SelectedSite,
 ) : ViewModel() {
-    val state = lockSession.state
+    val state = accessSession.state
     init {
         viewModelScope.launch {
-            selectedSite.observe().collectLatest { lockSession.initialize() }
+            selectedSite.observe().collectLatest { accessSession.initialize() }
         }
         viewModelScope.launch {
             state.map { it.isLocked && it.remainingSeconds > 0 }.distinctUntilChanged().collectLatest { waiting ->
                 if (waiting) {
                     while (state.value.remainingSeconds > 0) {
                         delay(COUNTDOWN_INTERVAL_MILLIS)
-                        lockSession.refreshWait()
+                        accessSession.refreshWait()
                     }
                 }
             }
@@ -36,10 +36,10 @@ class WooPosLockScreenViewModel @Inject constructor(
     fun onUIEvent(event: WooPosLockScreenUIEvent) {
         viewModelScope.launch {
             when (event) {
-                is WooPosLockScreenUIEvent.DigitTapped -> lockSession.enterDigit(event.digit)
-                WooPosLockScreenUIEvent.DeleteTapped -> lockSession.deleteDigit()
+                is WooPosLockScreenUIEvent.DigitTapped -> accessSession.enterDigit(event.digit)
+                WooPosLockScreenUIEvent.DeleteTapped -> accessSession.deleteDigit()
                 // TODO WOOMOB-4606: Open PIN recovery.
-                WooPosLockScreenUIEvent.ForgotPINTapped -> lockSession.recover()
+                WooPosLockScreenUIEvent.ForgotPINTapped -> accessSession.recover()
             }
         }
     }

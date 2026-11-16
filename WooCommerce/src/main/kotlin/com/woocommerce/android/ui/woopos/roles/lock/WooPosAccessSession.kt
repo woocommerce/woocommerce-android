@@ -13,10 +13,10 @@ import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 @ActivityRetainedScoped
-class WooPosLockSession @Inject constructor(
+class WooPosAccessSession @Inject constructor(
     featureFlagRepository: FeatureFlagRepository,
     private val selectedSite: SelectedSite,
-    private val access: WooPosPINAccess,
+    private val rateLimiter: WooPosLocalRateLimiter,
 ) {
     private val flagEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ROLES)
     private val _state = MutableStateFlow(WooPosLockScreenState(isLocked = flagEnabled, isChecking = flagEnabled))
@@ -46,11 +46,11 @@ class WooPosLockSession @Inject constructor(
             return@withLock
         }
         val request = generation
-        val protectionResult = access.protection(id)
+        val protectionResult = rateLimiter.protection(id)
         if (!isCurrent(request, id)) return@withLock
         protectionEnabled = protectionResult.getOrDefault(true)
         if (protectionResult.getOrNull() == true && activeRole == null && unlockWith != null) {
-            val result = access.authenticate(id, unlockWith)
+            val result = rateLimiter.authenticate(id, unlockWith)
             if (!isCurrent(request, id)) return@withLock
             applyResult(result)
             if (_state.value.isLocked) refreshWait()
@@ -108,7 +108,7 @@ class WooPosLockSession @Inject constructor(
     private suspend fun unlock(submitted: String) {
         if (!_state.value.canEnterPIN) return
         pin = ""
-        authenticate { id -> access.authenticate(id, submitted) }
+        authenticate { id -> rateLimiter.authenticate(id, submitted) }
     }
 
     fun deleteDigit() {
@@ -120,13 +120,13 @@ class WooPosLockSession @Inject constructor(
     suspend fun recover() {
         if (!_state.value.isLocked || _state.value.isChecking) return
         pin = ""
-        authenticate { id -> access.recover(id) }
+        authenticate { id -> rateLimiter.recover(id) }
     }
 
     suspend fun refreshWait() {
         val id = localSiteId ?: return
         val request = generation
-        val wait = access.remainingSeconds(id)
+        val wait = rateLimiter.remainingSeconds(id)
         if (!isCurrent(request, id)) return
         _state.value = _state.value.copy(
             remainingSeconds = wait.getOrDefault(0),
@@ -134,7 +134,7 @@ class WooPosLockSession @Inject constructor(
         )
     }
 
-    private suspend fun authenticate(action: suspend (Int) -> WooPosPINAccessResult) {
+    private suspend fun authenticate(action: suspend (Int) -> WooPosLocalRateLimiterResult) {
         val id = localSiteId
         if (id == null) {
             _state.value = WooPosLockScreenState(isLocked = true, error = WooPosLockError.STORAGE)
@@ -150,22 +150,22 @@ class WooPosLockSession @Inject constructor(
         }
     }
 
-    private fun applyResult(result: WooPosPINAccessResult) {
-        activeRole = (result as? WooPosPINAccessResult.Authenticated)?.role
-        if (result == WooPosPINAccessResult.ProtectionOff) protectionEnabled = false
+    private fun applyResult(result: WooPosLocalRateLimiterResult) {
+        activeRole = (result as? WooPosLocalRateLimiterResult.Authenticated)?.role
+        if (result == WooPosLocalRateLimiterResult.ProtectionOff) protectionEnabled = false
         _state.value = when (result) {
-            is WooPosPINAccessResult.Authenticated -> WooPosLockScreenState()
-            is WooPosPINAccessResult.Incorrect -> WooPosLockScreenState(
+            is WooPosLocalRateLimiterResult.Authenticated -> WooPosLockScreenState()
+            is WooPosLocalRateLimiterResult.Incorrect -> WooPosLockScreenState(
                 isLocked = true, remainingSeconds = result.remainingSeconds, error = WooPosLockError.INCORRECT,
             )
-            is WooPosPINAccessResult.Waiting -> WooPosLockScreenState(
+            is WooPosLocalRateLimiterResult.Waiting -> WooPosLockScreenState(
                 isLocked = true, remainingSeconds = result.remainingSeconds,
             )
-            WooPosPINAccessResult.ProtectionOff -> WooPosLockScreenState()
-            WooPosPINAccessResult.Unavailable -> WooPosLockScreenState(
+            WooPosLocalRateLimiterResult.ProtectionOff -> WooPosLockScreenState()
+            WooPosLocalRateLimiterResult.Unavailable -> WooPosLockScreenState(
                 isLocked = true, error = WooPosLockError.STORAGE,
             )
-            WooPosPINAccessResult.RecoveryUnavailable -> _state.value.copy(
+            WooPosLocalRateLimiterResult.RecoveryUnavailable -> _state.value.copy(
                 isChecking = false, enteredDigits = 0,
             )
         }

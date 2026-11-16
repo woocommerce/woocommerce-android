@@ -16,7 +16,7 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarU
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.OnOutsideOfToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockSession
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.GoToOrdersTapped
@@ -42,7 +42,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val effectiveReaderStatusProvider: WooPosEffectiveReaderStatusProvider,
     controllerFactory: WooPosCardReaderConnectionControllerFactory,
-    private val lockSession: WooPosLockSession,
+    private val accessSession: WooPosAccessSession,
 ) : ViewModel() {
 
     private val controller: WooPosCardReaderConnectionController by lazy {
@@ -117,7 +117,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
         hideMenu()
 
         when (event.menuItem.title) {
-            R.string.woopos_lock_pos -> viewModelScope.launch { lockSession.lock() }
+            R.string.woopos_lock_pos -> viewModelScope.launch { accessSession.lock() }
 
             R.string.woopos_orders_title -> {
                 viewModelScope.launch {
@@ -200,7 +200,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                     ),
                 )
             )
-            if (lockSession.isEnabled) {
+            if (accessSession.isEnabled) {
                 add(
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_lock_pos,

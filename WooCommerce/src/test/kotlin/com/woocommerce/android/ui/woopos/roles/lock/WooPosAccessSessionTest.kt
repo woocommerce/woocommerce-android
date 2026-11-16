@@ -19,7 +19,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WooPosLockSessionTest {
+class WooPosAccessSessionTest {
     @get:Rule
     val coroutineRule = WooPosCoroutineTestRule()
     private val flags: FeatureFlagRepository = mock {
@@ -355,13 +355,13 @@ class WooPosLockSessionTest {
         assertThat(session.activeRole).isNull()
     }
 
-    private fun fixture() = WooPosPINAccessTestFixture(coroutineRule.testDispatchers)
-    private fun session(fixture: WooPosPINAccessTestFixture) = WooPosLockSession(
+    private fun fixture() = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
+    private fun session(fixture: WooPosLocalRateLimiterTestFixture) = WooPosAccessSession(
         flags,
         selectedSite,
         fixture.access(),
     )
-    private suspend fun enter(session: WooPosLockSession, pin: String) {
+    private suspend fun enter(session: WooPosAccessSession, pin: String) {
         pin.forEach { session.enterDigit(it.digitToInt()) }
     }
 }
