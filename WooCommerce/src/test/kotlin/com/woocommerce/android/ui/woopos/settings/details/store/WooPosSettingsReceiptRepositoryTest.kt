@@ -156,4 +156,64 @@ class WooPosSettingsReceiptRepositoryTest {
         // THEN
         assertThat(result).isInstanceOf(WooPosReceiptDataResult.Success::class.java)
     }
+
+    @Test
+    fun `given an address with CRLF line breaks, when getReceiptInfo, then the lines are joined with commas`() = runTest {
+        // GIVEN
+        whenever(getWooCoreVersion()).thenReturn("10.0.0")
+        val settingsMap = mapOf("woocommerce_pos_store_address" to "123 Test Street\r\nSpringfield, CA 90000")
+        whenever(wooCommerceStore.fetchPosSettings(siteModel)).thenReturn(WooResult(settingsMap))
+
+        // WHEN
+        val result = repository.getReceiptInfo()
+
+        // THEN
+        val successData = result as WooPosReceiptDataResult.Success
+        assertThat(successData.receiptInfo.address).isEqualTo("123 Test Street, Springfield, CA 90000")
+    }
+
+    @Test
+    fun `given nothing was fetched, when getCachedReceiptInfo, then returns null`() {
+        // WHEN
+        val cached = repository.getCachedReceiptInfo()
+
+        // THEN
+        assertThat(cached).isNull()
+    }
+
+    @Test
+    fun `given a fetch succeeded and the next one failed, when getCachedReceiptInfo, then returns the last success`() =
+        runTest {
+            // GIVEN
+            whenever(getWooCoreVersion()).thenReturn("10.0.0")
+            val error = WooError(WooErrorType.API_ERROR, GenericErrorType.NETWORK_ERROR, "Network error")
+            whenever(wooCommerceStore.fetchPosSettings(siteModel))
+                .thenReturn(WooResult(mapOf("woocommerce_pos_store_name" to "Test Store")))
+                .thenReturn(WooResult(error))
+            repository.getReceiptInfo()
+            repository.getReceiptInfo()
+
+            // WHEN
+            val cached = repository.getCachedReceiptInfo()
+
+            // THEN
+            assertThat(cached?.storeName).isEqualTo("Test Store")
+        }
+
+    @Test
+    fun `given a fetch succeeded for another site, when getCachedReceiptInfo, then returns null`() = runTest {
+        // GIVEN
+        whenever(getWooCoreVersion()).thenReturn("10.0.0")
+        whenever(wooCommerceStore.fetchPosSettings(siteModel))
+            .thenReturn(WooResult(mapOf("woocommerce_pos_store_name" to "Test Store")))
+        repository.getReceiptInfo()
+        val otherSite: SiteModel = mock { on { id }.thenReturn(2) }
+        whenever(selectedSite.get()).thenReturn(otherSite)
+
+        // WHEN
+        val cached = repository.getCachedReceiptInfo()
+
+        // THEN
+        assertThat(cached).isNull()
+    }
 }
