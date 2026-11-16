@@ -13,6 +13,7 @@ import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.sitepicker.sitevisibility.VisibleWooSitesDataStore
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosPINAccess
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINError
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -65,6 +66,9 @@ class AccountRepositoryTest : BaseUnitTest() {
     private val localPINStore: WooPosLocalPINStore = mock {
         on { clearAll() } doReturn Result.success(Unit)
     }
+    private val pinAccess: WooPosPINAccess = mock {
+        on { clearAllAttempts() } doReturn Result.success(Unit)
+    }
     private val appCoroutineScope = CoroutineScope(coroutinesTestRule.testDispatcher)
     private val dispatcher = FakeDispatcher().apply {
         registerActionHandler(AccountAction.SIGN_OUT) {
@@ -91,6 +95,7 @@ class AccountRepositoryTest : BaseUnitTest() {
         posDataStore = posDataStore,
         analyticsTracker = analyticsTracker,
         localPINStore = localPINStore,
+        pinAccess = pinAccess,
     )
 
     @Test
@@ -100,6 +105,7 @@ class AccountRepositoryTest : BaseUnitTest() {
 
         // THEN
         verify(localPINStore).clearAll()
+        verify(pinAccess).clearAllAttempts()
     }
 
     @Test
@@ -135,6 +141,7 @@ class AccountRepositoryTest : BaseUnitTest() {
 
         // THEN
         verify(localPINStore).clearAll()
+        verify(pinAccess).clearAllAttempts()
         verify(selectedSite).reset()
     }
 
@@ -171,6 +178,7 @@ class AccountRepositoryTest : BaseUnitTest() {
 
         // THEN
         verify(localPINStore).clearAll()
+        verify(pinAccess).clearAllAttempts()
         verify(selectedSite).reset()
     }
 
@@ -192,6 +200,7 @@ class AccountRepositoryTest : BaseUnitTest() {
         // THEN
         assertThat(logout.isCancelled).isTrue()
         verify(localPINStore).clearAll()
+        verify(pinAccess).clearAllAttempts()
         verify(selectedSite).reset()
     }
 
@@ -216,6 +225,7 @@ class AccountRepositoryTest : BaseUnitTest() {
 
         // THEN
         verify(localPINStore).clearAll()
+        verify(pinAccess).clearAllAttempts()
         verify(selectedSite).reset()
     }
 
@@ -238,8 +248,9 @@ class AccountRepositoryTest : BaseUnitTest() {
         verify(selectedSite, never()).reset()
         gate.complete(Unit)
         assertThat(result.await()).isTrue()
-        inOrder(localPINStore, selectedSite) {
+        inOrder(localPINStore, pinAccess, selectedSite) {
             verify(localPINStore).clearAll()
+            verify(pinAccess).clearAllAttempts()
             verify(selectedSite).reset()
         }
     }
