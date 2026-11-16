@@ -264,6 +264,33 @@ class WooPosBuildThermalReceiptTest {
     }
 
     @Test
+    fun `given an order note made only of tags, when building the receipt, then the note is absent`() = runTest {
+        // GIVEN
+        whenever(totalsRepository.getOrderById(ORDER_ID))
+            .thenReturn(ORDER.copy(customerNote = "<p></p><img src=\"a.png\" />"))
+
+        // WHEN
+        val receipt = sut(ORDER_ID)
+
+        // THEN
+        assertThat(receipt?.orderNote).isNull()
+    }
+
+    @Test
+    fun `given an order note with several paragraphs, when building the receipt, then it starts with the text`() =
+        runTest {
+            // GIVEN
+            whenever(totalsRepository.getOrderById(ORDER_ID))
+                .thenReturn(ORDER.copy(customerNote = "<p>Gift wrap</p><p>Ring the bell</p>\n"))
+
+            // WHEN
+            val receipt = sut(ORDER_ID)
+
+            // THEN
+            assertThat(receipt?.orderNote).isEqualTo("Gift wrap\nRing the bell")
+        }
+
+    @Test
     fun `given the settings fetch fails, when building the receipt, then the cached settings are used`() = runTest {
         // GIVEN
         whenever(receiptRepository.getReceiptInfo()).thenReturn(WooPosReceiptDataResult.Error)

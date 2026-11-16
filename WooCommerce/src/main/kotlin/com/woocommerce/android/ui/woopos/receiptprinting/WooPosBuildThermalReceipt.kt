@@ -43,7 +43,7 @@ class WooPosBuildThermalReceipt @Inject constructor(
             paymentMethod = null,
             lineItems = order.items.map { lineItem(it, order.currency) },
             totals = totals(order),
-            orderNote = order.customerNote.fastStripHtml().nullIfBlank(),
+            orderNote = order.customerNote.toReceiptNote(),
             refundPolicy = receiptInfo?.refundPolicy.nullIfBlank(),
         )
     }
@@ -100,5 +100,15 @@ class WooPosBuildThermalReceipt @Inject constructor(
     private fun Order.totalRow(@StringRes label: Int, amount: BigDecimal) =
         Row(label = resourceProvider.getString(label), amount = formatPrice(amount, currency))
 
+    // fastStripHtml returns the markup itself when stripping leaves nothing, and keeps leading whitespace.
+    // Only a note set through the API can be made of tags alone, so the receipt drops such a note and
+    // trims the rest here, rather than changing the shared helper for every store screen that uses it.
+    private fun String.toReceiptNote(): String? =
+        fastStripHtml().trim().takeUnless { it.replace(HTML_TAG, "").isEmpty() }
+
     private fun String?.nullIfBlank(): String? = this?.ifBlank { null }
+
+    private companion object {
+        val HTML_TAG = Regex("<(.|\n)*?>")
+    }
 }
