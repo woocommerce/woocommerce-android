@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
 import com.woocommerce.android.ui.woopos.roles.WooPosCapability
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINAuthenticator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -11,6 +12,8 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosPINAccessTest {
@@ -291,6 +294,35 @@ class WooPosPINAccessTest {
         // THEN
         assertThat(result).isEqualTo(WooPosPINAccessResult.Unavailable)
         assertThat(fixture.records.getValue(1).failures).isEqualTo(1)
+    }
+
+    @Test
+    fun `given comparison failure, when authenticating, then precharge is refunded without authority`() = runTest {
+        // GIVEN
+        val fixture = fixture()
+        val previous = WooPosPINAttemptState(4, fixture.boot, fixture.elapsed, 0)
+        fixture.records[1] = previous
+        val authenticator: WooPosPINAuthenticator = mock()
+        whenever(authenticator.authenticate(fixture.pins.getOrThrow(), "1234"))
+            .thenReturn(Result.failure(IllegalStateException()))
+        val access = WooPosPINAccess(
+            fixture.store,
+            authenticator,
+            fixture.storage,
+            fixture.clock,
+            fixture.recovery,
+            coroutineRule.testDispatchers,
+        )
+        val writes = mutableListOf<WooPosPINAttemptState>()
+        fixture.onAttemptWrite = { writes.add(it) }
+
+        // WHEN
+        val result = access.authenticate(1, "1234")
+
+        // THEN
+        assertThat(result).isEqualTo(WooPosPINAccessResult.Unavailable)
+        assertThat(writes).containsExactly(previous.failed(WooPosPINTime(fixture.boot, fixture.elapsed)), previous)
+        assertThat(fixture.records[1]).isEqualTo(previous)
     }
 
     private fun fixture() = WooPosPINAccessTestFixture(coroutineRule.testDispatchers)

@@ -60,7 +60,6 @@ internal class WooPosFilePINAttemptStorage @Inject constructor(
 
     @Synchronized
     override fun clearAll() {
-        checkDirectory()
         check(!directory.exists() || directory.deleteRecursively())
     }
 
