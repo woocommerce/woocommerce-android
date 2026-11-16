@@ -86,12 +86,15 @@ class WooPosPINIntegrationTest {
 
     @After
     fun tearDown() {
-        encrypted.clearAll()
-        attempts.clearAll()
-        appScope.cancel()
-        check(directory.deleteRecursively())
-        check(baseContext.deleteSharedPreferences(PREFERENCES))
-        AppPrefs.init(baseContext)
+        try {
+            encrypted.clearAll()
+            attempts.clearAll()
+            check(directory.deleteRecursively())
+            check(baseContext.deleteSharedPreferences(PREFERENCES))
+        } finally {
+            if (::appScope.isInitialized) appScope.cancel()
+            AppPrefs.init(baseContext)
+        }
     }
 
     @Test
@@ -107,6 +110,7 @@ class WooPosPINIntegrationTest {
         val previous = attempts.read(SITE_ID)
 
         // THEN
+        assertThat(session.state.value.isLocked).isTrue()
         assertThat(session.state.value.error).isEqualTo(WooPosLockError.INCORRECT)
         assertThat(session.activeRole).isNull()
         assertThat(previous.failures).isEqualTo(1)
@@ -146,13 +150,19 @@ class WooPosPINIntegrationTest {
         assertThat(session.activeRole).isNull()
         enter(session, ADMIN_PIN)
         assertThat(session.state.value.isLocked).isTrue()
+        assertThat(limiter.authenticate(SITE_ID, ADMIN_PIN))
+            .isInstanceOf(WooPosLocalRateLimiterResult.Waiting::class.java)
         assertThat(attempts.read(SITE_ID)).isEqualTo(previous)
 
         val recreatedStore = WooPosLocalPINStore(WooPosEncryptedPINStorage(context, KEY_ALIAS), dispatchers)
-        val recreated = createSession(createLimiter(recreatedStore))
+        val recreatedLimiter = createLimiter(recreatedStore)
+        val recreated = createSession(recreatedLimiter)
         recreated.initialize()
         assertThat(recreated.state.value.remainingSeconds).isBetween(1, session.state.value.remainingSeconds)
         assertThat(recreated.state.value.canEnterPIN).isFalse()
+        assertThat(recreatedLimiter.authenticate(SITE_ID, ADMIN_PIN))
+            .isInstanceOf(WooPosLocalRateLimiterResult.Waiting::class.java)
+        assertThat(attempts.read(SITE_ID)).isEqualTo(previous)
         withTimeout(35_000) {
             while (recreated.state.value.remainingSeconds > 0) {
                 delay(1000)
