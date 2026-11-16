@@ -16,7 +16,7 @@ import javax.inject.Singleton
 
 /** Unlock and action approval must both use this service, rather than authenticating PINs directly. */
 @Singleton
-class WooPosPINAccess @Inject internal constructor(
+class WooPosLocalRateLimiter @Inject internal constructor(
     private val store: WooPosLocalPINStore,
     private val authenticator: WooPosPINAuthenticator,
     private val storage: WooPosPINAttemptStorage,
@@ -37,24 +37,24 @@ class WooPosPINAccess @Inject internal constructor(
         localSiteId: Int,
         pin: String,
         requiredCapability: WooPosCapability? = null,
-    ): WooPosPINAccessResult = operation {
+    ): WooPosLocalRateLimiterResult = operation {
         val pins = store.getPINs(localSiteId).getOrThrow()
-        if (pins.isEmpty()) return@operation WooPosPINAccessResult.ProtectionOff
+        if (pins.isEmpty()) return@operation WooPosLocalRateLimiterResult.ProtectionOff
         val (attempts, time) = load(localSiteId)
         val wait = seconds(attempts.remainingMillis(time))
-        if (wait > 0) return@operation WooPosPINAccessResult.Waiting(wait)
+        if (wait > 0) return@operation WooPosLocalRateLimiterResult.Waiting(wait)
         // Persist before comparing: a process kill must not create an unrecorded PIN oracle.
         val chargedAttempt = attempts.failed(time)
         storage.write(localSiteId, chargedAttempt)
         val authenticated = authenticator.authenticate(pins, pin)
         if (authenticated.isFailure) {
             storage.write(localSiteId, attempts)
-            return@operation WooPosPINAccessResult.Unavailable
+            return@operation WooPosLocalRateLimiterResult.Unavailable
         }
         val role = authenticated.getOrThrow()
         when {
             role == null || (requiredCapability != null && !role.hasCapability(requiredCapability)) -> {
-                WooPosPINAccessResult.Incorrect(seconds(chargedAttempt.waitMillis))
+                WooPosLocalRateLimiterResult.Incorrect(seconds(chargedAttempt.waitMillis))
             }
             else -> {
                 val next = if (role.hasCapability(WooPosCapability.MANAGE_STORE_SETTINGS)) {
@@ -63,17 +63,17 @@ class WooPosPINAccess @Inject internal constructor(
                     attempts
                 }
                 storage.write(localSiteId, next)
-                WooPosPINAccessResult.Authenticated(role)
+                WooPosLocalRateLimiterResult.Authenticated(role)
             }
         }
-    }.getOrDefault(WooPosPINAccessResult.Unavailable)
+    }.getOrDefault(WooPosLocalRateLimiterResult.Unavailable)
 
-    suspend fun recover(localSiteId: Int): WooPosPINAccessResult = operation {
+    suspend fun recover(localSiteId: Int): WooPosLocalRateLimiterResult = operation {
         val role = recovery.authenticate(localSiteId).getOrThrow()
         check(role.hasCapability(WooPosCapability.MANAGE_STORE_SETTINGS))
         storage.write(localSiteId, WooPosPINAttemptState())
-        WooPosPINAccessResult.Authenticated(role)
-    }.getOrDefault(WooPosPINAccessResult.RecoveryUnavailable)
+        WooPosLocalRateLimiterResult.Authenticated(role)
+    }.getOrDefault(WooPosLocalRateLimiterResult.RecoveryUnavailable)
 
     suspend fun clearAllAttempts(): Result<Unit> = operation { storage.clearAll() }
 
@@ -107,11 +107,11 @@ class WooPosPINAccess @Inject internal constructor(
     }
 }
 
-sealed interface WooPosPINAccessResult {
-    data class Authenticated(val role: WooPosLocalRole) : WooPosPINAccessResult
-    data class Incorrect(val remainingSeconds: Long) : WooPosPINAccessResult
-    data class Waiting(val remainingSeconds: Long) : WooPosPINAccessResult
-    data object ProtectionOff : WooPosPINAccessResult
-    data object Unavailable : WooPosPINAccessResult
-    data object RecoveryUnavailable : WooPosPINAccessResult
+sealed interface WooPosLocalRateLimiterResult {
+    data class Authenticated(val role: WooPosLocalRole) : WooPosLocalRateLimiterResult
+    data class Incorrect(val remainingSeconds: Long) : WooPosLocalRateLimiterResult
+    data class Waiting(val remainingSeconds: Long) : WooPosLocalRateLimiterResult
+    data object ProtectionOff : WooPosLocalRateLimiterResult
+    data object Unavailable : WooPosLocalRateLimiterResult
+    data object RecoveryUnavailable : WooPosLocalRateLimiterResult
 }

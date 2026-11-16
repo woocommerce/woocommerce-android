@@ -16,7 +16,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WooPosPINAccessTest {
+class WooPosLocalRateLimiterTest {
     @get:Rule
     val coroutineRule = WooPosCoroutineTestRule()
 
@@ -38,9 +38,9 @@ class WooPosPINAccessTest {
             }
 
             // THEN
-            assertThat(result).isEqualTo(WooPosPINAccessResult.Incorrect(expected))
+            assertThat(result).isEqualTo(WooPosLocalRateLimiterResult.Incorrect(expected))
             if (expected > 0) {
-                assertThat(access.authenticate(1, "1234")).isEqualTo(WooPosPINAccessResult.Waiting(expected))
+                assertThat(access.authenticate(1, "1234")).isEqualTo(WooPosLocalRateLimiterResult.Waiting(expected))
                 fixture.elapsed += expected * 1000
             }
         }
@@ -58,8 +58,8 @@ class WooPosPINAccessTest {
         val approval = access.authenticate(1, "0000", WooPosCapability.ISSUE_REFUNDS)
 
         // THEN
-        assertThat(cashier).isEqualTo(WooPosPINAccessResult.Authenticated(fixture.cashier))
-        assertThat(approval).isEqualTo(WooPosPINAccessResult.Incorrect(30))
+        assertThat(cashier).isEqualTo(WooPosLocalRateLimiterResult.Authenticated(fixture.cashier))
+        assertThat(approval).isEqualTo(WooPosLocalRateLimiterResult.Incorrect(30))
         assertThat(fixture.records.getValue(1).failures).isEqualTo(5)
     }
 
@@ -74,9 +74,9 @@ class WooPosPINAccessTest {
         val result = access.authenticate(1, "1234")
 
         // THEN
-        assertThat(result).isEqualTo(WooPosPINAccessResult.Authenticated(fixture.admin))
+        assertThat(result).isEqualTo(WooPosLocalRateLimiterResult.Authenticated(fixture.admin))
         assertThat(fixture.records.getValue(1).failures).isZero()
-        assertThat(access.authenticate(1, "0000")).isEqualTo(WooPosPINAccessResult.Incorrect(0))
+        assertThat(access.authenticate(1, "0000")).isEqualTo(WooPosLocalRateLimiterResult.Incorrect(0))
     }
 
     @Test
@@ -88,7 +88,7 @@ class WooPosPINAccessTest {
         val result = fixture.access().authenticate(1, "5678", WooPosCapability.ISSUE_REFUNDS)
 
         // THEN
-        assertThat(result).isEqualTo(WooPosPINAccessResult.Incorrect(0))
+        assertThat(result).isEqualTo(WooPosLocalRateLimiterResult.Incorrect(0))
         assertThat(fixture.records.getValue(1).failures).isEqualTo(1)
     }
 
@@ -105,8 +105,8 @@ class WooPosPINAccessTest {
 
         // THEN
         assertThat(restarted.remainingSeconds(1).getOrThrow()).isEqualTo(18)
-        assertThat(restarted.authenticate(1, "1234")).isEqualTo(WooPosPINAccessResult.Waiting(18))
-        assertThat(restarted.authenticate(2, "1234")).isInstanceOf(WooPosPINAccessResult.Authenticated::class.java)
+        assertThat(restarted.authenticate(1, "1234")).isEqualTo(WooPosLocalRateLimiterResult.Waiting(18))
+        assertThat(restarted.authenticate(2, "1234")).isInstanceOf(WooPosLocalRateLimiterResult.Authenticated::class.java)
     }
 
     @Test
@@ -172,7 +172,7 @@ class WooPosPINAccessTest {
         fixture.pins = Result.failure(IllegalStateException())
 
         // THEN
-        assertThat(access.authenticate(1, "0000")).isEqualTo(WooPosPINAccessResult.Unavailable)
+        assertThat(access.authenticate(1, "0000")).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
         assertThat(access.protection(1).isFailure).isTrue()
         assertThat(fixture.records).isEmpty()
 
@@ -180,7 +180,7 @@ class WooPosPINAccessTest {
         fixture.pins = Result.success(emptyMap())
 
         // THEN
-        assertThat(access.authenticate(1, "0000")).isEqualTo(WooPosPINAccessResult.ProtectionOff)
+        assertThat(access.authenticate(1, "0000")).isEqualTo(WooPosLocalRateLimiterResult.ProtectionOff)
         assertThat(access.protection(1).getOrThrow()).isFalse()
         assertThat(fixture.records).isEmpty()
     }
@@ -193,13 +193,13 @@ class WooPosPINAccessTest {
         val access = fixture.access()
 
         // THEN
-        assertThat(access.authenticate(1, "1234")).isEqualTo(WooPosPINAccessResult.Unavailable)
+        assertThat(access.authenticate(1, "1234")).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
         assertThat(access.remainingSeconds(1).isFailure).isTrue()
         fixture.readError = false
         val badClock = object : WooPosPINClock {
             override fun now(): WooPosPINTime = error("Unavailable boot identity")
         }
-        val clockFailure = WooPosPINAccess(
+        val clockFailure = WooPosLocalRateLimiter(
             fixture.store,
             WooPosPINAuthenticator(
                 fixture.store,
@@ -210,7 +210,7 @@ class WooPosPINAccessTest {
             fixture.recovery,
             coroutineRule.testDispatchers,
         )
-        assertThat(clockFailure.authenticate(1, "1234")).isEqualTo(WooPosPINAccessResult.Unavailable)
+        assertThat(clockFailure.authenticate(1, "1234")).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
         assertThat(fixture.records).isEmpty()
     }
 
@@ -221,8 +221,8 @@ class WooPosPINAccessTest {
         fixture.writeError = true
 
         // THEN
-        assertThat(fixture.access().authenticate(1, "1234")).isEqualTo(WooPosPINAccessResult.Unavailable)
-        assertThat(fixture.access().authenticate(1, "0000")).isEqualTo(WooPosPINAccessResult.Unavailable)
+        assertThat(fixture.access().authenticate(1, "1234")).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
+        assertThat(fixture.access().authenticate(1, "0000")).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
     }
 
     @Test
@@ -241,8 +241,8 @@ class WooPosPINAccessTest {
         val results = requests.awaitAll()
 
         // THEN
-        assertThat(results.filterIsInstance<WooPosPINAccessResult.Incorrect>()).hasSize(5)
-        assertThat(results.filterIsInstance<WooPosPINAccessResult.Waiting>()).hasSize(3)
+        assertThat(results.filterIsInstance<WooPosLocalRateLimiterResult.Incorrect>()).hasSize(5)
+        assertThat(results.filterIsInstance<WooPosLocalRateLimiterResult.Waiting>()).hasSize(3)
         assertThat(fixture.records.getValue(1).failures).isEqualTo(5)
     }
 
@@ -254,12 +254,12 @@ class WooPosPINAccessTest {
         repeat(5) { access.authenticate(1, "0000") }
 
         // WHEN
-        assertThat(access.recover(1)).isEqualTo(WooPosPINAccessResult.RecoveryUnavailable)
+        assertThat(access.recover(1)).isEqualTo(WooPosLocalRateLimiterResult.RecoveryUnavailable)
         assertThat(fixture.records.getValue(1).failures).isEqualTo(5)
         fixture.recoveryResult = Result.success(fixture.admin)
 
         // THEN
-        assertThat(access.recover(1)).isEqualTo(WooPosPINAccessResult.Authenticated(fixture.admin))
+        assertThat(access.recover(1)).isEqualTo(WooPosLocalRateLimiterResult.Authenticated(fixture.admin))
         assertThat(fixture.records.getValue(1).failures).isZero()
     }
 
@@ -277,7 +277,7 @@ class WooPosPINAccessTest {
         val result = fixture.access().authenticate(1, "1234")
 
         // THEN
-        assertThat(result).isEqualTo(WooPosPINAccessResult.Authenticated(fixture.admin))
+        assertThat(result).isEqualTo(WooPosLocalRateLimiterResult.Authenticated(fixture.admin))
         assertThat(fixture.pinReads).isEqualTo(1)
         assertThat(writes).containsExactly(1L, 0L)
     }
@@ -292,7 +292,7 @@ class WooPosPINAccessTest {
         val result = fixture.access().authenticate(1, "1234")
 
         // THEN
-        assertThat(result).isEqualTo(WooPosPINAccessResult.Unavailable)
+        assertThat(result).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
         assertThat(fixture.records.getValue(1).failures).isEqualTo(1)
     }
 
@@ -305,7 +305,7 @@ class WooPosPINAccessTest {
         val authenticator: WooPosPINAuthenticator = mock()
         whenever(authenticator.authenticate(fixture.pins.getOrThrow(), "1234"))
             .thenReturn(Result.failure(IllegalStateException()))
-        val access = WooPosPINAccess(
+        val access = WooPosLocalRateLimiter(
             fixture.store,
             authenticator,
             fixture.storage,
@@ -320,10 +320,10 @@ class WooPosPINAccessTest {
         val result = access.authenticate(1, "1234")
 
         // THEN
-        assertThat(result).isEqualTo(WooPosPINAccessResult.Unavailable)
+        assertThat(result).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
         assertThat(writes).containsExactly(previous.failed(WooPosPINTime(fixture.boot, fixture.elapsed)), previous)
         assertThat(fixture.records[1]).isEqualTo(previous)
     }
 
-    private fun fixture() = WooPosPINAccessTestFixture(coroutineRule.testDispatchers)
+    private fun fixture() = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
 }

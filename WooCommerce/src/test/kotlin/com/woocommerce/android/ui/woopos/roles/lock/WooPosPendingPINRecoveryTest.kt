@@ -16,7 +16,7 @@ class WooPosPendingPINRecoveryTest {
     @Test
     fun `given unavailable local clock and storage, when pending recovery runs, then neither is accessed`() = runTest {
         // GIVEN
-        val fixture = WooPosPINAccessTestFixture(coroutineRule.testDispatchers)
+        val fixture = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
         var storageCalls = 0
         var clockCalls = 0
         val storage = object : WooPosPINAttemptStorage {
@@ -39,7 +39,7 @@ class WooPosPendingPINRecoveryTest {
                 error("Unavailable boot identity")
             }
         }
-        val access = WooPosPINAccess(
+        val access = WooPosLocalRateLimiter(
             fixture.store,
             WooPosPINAuthenticator(fixture.store, coroutineRule.testDispatchers),
             storage,
@@ -49,7 +49,7 @@ class WooPosPendingPINRecoveryTest {
         )
 
         // THEN
-        assertThat(access.recover(1)).isEqualTo(WooPosPINAccessResult.RecoveryUnavailable)
+        assertThat(access.recover(1)).isEqualTo(WooPosLocalRateLimiterResult.RecoveryUnavailable)
         assertThat(storageCalls).isZero()
         assertThat(clockCalls).isZero()
         assertThat(fixture.pinReads).isZero()

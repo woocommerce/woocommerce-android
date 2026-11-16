@@ -12,7 +12,7 @@ import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
-internal class WooPosPINAccessTestFixture(private val dispatchers: CoroutineDispatchers) {
+internal class WooPosLocalRateLimiterTestFixture(private val dispatchers: CoroutineDispatchers) {
     val admin = WooPosLocalRole.ADMIN
     val cashier = WooPosLocalRole.CASHIER
     var pins = Result.success(
@@ -61,7 +61,7 @@ internal class WooPosPINAccessTestFixture(private val dispatchers: CoroutineDisp
     val recovery = object : WooPosPINRecovery {
         override suspend fun authenticate(localSiteId: Int) = recoveryResult
     }
-    fun access() = WooPosPINAccess(
+    fun access() = WooPosLocalRateLimiter(
         store,
         WooPosPINAuthenticator(store, dispatchers),
         storage,
