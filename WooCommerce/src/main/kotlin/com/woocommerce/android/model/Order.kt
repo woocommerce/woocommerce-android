@@ -139,9 +139,7 @@ data class Order(
         var containsAddons = false
 
         val displayableAttributes: List<Attribute>
-            get() = attributesList.filter {
-                it.value.isNotEmpty() && it.key.isNotEmpty()
-            }.map { attribute ->
+            get() = attributesList.map { attribute ->
                 Attribute(
                     key = attribute.key.fastStripHtml(),
                     value = attribute.value
@@ -150,6 +148,8 @@ data class Order(
                             if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
                         }
                 )
+            }.filter {
+                it.value.isNotEmpty() && it.key.isNotEmpty()
             }
 
         /**

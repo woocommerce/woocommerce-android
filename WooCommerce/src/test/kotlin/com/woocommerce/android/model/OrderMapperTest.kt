@@ -107,10 +107,33 @@ class OrderMapperTest {
         assertThat(result.giftCards).isEmpty()
     }
 
+    @Test
+    fun `given a parent name made only of html tags, when mapping line items, then the item name is used`() = runTest {
+        val orderEntity = createTestOrderEntity(
+            lineItems = """[{"id":1,"product_id":2,"parent_name":"<p></p>","name":"<b>Blue shirt</b>"}]"""
+        )
+
+        val result = orderMapper.toAppModel(orderEntity)
+
+        assertThat(result.items.single().name).isEqualTo("Blue shirt")
+    }
+
+    @Test
+    fun `given a parent name with text, when mapping line items, then the stripped parent name is used`() = runTest {
+        val orderEntity = createTestOrderEntity(
+            lineItems = """[{"id":1,"product_id":2,"parent_name":"<b>Shirt</b>","name":"Shirt - Blue"}]"""
+        )
+
+        val result = orderMapper.toAppModel(orderEntity)
+
+        assertThat(result.items.single().name).isEqualTo("Shirt")
+    }
+
     private fun createTestOrderEntity(
         createdVia: String = "",
         metaData: List<WCMetaData> = emptyList(),
         giftCards: String = "",
+        lineItems: String = "",
     ): OrderEntity {
         return OrderEntity(
             localSiteId = localSiteId,
@@ -124,6 +147,7 @@ class OrderMapperTest {
             createdVia = createdVia,
             metaData = metaData,
             giftCards = giftCards,
+            lineItems = lineItems,
         )
     }
 }

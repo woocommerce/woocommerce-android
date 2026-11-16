@@ -4,6 +4,7 @@
 
 26.2
 -----
+- [*] Product names, purchase notes and order item details made only of HTML tags no longer show the raw tags [https://github.com/woocommerce/woocommerce-android/pull/16873]
 
 
 26.1

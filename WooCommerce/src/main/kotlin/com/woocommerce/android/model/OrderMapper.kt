@@ -126,7 +126,9 @@ class OrderMapper @Inject constructor(
                 Item(
                     it.id!!,
                     it.productId!!,
-                    it.parentName?.fastStripHtml() ?: it.name?.fastStripHtml() ?: StringUtils.EMPTY,
+                    it.parentName?.fastStripHtml()?.ifEmpty { null }
+                        ?: it.name?.fastStripHtml()
+                        ?: StringUtils.EMPTY,
                     it.price?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                     it.sku ?: "",
                     it.quantity ?: 0f,

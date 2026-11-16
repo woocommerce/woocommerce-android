@@ -165,7 +165,7 @@ private fun Product.toListItemUiModel(
     context: Context,
     currencyFormatter: CurrencyFormatter,
 ): ProductListItemUiModel {
-    val productName = name.takeIf(String::isNotEmpty)?.fastStripHtml() ?: context.getString(R.string.untitled)
+    val productName = name.fastStripHtml().ifEmpty { context.getString(R.string.untitled) }
     val statusText = status?.takeUnless { it == ProductStatus.PUBLISH }?.let {
         context.getString(it.stringResource)
     }

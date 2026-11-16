@@ -66,4 +66,14 @@ class StringExtFastStripHtmlTest {
     fun `given entities inside tags, when html is stripped, then tags are removed and entities unescaped`() {
         assertThat("<b>Tom &amp; Jerry</b>".fastStripHtml()).isEqualTo("Tom & Jerry")
     }
+
+    @Test
+    fun `given text with trailing whitespace, when html is stripped, then the trailing whitespace is kept`() {
+        assertThat("<p>Fragile </p>\n".fastStripHtml()).isEqualTo("Fragile \n")
+    }
+
+    @Test
+    fun `given an html comment, when html is stripped, then the comment is removed`() {
+        assertThat("Before<!-- hidden -->After".fastStripHtml()).isEqualTo("BeforeAfter")
+    }
 }

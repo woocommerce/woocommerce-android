@@ -127,7 +127,7 @@ class SubscriptionProductVariation(
             isVirtual = model.virtual,
             isDownloadable = model.downloadable,
             isStockManaged = model.manageStock,
-            description = model.description.fastStripHtml(),
+            description = model.description.stripVariationDescriptionHtml(),
             isVisible = ProductStatus.fromString(model.status) == ProductStatus.PUBLISH,
             shippingClass = model.shippingClass,
             shippingClassId = model.shippingClassId.toLong(),

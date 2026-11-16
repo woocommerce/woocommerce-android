@@ -86,4 +86,23 @@ class OrderItemTest {
         // THEN
         assertThat(attributes).containsExactly(Order.Item.Attribute("First Key", "First Value"))
     }
+
+    @Test
+    fun `given attributes made only of html tags, when displayableAttributes is read, then they are dropped`() {
+        // GIVEN
+        orderItemUnderTest = orderItemUnderTest.copy(
+            attributesList = listOf(
+                Order.Item.Attribute("Color", "<p></p>"),
+                Order.Item.Attribute("<span></span>", "Orphan Value"),
+                Order.Item.Attribute("Size", "<b>large</b>")
+            )
+        )
+
+        // WHEN
+        val attributes = orderItemUnderTest.displayableAttributes
+
+        // THEN
+        assertThat(attributes).containsExactly(Order.Item.Attribute("Size", "Large"))
+        assertThat(orderItemUnderTest.attributesDescription).isEqualTo("Large")
+    }
 }

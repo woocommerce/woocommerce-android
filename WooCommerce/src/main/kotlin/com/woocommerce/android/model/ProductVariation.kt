@@ -315,6 +315,12 @@ data class VariantOption(
     fun asSourceModel() = WCProductVariationModel.ProductVariantOption(id, name, option)
 }
 
+/**
+ * The stripped description is sent back to the server on the next variation update,
+ * so markup that strips to nothing is kept rather than replaced with an empty description.
+ */
+internal fun String.stripVariationDescriptionHtml(): String = fastStripHtml().ifEmpty { this }
+
 fun WCProductVariationModel.toAppModel(): ProductVariation {
     return ProductVariation(
         remoteProductId = this.remoteProductId.value,
@@ -336,7 +342,7 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
         isVirtual = this.virtual,
         isDownloadable = this.downloadable,
         isStockManaged = this.manageStock,
-        description = this.description.fastStripHtml(),
+        description = this.description.stripVariationDescriptionHtml(),
         isVisible = ProductStatus.fromString(this.status) == PUBLISH,
         shippingClass = this.shippingClass,
         shippingClassId = this.shippingClassId.toLong(),
