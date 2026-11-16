@@ -8,6 +8,8 @@ import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockSession
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -62,9 +64,12 @@ class WooPosPinSetupViewModel @Inject constructor(
                 return@launch
             }
             val canCreate = pins.getOrNull()?.let { WooPosLocalRole.ADMIN !in it } == true
-            val saved = canCreate && store.setPIN(id, WooPosLocalRole.ADMIN, submitted).isSuccess
-            if (saved && id == selectedSite.getOrNull()?.id) {
-                lockSession.initialize(unlockWith = submitted)
+            val saved = withContext(NonCancellable) {
+                val saved = canCreate && store.setPIN(id, WooPosLocalRole.ADMIN, submitted).isSuccess
+                if (saved && id == selectedSite.getOrNull()?.id) {
+                    lockSession.initialize(unlockWith = submitted)
+                }
+                saved
             }
             if (request != generation) return@launch
             isSaving = false

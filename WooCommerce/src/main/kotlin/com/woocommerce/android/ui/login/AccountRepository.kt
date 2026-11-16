@@ -130,9 +130,9 @@ class AccountRepository @Inject constructor(
             localPINStore.clearAll().onFailure {
                 WooLog.e(LOGIN, "Unable to clear local POS PINs")
             }
-        }
-        pinAccess.clearAllAttempts().onFailure {
-            WooLog.e(LOGIN, "Unable to clear local POS PIN attempts")
+            pinAccess.clearAllAttempts().onFailure {
+                WooLog.e(LOGIN, "Unable to clear local POS PIN attempts")
+            }
         }
     }
 

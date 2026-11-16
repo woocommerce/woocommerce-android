@@ -64,7 +64,7 @@ class WooPosLockSession @Inject constructor(
             }
             protected.getOrThrow() -> _state.value.copy(
                 isLocked = activeRole == null,
-                isChecking = false,
+                isChecking = activeRole == null,
                 error = _state.value.error.takeUnless { it == WooPosLockError.STORAGE },
             )
             else -> {
@@ -73,7 +73,10 @@ class WooPosLockSession @Inject constructor(
                 WooPosLockScreenState()
             }
         }
-        if (_state.value.isLocked) refreshWait()
+        if (_state.value.isLocked) {
+            refreshWait()
+            if (isCurrent(request, id)) _state.value = _state.value.copy(isChecking = false)
+        }
     }
 
     suspend fun lock() {
@@ -101,7 +104,7 @@ class WooPosLockSession @Inject constructor(
         }
     }
 
-    suspend fun unlock(submitted: String) {
+    private suspend fun unlock(submitted: String) {
         if (!_state.value.canEnterPIN) return
         pin = ""
         authenticate { id -> access.authenticate(id, submitted) }

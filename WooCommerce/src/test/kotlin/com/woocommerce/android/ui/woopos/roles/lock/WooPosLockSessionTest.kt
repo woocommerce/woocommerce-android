@@ -30,6 +30,11 @@ class WooPosLockSessionTest {
     }
 
     @Test
+    fun `given Roles rollout has not started, then the local flag defaults off`() {
+        assertThat(FeatureFlag.WOO_POS_ROLES.localValue).isFalse()
+    }
+
+    @Test
     fun `given flag off, when initialized and locked, then POS remains unprotected`() = runTest {
         // GIVEN
         whenever(flags.isEnabled(FeatureFlag.WOO_POS_ROLES)).thenReturn(false)
@@ -42,7 +47,6 @@ class WooPosLockSessionTest {
         // THEN
         assertThat(session.state.value.isLocked).isFalse()
         assertThat(session.isEnabled).isFalse()
-        assertThat(FeatureFlag.WOO_POS_ROLES.localValue).isFalse()
     }
 
     @Test

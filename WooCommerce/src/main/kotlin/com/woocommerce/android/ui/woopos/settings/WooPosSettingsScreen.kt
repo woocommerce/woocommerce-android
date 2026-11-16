@@ -237,7 +237,7 @@ private fun SettingsDialogs(
     val pinSetup: WooPosPinSetupViewModel = hiltViewModel()
     val pinSetupState by pinSetup.state.collectAsState()
     val isPinSetupVisible = dialogState is WooPosSettingsDialogState.PinSetupDialog
-    LaunchedEffect(isPinSetupVisible) { pinSetup.reset() }
+    LaunchedEffect(isPinSetupVisible) { if (!isPinSetupVisible) pinSetup.reset() }
     WooPosPinSetupDialog(
         state = pinSetupState,
         isVisible = isPinSetupVisible,

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.settings.details.security
 
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockSession
@@ -8,6 +9,7 @@ import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -207,6 +209,28 @@ class WooPosPinSetupViewModelTest {
             // THEN
             verify(session).initialize(unlockWith = "1234")
             assertReady()
+        }
+
+    @Test
+    fun `given a committed save, when Settings scope is cancelled, then the real session receives the saved PIN`() =
+        runTest {
+            // GIVEN
+            val gate = CompletableDeferred<Unit>()
+            whenever(store.getPINs(1)).thenReturn(Result.success(emptyMap()))
+            whenever(store.setPIN(1, WooPosLocalRole.ADMIN, "1234")).doSuspendableAnswer {
+                gate.await()
+                Result.success(Unit)
+            }
+            enter("1234")
+            runCurrent()
+
+            // WHEN
+            viewModel.viewModelScope.cancel()
+            gate.complete(Unit)
+            runCurrent()
+
+            // THEN
+            verify(session).initialize(unlockWith = "1234")
         }
 
     private fun enter(pin: String) = pin.forEach {
