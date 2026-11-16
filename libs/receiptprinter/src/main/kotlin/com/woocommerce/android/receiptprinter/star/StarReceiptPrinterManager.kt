@@ -127,7 +127,7 @@ internal class StarReceiptPrinterManager @Inject constructor(
 
     override suspend fun printReceipt(text: String): ReceiptPrinterResult {
         val (connection, error) = connectionMutex.withLock {
-            val connection = openConnection
+            val connection = openConnection?.takeIf { isLatest(it.attempt) }
                 ?: return ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotConnected)
             val error = print(connection.printer, text) ?: return ReceiptPrinterResult.Success
             connection to error
@@ -138,10 +138,7 @@ internal class StarReceiptPrinterManager @Inject constructor(
 
     private suspend fun disconnectLost(connectAttempt: Any) {
         val attempt = synchronized(attemptLock) {
-            // While the attempt is still connecting, the connect reports the outcome itself.
-            val isCurrent = latestAttempt === connectAttempt &&
-                _connectionStatus.value is ReceiptPrinterConnectionStatus.Connected
-            if (!isCurrent) return
+            if (latestAttempt !== connectAttempt) return
             startAttempt(ReceiptPrinterConnectionStatus.Disconnecting)
         }
         closeAsLatest(attempt)
