@@ -57,11 +57,15 @@ class WooPosReceiptPrinterConnectionControllerTest {
     )
     private val discoveryEvents = Channel<ReceiptPrinterDiscoveryEvent>(Channel.UNLIMITED)
     private var isDiscovering = false
+    private var searchesStarted = 0
 
     private val receiptPrinterFacade: WooPosReceiptPrinterFacade = mock {
         on { connectionStatus } doReturn connectionStatus
         on { discover() } doReturn discoveryEvents.receiveAsFlow()
-            .onStart { isDiscovering = true }
+            .onStart {
+                isDiscovering = true
+                searchesStarted++
+            }
             .onCompletion { isDiscovering = false }
     }
     private val permissionUtils: WooPosPermissionUtils = mock {
@@ -184,6 +188,7 @@ class WooPosReceiptPrinterConnectionControllerTest {
             // GIVEN
             whenever(permissionUtils.hasBluetoothScanAndConnectPermissions()).thenReturn(false)
             val sut = createController()
+            sut.startSetup()
             sut.onBluetoothPermissionResult(granted = false, shouldShowRationale = false)
             whenever(permissionUtils.hasBluetoothScanAndConnectPermissions()).thenReturn(true)
 
@@ -195,6 +200,24 @@ class WooPosReceiptPrinterConnectionControllerTest {
             assertThat(sut.state.value).isEqualTo(Searching)
             verify(receiptPrinterFacade).discover()
         }
+
+    @Test
+    fun `given setup was cancelled, when a permission result arrives, then setup is not started again`() = runTest {
+        // GIVEN
+        whenever(permissionUtils.hasBluetoothScanAndConnectPermissions()).thenReturn(false)
+        val sut = createController()
+        sut.startSetup()
+        sut.cancelSetup()
+        whenever(permissionUtils.hasBluetoothScanAndConnectPermissions()).thenReturn(true)
+
+        // WHEN
+        sut.onBluetoothPermissionResult(granted = true, shouldShowRationale = false)
+        runCurrent()
+
+        // THEN
+        assertThat(sut.state.value).isEqualTo(Idle)
+        assertThat(searchesStarted).isEqualTo(0)
+    }
 
     @Test
     fun `given Bluetooth was off, when it is turned on and rechecked, then the search starts`() = runTest {
@@ -243,7 +266,7 @@ class WooPosReceiptPrinterConnectionControllerTest {
 
             // THEN
             assertThat(sut.state.value).isEqualTo(FoundOne(PRINTER))
-            verify(receiptPrinterFacade, times(1)).discover()
+            assertThat(searchesStarted).isEqualTo(1)
         }
 
     @Test
@@ -355,7 +378,7 @@ class WooPosReceiptPrinterConnectionControllerTest {
             assertThat(stateAfterKeepSearching).isEqualTo(Searching)
             assertThat(stateAfterSkippedPrinter).isEqualTo(Searching)
             assertThat(sut.state.value).isEqualTo(FoundOne(OTHER_PRINTER))
-            verify(receiptPrinterFacade, times(1)).discover()
+            assertThat(searchesStarted).isEqualTo(1)
         }
 
     @Test
@@ -411,7 +434,7 @@ class WooPosReceiptPrinterConnectionControllerTest {
 
         // THEN
         assertThat(sut.state.value).isEqualTo(FoundOne(PRINTER))
-        verify(receiptPrinterFacade, times(2)).discover()
+        assertThat(searchesStarted).isEqualTo(2)
     }
 
     @Test
@@ -428,7 +451,7 @@ class WooPosReceiptPrinterConnectionControllerTest {
 
         // THEN
         assertThat(sut.state.value).isEqualTo(FoundMultiple(listOf(PRINTER, OTHER_PRINTER)))
-        verify(receiptPrinterFacade, times(1)).discover()
+        assertThat(searchesStarted).isEqualTo(1)
     }
 
     @Test

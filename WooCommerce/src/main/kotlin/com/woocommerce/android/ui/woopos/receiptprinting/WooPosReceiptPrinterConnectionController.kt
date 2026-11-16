@@ -52,6 +52,7 @@ class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
     }
 
     fun onBluetoothPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
+        if (_state.value !is MissingBluetoothPermission) return
         isBluetoothPermissionPermanentlyDenied = !granted && !shouldShowRationale
         startSetup()
     }
