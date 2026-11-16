@@ -36,7 +36,7 @@ class WooPosPINAccess @Inject internal constructor(
     suspend fun authenticate(
         localSiteId: Int,
         pin: String,
-        permission: WooPosCapability? = null,
+        requiredCapability: WooPosCapability? = null,
     ): WooPosPINAccessResult = operation {
         val pins = store.getPINs(localSiteId).getOrThrow()
         if (pins.isEmpty()) return@operation WooPosPINAccessResult.ProtectionOff
@@ -44,8 +44,8 @@ class WooPosPINAccess @Inject internal constructor(
         val wait = seconds(attempts.remainingMillis(time))
         if (wait > 0) return@operation WooPosPINAccessResult.Waiting(wait)
         // Persist before comparing: a process kill must not create an unrecorded PIN oracle.
-        val failed = attempts.failed(time)
-        storage.write(localSiteId, failed)
+        val chargedAttempt = attempts.failed(time)
+        storage.write(localSiteId, chargedAttempt)
         val authenticated = authenticator.authenticate(pins, pin)
         if (authenticated.isFailure) {
             storage.write(localSiteId, attempts)
@@ -53,8 +53,8 @@ class WooPosPINAccess @Inject internal constructor(
         }
         val role = authenticated.getOrThrow()
         when {
-            role == null || (permission != null && !role.hasCapability(permission)) -> {
-                WooPosPINAccessResult.Incorrect(seconds(failed.waitMillis))
+            role == null || (requiredCapability != null && !role.hasCapability(requiredCapability)) -> {
+                WooPosPINAccessResult.Incorrect(seconds(chargedAttempt.waitMillis))
             }
             else -> {
                 val next = if (role.hasCapability(WooPosCapability.MANAGE_STORE_SETTINGS)) {
@@ -69,7 +69,6 @@ class WooPosPINAccess @Inject internal constructor(
     }.getOrDefault(WooPosPINAccessResult.Unavailable)
 
     suspend fun recover(localSiteId: Int): WooPosPINAccessResult = operation {
-        // WOOMOB-4606 supplies fresh account authentication. A stored app session is not recovery proof.
         val role = recovery.authenticate(localSiteId).getOrThrow()
         check(role.hasCapability(WooPosCapability.MANAGE_STORE_SETTINGS))
         storage.write(localSiteId, WooPosPINAttemptState())
