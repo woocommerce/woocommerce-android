@@ -6,6 +6,7 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatToLocalizedMediumWithTime
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.Labels
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.Row
@@ -19,6 +20,7 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 class WooPosBuildThermalReceipt @Inject constructor(
+    private val selectedSite: SelectedSite,
     private val totalsRepository: WooPosTotalsRepository,
     private val receiptRepository: WooPosSettingsReceiptRepository,
     private val storeRepository: WooPosSettingsStoreRepository,
@@ -26,9 +28,11 @@ class WooPosBuildThermalReceipt @Inject constructor(
     private val resourceProvider: ResourceProvider,
 ) {
     suspend operator fun invoke(orderId: Long): WooPosThermalReceipt? {
+        val siteId = selectedSite.getSelectedSiteId()
         val order = totalsRepository.getOrderById(orderId) ?: return null
         val receiptInfo = getReceiptInfo()
         val storeInfo = storeRepository.getStoreInfo()
+        if (selectedSite.getSelectedSiteId() != siteId) return null
         return WooPosThermalReceipt(
             storeName = receiptInfo?.storeName.nullIfBlank() ?: storeInfo.storeName,
             storeAddress = (receiptInfo?.address.nullIfBlank() ?: storeInfo.address).nullIfBlank(),

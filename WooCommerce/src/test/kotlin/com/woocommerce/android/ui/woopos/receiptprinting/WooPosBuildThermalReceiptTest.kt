@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.receiptprinting
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.Labels
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.Row
@@ -38,6 +39,9 @@ class WooPosBuildThermalReceiptTest {
     @get:Rule
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
+    private val selectedSite: SelectedSite = mock {
+        on { getSelectedSiteId() } doReturn SITE_ID
+    }
     private val totalsRepository: WooPosTotalsRepository = mock {
         on { getOrderById(ORDER_ID) } doReturn ORDER
     }
@@ -61,6 +65,7 @@ class WooPosBuildThermalReceiptTest {
     }
 
     private val sut = WooPosBuildThermalReceipt(
+        selectedSite = selectedSite,
         totalsRepository = totalsRepository,
         receiptRepository = receiptRepository,
         storeRepository = storeRepository,
@@ -351,6 +356,19 @@ class WooPosBuildThermalReceiptTest {
     }
 
     @Test
+    fun `given the selected site changes while building, when building the receipt, then there is no receipt`() =
+        runTest {
+            // GIVEN
+            whenever(selectedSite.getSelectedSiteId()).thenReturn(SITE_ID, SITE_ID + 1)
+
+            // WHEN
+            val receipt = sut(ORDER_ID)
+
+            // THEN
+            assertThat(receipt).isNull()
+        }
+
+    @Test
     fun `when reading the labels, then they come from the receipt strings`() {
         // WHEN
         val labels = sut.labels()
@@ -361,6 +379,7 @@ class WooPosBuildThermalReceiptTest {
 
     private companion object {
         const val ORDER_ID = 1042L
+        const val SITE_ID = 1
         const val CURRENCY = "USD"
 
         val STRINGS = mapOf(
