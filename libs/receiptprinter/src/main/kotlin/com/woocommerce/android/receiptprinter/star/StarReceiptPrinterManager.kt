@@ -117,13 +117,7 @@ internal class StarReceiptPrinterManager @Inject constructor(
         return result
     }
 
-    override suspend fun disconnect() {
-        val attempt = synchronized(attemptLock) {
-            if (_connectionStatus.value == ReceiptPrinterConnectionStatus.Disconnected) return
-            startAttempt(ReceiptPrinterConnectionStatus.Disconnecting)
-        }
-        closeAsLatest(attempt)
-    }
+    override suspend fun disconnect() = disconnect(lostConnectAttempt = null)
 
     override suspend fun printReceipt(text: String): ReceiptPrinterResult {
         val (connection, error) = connectionMutex.withLock {
@@ -132,19 +126,16 @@ internal class StarReceiptPrinterManager @Inject constructor(
             val error = print(connection.printer, text) ?: return ReceiptPrinterResult.Success
             connection to error
         }
-        if (error is ReceiptPrinterError.ConnectionLost) disconnectLost(connection.attempt)
+        if (error is ReceiptPrinterError.ConnectionLost) disconnect(connection.attempt)
         return ReceiptPrinterResult.Failure(error)
     }
 
-    private suspend fun disconnectLost(connectAttempt: Any) {
+    private suspend fun disconnect(lostConnectAttempt: Any?) {
         val attempt = synchronized(attemptLock) {
-            if (latestAttempt !== connectAttempt) return
+            if (_connectionStatus.value == ReceiptPrinterConnectionStatus.Disconnected) return
+            if (lostConnectAttempt != null && latestAttempt !== lostConnectAttempt) return
             startAttempt(ReceiptPrinterConnectionStatus.Disconnecting)
         }
-        closeAsLatest(attempt)
-    }
-
-    private suspend fun closeAsLatest(attempt: Any) {
         withContext(NonCancellable) {
             connectionMutex.withLock {
                 if (isLatest(attempt)) {
@@ -174,7 +165,7 @@ internal class StarReceiptPrinterManager @Inject constructor(
             printer.printerDelegate = object : PrinterDelegate() {
                 override fun onCommunicationError(e: StarIO10Exception) {
                     if (e.toPrintError() !is ReceiptPrinterError.ConnectionLost) return
-                    connectionLossScope.launch { disconnectLost(attempt) }
+                    connectionLossScope.launch { disconnect(attempt) }
                 }
             }
             printer.openAsync().await()

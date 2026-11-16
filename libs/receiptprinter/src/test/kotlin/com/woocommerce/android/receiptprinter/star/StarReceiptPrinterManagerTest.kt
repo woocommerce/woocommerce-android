@@ -31,9 +31,11 @@ import com.woocommerce.android.receiptprinter.ReceiptPrinterDiscoveryEvent.Print
 import com.woocommerce.android.receiptprinter.ReceiptPrinterError
 import com.woocommerce.android.receiptprinter.ReceiptPrinterResult
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
@@ -58,6 +60,7 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import kotlin.coroutines.CoroutineContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StarReceiptPrinterManagerTest {
@@ -1400,18 +1403,19 @@ class StarReceiptPrinterManagerTest {
         }
 
     @Test
-    fun `given a connect that failed, when its printer reports a lost connection, then the status ends at disconnected`() =
+    fun `given a connect that failed, when its printer reports a lost connection, then no status is published`() =
         runTest {
             // GIVEN
             val printer = starPrinter(open = failed(StarIO10CommunicationException("communication")))
             discover(printer)
             sut.connect(DEVICE)
+            val statuses = collectStatuses()
 
             // WHEN
             printer.capturedDelegate().onCommunicationError(StarIO10CommunicationException("communication"))
 
             // THEN
-            assertThat(sut.connectionStatus.value).isEqualTo(Disconnected)
+            assertThat(statuses).containsExactly(Disconnected)
         }
 
     @Test
@@ -1458,7 +1462,7 @@ class StarReceiptPrinterManagerTest {
 
     private fun TestScope.collectStatuses(): List<ReceiptPrinterConnectionStatus> {
         val statuses = mutableListOf<ReceiptPrinterConnectionStatus>()
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { sut.connectionStatus.toList(statuses) }
+        backgroundScope.launch(InlineDispatcher) { sut.connectionStatus.toList(statuses) }
         return statuses
     }
 
@@ -1570,6 +1574,11 @@ class StarReceiptPrinterManagerTest {
             on { this.detail } doReturn detail
             on { this.model } doReturn model
         }
+    }
+
+    // Runs the status collector inside each publication, so a status that is replaced at once is still recorded.
+    private object InlineDispatcher : CoroutineDispatcher() {
+        override fun dispatch(context: CoroutineContext, block: Runnable) = block.run()
     }
 
     private companion object {
