@@ -20,6 +20,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -77,7 +78,9 @@ class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
         _state.value = Connecting(device)
         setupJob = scope.launch {
             discoveryJob?.join()
-            _state.value = when (receiptPrinterFacade.connect(device)) {
+            val result = receiptPrinterFacade.connect(device)
+            ensureActive()
+            _state.value = when (result) {
                 ReceiptPrinterResult.Success -> Idle
                 is ReceiptPrinterResult.Failure -> ConnectionFailed
             }

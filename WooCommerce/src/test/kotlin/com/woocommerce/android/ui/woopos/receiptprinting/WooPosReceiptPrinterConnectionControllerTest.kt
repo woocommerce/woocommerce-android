@@ -573,6 +573,27 @@ class WooPosReceiptPrinterConnectionControllerTest {
     }
 
     @Test
+    fun `given setup restarts while a connection succeeds, when the connection returns, then the new search is kept`() =
+        runTest {
+            // GIVEN
+            lateinit var sut: WooPosReceiptPrinterConnectionController
+            whenever(receiptPrinterFacade.connect(PRINTER)).doSuspendableAnswer {
+                sut.startSetup()
+                ReceiptPrinterResult.Success
+            }
+            sut = createController()
+            sut.startSetup()
+            find(PRINTER)
+
+            // WHEN
+            sut.connect(PRINTER)
+            runCurrent()
+
+            // THEN
+            assertThat(sut.state.value).isEqualTo(Searching)
+        }
+
+    @Test
     fun `given setup was cancelled, when it starts again, then the new search is not affected`() = runTest {
         // GIVEN
         val sut = createController()
