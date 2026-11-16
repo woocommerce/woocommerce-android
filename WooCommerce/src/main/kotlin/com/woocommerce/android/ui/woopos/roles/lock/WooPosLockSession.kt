@@ -73,10 +73,7 @@ class WooPosLockSession @Inject constructor(
                 WooPosLockScreenState()
             }
         }
-        if (_state.value.isLocked) {
-            refreshWait()
-            if (isCurrent(request, id)) _state.value = _state.value.copy(isChecking = false)
-        }
+        if (_state.value.isLocked) finishChecking(request, id)
     }
 
     suspend fun lock() {
@@ -90,6 +87,10 @@ class WooPosLockSession @Inject constructor(
             _state.value = WooPosLockScreenState(isLocked = true, error = WooPosLockError.STORAGE)
             return
         }
+        finishChecking(request, id)
+    }
+
+    private suspend fun finishChecking(request: Long, id: Int) {
         refreshWait()
         if (isCurrent(request, id)) _state.value = _state.value.copy(isChecking = false)
     }

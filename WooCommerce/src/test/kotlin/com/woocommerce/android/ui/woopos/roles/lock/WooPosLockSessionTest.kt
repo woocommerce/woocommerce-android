@@ -30,7 +30,7 @@ class WooPosLockSessionTest {
     }
 
     @Test
-    fun `given Roles rollout has not started, then the local flag defaults off`() {
+    fun `when checking the Roles rollout default, then the local flag is off`() {
         assertThat(FeatureFlag.WOO_POS_ROLES.localValue).isFalse()
     }
 
