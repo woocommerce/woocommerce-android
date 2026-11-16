@@ -165,6 +165,13 @@ tags:
 
 - takeScreenshot: after_see_receipt_tap
 
+# A tap that lands disables "See receipt" while the receipt loads, and the order
+# detail stays on screen until it opens, so give it time before deciding.
+- extendedWaitUntil:
+    notVisible: "See receipt"
+    timeout: 20000
+    optional: true
+
 # The order detail auto-refreshes and can reset scroll, dropping the tap. If
 # "See receipt" is still visible we are still on the order detail (the receipt
 # did not open), so re-scroll and tap again — this keeps the assertion below a
