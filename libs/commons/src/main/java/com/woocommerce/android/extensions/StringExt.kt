@@ -53,7 +53,7 @@ fun String.fastStripHtml(): String {
     }
 
     val htmlString = StringEscapeUtils.unescapeHtml4(str.replace(Regex("<(.|\n)*?>"), ""))
-    if (htmlString.isEmpty()) return str
+    if (htmlString.isEmpty()) return ""
 
     var start = 0
     while (start != 0 && (Character.isWhitespace(htmlString[start]) || htmlString[start].code == 160)) {
