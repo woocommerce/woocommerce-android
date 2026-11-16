@@ -63,6 +63,8 @@ class WooPosPINAttemptStorageTest {
         val state = WooPosPINAttemptState(5, 1, 1000, 30_000)
         storage.write(1, state)
         File(directory, "1.attempts.new").writeBytes(byteArrayOf(0))
+        val previousFile = File(directory, "1.attempts")
+        check(previousFile.setWritable(false))
         check(directory.setWritable(false))
         try {
             // THEN
@@ -70,6 +72,7 @@ class WooPosPINAttemptStorageTest {
             assertThat(storage.read(1)).isEqualTo(state)
         } finally {
             check(directory.setWritable(true))
+            check(previousFile.setWritable(true))
         }
     }
 
