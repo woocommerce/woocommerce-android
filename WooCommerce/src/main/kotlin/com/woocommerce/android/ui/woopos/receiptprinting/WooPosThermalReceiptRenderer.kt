@@ -1,10 +1,7 @@
 package com.woocommerce.android.ui.woopos.receiptprinting
 
-import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.Card
-import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.Discount
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.Labels
-import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.LineItem
-import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.Totals
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.Row
 import javax.inject.Inject
 
 /**
@@ -15,10 +12,10 @@ class WooPosThermalReceiptRenderer @Inject constructor() {
         listOf(
             header(receipt),
             payment(receipt, labels),
-            receipt.lineItems.flatMap(::lineItem),
-            totals(receipt.totals, labels),
+            receipt.lineItems.flatMap(::twoColumns),
+            receipt.totals.flatMap(::twoColumns),
             labeled(labels.notes, receipt.orderNote),
-            wrap(receipt.returnsPolicy),
+            wrap(receipt.refundPolicy),
         )
             .filter { it.isNotEmpty() }
             .joinToString(separator = "\n$SEPARATOR\n", postfix = "\n") { it.joinToString("\n") }
@@ -31,45 +28,24 @@ class WooPosThermalReceiptRenderer @Inject constructor() {
     private fun payment(receipt: WooPosThermalReceipt, labels: Labels): List<String> =
         labeled(labels.datePaid, receipt.datePaid) +
             wrap(receipt.orderNumber) +
-            receipt.card?.let { labeled(labels.paymentMethod, cardDescription(it)) }.orEmpty()
+            labeled(labels.paymentMethod, receipt.paymentMethod)
 
-    private fun cardDescription(card: Card): String =
-        listOf(card.brand, card.last4).filter { it.isNotBlank() }.joinToString(" - ")
-
-    private fun lineItem(item: LineItem): List<String> {
-        val title = listOf(item.title, item.attributes).filter { it.isNotBlank() }.joinToString(". ")
-        return twoColumns("$title x${item.quantity}", item.amount)
-    }
-
-    private fun totals(totals: Totals, labels: Labels): List<String> =
-        listOfNotNull(
-            labels.subtotal to totals.subtotal,
-            totals.discount?.let { discountLabel(labels.discount, it) to it.amount },
-            totals.fees?.let { labels.fees to it },
-            totals.shipping?.let { labels.shipping to it },
-            totals.taxes?.let { labels.taxes to it },
-            labels.amountPaid to totals.amountPaid,
-        ).flatMap { (label, amount) -> twoColumns(label, amount) }
-
-    private fun discountLabel(label: String, discount: Discount): String =
-        if (discount.couponCodes.isEmpty()) label else "$label (${discount.couponCodes.joinToString()})"
-
-    private fun labeled(label: String, text: String): List<String> =
+    private fun labeled(label: String, text: String?): List<String> =
         wrap(text).let { if (it.isEmpty()) it else wrap(label) + it }
 
-    private fun twoColumns(left: String, right: String): List<String> {
-        val leftLines = wrap(left)
-        val rightLines = wrap(right)
-        val lastLine = leftLines.lastOrNull().orEmpty()
-        val amount = rightLines.singleOrNull()
+    private fun twoColumns(row: Row): List<String> {
+        val labelLines = wrap(row.label)
+        val amountLines = wrap(row.amount)
+        val lastLine = labelLines.lastOrNull().orEmpty()
+        val amount = amountLines.singleOrNull()
         return if (amount != null && lastLine.length + 1 + amount.length <= LINE_WIDTH) {
-            leftLines.dropLast(1) + (lastLine + amount.padStart(LINE_WIDTH - lastLine.length))
+            labelLines.dropLast(1) + (lastLine + amount.padStart(LINE_WIDTH - lastLine.length))
         } else {
-            leftLines + rightLines.map { it.padStart(LINE_WIDTH) }
+            labelLines + amountLines.map { it.padStart(LINE_WIDTH) }
         }
     }
 
-    private fun wrap(text: String): List<String> = text.lines().flatMap(::wrapLine)
+    private fun wrap(text: String?): List<String> = text.orEmpty().lines().flatMap(::wrapLine)
 
     private fun wrapLine(line: String): List<String> =
         line.split(WHITESPACE)
