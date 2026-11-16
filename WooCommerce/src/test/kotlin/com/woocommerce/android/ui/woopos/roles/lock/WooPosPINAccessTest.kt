@@ -201,7 +201,7 @@ class WooPosPINAccessTest {
         }
         val clockFailure = WooPosPINAccess(
             fixture.store,
-            com.woocommerce.android.ui.woopos.roles.pin.WooPosPINAuthenticator(
+            WooPosPINAuthenticator(
                 fixture.store,
                 coroutineRule.testDispatchers
             ),
