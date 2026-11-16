@@ -64,16 +64,16 @@ class WooPosPinSetupViewModel @Inject constructor(
                 return@launch
             }
             val canCreate = pins.getOrNull()?.let { WooPosLocalRole.ADMIN !in it } == true
-            val saved = withContext(NonCancellable) {
-                val saved = canCreate && store.setPIN(id, WooPosLocalRole.ADMIN, submitted).isSuccess
-                if (saved && id == selectedSite.getOrNull()?.id) {
+            val setupSaved = withContext(NonCancellable) {
+                val pinSaved = canCreate && store.setPIN(id, WooPosLocalRole.ADMIN, submitted).isSuccess
+                if (pinSaved && id == selectedSite.getOrNull()?.id) {
                     lockSession.initialize(unlockWith = submitted)
                 }
-                saved
+                pinSaved
             }
             if (request != generation) return@launch
             isSaving = false
-            _state.value = if (saved && id == selectedSite.getOrNull()?.id) {
+            _state.value = if (setupSaved && id == selectedSite.getOrNull()?.id) {
                 WooPosPinSetupState(stage = WooPosPinSetupState.Stage.SUCCESS)
             } else {
                 WooPosPinSetupState()

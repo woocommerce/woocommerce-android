@@ -46,10 +46,10 @@ class WooPosLockSession @Inject constructor(
             return@withLock
         }
         val request = generation
-        val protected = access.protection(id)
+        val protectionResult = access.protection(id)
         if (!isCurrent(request, id)) return@withLock
-        protectionEnabled = protected.getOrDefault(true)
-        if (protected.getOrNull() == true && activeRole == null && unlockWith != null) {
+        protectionEnabled = protectionResult.getOrDefault(true)
+        if (protectionResult.getOrNull() == true && activeRole == null && unlockWith != null) {
             val result = access.authenticate(id, unlockWith)
             if (!isCurrent(request, id)) return@withLock
             applyResult(result)
@@ -57,12 +57,12 @@ class WooPosLockSession @Inject constructor(
             return@withLock
         }
         _state.value = when {
-            protected.isFailure -> {
+            protectionResult.isFailure -> {
                 pin = ""
                 activeRole = null
                 WooPosLockScreenState(isLocked = true, error = WooPosLockError.STORAGE)
             }
-            protected.getOrThrow() -> _state.value.copy(
+            protectionResult.getOrThrow() -> _state.value.copy(
                 isLocked = activeRole == null,
                 isChecking = activeRole == null,
                 error = _state.value.error.takeUnless { it == WooPosLockError.STORAGE },
