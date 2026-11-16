@@ -234,6 +234,7 @@ private fun SettingsDialogs(
         onDismissRequest = onDismissDialog
     )
 
+    // TODO WOOMOB-4602: Drive PIN setup state and events from its ViewModel.
     WooPosPinSetupDialog(
         state = WooPosPinSetupState(),
         isVisible = dialogState is WooPosSettingsDialogState.PinSetupDialog,
