@@ -14,6 +14,7 @@ class WooPosLockScreenViewModel @Inject constructor(
         when (event) {
             is WooPosLockScreenUIEvent.DigitTapped -> lockSession.enterDigit(event.digit)
             WooPosLockScreenUIEvent.DeleteTapped -> lockSession.deleteDigit()
+            // TODO WOOMOB-4606: Open PIN recovery.
             WooPosLockScreenUIEvent.ForgotPINTapped -> Unit
         }
     }
