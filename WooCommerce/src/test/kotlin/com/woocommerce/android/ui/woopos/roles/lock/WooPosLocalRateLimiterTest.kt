@@ -41,7 +41,8 @@ class WooPosLocalRateLimiterTest {
             // THEN
             assertThat(result).isEqualTo(WooPosLocalRateLimiterResult.Incorrect(expected))
             if (expected > 0) {
-                assertThat(rateLimiter.authenticate(1, "1234")).isEqualTo(WooPosLocalRateLimiterResult.Waiting(expected))
+                assertThat(rateLimiter.authenticate(1, "1234"))
+                    .isEqualTo(WooPosLocalRateLimiterResult.Waiting(expected))
                 fixture.elapsed += expected * 1000
             }
         }

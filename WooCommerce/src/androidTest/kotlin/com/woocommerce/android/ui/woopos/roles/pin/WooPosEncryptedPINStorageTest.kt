@@ -47,7 +47,8 @@ class WooPosEncryptedPINStorageTest {
         assertThat(directory.canonicalPath).doesNotStartWith(context.filesDir.canonicalPath)
 
         val recreatedStore = WooPosLocalPINStore(
-            WooPosEncryptedPINStorage(context, "woopos.pin-test"), CoroutineDispatchers()
+            WooPosEncryptedPINStorage(context, "woopos.pin-test"),
+            CoroutineDispatchers()
         )
         val recreated = WooPosPINAuthenticator(CoroutineDispatchers())
         val pins = recreatedStore.getPINs(1).getOrThrow()
