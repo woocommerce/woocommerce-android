@@ -28,7 +28,8 @@ class WooPosLocalRateLimiter @Inject internal constructor(
 ) {
     private val mutex = Mutex()
 
-    suspend fun isProtectionEnabled(localSiteId: Int): Result<Boolean> = store.getPINs(localSiteId).map { it.isNotEmpty() }
+    suspend fun isProtectionEnabled(localSiteId: Int): Result<Boolean> =
+        store.getPINs(localSiteId).map { it.isNotEmpty() }
 
     suspend fun remainingSeconds(localSiteId: Int): Result<Long> = operation {
         val (attempts, time) = load(localSiteId)
@@ -77,6 +78,7 @@ class WooPosLocalRateLimiter @Inject internal constructor(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
+            WooLog.e(WooLog.T.POS, "Local PIN recovery authentication failed: ${e.javaClass.simpleName}")
             return WooPosLocalRateLimiterResult.RecoveryUnavailable
         }
         if (!role.hasCapability(WooPosCapability.MANAGE_STORE_SETTINGS)) {

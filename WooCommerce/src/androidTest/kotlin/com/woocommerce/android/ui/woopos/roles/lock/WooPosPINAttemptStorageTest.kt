@@ -68,7 +68,8 @@ class WooPosPINAttemptStorageTest {
         check(directory.setWritable(false))
         try {
             // THEN
-            assertThatThrownBy { storage.write(1, WooPosPINAttemptState.NO_FAILURES) }.isInstanceOf(Exception::class.java)
+            assertThatThrownBy { storage.write(1, WooPosPINAttemptState.NO_FAILURES) }
+                .isInstanceOf(Exception::class.java)
             assertThat(storage.read(1)).isEqualTo(state)
         } finally {
             check(directory.setWritable(true))
