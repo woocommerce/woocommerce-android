@@ -2,10 +2,10 @@ package com.woocommerce.android.ui.woopos.roles.lock
 
 /** Persisted monotonic time belongs to one boot. Never use wall time to reduce a PIN wait. */
 internal data class WooPosPINAttemptState(
-    val failures: Long = 0,
-    val bootCount: Int = 0,
-    val lastFailureMillis: Long = 0,
-    val waitMillis: Long = 0,
+    val failures: Long,
+    val bootCount: Int,
+    val lastFailureMillis: Long,
+    val waitMillis: Long,
 ) {
     init {
         require(failures >= 0 && bootCount >= 0 && lastFailureMillis >= 0)
@@ -16,7 +16,7 @@ internal data class WooPosPINAttemptState(
         failures == 0L -> this
         bootCount != time.bootCount || time.elapsedMillis < lastFailureMillis ->
             copy(bootCount = time.bootCount, lastFailureMillis = time.elapsedMillis)
-        time.elapsedMillis - lastFailureMillis >= QUIET_PERIOD -> WooPosPINAttemptState()
+        time.elapsedMillis - lastFailureMillis >= QUIET_PERIOD -> WooPosPINAttemptState.NO_FAILURES
         else -> this
     }
 
@@ -36,6 +36,8 @@ internal data class WooPosPINAttemptState(
     }
 
     companion object {
+        val NO_FAILURES = WooPosPINAttemptState(0, 0, 0, 0)
+
         private const val ATTEMPT_GROUP = 5L
         private const val FIRST_THRESHOLD = 5L
         private const val SECOND_THRESHOLD = 10L

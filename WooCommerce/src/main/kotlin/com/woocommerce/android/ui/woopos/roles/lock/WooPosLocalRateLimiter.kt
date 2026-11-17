@@ -60,7 +60,7 @@ class WooPosLocalRateLimiter @Inject internal constructor(
             }
             else -> {
                 val next = if (role.hasCapability(WooPosCapability.MANAGE_STORE_SETTINGS)) {
-                    WooPosPINAttemptState()
+                    WooPosPINAttemptState.NO_FAILURES
                 } else {
                     attempts
                 }
@@ -84,7 +84,7 @@ class WooPosLocalRateLimiter @Inject internal constructor(
         }
         currentCoroutineContext().ensureActive()
         return operation {
-            storage.write(localSiteId, WooPosPINAttemptState())
+            storage.write(localSiteId, WooPosPINAttemptState.NO_FAILURES)
             WooPosLocalRateLimiterResult.Authenticated(role)
         }.getOrDefault(WooPosLocalRateLimiterResult.RecoveryUnavailable)
     }

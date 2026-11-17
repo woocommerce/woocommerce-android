@@ -48,7 +48,7 @@ internal class WooPosLocalRateLimiterTestFixture(private val dispatchers: Corout
         override fun read(localSiteId: Int): WooPosPINAttemptState {
             attemptReads++
             check(!readError)
-            return records[localSiteId] ?: WooPosPINAttemptState()
+            return records[localSiteId] ?: WooPosPINAttemptState.NO_FAILURES
         }
         override fun write(localSiteId: Int, state: WooPosPINAttemptState) {
             check(!writeError)
