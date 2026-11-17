@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,7 +35,9 @@ class WooPosLockScreenViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            selectedSite.observe().collectLatest { accessSession.initialize() }
+            selectedSite.observe()
+                .distinctUntilChangedBy { it?.id }
+                .collectLatest { accessSession.initialize() }
         }
         viewModelScope.launch {
             state.map { it.isLocked && it.status is Status.Wait }

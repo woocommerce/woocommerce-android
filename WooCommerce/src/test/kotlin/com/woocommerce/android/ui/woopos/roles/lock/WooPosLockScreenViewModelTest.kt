@@ -182,13 +182,82 @@ class WooPosLockScreenViewModelTest {
         assertThat(fixture.records.getValue(1).failures).isZero()
     }
 
+    @Test
+    fun `given partial PIN entry, when the same store is refreshed, then the entered digits remain`() = runTest {
+        // GIVEN
+        val fixture = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
+        val sites = MutableStateFlow<SiteModel?>(SiteModel().apply { id = 1 })
+        val (viewModel, session) = viewModel(fixture, sites)
+        "12".forEach { viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(it.digitToInt())) }
+
+        // WHEN
+        sites.value = SiteModel().apply {
+            id = 1
+            name = "Updated store name"
+        }
+        runCurrent()
+        "34".forEach { viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(it.digitToInt())) }
+
+        // THEN
+        assertThat(session.state.value.activeRole).isEqualTo(fixture.admin)
+        assertThat(viewModel.state.value.enteredDigits).isZero()
+    }
+
+    @Test
+    fun `given pending unlock, when the same store is refreshed, then the verified role is retained`() = runTest {
+        // GIVEN
+        val fixture = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
+        val sites = MutableStateFlow<SiteModel?>(SiteModel().apply { id = 1 })
+        val (viewModel, session) = viewModel(fixture, sites)
+        val gate = CompletableDeferred<Unit>()
+        fixture.pinReadGate = gate
+        "1234".forEach { viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(it.digitToInt())) }
+        runCurrent()
+
+        // WHEN
+        sites.value = SiteModel().apply {
+            id = 1
+            name = "Updated store name"
+        }
+        runCurrent()
+        gate.complete(Unit)
+        runCurrent()
+
+        // THEN
+        assertThat(session.state.value.activeRole).isEqualTo(fixture.admin)
+        assertThat(viewModel.state.value.isLocked).isFalse()
+    }
+
+    @Test
+    fun `given pending unlock, when logout clears the selected store, then late success stays blocked`() = runTest {
+        // GIVEN
+        val fixture = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
+        val sites = MutableStateFlow<SiteModel?>(SiteModel().apply { id = 1 })
+        val (viewModel, session) = viewModel(fixture, sites)
+        val gate = CompletableDeferred<Unit>()
+        fixture.pinReadGate = gate
+        "1234".forEach { viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(it.digitToInt())) }
+        runCurrent()
+
+        // WHEN
+        sites.value = null
+        runCurrent()
+        gate.complete(Unit)
+        runCurrent()
+
+        // THEN
+        assertThat(session.state.value.activeRole).isNull()
+        assertThat(viewModel.state.value.isLocked).isTrue()
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
+    }
+
     private fun viewModel(
         fixture: WooPosLocalRateLimiterTestFixture,
+        sites: MutableStateFlow<SiteModel?> = MutableStateFlow(SiteModel().apply { id = 1 }),
     ): Pair<WooPosLockScreenViewModel, WooPosAccessSession> {
-        val site = SiteModel().apply { id = 1 }
         val selectedSite: SelectedSite = mock {
-            on { getOrNull() }.thenReturn(site)
-            on { observe() }.thenReturn(MutableStateFlow(site))
+            on { getOrNull() }.thenAnswer { sites.value }
+            on { observe() }.thenReturn(sites)
         }
         val flags: FeatureFlagRepository = mock {
             on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
