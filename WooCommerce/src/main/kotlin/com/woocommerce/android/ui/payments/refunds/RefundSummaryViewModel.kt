@@ -323,14 +323,13 @@ class RefundSummaryViewModel @Inject constructor(
     private suspend fun initiateRefund(order: Order): WooResult<WCRefundModel> {
         val amount = refundSummaryState.refundAmount
         if (isServerComputedRefund) {
-            // Pinned so the store rejects the refund if its total changed since the preview.
             return refundStore.createComputedItemsRefund(
                 site = selectedSite.get(),
                 orderId = order.id,
                 reason = refundSummaryState.refundReason ?: "",
                 autoRefund = gateway.await().supportsRefunds,
                 restockItems = true,
-                amount = amount,
+                amount = amount.takeIf { isInteracRefund() },
                 items = navArgs.refundItems.toList().toComputedRefundLineItems()
             )
         }

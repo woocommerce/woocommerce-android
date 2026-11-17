@@ -30,6 +30,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -981,7 +982,7 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             reason = eq(""),
             autoRefund = eq(false),
             restockItems = eq(true),
-            amount = eq(BigDecimal("10")),
+            amount = isNull(),
             items = eq(
                 listOf(
                     ComputedRefundLineItem.quantityBased(lineItemId = PRODUCT_LINE_ID, quantity = 2),
@@ -990,6 +991,38 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             )
         )
         verify(refundStore, never()).createItemsRefund(any(), any(), anyOrNull(), any(), any(), any(), any())
+    }
+
+    @Test
+    fun `given interac server computed refund, when refunding, then the card refund amount is sent`() = testBlocking {
+        // GIVEN
+        val order = createTestOrder(paymentMethod = "cod")
+        whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(order)
+        whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("charge_id")).thenReturn(
+            PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                cardBrand = "visa",
+                cardLast4 = "1234",
+                paymentMethodType = "interac_present"
+            )
+        )
+        whenever(resourceProvider.getString(R.string.order_refunds_manual_refund)).thenReturn("Credit/Debit card")
+        serverRefundAvailabilityCache.markAvailable(LOCAL_SITE_ID, WOO_VERSION)
+        givenComputedRefundResult(WooResult(model = createRefundModel()))
+
+        // WHEN
+        initViewModel(refundItems = arrayOf(givenProductItem(quantity = 1)), isServerComputed = true)
+        viewModel.refund()
+
+        // THEN
+        verify(refundStore).createComputedItemsRefund(
+            site = any(),
+            orderId = any(),
+            reason = any(),
+            autoRefund = any(),
+            restockItems = any(),
+            amount = eq(BigDecimal("10")),
+            items = any()
+        )
     }
 
     @Test
