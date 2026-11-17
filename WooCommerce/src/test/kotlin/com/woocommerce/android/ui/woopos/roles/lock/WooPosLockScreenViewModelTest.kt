@@ -34,7 +34,7 @@ class WooPosLockScreenViewModelTest {
             on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
         }
         val viewModel = WooPosLockScreenViewModel(
-            WooPosAccessSession(flags, selectedSite, fixture.access()),
+            WooPosAccessSession(flags, selectedSite, fixture.rateLimiter()),
             selectedSite
         )
         repeat(5) {
@@ -81,7 +81,7 @@ class WooPosLockScreenViewModelTest {
             val flags: FeatureFlagRepository = mock {
                 on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
             }
-            val access = fixture.access()
+            val access = fixture.rateLimiter()
             val session = WooPosAccessSession(flags, selectedSite, access)
             val viewModel = WooPosLockScreenViewModel(session, selectedSite)
             "5678".forEach { session.enterDigit(it.digitToInt()) }
