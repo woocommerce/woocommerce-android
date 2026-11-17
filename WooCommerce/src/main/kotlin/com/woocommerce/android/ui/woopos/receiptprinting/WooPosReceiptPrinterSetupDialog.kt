@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.woopos.receiptprinting
 
 import android.bluetooth.BluetoothAdapter
-import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
@@ -31,7 +29,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -67,7 +64,6 @@ import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterCon
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.MissingBluetoothPermission
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.NoPrintersFound
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.Searching
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
 import kotlinx.coroutines.flow.first
 
@@ -79,7 +75,6 @@ fun WooPosReceiptPrinterSetupDialog(
 ) {
     val state by viewModel.state.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
-    val context = LocalContext.current
     val currentOnConnectionSuccess by rememberUpdatedState(onConnectionSuccess)
 
     val bluetoothPermissionLauncher =
@@ -122,13 +117,7 @@ fun WooPosReceiptPrinterSetupDialog(
         onConnectClicked = viewModel::onConnectClicked,
         onKeepSearchingClicked = viewModel::onKeepSearchingClicked,
         onSearchAgainClicked = viewModel::onSearchAgainClicked,
-        onOpenBluetoothSettingsClicked = {
-            try {
-                context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
-            } catch (e: ActivityNotFoundException) {
-                WooLog.e(WooLog.T.POS, "Bluetooth settings activity not found.", e)
-            }
-        },
+        onOpenBluetoothSettingsClicked = viewModel::onOpenBluetoothSettingsClicked,
     )
 }
 

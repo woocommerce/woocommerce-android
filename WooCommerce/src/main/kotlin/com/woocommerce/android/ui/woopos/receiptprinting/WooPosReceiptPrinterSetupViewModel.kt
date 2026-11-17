@@ -46,6 +46,10 @@ class WooPosReceiptPrinterSetupViewModel @Inject constructor(
         permissionUtils.showAppSettings()
     }
 
+    fun onOpenBluetoothSettingsClicked() {
+        permissionUtils.showBluetoothSettings()
+    }
+
     fun onConnectClicked(device: ReceiptPrinterDevice) {
         controller.connect(device)
     }

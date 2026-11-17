@@ -149,6 +149,18 @@ class WooPosReceiptPrinterSetupViewModelTest {
     }
 
     @Test
+    fun `when open Bluetooth settings is clicked, then the Bluetooth settings are shown`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onOpenBluetoothSettingsClicked()
+
+        // THEN
+        verify(permissionUtils).showBluetoothSettings()
+    }
+
+    @Test
     fun `when connect is clicked, then the controller connects to that printer`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
