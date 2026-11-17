@@ -62,6 +62,11 @@ class WooPosAccessSession @Inject constructor(
             if (_state.value.isLocked) refreshWait()
             return@withLock
         }
+        applyProtection(protectionResult)
+        if (_state.value.isLocked) refreshWait()
+    }
+
+    private fun applyProtection(protectionResult: Result<Boolean>) {
         _state.value = when {
             protectionResult.isFailure -> {
                 pin = ""
@@ -78,7 +83,6 @@ class WooPosAccessSession @Inject constructor(
                 WooPosLockScreenState()
             }
         }
-        if (_state.value.isLocked) refreshWait()
     }
 
     suspend fun lock() {
