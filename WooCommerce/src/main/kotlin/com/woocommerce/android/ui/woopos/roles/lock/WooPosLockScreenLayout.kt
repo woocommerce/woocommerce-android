@@ -40,7 +40,6 @@ internal data class WooPosLockScreenLayout(
             metrics: Metrics,
         ): WooPosLockScreenLayout = with(metrics) {
             val contentWidth = viewport.width - horizontalPadding * 2
-            val keypadWidth = contentWidth
             val illustratedHeaderHeight = titleHeight + illustrationSize + sectionSpacing
 
             fun contentHeight(keySize: Dp, headerHeight: Dp): Dp {
@@ -57,7 +56,7 @@ internal data class WooPosLockScreenLayout(
             fun fittedKeySize(headerHeight: Dp): Dp {
                 val headerSpace = headerHeight + sectionSpacing
                 val keypadHeight = availableHeight - headerSpace - statusHeight - sectionSpacing
-                val widthLimit = (keypadWidth - keySpacing * (COLUMNS - 1)) / COLUMNS
+                val widthLimit = (contentWidth - keySpacing * (COLUMNS - 1)) / COLUMNS
                 val heightLimit = (keypadHeight - keySpacing * (ROWS - 1)) / ROWS
                 val minimum = max(MINIMUM_KEY_SIZE, preferredKeySize * MINIMUM_KEY_SCALE)
                 return floor(min(widthLimit, heightLimit).value).dp.coerceIn(minimum, max(minimum, preferredKeySize))

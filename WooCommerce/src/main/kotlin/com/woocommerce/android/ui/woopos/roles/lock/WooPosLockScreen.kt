@@ -66,6 +66,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -156,68 +157,6 @@ private fun BoxWithConstraintsScope.LockContent(
         translationY = intro.travel().y
     }
 
-    val header = @Composable { headerModifier: Modifier ->
-        Column(headerModifier, horizontalAlignment = Alignment.CenterHorizontally) {
-            if (layout.showsIllustration) {
-                Box(
-                    Modifier
-                        .size(metrics.illustrationSize)
-                        .onGloballyPositioned { intro.animation.slot = it },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    LockIllustration(
-                        shackleAngle = { intro.shackleAngle },
-                        modifier = Modifier.graphicsLayer {
-                            alpha = intro.illustrationAlpha
-                            val travel = intro.travel()
-                            translationX = travel.x
-                            translationY = travel.y
-                        },
-                    )
-                }
-                Spacer(Modifier.height(metrics.sectionSpacing))
-            }
-            WooPosText(
-                text = stringResource(R.string.woopos_lock_enter_pin),
-                style = WooPosTypography.BodyXLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .semantics { heading() }
-                    .then(contentModifier),
-            )
-        }
-    }
-    val entry = @Composable { entryModifier: Modifier ->
-        Column(
-            modifier = entryModifier.then(contentModifier),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(metrics.sectionSpacing),
-        ) {
-            LockStatus(state, feedback, statusHeight = layout.statusHeight)
-            // TODO WOOMOB-4606: Show Forgot PIN once PIN recovery is available.
-            WooPosPINPad(
-                enteredDigits = state.enteredDigits,
-                enabled = state.canEnterPIN && !intro.isActive,
-                onDigit = { onUIEvent(WooPosLockScreenUIEvent.DigitTapped(it)) },
-                onDelete = { onUIEvent(WooPosLockScreenUIEvent.DeleteTapped) },
-                style = WooPosPINPadStyle.LockScreen(
-                    keySize = layout.keySize,
-                    keySpacing = metrics.keySpacing,
-                    showsDisabledKeys = state.isLocked && when (state.status) {
-                        is Status.Wait, Status.StorageUnavailable -> true
-                        else -> false
-                    },
-                ),
-            )
-        }
-    }
-
-    val containerModifier = Modifier
-        .fillMaxWidth()
-        .heightIn(min = maxHeight)
-        .padding(horizontal = metrics.horizontalPadding, vertical = layout.verticalPadding)
     Box(
         Modifier
             .fillMaxSize()
@@ -226,12 +165,68 @@ private fun BoxWithConstraintsScope.LockContent(
             .verticalScroll(rememberScrollState(), enabled = !intro.isActive)
     ) {
         Column(
-            modifier = containerModifier,
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = this@LockContent.maxHeight)
+                .padding(horizontal = metrics.horizontalPadding, vertical = layout.verticalPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(metrics.sectionSpacing, Alignment.CenterVertically),
         ) {
-            header(Modifier.widthIn(max = CONTENT_MAX_WIDTH))
-            entry(Modifier.widthIn(max = CONTENT_MAX_WIDTH))
+            Column(Modifier.widthIn(max = CONTENT_MAX_WIDTH), horizontalAlignment = Alignment.CenterHorizontally) {
+                if (layout.showsIllustration) {
+                    Box(
+                        Modifier
+                            .size(metrics.illustrationSize)
+                            .onGloballyPositioned { intro.animation.slot = it },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        LockIllustration(
+                            shackleAngle = { intro.shackleAngle },
+                            modifier = Modifier.graphicsLayer {
+                                alpha = intro.illustrationAlpha
+                                val travel = intro.travel()
+                                translationX = travel.x
+                                translationY = travel.y
+                            },
+                        )
+                    }
+                    Spacer(Modifier.height(metrics.sectionSpacing))
+                }
+                WooPosText(
+                    text = stringResource(R.string.woopos_lock_enter_pin),
+                    style = WooPosTypography.BodyXLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .semantics { heading() }
+                        .then(contentModifier),
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .widthIn(max = CONTENT_MAX_WIDTH)
+                    .then(contentModifier),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(metrics.sectionSpacing),
+            ) {
+                LockStatus(state, feedback, statusHeight = layout.statusHeight)
+                // TODO WOOMOB-4606: Show Forgot PIN once PIN recovery is available.
+                WooPosPINPad(
+                    enteredDigits = state.enteredDigits,
+                    enabled = state.canEnterPIN && !intro.isActive,
+                    onDigit = { onUIEvent(WooPosLockScreenUIEvent.DigitTapped(it)) },
+                    onDelete = { onUIEvent(WooPosLockScreenUIEvent.DeleteTapped) },
+                    style = WooPosPINPadStyle.LockScreen(
+                        keySize = layout.keySize,
+                        keySpacing = metrics.keySpacing,
+                        showsDisabledKeys = state.isLocked && when (state.status) {
+                            is Status.Wait, Status.StorageUnavailable -> true
+                            else -> false
+                        },
+                    ),
+                )
+            }
         }
     }
 }
@@ -464,10 +459,8 @@ private fun LockPINDot(filled: Boolean) {
 private fun LockMessageText(message: WooPosLockMessage, remainingSeconds: Long) {
     val locale = LocalConfiguration.current.locales[0]
     val text = when (message) {
-        WooPosLockMessage.INCORRECT -> buildAnnotatedString { append(stringResource(R.string.woopos_lock_incorrect)) }
-        WooPosLockMessage.UNAVAILABLE -> buildAnnotatedString {
-            append(stringResource(R.string.woopos_lock_unavailable))
-        }
+        WooPosLockMessage.INCORRECT -> AnnotatedString(stringResource(R.string.woopos_lock_incorrect))
+        WooPosLockMessage.UNAVAILABLE -> AnnotatedString(stringResource(R.string.woopos_lock_unavailable))
         WooPosLockMessage.WAIT -> {
             val minutes = remainingSeconds / SECONDS_PER_MINUTE
             val seconds = remainingSeconds % SECONDS_PER_MINUTE
