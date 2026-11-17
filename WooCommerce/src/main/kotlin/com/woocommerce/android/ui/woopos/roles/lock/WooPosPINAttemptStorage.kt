@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
 import android.content.Context
-import android.util.AtomicFile
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINStorageFiles
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -20,13 +20,16 @@ internal interface WooPosPINAttemptStorage {
 internal class WooPosFilePINAttemptStorage @Inject constructor(
     @ApplicationContext context: Context,
 ) : WooPosPINAttemptStorage {
-    private val directory by lazy { File(context.noBackupFilesDir, "woopos-pin-attempts") }
+    private val files by lazy {
+        WooPosPINStorageFiles(File(context.noBackupFilesDir, "woopos-pin-attempts"), "attempts")
+    }
+    private val directory get() = files.directory
 
     @Synchronized
     override fun read(localSiteId: Int): WooPosPINAttemptState {
-        checkDirectory()
-        val file = file(localSiteId)
-        if (!file.baseFile.exists() && !File(file.baseFile.path + ".bak").exists()) {
+        files.checkDirectoryAccess()
+        val file = files.file(localSiteId)
+        if (!files.exists(file)) {
             return WooPosPINAttemptState.NO_FAILURES
         }
         return DataInputStream(file.openRead()).use { input ->
@@ -40,7 +43,7 @@ internal class WooPosFilePINAttemptStorage @Inject constructor(
     @Synchronized
     override fun write(localSiteId: Int, state: WooPosPINAttemptState) {
         check(directory.isDirectory || directory.mkdirs())
-        val file = file(localSiteId)
+        val file = files.file(localSiteId)
         val stream = file.startWrite()
         try {
             DataOutputStream(stream).apply {
@@ -63,15 +66,6 @@ internal class WooPosFilePINAttemptStorage @Inject constructor(
     @Synchronized
     override fun clearAll() {
         check(!directory.exists() || directory.deleteRecursively())
-    }
-
-    private fun checkDirectory() {
-        check(!directory.exists() || (directory.isDirectory && directory.canRead() && directory.canExecute()))
-    }
-
-    private fun file(localSiteId: Int): AtomicFile {
-        require(localSiteId > 0)
-        return AtomicFile(File(directory, "$localSiteId.attempts"))
     }
 
     companion object {
