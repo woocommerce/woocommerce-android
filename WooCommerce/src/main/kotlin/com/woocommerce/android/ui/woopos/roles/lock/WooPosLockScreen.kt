@@ -53,6 +53,7 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalView
@@ -91,7 +92,6 @@ import com.woocommerce.android.ui.woopos.common.pin.WooPosPinPadStyle
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.util.Locale
 import kotlin.math.PI
 import kotlin.math.sin
 
@@ -144,9 +144,9 @@ private fun BoxWithConstraintsScope.LockContent(
     state: WooPosLockScreenState,
     onUIEvent: (WooPosLockScreenUIEvent) -> Unit,
 ) {
-    val isHorizontal = maxHeight < COMPACT_HEIGHT && maxWidth > maxHeight
-    val metrics = lockMetrics(isHorizontal)
-    val layout = rememberLockLayout(metrics, isHorizontal)
+    val isCompactHeight = maxHeight < COMPACT_HEIGHT && maxWidth > maxHeight
+    val metrics = lockMetrics(isCompactHeight)
+    val layout = rememberLockLayout(metrics, isCompactHeight)
     val intro = rememberLockIntro(animates = layout.showsIllustration)
     val feedback = rememberLockPinFeedback(state)
     val contentModifier = Modifier.graphicsLayer {
@@ -219,35 +219,23 @@ private fun BoxWithConstraintsScope.LockContent(
             .then(if (intro.isActive) Modifier.clearAndSetSemantics {} else Modifier)
             .verticalScroll(rememberScrollState(), enabled = !intro.isActive)
     ) {
-        if (isHorizontal) {
-            Row(
-                modifier = containerModifier,
-                horizontalArrangement = Arrangement.spacedBy(metrics.columnSpacing, Alignment.CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                header(Modifier.weight(1f, fill = false).widthIn(max = CONTENT_MAX_WIDTH))
-                entry(Modifier)
-            }
-        } else {
-            Column(
-                modifier = containerModifier,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(metrics.sectionSpacing, Alignment.CenterVertically),
-            ) {
-                header(Modifier.widthIn(max = CONTENT_MAX_WIDTH))
-                entry(Modifier.widthIn(max = CONTENT_MAX_WIDTH))
-            }
+        Column(
+            modifier = containerModifier,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(metrics.sectionSpacing, Alignment.CenterVertically),
+        ) {
+            header(Modifier.widthIn(max = CONTENT_MAX_WIDTH))
+            entry(Modifier.widthIn(max = CONTENT_MAX_WIDTH))
         }
     }
 }
 
 @Composable
-private fun lockMetrics(isHorizontal: Boolean) = WooPosLockScreenLayout.Metrics(
+private fun lockMetrics(isCompactHeight: Boolean) = WooPosLockScreenLayout.Metrics(
     horizontalPadding = WooPosSpacing.XXLarge.value,
-    verticalPadding = if (isHorizontal) WooPosSpacing.Small.value else WooPosSpacing.XXLarge.value,
-    reducedVerticalPadding = if (isHorizontal) WooPosSpacing.Small.value else WooPosSpacing.Medium.value,
-    sectionSpacing = WooPosSpacing.XLarge.value,
-    columnSpacing = WooPosSpacing.XXLarge.value,
+    verticalPadding = if (isCompactHeight) WooPosSpacing.Small.value else WooPosSpacing.XXLarge.value,
+    reducedVerticalPadding = if (isCompactHeight) WooPosSpacing.Small.value else WooPosSpacing.Medium.value,
+    sectionSpacing = if (isCompactHeight) WooPosSpacing.Medium.value else WooPosSpacing.XLarge.value,
     keySpacing = WooPosSpacing.Small.value,
     illustrationSize = ILLUSTRATION_SIZE,
 )
@@ -255,7 +243,7 @@ private fun lockMetrics(isHorizontal: Boolean) = WooPosLockScreenLayout.Metrics(
 @Composable
 private fun BoxWithConstraintsScope.rememberLockLayout(
     metrics: WooPosLockScreenLayout.Metrics,
-    isHorizontal: Boolean,
+    isCompactHeight: Boolean,
 ): WooPosLockScreenLayout {
     val density = LocalDensity.current
     val title = stringResource(R.string.woopos_lock_enter_pin)
@@ -268,10 +256,7 @@ private fun BoxWithConstraintsScope.rememberLockLayout(
     )
     val textMeasurer = rememberTextMeasurer()
     val contentWidth = maxWidth - metrics.horizontalPadding * 2
-    val textWidth = min(
-        CONTENT_MAX_WIDTH,
-        if (isHorizontal) (contentWidth - metrics.columnSpacing) / 2 else contentWidth,
-    )
+    val textWidth = min(CONTENT_MAX_WIDTH, contentWidth)
     val textConstraints = Constraints(maxWidth = with(density) { textWidth.roundToPx() }.coerceAtLeast(0))
     fun measure(text: String, style: TextStyle) =
         with(density) { textMeasurer.measure(text, style, constraints = textConstraints).size.height.toDp() }
@@ -284,7 +269,7 @@ private fun BoxWithConstraintsScope.rememberLockLayout(
         preferredKeySize = preferredKeySize,
         titleHeight = titleHeight,
         statusHeight = statusHeight,
-        isHorizontal = isHorizontal,
+        isCompactHeight = isCompactHeight,
         metrics = metrics,
     )
 }
@@ -466,6 +451,7 @@ private fun LockPinDot(filled: Boolean) {
 
 @Composable
 private fun LockMessageText(message: LockMessage, remainingSeconds: Long) {
+    val locale = LocalConfiguration.current.locales[0]
     val text = when (message) {
         LockMessage.INCORRECT -> buildAnnotatedString { append(stringResource(R.string.woopos_lock_incorrect)) }
         LockMessage.UNAVAILABLE -> buildAnnotatedString { append(stringResource(R.string.woopos_lock_unavailable)) }
@@ -473,7 +459,7 @@ private fun LockMessageText(message: LockMessage, remainingSeconds: Long) {
             val minutes = remainingSeconds / SECONDS_PER_MINUTE
             val seconds = remainingSeconds % SECONDS_PER_MINUTE
             val full = stringResource(R.string.woopos_lock_wait, minutes, seconds)
-            val duration = String.format(Locale.getDefault(), "%d:%02d", minutes, seconds)
+            val duration = String.format(locale, "%d:%02d", minutes, seconds)
             buildAnnotatedString {
                 append(full)
                 val start = full.indexOf(duration)

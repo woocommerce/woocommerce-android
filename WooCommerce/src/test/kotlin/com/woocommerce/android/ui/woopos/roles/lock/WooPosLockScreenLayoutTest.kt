@@ -12,7 +12,6 @@ class WooPosLockScreenLayoutTest {
         verticalPadding = 40.dp,
         reducedVerticalPadding = 16.dp,
         sectionSpacing = 32.dp,
-        columnSpacing = 40.dp,
         keySpacing = 8.dp,
         illustrationSize = 88.dp,
     )
@@ -21,7 +20,6 @@ class WooPosLockScreenLayoutTest {
         verticalPadding = 20.dp,
         reducedVerticalPadding = 8.dp,
         sectionSpacing = 16.dp,
-        columnSpacing = 20.dp,
         keySpacing = 4.dp,
         illustrationSize = 88.dp,
     )
@@ -60,13 +58,17 @@ class WooPosLockScreenLayoutTest {
     }
 
     @Test
-    fun `given a landscape phone, when laid out side by side, then keys shrink to fit the height`() {
+    fun `given a landscape phone, when laid out in one column, then it hides the illustration and fits the keys`() {
         // WHEN
-        val layout = calculate(DpSize(800.dp, 360.dp), phone, preferredKeySize = 72.dp, isHorizontal = true)
+        val compactPhone = phone.copy(verticalPadding = 4.dp, reducedVerticalPadding = 4.dp, sectionSpacing = 8.dp)
+        val layout = calculate(DpSize(800.dp, 360.dp), compactPhone, preferredKeySize = 72.dp, isCompactHeight = true)
 
         // THEN
-        assertThat(layout.keySize).isEqualTo(67.dp)
-        assertThat(layout.showsIllustration).isTrue()
+        assertThat(layout.keySize).isEqualTo(61.dp)
+        assertThat(layout.showsIllustration).isFalse()
+        val contentHeight = 32.dp + 48.dp + compactPhone.sectionSpacing * 2 +
+            layout.keySize * 4 + compactPhone.keySpacing * 3 + layout.verticalPadding * 2
+        assertThat(contentHeight.value).isLessThanOrEqualTo(360f)
     }
 
     @Test
@@ -86,6 +88,13 @@ class WooPosLockScreenLayoutTest {
         preferredKeySize: Dp,
         titleHeight: Dp = 32.dp,
         statusHeight: Dp = 48.dp,
-        isHorizontal: Boolean = false,
-    ) = WooPosLockScreenLayout.calculate(viewport, preferredKeySize, titleHeight, statusHeight, isHorizontal, metrics)
+        isCompactHeight: Boolean = false,
+    ) = WooPosLockScreenLayout.calculate(
+        viewport,
+        preferredKeySize,
+        titleHeight,
+        statusHeight,
+        isCompactHeight,
+        metrics,
+    )
 }

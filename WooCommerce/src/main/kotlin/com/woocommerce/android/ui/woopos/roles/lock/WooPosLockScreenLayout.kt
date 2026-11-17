@@ -19,7 +19,6 @@ internal data class WooPosLockScreenLayout(
         val verticalPadding: Dp,
         val reducedVerticalPadding: Dp,
         val sectionSpacing: Dp,
-        val columnSpacing: Dp,
         val keySpacing: Dp,
         val illustrationSize: Dp,
     )
@@ -36,25 +35,26 @@ internal data class WooPosLockScreenLayout(
             preferredKeySize: Dp,
             titleHeight: Dp,
             statusHeight: Dp,
-            isHorizontal: Boolean,
+            isCompactHeight: Boolean,
             metrics: Metrics,
         ): WooPosLockScreenLayout = with(metrics) {
             val contentWidth = viewport.width - horizontalPadding * 2
-            val keypadWidth = if (isHorizontal) (contentWidth - columnSpacing) / 2 else contentWidth
+            val keypadWidth = contentWidth
             val illustratedHeaderHeight = titleHeight + illustrationSize + sectionSpacing
 
             fun contentHeight(keySize: Dp, headerHeight: Dp): Dp {
                 val entryHeight = statusHeight + sectionSpacing + keypadHeight(keySize)
-                return if (isHorizontal) max(headerHeight, entryHeight) else headerHeight + sectionSpacing + entryHeight
+                return headerHeight + sectionSpacing + entryHeight
             }
 
-            val fitsPreferred = contentHeight(preferredKeySize, illustratedHeaderHeight) + verticalPadding * 2 <=
+            val preferredHeaderHeight = if (isCompactHeight) titleHeight else illustratedHeaderHeight
+            val fitsPreferred = contentHeight(preferredKeySize, preferredHeaderHeight) + verticalPadding * 2 <=
                 viewport.height
             val padding = if (fitsPreferred) verticalPadding else reducedVerticalPadding
             val availableHeight = viewport.height - padding * 2
 
             fun fittedKeySize(headerHeight: Dp): Dp {
-                val headerSpace = if (isHorizontal) 0.dp else headerHeight + sectionSpacing
+                val headerSpace = headerHeight + sectionSpacing
                 val keypadHeight = availableHeight - headerSpace - statusHeight - sectionSpacing
                 val widthLimit = (keypadWidth - keySpacing * (COLUMNS - 1)) / COLUMNS
                 val heightLimit = (keypadHeight - keySpacing * (ROWS - 1)) / ROWS
@@ -63,7 +63,8 @@ internal data class WooPosLockScreenLayout(
             }
 
             val illustratedKeySize = fittedKeySize(illustratedHeaderHeight)
-            val showsIllustration = contentHeight(illustratedKeySize, illustratedHeaderHeight) <= availableHeight
+            val showsIllustration = !isCompactHeight &&
+                contentHeight(illustratedKeySize, illustratedHeaderHeight) <= availableHeight
             WooPosLockScreenLayout(
                 keySize = if (showsIllustration) illustratedKeySize else fittedKeySize(titleHeight),
                 verticalPadding = padding,
