@@ -35,7 +35,7 @@ class WooPosPendingPINRecoverySessionTest {
             repeat(5) {
                 repeat(WooPosPINHash.PIN_LENGTH) { session.enterDigit(0) }
             }
-            assertThat(session.state.value.remainingSeconds).isEqualTo(30)
+            assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Wait(30))
             val records = fixture.records.toMap()
             val pins = fixture.pins.getOrThrow().toMap()
 
@@ -45,7 +45,7 @@ class WooPosPendingPINRecoverySessionTest {
 
             // THEN
             assertUnavailable(session)
-            assertThat(session.state.value.remainingSeconds).isEqualTo(30)
+            assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Wait(30))
             assertThat(fixture.records).isEqualTo(records)
             assertThat(fixture.pins.getOrThrow()).isEqualTo(pins)
             fixture.elapsed += 30_000
@@ -73,6 +73,6 @@ class WooPosPendingPINRecoverySessionTest {
     private fun assertUnavailable(session: WooPosAccessSession) {
         assertThat(session.state.value.isLocked).isTrue()
         assertThat(session.activeRole).isNull()
-        assertThat(session.state.value.error).isNotEqualTo(WooPosLockError.STORAGE)
+        assertThat(session.state.value.status).isNotEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
     }
 }

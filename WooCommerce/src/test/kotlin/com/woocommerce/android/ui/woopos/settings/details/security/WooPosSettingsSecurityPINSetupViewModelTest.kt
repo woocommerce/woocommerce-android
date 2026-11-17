@@ -26,7 +26,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WooPosPinSetupViewModelTest {
+class WooPosSettingsSecurityPINSetupViewModelTest {
     @get:Rule
     val coroutineRule = WooPosCoroutineTestRule()
     private val selectedSite: SelectedSite = mock {
@@ -34,7 +34,7 @@ class WooPosPinSetupViewModelTest {
     }
     private val store: WooPosLocalPINStore = mock()
     private val session: WooPosAccessSession = mock()
-    private val viewModel = WooPosPinSetupViewModel(selectedSite, store, session)
+    private val viewModel = WooPosSettingsSecurityPINSetupViewModel(selectedSite, store, session)
 
     @Test
     fun `given no Admin PIN, when four digits are entered once, then save before real session authentication`() = runTest {
@@ -46,7 +46,7 @@ class WooPosPinSetupViewModelTest {
         enter("1234")
 
         // THEN
-        assertThat(viewModel.state.value.stage).isEqualTo(WooPosPinSetupState.Stage.SUCCESS)
+        assertThat(viewModel.state.value.stage).isEqualTo(WooPosSettingsSecurityPINSetupState.Stage.SUCCESS)
         inOrder(store, session) {
             verify(store).getPINs(1)
             verify(store).setPIN(1, WooPosLocalRole.ADMIN, "1234")
@@ -102,7 +102,7 @@ class WooPosPinSetupViewModelTest {
         enter("1234")
 
         // THEN
-        assertThat(viewModel.state.value.stage).isEqualTo(WooPosPinSetupState.Stage.SUCCESS)
+        assertThat(viewModel.state.value.stage).isEqualTo(WooPosSettingsSecurityPINSetupState.Stage.SUCCESS)
         verify(session).initialize(unlockWith = "1234")
     }
 
@@ -110,11 +110,11 @@ class WooPosPinSetupViewModelTest {
     fun `given partial entry, when deleting resetting or entering invalid digits, then no partial PIN is saved`() = runTest {
         // WHEN
         enter("12")
-        viewModel.onUIEvent(WooPosPinSetupUIEvent.DeleteTapped)
+        viewModel.onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DeleteTapped)
         assertThat(viewModel.state.value.enteredDigits).isEqualTo(1)
         viewModel.reset()
-        viewModel.onUIEvent(WooPosPinSetupUIEvent.DigitTapped(-1))
-        viewModel.onUIEvent(WooPosPinSetupUIEvent.DigitTapped(10))
+        viewModel.onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DigitTapped(-1))
+        viewModel.onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DigitTapped(10))
         enter("123")
 
         // THEN
@@ -234,10 +234,10 @@ class WooPosPinSetupViewModelTest {
         }
 
     private fun enter(pin: String) = pin.forEach {
-        viewModel.onUIEvent(WooPosPinSetupUIEvent.DigitTapped(it.digitToInt()))
+        viewModel.onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DigitTapped(it.digitToInt()))
     }
 
     private fun assertReady() {
-        assertThat(viewModel.state.value).isEqualTo(WooPosPinSetupState())
+        assertThat(viewModel.state.value).isEqualTo(WooPosSettingsSecurityPINSetupState())
     }
 }

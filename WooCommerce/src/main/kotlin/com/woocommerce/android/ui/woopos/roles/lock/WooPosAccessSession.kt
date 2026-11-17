@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.roles.lock
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -19,7 +20,12 @@ class WooPosAccessSession @Inject constructor(
     private val rateLimiter: WooPosLocalRateLimiter,
 ) {
     private val flagEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ROLES)
-    private val _state = MutableStateFlow(WooPosLockScreenState(isLocked = flagEnabled, isChecking = flagEnabled))
+    private val _state = MutableStateFlow(
+        WooPosLockScreenState(
+            isLocked = flagEnabled,
+            status = if (flagEnabled) Status.Checking else Status.Idle,
+        )
+    )
     val state = _state.asStateFlow()
     var activeRole: WooPosLocalRole? = null
         private set
@@ -39,10 +45,10 @@ class WooPosAccessSession @Inject constructor(
             activeRole = null
             localSiteId = id
             pin = ""
-            _state.value = WooPosLockScreenState(isLocked = true, isChecking = true)
+            _state.value = WooPosLockScreenState(isLocked = true, status = Status.Checking)
         }
         if (id == null) {
-            _state.value = WooPosLockScreenState(isLocked = true, error = WooPosLockError.STORAGE)
+            _state.value = WooPosLockScreenState(isLocked = true, status = Status.StorageUnavailable)
             return@withLock
         }
         val request = generation
@@ -60,12 +66,11 @@ class WooPosAccessSession @Inject constructor(
             protectionResult.isFailure -> {
                 pin = ""
                 activeRole = null
-                WooPosLockScreenState(isLocked = true, error = WooPosLockError.STORAGE)
+                WooPosLockScreenState(isLocked = true, status = Status.StorageUnavailable)
             }
             protectionResult.getOrThrow() -> _state.value.copy(
                 isLocked = activeRole == null,
-                isChecking = activeRole == null,
-                error = _state.value.error.takeUnless { it == WooPosLockError.STORAGE },
+                status = if (activeRole == null) Status.Checking else Status.Idle,
             )
             else -> {
                 pin = ""
@@ -73,33 +78,28 @@ class WooPosAccessSession @Inject constructor(
                 WooPosLockScreenState()
             }
         }
-        if (_state.value.isLocked) finishChecking(request, id)
+        if (_state.value.isLocked) refreshWait()
     }
 
     suspend fun lock() {
         if (!isEnabled) return
-        val request = ++generation
+        generation++
         activeRole = null
         val id = localSiteId
         pin = ""
-        _state.value = WooPosLockScreenState(isLocked = true, isChecking = true)
+        _state.value = WooPosLockScreenState(isLocked = true, status = Status.Checking)
         if (id == null) {
-            _state.value = WooPosLockScreenState(isLocked = true, error = WooPosLockError.STORAGE)
+            _state.value = WooPosLockScreenState(isLocked = true, status = Status.StorageUnavailable)
             return
         }
-        finishChecking(request, id)
-    }
-
-    private suspend fun finishChecking(request: Long, id: Int) {
         refreshWait()
-        if (isCurrent(request, id)) _state.value = _state.value.copy(isChecking = false)
     }
 
     suspend fun enterDigit(digit: Int) {
         val current = _state.value
         if (digit !in MIN_DIGIT..MAX_DIGIT || !current.canEnterPIN) return
         pin += digit
-        _state.value = current.copy(enteredDigits = pin.length, error = null)
+        _state.value = current.copy(enteredDigits = pin.length, status = Status.Idle)
         if (pin.length == WooPosPINHash.PIN_LENGTH) {
             unlock(pin)
         }
@@ -114,11 +114,11 @@ class WooPosAccessSession @Inject constructor(
     fun deleteDigit() {
         if (!_state.value.canEnterPIN) return
         pin = pin.dropLast(1)
-        _state.value = _state.value.copy(enteredDigits = pin.length, error = null)
+        _state.value = _state.value.copy(enteredDigits = pin.length, status = Status.Idle)
     }
 
     suspend fun recover() {
-        if (!_state.value.isLocked || _state.value.isChecking) return
+        if (!_state.value.isLocked || _state.value.status == Status.Checking) return
         pin = ""
         authenticate { id -> rateLimiter.recover(id) }
     }
@@ -129,44 +129,51 @@ class WooPosAccessSession @Inject constructor(
         val wait = rateLimiter.remainingSeconds(id)
         if (!isCurrent(request, id)) return
         _state.value = _state.value.copy(
-            remainingSeconds = wait.getOrDefault(0),
-            error = if (wait.isFailure) WooPosLockError.STORAGE else _state.value.error,
+            status = when {
+                wait.isFailure -> Status.StorageUnavailable
+                wait.getOrThrow() > 0 -> Status.Wait(wait.getOrThrow())
+                _state.value.status == Status.Incorrect -> Status.Incorrect
+                _state.value.status == Status.StorageUnavailable -> Status.StorageUnavailable
+                else -> Status.Idle
+            },
         )
     }
 
     private suspend fun authenticate(action: suspend (Int) -> WooPosLocalRateLimiterResult) {
         val id = localSiteId
         if (id == null) {
-            _state.value = WooPosLockScreenState(isLocked = true, error = WooPosLockError.STORAGE)
+            _state.value = WooPosLockScreenState(isLocked = true, status = Status.StorageUnavailable)
             return
         }
         val request = ++generation
-        _state.value = _state.value.copy(isChecking = true)
+        val previousStatus = _state.value.status
+        _state.value = _state.value.copy(status = Status.Checking)
         transitions.withLock {
             if (!isCurrent(request, id)) return@withLock
             val result = action(id)
             if (!isCurrent(request, id)) return@withLock
-            applyResult(result)
+            applyResult(result, previousStatus)
         }
     }
 
-    private fun applyResult(result: WooPosLocalRateLimiterResult) {
+    private fun applyResult(result: WooPosLocalRateLimiterResult, previousStatus: Status = Status.Idle) {
         activeRole = (result as? WooPosLocalRateLimiterResult.Authenticated)?.role
         if (result == WooPosLocalRateLimiterResult.ProtectionOff) protectionEnabled = false
         _state.value = when (result) {
             is WooPosLocalRateLimiterResult.Authenticated -> WooPosLockScreenState()
             is WooPosLocalRateLimiterResult.Incorrect -> WooPosLockScreenState(
-                isLocked = true, remainingSeconds = result.remainingSeconds, error = WooPosLockError.INCORRECT,
+                isLocked = true,
+                status = if (result.remainingSeconds > 0) Status.Wait(result.remainingSeconds) else Status.Incorrect,
             )
             is WooPosLocalRateLimiterResult.Waiting -> WooPosLockScreenState(
-                isLocked = true, remainingSeconds = result.remainingSeconds,
+                isLocked = true, status = Status.Wait(result.remainingSeconds),
             )
             WooPosLocalRateLimiterResult.ProtectionOff -> WooPosLockScreenState()
             WooPosLocalRateLimiterResult.Unavailable -> WooPosLockScreenState(
-                isLocked = true, error = WooPosLockError.STORAGE,
+                isLocked = true, status = Status.StorageUnavailable,
             )
             WooPosLocalRateLimiterResult.RecoveryUnavailable -> _state.value.copy(
-                isChecking = false, enteredDigits = 0,
+                status = previousStatus, enteredDigits = 0,
             )
         }
     }
