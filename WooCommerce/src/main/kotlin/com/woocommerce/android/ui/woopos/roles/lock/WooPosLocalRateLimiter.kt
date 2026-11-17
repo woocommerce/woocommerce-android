@@ -28,7 +28,7 @@ class WooPosLocalRateLimiter @Inject internal constructor(
 ) {
     private val mutex = Mutex()
 
-    suspend fun protection(localSiteId: Int): Result<Boolean> = store.getPINs(localSiteId).map { it.isNotEmpty() }
+    suspend fun isProtectionEnabled(localSiteId: Int): Result<Boolean> = store.getPINs(localSiteId).map { it.isNotEmpty() }
 
     suspend fun remainingSeconds(localSiteId: Int): Result<Long> = operation {
         val (attempts, time) = load(localSiteId)

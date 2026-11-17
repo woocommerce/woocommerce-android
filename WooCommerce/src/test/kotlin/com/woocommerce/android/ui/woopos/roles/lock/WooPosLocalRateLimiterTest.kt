@@ -175,7 +175,7 @@ class WooPosLocalRateLimiterTest {
 
         // THEN
         assertThat(access.authenticate(1, "0000")).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
-        assertThat(access.protection(1).isFailure).isTrue()
+        assertThat(access.isProtectionEnabled(1).isFailure).isTrue()
         assertThat(fixture.records).isEmpty()
 
         // WHEN
@@ -183,7 +183,7 @@ class WooPosLocalRateLimiterTest {
 
         // THEN
         assertThat(access.authenticate(1, "0000")).isEqualTo(WooPosLocalRateLimiterResult.ProtectionOff)
-        assertThat(access.protection(1).getOrThrow()).isFalse()
+        assertThat(access.isProtectionEnabled(1).getOrThrow()).isFalse()
         assertThat(fixture.records).isEmpty()
     }
 
