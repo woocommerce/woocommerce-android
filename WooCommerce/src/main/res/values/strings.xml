@@ -4563,6 +4563,32 @@
     <string name="woopos_card_reader_update_battery_low_message" formatted="false">The reader battery is too low to install this update. Please charge your reader to at least 50% and try again.</string>
     <string name="woopos_card_reader_update_battery_low_message_with_level">The reader battery is at %d%%, which is too low to install this update. Please charge your reader to at least 50%% and try again.</string>
 
+    <string name="woopos_receipt_printer_setup_dialog_background_content_description">Receipt printer setup dialog</string>
+    <string name="woopos_receipt_printer_setup_searching_title">Searching for printers…</string>
+    <string name="woopos_receipt_printer_setup_found_title">Found %1$s</string>
+    <string name="woopos_receipt_printer_setup_found_message">Do you want to connect to this printer?</string>
+    <string name="woopos_receipt_printer_setup_connect_to_printer_button">Connect to printer</string>
+    <string name="woopos_receipt_printer_setup_keep_searching_button">Keep searching</string>
+    <string name="woopos_receipt_printer_setup_multiple_found_title">Several printers found</string>
+    <string name="woopos_receipt_printer_setup_connect_button">Connect</string>
+    <string name="woopos_receipt_printer_setup_connecting_title">Connecting to %1$s…</string>
+    <string name="woopos_receipt_printer_setup_no_printers_title">No printers found</string>
+    <string name="woopos_receipt_printer_setup_no_printers_message">Make sure your printer is on and paired in Android Bluetooth settings, then search again.</string>
+    <string name="woopos_receipt_printer_setup_search_again_button">Search again</string>
+    <string name="woopos_receipt_printer_setup_open_bluetooth_settings_button">Open Bluetooth settings</string>
+    <string name="woopos_receipt_printer_setup_discovery_failed_title">Couldn\'t search for printers</string>
+    <string name="woopos_receipt_printer_setup_discovery_failed_message">Make sure Bluetooth is on, then search again.</string>
+    <string name="woopos_receipt_printer_setup_connection_failed_title">Something went wrong</string>
+    <string name="woopos_receipt_printer_setup_connection_failed_message">We couldn\'t connect to your printer. Please try again.</string>
+    <string name="woopos_receipt_printer_setup_bluetooth_off_title">Bluetooth is off</string>
+    <string name="woopos_receipt_printer_setup_bluetooth_off_message">Bluetooth is turned off on this device. Turn it on and the search for your printer will continue.</string>
+    <string name="woopos_receipt_printer_setup_turn_on_bluetooth_button">Turn on Bluetooth</string>
+    <string name="woopos_receipt_printer_setup_bluetooth_permission_title">Bluetooth permission required</string>
+    <string name="woopos_receipt_printer_setup_bluetooth_permission_message">Bluetooth permission is required to find and connect to a receipt printer.</string>
+    <string name="woopos_receipt_printer_setup_grant_permission_button">Grant permission</string>
+    <string name="woopos_receipt_printer_setup_bluetooth_permission_denied_message">Bluetooth access is turned off. Tap Open Settings and allow Nearby devices, then come back to search for your printer.</string>
+    <string name="woopos_receipt_printer_setup_open_settings_button">Open Settings</string>
+
     <string name="woopos_remote_ttp_hint_strip_text">Use an Android phone as a card reader</string>
     <string name="woopos_remote_ttp_explainer_title">No card reader? No problem</string>
     <string name="woopos_remote_ttp_explainer_intro">Use the Woo app on your phone to take card payments.</string>
