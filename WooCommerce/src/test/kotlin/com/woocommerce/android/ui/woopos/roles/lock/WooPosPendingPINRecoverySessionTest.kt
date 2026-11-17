@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.roles.lock
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINAuthenticator
-import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -32,9 +31,7 @@ class WooPosPendingPINRecoverySessionTest {
             val site: SelectedSite = mock { on { getOrNull() }.thenReturn(SiteModel().apply { id = 1 }) }
             val session = WooPosAccessSession(flags, site, access)
             session.initialize()
-            repeat(5) {
-                repeat(WooPosPINHash.PIN_LENGTH) { session.enterDigit(0) }
-            }
+            repeat(5) { session.unlock("0000") }
             assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Wait(30))
             val records = fixture.records.toMap()
             val pins = fixture.pins.getOrThrow().toMap()
@@ -53,8 +50,8 @@ class WooPosPendingPINRecoverySessionTest {
             session.recover()
             assertUnavailable(session)
             assertThat(fixture.records).isEqualTo(records)
-            "1234".forEach { session.enterDigit(it.digitToInt()) }
-            assertThat(session.activeRole).isEqualTo(fixture.admin)
+            session.unlock("1234")
+            assertThat(session.state.value.activeRole).isEqualTo(fixture.admin)
             assertThat(session.state.value.isLocked).isFalse()
         }
 
@@ -72,7 +69,7 @@ class WooPosPendingPINRecoverySessionTest {
 
     private fun assertUnavailable(session: WooPosAccessSession) {
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.activeRole).isNull()
+        assertThat(session.state.value.activeRole).isNull()
         assertThat(session.state.value.status).isNotEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
     }
 }

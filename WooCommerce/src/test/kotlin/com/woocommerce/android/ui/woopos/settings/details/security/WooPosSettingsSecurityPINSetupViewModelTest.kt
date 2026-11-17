@@ -50,7 +50,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         inOrder(store, session) {
             verify(store).getPINs(1)
             verify(store).setPIN(1, WooPosLocalRole.ADMIN, "1234")
-            verify(session).initialize(unlockWith = "1234")
+            verify(session).unlock("1234")
         }
     }
 
@@ -103,7 +103,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value.stage).isEqualTo(WooPosSettingsSecurityPINSetupState.Stage.SUCCESS)
-        verify(session).initialize(unlockWith = "1234")
+        verify(session).unlock("1234")
     }
 
     @Test
@@ -132,6 +132,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         }
         enter("1234")
         runCurrent()
+        assertThat(viewModel.state.value.stage).isEqualTo(WooPosSettingsSecurityPINSetupState.Stage.CHECKING)
 
         // WHEN
         viewModel.reset()
@@ -207,7 +208,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
             runCurrent()
 
             // THEN
-            verify(session).initialize(unlockWith = "1234")
+            verify(session).unlock("1234")
             assertReady()
         }
 
@@ -230,7 +231,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
             runCurrent()
 
             // THEN
-            verify(session).initialize(unlockWith = "1234")
+            verify(session).unlock("1234")
         }
 
     private fun enter(pin: String) = pin.forEach {

@@ -1,12 +1,15 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runCurrent
@@ -59,8 +62,8 @@ class WooPosAccessSessionTest {
         session.initialize()
 
         // THEN
-        assertThat(session.state.value.canEnterPIN).isTrue()
-        assertThat(session.activeRole).isNull()
+        assertThat((session.state.value.status == WooPosLockScreenState.Status.Idle)).isTrue()
+        assertThat(session.state.value.activeRole).isNull()
         assertThat(session.isEnabled).isTrue()
     }
 
@@ -87,7 +90,7 @@ class WooPosAccessSessionTest {
 
         // WHEN
         session.initialize()
-        enter(session, "1234")
+        session.unlock("1234")
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
@@ -103,19 +106,19 @@ class WooPosAccessSessionTest {
         session.initialize()
 
         // WHEN
-        enter(session, "0000")
+        session.unlock("0000")
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
         assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Incorrect)
-        assertThat(session.state.value.enteredDigits).isZero()
+
 
         // WHEN
-        enter(session, "5678")
+        session.unlock("5678")
 
         // THEN
         assertThat(session.state.value.isLocked).isFalse()
-        assertThat(session.activeRole).isEqualTo(fixture.cashier)
+        assertThat(session.state.value.activeRole).isEqualTo(fixture.cashier)
         assertThat(fixture.records.getValue(1).failures).isEqualTo(1)
     }
 
@@ -125,40 +128,19 @@ class WooPosAccessSessionTest {
         val fixture = fixture()
         val session = session(fixture)
         session.initialize()
-        enter(session, "1234")
-        assertThat(session.activeRole).isEqualTo(fixture.admin)
+        session.unlock("1234")
+        assertThat(session.state.value.activeRole).isEqualTo(fixture.admin)
 
         // WHEN
         session.lock()
 
         // THEN
-        assertThat(session.activeRole).isNull()
+        assertThat(session.state.value.activeRole).isNull()
         assertThat(session.state.value.isLocked).isTrue()
         val restarted = session(fixture)
         restarted.initialize()
         assertThat(restarted.state.value.isLocked).isTrue()
-        assertThat(restarted.activeRole).isNull()
-    }
-
-    @Test
-    fun `given partial entry, when deleting or receiving invalid digits, then only valid remaining entry is kept`() = runTest {
-        // GIVEN
-        val session = session(fixture())
-        session.initialize()
-        session.enterDigit(9)
-        session.deleteDigit()
-        session.deleteDigit()
-        session.enterDigit(-1)
-        session.enterDigit(10)
-
-        // WHEN
-        enter(session, "123")
-
-        // THEN
-        assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.state.value.enteredDigits).isEqualTo(3)
-        session.enterDigit(4)
-        assertThat(session.state.value.isLocked).isFalse()
+        assertThat(restarted.state.value.activeRole).isNull()
     }
 
     @Test
@@ -167,15 +149,15 @@ class WooPosAccessSessionTest {
         val fixture = fixture()
         val session = session(fixture)
         session.initialize()
-        repeat(5) { enter(session, "0000") }
+        repeat(5) { session.unlock("0000") }
 
         // WHEN
-        enter(session, "1234")
+        session.unlock("1234")
         session.recover()
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.state.value.enteredDigits).isZero()
+
         assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Wait(30))
         assertThat(session.state.value.status).isNotEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
         fixture.elapsed += 1001
@@ -188,7 +170,7 @@ class WooPosAccessSessionTest {
         // GIVEN
         val session = session(fixture())
         session.initialize()
-        enter(session, "1234")
+        session.unlock("1234")
 
         // WHEN
         whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { id = 2 })
@@ -196,7 +178,7 @@ class WooPosAccessSessionTest {
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.activeRole).isNull()
+        assertThat(session.state.value.activeRole).isNull()
 
         // WHEN
         whenever(selectedSite.getOrNull()).thenReturn(null)
@@ -204,7 +186,7 @@ class WooPosAccessSessionTest {
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.activeRole).isNull()
+        assertThat(session.state.value.activeRole).isNull()
     }
 
     @Test
@@ -223,7 +205,7 @@ class WooPosAccessSessionTest {
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.activeRole).isNull()
+        assertThat(session.state.value.activeRole).isNull()
     }
 
     @Test
@@ -234,25 +216,25 @@ class WooPosAccessSessionTest {
         session.initialize()
         val gate = CompletableDeferred<Unit>()
         fixture.pinReadGate = gate
-        val unlock = async { enter(session, "1234") }
+        val unlock = async { session.unlock("1234") }
         runCurrent()
         assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Checking)
 
         // WHEN
         val lock = async { session.lock() }
         runCurrent()
-        assertThat(session.activeRole).isNull()
+        assertThat(session.state.value.activeRole).isNull()
         assertThat(session.state.value.isLocked).isTrue()
         assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Checking)
-        assertThat(session.state.value.canEnterPIN).isFalse()
+        assertThat((session.state.value.status == WooPosLockScreenState.Status.Idle)).isFalse()
         gate.complete(Unit)
         unlock.await()
         lock.await()
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.activeRole).isNull()
-        assertThat(session.state.value.enteredDigits).isZero()
+        assertThat(session.state.value.activeRole).isNull()
+
     }
 
     @Test
@@ -263,7 +245,7 @@ class WooPosAccessSessionTest {
         session.initialize()
         val gate = CompletableDeferred<Unit>()
         fixture.pinReadGate = gate
-        val unlock = async { enter(session, "1234") }
+        val unlock = async { session.unlock("1234") }
         runCurrent()
 
         // WHEN
@@ -275,28 +257,27 @@ class WooPosAccessSessionTest {
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.activeRole).isNull()
+        assertThat(session.state.value.activeRole).isNull()
     }
 
     @Test
-    fun `given partial entry, when same-store refresh fails, then retry uses only the newly entered PIN`() = runTest {
+    fun `given same-store refresh fails, when retried, then a valid PIN unlocks`() = runTest {
         // GIVEN
         val fixture = fixture()
         val configured = fixture.pins
         val session = session(fixture)
         session.initialize()
-        enter(session, "12")
         fixture.pins = Result.failure(IllegalStateException())
 
         // WHEN
         session.initialize()
         fixture.pins = configured
         session.initialize()
-        enter(session, "1234")
+        session.unlock("1234")
 
         // THEN
         assertThat(session.state.value.isLocked).isFalse()
-        assertThat(session.activeRole).isEqualTo(fixture.admin)
+        assertThat(session.state.value.activeRole).isEqualTo(fixture.admin)
         assertThat(fixture.records.getValue(1).failures).isZero()
     }
 
@@ -308,11 +289,11 @@ class WooPosAccessSessionTest {
         session.initialize()
 
         // WHEN
-        enter(session, "1234")
+        session.unlock("1234")
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.state.value.enteredDigits).isZero()
+
         assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
     }
 
@@ -331,10 +312,10 @@ class WooPosAccessSessionTest {
         fixture.pins = configured
 
         // WHEN
-        session.initialize(unlockWith = "1234")
+        session.unlock("1234")
 
         // THEN
-        assertThat(session.activeRole).isEqualTo(fixture.admin)
+        assertThat(session.state.value.activeRole).isEqualTo(fixture.admin)
         assertThat(session.isEnabled).isTrue()
         assertThat(lockedStates).containsOnly(false)
     }
@@ -347,12 +328,32 @@ class WooPosAccessSessionTest {
         fixture.writeError = true
 
         // WHEN
-        session.initialize(unlockWith = "1234")
+        session.unlock("1234")
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
         assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
-        assertThat(session.activeRole).isNull()
+        assertThat(session.state.value.activeRole).isNull()
+    }
+
+
+    @Test
+    fun `when an operator unlocks and locks, then the state flow exposes and removes the role`() = runTest {
+        // GIVEN
+        val fixture = fixture()
+        val session = session(fixture)
+        session.initialize()
+        val roles = mutableListOf<WooPosLocalRole?>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            session.state.map { it.activeRole }.distinctUntilChanged().collect { roles += it }
+        }
+
+        // WHEN
+        session.unlock("5678")
+        session.lock()
+
+        // THEN
+        assertThat(roles).containsExactly(null, fixture.cashier, null)
     }
 
     private fun fixture() = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
@@ -361,7 +362,4 @@ class WooPosAccessSessionTest {
         selectedSite,
         fixture.rateLimiter(),
     )
-    private suspend fun enter(session: WooPosAccessSession, pin: String) {
-        pin.forEach { session.enterDigit(it.digitToInt()) }
-    }
 }
