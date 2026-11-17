@@ -79,7 +79,7 @@ fun WooPosLockScreen(
             modifier = Modifier.semantics { heading() },
         )
         WooPosPinDots(state.enteredDigits)
-        LockStatus(state)
+        LockStatus(state.status)
         WooPosPinPad(
             enteredDigits = state.enteredDigits,
             enabled = state.canEnterPIN,
@@ -101,28 +101,36 @@ fun WooPosLockScreenPreview() {
 }
 
 @Composable
-private fun LockStatus(state: WooPosLockScreenState) {
-    val message = when {
-        state.remainingSeconds > 0 -> stringResource(
-            R.string.woopos_lock_wait,
-            state.remainingSeconds / 60,
-            state.remainingSeconds % 60,
+private fun LockStatus(status: WooPosLockScreenState.Status) {
+    when (status) {
+        WooPosLockScreenState.Status.Idle -> Unit
+        WooPosLockScreenState.Status.Checking ->
+            WooPosCircularLoadingIndicator(Modifier.size(WooPosIconSize.Large.value).progressSemantics())
+        WooPosLockScreenState.Status.Incorrect -> LockStatusMessage(
+            message = stringResource(R.string.woopos_lock_incorrect),
+            isError = true,
         )
-        state.isChecking -> null
-        state.error == WooPosLockError.INCORRECT -> stringResource(R.string.woopos_lock_incorrect)
-        state.error == WooPosLockError.STORAGE -> stringResource(R.string.woopos_lock_storage_error)
-        else -> null
-    }
-    val isError = state.error != null && state.remainingSeconds == 0L && !state.isChecking
-    if (state.isChecking && state.remainingSeconds == 0L) {
-        WooPosCircularLoadingIndicator(Modifier.size(WooPosIconSize.Large.value).progressSemantics())
-    } else if (message != null) {
-        WooPosText(
-            text = message,
-            style = WooPosTypography.BodyLarge,
-            color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+        WooPosLockScreenState.Status.StorageUnavailable -> LockStatusMessage(
+            message = stringResource(R.string.woopos_lock_storage_error),
+            isError = true,
+        )
+        is WooPosLockScreenState.Status.Wait -> LockStatusMessage(
+            message = stringResource(
+                R.string.woopos_lock_wait,
+                status.remainingSeconds / 60,
+                status.remainingSeconds % 60,
+            ),
         )
     }
+}
+
+@Composable
+private fun LockStatusMessage(message: String, isError: Boolean = false) {
+    WooPosText(
+        text = message,
+        style = WooPosTypography.BodyLarge,
+        color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+    )
 }

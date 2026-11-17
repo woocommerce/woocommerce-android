@@ -24,7 +24,7 @@ class WooPosLockScreenPresentationTest {
 
     @Test
     fun waitDisablesKeysAndKeepsForgotPINEnabled() {
-        val state = WooPosLockScreenState(isLocked = true, remainingSeconds = 30)
+        val state = WooPosLockScreenState(isLocked = true, status = WooPosLockScreenState.Status.Wait(30))
         composeTestRule.setContent {
             WooPosTheme {
                 WooPosLockScreen(state, onUIEvent = {})
@@ -45,7 +45,7 @@ class WooPosLockScreenPresentationTest {
         composeTestRule.setContent {
             WooPosTheme {
                 WooPosLockScreen(
-                    WooPosLockScreenState(isLocked = true, enteredDigits = 4, isChecking = true),
+                    WooPosLockScreenState(isLocked = true, enteredDigits = 4, status = WooPosLockScreenState.Status.Checking),
                     onUIEvent = {},
                 )
             }
