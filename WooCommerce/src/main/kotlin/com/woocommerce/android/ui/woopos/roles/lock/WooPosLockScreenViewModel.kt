@@ -38,8 +38,6 @@ class WooPosLockScreenViewModel @Inject constructor(
             when (event) {
                 is WooPosLockScreenUIEvent.DigitTapped -> accessSession.enterDigit(event.digit)
                 WooPosLockScreenUIEvent.DeleteTapped -> accessSession.deleteDigit()
-                // TODO WOOMOB-4606: Open PIN recovery.
-                WooPosLockScreenUIEvent.ForgotPINTapped -> accessSession.recover()
             }
         }
     }
@@ -51,6 +49,5 @@ class WooPosLockScreenViewModel @Inject constructor(
 
 sealed interface WooPosLockScreenUIEvent {
     data class DigitTapped(val digit: Int) : WooPosLockScreenUIEvent
-    data object ForgotPINTapped : WooPosLockScreenUIEvent
     data object DeleteTapped : WooPosLockScreenUIEvent
 }

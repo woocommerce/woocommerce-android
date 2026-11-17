@@ -22,7 +22,7 @@ class WooPosLockScreenViewModelTest {
     val coroutineRule = WooPosCoroutineTestRule()
 
     @Test
-    fun `given wrong entries, when wait starts, then countdown updates live and Forgot PIN remains available`() = runTest {
+    fun `given wrong entries, when wait starts, then countdown updates live until PIN entry returns`() = runTest {
         // GIVEN
         val fixture = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
         val site = SiteModel().apply { id = 1 }
@@ -51,7 +51,6 @@ class WooPosLockScreenViewModelTest {
         advanceTimeBy(1)
         runCurrent()
         assertThat(fixture.attemptReads).isEqualTo(readsBeforeTick + 1)
-        viewModel.onUIEvent(WooPosLockScreenUIEvent.ForgotPINTapped)
 
         // THEN
         assertThat(viewModel.state.value.remainingSeconds).isEqualTo(29)
@@ -100,9 +99,6 @@ class WooPosLockScreenViewModelTest {
             assertThat(viewModel.state.value.canEnterPIN).isFalse()
             repeat(4) { viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(0)) }
             assertThat(viewModel.state.value.enteredDigits).isZero()
-            assertThat(fixture.records).isEqualTo(attempts)
-            viewModel.onUIEvent(WooPosLockScreenUIEvent.ForgotPINTapped)
-            assertThat(viewModel.state.value.error).isNotEqualTo(WooPosLockError.STORAGE)
             assertThat(fixture.records).isEqualTo(attempts)
 
             // WHEN
