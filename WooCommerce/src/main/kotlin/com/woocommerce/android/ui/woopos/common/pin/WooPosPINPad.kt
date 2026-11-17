@@ -47,17 +47,17 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 
 @Composable
-fun WooPosPinPad(
+fun WooPosPINPad(
     enteredDigits: Int,
     enabled: Boolean,
     onDigit: (Int) -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
-    style: WooPosPinPadStyle = WooPosPinPadStyle.Standard,
+    style: WooPosPINPadStyle = WooPosPINPadStyle.Standard,
 ) {
     val spacing = when (style) {
-        WooPosPinPadStyle.Standard -> WooPosSpacing.Medium.value
-        is WooPosPinPadStyle.LockScreen -> WooPosSpacing.Small.value
+        WooPosPINPadStyle.Standard -> WooPosSpacing.Medium.value
+        is WooPosPINPadStyle.LockScreen -> WooPosSpacing.Small.value
     }
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(spacing)) {
         for (row in 0..2) {
@@ -88,7 +88,7 @@ fun WooPosPinPad(
 }
 
 @Composable
-fun WooPosPinDots(enteredDigits: Int) {
+fun WooPosPINDots(enteredDigits: Int) {
     val label = stringResource(R.string.woopos_lock_pin_entry)
     val description = stringResource(
         R.string.woopos_lock_digits_entered,
@@ -119,7 +119,7 @@ fun WooPosPinDots(enteredDigits: Int) {
 }
 
 @Composable
-private fun DigitKey(digit: Int, enabled: Boolean, style: WooPosPinPadStyle, onDigit: (Int) -> Unit) {
+private fun DigitKey(digit: Int, enabled: Boolean, style: WooPosPINPadStyle, onDigit: (Int) -> Unit) {
     PinKey(enabled = enabled, style = style, onClick = { onDigit(digit) }) {
         WooPosText(text = digit.toString(), style = WooPosTypography.Heading, fontWeight = FontWeight.Bold)
     }
@@ -128,12 +128,12 @@ private fun DigitKey(digit: Int, enabled: Boolean, style: WooPosPinPadStyle, onD
 @Composable
 private fun PinKey(
     enabled: Boolean,
-    style: WooPosPinPadStyle,
+    style: WooPosPINPadStyle,
     onClick: () -> Unit,
     content: @Composable () -> Unit,
 ) {
     when (style) {
-        WooPosPinPadStyle.Standard -> Surface(
+        WooPosPINPadStyle.Standard -> Surface(
             onClick = onClick,
             enabled = enabled,
             shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
@@ -146,14 +146,14 @@ private fun PinKey(
         ) {
             Box(contentAlignment = Alignment.Center) { content() }
         }
-        is WooPosPinPadStyle.LockScreen -> LockScreenKey(enabled, style, onClick, content)
+        is WooPosPINPadStyle.LockScreen -> LockScreenKey(enabled, style, onClick, content)
     }
 }
 
 @Composable
 private fun LockScreenKey(
     enabled: Boolean,
-    style: WooPosPinPadStyle.LockScreen,
+    style: WooPosPINPadStyle.LockScreen,
     onClick: () -> Unit,
     content: @Composable () -> Unit,
 ) {
@@ -187,9 +187,9 @@ private fun LockScreenKey(
 }
 
 @Composable
-private fun WooPosPinPadStyle.keySize(): Dp = when (this) {
-    WooPosPinPadStyle.Standard -> WooPosComponentSize.Small.value
-    is WooPosPinPadStyle.LockScreen -> keySize
+private fun WooPosPINPadStyle.keySize(): Dp = when (this) {
+    WooPosPINPadStyle.Standard -> WooPosComponentSize.Small.value
+    is WooPosPINPadStyle.LockScreen -> keySize
 }
 
 private val PIN_DOT_SIZE = 22.dp

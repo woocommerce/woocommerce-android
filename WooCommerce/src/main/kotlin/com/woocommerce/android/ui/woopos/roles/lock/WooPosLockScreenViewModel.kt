@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.roles.lock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -22,14 +23,16 @@ class WooPosLockScreenViewModel @Inject constructor(
             selectedSite.observe().collectLatest { accessSession.initialize() }
         }
         viewModelScope.launch {
-            state.map { it.isLocked && it.remainingSeconds > 0 }.distinctUntilChanged().collectLatest { waiting ->
-                if (waiting) {
-                    while (state.value.remainingSeconds > 0) {
-                        delay(COUNTDOWN_INTERVAL_MILLIS)
-                        accessSession.refreshWait()
+            state.map { it.isLocked && it.status is Status.Wait }
+                .distinctUntilChanged()
+                .collectLatest { waiting ->
+                    if (waiting) {
+                        while (state.value.status is Status.Wait) {
+                            delay(COUNTDOWN_INTERVAL_MILLIS)
+                            accessSession.refreshWait()
+                        }
                     }
                 }
-            }
         }
     }
 

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.roles.lock
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosCapability
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -40,7 +41,7 @@ class WooPosLockScreenViewModelTest {
         repeat(5) {
             repeat(4) { viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(0)) }
         }
-        assertThat(viewModel.state.value.remainingSeconds).isEqualTo(30)
+        assertThat(viewModel.state.value.status).isEqualTo(Status.Wait(30))
 
         // WHEN
         val readsBeforeTick = fixture.attemptReads
@@ -53,8 +54,8 @@ class WooPosLockScreenViewModelTest {
         assertThat(fixture.attemptReads).isEqualTo(readsBeforeTick + 1)
 
         // THEN
-        assertThat(viewModel.state.value.remainingSeconds).isEqualTo(29)
-        assertThat(viewModel.state.value.error).isNotEqualTo(WooPosLockError.STORAGE)
+        assertThat(viewModel.state.value.status).isEqualTo(Status.Wait(29))
+        assertThat(viewModel.state.value.status).isNotEqualTo(Status.StorageUnavailable)
         assertThat(viewModel.state.value.isLocked).isTrue()
 
         // WHEN
@@ -63,7 +64,7 @@ class WooPosLockScreenViewModelTest {
         runCurrent()
 
         // THEN
-        assertThat(viewModel.state.value.remainingSeconds).isZero()
+        assertThat(viewModel.state.value.status).isEqualTo(Status.Idle)
         assertThat(viewModel.state.value.canEnterPIN).isTrue()
     }
 
@@ -95,7 +96,7 @@ class WooPosLockScreenViewModelTest {
             // THEN
             assertThat(viewModel.state.value.isLocked).isTrue()
             assertThat(session.activeRole).isNull()
-            assertThat(viewModel.state.value.remainingSeconds).isEqualTo(30)
+            assertThat(viewModel.state.value.status).isEqualTo(Status.Wait(30))
             assertThat(viewModel.state.value.canEnterPIN).isFalse()
             repeat(4) { viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(0)) }
             assertThat(viewModel.state.value.enteredDigits).isZero()
@@ -107,7 +108,7 @@ class WooPosLockScreenViewModelTest {
             runCurrent()
 
             // THEN
-            assertThat(viewModel.state.value.remainingSeconds).isZero()
+            assertThat(viewModel.state.value.status).isEqualTo(Status.Idle)
             assertThat(viewModel.state.value.canEnterPIN).isTrue()
         }
 }

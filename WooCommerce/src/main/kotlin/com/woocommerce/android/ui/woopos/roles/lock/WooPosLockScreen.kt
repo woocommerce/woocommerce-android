@@ -87,8 +87,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
-import com.woocommerce.android.ui.woopos.common.pin.WooPosPinPad
-import com.woocommerce.android.ui.woopos.common.pin.WooPosPinPadStyle
+import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPad
+import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPadStyle
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -195,14 +196,17 @@ private fun BoxWithConstraintsScope.LockContent(
         ) {
             LockStatus(state, feedback)
             // TODO WOOMOB-4606: Show Forgot PIN once PIN recovery is available.
-            WooPosPinPad(
+            WooPosPINPad(
                 enteredDigits = state.enteredDigits,
                 enabled = state.canEnterPIN && !intro.isActive,
                 onDigit = { onUIEvent(WooPosLockScreenUIEvent.DigitTapped(it)) },
                 onDelete = { onUIEvent(WooPosLockScreenUIEvent.DeleteTapped) },
-                style = WooPosPinPadStyle.LockScreen(
+                style = WooPosPINPadStyle.LockScreen(
                     keySize = layout.keySize,
-                    showsDisabledKeys = state.isLocked && (state.remainingSeconds > 0 || state.isUnavailable),
+                    showsDisabledKeys = state.isLocked && when (state.status) {
+                        is Status.Wait, Status.StorageUnavailable -> true
+                        else -> false
+                    },
                 ),
             )
         }
@@ -364,8 +368,8 @@ private fun rememberLockPinFeedback(state: WooPosLockScreenState): LockPinFeedba
         var previous = currentState
         var shakeJob: Job? = null
         snapshotFlow { currentState }.collect { current ->
-            val rejected = current.error == WooPosLockError.INCORRECT && current.enteredDigits == 0 &&
-                (previous.isChecking || previous.enteredDigits > 0)
+            val rejected = (current.status == Status.Incorrect || current.status is Status.Wait) &&
+                current.enteredDigits == 0 && previous.enteredDigits > 0
             if (rejected) {
                 shakeJob?.cancel()
                 shakeJob = launch {
@@ -390,12 +394,15 @@ private enum class LockMessage { INCORRECT, WAIT, UNAVAILABLE }
 
 @Composable
 private fun LockStatus(state: WooPosLockScreenState, feedback: LockPinFeedback) {
-    val message = when {
-        feedback.heldDigits > 0 -> null
-        state.remainingSeconds > 0 -> LockMessage.WAIT
-        state.isUnavailable -> LockMessage.UNAVAILABLE
-        state.error == WooPosLockError.INCORRECT && state.enteredDigits == 0 -> LockMessage.INCORRECT
-        else -> null
+    val message = if (feedback.heldDigits > 0) {
+        null
+    } else {
+        when (state.status) {
+            Status.Idle, Status.Checking -> null
+            Status.Incorrect -> if (state.enteredDigits == 0) LockMessage.INCORRECT else null
+            is Status.Wait -> LockMessage.WAIT
+            Status.StorageUnavailable -> LockMessage.UNAVAILABLE
+        }
     }
     val feedbackSpec = tween<Float>(FEEDBACK_MILLIS, easing = LinearOutSlowInEasing)
     val dotsAlpha by animateFloatAsState(if (message == null) 1f else 0f, feedbackSpec, label = "lockDots")
@@ -410,7 +417,7 @@ private fun LockStatus(state: WooPosLockScreenState, feedback: LockPinFeedback) 
             },
         )
         Crossfade(targetState = message, animationSpec = feedbackSpec, label = "lockStatus") { shown ->
-            if (shown != null) LockMessageText(shown, state.remainingSeconds)
+            if (shown != null) LockMessageText(shown, (state.status as? Status.Wait)?.remainingSeconds ?: 0L)
         }
     }
 }
@@ -478,9 +485,6 @@ private fun LockMessageText(message: LockMessage, remainingSeconds: Long) {
     )
 }
 
-private val WooPosLockScreenState.isUnavailable: Boolean
-    get() = error == WooPosLockError.STORAGE
-
 @WooPosPreview
 @Composable
 fun WooPosLockScreenPreview() {
@@ -494,7 +498,7 @@ fun WooPosLockScreenPreview() {
 fun WooPosLockScreenIncorrectPreview() {
     WooPosTheme {
         WooPosLockScreen(
-            state = WooPosLockScreenState(isLocked = true, error = WooPosLockError.INCORRECT),
+            state = WooPosLockScreenState(isLocked = true, status = Status.Incorrect),
             onUIEvent = {},
         )
     }
@@ -504,7 +508,7 @@ fun WooPosLockScreenIncorrectPreview() {
 @Composable
 fun WooPosLockScreenWaitPreview() {
     WooPosTheme {
-        WooPosLockScreen(state = WooPosLockScreenState(isLocked = true, remainingSeconds = 30), onUIEvent = {})
+        WooPosLockScreen(state = WooPosLockScreenState(isLocked = true, status = Status.Wait(30)), onUIEvent = {})
     }
 }
 
@@ -513,7 +517,7 @@ fun WooPosLockScreenWaitPreview() {
 fun WooPosLockScreenUnavailablePreview() {
     WooPosTheme {
         WooPosLockScreen(
-            state = WooPosLockScreenState(isLocked = true, error = WooPosLockError.STORAGE),
+            state = WooPosLockScreenState(isLocked = true, status = Status.StorageUnavailable),
             onUIEvent = {},
         )
     }

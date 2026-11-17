@@ -18,6 +18,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
 import org.junit.Assume.assumeTrue
 import org.junit.Rule
 import org.junit.Test
@@ -33,7 +34,7 @@ class WooPosLockScreenPresentationTest {
 
     @Test
     fun waitDisablesKeysAndShowsCountdown() {
-        setLockScreen(WooPosLockScreenState(isLocked = true, remainingSeconds = 90))
+        setLockScreen(WooPosLockScreenState(isLocked = true, status = Status.Wait(90)))
 
         composeTestRule.onNodeWithText("1").assertIsNotEnabled()
         composeTestRule.onNodeWithText(context.getString(R.string.woopos_lock_wait, 1L, 30L)).assertIsDisplayed()
@@ -41,7 +42,7 @@ class WooPosLockScreenPresentationTest {
 
     @Test
     fun checkingKeepsEnteredDotsAndDisablesKeysWithoutProgress() {
-        setLockScreen(WooPosLockScreenState(isLocked = true, enteredDigits = 4, isChecking = true))
+        setLockScreen(WooPosLockScreenState(isLocked = true, enteredDigits = 4, status = Status.Checking))
 
         composeTestRule.onNodeWithText("1").assertIsNotEnabled()
         composeTestRule.onNode(hasProgressBarRangeInfo(ProgressBarRangeInfo.Indeterminate)).assertDoesNotExist()
@@ -50,7 +51,7 @@ class WooPosLockScreenPresentationTest {
 
     @Test
     fun unavailableDisablesKeysAndShowsMessage() {
-        setLockScreen(WooPosLockScreenState(isLocked = true, error = WooPosLockError.STORAGE))
+        setLockScreen(WooPosLockScreenState(isLocked = true, status = Status.StorageUnavailable))
 
         composeTestRule.onNodeWithText("1").assertIsNotEnabled()
         composeTestRule.onNodeWithText(context.getString(R.string.woopos_lock_unavailable)).assertIsDisplayed()
@@ -107,13 +108,13 @@ class WooPosLockScreenPresentationTest {
 
     @Test
     fun incorrectPINShakesFourDotsBeforeTheErrorReplacesThem() {
-        val state = mutableStateOf(WooPosLockScreenState(isLocked = true, enteredDigits = 4, isChecking = true))
+        val state = mutableStateOf(WooPosLockScreenState(isLocked = true, enteredDigits = 4, status = Status.Checking))
         setLockScreen(state)
         composeTestRule.waitForIdle()
         composeTestRule.mainClock.autoAdvance = false
 
         // WHEN
-        state.value = WooPosLockScreenState(isLocked = true, error = WooPosLockError.INCORRECT)
+        state.value = WooPosLockScreenState(isLocked = true, status = Status.Incorrect)
         composeTestRule.mainClock.advanceTimeBy(SHAKE_MILLIS / 2)
 
         // THEN
@@ -128,12 +129,49 @@ class WooPosLockScreenPresentationTest {
     }
 
     @Test
-    fun newInputDuringShakeShowsTheNewDigitWithoutTheError() {
-        val state = mutableStateOf(WooPosLockScreenState(isLocked = true, enteredDigits = 4, isChecking = true))
+    fun waitAfterRejectedPINShakesFourDotsWhileKeysStayDisabled() {
+        val state = mutableStateOf(WooPosLockScreenState(isLocked = true, enteredDigits = 4, status = Status.Checking))
         setLockScreen(state)
         composeTestRule.waitForIdle()
         composeTestRule.mainClock.autoAdvance = false
-        state.value = WooPosLockScreenState(isLocked = true, error = WooPosLockError.INCORRECT)
+
+        // WHEN
+        state.value = WooPosLockScreenState(isLocked = true, status = Status.Wait(30))
+        composeTestRule.mainClock.advanceTimeBy(SHAKE_MILLIS / 2)
+
+        // THEN
+        composeTestRule.onNode(dots(entered = 4)).assertIsDisplayed()
+        composeTestRule.onNodeWithText("1").assertIsNotEnabled()
+
+        // WHEN
+        composeTestRule.mainClock.advanceTimeBy(SHAKE_MILLIS)
+
+        // THEN
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_lock_wait, 0L, 30L)).assertIsDisplayed()
+    }
+
+    @Test
+    fun checkingAnExistingWaitShowsTheCountdownWithoutRejectedDots() {
+        val state = mutableStateOf(WooPosLockScreenState(isLocked = true, status = Status.Checking))
+        setLockScreen(state)
+        composeTestRule.waitForIdle()
+
+        // WHEN
+        state.value = WooPosLockScreenState(isLocked = true, status = Status.Wait(30))
+        composeTestRule.waitForIdle()
+
+        // THEN
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_lock_wait, 0L, 30L)).assertIsDisplayed()
+        composeTestRule.onNode(dots(entered = 4)).assertDoesNotExist()
+    }
+
+    @Test
+    fun newInputDuringShakeShowsTheNewDigitWithoutTheError() {
+        val state = mutableStateOf(WooPosLockScreenState(isLocked = true, enteredDigits = 4, status = Status.Checking))
+        setLockScreen(state)
+        composeTestRule.waitForIdle()
+        composeTestRule.mainClock.autoAdvance = false
+        state.value = WooPosLockScreenState(isLocked = true, status = Status.Incorrect)
         composeTestRule.mainClock.advanceTimeBy(SHAKE_MILLIS / 2)
 
         // WHEN
