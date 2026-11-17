@@ -41,7 +41,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 
 @Composable
-fun WooPosPinPad(
+fun WooPosPINPad(
     enteredDigits: Int,
     enabled: Boolean,
     onDigit: (Int) -> Unit,
@@ -64,7 +64,7 @@ fun WooPosPinPad(
         ) {
             Spacer(Modifier.size(WooPosComponentSize.Small.value))
             DigitKey(0, enabled, onDigit)
-            PinKey(onClick = onDelete, enabled = enabled && enteredDigits > 0) {
+            PINKey(onClick = onDelete, enabled = enabled && enteredDigits > 0) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_woopos_backspace),
                     contentDescription = stringResource(R.string.woopos_lock_delete_digit),
@@ -76,7 +76,7 @@ fun WooPosPinPad(
 }
 
 @Composable
-fun WooPosPinDots(enteredDigits: Int) {
+fun WooPosPINDots(enteredDigits: Int) {
     val label = stringResource(R.string.woopos_lock_pin_entry)
     val description = stringResource(
         R.string.woopos_lock_digits_entered,
@@ -108,13 +108,13 @@ fun WooPosPinDots(enteredDigits: Int) {
 
 @Composable
 private fun DigitKey(digit: Int, enabled: Boolean, onDigit: (Int) -> Unit) {
-    PinKey(enabled = enabled, onClick = { onDigit(digit) }) {
+    PINKey(enabled = enabled, onClick = { onDigit(digit) }) {
         WooPosText(text = digit.toString(), style = WooPosTypography.Heading, fontWeight = FontWeight.Bold)
     }
 }
 
 @Composable
-private fun PinKey(enabled: Boolean = true, onClick: () -> Unit, content: @Composable () -> Unit) {
+private fun PINKey(enabled: Boolean = true, onClick: () -> Unit, content: @Composable () -> Unit) {
     Surface(
         onClick = onClick,
         enabled = enabled,

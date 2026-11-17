@@ -38,10 +38,13 @@ tags:
     id: "point_of_sale"
     label: "Tap POS tab"
 
+# The first POS visit after a fresh install syncs the catalog, which can take
+# minutes on a store with many products.
 - extendedWaitUntil:
     visible:
       id: "woo_pos_product_item"
-    timeout: 20000
+    timeout: 180000
+    label: "Wait for the catalog to sync"
 
 - runFlow:
     when:
