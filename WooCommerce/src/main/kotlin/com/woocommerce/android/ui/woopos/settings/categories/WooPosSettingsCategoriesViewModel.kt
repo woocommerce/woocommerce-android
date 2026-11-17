@@ -20,12 +20,11 @@ class WooPosSettingsCategoriesViewModel @Inject constructor(
 
     init {
         val categories = WooPosSettingsCategory.entries.filter {
-            if (it == WooPosSettingsCategory.LOCAL_CATALOG) {
-                productsDataSource.getCurrentSyncStrategy() != WooPosProductsDataSource.SyncStrategy.REMOTE
-            } else if (it == WooPosSettingsCategory.SECURITY) {
-                featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ROLES)
-            } else {
-                true
+            when (it) {
+                WooPosSettingsCategory.LOCAL_CATALOG ->
+                    productsDataSource.getCurrentSyncStrategy() != WooPosProductsDataSource.SyncStrategy.REMOTE
+                WooPosSettingsCategory.SECURITY -> featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ROLES)
+                else -> true
             }
         }
         _state.value = WooPosSettingsCategoriesState(categories)
