@@ -59,6 +59,9 @@ class WooPosPINIntegrationTest {
 
     private val baseContext = InstrumentationRegistry.getInstrumentation().targetContext
     private val directory = File(baseContext.noBackupFilesDir, "pin-integration-test")
+    private val pinFile = File(directory, "woopos-pins/$SITE_ID.pins")
+    private val attemptsDirectory = File(directory, "woopos-pin-attempts")
+    private val attemptsFile = File(attemptsDirectory, "$SITE_ID.attempts")
     private val context = object : ContextWrapper(baseContext) {
         override fun getApplicationContext(): Context = this
         override fun getNoBackupFilesDir(): File = directory.apply { mkdirs() }
@@ -101,8 +104,7 @@ class WooPosPINIntegrationTest {
     @Test
     fun savedPINsUnlockRecreatedSessionAndOnlyAdminResetsFailures(): Unit = runBlocking(Dispatchers.Main) {
         // GIVEN
-        val recreatedStore = WooPosLocalPINStore(WooPosEncryptedPINStorage(context, KEY_ALIAS), dispatchers)
-        val session = createSession(createLimiter(recreatedStore))
+        val session = createSession(createLimiter())
         session.initialize()
         assertThat(session.state.value.isLocked).isTrue()
 
@@ -156,8 +158,7 @@ class WooPosPINIntegrationTest {
             .isInstanceOf(WooPosLocalRateLimiterResult.Waiting::class.java)
         assertThat(attempts.read(SITE_ID)).isEqualTo(previous)
 
-        val recreatedStore = WooPosLocalPINStore(WooPosEncryptedPINStorage(context, KEY_ALIAS), dispatchers)
-        val recreatedLimiter = createLimiter(recreatedStore)
+        val recreatedLimiter = createLimiter()
         val recreated = createSession(recreatedLimiter)
         recreated.initialize()
         assertThat((recreated.state.value.status as Status.Wait).remainingSeconds).isBetween(1, initialWait)
@@ -185,10 +186,8 @@ class WooPosPINIntegrationTest {
     fun corruptAttemptsBlockCorrectPINWithoutChangingPINsOrRepairingRecord(): Unit = runBlocking(Dispatchers.Main) {
         // GIVEN
         createLimiter().authenticate(SITE_ID, WRONG_PIN)
-        val file = File(directory, "woopos-pin-attempts/$SITE_ID.attempts")
-        val corrupt = file.readBytes().copyOf(1)
-        file.writeBytes(corrupt)
-        val pinFile = File(directory, "woopos-pins/$SITE_ID.pins")
+        val corrupt = attemptsFile.readBytes().copyOf(1)
+        attemptsFile.writeBytes(corrupt)
         val pins = pinFile.readBytes()
         val limiter = createLimiter()
         val session = createSession(limiter)
@@ -203,7 +202,7 @@ class WooPosPINIntegrationTest {
         assertThat(session.state.value.canEnterPIN).isFalse()
         assertThat(session.activeRole).isNull()
         assertThat(limiter.authenticate(SITE_ID, ADMIN_PIN)).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
-        assertThat(file.readBytes()).isEqualTo(corrupt)
+        assertThat(attemptsFile.readBytes()).isEqualTo(corrupt)
         assertThat(pinFile.readBytes()).isEqualTo(pins)
         assertThat(store.getPINs(SITE_ID).getOrThrow()).containsKeys(WooPosLocalRole.ADMIN, WooPosLocalRole.CASHIER)
     }
@@ -211,8 +210,7 @@ class WooPosPINIntegrationTest {
     @Test
     fun missingKeystoreKeyKeepsProtectionEnabledAndSessionLocked(): Unit = runBlocking(Dispatchers.Main) {
         // GIVEN
-        val file = File(directory, "woopos-pins/$SITE_ID.pins")
-        val original = file.readBytes()
+        val original = pinFile.readBytes()
         KeyStore.getInstance("AndroidKeyStore").apply { load(null) }.deleteEntry(KEY_ALIAS)
         val limiter = createLimiter()
         val session = createSession(limiter)
@@ -227,21 +225,19 @@ class WooPosPINIntegrationTest {
         assertThat(session.state.value.status).isEqualTo(Status.StorageUnavailable)
         assertThat(session.activeRole).isNull()
         assertThat(limiter.authenticate(SITE_ID, ADMIN_PIN)).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
-        assertThat(file.readBytes()).isEqualTo(original)
+        assertThat(pinFile.readBytes()).isEqualTo(original)
     }
 
     @Test
-    fun failedAttemptCommitCannotPublishAuthenticatedRole(): Unit = runBlocking(Dispatchers.Main) {
+    fun unwritableAttemptRecordBlocksCorrectPIN(): Unit = runBlocking(Dispatchers.Main) {
         // GIVEN
         val limiter = createLimiter()
         limiter.authenticate(SITE_ID, WRONG_PIN)
         val previous = attempts.read(SITE_ID)
         val session = createSession(limiter)
         session.initialize()
-        val folder = File(directory, "woopos-pin-attempts")
-        val file = File(folder, "$SITE_ID.attempts")
-        check(file.setWritable(false))
-        check(folder.setWritable(false))
+        check(attemptsFile.setWritable(false))
+        check(attemptsDirectory.setWritable(false))
         try {
             // WHEN
             enter(session, ADMIN_PIN)
@@ -252,20 +248,23 @@ class WooPosPINIntegrationTest {
             assertThat(session.activeRole).isNull()
             assertThat(attempts.read(SITE_ID)).isEqualTo(previous)
         } finally {
-            check(folder.setWritable(true))
-            check(file.setWritable(true))
+            check(attemptsDirectory.setWritable(true))
+            check(attemptsFile.setWritable(true))
         }
         assertThat(store.getPINs(SITE_ID).getOrThrow()).containsKeys(WooPosLocalRole.ADMIN, WooPosLocalRole.CASHIER)
     }
 
-    private fun createLimiter(pinStore: WooPosLocalPINStore = store) = WooPosLocalRateLimiter(
-        pinStore,
-        WooPosPINAuthenticator(dispatchers),
-        WooPosFilePINAttemptStorage(context),
-        WooPosAndroidPINClock(context),
-        WooPosPendingPINRecovery(),
-        dispatchers,
-    )
+    private fun createLimiter(): WooPosLocalRateLimiter {
+        val pinStore = WooPosLocalPINStore(WooPosEncryptedPINStorage(context, KEY_ALIAS), dispatchers)
+        return WooPosLocalRateLimiter(
+            pinStore,
+            WooPosPINAuthenticator(dispatchers),
+            WooPosFilePINAttemptStorage(context),
+            WooPosAndroidPINClock(context),
+            WooPosPendingPINRecovery(),
+            dispatchers,
+        )
+    }
 
     private fun createSession(limiter: WooPosLocalRateLimiter) = WooPosAccessSession(flags, selectedSite, limiter)
 
