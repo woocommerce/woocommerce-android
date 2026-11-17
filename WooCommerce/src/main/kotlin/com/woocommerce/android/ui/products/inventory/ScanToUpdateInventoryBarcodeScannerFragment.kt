@@ -11,7 +11,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
@@ -31,10 +30,6 @@ import javax.inject.Inject
 class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
     private val scannerViewModel: BarcodeScanningViewModel by viewModels()
     private val viewModel: ScanToUpdateInventoryViewModel by viewModels()
-    private val navArgs: ScanToUpdateInventoryBarcodeScannerFragmentArgs by navArgs()
-
-    private val cameraScanningEnabled: Boolean
-        get() = navArgs.scannedBarcode == null
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
@@ -51,7 +46,6 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             ScanToUpdateInventoryScreen(
-                cameraScanningEnabled = cameraScanningEnabled,
                 onNewFrame = scannerViewModel::onNewFrame,
                 onBindingException = scannerViewModel::onBindingException,
                 permissionState = scannerViewModel.permissionState.observeAsState(Unknown),
@@ -94,9 +88,7 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        if (cameraScanningEnabled) {
-            scannerViewModel.startCodesRecognition()
-        }
+        scannerViewModel.startCodesRecognition()
     }
 
     override fun onPause() {

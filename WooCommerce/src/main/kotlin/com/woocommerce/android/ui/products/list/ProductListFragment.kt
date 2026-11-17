@@ -4,6 +4,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
@@ -31,12 +35,12 @@ import com.woocommerce.android.ui.barcodescanner.listenForHardwareBarcodes
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.setDesignSystemContent
+import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.BackPressTracker
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
-import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.ui.products.AddProductNavigator
 import com.woocommerce.android.ui.products.ProductSortingFragment
@@ -47,6 +51,8 @@ import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.Upd
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.ui.products.details.ProductDetailFragmentArgs
 import com.woocommerce.android.ui.products.filter.ProductFilterResult
+import com.woocommerce.android.ui.products.inventory.QuickInventoryUpdateSheet
+import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel
 import com.woocommerce.android.ui.products.list.ProductListEvent.OpenEmptyProduct
 import com.woocommerce.android.ui.products.list.ProductListEvent.OpenProduct
 import com.woocommerce.android.ui.products.list.ProductListEvent.ScrollToTop
@@ -100,8 +106,10 @@ class ProductListFragment :
 
     private val productsCommunicationViewModel: ProductsCommunicationViewModel by activityViewModels()
     private val productListViewModel: ProductListViewModel by viewModels()
+    private val inventoryViewModel: ScanToUpdateInventoryViewModel by viewModels()
 
     private var trashProductUndoSnack: Snackbar? = null
+    private var inventoryUndoSnack: Snackbar? = null
     private var pendingTrashProductId: Long? = null
     private var isListAtTop = true
     private var isAddProductFabAvailable = false
@@ -186,10 +194,24 @@ class ProductListFragment :
                 onEmptyAddProductClicked = ::showAddProductBottomSheet,
                 onListAtTopChanged = { isListAtTop = it },
             )
+            WooTheme {
+                CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onSurface) {
+                    QuickInventoryUpdateSheet(
+                        viewState = inventoryViewModel.viewState.collectAsState(),
+                        onBottomSheetDismissed = inventoryViewModel::onBottomSheetDismissed,
+                        onIncrementQuantityClicked = inventoryViewModel::onIncrementQuantityClicked,
+                        onUpdateQuantityClicked = inventoryViewModel::onUpdateQuantityClicked,
+                        onViewProductDetailsClicked = inventoryViewModel::onViewProductDetailsClicked,
+                        onManualQuantityEntered = inventoryViewModel::onManualQuantityEntered,
+                        onManageStockClicked = inventoryViewModel::onManageStockClicked,
+                    )
+                }
+            }
         }
         view.doOnPreDraw { startPostponedEnterTransition() }
 
         setupObservers()
+        observeInventoryEvents()
         setupResultHandlers()
         setupBackHandling()
 
@@ -217,6 +239,7 @@ class ProductListFragment :
     override fun onStop() {
         super.onStop()
         trashProductUndoSnack?.dismiss()
+        inventoryUndoSnack?.dismiss()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -258,8 +281,8 @@ class ProductListFragment :
                 is ShowAddProductBottomSheet -> showAddProductBottomSheet()
                 is ShowProductFilterScreen -> showProductFilterScreen(event)
                 is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
-                is ShowBarcodeScanner -> showScanToUpdateInventory(scannedBarcode = null)
-                is ShowScanToUpdateInventory -> showScanToUpdateInventory(event.scannedBarcode)
+                is ShowBarcodeScanner -> showScanToUpdateInventory()
+                is ShowScanToUpdateInventory -> inventoryViewModel.onBarcodeScanningResult(event.scannedBarcode)
                 is ShowUpdateDialog -> handleUpdateDialogs(event)
                 is OpenProduct -> openProduct(event)
                 is OpenEmptyProduct -> openEmptyProduct()
@@ -285,6 +308,35 @@ class ProductListFragment :
                 }
                 else -> event.isHandled = false
             }
+        }
+    }
+
+    private fun observeInventoryEvents() {
+        inventoryViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is MultiLiveEvent.Event.ShowUiStringSnackbar -> {
+                    uiMessageResolver.showSnack(event.message)
+                    reloadProductsAfterInventoryChange()
+                }
+                is MultiLiveEvent.Event.ShowUndoSnackbar -> {
+                    inventoryUndoSnack = uiMessageResolver.getUndoSnack(
+                        message = event.message,
+                        actionListener = event.undoAction,
+                    ).also {
+                        it.addCallback(event.dismissAction)
+                        it.show()
+                    }
+                    reloadProductsAfterInventoryChange()
+                }
+                is ScanToUpdateInventoryViewModel.NavigateToProductDetailsEvent -> onProductClick(event.productId)
+                else -> event.isHandled = false
+            }
+        }
+    }
+
+    private fun reloadProductsAfterInventoryChange() {
+        if (!productListViewModel.isSearching()) {
+            productListViewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
         }
     }
 
@@ -553,9 +605,9 @@ class ProductListFragment :
         )
     }
 
-    private fun showScanToUpdateInventory(scannedBarcode: CodeScannerStatus.Success?) {
+    private fun showScanToUpdateInventory() {
         findNavController().navigateSafely(
-            ProductListFragmentDirections.actionProductListFragmentToScanToUpdateInventory(scannedBarcode)
+            ProductListFragmentDirections.actionProductListFragmentToScanToUpdateInventory()
         )
     }
 

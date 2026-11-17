@@ -21,7 +21,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.eq
@@ -68,13 +67,15 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a scanned barcode in arguments, when screen opened, then the product is fetched once`() = testBlocking {
+    fun `given restored loading state, when view model created, then it accepts new barcodes`() = testBlocking {
         // GIVEN
-        val scannedBarcode = CodeScannerStatus.Success("123", GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8)
-        val savedState = SavedStateHandle(mapOf("scannedBarcode" to scannedBarcode))
-
-        // WHEN
-        ScanToUpdateInventoryViewModel(
+        val savedState = SavedStateHandle(
+            mapOf(
+                "viewState" to ScanToUpdateInventoryViewModel.ViewState.Loading,
+                "productSearchState" to ScanToUpdateInventoryViewModel.ScanToUpdateInventoryState.FetchingProduct,
+            )
+        )
+        val viewModel = ScanToUpdateInventoryViewModel(
             fetchProductByIdentifier = fetchProductByIdentifier,
             savedState = savedState,
             resourceProvider = resourceProvider,
@@ -83,9 +84,13 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             tracker = tracker
         )
 
+        // WHEN
+        viewModel.onBarcodeScanningResult(
+            CodeScannerStatus.Success("123", GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8)
+        )
+
         // THEN
         verify(fetchProductByIdentifier).invoke("123", GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8)
-        assertThat(savedState.contains("scannedBarcode")).isFalse()
     }
 
     @Test
