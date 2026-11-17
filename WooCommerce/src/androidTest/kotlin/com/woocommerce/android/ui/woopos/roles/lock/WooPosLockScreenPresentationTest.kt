@@ -45,7 +45,11 @@ class WooPosLockScreenPresentationTest {
         composeTestRule.setContent {
             WooPosTheme {
                 WooPosLockScreen(
-                    WooPosLockScreenState(isLocked = true, enteredDigits = 4, status = WooPosLockScreenState.Status.Checking),
+                    WooPosLockScreenState(
+                        isLocked = true,
+                        enteredDigits = 4,
+                        status = WooPosLockScreenState.Status.Checking,
+                    ),
                     onUIEvent = {},
                 )
             }

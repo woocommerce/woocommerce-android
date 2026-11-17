@@ -12,7 +12,7 @@ class WooPosLockScreenStateTest {
     }
 
     @Test
-    fun `given checking waiting or storage unavailable, then PIN entry is disabled`() {
+    fun `given locked screen, when checking waiting or storage unavailable, then PIN entry is disabled`() {
         listOf(
             WooPosLockScreenState.Status.Checking,
             WooPosLockScreenState.Status.Wait(30),
@@ -23,7 +23,7 @@ class WooPosLockScreenStateTest {
     }
 
     @Test
-    fun `given unlocked screen, then PIN entry is disabled`() {
+    fun `given unlocked screen, when checking PIN entry availability, then entry is disabled`() {
         assertThat(WooPosLockScreenState().canEnterPIN).isFalse()
     }
 }
