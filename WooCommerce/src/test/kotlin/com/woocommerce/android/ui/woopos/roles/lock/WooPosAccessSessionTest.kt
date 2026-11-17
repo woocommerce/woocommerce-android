@@ -359,7 +359,7 @@ class WooPosAccessSessionTest {
     private fun session(fixture: WooPosLocalRateLimiterTestFixture) = WooPosAccessSession(
         flags,
         selectedSite,
-        fixture.access(),
+        fixture.rateLimiter(),
     )
     private suspend fun enter(session: WooPosAccessSession, pin: String) {
         pin.forEach { session.enterDigit(it.digitToInt()) }

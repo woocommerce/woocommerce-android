@@ -52,7 +52,7 @@ class WooPosAccessSession @Inject constructor(
             return@withLock
         }
         val request = generation
-        val protectionResult = rateLimiter.protection(id)
+        val protectionResult = rateLimiter.isProtectionEnabled(id)
         if (!isCurrent(request, id)) return@withLock
         protectionEnabled = protectionResult.getOrDefault(true)
         if (protectionResult.getOrNull() == true && activeRole == null && unlockWith != null) {

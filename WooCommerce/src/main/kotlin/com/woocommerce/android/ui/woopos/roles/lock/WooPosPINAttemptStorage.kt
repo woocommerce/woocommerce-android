@@ -26,7 +26,7 @@ internal class WooPosFilePINAttemptStorage @Inject constructor(
     override fun read(localSiteId: Int): WooPosPINAttemptState {
         checkDirectory()
         val file = file(localSiteId)
-        if (!file.baseFile.exists() && !File(file.baseFile.path + ".bak").exists()) return WooPosPINAttemptState()
+        if (!file.baseFile.exists() && !File(file.baseFile.path + ".bak").exists()) return WooPosPINAttemptState.NO_FAILURES
         return DataInputStream(file.openRead()).use { input ->
             require(input.readInt() == VERSION)
             WooPosPINAttemptState(input.readLong(), input.readInt(), input.readLong(), input.readLong()).also {

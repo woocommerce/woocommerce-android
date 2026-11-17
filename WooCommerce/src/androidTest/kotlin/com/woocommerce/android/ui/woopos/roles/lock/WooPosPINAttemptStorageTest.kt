@@ -36,7 +36,7 @@ class WooPosPINAttemptStorageTest {
 
         // THEN
         assertThat(recreated.read(1)).isEqualTo(state)
-        assertThat(recreated.read(2)).isEqualTo(WooPosPINAttemptState())
+        assertThat(recreated.read(2)).isEqualTo(WooPosPINAttemptState.NO_FAILURES)
         assertThat(directory.canonicalPath).startsWith(context.noBackupFilesDir.canonicalPath)
         assertThat(directory.canonicalPath).doesNotStartWith(context.filesDir.canonicalPath)
     }
@@ -68,7 +68,7 @@ class WooPosPINAttemptStorageTest {
         check(directory.setWritable(false))
         try {
             // THEN
-            assertThatThrownBy { storage.write(1, WooPosPINAttemptState()) }.isInstanceOf(Exception::class.java)
+            assertThatThrownBy { storage.write(1, WooPosPINAttemptState.NO_FAILURES) }.isInstanceOf(Exception::class.java)
             assertThat(storage.read(1)).isEqualTo(state)
         } finally {
             check(directory.setWritable(true))
@@ -99,7 +99,7 @@ class WooPosPINAttemptStorageTest {
         storage.clearAll()
 
         // THEN
-        assertThat(storage.read(1)).isEqualTo(WooPosPINAttemptState())
-        assertThat(storage.read(2)).isEqualTo(WooPosPINAttemptState())
+        assertThat(storage.read(1)).isEqualTo(WooPosPINAttemptState.NO_FAILURES)
+        assertThat(storage.read(2)).isEqualTo(WooPosPINAttemptState.NO_FAILURES)
     }
 }
