@@ -204,7 +204,6 @@ class WooPosLocalRateLimiterTest {
         val clockFailure = WooPosLocalRateLimiter(
             fixture.store,
             WooPosPINAuthenticator(
-                fixture.store,
                 coroutineRule.testDispatchers
             ),
             fixture.storage,

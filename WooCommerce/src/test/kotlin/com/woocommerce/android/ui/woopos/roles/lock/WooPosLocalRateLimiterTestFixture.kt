@@ -64,7 +64,7 @@ internal class WooPosLocalRateLimiterTestFixture(private val dispatchers: Corout
     }
     fun access() = WooPosLocalRateLimiter(
         store,
-        WooPosPINAuthenticator(store, dispatchers),
+        WooPosPINAuthenticator(dispatchers),
         storage,
         clock,
         recovery,

@@ -41,7 +41,7 @@ class WooPosPendingPINRecoveryTest {
         }
         val access = WooPosLocalRateLimiter(
             fixture.store,
-            WooPosPINAuthenticator(fixture.store, coroutineRule.testDispatchers),
+            WooPosPINAuthenticator(coroutineRule.testDispatchers),
             storage,
             clock,
             WooPosPendingPINRecovery(),
