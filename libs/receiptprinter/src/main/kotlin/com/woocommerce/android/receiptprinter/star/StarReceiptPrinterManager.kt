@@ -22,6 +22,7 @@ import com.woocommerce.android.receiptprinter.ReceiptPrinterDiscoveryEvent
 import com.woocommerce.android.receiptprinter.ReceiptPrinterError
 import com.woocommerce.android.receiptprinter.ReceiptPrinterManager
 import com.woocommerce.android.receiptprinter.ReceiptPrinterResult
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
@@ -47,9 +48,13 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
-internal class StarReceiptPrinterManager @Inject constructor(
+internal class StarReceiptPrinterManager(
     private val starIO10: StarIO10Wrapper,
+    connectionLossDispatcher: CoroutineDispatcher,
 ) : ReceiptPrinterManager {
+    @Inject
+    constructor(starIO10: StarIO10Wrapper) : this(starIO10, Dispatchers.Default)
+
     private val _connectionStatus =
         MutableStateFlow<ReceiptPrinterConnectionStatus>(ReceiptPrinterConnectionStatus.Disconnected)
     override val connectionStatus: StateFlow<ReceiptPrinterConnectionStatus> = _connectionStatus.asStateFlow()
@@ -60,9 +65,9 @@ internal class StarReceiptPrinterManager @Inject constructor(
 
     private val connectionMutex = Mutex()
     private val attemptLock = Any()
-    private var latestAttempt: Any? = null
+    private var latestAttempt: Attempt? = null
     private var openConnection: Connection? = null
-    private val connectionLossScope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
+    private val connectionLossScope = CoroutineScope(SupervisorJob() + connectionLossDispatcher)
 
     init {
         starIO10.disableDiagnosticsUpload()
@@ -109,7 +114,9 @@ internal class StarReceiptPrinterManager @Inject constructor(
                 } else {
                     closeOpenPrinter()
                     finishAttempt(attempt, ReceiptPrinterConnectionStatus.Disconnected)
-                    ReceiptPrinterResult.Failure(error ?: ReceiptPrinterError.PrinterNotConnected)
+                    ReceiptPrinterResult.Failure(
+                        error ?: attempt.lostConnection ?: ReceiptPrinterError.PrinterNotConnected
+                    )
                 }
             }
         }
@@ -117,25 +124,38 @@ internal class StarReceiptPrinterManager @Inject constructor(
         return result
     }
 
-    override suspend fun disconnect() = disconnect(lostConnectAttempt = null)
+    override suspend fun disconnect() {
+        val attempt = synchronized(attemptLock) {
+            if (_connectionStatus.value == ReceiptPrinterConnectionStatus.Disconnected) return
+            startAttempt(ReceiptPrinterConnectionStatus.Disconnecting)
+        }
+        closeAsLatest(attempt)
+    }
 
     override suspend fun printReceipt(text: String): ReceiptPrinterResult {
         val (connection, error) = connectionMutex.withLock {
-            val connection = openConnection?.takeIf { isLatest(it.attempt) }
+            val connection = openConnection
                 ?: return ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotConnected)
             val error = print(connection.printer, text) ?: return ReceiptPrinterResult.Success
             connection to error
         }
-        if (error is ReceiptPrinterError.ConnectionLost) disconnect(connection.attempt)
+        if (error is ReceiptPrinterError.ConnectionLost) disconnectLost(connection.attempt, error)
+        currentCoroutineContext().ensureActive()
         return ReceiptPrinterResult.Failure(error)
     }
 
-    private suspend fun disconnect(lostConnectAttempt: Any?) {
+    private suspend fun disconnectLost(connectAttempt: Attempt, lostConnection: ReceiptPrinterError.ConnectionLost) {
         val attempt = synchronized(attemptLock) {
-            if (_connectionStatus.value == ReceiptPrinterConnectionStatus.Disconnected) return
-            if (lostConnectAttempt != null && latestAttempt !== lostConnectAttempt) return
+            val isCurrent = latestAttempt === connectAttempt &&
+                _connectionStatus.value != ReceiptPrinterConnectionStatus.Disconnected
+            if (!isCurrent) return
+            connectAttempt.lostConnection = lostConnection
             startAttempt(ReceiptPrinterConnectionStatus.Disconnecting)
         }
+        closeAsLatest(attempt)
+    }
+
+    private suspend fun closeAsLatest(attempt: Attempt) {
         withContext(NonCancellable) {
             connectionMutex.withLock {
                 if (isLatest(attempt)) {
@@ -146,26 +166,26 @@ internal class StarReceiptPrinterManager @Inject constructor(
         }
     }
 
-    private fun startAttempt(status: ReceiptPrinterConnectionStatus): Any = synchronized(attemptLock) {
-        Any().also {
+    private fun startAttempt(status: ReceiptPrinterConnectionStatus): Attempt = synchronized(attemptLock) {
+        Attempt().also {
             latestAttempt = it
             _connectionStatus.value = status
         }
     }
 
-    private fun isLatest(attempt: Any): Boolean = synchronized(attemptLock) { latestAttempt === attempt }
+    private fun isLatest(attempt: Attempt): Boolean = synchronized(attemptLock) { latestAttempt === attempt }
 
-    private fun finishAttempt(attempt: Any, status: ReceiptPrinterConnectionStatus): Boolean =
+    private fun finishAttempt(attempt: Attempt, status: ReceiptPrinterConnectionStatus): Boolean =
         synchronized(attemptLock) {
             (latestAttempt === attempt).also { isLatest -> if (isLatest) _connectionStatus.value = status }
         }
 
-    private suspend fun open(printer: StarPrinter, attempt: Any): ReceiptPrinterError? =
+    private suspend fun open(printer: StarPrinter, attempt: Attempt): ReceiptPrinterError? =
         try {
             printer.printerDelegate = object : PrinterDelegate() {
                 override fun onCommunicationError(e: StarIO10Exception) {
-                    if (e.toPrintError() !is ReceiptPrinterError.ConnectionLost) return
-                    connectionLossScope.launch { disconnect(attempt) }
+                    if (!e.isConnectionLost()) return
+                    connectionLossScope.launch { disconnectLost(attempt, ReceiptPrinterError.ConnectionLost(e)) }
                 }
             }
             printer.openAsync().await()
@@ -178,23 +198,29 @@ internal class StarReceiptPrinterManager @Inject constructor(
         }
 
     private suspend fun closeOpenPrinter() {
+        val printer = openConnection?.printer ?: return
+        openConnection = null
         try {
-            openConnection?.printer?.closeAsync()?.await()
-            openConnection = null
+            printer.closeAsync().await()
         } catch (@Suppress("TooGenericExceptionCaught") expected: Exception) {
             return
         }
     }
 
+    // The SDK keeps printing after a cancellation, so the print always runs to the end before the lock is released.
     private suspend fun print(printer: StarPrinter, text: String): ReceiptPrinterError? =
-        try {
-            val content = PrinterBuilder().actionPrintText(text).actionFeedLine(2).actionCut(CutType.Partial)
-            val command = StarXpandCommandBuilder().addDocument(DocumentBuilder().addPrinter(content)).getCommands()
-            printer.printAsync(command).await()
-            null
-        } catch (@Suppress("TooGenericExceptionCaught") cause: Exception) {
-            currentCoroutineContext().ensureActive()
-            cause.toPrintError()
+        withContext(NonCancellable) {
+            try {
+                val content = PrinterBuilder()
+                    .actionPrintText(text)
+                    .actionFeedLine(FEED_LINES_BEFORE_CUT)
+                    .actionCut(CutType.Partial)
+                val document = DocumentBuilder().addPrinter(content)
+                printer.printAsync(StarXpandCommandBuilder().addDocument(document).getCommands()).await()
+                null
+            } catch (@Suppress("TooGenericExceptionCaught") cause: Exception) {
+                cause.toPrintError()
+            }
         }
 
     private fun bluetoothInterfaceTypes(): List<InterfaceType> =
@@ -204,7 +230,12 @@ internal class StarReceiptPrinterManager @Inject constructor(
             listOf(InterfaceType.Bluetooth)
         }
 
-    private class Connection(val printer: StarPrinter, val attempt: Any)
+    private class Attempt {
+        @Volatile
+        var lostConnection: ReceiptPrinterError.ConnectionLost? = null
+    }
+
+    private class Connection(val printer: StarPrinter, val attempt: Attempt)
 
     private class DiscoverySession(
         private val starIO10: StarIO10Wrapper,
@@ -269,23 +300,24 @@ internal class StarReceiptPrinterManager @Inject constructor(
     private companion object {
         const val DISCOVERY_TIME_MS = 30_000
         const val DISCOVERY_TIMEOUT_MS = DISCOVERY_TIME_MS + 5_000L
+        const val FEED_LINES_BEFORE_CUT = 2
     }
 }
 
 private class DiscoveryFailedException : Exception()
 
-private fun Exception.toPrintError(): ReceiptPrinterError = when (this) {
-    is StarIO10UnprintableException -> when {
-        status?.coverOpen == true -> ReceiptPrinterError.CoverOpen
-        status?.paperEmpty == true -> ReceiptPrinterError.PaperEmpty
-        else -> ReceiptPrinterError.PrintFailed(this)
-    }
-    is StarIO10CommunicationException,
-    is StarIO10IllegalHostDeviceStateException,
-    is StarIO10NotFoundException,
-    is StarIO10InvalidOperationException -> ReceiptPrinterError.ConnectionLost(this)
+private fun Exception.toPrintError(): ReceiptPrinterError = when {
+    this is StarIO10UnprintableException && status?.coverOpen == true -> ReceiptPrinterError.CoverOpen
+    this is StarIO10UnprintableException && status?.paperEmpty == true -> ReceiptPrinterError.PaperEmpty
+    isConnectionLost() -> ReceiptPrinterError.ConnectionLost(this)
     else -> ReceiptPrinterError.PrintFailed(this)
 }
+
+private fun Exception.isConnectionLost(): Boolean =
+    this is StarIO10CommunicationException ||
+        this is StarIO10IllegalHostDeviceStateException ||
+        this is StarIO10NotFoundException ||
+        this is StarIO10InvalidOperationException
 
 private fun StarPrinter.toReceiptPrinterDevice(): ReceiptPrinterDevice {
     val identifier = connectionSettings.identifier

@@ -24,9 +24,6 @@ interface ReceiptPrinterManager {
      */
     suspend fun disconnect()
 
-    /**
-     * Prints [text] as it is, so it must arrive already laid out for the paper width. Waits for a print, [connect]
-     * or [disconnect] still in flight. A [ReceiptPrinterError.ConnectionLost] failure also disconnects the printer.
-     */
+    /** Prints [text] as it is, so it must arrive already laid out for the paper width. */
     suspend fun printReceipt(text: String): ReceiptPrinterResult
 }

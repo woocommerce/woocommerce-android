@@ -33,6 +33,7 @@ import com.woocommerce.android.receiptprinter.ReceiptPrinterResult
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Runnable
@@ -71,7 +72,7 @@ class StarReceiptPrinterManagerTest {
         on { createDiscoveryManager(any()) }.doReturn(discoveryManager, newerDiscoveryManager)
     }
 
-    private val sut = StarReceiptPrinterManager(starIO10)
+    private val sut = StarReceiptPrinterManager(starIO10, Dispatchers.Unconfined)
 
     @Test
     fun `when the manager is created, then the SDK diagnostics upload is disabled`() {
@@ -947,12 +948,10 @@ class StarReceiptPrinterManagerTest {
         }
 
     @Test
-    fun `given closing the printer failed, when it is connected again, then the close is retried before the printer is reopened`() =
+    fun `given closing the printer failed, when it is connected again, then it is opened without another close`() =
         runTest {
             // GIVEN
-            val printer = starPrinter()
-            whenever(printer.closeAsync())
-                .doReturn(failed(StarIO10CommunicationException("close failed")), CompletableDeferred(Unit))
+            val printer = starPrinter(close = failed(StarIO10CommunicationException("close failed")))
             discover(printer)
             sut.connect(DEVICE)
             sut.disconnect()
@@ -961,11 +960,8 @@ class StarReceiptPrinterManagerTest {
             val result = sut.connect(DEVICE)
 
             // THEN
-            inOrder(printer) {
-                verify(printer).openAsync()
-                verify(printer, times(2)).closeAsync()
-                verify(printer).openAsync()
-            }
+            verify(printer).closeAsync()
+            verify(printer, times(2)).openAsync()
             assertThat(result).isEqualTo(ReceiptPrinterResult.Success)
             assertThat(sut.connectionStatus.value).isEqualTo(Connected(DEVICE))
         }
@@ -1034,6 +1030,27 @@ class StarReceiptPrinterManagerTest {
             val result = sut.printReceipt(RECEIPT)
 
             // THEN
+            assertThat(result).isEqualTo(ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotConnected))
+            verify(printer, never()).printAsync(any())
+        }
+
+    @Test
+    fun `given a cancelled connect whose printer failed to close, when printReceipt is called, then it fails with printer not connected and nothing is sent`() =
+        runTest {
+            // GIVEN
+            val open = CompletableDeferred<Unit>()
+            val printer = starPrinter(open = open, close = failed(StarIO10CommunicationException("close failed")))
+            discover(printer)
+            val connecting = connectAsync(DEVICE)
+            connecting.cancel()
+            open.complete(Unit)
+            runCurrent()
+
+            // WHEN
+            val result = sut.printReceipt(RECEIPT)
+
+            // THEN
+            assertThat(sut.connectionStatus.value).isEqualTo(Disconnected)
             assertThat(result).isEqualTo(ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotConnected))
             verify(printer, never()).printAsync(any())
         }
@@ -1241,11 +1258,34 @@ class StarReceiptPrinterManagerTest {
         }
 
     @Test
-    fun `given a print in flight, when its caller is cancelled, then it returns no result and the next print is sent`() =
+    fun `given a print in flight, when its caller is cancelled, then the next print waits until the first ends`() =
         runTest {
             // GIVEN
+            val firstPrint = CompletableDeferred<Unit>()
             val printer = starPrinter()
-            whenever(printer.printAsync(any())).doReturn(CompletableDeferred(), CompletableDeferred(Unit))
+            whenever(printer.printAsync(any())).doReturn(firstPrint, CompletableDeferred(Unit))
+            discover(printer)
+            sut.connect(DEVICE)
+            val cancelled = printAsync()
+
+            // WHEN
+            cancelled.cancel()
+            val result = printAsync()
+            verify(printer).printAsync(any())
+            firstPrint.complete(Unit)
+            runCurrent()
+
+            // THEN
+            verify(printer, times(2)).printAsync(any())
+            assertThat(result.getCompleted()).isEqualTo(ReceiptPrinterResult.Success)
+        }
+
+    @Test
+    fun `given a print in flight, when its caller is cancelled and the print loses the connection, then the printer is disconnected and no result is returned`() =
+        runTest {
+            // GIVEN
+            val print = CompletableDeferred<Unit>()
+            val printer = starPrinter(print = print)
             discover(printer)
             sut.connect(DEVICE)
             var cancelledPrintReturned = false
@@ -1257,13 +1297,13 @@ class StarReceiptPrinterManagerTest {
 
             // WHEN
             cancelled.cancel()
+            print.completeExceptionally(StarIO10CommunicationException("communication"))
             runCurrent()
-            val result = sut.printReceipt(RECEIPT)
 
             // THEN
             assertThat(cancelledPrintReturned).isFalse()
-            assertThat(result).isEqualTo(ReceiptPrinterResult.Success)
-            assertThat(sut.connectionStatus.value).isEqualTo(Connected(DEVICE))
+            verify(printer).closeAsync()
+            assertThat(sut.connectionStatus.value).isEqualTo(Disconnected)
         }
 
     @Test
@@ -1340,7 +1380,7 @@ class StarReceiptPrinterManagerTest {
         }
 
     @Test
-    fun `given a connect in flight, when its printer reports a lost connection and then opens, then the connect fails and never reports connected`() =
+    fun `given a connect in flight, when its printer reports a lost connection and then opens, then the connect fails with connection lost and never reports connected`() =
         runTest {
             // GIVEN
             val open = CompletableDeferred<Unit>()
@@ -1355,8 +1395,9 @@ class StarReceiptPrinterManagerTest {
             runCurrent()
 
             // THEN
-            assertThat(result.getCompleted())
-                .isEqualTo(ReceiptPrinterResult.Failure(ReceiptPrinterError.PrinterNotConnected))
+            assertThat(result.getCompleted()).isInstanceOfSatisfying(ReceiptPrinterResult.Failure::class.java) {
+                assertThat(it.error).isInstanceOf(ReceiptPrinterError.ConnectionLost::class.java)
+            }
             verify(printer).closeAsync()
             assertThat(statuses).containsExactly(Disconnected, Connecting(DEVICE), Disconnecting, Disconnected)
         }
