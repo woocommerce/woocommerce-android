@@ -104,7 +104,8 @@ class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
             receiptPrinterFacade.discover().collect { event ->
                 when (event) {
                     is ReceiptPrinterDiscoveryEvent.PrinterFound -> onPrinterFound(event.device)
-                    is ReceiptPrinterDiscoveryEvent.Failed -> _state.value = DiscoveryFailed
+                    is ReceiptPrinterDiscoveryEvent.Failed ->
+                        if (_state.value is Searching) _state.value = DiscoveryFailed
                 }
             }
             ensureActive()

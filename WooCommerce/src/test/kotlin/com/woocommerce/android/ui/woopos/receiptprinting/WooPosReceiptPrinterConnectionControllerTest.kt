@@ -362,6 +362,22 @@ class WooPosReceiptPrinterConnectionControllerTest {
     }
 
     @Test
+    fun `given a printer was found, when the search fails, then the printer stays offered`() = runTest {
+        // GIVEN
+        val sut = createController()
+        sut.startSetup()
+        find(PRINTER)
+
+        // WHEN
+        discoveryEvents.trySend(ReceiptPrinterDiscoveryEvent.Failed(ReceiptPrinterError.DiscoveryFailure))
+        discoveryEvents.close()
+        runCurrent()
+
+        // THEN
+        assertThat(sut.state.value).isEqualTo(FoundOne(PRINTER))
+    }
+
+    @Test
     fun `given the search is still running, when keeping searching, then the offered printer is skipped without a new search`() =
         runTest {
             // GIVEN
