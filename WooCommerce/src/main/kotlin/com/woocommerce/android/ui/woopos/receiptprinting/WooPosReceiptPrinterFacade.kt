@@ -6,7 +6,6 @@ import com.woocommerce.android.receiptprinter.ReceiptPrinterDiscoveryEvent
 import com.woocommerce.android.receiptprinter.ReceiptPrinterError
 import com.woocommerce.android.receiptprinter.ReceiptPrinterManager
 import com.woocommerce.android.receiptprinter.ReceiptPrinterResult
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
@@ -29,15 +28,8 @@ class WooPosReceiptPrinterFacade @Inject constructor(
     }
 
     suspend fun printReceipt(orderId: Long): ReceiptPrinterResult {
-        val text = try {
-            val receipt = buildThermalReceipt(orderId)
-                ?: return ReceiptPrinterResult.Failure(ReceiptPrinterError.PrintFailed())
-            thermalReceiptRenderer.render(receipt, buildThermalReceipt.labels())
-        } catch (cancellation: CancellationException) {
-            throw cancellation
-        } catch (@Suppress("TooGenericExceptionCaught") cause: Exception) {
-            return ReceiptPrinterResult.Failure(ReceiptPrinterError.PrintFailed(cause))
-        }
-        return receiptPrinterManager.printReceipt(text)
+        val receipt = buildThermalReceipt(orderId)
+            ?: return ReceiptPrinterResult.Failure(ReceiptPrinterError.PrintFailed())
+        return receiptPrinterManager.printReceipt(thermalReceiptRenderer.render(receipt))
     }
 }

@@ -6,10 +6,9 @@ import com.woocommerce.android.receiptprinter.ReceiptPrinterDiscoveryEvent
 import com.woocommerce.android.receiptprinter.ReceiptPrinterError
 import com.woocommerce.android.receiptprinter.ReceiptPrinterManager
 import com.woocommerce.android.receiptprinter.ReceiptPrinterResult
-import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.Labels
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.LabeledText
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.Row
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -20,7 +19,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -42,7 +40,6 @@ class WooPosReceiptPrinterFacadeTest {
     }
     private val buildThermalReceipt: WooPosBuildThermalReceipt = mock {
         on { invoke(ORDER_ID) } doReturn RECEIPT
-        on { labels() } doReturn LABELS
     }
 
     private val sut = WooPosReceiptPrinterFacade(
@@ -119,44 +116,15 @@ class WooPosReceiptPrinterFacadeTest {
         verify(receiptPrinterManager, never()).printReceipt(any())
     }
 
-    @Test
-    fun `given building the receipt throws, when printReceipt is called, then it fails with the cause`() = runTest {
-        // GIVEN
-        val cause = IllegalStateException("No site selected")
-        whenever(buildThermalReceipt(ORDER_ID)).doThrow(cause)
-
-        // WHEN
-        val result = sut.printReceipt(ORDER_ID)
-
-        // THEN
-        assertThat(result).isEqualTo(ReceiptPrinterResult.Failure(ReceiptPrinterError.PrintFailed(cause)))
-        verify(receiptPrinterManager, never()).printReceipt(any())
-    }
-
-    @Test
-    fun `given the caller is cancelled while building, when printReceipt is called, then the cancellation propagates`() =
-        runTest {
-            // GIVEN
-            val cancellation = CancellationException("Cancelled")
-            whenever(buildThermalReceipt(ORDER_ID)).doThrow(cancellation)
-
-            // WHEN
-            val result = runCatching { sut.printReceipt(ORDER_ID) }
-
-            // THEN
-            assertThat(result.exceptionOrNull()).isSameAs(cancellation)
-        }
-
     private companion object {
         const val ORDER_ID = 1042L
         val DEVICE = ReceiptPrinterDevice(id = "BT:00:11:22", name = "mC-Print3")
-        val LABELS = Labels(datePaid = "Date Paid", paymentMethod = "Payment Method", notes = "Notes")
         val RECEIPT = WooPosThermalReceipt(
             storeName = "Everyday Pay",
             storeAddress = null,
             storePhone = null,
             storeEmail = null,
-            datePaid = "Nov 12, 2026, 2:30 PM",
+            datePaid = LabeledText(label = "Date Paid", text = "Nov 12, 2026, 2:30 PM"),
             orderNumber = "Order #1042",
             paymentMethod = null,
             lineItems = listOf(Row(label = "Coffee Mug x1", amount = "$12.00")),
@@ -164,7 +132,7 @@ class WooPosReceiptPrinterFacadeTest {
                 Row(label = "Subtotal", amount = "$12.00"),
                 Row(label = "Amount Paid", amount = "$12.00"),
             ),
-            orderNote = "Thanks!",
+            orderNote = LabeledText(label = "Notes", text = "Thanks!"),
             refundPolicy = null,
         )
         val RECEIPT_TEXT = """

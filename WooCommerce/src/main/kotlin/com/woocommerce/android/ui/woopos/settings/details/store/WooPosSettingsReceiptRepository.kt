@@ -5,6 +5,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
@@ -18,16 +19,17 @@ class WooPosSettingsReceiptRepository @Inject constructor(
 ) {
     private val cachedReceiptInfo = ConcurrentHashMap<Int, WooPosSettingsStoreState.ReceiptInfo>()
 
-    fun getCachedReceiptInfo(): WooPosSettingsStoreState.ReceiptInfo? = cachedReceiptInfo[selectedSite.get().id]
+    fun getCachedReceiptInfo(site: SiteModel): WooPosSettingsStoreState.ReceiptInfo? = cachedReceiptInfo[site.id]
 
-    suspend fun getReceiptInfo(): WooPosReceiptDataResult =
+    suspend fun getReceiptInfo(): WooPosReceiptDataResult = getReceiptInfo(selectedSite.get())
+
+    suspend fun getReceiptInfo(site: SiteModel): WooPosReceiptDataResult =
         withContext(Dispatchers.IO) {
-            if (!isWooCommerceVersionAtLeast10()) {
+            if (!isWooCommerceVersionAtLeast10(site)) {
                 return@withContext WooPosReceiptDataResult.NotAvailable
             }
 
             try {
-                val site = selectedSite.get()
                 val response = wooCommerceStore.fetchPosSettings(site)
 
                 if (response.isError) {
@@ -58,8 +60,8 @@ class WooPosSettingsReceiptRepository @Inject constructor(
             .replace(Regex(",\\s*,"), ",")
     }
 
-    private fun isWooCommerceVersionAtLeast10(): Boolean {
-        val wooCoreVersion = getWooCoreVersion() ?: return false
+    private fun isWooCommerceVersionAtLeast10(site: SiteModel): Boolean {
+        val wooCoreVersion = getWooCoreVersion(site) ?: return false
         return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_RECEIPTS) >= 0
     }
 
