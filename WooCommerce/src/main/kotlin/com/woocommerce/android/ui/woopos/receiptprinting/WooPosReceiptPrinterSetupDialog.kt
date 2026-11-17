@@ -162,7 +162,9 @@ private fun WooPosReceiptPrinterSetupDialogContent(
             },
             contentKey = { it::class },
             label = "ReceiptPrinterSetupStateTransition",
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
         ) { currentState ->
             when (currentState) {
                 Idle,
@@ -350,9 +352,7 @@ private fun MultiplePrintersFoundContent(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
+        modifier = Modifier.fillMaxWidth()
     ) {
         WooPosText(
             text = stringResource(R.string.woopos_receipt_printer_setup_multiple_found_title),
