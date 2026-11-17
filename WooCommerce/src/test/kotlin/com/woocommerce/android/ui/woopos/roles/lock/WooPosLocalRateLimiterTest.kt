@@ -24,11 +24,11 @@ class WooPosLocalRateLimiterTest {
     fun `when failure thresholds are reached, then waits escalate and never permanently lock`() = runTest {
         // GIVEN
         val fixture = fixture()
-        val access = fixture.access()
+        val rateLimiter = fixture.rateLimiter()
 
         // WHEN
         (1..30).forEach { count ->
-            val result = access.authenticate(1, "0000")
+            val result = rateLimiter.authenticate(1, "0000")
             val expected = when (count) {
                 5 -> 30L
                 10 -> 300L
@@ -40,7 +40,8 @@ class WooPosLocalRateLimiterTest {
             // THEN
             assertThat(result).isEqualTo(WooPosLocalRateLimiterResult.Incorrect(expected))
             if (expected > 0) {
-                assertThat(access.authenticate(1, "1234")).isEqualTo(WooPosLocalRateLimiterResult.Waiting(expected))
+                assertThat(rateLimiter.authenticate(1, "1234"))
+                    .isEqualTo(WooPosLocalRateLimiterResult.Waiting(expected))
                 fixture.elapsed += expected * 1000
             }
         }
@@ -50,12 +51,12 @@ class WooPosLocalRateLimiterTest {
     fun `given four failures, when Cashier unlocks then approval fails, then shared wait starts`() = runTest {
         // GIVEN
         val fixture = fixture()
-        val access = fixture.access()
-        repeat(4) { access.authenticate(1, "0000") }
+        val rateLimiter = fixture.rateLimiter()
+        repeat(4) { rateLimiter.authenticate(1, "0000") }
 
         // WHEN
-        val cashier = access.authenticate(1, "5678")
-        val approval = access.authenticate(1, "0000", WooPosCapability.ISSUE_REFUNDS)
+        val cashier = rateLimiter.authenticate(1, "5678")
+        val approval = rateLimiter.authenticate(1, "0000", WooPosCapability.ISSUE_REFUNDS)
 
         // THEN
         assertThat(cashier).isEqualTo(WooPosLocalRateLimiterResult.Authenticated(fixture.cashier))
@@ -67,16 +68,16 @@ class WooPosLocalRateLimiterTest {
     fun `given previous failures, when Admin unlocks, then attempt budget resets`() = runTest {
         // GIVEN
         val fixture = fixture()
-        val access = fixture.access()
-        repeat(4) { access.authenticate(1, "0000") }
+        val rateLimiter = fixture.rateLimiter()
+        repeat(4) { rateLimiter.authenticate(1, "0000") }
 
         // WHEN
-        val result = access.authenticate(1, "1234")
+        val result = rateLimiter.authenticate(1, "1234")
 
         // THEN
         assertThat(result).isEqualTo(WooPosLocalRateLimiterResult.Authenticated(fixture.admin))
         assertThat(fixture.records.getValue(1).failures).isZero()
-        assertThat(access.authenticate(1, "0000")).isEqualTo(WooPosLocalRateLimiterResult.Incorrect(0))
+        assertThat(rateLimiter.authenticate(1, "0000")).isEqualTo(WooPosLocalRateLimiterResult.Incorrect(0))
     }
 
     @Test
@@ -85,7 +86,7 @@ class WooPosLocalRateLimiterTest {
         val fixture = fixture()
 
         // WHEN
-        val result = fixture.access().authenticate(1, "5678", WooPosCapability.ISSUE_REFUNDS)
+        val result = fixture.rateLimiter().authenticate(1, "5678", WooPosCapability.ISSUE_REFUNDS)
 
         // THEN
         assertThat(result).isEqualTo(WooPosLocalRateLimiterResult.Incorrect(0))
@@ -96,12 +97,12 @@ class WooPosLocalRateLimiterTest {
     fun `given a wait, when service restarts during the same boot, then remaining monotonic wait survives`() = runTest {
         // GIVEN
         val fixture = fixture()
-        val access = fixture.access()
-        repeat(5) { access.authenticate(1, "0000") }
+        val rateLimiter = fixture.rateLimiter()
+        repeat(5) { rateLimiter.authenticate(1, "0000") }
         fixture.elapsed += 12_001
 
         // WHEN
-        val restarted = fixture.access()
+        val restarted = fixture.rateLimiter()
 
         // THEN
         assertThat(restarted.remainingSeconds(1).getOrThrow()).isEqualTo(18)
@@ -115,17 +116,17 @@ class WooPosLocalRateLimiterTest {
         // GIVEN
         listOf(true, false).forEach { newBoot ->
             val fixture = fixture()
-            val access = fixture.access()
-            repeat(5) { access.authenticate(1, "0000") }
+            val rateLimiter = fixture.rateLimiter()
+            repeat(5) { rateLimiter.authenticate(1, "0000") }
             fixture.elapsed = 1
             if (newBoot) fixture.boot++
 
             // WHEN
-            assertThat(fixture.access().remainingSeconds(1).getOrThrow()).isEqualTo(30)
+            assertThat(fixture.rateLimiter().remainingSeconds(1).getOrThrow()).isEqualTo(30)
             fixture.elapsed += 1000
 
             // THEN
-            assertThat(fixture.access().remainingSeconds(1).getOrThrow()).isEqualTo(29)
+            assertThat(fixture.rateLimiter().remainingSeconds(1).getOrThrow()).isEqualTo(29)
             assertThat(fixture.records.getValue(1).lastFailureMillis).isEqualTo(1)
         }
     }
@@ -134,15 +135,15 @@ class WooPosLocalRateLimiterTest {
     fun `given failures, when 24 hours pass without a wrong PIN, then quiet budget resets at the boundary`() = runTest {
         // GIVEN
         val fixture = fixture()
-        val access = fixture.access()
-        access.authenticate(1, "0000")
+        val rateLimiter = fixture.rateLimiter()
+        rateLimiter.authenticate(1, "0000")
         fixture.elapsed += WooPosPINAttemptState.QUIET_PERIOD - 1
-        access.remainingSeconds(1).getOrThrow()
+        rateLimiter.remainingSeconds(1).getOrThrow()
         assertThat(fixture.records.getValue(1).failures).isEqualTo(1)
 
         // WHEN
         fixture.elapsed++
-        access.remainingSeconds(1).getOrThrow()
+        rateLimiter.remainingSeconds(1).getOrThrow()
 
         // THEN
         assertThat(fixture.records.getValue(1).failures).isZero()
@@ -152,14 +153,14 @@ class WooPosLocalRateLimiterTest {
     fun `given old failures, when another wrong PIN is entered, then the quiet period starts again`() = runTest {
         // GIVEN
         val fixture = fixture()
-        val access = fixture.access()
-        access.authenticate(1, "0000")
+        val rateLimiter = fixture.rateLimiter()
+        rateLimiter.authenticate(1, "0000")
         fixture.elapsed += WooPosPINAttemptState.QUIET_PERIOD - 1
-        access.authenticate(1, "0000")
+        rateLimiter.authenticate(1, "0000")
 
         // WHEN
         fixture.elapsed++
-        access.remainingSeconds(1).getOrThrow()
+        rateLimiter.remainingSeconds(1).getOrThrow()
 
         // THEN
         assertThat(fixture.records.getValue(1).failures).isEqualTo(2)
@@ -169,33 +170,33 @@ class WooPosLocalRateLimiterTest {
     fun `given source failure or empty credentials, when authenticating, then no wrong guess is charged`() = runTest {
         // GIVEN
         val fixture = fixture()
-        val access = fixture.access()
+        val rateLimiter = fixture.rateLimiter()
         fixture.pins = Result.failure(IllegalStateException())
 
         // THEN
-        assertThat(access.authenticate(1, "0000")).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
-        assertThat(access.protection(1).isFailure).isTrue()
+        assertThat(rateLimiter.authenticate(1, "0000")).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
+        assertThat(rateLimiter.isProtectionEnabled(1).isFailure).isTrue()
         assertThat(fixture.records).isEmpty()
 
         // WHEN
         fixture.pins = Result.success(emptyMap())
 
         // THEN
-        assertThat(access.authenticate(1, "0000")).isEqualTo(WooPosLocalRateLimiterResult.ProtectionOff)
-        assertThat(access.protection(1).getOrThrow()).isFalse()
+        assertThat(rateLimiter.authenticate(1, "0000")).isEqualTo(WooPosLocalRateLimiterResult.ProtectionOff)
+        assertThat(rateLimiter.isProtectionEnabled(1).getOrThrow()).isFalse()
         assertThat(fixture.records).isEmpty()
     }
 
     @Test
-    fun `given unreadable limiter or unavailable boot identity, when authenticating, then access fails closed`() = runTest {
+    fun `given unreadable limiter or unavailable boot identity, when authenticating, then rateLimiter fails closed`() = runTest {
         // GIVEN
         val fixture = fixture()
         fixture.readError = true
-        val access = fixture.access()
+        val rateLimiter = fixture.rateLimiter()
 
         // THEN
-        assertThat(access.authenticate(1, "1234")).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
-        assertThat(access.remainingSeconds(1).isFailure).isTrue()
+        assertThat(rateLimiter.authenticate(1, "1234")).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
+        assertThat(rateLimiter.remainingSeconds(1).isFailure).isTrue()
         fixture.readError = false
         val badClock = object : WooPosPINClock {
             override fun now(): WooPosPINTime = error("Unavailable boot identity")
@@ -203,12 +204,10 @@ class WooPosLocalRateLimiterTest {
         val clockFailure = WooPosLocalRateLimiter(
             fixture.store,
             WooPosPINAuthenticator(
-                fixture.store,
                 coroutineRule.testDispatchers
             ),
             fixture.storage,
             badClock,
-            fixture.recovery,
             coroutineRule.testDispatchers,
         )
         assertThat(clockFailure.authenticate(1, "1234")).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
@@ -222,20 +221,20 @@ class WooPosLocalRateLimiterTest {
         fixture.writeError = true
 
         // THEN
-        assertThat(fixture.access().authenticate(1, "1234")).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
-        assertThat(fixture.access().authenticate(1, "0000")).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
+        assertThat(fixture.rateLimiter().authenticate(1, "1234")).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
+        assertThat(fixture.rateLimiter().authenticate(1, "0000")).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
     }
 
     @Test
     fun `given concurrent unlock and approval guesses, when threshold reached, then later guesses wait`() = runTest {
         // GIVEN
         val fixture = fixture()
-        val access = fixture.access()
+        val rateLimiter = fixture.rateLimiter()
 
         // WHEN
         val gate = CompletableDeferred<Unit>()
         fixture.pinReadGate = gate
-        val requests = (1..8).map { async { access.authenticate(1, "0000", WooPosCapability.ISSUE_REFUNDS) } }
+        val requests = (1..8).map { async { rateLimiter.authenticate(1, "0000", WooPosCapability.ISSUE_REFUNDS) } }
         runCurrent()
         assertThat(fixture.pinReads).isEqualTo(1)
         gate.complete(Unit)
@@ -245,23 +244,6 @@ class WooPosLocalRateLimiterTest {
         assertThat(results.filterIsInstance<WooPosLocalRateLimiterResult.Incorrect>()).hasSize(5)
         assertThat(results.filterIsInstance<WooPosLocalRateLimiterResult.Waiting>()).hasSize(3)
         assertThat(fixture.records.getValue(1).failures).isEqualTo(5)
-    }
-
-    @Test
-    fun `given a wait, when recovery is unavailable then verified recovery succeeds, then only success resets`() = runTest {
-        // GIVEN
-        val fixture = fixture()
-        val access = fixture.access()
-        repeat(5) { access.authenticate(1, "0000") }
-
-        // WHEN
-        assertThat(access.recover(1)).isEqualTo(WooPosLocalRateLimiterResult.RecoveryUnavailable)
-        assertThat(fixture.records.getValue(1).failures).isEqualTo(5)
-        fixture.recoveryResult = Result.success(fixture.admin)
-
-        // THEN
-        assertThat(access.recover(1)).isEqualTo(WooPosLocalRateLimiterResult.Authenticated(fixture.admin))
-        assertThat(fixture.records.getValue(1).failures).isZero()
     }
 
     @Test
@@ -275,7 +257,7 @@ class WooPosLocalRateLimiterTest {
         }
 
         // WHEN
-        val result = fixture.access().authenticate(1, "1234")
+        val result = fixture.rateLimiter().authenticate(1, "1234")
 
         // THEN
         assertThat(result).isEqualTo(WooPosLocalRateLimiterResult.Authenticated(fixture.admin))
@@ -290,7 +272,7 @@ class WooPosLocalRateLimiterTest {
         fixture.onAttemptWrite = { state -> check(state.failures > 0) }
 
         // WHEN
-        val result = fixture.access().authenticate(1, "1234")
+        val result = fixture.rateLimiter().authenticate(1, "1234")
 
         // THEN
         assertThat(result).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
@@ -306,24 +288,55 @@ class WooPosLocalRateLimiterTest {
         val authenticator: WooPosPINAuthenticator = mock()
         whenever(authenticator.authenticate(fixture.pins.getOrThrow(), "1234"))
             .thenReturn(Result.failure(IllegalStateException()))
-        val access = WooPosLocalRateLimiter(
+        val rateLimiter = WooPosLocalRateLimiter(
             fixture.store,
             authenticator,
             fixture.storage,
             fixture.clock,
-            fixture.recovery,
             coroutineRule.testDispatchers,
         )
         val writes = mutableListOf<WooPosPINAttemptState>()
         fixture.onAttemptWrite = { writes.add(it) }
 
         // WHEN
-        val result = access.authenticate(1, "1234")
+        val result = rateLimiter.authenticate(1, "1234")
 
         // THEN
         assertThat(result).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
         assertThat(writes).containsExactly(previous.failed(WooPosPINTime(fixture.boot, fixture.elapsed)), previous)
         assertThat(fixture.records[1]).isEqualTo(previous)
+    }
+
+    @Test
+    fun `given saved failures, when verified recovery requests a reset, then the reset is durable`() = runTest {
+        // GIVEN
+        val fixture = fixture()
+        val rateLimiter = fixture.rateLimiter()
+        repeat(5) { rateLimiter.authenticate(1, "0000") }
+
+        // WHEN
+        val result = rateLimiter.resetAfterRecovery(1)
+
+        // THEN
+        assertThat(result.isSuccess).isTrue()
+        assertThat(fixture.records.getValue(1)).isEqualTo(WooPosPINAttemptState.NO_FAILURES)
+    }
+
+    @Test
+    fun `given reset write fails, when recovery requests a reset, then existing failures remain`() = runTest {
+        // GIVEN
+        val fixture = fixture()
+        val rateLimiter = fixture.rateLimiter()
+        rateLimiter.authenticate(1, "0000")
+        val previous = fixture.records.toMap()
+        fixture.writeError = true
+
+        // WHEN
+        val result = rateLimiter.resetAfterRecovery(1)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        assertThat(fixture.records).isEqualTo(previous)
     }
 
     private fun fixture() = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)

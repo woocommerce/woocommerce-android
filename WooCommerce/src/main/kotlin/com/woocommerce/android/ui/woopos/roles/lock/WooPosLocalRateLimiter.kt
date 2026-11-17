@@ -21,12 +21,12 @@ class WooPosLocalRateLimiter @Inject internal constructor(
     private val authenticator: WooPosPINAuthenticator,
     private val storage: WooPosPINAttemptStorage,
     private val clock: WooPosPINClock,
-    private val recovery: WooPosPINRecovery,
     private val dispatchers: CoroutineDispatchers,
 ) {
     private val mutex = Mutex()
 
-    suspend fun protection(localSiteId: Int): Result<Boolean> = store.getPINs(localSiteId).map { it.isNotEmpty() }
+    suspend fun isProtectionEnabled(localSiteId: Int): Result<Boolean> =
+        store.getPINs(localSiteId).map { it.isNotEmpty() }
 
     suspend fun remainingSeconds(localSiteId: Int): Result<Long> = operation {
         val (attempts, time) = load(localSiteId)
@@ -58,7 +58,7 @@ class WooPosLocalRateLimiter @Inject internal constructor(
             }
             else -> {
                 val next = if (role.hasCapability(WooPosCapability.MANAGE_STORE_SETTINGS)) {
-                    WooPosPINAttemptState()
+                    WooPosPINAttemptState.NO_FAILURES
                 } else {
                     attempts
                 }
@@ -68,12 +68,9 @@ class WooPosLocalRateLimiter @Inject internal constructor(
         }
     }.getOrDefault(WooPosLocalRateLimiterResult.Unavailable)
 
-    suspend fun recover(localSiteId: Int): WooPosLocalRateLimiterResult = operation {
-        val role = recovery.authenticate(localSiteId).getOrThrow()
-        check(role.hasCapability(WooPosCapability.MANAGE_STORE_SETTINGS))
-        storage.write(localSiteId, WooPosPINAttemptState())
-        WooPosLocalRateLimiterResult.Authenticated(role)
-    }.getOrDefault(WooPosLocalRateLimiterResult.RecoveryUnavailable)
+    internal suspend fun resetAfterRecovery(localSiteId: Int): Result<Unit> = operation {
+        storage.write(localSiteId, WooPosPINAttemptState.NO_FAILURES)
+    }
 
     suspend fun clearAllAttempts(): Result<Unit> = operation { storage.clearAll() }
 
@@ -113,5 +110,4 @@ sealed interface WooPosLocalRateLimiterResult {
     data class Waiting(val remainingSeconds: Long) : WooPosLocalRateLimiterResult
     data object ProtectionOff : WooPosLocalRateLimiterResult
     data object Unavailable : WooPosLocalRateLimiterResult
-    data object RecoveryUnavailable : WooPosLocalRateLimiterResult
 }

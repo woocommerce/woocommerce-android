@@ -14,6 +14,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.sitepicker.sitevisibility.VisibleWooSitesDataStore
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLocalRateLimiter
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosClearLocalPINData
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINError
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -94,8 +95,7 @@ class AccountRepositoryTest : BaseUnitTest() {
         registerDevice = registerDevice,
         posDataStore = posDataStore,
         analyticsTracker = analyticsTracker,
-        localPINStore = localPINStore,
-        rateLimiter = rateLimiter,
+        clearLocalPINData = WooPosClearLocalPINData(localPINStore, rateLimiter),
     )
 
     @Test

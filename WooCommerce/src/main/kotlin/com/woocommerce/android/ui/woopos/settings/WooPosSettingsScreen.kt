@@ -242,10 +242,7 @@ private fun SettingsDialogs(
         state = pinSetupState,
         isVisible = isPinSetupVisible,
         onUIEvent = pinSetup::onUIEvent,
-        onClose = {
-            pinSetup.reset()
-            onDismissDialog()
-        },
+        onClose = onDismissDialog,
     )
 
     WooPosScanningSetupDialog(

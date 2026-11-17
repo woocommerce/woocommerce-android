@@ -109,24 +109,24 @@ class WooPosPINIntegrationTest {
         assertThat(session.state.value.isLocked).isTrue()
 
         // WHEN
-        enter(session, WRONG_PIN)
+        session.unlock(WRONG_PIN)
         val previous = attempts.read(SITE_ID)
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
         assertThat(session.state.value.status).isEqualTo(Status.Incorrect)
-        assertThat(session.activeRole).isNull()
+        assertThat(session.state.value.activeRole).isNull()
         assertThat(previous.failures).isEqualTo(1)
-        enter(session, CASHIER_PIN)
+        session.unlock(CASHIER_PIN)
         assertThat(session.state.value.isLocked).isFalse()
-        assertThat(session.activeRole).isEqualTo(WooPosLocalRole.CASHIER)
+        assertThat(session.state.value.activeRole).isEqualTo(WooPosLocalRole.CASHIER)
         assertThat(attempts.read(SITE_ID)).isEqualTo(previous)
         session.lock()
-        assertThat(session.activeRole).isNull()
-        enter(session, ADMIN_PIN)
+        assertThat(session.state.value.activeRole).isNull()
+        session.unlock(ADMIN_PIN)
         assertThat(session.state.value.isLocked).isFalse()
-        assertThat(session.activeRole).isEqualTo(WooPosLocalRole.ADMIN)
-        assertThat(attempts.read(SITE_ID)).isEqualTo(WooPosPINAttemptState())
+        assertThat(session.state.value.activeRole).isEqualTo(WooPosLocalRole.ADMIN)
+        assertThat(attempts.read(SITE_ID)).isEqualTo(WooPosPINAttemptState.NO_FAILURES)
     }
 
     @Test
@@ -135,7 +135,7 @@ class WooPosPINIntegrationTest {
         val limiter = createLimiter()
         val session = createSession(limiter)
         session.initialize()
-        enter(session, CASHIER_PIN)
+        session.unlock(CASHIER_PIN)
         repeat(5) {
             assertThat(limiter.authenticate(SITE_ID, CASHIER_PIN, WooPosCapability.ISSUE_REFUNDS))
                 .isInstanceOf(WooPosLocalRateLimiterResult.Incorrect::class.java)
@@ -150,9 +150,8 @@ class WooPosPINIntegrationTest {
         // THEN
         val initialWait = (session.state.value.status as Status.Wait).remainingSeconds
         assertThat(initialWait).isBetween(1, 30)
-        assertThat(session.state.value.canEnterPIN).isFalse()
-        assertThat(session.activeRole).isNull()
-        enter(session, ADMIN_PIN)
+        assertThat(session.state.value.activeRole).isNull()
+        session.unlock(ADMIN_PIN)
         assertThat(session.state.value.isLocked).isTrue()
         assertThat(limiter.authenticate(SITE_ID, ADMIN_PIN))
             .isInstanceOf(WooPosLocalRateLimiterResult.Waiting::class.java)
@@ -162,7 +161,6 @@ class WooPosPINIntegrationTest {
         val recreated = createSession(recreatedLimiter)
         recreated.initialize()
         assertThat((recreated.state.value.status as Status.Wait).remainingSeconds).isBetween(1, initialWait)
-        assertThat(recreated.state.value.canEnterPIN).isFalse()
         assertThat(recreatedLimiter.authenticate(SITE_ID, ADMIN_PIN))
             .isInstanceOf(WooPosLocalRateLimiterResult.Waiting::class.java)
         assertThat(attempts.read(SITE_ID)).isEqualTo(previous)
@@ -172,14 +170,14 @@ class WooPosPINIntegrationTest {
                 recreated.refreshWait()
             }
         }
-        assertThat(recreated.state.value.canEnterPIN).isTrue()
-        enter(recreated, CASHIER_PIN)
+        assertThat(recreated.state.value.status).isEqualTo(Status.Idle)
+        recreated.unlock(CASHIER_PIN)
         assertThat(recreated.state.value.isLocked).isFalse()
         assertThat(attempts.read(SITE_ID)).isEqualTo(previous)
         recreated.lock()
-        enter(recreated, ADMIN_PIN)
+        recreated.unlock(ADMIN_PIN)
         assertThat(recreated.state.value.isLocked).isFalse()
-        assertThat(attempts.read(SITE_ID)).isEqualTo(WooPosPINAttemptState())
+        assertThat(attempts.read(SITE_ID)).isEqualTo(WooPosPINAttemptState.NO_FAILURES)
     }
 
     @Test
@@ -194,13 +192,12 @@ class WooPosPINIntegrationTest {
 
         // WHEN
         session.initialize()
-        enter(session, ADMIN_PIN)
+        session.unlock(ADMIN_PIN)
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
         assertThat(session.state.value.status).isEqualTo(Status.StorageUnavailable)
-        assertThat(session.state.value.canEnterPIN).isFalse()
-        assertThat(session.activeRole).isNull()
+        assertThat(session.state.value.activeRole).isNull()
         assertThat(limiter.authenticate(SITE_ID, ADMIN_PIN)).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
         assertThat(attemptsFile.readBytes()).isEqualTo(corrupt)
         assertThat(pinFile.readBytes()).isEqualTo(pins)
@@ -217,13 +214,13 @@ class WooPosPINIntegrationTest {
 
         // WHEN
         session.initialize()
-        enter(session, ADMIN_PIN)
+        session.unlock(ADMIN_PIN)
 
         // THEN
         assertThat(session.isEnabled).isTrue()
         assertThat(session.state.value.isLocked).isTrue()
         assertThat(session.state.value.status).isEqualTo(Status.StorageUnavailable)
-        assertThat(session.activeRole).isNull()
+        assertThat(session.state.value.activeRole).isNull()
         assertThat(limiter.authenticate(SITE_ID, ADMIN_PIN)).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
         assertThat(pinFile.readBytes()).isEqualTo(original)
     }
@@ -240,12 +237,12 @@ class WooPosPINIntegrationTest {
         check(attemptsDirectory.setWritable(false))
         try {
             // WHEN
-            enter(session, ADMIN_PIN)
+            session.unlock(ADMIN_PIN)
 
             // THEN
             assertThat(session.state.value.isLocked).isTrue()
             assertThat(session.state.value.status).isEqualTo(Status.StorageUnavailable)
-            assertThat(session.activeRole).isNull()
+            assertThat(session.state.value.activeRole).isNull()
             assertThat(attempts.read(SITE_ID)).isEqualTo(previous)
         } finally {
             check(attemptsDirectory.setWritable(true))
@@ -258,19 +255,15 @@ class WooPosPINIntegrationTest {
         val pinStore = WooPosLocalPINStore(WooPosEncryptedPINStorage(context, KEY_ALIAS), dispatchers)
         return WooPosLocalRateLimiter(
             pinStore,
-            WooPosPINAuthenticator(pinStore, dispatchers),
+            WooPosPINAuthenticator(dispatchers),
             WooPosFilePINAttemptStorage(context),
             WooPosAndroidPINClock(context),
-            WooPosPendingPINRecovery(),
             dispatchers,
         )
     }
 
-    private fun createSession(limiter: WooPosLocalRateLimiter) = WooPosAccessSession(flags, selectedSite, limiter)
-
-    private suspend fun enter(session: WooPosAccessSession, pin: String) {
-        pin.forEach { session.enterDigit(it.digitToInt()) }
-    }
+    private fun createSession(limiter: WooPosLocalRateLimiter) =
+        WooPosAccessSession(flags, selectedSite, limiter, WooPosPendingPINRecovery())
 
     @Suppress("DEPRECATION")
     private fun reportKeySecurity() {
