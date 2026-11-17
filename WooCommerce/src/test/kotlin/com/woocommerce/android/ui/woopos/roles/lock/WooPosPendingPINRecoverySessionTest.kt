@@ -63,7 +63,7 @@ class WooPosPendingPINRecoverySessionTest {
         recovery: WooPosPINRecovery,
     ) = WooPosLocalRateLimiter(
         fixture.store,
-        WooPosPINAuthenticator(fixture.store, coroutineRule.testDispatchers),
+        WooPosPINAuthenticator(coroutineRule.testDispatchers),
         fixture.storage,
         fixture.clock,
         recovery,

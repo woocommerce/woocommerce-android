@@ -124,7 +124,7 @@ class WooPosPINIntegrationTest {
         enter(session, ADMIN_PIN)
         assertThat(session.state.value.isLocked).isFalse()
         assertThat(session.activeRole).isEqualTo(WooPosLocalRole.ADMIN)
-        assertThat(attempts.read(SITE_ID)).isEqualTo(WooPosPINAttemptState())
+        assertThat(attempts.read(SITE_ID)).isEqualTo(WooPosPINAttemptState.NO_FAILURES)
     }
 
     @Test
@@ -178,7 +178,7 @@ class WooPosPINIntegrationTest {
         recreated.lock()
         enter(recreated, ADMIN_PIN)
         assertThat(recreated.state.value.isLocked).isFalse()
-        assertThat(attempts.read(SITE_ID)).isEqualTo(WooPosPINAttemptState())
+        assertThat(attempts.read(SITE_ID)).isEqualTo(WooPosPINAttemptState.NO_FAILURES)
     }
 
     @Test
@@ -260,7 +260,7 @@ class WooPosPINIntegrationTest {
 
     private fun createLimiter(pinStore: WooPosLocalPINStore = store) = WooPosLocalRateLimiter(
         pinStore,
-        WooPosPINAuthenticator(pinStore, dispatchers),
+        WooPosPINAuthenticator(dispatchers),
         WooPosFilePINAttemptStorage(context),
         WooPosAndroidPINClock(context),
         WooPosPendingPINRecovery(),
