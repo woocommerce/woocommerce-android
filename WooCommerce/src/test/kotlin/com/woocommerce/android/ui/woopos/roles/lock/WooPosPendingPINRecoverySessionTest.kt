@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINAuthenticator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -24,12 +23,12 @@ class WooPosPendingPINRecoverySessionTest {
             // GIVEN
             val fixture = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
             val pending = WooPosPendingPINRecovery()
-            val access = access(fixture, pending)
+            val access = fixture.rateLimiter()
             val flags: FeatureFlagRepository = mock {
                 on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
             }
             val site: SelectedSite = mock { on { getOrNull() }.thenReturn(SiteModel().apply { id = 1 }) }
-            val session = WooPosAccessSession(flags, site, access)
+            val session = WooPosAccessSession(flags, site, access, pending)
             session.initialize()
             repeat(5) { session.unlock("0000") }
             assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Wait(30))
@@ -54,18 +53,6 @@ class WooPosPendingPINRecoverySessionTest {
             assertThat(session.state.value.activeRole).isEqualTo(fixture.admin)
             assertThat(session.state.value.isLocked).isFalse()
         }
-
-    private fun access(
-        fixture: WooPosLocalRateLimiterTestFixture,
-        recovery: WooPosPINRecovery,
-    ) = WooPosLocalRateLimiter(
-        fixture.store,
-        WooPosPINAuthenticator(coroutineRule.testDispatchers),
-        fixture.storage,
-        fixture.clock,
-        recovery,
-        coroutineRule.testDispatchers,
-    )
 
     private fun assertUnavailable(session: WooPosAccessSession) {
         assertThat(session.state.value.isLocked).isTrue()

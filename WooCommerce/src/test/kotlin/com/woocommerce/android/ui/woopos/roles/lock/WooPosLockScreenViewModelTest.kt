@@ -35,7 +35,7 @@ class WooPosLockScreenViewModelTest {
             on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
         }
         val viewModel = WooPosLockScreenViewModel(
-            WooPosAccessSession(flags, selectedSite, fixture.rateLimiter()),
+            WooPosAccessSession(flags, selectedSite, fixture.rateLimiter(), fixture.recovery),
             selectedSite
         )
         repeat(5) {
@@ -83,7 +83,7 @@ class WooPosLockScreenViewModelTest {
                 on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
             }
             val access = fixture.rateLimiter()
-            val session = WooPosAccessSession(flags, selectedSite, access)
+            val session = WooPosAccessSession(flags, selectedSite, access, fixture.recovery)
             val viewModel = WooPosLockScreenViewModel(session, selectedSite)
             session.unlock("5678")
             assertThat(session.state.value.activeRole).isEqualTo(fixture.cashier)
@@ -182,7 +182,9 @@ class WooPosLockScreenViewModelTest {
         assertThat(fixture.records.getValue(1).failures).isZero()
     }
 
-    private fun viewModel(fixture: WooPosLocalRateLimiterTestFixture): Pair<WooPosLockScreenViewModel, WooPosAccessSession> {
+    private fun viewModel(
+        fixture: WooPosLocalRateLimiterTestFixture,
+    ): Pair<WooPosLockScreenViewModel, WooPosAccessSession> {
         val site = SiteModel().apply { id = 1 }
         val selectedSite: SelectedSite = mock {
             on { getOrNull() }.thenReturn(site)
@@ -191,7 +193,7 @@ class WooPosLockScreenViewModelTest {
         val flags: FeatureFlagRepository = mock {
             on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
         }
-        val session = WooPosAccessSession(flags, selectedSite, fixture.rateLimiter())
+        val session = WooPosAccessSession(flags, selectedSite, fixture.rateLimiter(), fixture.recovery)
         return WooPosLockScreenViewModel(session, selectedSite) to session
     }
 }

@@ -8,6 +8,7 @@ import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -111,7 +112,6 @@ class WooPosAccessSessionTest {
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
         assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Incorrect)
-
 
         // WHEN
         session.unlock("5678")
@@ -234,7 +234,6 @@ class WooPosAccessSessionTest {
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
         assertThat(session.state.value.activeRole).isNull()
-
     }
 
     @Test
@@ -336,7 +335,6 @@ class WooPosAccessSessionTest {
         assertThat(session.state.value.activeRole).isNull()
     }
 
-
     @Test
     fun `when an operator unlocks and locks, then the state flow exposes and removes the role`() = runTest {
         // GIVEN
@@ -356,10 +354,138 @@ class WooPosAccessSessionTest {
         assertThat(roles).containsExactly(null, fixture.cashier, null)
     }
 
+    @Test
+    fun `given pending recovery, when approval checks a PIN, then recovery does not hold the limiter`() = runTest {
+        // GIVEN
+        val fixture = fixture()
+        val rateLimiter = fixture.rateLimiter()
+        val session = session(fixture, rateLimiter)
+        session.initialize()
+        val gate = CompletableDeferred<Unit>()
+        fixture.recoveryAction = {
+            gate.await()
+            Result.success(fixture.admin)
+        }
+        val recovery = async { session.recover() }
+        runCurrent()
+
+        // WHEN
+        val result = rateLimiter.authenticate(1, "0000")
+
+        // THEN
+        assertThat(result).isEqualTo(WooPosLocalRateLimiterResult.Incorrect(0))
+        assertThat(recovery.isCompleted).isFalse()
+        gate.complete(Unit)
+        recovery.await()
+        assertThat(session.state.value.activeRole).isEqualTo(fixture.admin)
+        assertThat(fixture.records.getValue(1).failures).isZero()
+    }
+
+    @Test
+    fun `given pending recovery, when cancelled, then attempts and the previous lock state remain`() = runTest {
+        // GIVEN
+        val fixture = fixture()
+        val session = session(fixture)
+        session.initialize()
+        repeat(5) { session.unlock("0000") }
+        val previousState = session.state.value
+        val previousAttempts = fixture.records.toMap()
+        val gate = CompletableDeferred<Unit>()
+        fixture.recoveryAction = {
+            gate.await()
+            Result.success(fixture.admin)
+        }
+        val recovery = async { session.recover() }
+        runCurrent()
+
+        // WHEN
+        recovery.cancelAndJoin()
+
+        // THEN
+        assertThat(recovery.isCancelled).isTrue()
+        assertThat(session.state.value).isEqualTo(previousState)
+        assertThat(fixture.records).isEqualTo(previousAttempts)
+    }
+
+    @Test
+    fun `given failed or non-Admin recovery, when recovering, then no attempts are reset or role published`() = runTest {
+        // GIVEN
+        val fixture = fixture()
+        val session = session(fixture)
+        session.initialize()
+        session.unlock("0000")
+        val previous = fixture.records.toMap()
+        fixture.recoveryAction = { error("Recovery unavailable") }
+
+        // THEN
+        session.recover()
+        assertThat(session.state.value.activeRole).isNull()
+        assertThat(fixture.records).isEqualTo(previous)
+
+        // WHEN
+        fixture.recoveryAction = { Result.success(fixture.cashier) }
+        session.recover()
+
+        // THEN
+        assertThat(session.state.value.activeRole).isNull()
+        assertThat(fixture.records).isEqualTo(previous)
+    }
+
+    @Test
+    fun `given recovery reset fails, when the Admin is verified, then no role is published`() = runTest {
+        // GIVEN
+        val fixture = fixture()
+        val session = session(fixture)
+        session.initialize()
+        session.unlock("0000")
+        val previous = fixture.records.toMap()
+        fixture.recoveryResult = Result.success(fixture.admin)
+        fixture.writeError = true
+
+        // WHEN
+        session.recover()
+
+        // THEN
+        assertThat(session.state.value.activeRole).isNull()
+        assertThat(session.state.value.isLocked).isTrue()
+        assertThat(fixture.records).isEqualTo(previous)
+    }
+
+    @Test
+    fun `given pending recovery, when a manual lock invalidates it, then late success cannot reset or unlock`() = runTest {
+        // GIVEN
+        val fixture = fixture()
+        val session = session(fixture)
+        session.initialize()
+        session.unlock("0000")
+        val previous = fixture.records.toMap()
+        val gate = CompletableDeferred<Unit>()
+        fixture.recoveryAction = {
+            gate.await()
+            Result.success(fixture.admin)
+        }
+        val recovery = async { session.recover() }
+        runCurrent()
+
+        // WHEN
+        session.lock()
+        gate.complete(Unit)
+        recovery.await()
+
+        // THEN
+        assertThat(session.state.value.activeRole).isNull()
+        assertThat(session.state.value.isLocked).isTrue()
+        assertThat(fixture.records).isEqualTo(previous)
+    }
+
     private fun fixture() = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
-    private fun session(fixture: WooPosLocalRateLimiterTestFixture) = WooPosAccessSession(
+    private fun session(
+        fixture: WooPosLocalRateLimiterTestFixture,
+        rateLimiter: WooPosLocalRateLimiter = fixture.rateLimiter(),
+    ) = WooPosAccessSession(
         flags,
         selectedSite,
-        fixture.rateLimiter(),
+        rateLimiter,
+        fixture.recovery,
     )
 }

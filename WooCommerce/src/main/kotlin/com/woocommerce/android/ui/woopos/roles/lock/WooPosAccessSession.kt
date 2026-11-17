@@ -2,10 +2,14 @@ package com.woocommerce.android.ui.woopos.roles.lock
 
 import androidx.annotation.MainThread
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.roles.WooPosCapability
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
+import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.scopes.ActivityRetainedScoped
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +22,7 @@ class WooPosAccessSession @Inject constructor(
     featureFlagRepository: FeatureFlagRepository,
     private val selectedSite: SelectedSite,
     private val rateLimiter: WooPosLocalRateLimiter,
+    private val recovery: WooPosPINRecovery,
 ) {
     private val flagEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ROLES)
     private val _state = MutableStateFlow<WooPosAccessSessionState>(
@@ -67,8 +72,44 @@ class WooPosAccessSession @Inject constructor(
     }
 
     suspend fun recover() {
-        if (!_state.value.isLocked || _state.value.status == Status.Checking) return
-        authenticate { id -> rateLimiter.recover(id) }
+        val previous = _state.value as? WooPosAccessSessionState.Locked ?: return
+        if (previous.status == Status.Checking) return
+        val id = localSiteId ?: return
+        val request = ++generation
+        _state.value = WooPosAccessSessionState.Locked(Status.Checking)
+        try {
+            val role = recoveryRole(id)
+            currentCoroutineContext().ensureActive()
+            if (isCurrent(request, id)) {
+                if (role == null) _state.value = previous else completeRecovery(id, request, previous, role)
+            }
+        } catch (e: CancellationException) {
+            if (isCurrent(request, id)) _state.value = previous
+            throw e
+        }
+    }
+
+    private suspend fun completeRecovery(
+        id: Int,
+        request: Long,
+        previous: WooPosAccessSessionState.Locked,
+        role: WooPosLocalRole,
+    ) {
+        val reset = rateLimiter.resetAfterRecovery(id)
+        currentCoroutineContext().ensureActive()
+        if (isCurrent(request, id)) {
+            _state.value = if (reset.isSuccess) WooPosAccessSessionState.Unlocked(role) else previous
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    private suspend fun recoveryRole(id: Int): WooPosLocalRole? = try {
+        recovery.authenticate(id).getOrNull()?.takeIf { it.hasCapability(WooPosCapability.MANAGE_STORE_SETTINGS) }
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        WooLog.e(WooLog.T.POS, "Local PIN recovery authentication failed: ${e.javaClass.simpleName}")
+        null
     }
 
     suspend fun refreshWait() {
@@ -102,7 +143,12 @@ class WooPosAccessSession @Inject constructor(
         }
         localSiteId = id
         if (previous.isLocked) _state.value = WooPosAccessSessionState.Locked(Status.Checking)
-        val result = action(id)
+        val result = try {
+            action(id)
+        } catch (e: CancellationException) {
+            if (isCurrent(request, id)) _state.value = previous
+            throw e
+        }
         currentCoroutineContext().ensureActive()
         if (!isCurrent(request, id)) return
         _state.value = when (result) {
@@ -110,10 +156,10 @@ class WooPosAccessSession @Inject constructor(
             is WooPosLocalRateLimiterResult.Incorrect -> WooPosAccessSessionState.Locked(
                 if (result.remainingSeconds > 0) Status.Wait(result.remainingSeconds) else Status.Incorrect,
             )
-            is WooPosLocalRateLimiterResult.Waiting -> WooPosAccessSessionState.Locked(Status.Wait(result.remainingSeconds))
+            is WooPosLocalRateLimiterResult.Waiting ->
+                WooPosAccessSessionState.Locked(Status.Wait(result.remainingSeconds))
             WooPosLocalRateLimiterResult.ProtectionOff -> WooPosAccessSessionState.Unprotected
             WooPosLocalRateLimiterResult.Unavailable -> WooPosAccessSessionState.Locked(Status.StorageUnavailable)
-            WooPosLocalRateLimiterResult.RecoveryUnavailable -> previous
         }
     }
 
