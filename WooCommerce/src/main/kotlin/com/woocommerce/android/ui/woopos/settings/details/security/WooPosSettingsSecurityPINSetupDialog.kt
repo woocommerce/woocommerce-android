@@ -29,14 +29,15 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.pin.WooPosPinDots
-import com.woocommerce.android.ui.woopos.common.pin.WooPosPinPad
+import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDots
+import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPad
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Stage
 
 @Composable
-fun WooPosPinSetupDialog(
-    state: WooPosPinSetupState,
+fun WooPosSettingsSecurityPINSetupDialog(
+    state: WooPosSettingsSecurityPINSetupState,
     isVisible: Boolean,
-    onUIEvent: (WooPosPinSetupUIEvent) -> Unit,
+    onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
     onClose: () -> Unit,
 ) {
     WooPosDialogWrapper(
@@ -54,25 +55,25 @@ fun WooPosPinSetupDialog(
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value),
         ) {
             when (state.stage) {
-                WooPosPinSetupState.Stage.CHOOSE -> PinSetupEntry(
+                Stage.CHOOSE -> PINSetupEntry(
                     state = state,
                     title = stringResource(R.string.woopos_security_choose_pin),
                     onUIEvent = onUIEvent,
                 )
-                WooPosPinSetupState.Stage.CONFIRM,
-                WooPosPinSetupState.Stage.MISMATCH -> PinSetupEntry(
+                Stage.CONFIRM,
+                Stage.MISMATCH -> PINSetupEntry(
                     state = state,
                     title = stringResource(R.string.woopos_security_confirm_pin),
                     onUIEvent = onUIEvent,
                     showBack = true,
-                    showMismatch = state.stage == WooPosPinSetupState.Stage.MISMATCH,
+                    showMismatch = state.stage == Stage.MISMATCH,
                 )
-                WooPosPinSetupState.Stage.CHECKING -> {
-                    PinSetupHeading(stringResource(R.string.woopos_security_confirm_pin))
+                Stage.CHECKING -> {
+                    PINSetupHeading(stringResource(R.string.woopos_security_confirm_pin))
                     WooPosCircularLoadingIndicator(Modifier.size(WooPosIconSize.Large.value).progressSemantics())
                 }
-                WooPosPinSetupState.Stage.SUCCESS -> {
-                    PinSetupHeading(stringResource(R.string.woopos_security_success))
+                Stage.SUCCESS -> {
+                    PINSetupHeading(stringResource(R.string.woopos_security_success))
                     WooPosOutlinedButton(text = stringResource(R.string.done), onClick = onClose)
                 }
             }
@@ -81,15 +82,15 @@ fun WooPosPinSetupDialog(
 }
 
 @Composable
-private fun PinSetupEntry(
-    state: WooPosPinSetupState,
+private fun PINSetupEntry(
+    state: WooPosSettingsSecurityPINSetupState,
     title: String,
-    onUIEvent: (WooPosPinSetupUIEvent) -> Unit,
+    onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
     showBack: Boolean = false,
     showMismatch: Boolean = false,
 ) {
-    PinSetupHeading(title)
-    WooPosPinDots(state.enteredDigits)
+    PINSetupHeading(title)
+    WooPosPINDots(state.enteredDigits)
     if (showMismatch) {
         WooPosText(
             text = stringResource(R.string.woopos_security_mismatch),
@@ -99,22 +100,22 @@ private fun PinSetupEntry(
             modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
         )
     }
-    WooPosPinPad(
+    WooPosPINPad(
         enteredDigits = state.enteredDigits,
         enabled = true,
-        onDigit = { onUIEvent(WooPosPinSetupUIEvent.DigitTapped(it)) },
-        onDelete = { onUIEvent(WooPosPinSetupUIEvent.DeleteTapped) },
+        onDigit = { onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DigitTapped(it)) },
+        onDelete = { onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DeleteTapped) },
     )
     if (showBack) {
         WooPosOutlinedButton(
             text = stringResource(R.string.back),
-            onClick = { onUIEvent(WooPosPinSetupUIEvent.BackTapped) },
+            onClick = { onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.BackTapped) },
         )
     }
 }
 
 @Composable
-private fun PinSetupHeading(title: String) {
+private fun PINSetupHeading(title: String) {
     WooPosText(
         text = title,
         style = WooPosTypography.Heading,
@@ -129,37 +130,37 @@ private fun PinSetupHeading(title: String) {
 
 @WooPosPreview
 @Composable
-fun WooPosPinSetupChoosePreview() {
-    PinSetupDialogPreview(WooPosPinSetupState())
+fun WooPosSettingsSecurityPINSetupChoosePreview() {
+    PINSetupDialogPreview(WooPosSettingsSecurityPINSetupState())
 }
 
 @WooPosPreview
 @Composable
-fun WooPosPinSetupConfirmPreview() {
-    PinSetupDialogPreview(WooPosPinSetupState(stage = WooPosPinSetupState.Stage.CONFIRM))
+fun WooPosSettingsSecurityPINSetupConfirmPreview() {
+    PINSetupDialogPreview(WooPosSettingsSecurityPINSetupState(stage = Stage.CONFIRM))
 }
 
 @WooPosPreview
 @Composable
-fun WooPosPinSetupMismatchPreview() {
-    PinSetupDialogPreview(WooPosPinSetupState(stage = WooPosPinSetupState.Stage.MISMATCH))
+fun WooPosSettingsSecurityPINSetupMismatchPreview() {
+    PINSetupDialogPreview(WooPosSettingsSecurityPINSetupState(stage = Stage.MISMATCH))
 }
 
 @WooPosPreview
 @Composable
-fun WooPosPinSetupCheckingPreview() {
-    PinSetupDialogPreview(WooPosPinSetupState(stage = WooPosPinSetupState.Stage.CHECKING))
+fun WooPosSettingsSecurityPINSetupCheckingPreview() {
+    PINSetupDialogPreview(WooPosSettingsSecurityPINSetupState(stage = Stage.CHECKING))
 }
 
 @WooPosPreview
 @Composable
-fun WooPosPinSetupSuccessPreview() {
-    PinSetupDialogPreview(WooPosPinSetupState(stage = WooPosPinSetupState.Stage.SUCCESS))
+fun WooPosSettingsSecurityPINSetupSuccessPreview() {
+    PINSetupDialogPreview(WooPosSettingsSecurityPINSetupState(stage = Stage.SUCCESS))
 }
 
 @Composable
-private fun PinSetupDialogPreview(state: WooPosPinSetupState) {
+private fun PINSetupDialogPreview(state: WooPosSettingsSecurityPINSetupState) {
     WooPosTheme {
-        WooPosPinSetupDialog(state = state, isVisible = true, onUIEvent = {}, onClose = {})
+        WooPosSettingsSecurityPINSetupDialog(state = state, isVisible = true, onUIEvent = {}, onClose = {})
     }
 }

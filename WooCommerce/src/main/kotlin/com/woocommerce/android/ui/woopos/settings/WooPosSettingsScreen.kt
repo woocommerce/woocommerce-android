@@ -38,8 +38,8 @@ import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCateg
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPaneScreen
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSyncErrorDialog
-import com.woocommerce.android.ui.woopos.settings.details.security.WooPosPinSetupDialog
-import com.woocommerce.android.ui.woopos.settings.details.security.WooPosPinSetupState
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupDialog
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialog
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialogState
 import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
@@ -235,8 +235,8 @@ private fun SettingsDialogs(
     )
 
     // TODO WOOMOB-4602: Drive PIN setup state and events from its ViewModel.
-    WooPosPinSetupDialog(
-        state = WooPosPinSetupState(),
+    WooPosSettingsSecurityPINSetupDialog(
+        state = WooPosSettingsSecurityPINSetupState(),
         isVisible = dialogState is WooPosSettingsDialogState.PinSetupDialog,
         onUIEvent = {},
         onClose = onDismissDialog,

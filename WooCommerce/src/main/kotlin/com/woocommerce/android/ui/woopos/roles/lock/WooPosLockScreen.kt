@@ -32,8 +32,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.pin.WooPosPinDots
-import com.woocommerce.android.ui.woopos.common.pin.WooPosPinPad
+import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDots
+import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPad
 
 @Composable
 fun WooPosLockScreenDialog(
@@ -78,9 +78,9 @@ fun WooPosLockScreen(
             textAlign = TextAlign.Center,
             modifier = Modifier.semantics { heading() },
         )
-        WooPosPinDots(state.enteredDigits)
+        WooPosPINDots(state.enteredDigits)
         LockStatus(state.status)
-        WooPosPinPad(
+        WooPosPINPad(
             enteredDigits = state.enteredDigits,
             enabled = state.canEnterPIN,
             onDigit = { onUIEvent(WooPosLockScreenUIEvent.DigitTapped(it)) },
