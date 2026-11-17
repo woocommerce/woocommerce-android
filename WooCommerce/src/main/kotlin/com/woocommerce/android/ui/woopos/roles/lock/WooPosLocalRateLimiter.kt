@@ -8,6 +8,8 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -68,12 +70,24 @@ class WooPosLocalRateLimiter @Inject internal constructor(
         }
     }.getOrDefault(WooPosLocalRateLimiterResult.Unavailable)
 
-    suspend fun recover(localSiteId: Int): WooPosLocalRateLimiterResult = operation {
-        val role = recovery.authenticate(localSiteId).getOrThrow()
-        check(role.hasCapability(WooPosCapability.MANAGE_STORE_SETTINGS))
-        storage.write(localSiteId, WooPosPINAttemptState())
-        WooPosLocalRateLimiterResult.Authenticated(role)
-    }.getOrDefault(WooPosLocalRateLimiterResult.RecoveryUnavailable)
+    @Suppress("TooGenericExceptionCaught")
+    suspend fun recover(localSiteId: Int): WooPosLocalRateLimiterResult {
+        val role = try {
+            recovery.authenticate(localSiteId).getOrThrow()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return WooPosLocalRateLimiterResult.RecoveryUnavailable
+        }
+        if (!role.hasCapability(WooPosCapability.MANAGE_STORE_SETTINGS)) {
+            return WooPosLocalRateLimiterResult.RecoveryUnavailable
+        }
+        currentCoroutineContext().ensureActive()
+        return operation {
+            storage.write(localSiteId, WooPosPINAttemptState())
+            WooPosLocalRateLimiterResult.Authenticated(role)
+        }.getOrDefault(WooPosLocalRateLimiterResult.RecoveryUnavailable)
+    }
 
     suspend fun clearAllAttempts(): Result<Unit> = operation { storage.clearAll() }
 

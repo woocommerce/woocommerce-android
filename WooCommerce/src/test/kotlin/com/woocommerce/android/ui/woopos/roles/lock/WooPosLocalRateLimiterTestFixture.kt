@@ -58,8 +58,9 @@ internal class WooPosLocalRateLimiterTestFixture(private val dispatchers: Corout
         override fun clearAll() { records.clear() }
     }
     var recoveryResult: Result<WooPosLocalRole> = Result.failure(IllegalStateException())
+    var recoveryAction: suspend () -> Result<WooPosLocalRole> = { recoveryResult }
     val recovery = object : WooPosPINRecovery {
-        override suspend fun authenticate(localSiteId: Int) = recoveryResult
+        override suspend fun authenticate(localSiteId: Int) = recoveryAction()
     }
     fun access() = WooPosLocalRateLimiter(
         store,

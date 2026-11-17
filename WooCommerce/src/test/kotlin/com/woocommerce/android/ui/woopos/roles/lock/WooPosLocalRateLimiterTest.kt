@@ -7,6 +7,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -324,6 +325,87 @@ class WooPosLocalRateLimiterTest {
         assertThat(result).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
         assertThat(writes).containsExactly(previous.failed(WooPosPINTime(fixture.boot, fixture.elapsed)), previous)
         assertThat(fixture.records[1]).isEqualTo(previous)
+    }
+
+    @Test
+    fun `given pending recovery, when a PIN is checked, then recovery does not block the check`() = runTest {
+        // GIVEN
+        val fixture = fixture()
+        val gate = CompletableDeferred<Unit>()
+        fixture.recoveryAction = {
+            gate.await()
+            Result.success(fixture.admin)
+        }
+        val access = fixture.access()
+        val recovery = async { access.recover(1) }
+        runCurrent()
+
+        // WHEN
+        val result = access.authenticate(1, "0000")
+
+        // THEN
+        assertThat(result).isEqualTo(WooPosLocalRateLimiterResult.Incorrect(0))
+        assertThat(recovery.isCompleted).isFalse()
+        assertThat(fixture.records.getValue(1).failures).isEqualTo(1)
+        gate.complete(Unit)
+        assertThat(recovery.await()).isEqualTo(WooPosLocalRateLimiterResult.Authenticated(fixture.admin))
+        assertThat(fixture.records.getValue(1).failures).isZero()
+    }
+
+    @Test
+    fun `given pending recovery, when cancelled, then no reset is written`() = runTest {
+        // GIVEN
+        val fixture = fixture()
+        val gate = CompletableDeferred<Unit>()
+        fixture.recoveryAction = {
+            gate.await()
+            Result.success(fixture.admin)
+        }
+        val access = fixture.access()
+        access.authenticate(1, "0000")
+        val previous = fixture.records.toMap()
+        val recovery = async { access.recover(1) }
+        runCurrent()
+
+        // WHEN
+        recovery.cancelAndJoin()
+
+        // THEN
+        assertThat(recovery.isCancelled).isTrue()
+        assertThat(fixture.records).isEqualTo(previous)
+    }
+
+    @Test
+    fun `given recovery throws or returns a non-Admin role, when recovering, then no reset is written`() = runTest {
+        // GIVEN
+        val fixture = fixture()
+        val access = fixture.access()
+        access.authenticate(1, "0000")
+        val previous = fixture.records.toMap()
+        fixture.recoveryAction = { error("Recovery unavailable") }
+
+        // THEN
+        assertThat(access.recover(1)).isEqualTo(WooPosLocalRateLimiterResult.RecoveryUnavailable)
+        assertThat(fixture.records).isEqualTo(previous)
+
+        // WHEN
+        fixture.recoveryAction = { Result.success(fixture.cashier) }
+
+        // THEN
+        assertThat(access.recover(1)).isEqualTo(WooPosLocalRateLimiterResult.RecoveryUnavailable)
+        assertThat(fixture.records).isEqualTo(previous)
+    }
+
+    @Test
+    fun `given recovery reset cannot be saved, when recovering, then no role is returned`() = runTest {
+        // GIVEN
+        val fixture = fixture()
+        fixture.recoveryResult = Result.success(fixture.admin)
+        fixture.writeError = true
+
+        // THEN
+        assertThat(fixture.access().recover(1)).isEqualTo(WooPosLocalRateLimiterResult.RecoveryUnavailable)
+        assertThat(fixture.records).isEmpty()
     }
 
     private fun fixture() = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
