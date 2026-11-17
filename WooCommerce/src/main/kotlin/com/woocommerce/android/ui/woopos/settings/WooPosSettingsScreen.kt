@@ -39,7 +39,7 @@ import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCateg
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPaneScreen
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSyncErrorDialog
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupDialog
-import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupViewModel
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialog
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialogState
 import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
@@ -234,11 +234,14 @@ private fun SettingsDialogs(
         onDismissRequest = onDismissDialog
     )
 
-    // TODO WOOMOB-4602: Drive PIN setup state and events from its ViewModel.
+    val pinSetup: WooPosSettingsSecurityPINSetupViewModel = hiltViewModel()
+    val pinSetupState by pinSetup.state.collectAsState()
+    val isPinSetupVisible = dialogState is WooPosSettingsDialogState.PinSetupDialog
+    LaunchedEffect(isPinSetupVisible) { if (!isPinSetupVisible) pinSetup.reset() }
     WooPosSettingsSecurityPINSetupDialog(
-        state = WooPosSettingsSecurityPINSetupState(),
-        isVisible = dialogState is WooPosSettingsDialogState.PinSetupDialog,
-        onUIEvent = {},
+        state = pinSetupState,
+        isVisible = isPinSetupVisible,
+        onUIEvent = pinSetup::onUIEvent,
         onClose = onDismissDialog,
     )
 
