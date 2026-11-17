@@ -39,7 +39,7 @@ class WooPosPendingPINRecoveryTest {
                 error("Unavailable boot identity")
             }
         }
-        val access = WooPosLocalRateLimiter(
+        val rateLimiter = WooPosLocalRateLimiter(
             fixture.store,
             WooPosPINAuthenticator(coroutineRule.testDispatchers),
             storage,
@@ -49,7 +49,7 @@ class WooPosPendingPINRecoveryTest {
         )
 
         // THEN
-        assertThat(access.recover(1)).isEqualTo(WooPosLocalRateLimiterResult.RecoveryUnavailable)
+        assertThat(rateLimiter.recover(1)).isEqualTo(WooPosLocalRateLimiterResult.RecoveryUnavailable)
         assertThat(storageCalls).isZero()
         assertThat(clockCalls).isZero()
         assertThat(fixture.pinReads).isZero()

@@ -62,7 +62,7 @@ internal class WooPosLocalRateLimiterTestFixture(private val dispatchers: Corout
     val recovery = object : WooPosPINRecovery {
         override suspend fun authenticate(localSiteId: Int) = recoveryAction()
     }
-    fun access() = WooPosLocalRateLimiter(
+    fun rateLimiter() = WooPosLocalRateLimiter(
         store,
         WooPosPINAuthenticator(dispatchers),
         storage,
