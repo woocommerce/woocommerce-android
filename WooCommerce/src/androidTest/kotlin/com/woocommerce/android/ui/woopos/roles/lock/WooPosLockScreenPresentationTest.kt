@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
 import android.animation.ValueAnimator
+import android.provider.Settings
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
@@ -10,6 +11,8 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertTopPositionInRootIsEqualTo
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -19,10 +22,10 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
-import org.junit.Assume.assumeTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.FileInputStream
 
 @RunWith(AndroidJUnit4::class)
 class WooPosLockScreenPresentationTest {
@@ -31,6 +34,35 @@ class WooPosLockScreenPresentationTest {
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val incorrect: String get() = context.getString(R.string.woopos_lock_incorrect)
+
+    @Test
+    fun statusChangesKeepTheKeypadInPlace() {
+        val state = mutableStateOf(WooPosLockScreenState(isLocked = true, enteredDigits = 2))
+        setLockScreen(state)
+        composeTestRule.waitForIdle()
+        val keyTop = composeTestRule.onNodeWithText("1").getUnclippedBoundsInRoot().top
+
+        // WHEN
+        state.value = WooPosLockScreenState(isLocked = true, status = Status.Incorrect)
+        composeTestRule.waitForIdle()
+
+        // THEN
+        composeTestRule.onNodeWithText("1").assertTopPositionInRootIsEqualTo(keyTop)
+
+        // WHEN
+        state.value = WooPosLockScreenState(isLocked = true, status = Status.Wait(30))
+        composeTestRule.waitForIdle()
+
+        // THEN
+        composeTestRule.onNodeWithText("1").assertTopPositionInRootIsEqualTo(keyTop)
+
+        // WHEN
+        state.value = WooPosLockScreenState(isLocked = true, enteredDigits = 1)
+        composeTestRule.waitForIdle()
+
+        // THEN
+        composeTestRule.onNodeWithText("1").assertTopPositionInRootIsEqualTo(keyTop)
+    }
 
     @Test
     fun waitDisablesKeysAndShowsCountdown() {
@@ -58,8 +90,7 @@ class WooPosLockScreenPresentationTest {
     }
 
     @Test
-    fun introKeepsKeypadHiddenUntilLockClosesAndContentRises() {
-        assumeTrue(ValueAnimator.areAnimatorsEnabled())
+    fun introKeepsKeypadHiddenUntilLockClosesAndContentRises() = withAnimationsEnabled {
         composeTestRule.mainClock.autoAdvance = false
         setLockScreen(WooPosLockScreenState(isLocked = true))
 
@@ -77,8 +108,7 @@ class WooPosLockScreenPresentationTest {
     }
 
     @Test
-    fun interruptedIntroDoesNotReplayAfterStateRestoration() {
-        assumeTrue(ValueAnimator.areAnimatorsEnabled())
+    fun interruptedIntroDoesNotReplayAfterStateRestoration() = withAnimationsEnabled {
         composeTestRule.mainClock.autoAdvance = false
         val showsScreen = mutableStateOf(true)
         composeTestRule.setContent {
@@ -181,6 +211,28 @@ class WooPosLockScreenPresentationTest {
         // THEN
         composeTestRule.onNode(dots(entered = 1)).assertIsDisplayed()
         composeTestRule.onNodeWithText(incorrect).assertDoesNotExist()
+    }
+
+    private fun withAnimationsEnabled(test: () -> Unit) {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val originalScale = Settings.Global.getString(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE)
+        fun setScale(command: String) {
+            instrumentation.uiAutomation.executeShellCommand(command).use { descriptor ->
+                FileInputStream(descriptor.fileDescriptor).use { it.readBytes() }
+            }
+        }
+        try {
+            setScale("settings put global animator_duration_scale 1")
+            composeTestRule.waitUntil { ValueAnimator.areAnimatorsEnabled() }
+            test()
+        } finally {
+            val command = if (originalScale == null) {
+                "settings delete global animator_duration_scale"
+            } else {
+                "settings put global animator_duration_scale $originalScale"
+            }
+            setScale(command)
+        }
     }
 
     private fun setLockScreen(state: WooPosLockScreenState) = setLockScreen(mutableStateOf(state))

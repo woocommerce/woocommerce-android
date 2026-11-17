@@ -13,6 +13,7 @@ internal data class WooPosLockScreenLayout(
     val keySize: Dp,
     val verticalPadding: Dp,
     val showsIllustration: Boolean,
+    val statusHeight: Dp,
 ) {
     data class Metrics(
         val horizontalPadding: Dp,
@@ -69,6 +70,7 @@ internal data class WooPosLockScreenLayout(
                 keySize = if (showsIllustration) illustratedKeySize else fittedKeySize(titleHeight),
                 verticalPadding = padding,
                 showsIllustration = showsIllustration,
+                statusHeight = statusHeight,
             )
         }
 

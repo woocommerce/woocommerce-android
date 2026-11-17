@@ -57,7 +57,7 @@ fun WooPosPINPad(
 ) {
     val spacing = when (style) {
         WooPosPINPadStyle.Standard -> WooPosSpacing.Medium.value
-        is WooPosPINPadStyle.LockScreen -> WooPosSpacing.Small.value
+        is WooPosPINPadStyle.LockScreen -> style.keySpacing
     }
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(spacing)) {
         for (row in 0..2) {

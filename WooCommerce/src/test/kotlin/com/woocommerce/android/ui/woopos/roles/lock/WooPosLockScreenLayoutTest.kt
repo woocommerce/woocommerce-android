@@ -30,7 +30,9 @@ class WooPosLockScreenLayoutTest {
         val layout = calculate(DpSize(800.dp, 1200.dp), tablet, preferredKeySize = 90.dp)
 
         // THEN
-        assertThat(layout).isEqualTo(WooPosLockScreenLayout(90.dp, 40.dp, showsIllustration = true))
+        assertThat(layout).isEqualTo(
+            WooPosLockScreenLayout(90.dp, 40.dp, showsIllustration = true, statusHeight = 48.dp)
+        )
     }
 
     @Test
@@ -39,7 +41,9 @@ class WooPosLockScreenLayoutTest {
         val layout = calculate(DpSize(600.dp, 700.dp), tablet, preferredKeySize = 90.dp)
 
         // THEN
-        assertThat(layout).isEqualTo(WooPosLockScreenLayout(90.dp, 16.dp, showsIllustration = true))
+        assertThat(layout).isEqualTo(
+            WooPosLockScreenLayout(90.dp, 16.dp, showsIllustration = true, statusHeight = 48.dp)
+        )
     }
 
     @Test
@@ -54,7 +58,9 @@ class WooPosLockScreenLayoutTest {
         )
 
         // THEN
-        assertThat(layout).isEqualTo(WooPosLockScreenLayout(72.dp, 8.dp, showsIllustration = false))
+        assertThat(layout).isEqualTo(
+            WooPosLockScreenLayout(72.dp, 8.dp, showsIllustration = false, statusHeight = 96.dp)
+        )
     }
 
     @Test

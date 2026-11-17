@@ -73,6 +73,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
@@ -147,9 +148,9 @@ private fun BoxWithConstraintsScope.LockContent(
 ) {
     val isCompactHeight = maxHeight < COMPACT_HEIGHT && maxWidth > maxHeight
     val metrics = lockMetrics(isCompactHeight)
-    val layout = rememberLockLayout(metrics, isCompactHeight)
+    val layout = calculateLockLayout(metrics, isCompactHeight)
     val intro = rememberLockIntro(animates = layout.showsIllustration)
-    val feedback = rememberLockPinFeedback(state)
+    val feedback = rememberLockPINFeedback(state)
     val contentModifier = Modifier.graphicsLayer {
         alpha = intro.contentAlpha
         translationY = intro.travel().y
@@ -194,7 +195,7 @@ private fun BoxWithConstraintsScope.LockContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(metrics.sectionSpacing),
         ) {
-            LockStatus(state, feedback)
+            LockStatus(state, feedback, statusHeight = layout.statusHeight)
             // TODO WOOMOB-4606: Show Forgot PIN once PIN recovery is available.
             WooPosPINPad(
                 enteredDigits = state.enteredDigits,
@@ -203,6 +204,7 @@ private fun BoxWithConstraintsScope.LockContent(
                 onDelete = { onUIEvent(WooPosLockScreenUIEvent.DeleteTapped) },
                 style = WooPosPINPadStyle.LockScreen(
                     keySize = layout.keySize,
+                    keySpacing = metrics.keySpacing,
                     showsDisabledKeys = state.isLocked && when (state.status) {
                         is Status.Wait, Status.StorageUnavailable -> true
                         else -> false
@@ -245,7 +247,7 @@ private fun lockMetrics(isCompactHeight: Boolean) = WooPosLockScreenLayout.Metri
 )
 
 @Composable
-private fun BoxWithConstraintsScope.rememberLockLayout(
+private fun BoxWithConstraintsScope.calculateLockLayout(
     metrics: WooPosLockScreenLayout.Metrics,
     isCompactHeight: Boolean,
 ): WooPosLockScreenLayout {
@@ -279,7 +281,7 @@ private fun BoxWithConstraintsScope.rememberLockLayout(
 }
 
 @Stable
-private class LockIntroAnimation {
+private class WooPosLockIntroAnimation {
     val shackle = Animatable(LOCK_OPEN_ANGLE)
     val reveal = Animatable(0f)
     var viewport: LayoutCoordinates? by mutableStateOf(null)
@@ -287,7 +289,7 @@ private class LockIntroAnimation {
 }
 
 /** Plays the lock intro over the opaque lock background; protection and enforcement never wait for it. */
-private class LockIntro(val isActive: Boolean, val animation: LockIntroAnimation) {
+private class WooPosLockIntro(val isActive: Boolean, val animation: WooPosLockIntroAnimation) {
     val shackleAngle: Float get() = if (isActive) animation.shackle.value else 0f
     val contentAlpha: Float get() = if (isActive) animation.reveal.value else 1f
     val illustrationAlpha: Float get() = if (isActive && slotTravel() == null) 0f else 1f
@@ -303,29 +305,31 @@ private class LockIntro(val isActive: Boolean, val animation: LockIntroAnimation
     }
 }
 
-private enum class IntroProgress { PENDING, RUNNING, DONE }
+private enum class WooPosLockIntroProgress { PENDING, RUNNING, DONE }
 
 @Composable
-private fun rememberLockIntro(animates: Boolean): LockIntro {
+private fun rememberLockIntro(animates: Boolean): WooPosLockIntro {
     val canAnimate = animates && !LocalInspectionMode.current && ValueAnimator.areAnimatorsEnabled()
-    var progress by rememberSaveable { mutableStateOf(if (canAnimate) IntroProgress.PENDING else IntroProgress.DONE) }
+    var progress by rememberSaveable {
+        mutableStateOf(if (canAnimate) WooPosLockIntroProgress.PENDING else WooPosLockIntroProgress.DONE)
+    }
     // A recreated screen, for example after rotation, does not replay an interrupted intro.
-    val wasInterrupted = remember { progress == IntroProgress.RUNNING }
-    val isActive = canAnimate && !wasInterrupted && progress != IntroProgress.DONE
-    SideEffect { if (!isActive) progress = IntroProgress.DONE }
-    val animation = remember { LockIntroAnimation() }
+    val wasInterrupted = remember { progress == WooPosLockIntroProgress.RUNNING }
+    val isActive = canAnimate && !wasInterrupted && progress != WooPosLockIntroProgress.DONE
+    SideEffect { if (!isActive) progress = WooPosLockIntroProgress.DONE }
+    val animation = remember { WooPosLockIntroAnimation() }
     LaunchedEffect(isActive) {
         if (!isActive) return@LaunchedEffect
         if (coroutineContext[MotionDurationScale]?.scaleFactor == 0f) {
-            progress = IntroProgress.DONE
+            progress = WooPosLockIntroProgress.DONE
             return@LaunchedEffect
         }
-        progress = IntroProgress.RUNNING
+        progress = WooPosLockIntroProgress.RUNNING
         animation.shackle.animateTo(0f, tween(INTRO_CLOSE_MILLIS, delayMillis = INTRO_HOLD_MILLIS))
         animation.reveal.animateTo(1f, tween(INTRO_REVEAL_MILLIS, easing = FastOutSlowInEasing))
-        progress = IntroProgress.DONE
+        progress = WooPosLockIntroProgress.DONE
     }
-    return remember(isActive) { LockIntro(isActive, animation) }
+    return remember(isActive) { WooPosLockIntro(isActive, animation) }
 }
 
 @Composable
@@ -352,7 +356,7 @@ private fun LockIllustration(shackleAngle: () -> Float, modifier: Modifier = Mod
 
 /** Keeps a rejected PIN's dots in place while they shake, then lets the error replace them. */
 @Stable
-private class LockPinFeedback {
+private class WooPosLockPINFeedback {
     var heldDigits by mutableIntStateOf(0)
     val shake = Animatable(0f)
 
@@ -361,8 +365,8 @@ private class LockPinFeedback {
 }
 
 @Composable
-private fun rememberLockPinFeedback(state: WooPosLockScreenState): LockPinFeedback {
-    val feedback = remember { LockPinFeedback() }
+private fun rememberLockPINFeedback(state: WooPosLockScreenState): WooPosLockPINFeedback {
+    val feedback = remember { WooPosLockPINFeedback() }
     val currentState by rememberUpdatedState(state)
     LaunchedEffect(feedback) {
         var previous = currentState
@@ -390,25 +394,25 @@ private fun rememberLockPinFeedback(state: WooPosLockScreenState): LockPinFeedba
     return feedback
 }
 
-private enum class LockMessage { INCORRECT, WAIT, UNAVAILABLE }
+private enum class WooPosLockMessage { INCORRECT, WAIT, UNAVAILABLE }
 
 @Composable
-private fun LockStatus(state: WooPosLockScreenState, feedback: LockPinFeedback) {
+private fun LockStatus(state: WooPosLockScreenState, feedback: WooPosLockPINFeedback, statusHeight: Dp) {
     val message = if (feedback.heldDigits > 0) {
         null
     } else {
         when (state.status) {
             Status.Idle, Status.Checking -> null
-            Status.Incorrect -> if (state.enteredDigits == 0) LockMessage.INCORRECT else null
-            is Status.Wait -> LockMessage.WAIT
-            Status.StorageUnavailable -> LockMessage.UNAVAILABLE
+            Status.Incorrect -> if (state.enteredDigits == 0) WooPosLockMessage.INCORRECT else null
+            is Status.Wait -> WooPosLockMessage.WAIT
+            Status.StorageUnavailable -> WooPosLockMessage.UNAVAILABLE
         }
     }
     val feedbackSpec = tween<Float>(FEEDBACK_MILLIS, easing = LinearOutSlowInEasing)
     val dotsAlpha by animateFloatAsState(if (message == null) 1f else 0f, feedbackSpec, label = "lockDots")
-    Box(Modifier.heightIn(min = STATUS_ROW_HEIGHT), contentAlignment = Alignment.Center) {
+    Box(Modifier.heightIn(min = statusHeight), contentAlignment = Alignment.Center) {
         // The dots stay composed under messages so the next digit still pops in.
-        LockPinDots(
+        LockPINDots(
             enteredDigits = feedback.heldDigits.takeIf { it > 0 } ?: state.enteredDigits,
             isHidden = message != null,
             modifier = Modifier.graphicsLayer {
@@ -423,7 +427,7 @@ private fun LockStatus(state: WooPosLockScreenState, feedback: LockPinFeedback) 
 }
 
 @Composable
-private fun LockPinDots(enteredDigits: Int, isHidden: Boolean, modifier: Modifier = Modifier) {
+private fun LockPINDots(enteredDigits: Int, isHidden: Boolean, modifier: Modifier = Modifier) {
     val label = stringResource(R.string.woopos_lock_pin_entry)
     val description = stringResource(R.string.woopos_lock_digits_entered, enteredDigits, WooPosPINHash.PIN_LENGTH)
     Row(
@@ -435,12 +439,12 @@ private fun LockPinDots(enteredDigits: Int, isHidden: Boolean, modifier: Modifie
             }
         },
     ) {
-        repeat(WooPosPINHash.PIN_LENGTH) { index -> LockPinDot(filled = index < enteredDigits) }
+        repeat(WooPosPINHash.PIN_LENGTH) { index -> LockPINDot(filled = index < enteredDigits) }
     }
 }
 
 @Composable
-private fun LockPinDot(filled: Boolean) {
+private fun LockPINDot(filled: Boolean) {
     Box(
         Modifier
             .size(DOT_SIZE)
@@ -457,12 +461,14 @@ private fun LockPinDot(filled: Boolean) {
 }
 
 @Composable
-private fun LockMessageText(message: LockMessage, remainingSeconds: Long) {
+private fun LockMessageText(message: WooPosLockMessage, remainingSeconds: Long) {
     val locale = LocalConfiguration.current.locales[0]
     val text = when (message) {
-        LockMessage.INCORRECT -> buildAnnotatedString { append(stringResource(R.string.woopos_lock_incorrect)) }
-        LockMessage.UNAVAILABLE -> buildAnnotatedString { append(stringResource(R.string.woopos_lock_unavailable)) }
-        LockMessage.WAIT -> {
+        WooPosLockMessage.INCORRECT -> buildAnnotatedString { append(stringResource(R.string.woopos_lock_incorrect)) }
+        WooPosLockMessage.UNAVAILABLE -> buildAnnotatedString {
+            append(stringResource(R.string.woopos_lock_unavailable))
+        }
+        WooPosLockMessage.WAIT -> {
             val minutes = remainingSeconds / SECONDS_PER_MINUTE
             val seconds = remainingSeconds % SECONDS_PER_MINUTE
             val full = stringResource(R.string.woopos_lock_wait, minutes, seconds)
