@@ -5,7 +5,6 @@ import android.os.Build
 import android.security.KeyStoreException
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import android.util.AtomicFile
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
@@ -38,7 +37,8 @@ class WooPosEncryptedPINStorage internal constructor(
         },
     )
 
-    private val directory by lazy { File(context.noBackupFilesDir, "woopos-pins") }
+    private val files by lazy { WooPosPINStorageFiles(File(context.noBackupFilesDir, "woopos-pins"), "pins") }
+    private val directory get() = files.directory
 
     @Synchronized
     override fun read(localSiteId: Int): ByteArray? = reporting("read") { readRecord(localSiteId) }
@@ -58,9 +58,9 @@ class WooPosEncryptedPINStorage internal constructor(
     }
 
     private fun readRecord(localSiteId: Int): ByteArray? {
-        checkDirectoryAccess()
-        val file = file(localSiteId)
-        if (!exists(file)) return null
+        files.checkDirectoryAccess()
+        val file = files.file(localSiteId)
+        if (!files.exists(file)) return null
         return decrypt(localSiteId, file.openRead().use { input -> input.readBytesBounded() })
     }
 
@@ -79,11 +79,11 @@ class WooPosEncryptedPINStorage internal constructor(
     }
 
     private fun writeRecord(localSiteId: Int, bytes: ByteArray?) {
-        val file = file(localSiteId)
+        val file = files.file(localSiteId)
         if (bytes == null) {
-            checkDirectoryAccess()
+            files.checkDirectoryAccess()
             file.delete()
-            check(!exists(file))
+            check(!files.exists(file))
             return
         }
         require(bytes.size <= WooPosPINStorage.MAX_RECORD_BYTES)
@@ -119,18 +119,6 @@ class WooPosEncryptedPINStorage internal constructor(
 
     private fun report(operation: String, failure: Throwable) {
         runCatching { reportFailure(operation, failure) }
-    }
-
-    private fun checkDirectoryAccess() {
-        check(!directory.exists() || (directory.isDirectory && directory.canRead() && directory.canExecute()))
-    }
-
-    private fun exists(file: AtomicFile): Boolean =
-        file.baseFile.exists() || File(file.baseFile.path + ".bak").exists()
-
-    private fun file(localSiteId: Int): AtomicFile {
-        require(localSiteId > 0)
-        return AtomicFile(File(directory, "$localSiteId.pins"))
     }
 
     private fun getOrCreateKey(): SecretKey {

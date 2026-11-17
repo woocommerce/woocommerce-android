@@ -40,13 +40,11 @@ internal class WooPosLocalRateLimiterTestFixture(private val dispatchers: Corout
         override fun now() = WooPosPINTime(boot, elapsed)
     }
     val records = mutableMapOf<Int, WooPosPINAttemptState>()
-    var attemptReads = 0
     var readError = false
     var writeError = false
     var onAttemptWrite: ((WooPosPINAttemptState) -> Unit)? = null
     val storage = object : WooPosPINAttemptStorage {
         override fun read(localSiteId: Int): WooPosPINAttemptState {
-            attemptReads++
             check(!readError)
             return records[localSiteId] ?: WooPosPINAttemptState.NO_FAILURES
         }
@@ -57,17 +55,11 @@ internal class WooPosLocalRateLimiterTestFixture(private val dispatchers: Corout
         }
         override fun clearAll() { records.clear() }
     }
-    var recoveryResult: Result<WooPosLocalRole> = Result.failure(IllegalStateException())
-    var recoveryAction: suspend () -> Result<WooPosLocalRole> = { recoveryResult }
-    val recovery = object : WooPosPINRecovery {
-        override suspend fun authenticate(localSiteId: Int) = recoveryAction()
-    }
     fun rateLimiter() = WooPosLocalRateLimiter(
         store,
         WooPosPINAuthenticator(dispatchers),
         storage,
         clock,
-        recovery,
         dispatchers,
     )
 }

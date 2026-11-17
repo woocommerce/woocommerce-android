@@ -8,8 +8,6 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -23,7 +21,6 @@ class WooPosLocalRateLimiter @Inject internal constructor(
     private val authenticator: WooPosPINAuthenticator,
     private val storage: WooPosPINAttemptStorage,
     private val clock: WooPosPINClock,
-    private val recovery: WooPosPINRecovery,
     private val dispatchers: CoroutineDispatchers,
 ) {
     private val mutex = Mutex()
@@ -71,24 +68,8 @@ class WooPosLocalRateLimiter @Inject internal constructor(
         }
     }.getOrDefault(WooPosLocalRateLimiterResult.Unavailable)
 
-    @Suppress("TooGenericExceptionCaught")
-    suspend fun recover(localSiteId: Int): WooPosLocalRateLimiterResult {
-        val role = try {
-            recovery.authenticate(localSiteId).getOrThrow()
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            WooLog.e(WooLog.T.POS, "Local PIN recovery authentication failed: ${e.javaClass.simpleName}")
-            return WooPosLocalRateLimiterResult.RecoveryUnavailable
-        }
-        if (!role.hasCapability(WooPosCapability.MANAGE_STORE_SETTINGS)) {
-            return WooPosLocalRateLimiterResult.RecoveryUnavailable
-        }
-        currentCoroutineContext().ensureActive()
-        return operation {
-            storage.write(localSiteId, WooPosPINAttemptState.NO_FAILURES)
-            WooPosLocalRateLimiterResult.Authenticated(role)
-        }.getOrDefault(WooPosLocalRateLimiterResult.RecoveryUnavailable)
+    internal suspend fun resetAfterRecovery(localSiteId: Int): Result<Unit> = operation {
+        storage.write(localSiteId, WooPosPINAttemptState.NO_FAILURES)
     }
 
     suspend fun clearAllAttempts(): Result<Unit> = operation { storage.clearAll() }
@@ -129,5 +110,4 @@ sealed interface WooPosLocalRateLimiterResult {
     data class Waiting(val remainingSeconds: Long) : WooPosLocalRateLimiterResult
     data object ProtectionOff : WooPosLocalRateLimiterResult
     data object Unavailable : WooPosLocalRateLimiterResult
-    data object RecoveryUnavailable : WooPosLocalRateLimiterResult
 }
