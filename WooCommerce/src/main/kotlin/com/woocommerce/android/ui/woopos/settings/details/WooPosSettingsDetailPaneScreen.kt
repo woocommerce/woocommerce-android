@@ -27,12 +27,14 @@ import com.woocommerce.android.ui.woopos.settings.WooPosSettingsState
 import com.woocommerce.android.ui.woopos.settings.details.hardware.WooPosHardwareSettingsScreen
 import com.woocommerce.android.ui.woopos.settings.details.hardware.barcodescanner.WooPosSettingsHardwareBarcodeScannerScreen
 import com.woocommerce.android.ui.woopos.settings.details.hardware.cardreader.WooPosSettingsHardwareCardReaderScreen
+import com.woocommerce.android.ui.woopos.settings.details.hardware.receiptprinter.WooPosSettingsHardwareReceiptPrinterScreen
 import com.woocommerce.android.ui.woopos.settings.details.help.WooPosHelpDetailScreen
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSettingsLocalCatalogScreen
 import com.woocommerce.android.ui.woopos.settings.details.payments.WooPosSettingsPaymentsScreen
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityScreen
 import com.woocommerce.android.ui.woopos.settings.details.store.WooPosSettingsStoreScreen
 
+@Suppress("CyclomaticComplexMethod")
 @Composable
 fun WooPosSettingsDetailPaneScreen(
     state: WooPosSettingsState,
@@ -93,6 +95,10 @@ fun WooPosSettingsDetailPaneScreen(
 
                 is WooPosSettingsDetailDestination.Hardware.CardReaders -> {
                     WooPosSettingsHardwareCardReaderScreen()
+                }
+
+                is WooPosSettingsDetailDestination.Hardware.ReceiptPrinters -> {
+                    WooPosSettingsHardwareReceiptPrinterScreen()
                 }
 
                 is WooPosSettingsDetailDestination.Store.Overview -> {
