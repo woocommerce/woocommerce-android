@@ -7,6 +7,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -313,22 +314,27 @@ private class LockIntro(val isActive: Boolean, val animation: LockIntroAnimation
     }
 }
 
+private enum class IntroProgress { PENDING, RUNNING, DONE }
+
 @Composable
 private fun rememberLockIntro(animates: Boolean): LockIntro {
     val canAnimate = animates && !LocalInspectionMode.current && ValueAnimator.areAnimatorsEnabled()
-    var isFinished by rememberSaveable { mutableStateOf(!canAnimate) }
-    SideEffect { if (!canAnimate) isFinished = true }
-    val isActive = canAnimate && !isFinished
+    var progress by rememberSaveable { mutableStateOf(if (canAnimate) IntroProgress.PENDING else IntroProgress.DONE) }
+    // A recreated screen, for example after rotation, does not replay an interrupted intro.
+    val wasInterrupted = remember { progress == IntroProgress.RUNNING }
+    val isActive = canAnimate && !wasInterrupted && progress != IntroProgress.DONE
+    SideEffect { if (!isActive) progress = IntroProgress.DONE }
     val animation = remember { LockIntroAnimation() }
     LaunchedEffect(isActive) {
         if (!isActive) return@LaunchedEffect
         if (coroutineContext[MotionDurationScale]?.scaleFactor == 0f) {
-            isFinished = true
+            progress = IntroProgress.DONE
             return@LaunchedEffect
         }
+        progress = IntroProgress.RUNNING
         animation.shackle.animateTo(0f, tween(INTRO_CLOSE_MILLIS, delayMillis = INTRO_HOLD_MILLIS))
         animation.reveal.animateTo(1f, tween(INTRO_REVEAL_MILLIS, easing = FastOutSlowInEasing))
-        isFinished = true
+        progress = IntroProgress.DONE
     }
     return remember(isActive) { LockIntro(isActive, animation) }
 }
@@ -406,32 +412,35 @@ private fun LockStatus(state: WooPosLockScreenState, feedback: LockPinFeedback) 
         state.error == WooPosLockError.INCORRECT && state.enteredDigits == 0 -> LockMessage.INCORRECT
         else -> null
     }
+    val feedbackSpec = tween<Float>(FEEDBACK_MILLIS, easing = LinearOutSlowInEasing)
+    val dotsAlpha by animateFloatAsState(if (message == null) 1f else 0f, feedbackSpec, label = "lockDots")
     Box(Modifier.heightIn(min = STATUS_ROW_HEIGHT), contentAlignment = Alignment.Center) {
-        Crossfade(
-            targetState = message,
-            animationSpec = tween(FEEDBACK_MILLIS, easing = LinearOutSlowInEasing),
-            label = "lockStatus",
-        ) { shown ->
-            when (shown) {
-                null -> LockPinDots(
-                    enteredDigits = feedback.heldDigits.takeIf { it > 0 } ?: state.enteredDigits,
-                    modifier = Modifier.graphicsLayer { translationX = feedback.shakeOffset * SHAKE_TRAVEL.toPx() },
-                )
-                else -> LockMessageText(shown, state.remainingSeconds)
-            }
+        // The dots stay composed under messages so the next digit still pops in.
+        LockPinDots(
+            enteredDigits = feedback.heldDigits.takeIf { it > 0 } ?: state.enteredDigits,
+            isHidden = message != null,
+            modifier = Modifier.graphicsLayer {
+                alpha = dotsAlpha
+                translationX = feedback.shakeOffset * SHAKE_TRAVEL.toPx()
+            },
+        )
+        Crossfade(targetState = message, animationSpec = feedbackSpec, label = "lockStatus") { shown ->
+            if (shown != null) LockMessageText(shown, state.remainingSeconds)
         }
     }
 }
 
 @Composable
-private fun LockPinDots(enteredDigits: Int, modifier: Modifier = Modifier) {
+private fun LockPinDots(enteredDigits: Int, isHidden: Boolean, modifier: Modifier = Modifier) {
     val label = stringResource(R.string.woopos_lock_pin_entry)
     val description = stringResource(R.string.woopos_lock_digits_entered, enteredDigits, WooPosPINHash.PIN_LENGTH)
     Row(
         horizontalArrangement = Arrangement.spacedBy(DOT_SPACING),
         modifier = modifier.clearAndSetSemantics {
-            contentDescription = label
-            stateDescription = description
+            if (!isHidden) {
+                contentDescription = label
+                stateDescription = description
+            }
         },
     ) {
         repeat(WooPosPINHash.PIN_LENGTH) { index -> LockPinDot(filled = index < enteredDigits) }

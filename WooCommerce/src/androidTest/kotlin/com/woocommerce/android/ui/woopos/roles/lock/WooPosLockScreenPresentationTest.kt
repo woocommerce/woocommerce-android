@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.roles.lock
 import android.animation.ValueAnimator
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -72,6 +73,36 @@ class WooPosLockScreenPresentationTest {
 
         // THEN
         composeTestRule.onNodeWithText("1").assertIsDisplayed().assertIsEnabled()
+    }
+
+    @Test
+    fun interruptedIntroDoesNotReplayAfterStateRestoration() {
+        assumeTrue(ValueAnimator.areAnimatorsEnabled())
+        composeTestRule.mainClock.autoAdvance = false
+        val showsScreen = mutableStateOf(true)
+        composeTestRule.setContent {
+            val stateHolder = rememberSaveableStateHolder()
+            if (showsScreen.value) {
+                stateHolder.SaveableStateProvider("lock") {
+                    WooPosTheme {
+                        WooPosLockScreen(WooPosLockScreenState(isLocked = true, enteredDigits = 2), onUIEvent = {})
+                    }
+                }
+            }
+        }
+        composeTestRule.mainClock.advanceTimeBy(INTRO_HOLD_AND_CLOSE_MILLIS / 2)
+        composeTestRule.onNodeWithText("1").assertDoesNotExist()
+
+        // WHEN
+        showsScreen.value = false
+        composeTestRule.mainClock.advanceTimeByFrame()
+        composeTestRule.waitForIdle()
+        showsScreen.value = true
+        composeTestRule.mainClock.advanceTimeBy(FRAME_MILLIS * 6)
+
+        // THEN
+        composeTestRule.onNodeWithText("1").assertIsDisplayed().assertIsEnabled()
+        composeTestRule.onNode(dots(entered = 2)).assertIsDisplayed()
     }
 
     @Test
