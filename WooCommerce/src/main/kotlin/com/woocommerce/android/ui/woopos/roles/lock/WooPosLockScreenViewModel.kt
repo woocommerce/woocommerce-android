@@ -14,11 +14,14 @@ class WooPosLockScreenViewModel @Inject constructor(
         when (event) {
             is WooPosLockScreenUIEvent.DigitTapped -> lockSession.enterDigit(event.digit)
             WooPosLockScreenUIEvent.DeleteTapped -> lockSession.deleteDigit()
+            // TODO WOOMOB-4606: Open PIN recovery.
+            WooPosLockScreenUIEvent.ForgotPINTapped -> Unit
         }
     }
 }
 
 sealed interface WooPosLockScreenUIEvent {
     data class DigitTapped(val digit: Int) : WooPosLockScreenUIEvent
+    data object ForgotPINTapped : WooPosLockScreenUIEvent
     data object DeleteTapped : WooPosLockScreenUIEvent
 }

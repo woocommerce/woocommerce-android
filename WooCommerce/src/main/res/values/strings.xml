@@ -4126,6 +4126,20 @@
     <string name="woopos_product_limitations_title">Where are my products?</string>
     <string name="woopos_documentation_title">Documentation</string>
     <string name="woopos_lock_pos">Lock POS</string>
+    <string name="woopos_settings_security_category">Security</string>
+    <string name="woopos_settings_security_subtitle">Manage PINs and lock settings</string>
+    <string name="woopos_security_setup">Set up access control</string>
+    <string name="woopos_security_description">Use PINs to manage what your team can do in the app.</string>
+    <string name="woopos_security_get_started">Get started</string>
+    <string name="woopos_security_choose_pin">Choose your admin PIN</string>
+    <string name="woopos_security_confirm_pin">Confirm your admin PIN</string>
+    <string name="woopos_security_mismatch">The PINs didn’t match. Try again.</string>
+    <string name="woopos_security_success">Your admin PIN is set</string>
+    <string name="woopos_lock_forgot_pin">Forgot PIN?</string>
+    <string name="woopos_lock_incorrect">Incorrect PIN. Try again.</string>
+    <!-- Finalize storage error copy in WOOMOB-4623 before translation. -->
+    <string name="woopos_lock_storage_error" translatable="false">PIN storage is unavailable. Try again later.</string>
+    <string name="woopos_lock_wait">Too many incorrect attempts.\nTry again in %1$d:%2$02d.</string>
     <string name="woopos_lock_enter_pin">Enter your PIN to unlock POS</string>
     <string name="woopos_lock_delete_digit">Delete</string>
     <string name="woopos_lock_pin_entry">PIN entry</string>

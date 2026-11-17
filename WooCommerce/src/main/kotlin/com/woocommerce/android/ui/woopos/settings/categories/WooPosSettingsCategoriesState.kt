@@ -35,6 +35,11 @@ enum class WooPosSettingsCategory(
         R.string.woopos_settings_local_catalog_category_subtitle,
         WooPosSettingsDetailDestination.LocalCatalog.Overview
     ),
+    SECURITY(
+        R.string.woopos_settings_security_category,
+        R.string.woopos_settings_security_subtitle,
+        WooPosSettingsDetailDestination.Security.Overview
+    ),
     HELP(
         titleRes = R.string.woopos_settings_help_category,
         subtitleRes = null,

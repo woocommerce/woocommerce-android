@@ -44,8 +44,3 @@ class WooPosLockSession @Inject constructor(
         private const val MAX_DIGIT = 9
     }
 }
-
-data class WooPosLockScreenState(
-    val isLocked: Boolean = false,
-    val enteredDigits: Int = 0,
-)
