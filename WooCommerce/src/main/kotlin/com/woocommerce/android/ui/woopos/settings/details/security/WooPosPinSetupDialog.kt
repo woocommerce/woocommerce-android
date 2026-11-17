@@ -53,52 +53,78 @@ fun WooPosPinSetupDialog(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value),
         ) {
-            val title = when (state.stage) {
-                WooPosPinSetupState.Stage.CHOOSE -> R.string.woopos_security_choose_pin
-                WooPosPinSetupState.Stage.CONFIRM,
-                WooPosPinSetupState.Stage.CHECKING -> R.string.woopos_security_confirm_pin
-                WooPosPinSetupState.Stage.SUCCESS -> R.string.woopos_security_success
-            }
-            WooPosText(
-                text = stringResource(title),
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.semantics {
-                    heading()
-                    liveRegion = LiveRegionMode.Polite
-                },
-            )
-            if (state.canEnterPIN) {
-                WooPosPinDots(state.enteredDigits)
-                if (state.mismatch) {
-                    WooPosText(
-                        text = stringResource(R.string.woopos_security_mismatch),
-                        style = WooPosTypography.BodyLarge,
-                        color = MaterialTheme.colorScheme.error,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-                    )
-                }
-                WooPosPinPad(
-                    enteredDigits = state.enteredDigits,
-                    enabled = true,
-                    onDigit = { onUIEvent(WooPosPinSetupUIEvent.DigitTapped(it)) },
-                    onDelete = { onUIEvent(WooPosPinSetupUIEvent.DeleteTapped) },
+            when (state.stage) {
+                WooPosPinSetupState.Stage.CHOOSE -> PinSetupEntry(
+                    state = state,
+                    title = stringResource(R.string.woopos_security_choose_pin),
+                    onUIEvent = onUIEvent,
                 )
-                if (state.stage == WooPosPinSetupState.Stage.CONFIRM) {
-                    WooPosOutlinedButton(
-                        text = stringResource(R.string.back),
-                        onClick = { onUIEvent(WooPosPinSetupUIEvent.BackTapped) },
-                    )
+                WooPosPinSetupState.Stage.CONFIRM,
+                WooPosPinSetupState.Stage.MISMATCH -> PinSetupEntry(
+                    state = state,
+                    title = stringResource(R.string.woopos_security_confirm_pin),
+                    onUIEvent = onUIEvent,
+                    showBack = true,
+                    showMismatch = state.stage == WooPosPinSetupState.Stage.MISMATCH,
+                )
+                WooPosPinSetupState.Stage.CHECKING -> {
+                    PinSetupHeading(stringResource(R.string.woopos_security_confirm_pin))
+                    WooPosCircularLoadingIndicator(Modifier.size(WooPosIconSize.Large.value).progressSemantics())
                 }
-            } else if (state.stage == WooPosPinSetupState.Stage.CHECKING) {
-                WooPosCircularLoadingIndicator(Modifier.size(WooPosIconSize.Large.value).progressSemantics())
-            } else {
-                WooPosOutlinedButton(text = stringResource(R.string.done), onClick = onClose)
+                WooPosPinSetupState.Stage.SUCCESS -> {
+                    PinSetupHeading(stringResource(R.string.woopos_security_success))
+                    WooPosOutlinedButton(text = stringResource(R.string.done), onClick = onClose)
+                }
             }
         }
     }
+}
+
+@Composable
+private fun PinSetupEntry(
+    state: WooPosPinSetupState,
+    title: String,
+    onUIEvent: (WooPosPinSetupUIEvent) -> Unit,
+    showBack: Boolean = false,
+    showMismatch: Boolean = false,
+) {
+    PinSetupHeading(title)
+    WooPosPinDots(state.enteredDigits)
+    if (showMismatch) {
+        WooPosText(
+            text = stringResource(R.string.woopos_security_mismatch),
+            style = WooPosTypography.BodyLarge,
+            color = MaterialTheme.colorScheme.error,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+        )
+    }
+    WooPosPinPad(
+        enteredDigits = state.enteredDigits,
+        enabled = true,
+        onDigit = { onUIEvent(WooPosPinSetupUIEvent.DigitTapped(it)) },
+        onDelete = { onUIEvent(WooPosPinSetupUIEvent.DeleteTapped) },
+    )
+    if (showBack) {
+        WooPosOutlinedButton(
+            text = stringResource(R.string.back),
+            onClick = { onUIEvent(WooPosPinSetupUIEvent.BackTapped) },
+        )
+    }
+}
+
+@Composable
+private fun PinSetupHeading(title: String) {
+    WooPosText(
+        text = title,
+        style = WooPosTypography.Heading,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.semantics {
+            heading()
+            liveRegion = LiveRegionMode.Polite
+        },
+    )
 }
 
 @WooPosPreview
@@ -116,7 +142,7 @@ fun WooPosPinSetupConfirmPreview() {
 @WooPosPreview
 @Composable
 fun WooPosPinSetupMismatchPreview() {
-    PinSetupDialogPreview(WooPosPinSetupState(stage = WooPosPinSetupState.Stage.CONFIRM, mismatch = true))
+    PinSetupDialogPreview(WooPosPinSetupState(stage = WooPosPinSetupState.Stage.MISMATCH))
 }
 
 @WooPosPreview
