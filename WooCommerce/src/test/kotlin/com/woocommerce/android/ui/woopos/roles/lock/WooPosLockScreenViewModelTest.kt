@@ -40,7 +40,7 @@ class WooPosLockScreenViewModelTest {
         repeat(5) {
             repeat(4) { viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(0)) }
         }
-        assertThat(viewModel.state.value.remainingSeconds).isEqualTo(30)
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Wait(30))
 
         // WHEN
         val readsBeforeTick = fixture.attemptReads
@@ -54,8 +54,8 @@ class WooPosLockScreenViewModelTest {
         viewModel.onUIEvent(WooPosLockScreenUIEvent.ForgotPINTapped)
 
         // THEN
-        assertThat(viewModel.state.value.remainingSeconds).isEqualTo(29)
-        assertThat(viewModel.state.value.error).isNotEqualTo(WooPosLockError.STORAGE)
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Wait(29))
+        assertThat(viewModel.state.value.status).isNotEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
         assertThat(viewModel.state.value.isLocked).isTrue()
 
         // WHEN
@@ -64,7 +64,7 @@ class WooPosLockScreenViewModelTest {
         runCurrent()
 
         // THEN
-        assertThat(viewModel.state.value.remainingSeconds).isZero()
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Idle)
         assertThat(viewModel.state.value.canEnterPIN).isTrue()
     }
 
@@ -96,13 +96,13 @@ class WooPosLockScreenViewModelTest {
             // THEN
             assertThat(viewModel.state.value.isLocked).isTrue()
             assertThat(session.activeRole).isNull()
-            assertThat(viewModel.state.value.remainingSeconds).isEqualTo(30)
+            assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Wait(30))
             assertThat(viewModel.state.value.canEnterPIN).isFalse()
             repeat(4) { viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(0)) }
             assertThat(viewModel.state.value.enteredDigits).isZero()
             assertThat(fixture.records).isEqualTo(attempts)
             viewModel.onUIEvent(WooPosLockScreenUIEvent.ForgotPINTapped)
-            assertThat(viewModel.state.value.error).isNotEqualTo(WooPosLockError.STORAGE)
+            assertThat(viewModel.state.value.status).isNotEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
             assertThat(fixture.records).isEqualTo(attempts)
 
             // WHEN
@@ -111,7 +111,7 @@ class WooPosLockScreenViewModelTest {
             runCurrent()
 
             // THEN
-            assertThat(viewModel.state.value.remainingSeconds).isZero()
+            assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Idle)
             assertThat(viewModel.state.value.canEnterPIN).isTrue()
         }
 }

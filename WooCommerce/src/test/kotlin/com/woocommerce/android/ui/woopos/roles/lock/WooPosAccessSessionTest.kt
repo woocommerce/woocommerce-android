@@ -91,7 +91,7 @@ class WooPosAccessSessionTest {
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.state.value.error).isEqualTo(WooPosLockError.STORAGE)
+        assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
         assertThat(fixture.records).isEmpty()
     }
 
@@ -107,7 +107,7 @@ class WooPosAccessSessionTest {
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.state.value.error).isEqualTo(WooPosLockError.INCORRECT)
+        assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Incorrect)
         assertThat(session.state.value.enteredDigits).isZero()
 
         // WHEN
@@ -176,11 +176,11 @@ class WooPosAccessSessionTest {
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
         assertThat(session.state.value.enteredDigits).isZero()
-        assertThat(session.state.value.remainingSeconds).isEqualTo(30)
-        assertThat(session.state.value.error).isNotEqualTo(WooPosLockError.STORAGE)
+        assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Wait(30))
+        assertThat(session.state.value.status).isNotEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
         fixture.elapsed += 1001
         session.refreshWait()
-        assertThat(session.state.value.remainingSeconds).isEqualTo(29)
+        assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Wait(29))
     }
 
     @Test
@@ -236,14 +236,14 @@ class WooPosAccessSessionTest {
         fixture.pinReadGate = gate
         val unlock = async { enter(session, "1234") }
         runCurrent()
-        assertThat(session.state.value.isChecking).isTrue()
+        assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Checking)
 
         // WHEN
         val lock = async { session.lock() }
         runCurrent()
         assertThat(session.activeRole).isNull()
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.state.value.isChecking).isTrue()
+        assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Checking)
         assertThat(session.state.value.canEnterPIN).isFalse()
         gate.complete(Unit)
         unlock.await()
@@ -313,7 +313,7 @@ class WooPosAccessSessionTest {
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
         assertThat(session.state.value.enteredDigits).isZero()
-        assertThat(session.state.value.error).isEqualTo(WooPosLockError.STORAGE)
+        assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
     }
 
     @Test
@@ -351,7 +351,7 @@ class WooPosAccessSessionTest {
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.state.value.error).isEqualTo(WooPosLockError.STORAGE)
+        assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
         assertThat(session.activeRole).isNull()
     }
 

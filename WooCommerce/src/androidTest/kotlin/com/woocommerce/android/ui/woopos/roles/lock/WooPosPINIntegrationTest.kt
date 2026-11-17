@@ -12,6 +12,7 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosCapability
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosEncryptedPINStorage
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINAuthenticator
@@ -111,7 +112,7 @@ class WooPosPINIntegrationTest {
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.state.value.error).isEqualTo(WooPosLockError.INCORRECT)
+        assertThat(session.state.value.status).isEqualTo(Status.Incorrect)
         assertThat(session.activeRole).isNull()
         assertThat(previous.failures).isEqualTo(1)
         enter(session, CASHIER_PIN)
@@ -145,7 +146,8 @@ class WooPosPINIntegrationTest {
         session.lock()
 
         // THEN
-        assertThat(session.state.value.remainingSeconds).isBetween(1, 30)
+        val initialWait = (session.state.value.status as Status.Wait).remainingSeconds
+        assertThat(initialWait).isBetween(1, 30)
         assertThat(session.state.value.canEnterPIN).isFalse()
         assertThat(session.activeRole).isNull()
         enter(session, ADMIN_PIN)
@@ -158,13 +160,13 @@ class WooPosPINIntegrationTest {
         val recreatedLimiter = createLimiter(recreatedStore)
         val recreated = createSession(recreatedLimiter)
         recreated.initialize()
-        assertThat(recreated.state.value.remainingSeconds).isBetween(1, session.state.value.remainingSeconds)
+        assertThat((recreated.state.value.status as Status.Wait).remainingSeconds).isBetween(1, initialWait)
         assertThat(recreated.state.value.canEnterPIN).isFalse()
         assertThat(recreatedLimiter.authenticate(SITE_ID, ADMIN_PIN))
             .isInstanceOf(WooPosLocalRateLimiterResult.Waiting::class.java)
         assertThat(attempts.read(SITE_ID)).isEqualTo(previous)
         withTimeout(35_000) {
-            while (recreated.state.value.remainingSeconds > 0) {
+            while (recreated.state.value.status is Status.Wait) {
                 delay(1000)
                 recreated.refreshWait()
             }
@@ -197,7 +199,7 @@ class WooPosPINIntegrationTest {
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.state.value.error).isEqualTo(WooPosLockError.STORAGE)
+        assertThat(session.state.value.status).isEqualTo(Status.StorageUnavailable)
         assertThat(session.state.value.canEnterPIN).isFalse()
         assertThat(session.activeRole).isNull()
         assertThat(limiter.authenticate(SITE_ID, ADMIN_PIN)).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
@@ -222,7 +224,7 @@ class WooPosPINIntegrationTest {
         // THEN
         assertThat(session.isEnabled).isTrue()
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.state.value.error).isEqualTo(WooPosLockError.STORAGE)
+        assertThat(session.state.value.status).isEqualTo(Status.StorageUnavailable)
         assertThat(session.activeRole).isNull()
         assertThat(limiter.authenticate(SITE_ID, ADMIN_PIN)).isEqualTo(WooPosLocalRateLimiterResult.Unavailable)
         assertThat(file.readBytes()).isEqualTo(original)
@@ -246,7 +248,7 @@ class WooPosPINIntegrationTest {
 
             // THEN
             assertThat(session.state.value.isLocked).isTrue()
-            assertThat(session.state.value.error).isEqualTo(WooPosLockError.STORAGE)
+            assertThat(session.state.value.status).isEqualTo(Status.StorageUnavailable)
             assertThat(session.activeRole).isNull()
             assertThat(attempts.read(SITE_ID)).isEqualTo(previous)
         } finally {

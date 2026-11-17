@@ -1,0 +1,21 @@
+# Saves the privacy banner when it shows after a login. The app only shows it in
+# GDPR countries, a few seconds after the dashboard opens, and while it's open
+# the dashboard is missing from the hierarchy.
+#
+# The texts are literal because the runner only forwards the STRING_* variables
+# that flow files reference, not subflows.
+appId: com.woocommerce.android
+---
+- extendedWaitUntil:
+    visible: "Manage privacy"
+    timeout: 10000
+    optional: true
+
+- runFlow:
+    when:
+      visible: "Manage privacy"
+    commands:
+      - tapOn: "Save"
+      - extendedWaitUntil:
+          notVisible: "Manage privacy"
+          timeout: 10000

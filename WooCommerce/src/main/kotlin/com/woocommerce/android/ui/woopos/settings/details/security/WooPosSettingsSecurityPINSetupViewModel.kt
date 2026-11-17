@@ -16,12 +16,12 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class WooPosPinSetupViewModel @Inject constructor(
+class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val store: WooPosLocalPINStore,
     private val accessSession: WooPosAccessSession,
 ) : ViewModel() {
-    private val _state = MutableStateFlow(WooPosPinSetupState())
+    private val _state = MutableStateFlow(WooPosSettingsSecurityPINSetupState())
     val state = _state.asStateFlow()
     private var pin = ""
     private var generation = 0L
@@ -31,23 +31,23 @@ class WooPosPinSetupViewModel @Inject constructor(
         generation++
         pin = ""
         isSaving = false
-        _state.value = WooPosPinSetupState()
+        _state.value = WooPosSettingsSecurityPINSetupState()
     }
 
-    fun onUIEvent(event: WooPosPinSetupUIEvent) {
-        if (isSaving || !_state.value.canEnterPIN) return
+    fun onUIEvent(event: WooPosSettingsSecurityPINSetupUIEvent) {
+        if (isSaving || _state.value.stage != WooPosSettingsSecurityPINSetupState.Stage.CHOOSE) return
         when (event) {
-            is WooPosPinSetupUIEvent.DigitTapped -> {
+            is WooPosSettingsSecurityPINSetupUIEvent.DigitTapped -> {
                 if (event.digit !in MIN_DIGIT..MAX_DIGIT) return
                 pin += event.digit
                 _state.value = _state.value.copy(enteredDigits = pin.length)
                 if (pin.length == WooPosPINHash.PIN_LENGTH) save()
             }
-            WooPosPinSetupUIEvent.DeleteTapped -> {
+            WooPosSettingsSecurityPINSetupUIEvent.DeleteTapped -> {
                 pin = pin.dropLast(1)
                 _state.value = _state.value.copy(enteredDigits = pin.length)
             }
-            WooPosPinSetupUIEvent.BackTapped -> reset()
+            WooPosSettingsSecurityPINSetupUIEvent.BackTapped -> reset()
         }
     }
 
@@ -74,9 +74,9 @@ class WooPosPinSetupViewModel @Inject constructor(
             if (request != generation) return@launch
             isSaving = false
             _state.value = if (setupSaved && id == selectedSite.getOrNull()?.id) {
-                WooPosPinSetupState(stage = WooPosPinSetupState.Stage.SUCCESS)
+                WooPosSettingsSecurityPINSetupState(stage = WooPosSettingsSecurityPINSetupState.Stage.SUCCESS)
             } else {
-                WooPosPinSetupState()
+                WooPosSettingsSecurityPINSetupState()
             }
         }
     }
