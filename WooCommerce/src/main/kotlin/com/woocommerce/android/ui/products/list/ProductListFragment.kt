@@ -328,7 +328,10 @@ class ProductListFragment :
                     }
                     reloadProductsAfterInventoryChange()
                 }
-                is ScanToUpdateInventoryViewModel.NavigateToProductDetailsEvent -> onProductClick(event.productId)
+                is ScanToUpdateInventoryViewModel.NavigateToProductDetailsEvent -> {
+                    inventoryViewModel.onBottomSheetDismissed()
+                    onProductClick(event.productId)
+                }
                 else -> event.isHandled = false
             }
         }
