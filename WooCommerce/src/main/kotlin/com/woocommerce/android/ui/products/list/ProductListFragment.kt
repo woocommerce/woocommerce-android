@@ -194,13 +194,16 @@ class ProductListFragment :
                 onEmptyAddProductClicked = ::showAddProductBottomSheet,
                 onListAtTopChanged = { isListAtTop = it },
             )
-            // The sheet uses Material 2 text, which needs the legacy theme and a content color that this
-            // design system container doesn't provide.
+            // The sheet uses Material 2 text, which needs WooTheme and a Material 2 content color. The background
+            // of LegacyWooThemeWithBackground would hide the list while a product loads.
             WooTheme {
                 CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onSurface) {
                     QuickInventoryUpdateSheet(
                         viewState = inventoryViewModel.viewState.collectAsState(),
-                        onBottomSheetDismissed = inventoryViewModel::onBottomSheetDismissed,
+                        onBottomSheetDismissed = {
+                            inventoryViewModel.onBottomSheetDismissed()
+                            reloadProductsAfterInventoryChange()
+                        },
                         onIncrementQuantityClicked = inventoryViewModel::onIncrementQuantityClicked,
                         onUpdateQuantityClicked = inventoryViewModel::onUpdateQuantityClicked,
                         onViewProductDetailsClicked = inventoryViewModel::onViewProductDetailsClicked,

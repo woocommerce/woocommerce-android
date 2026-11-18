@@ -28,7 +28,7 @@ class BarcodeScannerScreenTest {
     private var hardwareScannerInfoOpened = false
 
     @Test
-    fun given_camera_permission_denied_when_external_scanner_is_supported_then_scanner_setup_is_available() {
+    fun givenCameraPermissionDeniedWhenExternalScannerIsSupportedThenScannerSetupIsAvailable() {
         // WHEN
         givenScreen(onHardwareScannerInfoClicked = { hardwareScannerInfoOpened = true })
 
@@ -44,7 +44,7 @@ class BarcodeScannerScreenTest {
     }
 
     @Test
-    fun given_camera_permission_denied_when_external_scanner_is_not_supported_then_permission_dialog_is_shown() {
+    fun givenCameraPermissionDeniedWhenExternalScannerIsNotSupportedThenPermissionDialogIsShown() {
         // WHEN
         givenScreen(onHardwareScannerInfoClicked = null)
 

@@ -103,7 +103,6 @@ fun BarcodeScannerScreen(
 }
 
 @Composable
-@Suppress("LongParameterList")
 private fun PermissionDeniedContent(
     title: String,
     message: String,
