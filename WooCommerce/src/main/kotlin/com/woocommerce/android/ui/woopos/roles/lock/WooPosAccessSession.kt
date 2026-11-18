@@ -26,7 +26,7 @@ class WooPosAccessSession @Inject constructor(
 ) {
     private val flagEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ROLES)
     private val _state = MutableStateFlow<WooPosAccessSessionState>(
-        if (flagEnabled) WooPosAccessSessionState.Locked(Status.Checking) else WooPosAccessSessionState.Unprotected
+        if (flagEnabled) WooPosAccessSessionState.Locked(Status.Initializing) else WooPosAccessSessionState.Unprotected
     )
     val state = _state.asStateFlow()
     private var localSiteId: Int? = null
@@ -39,7 +39,7 @@ class WooPosAccessSession @Inject constructor(
         val id = selectedSite.getOrNull()?.id
         if (id != localSiteId) {
             localSiteId = id
-            _state.value = WooPosAccessSessionState.Locked(Status.Checking)
+            _state.value = WooPosAccessSessionState.Locked(Status.Initializing)
         }
         val request = ++generation
         if (id == null) {
@@ -73,7 +73,7 @@ class WooPosAccessSession @Inject constructor(
 
     suspend fun recover() {
         val previous = _state.value as? WooPosAccessSessionState.Locked ?: return
-        if (previous.status == Status.Checking) return
+        if (previous.status == Status.Initializing || previous.status == Status.Checking) return
         val id = localSiteId ?: return
         val request = ++generation
         _state.value = WooPosAccessSessionState.Locked(Status.Checking)
