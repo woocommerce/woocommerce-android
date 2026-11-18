@@ -32,6 +32,8 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
     private val _events = MutableSharedFlow<WooPosPrintReceiptEvent>(extraBufferCapacity = 1)
     val events: SharedFlow<WooPosPrintReceiptEvent> = _events.asSharedFlow()
 
+    private var isPrintFailureIgnored = false
+
     fun onPrintReceiptClicked(orderId: Long) {
         if (_buttonState.value != WooPosPrintReceiptButtonState.Idle) return
         if (isPrinterConnected()) {
@@ -45,8 +47,13 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
         if (isPrinterConnected()) print(orderId)
     }
 
+    fun onEmailReceiptOpened() {
+        isPrintFailureIgnored = true
+    }
+
     private fun print(orderId: Long) {
         _buttonState.value = WooPosPrintReceiptButtonState.Loading
+        isPrintFailureIgnored = false
         scope.launch {
             when (val result = receiptPrinterFacade.printReceipt(orderId)) {
                 ReceiptPrinterResult.Success -> {
@@ -56,9 +63,11 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
 
                 is ReceiptPrinterResult.Failure -> {
                     logger.e("Printing the receipt failed: ${result.error}")
-                    _events.tryEmit(
-                        WooPosPrintReceiptEvent.PrintFailed(orderId, WooPosPrintReceiptFailure.from(result.error))
-                    )
+                    if (!isPrintFailureIgnored) {
+                        _events.tryEmit(
+                            WooPosPrintReceiptEvent.PrintFailed(orderId, WooPosPrintReceiptFailure.from(result.error))
+                        )
+                    }
                 }
             }
             _buttonState.value = WooPosPrintReceiptButtonState.Idle

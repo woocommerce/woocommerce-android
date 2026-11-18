@@ -1716,6 +1716,22 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
+    fun `when OnStartReceiptFlowClicked is triggered, then the coordinator is told email receipt was opened`() =
+        runTest {
+            // GIVEN
+            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+                on { events }.thenReturn(mock())
+            }
+            val viewModel = createViewModel(parentToChildrenEventReceiver = parentToChildrenEventReceiver)
+
+            // WHEN
+            viewModel.onUIEvent(WooPosTotalsUIEvent.OnStartReceiptFlowClicked)
+
+            // THEN
+            verify(printReceiptCoordinator).onEmailReceiptOpened()
+        }
+
+    @Test
     fun `given an order was created, when OnPrintReceiptClicked is triggered, then the coordinator gets the order id`() =
         runTest {
             // GIVEN

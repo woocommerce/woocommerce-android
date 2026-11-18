@@ -321,6 +321,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun handleEmailReceiptClicked() {
+        printReceiptCoordinator.onEmailReceiptOpened()
         viewModelScope.launch {
             totalsAnalyticsTracker.trackEmailReceiptTapped()
             childrenToParentEventSender.sendToParent(

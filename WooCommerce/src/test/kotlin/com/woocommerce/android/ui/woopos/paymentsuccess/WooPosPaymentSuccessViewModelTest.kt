@@ -173,6 +173,19 @@ class WooPosPaymentSuccessViewModelTest {
     }
 
     @Test
+    fun `when onEmailReceiptClicked, then the coordinator is told email receipt was opened`() = runTest {
+        // GIVEN
+        whenever(resourceProvider.getString(any())).thenReturn("test")
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onEmailReceiptClicked()
+
+        // THEN
+        verify(printReceiptCoordinator).onEmailReceiptOpened()
+    }
+
+    @Test
     fun `when onEmailReceiptClicked, then OpenEmailReceipt navigation event emitted`() = runTest {
         // GIVEN
         whenever(totalsRepository.getOrderById(any())).thenReturn(null)

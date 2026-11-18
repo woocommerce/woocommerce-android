@@ -279,6 +279,52 @@ class WooPosPrintReceiptCoordinatorTest {
             }
         }
 
+    @Test
+    fun `given the receipt is printing, when email receipt is opened and printing fails, then the failure is not reported`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            val printResult = CompletableDeferred<ReceiptPrinterResult>()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).doSuspendableAnswer { printResult.await() }
+            val sut = createCoordinator()
+
+            sut.events.test {
+                sut.onPrintReceiptClicked(ORDER_ID)
+                runCurrent()
+
+                // WHEN
+                sut.onEmailReceiptOpened()
+                printResult.complete(ReceiptPrinterResult.Failure(ReceiptPrinterError.PaperEmpty))
+                runCurrent()
+
+                // THEN
+                expectNoEvents()
+                assertThat(sut.buttonState.value).isEqualTo(Idle)
+            }
+        }
+
+    @Test
+    fun `given a failure was ignored after email receipt was opened, when the next print fails, then the failure is reported`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID))
+                .thenReturn(ReceiptPrinterResult.Failure(ReceiptPrinterError.PaperEmpty))
+            val sut = createCoordinator()
+
+            sut.events.test {
+                sut.onEmailReceiptOpened()
+
+                // WHEN
+                sut.onPrintReceiptClicked(ORDER_ID)
+                runCurrent()
+
+                // THEN
+                assertThat(awaitItem())
+                    .isEqualTo(WooPosPrintReceiptEvent.PrintFailed(ORDER_ID, WooPosPrintReceiptFailure.PaperEmpty))
+            }
+        }
+
     private fun connectPrinter() {
         connectionStatus.value = ReceiptPrinterConnectionStatus.Connected(
             ReceiptPrinterDevice(id = "1", name = "Star mC-Print3")
