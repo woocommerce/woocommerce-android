@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanToUpdateInventoryScreen(
     onNewFrame: (ImageProxy) -> Unit,
@@ -47,6 +46,7 @@ fun ScanToUpdateInventoryScreen(
                 onHardwareScannerInfoClicked = onHardwareScannerInfoClicked,
             )
         },
+        onHardwareScannerInfoClicked = onHardwareScannerInfoClicked,
     )
     if (isHardwareScannerInfoVisible.value) {
         HardwareBarcodeScannerInfoSheet(
@@ -55,6 +55,28 @@ fun ScanToUpdateInventoryScreen(
             onDismissRequest = onHardwareScannerInfoDismissed,
         )
     }
+    QuickInventoryUpdateSheet(
+        viewState = viewState,
+        onBottomSheetDismissed = onBottomSheetDismissed,
+        onIncrementQuantityClicked = onIncrementQuantityClicked,
+        onUpdateQuantityClicked = onUpdateQuantityClicked,
+        onViewProductDetailsClicked = onViewProductDetailsClicked,
+        onManualQuantityEntered = onManualQuantityEntered,
+        onManageStockClicked = onManageStockClicked,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun QuickInventoryUpdateSheet(
+    viewState: State<ScanToUpdateInventoryViewModel.ViewState>,
+    onBottomSheetDismissed: () -> Unit,
+    onIncrementQuantityClicked: () -> Unit,
+    onUpdateQuantityClicked: () -> Unit,
+    onViewProductDetailsClicked: () -> Unit,
+    onManualQuantityEntered: (String) -> Unit,
+    onManageStockClicked: () -> Unit,
+) {
     if (viewState.value is ScanToUpdateInventoryViewModel.ViewState.Loading) {
         ProgressIndicator(backgroundColor = colorResource(id = R.color.color_scrim_background))
     }

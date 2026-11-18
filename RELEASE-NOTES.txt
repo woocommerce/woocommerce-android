@@ -4,6 +4,7 @@
 
 26.2
 -----
+- [*] Fixed an issue where external barcode scanners could not be used without camera permission [https://github.com/woocommerce/woocommerce-android/pull/16876]
 - [Internal] The excerpt logged for a store's error page is now built off the main thread [https://github.com/woocommerce/woocommerce-android/pull/16836]
 - [*] [POS] The tablet now lists a phone as a card reader when the two devices are logged in to the same store in different ways [https://github.com/woocommerce/woocommerce-android/pull/16829]
 
