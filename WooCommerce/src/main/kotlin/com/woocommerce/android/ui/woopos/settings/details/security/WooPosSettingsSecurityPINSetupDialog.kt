@@ -3,11 +3,10 @@ package com.woocommerce.android.ui.woopos.settings.details.security
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -29,13 +28,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.MotionDurationScale
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -75,6 +77,7 @@ import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSetting
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Error
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Saved
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Saving
+import kotlinx.coroutines.delay
 
 @Composable
 fun WooPosSettingsSecurityPINSetupDialog(
@@ -252,29 +255,40 @@ private fun PINStatus(enteredDigits: Int, error: Error?) {
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
     ) {
         WooPosPINDots(enteredDigits)
-        if (error != null) {
-            // The message appears once the dots have slid back into place.
-            val isPreview = LocalInspectionMode.current
-            val visibility = remember { MutableTransitionState(isPreview) }.apply { targetState = true }
-            AnimatedVisibility(
-                visibleState = visibility,
-                enter = fadeIn(tween(MESSAGE_FADE_MILLIS, delayMillis = PAGE_MILLIS)),
-            ) {
-                WooPosText(
-                    text = stringResource(
-                        when (error) {
-                            Error.MISMATCH -> R.string.woopos_security_mismatch
-                            Error.SAVE_FAILED -> R.string.woopos_security_save_failed
-                        }
-                    ),
-                    style = WooPosTypography.BodySmall,
-                    color = MaterialTheme.colorScheme.error,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-                )
-            }
-        }
+        if (error != null) PINError(error)
     }
+}
+
+/** Reserves the message's space at once but reveals and announces it after the dots slide back into place. */
+@Composable
+private fun PINError(error: Error) {
+    val isPreview = LocalInspectionMode.current
+    var isShown by remember { mutableStateOf(isPreview) }
+    LaunchedEffect(Unit) {
+        delay((PAGE_MILLIS * (coroutineContext[MotionDurationScale]?.scaleFactor ?: 1f)).toLong())
+        isShown = true
+    }
+    val alpha by animateFloatAsState(if (isShown) 1f else 0f, tween(MESSAGE_FADE_MILLIS), label = "pinSetupError")
+    WooPosText(
+        text = stringResource(
+            when (error) {
+                Error.MISMATCH -> R.string.woopos_security_mismatch
+                Error.SAVE_FAILED -> R.string.woopos_security_save_failed
+            }
+        ),
+        style = WooPosTypography.BodySmall,
+        color = MaterialTheme.colorScheme.error,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .graphicsLayer { this.alpha = alpha }
+            .then(
+                if (isShown) {
+                    Modifier.semantics { liveRegion = LiveRegionMode.Polite }
+                } else {
+                    Modifier.clearAndSetSemantics {}
+                }
+            ),
+    )
 }
 
 @Composable
