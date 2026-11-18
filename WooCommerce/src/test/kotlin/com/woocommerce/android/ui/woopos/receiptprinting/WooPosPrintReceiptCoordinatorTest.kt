@@ -308,12 +308,17 @@ class WooPosPrintReceiptCoordinatorTest {
         runTest {
             // GIVEN
             connectPrinter()
-            whenever(receiptPrinterFacade.printReceipt(ORDER_ID))
-                .thenReturn(ReceiptPrinterResult.Failure(ReceiptPrinterError.PaperEmpty))
+            val printResult = CompletableDeferred<ReceiptPrinterResult>()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).doSuspendableAnswer { printResult.await() }
             val sut = createCoordinator()
 
             sut.events.test {
+                sut.onPrintReceiptClicked(ORDER_ID)
+                runCurrent()
                 sut.onEmailReceiptOpened()
+                printResult.complete(ReceiptPrinterResult.Failure(ReceiptPrinterError.PaperEmpty))
+                runCurrent()
+                expectNoEvents()
 
                 // WHEN
                 sut.onPrintReceiptClicked(ORDER_ID)
@@ -322,6 +327,7 @@ class WooPosPrintReceiptCoordinatorTest {
                 // THEN
                 assertThat(awaitItem())
                     .isEqualTo(WooPosPrintReceiptEvent.PrintFailed(ORDER_ID, WooPosPrintReceiptFailure.PaperEmpty))
+                verify(receiptPrinterFacade, times(2)).printReceipt(ORDER_ID)
             }
         }
 
