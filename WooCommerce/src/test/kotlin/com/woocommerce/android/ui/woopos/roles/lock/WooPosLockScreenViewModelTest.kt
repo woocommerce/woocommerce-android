@@ -23,6 +23,69 @@ class WooPosLockScreenViewModelTest {
     val coroutineRule = WooPosCoroutineTestRule()
 
     @Test
+    fun `given no PIN protection, when startup read is pending, then loading ends without PIN checking`() = runTest {
+        // GIVEN
+        val fixture = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers).apply {
+            pins = Result.success(emptyMap())
+            pinReadGate = CompletableDeferred()
+        }
+        val (viewModel, _) = viewModel(fixture)
+
+        // THEN
+        assertThat(viewModel.state.value.isLocked).isTrue()
+        assertThat(viewModel.state.value.canEnterPIN).isFalse()
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Initializing)
+
+        // WHEN
+        fixture.pinReadGate?.complete(Unit)
+        runCurrent()
+
+        // THEN
+        assertThat(viewModel.state.value.isLocked).isFalse()
+    }
+
+    @Test
+    fun `given configured PINs, when startup read completes, then loading becomes PIN entry`() = runTest {
+        // GIVEN
+        val fixture = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers).apply {
+            pinReadGate = CompletableDeferred()
+        }
+        val (viewModel, _) = viewModel(fixture)
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Initializing)
+        viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(1))
+        assertThat(viewModel.state.value.enteredDigits).isZero()
+
+        // WHEN
+        fixture.pinReadGate?.complete(Unit)
+        runCurrent()
+
+        // THEN
+        assertThat(viewModel.state.value.isLocked).isTrue()
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Idle)
+        assertThat(viewModel.state.value.canEnterPIN).isTrue()
+    }
+
+    @Test
+    fun `given failed startup read, when loading ends, then POS stays blocked with unavailable state`() = runTest {
+        // GIVEN
+        val fixture = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers).apply {
+            pins = Result.failure(IllegalStateException())
+            pinReadGate = CompletableDeferred()
+        }
+        val (viewModel, _) = viewModel(fixture)
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Initializing)
+
+        // WHEN
+        fixture.pinReadGate?.complete(Unit)
+        runCurrent()
+
+        // THEN
+        assertThat(viewModel.state.value.isLocked).isTrue()
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
+        assertThat(viewModel.state.value.canEnterPIN).isFalse()
+    }
+
+    @Test
     fun `given wrong entries, when wait starts, then countdown updates live until PIN entry returns`() = runTest {
         // GIVEN
         val fixture = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)

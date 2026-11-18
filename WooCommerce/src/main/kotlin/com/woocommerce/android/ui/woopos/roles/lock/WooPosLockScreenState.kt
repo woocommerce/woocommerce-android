@@ -9,6 +9,7 @@ data class WooPosLockScreenState(
         get() = isLocked && (status == Status.Idle || status == Status.Incorrect)
 
     sealed interface Status {
+        data object Initializing : Status
         data object Idle : Status
         data object Checking : Status
         data object Incorrect : Status
