@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.receiptprinting
 
-import app.cash.turbine.test
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDevice
+import com.woocommerce.android.receiptprinter.ReceiptPrinterError
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosPermissionUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,10 +25,8 @@ class WooPosReceiptPrinterSetupViewModelTest {
     private val controllerState = MutableStateFlow<WooPosReceiptPrinterConnectionState>(
         WooPosReceiptPrinterConnectionState.Idle
     )
-    private val controllerIsConnected = MutableStateFlow(false)
     private val controller: WooPosReceiptPrinterConnectionController = mock {
         on { state }.thenReturn(controllerState)
-        on { isConnected }.thenReturn(controllerIsConnected)
     }
     private val controllerFactory: WooPosReceiptPrinterConnectionController.Factory = mock {
         on { create(any()) }.thenReturn(controller)
@@ -45,22 +43,6 @@ class WooPosReceiptPrinterSetupViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value).isEqualTo(WooPosReceiptPrinterConnectionState.FoundOne(PRINTER))
-    }
-
-    @Test
-    fun `when the printer connects, then isConnected emits true`() = runTest {
-        // GIVEN
-        val viewModel = createViewModel()
-
-        viewModel.isConnected.test {
-            assertThat(awaitItem()).isFalse()
-
-            // WHEN
-            controllerIsConnected.value = true
-
-            // THEN
-            assertThat(awaitItem()).isTrue()
-        }
     }
 
     @Test
@@ -187,7 +169,10 @@ class WooPosReceiptPrinterSetupViewModelTest {
     @Test
     fun `given a failed setup, when search again is clicked, then the controller starts setup`() = runTest {
         // GIVEN
-        controllerState.value = WooPosReceiptPrinterConnectionState.ConnectionFailed
+        controllerState.value = WooPosReceiptPrinterConnectionState.ConnectionFailed(
+            device = PRINTER,
+            error = ReceiptPrinterError.ConnectionLost(),
+        )
         val viewModel = createViewModel()
 
         // WHEN

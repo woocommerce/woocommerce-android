@@ -40,6 +40,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDevice
+import com.woocommerce.android.receiptprinter.ReceiptPrinterError
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
@@ -55,6 +56,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.rememberWooPosBluetoothPermissionLauncher
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.BluetoothOff
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.Connected
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.Connecting
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.ConnectionFailed
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.DiscoveryFailed
@@ -65,7 +67,6 @@ import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterCon
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.NoPrintersFound
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.Searching
 import com.woocommerce.android.util.WooPermissionUtils
-import kotlinx.coroutines.flow.first
 
 @Composable
 fun WooPosReceiptPrinterSetupDialog(
@@ -90,9 +91,11 @@ fun WooPosReceiptPrinterSetupDialog(
         viewModel.startSetup()
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.isConnected.first { it }
-        currentOnConnectionSuccess()
+    LaunchedEffect(state) {
+        if (state is Connected) {
+            viewModel.dismissDialog()
+            currentOnConnectionSuccess()
+        }
     }
 
     LaunchedEffect(lifecycleOwner) {
@@ -180,12 +183,9 @@ private fun WooPosReceiptPrinterSetupDialogContent(
                     onConnectClicked = onConnectClicked,
                 )
 
-                is Connecting -> ProgressContent(
-                    title = stringResource(
-                        R.string.woopos_receipt_printer_setup_connecting_title,
-                        currentState.device.name
-                    ),
-                )
+                is Connecting -> ConnectingContent(currentState.device)
+
+                is Connected -> ConnectingContent(currentState.device)
 
                 NoPrintersFound -> MessageContent(
                     title = stringResource(R.string.woopos_receipt_printer_setup_no_printers_title),
@@ -211,7 +211,7 @@ private fun WooPosReceiptPrinterSetupDialogContent(
                     ),
                 )
 
-                ConnectionFailed -> MessageContent(
+                is ConnectionFailed -> MessageContent(
                     title = stringResource(R.string.woopos_receipt_printer_setup_connection_failed_title),
                     message = stringResource(R.string.woopos_receipt_printer_setup_connection_failed_message),
                     icon = WooPosIcons.ErrorX,
@@ -256,6 +256,13 @@ private fun ProgressContent(title: String) {
             )
         },
         content = {},
+    )
+}
+
+@Composable
+private fun ConnectingContent(device: ReceiptPrinterDevice) {
+    ProgressContent(
+        title = stringResource(R.string.woopos_receipt_printer_setup_connecting_title, device.name),
     )
 }
 
@@ -443,7 +450,12 @@ fun WooPosReceiptPrinterSetupDialogDiscoveryFailedPreview() {
 @WooPosPreview
 @Composable
 fun WooPosReceiptPrinterSetupDialogConnectionFailedPreview() {
-    SetupDialogPreview(ConnectionFailed)
+    SetupDialogPreview(
+        ConnectionFailed(
+            device = ReceiptPrinterDevice(id = "1", name = "Star mC-Print3"),
+            error = ReceiptPrinterError.ConnectionLost(),
+        )
+    )
 }
 
 @WooPosPreview

@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDevice
 import com.woocommerce.android.ui.woopos.util.WooPosPermissionUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
@@ -17,8 +16,6 @@ class WooPosReceiptPrinterSetupViewModel @Inject constructor(
     private val controller = controllerFactory.create(viewModelScope)
 
     val state: StateFlow<WooPosReceiptPrinterConnectionState> = controller.state
-
-    val isConnected: Flow<Boolean> = controller.isConnected
 
     // The dialog calls this again when the Activity is recreated (for example when a Bluetooth scanner connects),
     // so a setup that is already running is left alone instead of being restarted.
