@@ -32,21 +32,16 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
     private val _events = MutableSharedFlow<WooPosPrintReceiptEvent>(extraBufferCapacity = 1)
     val events: SharedFlow<WooPosPrintReceiptEvent> = _events.asSharedFlow()
 
-    private var pendingOrderId: Long? = null
-
     fun onPrintReceiptClicked(orderId: Long) {
         if (_buttonState.value != WooPosPrintReceiptButtonState.Idle) return
         if (isPrinterConnected()) {
             print(orderId)
-            return
+        } else {
+            _events.tryEmit(WooPosPrintReceiptEvent.ShowPrinterSetup)
         }
-        pendingOrderId = orderId
-        _events.tryEmit(WooPosPrintReceiptEvent.ShowPrinterSetup)
     }
 
-    fun onPrinterSetupClosed() {
-        val orderId = pendingOrderId ?: return
-        pendingOrderId = null
+    fun onPrinterSetupClosed(orderId: Long) {
         if (isPrinterConnected()) print(orderId)
     }
 

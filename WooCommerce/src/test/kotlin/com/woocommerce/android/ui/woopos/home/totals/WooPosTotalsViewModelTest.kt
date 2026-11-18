@@ -88,7 +88,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -231,6 +230,7 @@ class WooPosTotalsViewModelTest {
 
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
+        private const val CREATED_ORDER_ID = 23L
         private const val COUPON_ID = 10L
     }
 
@@ -1713,22 +1713,16 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `when OnPrintReceiptClicked is triggered, then the coordinator gets the order id`() =
+    fun `given an order was created, when OnPrintReceiptClicked is triggered, then the coordinator gets the order id`() =
         runTest {
             // GIVEN
-            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
-                on { events }.thenReturn(mock())
-            }
-            val viewModel = createViewModel(
-                savedState = createMockSavedStateHandle(),
-                parentToChildrenEventReceiver = parentToChildrenEventReceiver,
-            )
+            val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
 
             // WHEN
             viewModel.onUIEvent(WooPosTotalsUIEvent.OnPrintReceiptClicked)
 
             // THEN
-            verify(printReceiptCoordinator).onPrintReceiptClicked(EMPTY_ORDER_ID)
+            verify(printReceiptCoordinator).onPrintReceiptClicked(CREATED_ORDER_ID)
         }
 
     @Test
@@ -1748,18 +1742,25 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `when the receipt printer setup dialog is dismissed, then the coordinator is told`() =
+    fun `given an order was created, when the receipt printer setup dialog is dismissed, then the coordinator gets the order id`() =
         runTest {
             // GIVEN
-            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
-                on { events }.thenReturn(flowOf(ParentToChildrenEvent.ReceiptPrinterSetupDialogDismissed))
-            }
+            val events = MutableStateFlow<ParentToChildrenEvent>(
+                ParentToChildrenEvent.CheckoutClicked(
+                    listOf(
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                    )
+                )
+            )
+            createViewModelAndSetupForSuccessfulOrderCreation(parentToChildrenEventFlow = events)
 
             // WHEN
-            createViewModel(parentToChildrenEventReceiver = parentToChildrenEventReceiver)
+            events.value = ParentToChildrenEvent.ReceiptPrinterSetupDialogDismissed
 
             // THEN
-            verify(printReceiptCoordinator).onPrinterSetupClosed()
+            verify(printReceiptCoordinator).onPrinterSetupClosed(CREATED_ORDER_ID)
         }
 
     @Test
@@ -3445,7 +3446,7 @@ class WooPosTotalsViewModelTest {
             .thenReturn("Payment failed")
         whenever(uiStringParser.asString(any())).thenReturn("Unfortunately, this payment has been declined.")
 
-        val orderId = 23L
+        val orderId = CREATED_ORDER_ID
         val order = Order.getEmptyOrder(
             dateCreated = Date(),
             dateModified = Date()

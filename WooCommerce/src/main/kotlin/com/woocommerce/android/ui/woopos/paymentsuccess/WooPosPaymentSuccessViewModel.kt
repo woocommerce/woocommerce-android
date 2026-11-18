@@ -132,7 +132,7 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
 
     fun onReceiptPrinterSetupDialogDismissed() {
         _state.update { it.copy(isReceiptPrinterSetupDialogVisible = false) }
-        printReceiptCoordinator.onPrinterSetupClosed()
+        printReceiptCoordinator.onPrinterSetupClosed(orderId)
     }
 
     private suspend fun emitNavigateBack() {

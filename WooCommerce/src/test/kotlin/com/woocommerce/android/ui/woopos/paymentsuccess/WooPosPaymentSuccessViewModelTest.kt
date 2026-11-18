@@ -222,11 +222,11 @@ class WooPosPaymentSuccessViewModelTest {
     }
 
     @Test
-    fun `given the setup dialog is shown, when it is dismissed, then it is hidden and the coordinator is told`() =
+    fun `given the setup dialog is shown, when it is dismissed, then it is hidden and the coordinator gets the order id`() =
         runTest {
             // GIVEN
             whenever(resourceProvider.getString(any())).thenReturn("test")
-            val viewModel = createViewModel()
+            val viewModel = createViewModel(orderId = 42L)
             printReceiptEvents.emit(WooPosPrintReceiptEvent.ShowPrinterSetup)
 
             // WHEN
@@ -234,6 +234,6 @@ class WooPosPaymentSuccessViewModelTest {
 
             // THEN
             assertThat(viewModel.state.value.isReceiptPrinterSetupDialogVisible).isFalse()
-            verify(printReceiptCoordinator).onPrinterSetupClosed()
+            verify(printReceiptCoordinator).onPrinterSetupClosed(42L)
         }
 }

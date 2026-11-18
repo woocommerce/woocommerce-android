@@ -810,7 +810,7 @@ class WooPosTotalsViewModel @Inject constructor(
                     }
 
                     ParentToChildrenEvent.ReceiptPrinterSetupDialogDismissed ->
-                        printReceiptCoordinator.onPrinterSetupClosed()
+                        printReceiptCoordinator.onPrinterSetupClosed(dataState.value.orderId)
 
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     is ParentToChildrenEvent.ItemClickedInItemsList,

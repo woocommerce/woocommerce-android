@@ -115,7 +115,7 @@ class WooPosPrintReceiptCoordinatorTest {
 
             // WHEN
             connectPrinter()
-            sut.onPrinterSetupClosed()
+            sut.onPrinterSetupClosed(ORDER_ID)
             runCurrent()
 
             // THEN
@@ -130,13 +130,29 @@ class WooPosPrintReceiptCoordinatorTest {
             sut.onPrintReceiptClicked(ORDER_ID)
 
             // WHEN
-            sut.onPrinterSetupClosed()
+            sut.onPrinterSetupClosed(ORDER_ID)
             connectPrinter()
-            sut.onPrinterSetupClosed()
             runCurrent()
 
             // THEN
             verify(receiptPrinterFacade, never()).printReceipt(any())
+        }
+
+    @Test
+    fun `given the coordinator was recreated during setup, when setup closes with a printer connected, then the receipt is printed`() =
+        runTest {
+            // GIVEN
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).thenReturn(ReceiptPrinterResult.Success)
+            createCoordinator().onPrintReceiptClicked(ORDER_ID)
+            val recreated = createCoordinator()
+
+            // WHEN
+            connectPrinter()
+            recreated.onPrinterSetupClosed(ORDER_ID)
+            runCurrent()
+
+            // THEN
+            verify(receiptPrinterFacade).printReceipt(ORDER_ID)
         }
 
     @Test
