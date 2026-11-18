@@ -50,6 +50,7 @@ import com.woocommerce.android.ui.products.details.ProductDetailFragmentArgs
 import com.woocommerce.android.ui.products.filter.ProductFilterResult
 import com.woocommerce.android.ui.products.inventory.QuickInventoryUpdateSheet
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel
+import com.woocommerce.android.ui.products.list.ProductListEvent.HardwareBarcodeScanned
 import com.woocommerce.android.ui.products.list.ProductListEvent.OpenEmptyProduct
 import com.woocommerce.android.ui.products.list.ProductListEvent.OpenProduct
 import com.woocommerce.android.ui.products.list.ProductListEvent.ScrollToTop
@@ -59,7 +60,6 @@ import com.woocommerce.android.ui.products.list.ProductListEvent.ShowDiscardProd
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductUpdateStockStatusScreen
-import com.woocommerce.android.ui.products.list.ProductListEvent.ShowScanToUpdateInventory
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
@@ -280,7 +280,7 @@ class ProductListFragment :
                 is ShowProductFilterScreen -> showProductFilterScreen(event)
                 is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
                 is ShowBarcodeScanner -> showScanToUpdateInventory()
-                is ShowScanToUpdateInventory -> inventoryViewModel.onBarcodeScanningResult(event.scannedBarcode)
+                is HardwareBarcodeScanned -> inventoryViewModel.onBarcodeScanningResult(event.scannedBarcode)
                 is ShowUpdateDialog -> handleUpdateDialogs(event)
                 is OpenProduct -> openProduct(event)
                 is OpenEmptyProduct -> openEmptyProduct()
@@ -328,7 +328,7 @@ class ProductListFragment :
                 }
                 is ScanToUpdateInventoryViewModel.NavigateToProductDetailsEvent -> {
                     inventoryViewModel.onProductDetailsOpened()
-                    onProductClick(event.productId)
+                    productListViewModel.onOpenProduct(event.productId)
                 }
                 else -> event.isHandled = false
             }

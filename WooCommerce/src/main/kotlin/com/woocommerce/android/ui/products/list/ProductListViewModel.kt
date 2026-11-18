@@ -310,7 +310,7 @@ class ProductListViewModel @Inject constructor(
 
     fun onHardwareBarcodeScanned(status: CodeScannerStatus.Success) {
         if (isSquarePluginActive()) return
-        triggerEvent(ProductListEvent.ShowScanToUpdateInventory(scannedBarcode = status))
+        triggerEvent(ProductListEvent.HardwareBarcodeScanned(scannedBarcode = status))
     }
 
     fun reloadProductsFromDb(excludeProductId: Long? = null) {

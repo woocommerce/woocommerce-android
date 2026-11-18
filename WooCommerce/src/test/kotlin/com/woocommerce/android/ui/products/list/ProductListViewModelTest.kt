@@ -1359,7 +1359,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         viewModel.onHardwareBarcodeScanned(CodeScannerStatus.Success("1234567890128", BarcodeFormat.FormatEAN13))
 
         // THEN
-        assertThat(events.filterIsInstance<ProductListEvent.ShowScanToUpdateInventory>()).isEmpty()
+        assertThat(events.filterIsInstance<ProductListEvent.HardwareBarcodeScanned>()).isEmpty()
     }
 
     private companion object {
