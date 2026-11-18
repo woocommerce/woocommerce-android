@@ -4,6 +4,7 @@ import com.woocommerce.android.tools.ResolveSiteBySiteId
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.SalesChannel
+import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -20,8 +21,11 @@ class GetWCOrderListDescriptorWithFiltersBySiteIdTest {
         on { invoke(SITE_ID) } doReturn SiteModel()
     }
     private val sut = GetWCOrderListDescriptorWithFiltersBySiteId(
-        orderFiltersRepository = orderFiltersRepository,
-        dateUtils = mock(),
+        getWCOrderListDescriptorWithFilters = GetWCOrderListDescriptorWithFilters(
+            orderFiltersRepository = orderFiltersRepository,
+            selectedSite = mock(),
+            dateUtils = mock(),
+        ),
         resolveSiteBySiteId = resolveSiteBySiteId,
     )
 
