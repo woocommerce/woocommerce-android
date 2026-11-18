@@ -73,7 +73,7 @@ fun WooPosPINPad(
         ) {
             Spacer(Modifier.size(style.keySize))
             DigitKey(0, enabled, style, onDigit)
-            PinKey(onClick = onDelete, enabled = enabled && enteredDigits > 0, style = style) {
+            PINKey(onClick = onDelete, enabled = enabled && enteredDigits > 0, style = style) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_woopos_backspace),
                     contentDescription = stringResource(R.string.woopos_lock_delete_digit),
@@ -104,11 +104,8 @@ fun WooPosPINDots(enteredDigits: Int, modifier: Modifier = Modifier, isHidden: B
 
 @Composable
 private fun PINDot(filled: Boolean) {
-    Box(
-        Modifier
-            .size(PIN_DOT_SIZE)
-            .border(PIN_DOT_BORDER_WIDTH, WooPosTheme.colors.outline, CircleShape)
-    ) {
+    Box(Modifier.size(PIN_DOT_SIZE)) {
+        Box(Modifier.matchParentSize().border(PIN_DOT_BORDER_WIDTH, WooPosTheme.colors.outline, CircleShape))
         AnimatedVisibility(
             visible = filled,
             enter = scaleIn(tween(PIN_DOT_POP_MILLIS, easing = FastOutSlowInEasing), initialScale = PIN_DOT_POP_SCALE),
@@ -121,13 +118,13 @@ private fun PINDot(filled: Boolean) {
 
 @Composable
 private fun DigitKey(digit: Int, enabled: Boolean, style: WooPosPINPadStyle, onDigit: (Int) -> Unit) {
-    PinKey(enabled = enabled, style = style, onClick = { onDigit(digit) }) {
+    PINKey(enabled = enabled, style = style, onClick = { onDigit(digit) }) {
         WooPosText(text = digit.toString(), style = WooPosTypography.Heading, fontWeight = FontWeight.Bold)
     }
 }
 
 @Composable
-private fun PinKey(
+private fun PINKey(
     enabled: Boolean,
     style: WooPosPINPadStyle,
     onClick: () -> Unit,
@@ -136,7 +133,6 @@ private fun PinKey(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val container = when {
-        // Dark disabled containers are lighter than enabled keys, so dark mode dims only the digits.
         style.showsDisabledKeys && isSystemInDarkTheme() -> MaterialTheme.colorScheme.surfaceDim
         style.showsDisabledKeys -> WooPosTheme.colors.disabledContainer
         isPressed -> MaterialTheme.colorScheme.surfaceContainerLowest
