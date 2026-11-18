@@ -118,6 +118,7 @@ class WooPosTotalsViewModel @Inject constructor(
     val screenEvents: SharedFlow<WooPosTotalsScreenEvent> = _screenEvents.asSharedFlow()
 
     private var createDraftOrderJob: Job? = null
+    private var leaveFailedPaymentJob: Job? = null
     private var newOrder: Order? = null
     private var deletedVariationFromApiError: Long? = null
 
@@ -454,13 +455,50 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun handleGoBackToCheckoutClickedWhenPaymentFailed() {
-        viewModelScope.launch {
+        leaveFailedPayment {
             childrenToParentEventSender.sendToParent(ChildToParentEvent.GoBackToCheckoutAfterFailedPayment)
             if (lastFailedPaymentWasTapToPay()) {
                 returnToCheckoutAfterTapToPayFailed()
             } else {
                 retryPaymentCollectionFromScratch()
             }
+        }
+    }
+
+    private fun leaveFailedPayment(leave: suspend () -> Unit) {
+        if (leaveFailedPaymentJob?.isActive == true) return
+        val paymentStateWhenLeaving = cardReaderPaymentController?.paymentState?.value
+        leaveFailedPaymentJob = viewModelScope.launch {
+            val unconfirmedPaymentStatus = fetchUnconfirmedPaymentStatus()
+            if (cardReaderPaymentController?.paymentState?.value !== paymentStateWhenLeaving) return@launch
+            when (unconfirmedPaymentStatus) {
+                UnconfirmedPaymentStatus.PAID -> retryBluetoothFailedTransaction()
+                UnconfirmedPaymentStatus.NOT_PAID -> leave()
+                UnconfirmedPaymentStatus.UNKNOWN -> showPaymentStatusCheckFailedToast()
+            }
+        }
+    }
+
+    private suspend fun showPaymentStatusCheckFailedToast() {
+        childrenToParentEventSender.sendToParent(
+            ToastMessageDisplayed(resourceProvider.getString(R.string.woopos_payment_status_check_failed_message))
+        )
+    }
+
+    private suspend fun fetchUnconfirmedPaymentStatus(): UnconfirmedPaymentStatus {
+        val failedPayment = cardReaderPaymentController?.paymentState?.value as? CardReaderPaymentState.PaymentFailed
+        return when (failedPayment?.errorType == PaymentFlowError.CaptureOutcomeUnknown) {
+            true -> fetchServerPaymentStatus()
+            false -> UnconfirmedPaymentStatus.NOT_PAID
+        }
+    }
+
+    private suspend fun fetchServerPaymentStatus(): UnconfirmedPaymentStatus {
+        val orderOnServer = totalsRepository.fetchOrderById(dataState.value.orderId)
+        return when {
+            orderOnServer == null -> UnconfirmedPaymentStatus.UNKNOWN
+            orderOnServer.isOrderPaid -> UnconfirmedPaymentStatus.PAID
+            else -> UnconfirmedPaymentStatus.NOT_PAID
         }
     }
 
@@ -537,8 +575,12 @@ class WooPosTotalsViewModel @Inject constructor(
                 is PaymentFailed, is PaymentInProgress -> {
                     if (isPaymentInFlight()) return@launch
 
-                    childrenToParentEventSender.sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
-                    retryPaymentCollectionFromScratch()
+                    leaveFailedPayment {
+                        childrenToParentEventSender.sendToParent(
+                            ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout
+                        )
+                        retryPaymentCollectionFromScratch()
+                    }
                 }
 
                 is WooPosTotalsViewState.PaymentSuccess -> {
@@ -1261,5 +1303,11 @@ class WooPosTotalsViewModel @Inject constructor(
         CASH,
         SCAN_TO_PAY,
         MARK_ORDER_AS_PAID,
+    }
+
+    private enum class UnconfirmedPaymentStatus {
+        PAID,
+        NOT_PAID,
+        UNKNOWN,
     }
 }

@@ -14,7 +14,7 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.RecentSearchSelected
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.DialogState
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionState
-import com.woocommerce.android.ui.woopos.home.items.customamount.WooPosCustomAmountDialogState
+import com.woocommerce.android.ui.woopos.home.items.customamount.WooPosCustomAmountFormState
 import com.woocommerce.android.ui.woopos.home.items.customamount.toEditMode
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
@@ -287,8 +287,8 @@ class WooPosHomeViewModel @Inject constructor(
                         )
                     }
 
-                    is ChildToParentEvent.CustomAmountDialogRequested -> {
-                        val mode = event.editing?.toEditMode() ?: WooPosCustomAmountDialogState.Mode.Add
+                    is ChildToParentEvent.CustomAmountFormRequested -> {
+                        val mode = event.editing?.toEditMode() ?: WooPosCustomAmountFormState.Mode.Add
                         handleNavigationEvent(NavigationEvent.ToCustomAmount(mode))
                     }
 

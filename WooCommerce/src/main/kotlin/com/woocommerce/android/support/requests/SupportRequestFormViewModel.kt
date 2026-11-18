@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -58,8 +59,33 @@ class SupportRequestFormViewModel @Inject constructor(
         .distinctUntilChanged()
         .asLiveData()
 
+    val supportIdentityPrompt = viewState
+        .map { it.supportIdentityPrompt }
+        .asLiveData()
+        .distinctUntilChanged()
+
     fun onViewCreated() {
         tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_VIEWED)
+    }
+
+    fun onFormOpened() {
+        if (zendeskSettings.isIdentitySet.not()) {
+            val prompt = SupportIdentityPrompt(
+                emailSuggestion = zendeskSettings.supportEmail.orEmpty(),
+                nameSuggestion = zendeskSettings.supportName.orEmpty()
+            )
+            viewState.update { it.copy(supportIdentityPrompt = prompt) }
+            tracks.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
+        }
+    }
+
+    fun onSupportIdentityEntered(selectedEmail: String, selectedName: String) {
+        viewState.update { it.copy(supportIdentityPrompt = null) }
+        saveSupportIdentity(selectedEmail, selectedName)
+    }
+
+    fun onSupportIdentityPromptCancelled() {
+        viewState.update { it.copy(supportIdentityPrompt = null) }
     }
 
     fun onPrefillReceived(prefill: Prefill) {
@@ -101,9 +127,7 @@ class SupportRequestFormViewModel @Inject constructor(
         selectedName: String,
         aiSupportChatTicketAnalyticsContext: AiSupportChatTicketAnalyticsContext? = null
     ) {
-        zendeskSettings.supportEmail = selectedEmail
-        zendeskSettings.supportName = selectedName
-        tracks.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
+        saveSupportIdentity(selectedEmail, selectedName)
         submitSupportRequest(
             context = context,
             helpOrigin = helpOrigin,
@@ -139,6 +163,12 @@ class SupportRequestFormViewModel @Inject constructor(
         }
     }
 
+    private fun saveSupportIdentity(email: String, name: String) {
+        zendeskSettings.supportEmail = email
+        zendeskSettings.supportName = name
+        tracks.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
+    }
+
     private fun handleEmptyCredentials() {
         triggerEvent(
             ShowSupportIdentityInputDialog(
@@ -171,20 +201,20 @@ class SupportRequestFormViewModel @Inject constructor(
         error: Throwable,
         aiSupportChatTicketAnalyticsContext: AiSupportChatTicketAnalyticsContext?
     ) {
-        aiSupportChatTicketAnalyticsContext?.let {
-            WooLog.e(WooLog.T.AI, "Support chat ticket creation failed via support form", error)
-        }
         tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_FAILED)
-        aiSupportChatTicketAnalyticsContext?.let {
-            aiSupportChatAnalyticsTracker.trackTicketCreationFailed(
-                route = AiSupportChatTicketRoute.SUPPORT_FORM,
-                context = it,
-                error = error
-            )
-        }
         when (error) {
             is IdentityNotSetException -> handleEmptyCredentials()
-            else -> triggerEvent(RequestCreationFailed)
+            else -> {
+                aiSupportChatTicketAnalyticsContext?.let {
+                    WooLog.e(WooLog.T.AI, "Support chat ticket creation failed via support form", error)
+                    aiSupportChatAnalyticsTracker.trackTicketCreationFailed(
+                        route = AiSupportChatTicketRoute.SUPPORT_FORM,
+                        context = it,
+                        error = error
+                    )
+                }
+                triggerEvent(RequestCreationFailed)
+            }
         }
     }
 
@@ -205,6 +235,12 @@ class SupportRequestFormViewModel @Inject constructor(
     )
 
     @Parcelize
+    data class SupportIdentityPrompt(
+        val emailSuggestion: String,
+        val nameSuggestion: String
+    ) : Parcelable
+
+    @Parcelize
     data class ViewState(
         val ticketType: TicketType?,
         val subject: String,
@@ -212,7 +248,8 @@ class SupportRequestFormViewModel @Inject constructor(
         val message: String,
         val aiChatId: Long?,
         val aiSupportChatTranscript: String?,
-        val isLoading: Boolean
+        val isLoading: Boolean,
+        val supportIdentityPrompt: SupportIdentityPrompt?
     ) : Parcelable {
         val dataIsValid
             get() = ticketType != null && subject.isNotBlank() && siteAddress.isNotBlank() && message.isNotBlank()
@@ -225,7 +262,8 @@ class SupportRequestFormViewModel @Inject constructor(
                 message = "",
                 aiChatId = null,
                 aiSupportChatTranscript = null,
-                isLoading = false
+                isLoading = false,
+                supportIdentityPrompt = null
             )
         }
     }

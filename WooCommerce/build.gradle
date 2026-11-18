@@ -304,6 +304,7 @@ dependencies {
     implementation(project(":libs:pos"))
     implementation(project(":libs:store-design-system"))
     implementation(project(":libs:ai-assistant:feature"))
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.wordpress.aztec.main) {
         exclude group: "com.android.volley"
@@ -321,6 +322,7 @@ dependencies {
 
     implementation project(":libs:commons")
     implementation project(":libs:cardreader")
+    implementation project(":libs:receiptprinter")
 
     implementation(libs.facebook.shimmer)
     implementation(libs.photoview)
@@ -344,6 +346,7 @@ dependencies {
     implementation(libs.bumptech.glide.volley.integration)
     implementation(libs.google.play.app.update)
     implementation(libs.google.play.review)
+    implementation(libs.google.play.install.referrer)
 
     implementation(libs.google.play.services.code.scanner)
 

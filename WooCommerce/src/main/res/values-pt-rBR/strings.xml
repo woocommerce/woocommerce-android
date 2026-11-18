@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-19 17:59:03+0000
+Translation-Revision-Date: 2026-11-03 18:58:44+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_service_status_severity_info">Informações</string>
+    <string name="woo_shipping_labels_service_status_severity_warning">Aviso</string>
+    <string name="woo_shipping_labels_service_status_severity_error">Erro</string>
+    <string name="woo_shipping_labels_service_status_dismiss">Descartar aviso: %1$s</string>
+    <string name="woo_shipping_labels_service_status_view_status_page">Visualizar página de status</string>
+    <string name="woo_shipping_labels_purchase_service_status_error">Não foi possível comprar a etiqueta de envio devido a um problema no serviço de transporte: %1$s</string>
+    <string name="woopos_remote_ttp_explainer_local_network_body">Permita o acesso à rede local para que os pontos de venda possam encontrar seu celular no mesmo Wi-Fi.</string>
+    <string name="woopos_remote_ttp_explainer_local_network_heading">Deixe os pontos de venda encontrarem seu telefone</string>
+    <string name="woopos_remote_ttp_explainer_allow_local_network">Permitir acesso à rede local</string>
+    <string name="woopos_remote_reader_failed_insecure_environment">O Tap to Pay foi bloqueado no celular por motivos de segurança. No celular, verifique se os serviços de acessibilidade e a gravação de tela estão desativados.</string>
+    <string name="login_text_backup_code">Use um código de backup como alternativa</string>
+    <string name="support_request_ai_chat_transcript_disclosure">Sua transcrição do chat de suporte pela IA também será incluída nesta solicitação.</string>
+    <string name="enter_verification_code_backup">Insira um código de backup para continuar.</string>
+    <string name="enter_verification_code_email">Confira se recebeu um código de verificação do WordPress.com por e-mail, depois insira-o para continuar.</string>
+    <string name="enter_verification_code_authenticator">Digite o código de verificação do seu aplicativo de autenticação.</string>
+    <string name="ai_support_chat_escalation_consent_message_v2">Ambas as opções incluem esta transcrição do chat. Envie a solicitação agora ou abra o formulário de contato para adicionar mais detalhes primeiro.</string>
+    <string name="ai_support_chat_login_unexpected_response_message">Não consigo fazer login na minha loja. O aplicativo diz que minha loja retornou uma resposta inesperada. Como posso corrigir isso?</string>
+    <string name="card_reader_payment_failed_insecure_environment">O Tap to Pay foi bloqueado por motivos de segurança. Verifique se os serviços de acessibilidade e a gravação de tela estão desativados.</string>
+    <string name="barcode_scanning_hardware_scanner_no_enter_suffix">Varredura não concluída. Configure o leitor para enviar um comando Enter após a leitura de cada código de barras.</string>
+    <string name="customer_list_enable_analytics_error">O WooCommerce Analytics não pôde ser ativado. Tente novamente.</string>
+    <string name="customer_list_enable_analytics_confirmation_action">Ativar</string>
+    <string name="customer_list_enable_analytics_confirmation_message">Isso altera uma configuração de toda a sua loja. Ele permanece ativo até que alguém o desative no WooCommerce › Configurações › Avançado › Funcionalidades. Os clientes desde o momento em que o Analytics foi desativado só poderão aparecer após a importação dos dados históricos no WooCommerce › Analytics › Configurações.</string>
+    <string name="customer_list_enable_analytics_confirmation_title">Ativar o WooCommerce Analytics?</string>
+    <string name="customer_list_enable_analytics">Ativar Analytics</string>
+    <string name="customer_list_analytics_unavailable_message">As listas de clientes precisam do WooCommerce Analytics, que não está disponível nesta loja no momento. Peça ao administrador da loja para verificar se ele está ativado.</string>
+    <string name="customer_list_analytics_permission_denied_message">As listas de clientes precisam do WooCommerce Analytics, que não está disponível nesta loja. Peça ao administrador da loja para ativá-la no WooCommerce › Configurações › Avançado › Funcionalidades.</string>
+    <string name="customer_list_analytics_disabled_message">As listas de clientes precisam do WooCommerce Analytics, que está desativado para esta loja. Você pode ativá-lo aqui ou no painel de administração da sua loja em WooCommerce › Configurações › Avançado › Funcionalidades e depois tocar em Repetir.</string>
+    <string name="customer_list_analytics_unavailable_title">Os clientes não podem ser carregados</string>
+    <string name="login_unexpected_response_message">Sua loja retornou uma resposta inesperada, então não foi possível terminar o login. Tente novamente ou entre em contato com o suporte para obter ajuda.</string>
+    <string name="login_unexpected_response_title">Não foi possível fazer login</string>
     <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s requer um número de telefone do destinatário.</string>
     <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">Deve ter até %1$s caracteres.</string>
     <string name="woo_shipping_labels_customs_product_details_gtin_required">Insira o GTIN/EAN ou selecione \"Sem código de barras\"</string>
@@ -355,7 +385,6 @@ Language: pt_BR
     <string name="ai_support_chat_escalation_transcript_header">Veja a seguir a transcrição de uma sessão de chat de suporte de IA no aplicativo:</string>
     <string name="ai_support_chat_escalation_consent_contact_form">Formulário de contato</string>
     <string name="ai_support_chat_escalation_consent_send_request">Enviar solicitação</string>
-    <string name="ai_support_chat_escalation_consent_message">Podemos criar uma solicitação de suporte usando esta transcrição do chat, ou você pode abrir o formulário de contato e inserir os detalhes.</string>
     <string name="ai_support_chat_escalation_consent_title">Enviar este chat para o suporte?</string>
     <string name="ai_support_chat_mark_resolved_confirmation_message">Isso encerrará as ações de chat desta conversa.</string>
     <string name="ai_support_chat_mark_resolved_confirmation_title">Marcar chat como resolvido?</string>
@@ -1810,6 +1839,7 @@ Language: pt_BR
     <string name="blaze_campaign_edit_ad_change_image_button">Mudar imagem</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Aplicar</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s dias</string>
+    <string name="blaze_campaign_budget_impressions_info">As impressões demonstram a frequência com que seu anúncio aparece para possíveis clientes.\n\n\n        Apesar de o número exato não poder ser garantido por conta das variações no tráfego online e no comportamento do usuário, nós nos esforçamos para corresponder ao máximo as impressões reais do seu anúncio à contagem desejada.\n\n\n        E lembre-se: as impressões têm a ver com a visibilidade, e não com as ações dos visitantes.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Concluído</string>
     <string name="blaze_campaign_budget_impressions_title">Impressões</string>
     <string name="blaze_campaign_budget_update_button">Atualizar</string>
@@ -1820,7 +1850,6 @@ Language: pt_BR
     <string name="blaze_campaign_preview_target_default_value">Tudo</string>
     <string name="blaze_campaign_preview_days_duration">%1$s dias a partir de %2$s</string>
     <string name="blaze_campaign_edit_ad_change_description_title">Detalhamento</string>
-    <string name="blaze_campaign_budget_impressions_info">As impressões demonstram a frequência com que seu anúncio aparece para possíveis clientes.\n\n\n        Apesar de o número exato não poder ser garantido por conta das variações no tráfego online e no comportamento do usuário, nós nos esforçamos para corresponder ao máximo as impressões reais do seu anúncio à contagem desejada.\n\n\n        E lembre-se: as impressões têm a ver com a visibilidade, e não com as ações dos visitantes.</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Data inicial</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Confirmar detalhes</string>
     <string name="blaze_campaign_preview_details_destination_url">Destino do anúncio</string>
@@ -3273,7 +3302,6 @@ Language: pt_BR
     <string name="empty_order_list_message">Veja como aumentar as vendas da sua loja.</string>
     <string name="empty_product_message">Comece a vender hoje adicionando o primeiro produto à sua loja.</string>
     <string name="empty_product_add_product_button">Adicionar produto</string>
-    <string name="variable_product_attributes">Atributos das variações</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Ativar o Bluetooth do dispositivo móvel</string>
     <string name="card_reader_payment_receipt_email_subject">Seu recibo de %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Atualizando pedido</string>
@@ -3707,7 +3735,6 @@ Language: pt_BR
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_refund_title">Reembolso da etiqueta de %1$s solicitado</string>
     <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
-    <string name="product_variation_options">%1$s (%2$s opções)</string>
     <string name="shipping_labels">Etiquetas de envio</string>
     <string name="product_add_category_dialog_message">Aguarde…</string>
     <string name="product_add_category_dialog_title">Adicionando categoria</string>
@@ -3846,7 +3873,6 @@ Language: pt_BR
     <string name="order_refunds_select_quantity">Selecione a quantidade</string>
     <string name="order_refunds_shipping_refund">Reembolso de envio</string>
     <string name="order_refunds_products_refund">Reembolso de produtos</string>
-    <string name="order_refunds_items_selected">%d itens selecionados</string>
     <string name="order_refunds_items_select_none">Selecionar nenhum</string>
     <string name="order_refunds_items_select_all">Selecionar tudo</string>
     <string name="order_refunds_amount_refund_confirmation_message">Aguardando confirmação de reembolso…</string>
@@ -4090,8 +4116,6 @@ Language: pt_BR
     <string name="magic_link_login_title">Acessar com link mágico</string>
     <string name="site_address_login_title">Endereço do site para acesso</string>
     <string name="email_address_login_title">Endereço de e-mail para acesso</string>
-    <string name="signup_with_google_progress">Acessando com o Google…</string>
-    <string name="google_error_timeout">O Google demorou muito tempo para responder. Pode ser preciso esperar até que você tenha uma conexão melhor com a internet.</string>
     <string name="signup_magic_link_progress">Enviando e-mail</string>
     <string name="signup_magic_link_error_button_positive">Tentar novamente</string>
     <string name="signup_magic_link_error_button_negative">Fechar</string>
@@ -4106,7 +4130,6 @@ Language: pt_BR
     <string name="notification_login_title_success">Acesso realizado!</string>
     <string name="login_error_generic_start">Não foi possível iniciar o acesso pelo Google.</string>
     <string name="login_empty_password">Digite uma senha</string>
-    <string name="login_error_suffix">\nTalvez tentar com outra conta?</string>
     <string name="login_error_generic">Houve um problema na conexão com a conta do Google.</string>
     <string name="login_error_button">Fechar</string>
     <string name="error_generic_network">Ocorreu um erro na rede. Verifique sua conexão e tente novamente.</string>
@@ -4266,6 +4289,10 @@ Language: pt_BR
     <plurals name="more_menu_unseen_reviews_state_description">
         <item quantity="one">%d avaliação não visualizada</item>
         <item quantity="other">%d avaliações não visualizadas</item>
+    </plurals>
+    <plurals name="order_refunds_items_selected_count">
+        <item quantity="one">%d item selecionado</item>
+        <item quantity="other">%d itens selecionados</item>
     </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Subtotal de itens (%d item)</item>

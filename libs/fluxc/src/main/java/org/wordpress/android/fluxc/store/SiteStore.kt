@@ -509,6 +509,12 @@ open class SiteStore @Inject constructor(
         }
     }
 
+    suspend fun fetchWPAPISiteHomeUrl(siteUrl: String): String? {
+        return coroutineEngine.withDefaultContext(T.MAIN, this, "Fetch WPAPI Site home") {
+            siteWPAPIRestClient.fetchSiteHomeUrl(siteUrl)
+        }
+    }
+
     @Suppress("ForbiddenComment", "SwallowedException")
     private fun updateSite(siteModel: SiteModel): OnSiteChanged {
         return if (siteModel.isError) {

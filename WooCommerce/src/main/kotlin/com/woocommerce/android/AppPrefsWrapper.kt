@@ -54,6 +54,8 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var qrLoginRolloutBucket by AppPrefs::qrLoginRolloutBucket
 
+    var storeSuggestionRolloutBucket by AppPrefs::storeSuggestionRolloutBucket
+
     open var orderSummaryMigrated by AppPrefs::orderSummaryMigrated
     open var gatewayMigrated by AppPrefs::gatewayMigrated
 
@@ -66,6 +68,14 @@ open class AppPrefsWrapper @Inject constructor() {
     var wooCorePushDeviceUUID by AppPrefs::wooCorePushDeviceUUID
 
     var remoteFeatureFlagsDeviceId by AppPrefs::remoteFeatureFlagsDeviceId
+
+    var isInstallReferrerChecked by AppPrefs::isInstallReferrerChecked
+
+    var debugInstallReferrerOverride by AppPrefs::debugInstallReferrerOverride
+
+    var debugInstallReferrerClickTimestampSeconds by AppPrefs::debugInstallReferrerClickTimestampSeconds
+
+    var suggestedStoreLoginUrl by AppPrefs::suggestedStoreLoginUrl
 
     fun getAppInstallationDate() = AppPrefs.installationDate
 

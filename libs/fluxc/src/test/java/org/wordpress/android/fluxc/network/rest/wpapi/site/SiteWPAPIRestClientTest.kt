@@ -15,11 +15,13 @@ import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.INVALID_RESPONSE
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.discovery.DiscoveryWPAPIRestClient
 import org.wordpress.android.fluxc.network.discovery.RootWPAPIRestResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequestBuilder
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.store.SiteStore.FetchWPAPISitePayload
 import org.wordpress.android.fluxc.test
@@ -284,6 +286,49 @@ class SiteWPAPIRestClientTest {
         )
     }
 
+    @Test
+    fun `given a site that reports its home, when fetching its home address, then return it`() = test {
+        givenHomeResponse(WPAPIResponse.Success(RootWPAPIRestResponse(home = HOME_URL), emptyList()))
+
+        val home = subject.fetchSiteHomeUrl(SITE_URL)
+
+        assertThat(home).isEqualTo(HOME_URL)
+    }
+
+    @Test
+    fun `given the REST index can't be read, when fetching the home address, then return null`() = test {
+        givenHomeResponse(WPAPIResponse.Error(WPAPINetworkError(BaseNetworkError(INVALID_RESPONSE))))
+
+        val home = subject.fetchSiteHomeUrl(SITE_URL)
+
+        assertThat(home).isNull()
+    }
+
+    @Test
+    fun `given a site without a home field, when fetching its home address, then return null`() = test {
+        givenHomeResponse(WPAPIResponse.Success(RootWPAPIRestResponse(home = " "), emptyList()))
+
+        val home = subject.fetchSiteHomeUrl(SITE_URL)
+
+        assertThat(home).isNull()
+    }
+
+    private suspend fun givenHomeResponse(response: WPAPIResponse<RootWPAPIRestResponse>) {
+        whenever(
+            requestBuilder.syncGetRequest(
+                restClient = eq(subject),
+                url = eq(WP_API_URL),
+                params = eq(mapOf("_fields" to "home")),
+                body = any(),
+                clazz = eq(RootWPAPIRestResponse::class.java),
+                enableCaching = any(),
+                cacheTimeToLive = any(),
+                nonce = anyOrNull(),
+                readableBodyCheck = anyOrNull()
+            )
+        ).thenReturn(response)
+    }
+
     private suspend fun givenSiteResponse(response: RootWPAPIRestResponse) {
         whenever(
             requestBuilder.syncGetRequest(
@@ -332,6 +377,7 @@ class SiteWPAPIRestClientTest {
         const val SITE_URL = "https://site.example"
         const val HTTP_SITE_URL = "http://site.example"
         const val WP_API_URL = "$SITE_URL/wp-json/"
+        const val HOME_URL = "https://shop.example"
         const val USERNAME = "merchant"
         const val PASSWORD = "password"
         const val VERIFIED_LOGIN_URL = "$SITE_URL/private-login"

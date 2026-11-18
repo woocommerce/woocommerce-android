@@ -23,6 +23,7 @@ class SupportHelper @Inject constructor() {
      * @param email Initial value for the email field
      * @param name Initial value for the name field
      * @param isNameInputHidden Whether the name input field should be shown or not
+     * @param onCancel Function to run when the dialog is closed without picking an email
      * @param emailAndNameSelected Function to run with the email and name inputs from the dialog. Even if the
      * [isNameInputHidden] parameter is true, the input in the name field will be provided and it's up to the caller to
      * ignore the name parameter.
@@ -32,6 +33,7 @@ class SupportHelper @Inject constructor() {
         email: String?,
         name: String? = null,
         isNameInputHidden: Boolean = false,
+        onCancel: () -> Unit = {},
         emailAndNameSelected: (String, String) -> Unit
     ) {
         val (layout, emailEditText, nameEditText) =
@@ -40,7 +42,8 @@ class SupportHelper @Inject constructor() {
         val dialog = MaterialAlertDialogBuilder(context)
             .setView(layout)
             .setPositiveButton(android.R.string.ok, null)
-            .setNegativeButton(android.R.string.cancel, null)
+            .setNegativeButton(android.R.string.cancel) { _, _ -> onCancel() }
+            .setOnCancelListener { onCancel() }
             .create()
         dialog.setOnShowListener {
             val button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)

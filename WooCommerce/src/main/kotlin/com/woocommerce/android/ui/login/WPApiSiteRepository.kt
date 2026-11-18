@@ -111,6 +111,8 @@ class WPApiSiteRepository @Inject constructor(
             )
         )
 
+    suspend fun fetchSiteHomeUrl(siteUrl: String): String? = siteStore.fetchWPAPISiteHomeUrl(siteUrl)
+
     private suspend fun fetchSite(payload: FetchWPAPISitePayload): Result<SiteModel> {
         WooLog.d(WooLog.T.LOGIN, "Fetching site using WP REST API")
 

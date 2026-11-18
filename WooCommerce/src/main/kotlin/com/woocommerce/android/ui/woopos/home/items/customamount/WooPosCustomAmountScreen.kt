@@ -15,10 +15,10 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun WooPosCustomAmountScreen(
-    mode: WooPosCustomAmountDialogState.Mode,
+    mode: WooPosCustomAmountFormState.Mode,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: WooPosCustomAmountDialogViewModel = hiltViewModel(),
+    viewModel: WooPosCustomAmountFormViewModel = hiltViewModel(),
 ) {
     val close = { onNavigationEvent(WooPosNavigationEvent.CloseCustomAmount) }
 
@@ -34,7 +34,7 @@ fun WooPosCustomAmountScreen(
     }
 
     when (state.screen) {
-        WooPosCustomAmountDialogState.Screen.AMOUNT -> {
+        WooPosCustomAmountFormState.Screen.AMOUNT -> {
             WooPosCustomAmountValueScreen(
                 state = state,
                 onAmountChanged = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(it)) },
@@ -44,7 +44,7 @@ fun WooPosCustomAmountScreen(
             )
         }
 
-        WooPosCustomAmountDialogState.Screen.NAME -> {
+        WooPosCustomAmountFormState.Screen.NAME -> {
             WooPosCustomAmountNameScreen(
                 value = state.nameDraft,
                 onNameChanged = { viewModel.onUIEvent(WooPosCustomAmountUIEvent.NameDraftChanged(it)) },
@@ -54,7 +54,7 @@ fun WooPosCustomAmountScreen(
             )
         }
 
-        WooPosCustomAmountDialogState.Screen.DETAILS -> {
+        WooPosCustomAmountFormState.Screen.DETAILS -> {
             // The amount and name Save buttons share a position with this Save button, so the second tap of a fast
             // double tap would land here and add the item before the merchant sees the details.
             val doubleTapTimeoutMillis = LocalViewConfiguration.current.doubleTapTimeoutMillis

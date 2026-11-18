@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-20 09:57:35+0000
+Translation-Revision-Date: 2026-11-03 15:57:52+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_service_status_severity_info">Bilgi</string>
+    <string name="woo_shipping_labels_service_status_severity_warning">Uyarı</string>
+    <string name="woo_shipping_labels_service_status_severity_error">Hata</string>
+    <string name="woo_shipping_labels_service_status_dismiss">Bildirimi kapat: %1$s</string>
+    <string name="woo_shipping_labels_service_status_view_status_page">Durum sayfasını görüntüle</string>
+    <string name="woo_shipping_labels_purchase_service_status_error">Taşıyıcı hizmet sorunundan dolayı gönderim etiketini satın alamıyoruz: %1$s</string>
+    <string name="woopos_remote_ttp_explainer_local_network_body">POS\'un telefonunuzu aynı Wi-Fi\'da bulabilmesi için yerel ağ erişimine izin verin.</string>
+    <string name="woopos_remote_ttp_explainer_local_network_heading">POS\'un telefonunuzu bulmasını sağlayın</string>
+    <string name="woopos_remote_ttp_explainer_allow_local_network">Yerel ağ erişimine izin ver</string>
+    <string name="woopos_remote_reader_failed_insecure_environment">Tap to Pay güvenlik nedeniyle telefonda engellendi. Telefonda erişilebilirlik hizmetlerinin ve ekran kaydının kapalı olduğunu kontrol edin.</string>
+    <string name="login_text_backup_code">Bunun yerine yedek kod kullanın</string>
+    <string name="support_request_ai_chat_transcript_disclosure">Yapay zekâ destek sohbet dökümünüz de bu istekle birlikte dahil edilecektir.</string>
+    <string name="enter_verification_code_backup">Devam etmek için bir yedekleme kodu girin.</string>
+    <string name="enter_verification_code_email">WordPress.com\'dan bir doğrulama kodu için e-postanızı kontrol edin, ardından devam etmek için kodu girin.</string>
+    <string name="enter_verification_code_authenticator">Kimlik doğrulayıcı uygulamanızdaki doğrulama kodunu girin.</string>
+    <string name="ai_support_chat_escalation_consent_message_v2">Her iki seçenek de bu sohbet dökümünü içerir. Talebi şimdi gönderin veya önce daha fazla ayrıntı eklemek için iletişim formunu açın.</string>
+    <string name="ai_support_chat_login_unexpected_response_message">Mağazamda oturum açamıyorum. Uygulama, mağazamın beklenmeyen bir yanıt döndürdüğünü söylüyor. Bunu nasıl düzeltebilirim?</string>
+    <string name="card_reader_payment_failed_insecure_environment">Tap to Pay güvenlik nedeniyle engellendi. Erişilebilirlik hizmetlerinin ve ekran kaydının kapalı olduğunu kontrol edin.</string>
+    <string name="barcode_scanning_hardware_scanner_no_enter_suffix">Tarama tamamlanmadı. Tarayıcınızı her barkoddan sonra Enter gönderecek şekilde ayarlayın.</string>
+    <string name="customer_list_enable_analytics_error">WooCommerce Analytics etkinleştirilemedi. Lütfen tekrar deneyin.</string>
+    <string name="customer_list_enable_analytics_confirmation_action">Etkinleştir</string>
+    <string name="customer_list_enable_analytics_confirmation_message">Bu, tüm mağazanızın ayarını değiştirir. WooCommerce › Ayarlar › Gelişmiş › Özellikler\'de biri kapatana kadar açık kalır. Analytics\'in kapalı olduğu dönemdeki müşteriler yalnızca geçmiş verileri WooCommerce › Analizler › Ayarlar\'dan içe aktardıktan sonra görünebilir.</string>
+    <string name="customer_list_enable_analytics_confirmation_title">WooCommerce Analytics\'i etkinleştirilsin mi?</string>
+    <string name="customer_list_enable_analytics">Analytics\'i etkinleştir</string>
+    <string name="customer_list_analytics_unavailable_message">Müşteri listeleri için şu anda bu mağazada bulunmayan WooCommerce Analytics gerekir. Bir mağaza yöneticisinden açık olup olmadığını kontrol etmesini isteyin.</string>
+    <string name="customer_list_analytics_permission_denied_message">Müşteri listeleri için bu mağazada bulunmayan WooCommerce Analytics gerekir. Bir mağaza yöneticisinden WooCommerce › Ayarlar › Gelişmiş › Özellikler\'de açmasını isteyin.</string>
+    <string name="customer_list_analytics_disabled_message">Müşteri listeleri için bu mağazada kapatılan WooCommerce Analytics gerekir. Buradan veya WooCommerce › Ayarlar › Gelişmiş › Özellikler altından mağaza yöneticinizden etkinleştirebilir, ardından Yeniden Dene\'ye dokunun.</string>
+    <string name="customer_list_analytics_unavailable_title">Müşteriler yüklenemiyor</string>
+    <string name="login_unexpected_response_message">Mağazanız beklenmeyen bir yanıt döndürdü, bu nedenle oturum açmanız tamamlanamadı. Tekrar deneyin veya yardım almak için destek birimimizle iletişime geçin.</string>
+    <string name="login_unexpected_response_title">Oturum açılamıyor</string>
     <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s alıcının telefon numarasını gerektirir.</string>
     <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">%1$s karakter veya daha az olmalıdır.</string>
     <string name="woo_shipping_labels_customs_product_details_gtin_required">GTIN/EAN girin veya \"Barkod yok\" seçin</string>
@@ -354,7 +384,6 @@ Language: tr
     <string name="ai_support_chat_escalation_transcript_header">Uygulama içi yapay zeka destek sohbet oturumunun dökümü şudur:</string>
     <string name="ai_support_chat_escalation_consent_contact_form">İletişim Formu</string>
     <string name="ai_support_chat_escalation_consent_send_request">Talep gönder</string>
-    <string name="ai_support_chat_escalation_consent_message">Bu sohbet dökümünü kullanarak bir destek talebi oluşturabiliriz veya iletişim formunu açıp ayrıntıları kendiniz girebilirsiniz.</string>
     <string name="ai_support_chat_escalation_consent_title">Bu sohbet destek birimine gönderilsin mi?</string>
     <string name="ai_support_chat_mark_resolved_confirmation_message">Bu işlem, bu görüşmenin sohbet eylemlerini kapatacaktır.</string>
     <string name="ai_support_chat_mark_resolved_confirmation_title">Sohbet çözüldü olarak işaretlensin mi?</string>
@@ -1809,6 +1838,7 @@ Language: tr
     <string name="blaze_campaign_edit_ad_change_image_button">Görseli değiştir</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Uygula</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s gün</string>
+    <string name="blaze_campaign_budget_impressions_info">İzlenimler, reklamlarınızın olası müşterilere gözükme sıklığını yansıtır.\n\n\n        Dalgalı çevrimiçi trafik ve kullanıcı davranışından dolayı kesin sayılardan emin olunamasa da reklamınızın asıl izlenimlerini hedef sayıya olabildiğince yakın bir şekilde eşleştirmeye çalışıyoruz.\n\n\n        İzlenimlerin görüntüleyiciler tarafından gerçekleştirilen işlemler yerine görünürlük hakkında olduğunu unutmayın.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Tamam</string>
     <string name="blaze_campaign_budget_impressions_title">İzlenimler</string>
     <string name="blaze_campaign_budget_update_button">Güncelle</string>
@@ -1817,7 +1847,6 @@ Language: tr
     <string name="blaze_campaign_budget_days_duration">%1$s gün için</string>
     <string name="blaze_campaign_budget_toolbar_title">Bütçenizi oluşturun</string>
     <string name="blaze_campaign_preview_target_default_value">Tümü</string>
-    <string name="blaze_campaign_budget_impressions_info">İzlenimler, reklamlarınızın olası müşterilere gözükme sıklığını yansıtır.\n\n\n        Dalgalı çevrimiçi trafik ve kullanıcı davranışından dolayı kesin sayılardan emin olunamasa da reklamınızın asıl izlenimlerini hedef sayıya olabildiğince yakın bir şekilde eşleştirmeye çalışıyoruz.\n\n\n        İzlenimlerin görüntüleyiciler tarafından gerçekleştirilen işlemler yerine görünürlük hakkında olduğunu unutmayın.</string>
     <string name="blaze_campaign_preview_days_duration">%2$s tarihinden itibaren %1$s gün</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Başlangıç tarihi</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Ayrıntıları Onayla</string>
@@ -3271,7 +3300,6 @@ Language: tr
     <string name="empty_order_list_message">Mağaza satışlarınızı nasıl artırabileceğinizi keşfedin.</string>
     <string name="empty_product_message">Mağazanıza ilk ürünü ekleyerek hemen bugün satışa başlayın.</string>
     <string name="empty_product_add_product_button">Ürün ekle</string>
-    <string name="variable_product_attributes">Varyasyon nitelikleri.</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Mobil cihazda Bluetooth\'u açın</string>
     <string name="card_reader_payment_receipt_email_subject">%s makbuzunuz</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Sipariş yenileniyor</string>
@@ -3705,7 +3733,6 @@ Language: tr
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_refund_title">%1$s etiket geri ödemesi istendi</string>
     <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
-    <string name="product_variation_options">%1$s (%2$s seçenek)</string>
     <string name="shipping_labels">Gönderim Etiketleri</string>
     <string name="product_add_category_dialog_message">Lütfen bekleyin…</string>
     <string name="product_add_category_dialog_title">Kategori ekleniyor</string>
@@ -3844,7 +3871,6 @@ Language: tr
     <string name="order_refunds_select_quantity">Miktar seçin</string>
     <string name="order_refunds_shipping_refund">Gönderim para iadesi</string>
     <string name="order_refunds_products_refund">Ürün para iadesi</string>
-    <string name="order_refunds_items_selected">%d öge seçildi</string>
     <string name="order_refunds_items_select_none">Hiçbirini seçme</string>
     <string name="order_refunds_items_select_all">Tümünü seç</string>
     <string name="order_refunds_amount_refund_confirmation_message">Para iadesi onayı bekleniyor…</string>
@@ -4088,8 +4114,6 @@ Language: tr
     <string name="magic_link_login_title">Sihirli bağlantı ile giriş</string>
     <string name="site_address_login_title">Site adresi ile giriş</string>
     <string name="email_address_login_title">E-posta ile giriş</string>
-    <string name="signup_with_google_progress">Google ile kaydolunuyor…</string>
-    <string name="google_error_timeout">Google çok uzun sürede cevap verdi. Daha hızlı bir internet bağlantınız oluncaya kadar beklemeniz gerekebilir.</string>
     <string name="signup_magic_link_progress">E-posta gönderiliyor</string>
     <string name="signup_magic_link_error_button_positive">Tekrar dene</string>
     <string name="signup_magic_link_error_button_negative">Kapat</string>
@@ -4104,7 +4128,6 @@ Language: tr
     <string name="notification_login_title_success">Oturum açıldı!</string>
     <string name="login_error_generic_start">Google giriş başlatılamadı.</string>
     <string name="login_empty_password">Lütfen bir parola girin</string>
-    <string name="login_error_suffix">\nBelki de farklı bir hesap denemelisiniz.</string>
     <string name="login_error_generic">Google hesabı ile bağlantı kurarken bir miktar sorun yaşadık.</string>
     <string name="login_error_button">Kapat</string>
     <string name="error_generic_network">Bir ağ hatası oluştu. Lütfen bağlantınızı kontrol edin ve tekrar deneyin.</string>
@@ -4264,6 +4287,10 @@ Language: tr
     <plurals name="more_menu_unseen_reviews_state_description">
         <item quantity="one">%d görülmeyen inceleme</item>
         <item quantity="other">%d görülmeyen inceleme</item>
+    </plurals>
+    <plurals name="order_refunds_items_selected_count">
+        <item quantity="one">%d öğe seçildi</item>
+        <item quantity="other">%d öğe seçildi</item>
     </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Ürün alt toplamı (%d ürün)</item>

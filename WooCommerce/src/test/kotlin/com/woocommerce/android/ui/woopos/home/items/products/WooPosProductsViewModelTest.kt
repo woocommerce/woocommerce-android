@@ -338,7 +338,7 @@ class WooPosProductsViewModelTest {
     }
 
     @Test
-    fun `when custom amount entry row clicked, then dialog request event sent and tracked`() = runTest {
+    fun `when custom amount entry row clicked, then form request event sent and tracked`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
 
@@ -347,7 +347,7 @@ class WooPosProductsViewModelTest {
 
         // THEN
         verify(fromChildToParentEventSender).sendToParent(
-            eq(ChildToParentEvent.CustomAmountDialogRequested())
+            eq(ChildToParentEvent.CustomAmountFormRequested())
         )
         verify(analyticsTracker).track(
             eq(WooPosAnalyticsEvent.Event.CustomAmountEntryRowTapped)

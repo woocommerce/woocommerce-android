@@ -25,12 +25,12 @@ const val CUSTOM_AMOUNT_ROUTE = "$CUSTOM_AMOUNT_ROUTE_BASE?" +
     "$NAME_KEY={$NAME_KEY}&" +
     "$IS_TAXABLE_KEY={$IS_TAXABLE_KEY}"
 
-fun NavController.navigateToCustomAmountScreen(mode: WooPosCustomAmountDialogState.Mode) {
+fun NavController.navigateToCustomAmountScreen(mode: WooPosCustomAmountFormState.Mode) {
     if (currentDestination?.route == CUSTOM_AMOUNT_ROUTE) return
 
     val route = when (mode) {
-        WooPosCustomAmountDialogState.Mode.Add -> CUSTOM_AMOUNT_ROUTE_BASE
-        is WooPosCustomAmountDialogState.Mode.Edit ->
+        WooPosCustomAmountFormState.Mode.Add -> CUSTOM_AMOUNT_ROUTE_BASE
+        is WooPosCustomAmountFormState.Mode.Edit ->
             "$CUSTOM_AMOUNT_ROUTE_BASE?" +
                 "$ITEM_NUMBER_KEY=${mode.itemNumber}&" +
                 "$AMOUNT_KEY=${Uri.encode(mode.amount.toPlainString())}&" +
@@ -85,12 +85,12 @@ fun NavGraphBuilder.customAmountScreen(
     }
 }
 
-private fun NavBackStackEntry.toMode(): WooPosCustomAmountDialogState.Mode {
-    val args = arguments ?: return WooPosCustomAmountDialogState.Mode.Add
+private fun NavBackStackEntry.toMode(): WooPosCustomAmountFormState.Mode {
+    val args = arguments ?: return WooPosCustomAmountFormState.Mode.Add
     val itemNumber = args.getInt(ITEM_NUMBER_KEY, NO_ITEM_NUMBER)
     val amount = args.getString(AMOUNT_KEY)?.toBigDecimalOrNull()
-    if (itemNumber == NO_ITEM_NUMBER || amount == null) return WooPosCustomAmountDialogState.Mode.Add
-    return WooPosCustomAmountDialogState.Mode.Edit(
+    if (itemNumber == NO_ITEM_NUMBER || amount == null) return WooPosCustomAmountFormState.Mode.Add
+    return WooPosCustomAmountFormState.Mode.Edit(
         itemNumber = itemNumber,
         name = args.getString(NAME_KEY).orEmpty(),
         amount = amount,

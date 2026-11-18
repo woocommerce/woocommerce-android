@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.root.navigation
 
-import com.woocommerce.android.ui.woopos.home.items.customamount.WooPosCustomAmountDialogState
+import com.woocommerce.android.ui.woopos.home.items.customamount.WooPosCustomAmountFormState
 import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 
@@ -29,7 +29,7 @@ sealed class WooPosNavigationEvent {
         val reason: WooPosLaunchability.NonLaunchabilityReason
     ) : WooPosNavigationEvent()
     data object OpenSettings : WooPosNavigationEvent()
-    data class OpenCustomAmount(val mode: WooPosCustomAmountDialogState.Mode) : WooPosNavigationEvent()
+    data class OpenCustomAmount(val mode: WooPosCustomAmountFormState.Mode) : WooPosNavigationEvent()
     data object CloseCustomAmount : WooPosNavigationEvent()
     data object OpenOrders : WooPosNavigationEvent()
     data class OpenOrderDetails(val orderId: Long) : WooPosNavigationEvent()

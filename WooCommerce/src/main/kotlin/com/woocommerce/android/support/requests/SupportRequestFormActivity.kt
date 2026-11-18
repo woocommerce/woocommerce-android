@@ -25,6 +25,7 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.ShowSupportIdentityInputDialog
+import com.woocommerce.android.support.requests.SupportRequestFormViewModel.SupportIdentityPrompt
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.ui.aisupportchat.AiSupportChatTicketAnalyticsContext
@@ -102,6 +103,9 @@ class SupportRequestFormActivity : AppCompatActivity() {
             }
         }
         viewModel.onViewCreated()
+        if (savedInstanceState == null) {
+            viewModel.onFormOpened()
+        }
 
         if (isPOS()) {
             adjustActivityTransition(
@@ -172,6 +176,9 @@ class SupportRequestFormActivity : AppCompatActivity() {
         viewModel.shouldShowTranscriptDisclosure.observe(this) { shouldShow ->
             binding.aiSupportChatTranscriptDisclosure.isVisible = shouldShow
         }
+        viewModel.supportIdentityPrompt.observe(this) { prompt ->
+            prompt?.let { showSupportIdentityPrompt(it) }
+        }
         viewModel.event.observe(this) {
             when (it) {
                 is RequestCreationSucceeded -> showRequestCreationSuccessDialog()
@@ -238,6 +245,17 @@ class SupportRequestFormActivity : AppCompatActivity() {
             )
         }
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
+    }
+
+    private fun showSupportIdentityPrompt(prompt: SupportIdentityPrompt) {
+        supportHelper.showSupportIdentityInputDialog(
+            context = this,
+            email = prompt.emailSuggestion,
+            name = prompt.nameSuggestion,
+            onCancel = viewModel::onSupportIdentityPromptCancelled
+        ) { email, name ->
+            viewModel.onSupportIdentityEntered(selectedEmail = email, selectedName = name)
+        }
     }
 
     private fun applyPrefill(binding: ActivitySupportRequestFormBinding) {
