@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.cardreader.remote
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.siteIdHash
+import com.woocommerce.android.util.pairingIdentity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -12,7 +12,7 @@ class WooPosSimulatedRemoteReaderDiscovery @Inject constructor(
     private val selectedSite: SelectedSite,
 ) : WooPosPhoneDiscoverySource {
     override fun discover(): Flow<WooPosPhoneDiscoveryEvent> = flow {
-        val siteHash = siteIdHash(selectedSite.get().remoteId().value)
+        val identity = checkNotNull(selectedSite.get().pairingIdentity())
         delay(FIRST_PHONE_DELAY_MS)
         emit(
             WooPosPhoneDiscoveryEvent.Added(
@@ -23,7 +23,8 @@ class WooPosSimulatedRemoteReaderDiscovery @Inject constructor(
                     host = InetAddress.getByName("127.0.0.1"),
                     port = 9000,
                     fingerprintBase64 = "SIM1",
-                    siteHash = siteHash,
+                    siteHash = identity.siteHash,
+                    siteUrlHash = identity.siteUrlHash,
                     isSimulated = true,
                 )
             )
@@ -38,7 +39,8 @@ class WooPosSimulatedRemoteReaderDiscovery @Inject constructor(
                     host = InetAddress.getByName("127.0.0.2"),
                     port = 9001,
                     fingerprintBase64 = "SIM2",
-                    siteHash = siteHash,
+                    siteHash = identity.siteHash,
+                    siteUrlHash = identity.siteUrlHash,
                     isSimulated = true,
                 )
             )
