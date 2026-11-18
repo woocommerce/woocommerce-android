@@ -158,15 +158,15 @@ internal abstract class ListDao {
     }
 
     /**
-     * Puts [firstPage] at the start of the list and keeps the items already saved after its last item.
-     * When that last item isn't in the list, the saved items can't be placed after the page and are dropped.
+     * Puts [firstPage] at the start of the list and keeps the items already saved after the page's last saved item.
+     * When no page item is in the list, the saved items can't be placed after the page and are dropped.
      */
     @Transaction
     open suspend fun replaceFirstPage(listId: Int, firstPage: List<ListItemModel>) {
         val savedItems = getListItems(listId)
-        val lastPageItemIndex = savedItems.indexOf(firstPage.lastOrNull())
-        val itemsAfterFirstPage = if (lastPageItemIndex >= 0) {
-            savedItems.drop(lastPageItemIndex + 1) - firstPage.toSet()
+        val lastSavedPageItemIndex = savedItems.indexOf(firstPage.lastOrNull { it in savedItems })
+        val itemsAfterFirstPage = if (lastSavedPageItemIndex >= 0) {
+            savedItems.drop(lastSavedPageItemIndex + 1) - firstPage.toSet()
         } else {
             emptyList()
         }
