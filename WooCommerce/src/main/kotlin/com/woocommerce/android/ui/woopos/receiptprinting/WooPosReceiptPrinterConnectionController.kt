@@ -5,6 +5,7 @@ import com.woocommerce.android.receiptprinter.ReceiptPrinterDevice
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDiscoveryEvent
 import com.woocommerce.android.receiptprinter.ReceiptPrinterResult
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.BluetoothOff
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.Connected
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.Connecting
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.ConnectionFailed
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.DiscoveryFailed
@@ -81,7 +82,7 @@ class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
             val result = receiptPrinterFacade.connect(device)
             ensureActive()
             _state.value = when (result) {
-                ReceiptPrinterResult.Success -> Idle
+                ReceiptPrinterResult.Success -> Connected(device)
                 is ReceiptPrinterResult.Failure -> ConnectionFailed
             }
         }

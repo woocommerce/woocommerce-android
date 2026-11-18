@@ -6,6 +6,7 @@ import com.woocommerce.android.receiptprinter.ReceiptPrinterDiscoveryEvent
 import com.woocommerce.android.receiptprinter.ReceiptPrinterError
 import com.woocommerce.android.receiptprinter.ReceiptPrinterResult
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.BluetoothOff
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.Connected
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.Connecting
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.ConnectionFailed
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.DiscoveryFailed
@@ -522,7 +523,7 @@ class WooPosReceiptPrinterConnectionControllerTest {
         }
 
     @Test
-    fun `given a connection is in progress, when it succeeds, then the state is idle`() = runTest {
+    fun `given a connection is in progress, when it succeeds, then the state is connected`() = runTest {
         // GIVEN
         whenever(receiptPrinterFacade.connect(PRINTER)).thenReturn(ReceiptPrinterResult.Success)
         val sut = createController()
@@ -534,7 +535,7 @@ class WooPosReceiptPrinterConnectionControllerTest {
         runCurrent()
 
         // THEN
-        assertThat(sut.state.value).isEqualTo(Idle)
+        assertThat(sut.state.value).isEqualTo(Connected(PRINTER))
     }
 
     @Test

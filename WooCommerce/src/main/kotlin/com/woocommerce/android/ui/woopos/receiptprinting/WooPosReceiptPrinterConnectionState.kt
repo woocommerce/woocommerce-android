@@ -10,6 +10,7 @@ sealed interface WooPosReceiptPrinterConnectionState {
     data class FoundOne(val device: ReceiptPrinterDevice) : WooPosReceiptPrinterConnectionState
     data class FoundMultiple(val devices: List<ReceiptPrinterDevice>) : WooPosReceiptPrinterConnectionState
     data class Connecting(val device: ReceiptPrinterDevice) : WooPosReceiptPrinterConnectionState
+    data class Connected(val device: ReceiptPrinterDevice) : WooPosReceiptPrinterConnectionState
     data object NoPrintersFound : WooPosReceiptPrinterConnectionState
     data object DiscoveryFailed : WooPosReceiptPrinterConnectionState
     data object ConnectionFailed : WooPosReceiptPrinterConnectionState
