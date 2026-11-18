@@ -158,9 +158,20 @@ platform :android do
 
     # Validate release prerequisites before creating the branch.
     ensure_branch_does_not_exist!(new_release_branch)
-    previous_release_tag = release_version_current
-    unless git_tag_exists(tag: previous_release_tag, remote: true)
-      UI.user_error!("The previous release tag `#{previous_release_tag}` is missing from origin. Publish that release before freezing #{new_version}.")
+    previous_version = release_version_current
+    release_tags = sh(
+      'git', 'ls-remote', '--tags', '--refs', '--sort=-version:refname', 'origin',
+      "refs/tags/#{previous_version}", "refs/tags/#{previous_version}-rc-*", log: false
+    ).lines.map { |line| line.split.last.delete_prefix('refs/tags/') }
+    previous_release_tag = if release_tags.include?(previous_version)
+                             previous_version
+                           else
+                             release_tags.find { |tag| tag.match?(/\A#{Regexp.escape(previous_version)}-rc-\d+\z/) }
+                           end
+    UI.user_error!("No final or RC tag for #{previous_version} was found on origin. Cannot generate release notes for #{new_version}.") if previous_release_tag.nil?
+    UI.message("Using #{previous_release_tag} as the base for release notes and the smoke-testing report.")
+    if previous_release_tag != previous_version
+      UI.important("Release #{previous_version} is not tagged yet. Review the generated draft for fixes already shipped in that release before publishing the notes.")
     end
 
     UI.message 'Creating release branch...'

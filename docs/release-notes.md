@@ -18,13 +18,15 @@ Also add these labels when applicable:
 
 ## Release workflow
 
-`start_code_freeze` generates the version section before extracting the Play Store draft. It compares the preceding release's tag with the trunk commit being frozen. Before creating the release branch, it checks that the tag exists on `origin`; if it is missing, publish the preceding release first. Other version sections are preserved.
+`start_code_freeze` generates the version section before extracting the Play Store draft. It compares the trunk commit being frozen with the preceding release's final tag, or its highest-numbered RC tag if the final tag is not yet available. Only tags for that preceding version on `origin` are considered; Wear tags are excluded. The lane reports the selected base and stops before creating the release branch if neither tag exists or the lookup fails. Other version sections are preserved.
 
 The toolkit uses `generate_release_notes_file` (which calls `get_prs_between_tags`) with [developer-release-notes.yml](../.github/developer-release-notes.yml) to exclude internal, release-process, and feature-flagged PRs. It inserts a missing version section or replaces an existing one, keeping the generated Markdown, including headings, author attribution, contributors, and links. No empty heading needs to be added for the next freeze. Full GitHub release changelogs are unaffected.
 
 The same lane uses [release-testing.yml](../.github/release-testing.yml) to list PRs labeled for release smoke testing over the same commit range. This separate report includes internal and feature-flagged changes. Review the **Release smoke testing** annotation on the code-freeze build and complete the requested checks before release. The report is also printed in the lane output; it is not added to store notes.
 
 Release managers edit the extracted Play Store text, use the **Android Wear** section for Wear notes, and run `complete_code_freeze` as usual. Translation uses the same files. The existing backmerge brings `RELEASE-NOTES.txt` to trunk for Mission Control/ReleasesV2 summaries.
+
+When an RC is used as the base, late fixes from the preceding release can appear again in the draft. Remove entries already covered by that release during the usual review of store text; the freeze and translation steps stay in place.
 
 Regenerate only before editorial review: generation replaces the version's draft. Release managers still add late-fix and hotfix notes and testing requirements in the release PR; the code-freeze testing report is a snapshot.
 
