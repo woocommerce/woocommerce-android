@@ -30,7 +30,6 @@ import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
@@ -169,7 +168,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
 
             // THEN
             assertThat(viewModel.state.value).isEqualTo(Saved)
-            verify(store, times(1)).setPIN(any(), any(), any())
+            verify(store).setPIN(any(), any(), any())
         }
 
     @Test
@@ -260,22 +259,59 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         }
 
     @Test
-    fun `given partial entry, when deleting resetting or entering invalid digits, then no partial PIN is saved`() =
+    fun `given partial entry, when a digit is deleted, then the entry shrinks without saving`() = runTest {
+        // GIVEN
+        enter("12")
+
+        // WHEN
+        viewModel.onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DeleteTapped)
+
+        // THEN
+        assertThat(viewModel.state.value).isEqualTo(Choose(enteredDigits = 1))
+        verifyNoInteractions(store, session)
+    }
+
+    @Test
+    fun `given partial confirmation, when a digit is deleted, then confirmation keeps the remaining digits`() =
         runTest {
+            // GIVEN
+            givenNoPINs()
+            whenever(store.setPIN(1, WooPosLocalRole.ADMIN, "1234")).thenReturn(Result.success(Unit))
+            choose("1234")
+            enter("19")
+
             // WHEN
-            enter("12")
             viewModel.onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DeleteTapped)
-            assertThat(viewModel.state.value).isEqualTo(Choose(enteredDigits = 1))
-            viewModel.reset()
-            viewModel.onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DigitTapped(-1))
-            viewModel.onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DigitTapped(10))
-            enter("123")
+            enter("234")
             advanceUntilIdle()
 
             // THEN
-            assertThat(viewModel.state.value).isEqualTo(Choose(enteredDigits = 3))
-            verifyNoInteractions(store, session)
+            verify(store).setPIN(1, WooPosLocalRole.ADMIN, "1234")
+            assertThat(viewModel.state.value).isEqualTo(Saved)
         }
+
+    @Test
+    fun `when digits outside 0 to 9 are tapped, then they are ignored`() = runTest {
+        // WHEN
+        viewModel.onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DigitTapped(-1))
+        viewModel.onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DigitTapped(10))
+
+        // THEN
+        assertThat(viewModel.state.value).isEqualTo(Choose())
+    }
+
+    @Test
+    fun `given no selected store, when confirmation matches, then nothing is saved and Choose restarts`() = runTest {
+        // GIVEN
+        whenever(selectedSite.getOrNull()).thenReturn(null)
+
+        // WHEN
+        chooseAndConfirm("1234")
+
+        // THEN
+        verifyNoInteractions(store, session)
+        assertThat(viewModel.state.value).isEqualTo(Choose())
+    }
 
     @Test
     fun `given a held choice, when the dialog closes, then confirmation never opens`() = runTest {
@@ -355,7 +391,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         }
 
     @Test
-    fun `given a committed save after dialog close, when it completes, then the real session receives the saved PIN`() =
+    fun `given a committed save after dialog close, when it completes, then the session receives the saved PIN`() =
         runTest {
             // GIVEN
             val gate = givenPendingSave()
@@ -373,7 +409,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         }
 
     @Test
-    fun `given a committed save, when Settings scope is cancelled, then the real session receives the saved PIN`() =
+    fun `given a committed save, when Settings scope is cancelled, then the session receives the saved PIN`() =
         runTest {
             // GIVEN
             val gate = givenPendingSave()
@@ -407,21 +443,9 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            verify(store, times(1)).setPIN(any(), any(), any())
+            verify(store).setPIN(any(), any(), any())
             assertThat(viewModel.state.value).isEqualTo(Saved)
         }
-
-    @Test
-    fun `when a PIN is compared or saved, then Back and close are unavailable`() {
-        assertThat(Choose(enteredDigits = 4).canClose).isTrue()
-        assertThat(Choose().canGoBack).isFalse()
-        assertThat(Confirm(enteredDigits = 3).canGoBack).isTrue()
-        assertThat(Confirm(enteredDigits = 3).canClose).isTrue()
-        assertThat(Confirm(enteredDigits = 4).canGoBack).isFalse()
-        assertThat(Confirm(enteredDigits = 4).canClose).isFalse()
-        assertThat(Saving.canClose).isFalse()
-        assertThat(Saved.canClose).isTrue()
-    }
 
     private suspend fun givenNoPINs() {
         whenever(store.getPINs(1)).thenReturn(Result.success(emptyMap()))

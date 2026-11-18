@@ -102,10 +102,9 @@ fun WooPosSettingsDetailPaneScreen(
     }
 }
 
-/** Security centers its content in the whole pane without a heading; phones keep the Back control. */
 @Composable
 private fun DetailPaneHeader(destination: WooPosSettingsDetailDestination, onBack: (() -> Unit)?) {
-    val hasHeading = destination !is WooPosSettingsDetailDestination.Security.Overview
+    val hasHeading = destination.showsHeading
     if (!hasHeading && onBack == null) return
     WooPosToolbar(
         modifier = Modifier

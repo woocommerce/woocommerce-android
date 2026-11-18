@@ -3,17 +3,16 @@ package com.woocommerce.android.ui.woopos.settings.details.security
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,21 +27,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.MotionDurationScale
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -53,7 +47,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -75,10 +68,10 @@ import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPadStyle
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Choose
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Confirm
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Entry
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Error
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Saved
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Saving
-import kotlinx.coroutines.delay
 
 @Composable
 fun WooPosSettingsSecurityPINSetupDialog(
@@ -112,7 +105,6 @@ private fun PINSetupContent(
 ) {
     val density = LocalDensity.current
     var entryHeight by remember { mutableStateOf(0.dp) }
-    // Loading centers in the whole card, so it is placed over the column rather than under the header.
     Box(contentAlignment = Alignment.Center) {
         Column(
             modifier = Modifier
@@ -124,11 +116,10 @@ private fun PINSetupContent(
             PINSetupHeader(state, onUIEvent, onClose)
             Box(contentAlignment = Alignment.Center) {
                 // The entry keeps the dialog's size while loading and success replace it.
-                val entry = state as? Choose ?: state as? Confirm ?: Confirm(WooPosPINHash.PIN_LENGTH)
-                val showsEntry = state is Choose || state is Confirm
+                val entry = state as? Entry ?: Confirm(WooPosPINHash.PIN_LENGTH)
+                val showsEntry = state is Entry
                 PINEntry(
                     entry = entry,
-                    enabled = showsEntry,
                     onUIEvent = onUIEvent,
                     modifier = Modifier
                         .onSizeChanged { entryHeight = with(density) { it.height.toDp() } }
@@ -200,12 +191,10 @@ private fun PINSetupHeader(
 
 @Composable
 private fun PINEntry(
-    entry: WooPosSettingsSecurityPINSetupState,
-    enabled: Boolean,
+    entry: Entry,
     onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val enteredDigits = (entry as? Choose)?.enteredDigits ?: (entry as? Confirm)?.enteredDigits ?: 0
     val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
     Column(
         modifier = modifier,
@@ -213,22 +202,22 @@ private fun PINEntry(
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value),
     ) {
         Box(Modifier.heightIn(min = STATUS_MIN_HEIGHT), contentAlignment = Alignment.Center) {
-            val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
             AnimatedContent(
                 targetState = entry,
                 contentKey = { it is Confirm },
-                transitionSpec = { pageTransition(isRtl) },
+                transitionSpec = { pageTransition() },
                 label = "pinSetupPage",
             ) { page ->
                 PINStatus(
-                    enteredDigits = (page as? Choose)?.enteredDigits ?: (page as? Confirm)?.enteredDigits ?: 0,
+                    enteredDigits = page.enteredDigits,
                     error = (page as? Choose)?.error,
+                    isSettled = transition.currentState == EnterExitState.Visible,
                 )
             }
         }
         WooPosPINPad(
-            enteredDigits = enteredDigits,
-            enabled = enabled && entry.canEnterDigits,
+            enteredDigits = entry.enteredDigits,
+            enabled = entry.canEnterDigits,
             onDigit = { onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DigitTapped(it)) },
             onDelete = { onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DeleteTapped) },
             style = WooPosPINPadStyle(
@@ -239,61 +228,52 @@ private fun PINEntry(
     }
 }
 
-/** Confirmation pushes the dots in from the trailing edge; returning to Choose pushes them back. */
-private fun AnimatedContentTransitionScope<WooPosSettingsSecurityPINSetupState>.pageTransition(
-    isRtl: Boolean,
-): ContentTransform {
-    val direction = (if (targetState is Confirm) 1 else -1) * (if (isRtl) -1 else 1)
+private fun AnimatedContentTransitionScope<Entry>.pageTransition(): ContentTransform {
+    val towards = if (targetState is Confirm) SlideDirection.Start else SlideDirection.End
     val spec = tween<IntOffset>(PAGE_MILLIS, easing = LinearOutSlowInEasing)
     val fade = tween<Float>(PAGE_MILLIS, easing = LinearOutSlowInEasing)
-    // The groups travel slightly more than their width so a gap separates them, as in the design.
-    val travel = { width: Int -> (width * PAGE_TRAVEL).toInt() * direction }
-    return (slideInHorizontally(spec) { travel(it) } + fadeIn(fade)) togetherWith
-        (slideOutHorizontally(spec) { -travel(it) } + fadeOut(fade)) using
+    val travel = { fullSlide: Int -> (fullSlide * PAGE_TRAVEL).toInt() }
+    return (slideIntoContainer(towards, spec, travel) + fadeIn(fade)) togetherWith
+        (slideOutOfContainer(towards, spec, travel) + fadeOut(fade)) using
         SizeTransform(clip = true)
 }
 
+/** The error's space is reserved at once; it appears and is announced after the dots settle. */
 @Composable
-private fun PINStatus(enteredDigits: Int, error: Error?) {
+private fun PINStatus(enteredDigits: Int, error: Error?, isSettled: Boolean) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
     ) {
         WooPosPINDots(enteredDigits)
-        if (error != null) PINError(error)
+        if (error != null) {
+            val alpha by animateFloatAsState(
+                targetValue = if (isSettled) 1f else 0f,
+                animationSpec = tween(MESSAGE_FADE_MILLIS),
+                label = "pinSetupError",
+            )
+            WooPosText(
+                text = stringResource(
+                    when (error) {
+                        Error.MISMATCH -> R.string.woopos_security_mismatch
+                        Error.SAVE_FAILED -> R.string.woopos_security_save_failed
+                    }
+                ),
+                style = WooPosTypography.BodySmall,
+                color = MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .graphicsLayer { this.alpha = alpha }
+                    .then(
+                        if (isSettled) {
+                            Modifier.semantics { liveRegion = LiveRegionMode.Polite }
+                        } else {
+                            Modifier.clearAndSetSemantics {}
+                        }
+                    ),
+            )
+        }
     }
-}
-
-/** Reserves the message's space at once but reveals and announces it after the dots slide back into place. */
-@Composable
-private fun PINError(error: Error) {
-    val isPreview = LocalInspectionMode.current
-    var isShown by remember { mutableStateOf(isPreview) }
-    LaunchedEffect(Unit) {
-        delay((PAGE_MILLIS * (coroutineContext[MotionDurationScale]?.scaleFactor ?: 1f)).toLong())
-        isShown = true
-    }
-    val alpha by animateFloatAsState(if (isShown) 1f else 0f, tween(MESSAGE_FADE_MILLIS), label = "pinSetupError")
-    WooPosText(
-        text = stringResource(
-            when (error) {
-                Error.MISMATCH -> R.string.woopos_security_mismatch
-                Error.SAVE_FAILED -> R.string.woopos_security_save_failed
-            }
-        ),
-        style = WooPosTypography.BodySmall,
-        color = MaterialTheme.colorScheme.error,
-        textAlign = TextAlign.Center,
-        modifier = Modifier
-            .graphicsLayer { this.alpha = alpha }
-            .then(
-                if (isShown) {
-                    Modifier.semantics { liveRegion = LiveRegionMode.Polite }
-                } else {
-                    Modifier.clearAndSetSemantics {}
-                }
-            ),
-    )
 }
 
 @Composable
@@ -303,49 +283,18 @@ private fun PINSetupSaved(onContinue: () -> Unit, minHeight: Dp) {
             .fillMaxWidth()
             .heightIn(min = minHeight),
         horizontalAlignment = Alignment.CenterHorizontally,
-        // The empty first item centers the message above the bottom-aligned button.
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
         Spacer(Modifier)
-        WooPosSettingsSecurityProtectedMessage(Modifier.padding(vertical = WooPosSpacing.Large.value))
+        WooPosSettingsSecurityProtectedMessage(
+            Modifier
+                .padding(vertical = WooPosSpacing.Large.value)
+                .semantics { liveRegion = LiveRegionMode.Polite }
+        )
         WooPosButton(
             text = stringResource(R.string.continue_button),
             onClick = onContinue,
             modifier = Modifier.fillMaxWidth(),
-        )
-    }
-}
-
-/** Confirms that the Admin PIN protects POS; Security reuses it until PIN management is available. */
-@Composable
-fun WooPosSettingsSecurityProtectedMessage(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
-    ) {
-        Image(
-            painter = painterResource(R.drawable.woopos_check_circle),
-            contentDescription = null,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value),
-        )
-        WooPosText(
-            text = stringResource(R.string.woopos_security_success),
-            style = WooPosTypography.BodyXLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.semantics {
-                heading()
-                liveRegion = LiveRegionMode.Polite
-            },
-        )
-        WooPosText(
-            text = stringResource(R.string.woopos_security_success_message),
-            style = WooPosTypography.BodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.widthIn(max = MESSAGE_MAX_WIDTH),
         )
     }
 }
@@ -403,7 +352,6 @@ private const val PAGE_MILLIS = 290
 private const val PAGE_TRAVEL = 1.27f
 private const val MESSAGE_FADE_MILLIS = 120
 private val DIALOG_MAX_WIDTH = 520.dp
-private val MESSAGE_MAX_WIDTH = 470.dp
 private val STATUS_MIN_HEIGHT = 84.dp
 private val KEY_SIZE = 90.dp
 private val PHONE_KEY_SIZE = 72.dp

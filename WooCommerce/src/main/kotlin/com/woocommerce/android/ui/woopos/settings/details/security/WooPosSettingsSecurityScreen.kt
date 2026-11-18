@@ -40,7 +40,6 @@ fun WooPosSettingsSecurityScreen(onGetStartedClicked: () -> Unit) {
     WooPosSettingsSecurityScreen(isProtectionEnabled = isProtectionEnabled, onGetStartedClicked = onGetStartedClicked)
 }
 
-/** Centers its content in the whole Security pane, which has no heading. */
 @Composable
 fun WooPosSettingsSecurityScreen(isProtectionEnabled: Boolean, onGetStartedClicked: () -> Unit) {
     BoxWithConstraints(Modifier.fillMaxSize()) {

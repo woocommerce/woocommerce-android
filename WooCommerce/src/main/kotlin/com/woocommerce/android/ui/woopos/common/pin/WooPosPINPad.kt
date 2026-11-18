@@ -84,7 +84,7 @@ fun WooPosPINPad(
     }
 }
 
-/** Shows entered digits; hidden dots stay composed, for example under a message, so the next digit still pops in. */
+/** Hidden dots stay composed, for example under a message, so the next digit still pops in. */
 @Composable
 fun WooPosPINDots(enteredDigits: Int, modifier: Modifier = Modifier, isHidden: Boolean = false) {
     val label = stringResource(R.string.woopos_lock_pin_entry)

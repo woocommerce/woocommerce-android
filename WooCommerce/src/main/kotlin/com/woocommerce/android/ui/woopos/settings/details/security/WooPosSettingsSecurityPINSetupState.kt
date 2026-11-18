@@ -3,20 +3,20 @@ package com.woocommerce.android.ui.woopos.settings.details.security
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 
 sealed interface WooPosSettingsSecurityPINSetupState {
-    val canEnterDigits: Boolean get() = false
     val canGoBack: Boolean get() = false
     val canClose: Boolean get() = true
 
-    data class Choose(
-        val enteredDigits: Int = 0,
-        val error: Error? = null,
-    ) : WooPosSettingsSecurityPINSetupState {
-        override val canEnterDigits: Boolean get() = enteredDigits < WooPosPINHash.PIN_LENGTH
+    sealed interface Entry : WooPosSettingsSecurityPINSetupState {
+        val enteredDigits: Int
+        val canEnterDigits: Boolean get() = enteredDigits < WooPosPINHash.PIN_LENGTH
     }
 
-    /** A full confirmation holds its dots while the PIN is compared and saved. */
-    data class Confirm(val enteredDigits: Int = 0) : WooPosSettingsSecurityPINSetupState {
-        override val canEnterDigits: Boolean get() = enteredDigits < WooPosPINHash.PIN_LENGTH
+    data class Choose(
+        override val enteredDigits: Int = 0,
+        val error: Error? = null,
+    ) : Entry
+
+    data class Confirm(override val enteredDigits: Int = 0) : Entry {
         override val canGoBack: Boolean get() = canEnterDigits
         override val canClose: Boolean get() = canEnterDigits
     }

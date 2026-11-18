@@ -124,12 +124,34 @@ class WooPosSettingsSecurityPINSetupDialogTest {
         assertThat(closeCount).isEqualTo(1)
     }
 
-    private fun setDialog(state: State<WooPosSettingsSecurityPINSetupState>) {
+    @Test
+    fun closingKeepsTheLastStepWhileTheFlowResetsBehindIt() {
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Saved)
+        val isVisible = mutableStateOf(true)
+        setDialog(state, isVisible)
+        composeTestRule.waitForIdle()
+        composeTestRule.mainClock.autoAdvance = false
+
+        // WHEN
+        isVisible.value = false
+        composeTestRule.mainClock.advanceTimeByFrame()
+        state.value = Choose()
+        composeTestRule.mainClock.advanceTimeByFrame()
+
+        // THEN
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_security_success)).assertExists()
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_security_choose_pin)).assertDoesNotExist()
+    }
+
+    private fun setDialog(
+        state: State<WooPosSettingsSecurityPINSetupState>,
+        isVisible: State<Boolean> = mutableStateOf(true),
+    ) {
         composeTestRule.setContent {
             WooPosTheme {
                 WooPosSettingsSecurityPINSetupDialog(
                     state = state.value,
-                    isVisible = true,
+                    isVisible = isVisible.value,
                     onUIEvent = { events += it },
                     onClose = { closeCount++ },
                 )

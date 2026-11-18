@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Choose
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Confirm
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Entry
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Error
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -54,7 +55,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
     }
 
     private fun onDigit(digit: Int) {
-        val current = _state.value
+        val current = _state.value as? Entry ?: return
         if (!current.canEnterDigits || digit !in MIN_DIGIT..MAX_DIGIT) return
         entry += digit
         _state.value = if (current is Confirm) Confirm(entry.length) else Choose(entry.length)
@@ -65,7 +66,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
     }
 
     private fun onDelete() {
-        val current = _state.value
+        val current = _state.value as? Entry ?: return
         if (!current.canEnterDigits || entry.isEmpty()) return
         entry = entry.dropLast(1)
         _state.value = if (current is Confirm) Confirm(entry.length) else Choose(entry.length)
@@ -104,20 +105,23 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
         val id = selectedSite.getOrNull()?.id ?: return SaveResult.STALE
         val pins = store.getPINs(id)
         currentCoroutineContext().ensureActive()
-        if (id != selectedSite.getOrNull()?.id) return SaveResult.STALE
-        if (pins.getOrNull()?.let { WooPosLocalRole.ADMIN !in it } != true) return SaveResult.FAILED
+        if (!isSelected(id)) return SaveResult.STALE
+        val canCreate = pins.getOrNull()?.let { WooPosLocalRole.ADMIN !in it } == true
+        if (!canCreate) return SaveResult.FAILED
         val saved = withContext(NonCancellable) {
             val pinSaved = store.setPIN(id, WooPosLocalRole.ADMIN, pin).isSuccess
-            if (pinSaved && id == selectedSite.getOrNull()?.id) accessSession.unlock(pin)
+            if (pinSaved && isSelected(id)) accessSession.unlock(pin)
             pinSaved
         }
         currentCoroutineContext().ensureActive()
         return when {
             !saved -> SaveResult.FAILED
-            id != selectedSite.getOrNull()?.id -> SaveResult.STALE
+            !isSelected(id) -> SaveResult.STALE
             else -> SaveResult.SAVED
         }
     }
+
+    private fun isSelected(localSiteId: Int) = localSiteId == selectedSite.getOrNull()?.id
 
     private enum class SaveResult { SAVED, FAILED, STALE }
 
