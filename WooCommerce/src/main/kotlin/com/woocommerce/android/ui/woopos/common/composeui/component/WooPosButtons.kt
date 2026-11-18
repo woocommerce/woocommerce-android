@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBre
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -122,10 +123,10 @@ fun WooPosOutlinedButton(
     textStyle: WooPosTypography = WooPosTypography.BodyLarge,
     onClick: () -> Unit,
 ) {
-    val borderColor = if (state == WooPosButtonState.ENABLED || state == WooPosButtonState.LOADING) {
-        MaterialTheme.colorScheme.inverseSurface
-    } else {
+    val borderColor = if (state == WooPosButtonState.DISABLED) {
         WooPosTheme.colors.disabledContainer
+    } else {
+        MaterialTheme.colorScheme.inverseSurface
     }
     Button(
         modifier = modifier,
@@ -277,7 +278,7 @@ private fun Button(
     Button(
         onClick = onClickLocal,
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
-        enabled = state == WooPosButtonState.ENABLED || state == WooPosButtonState.LOADING,
+        enabled = state != WooPosButtonState.DISABLED,
         border = border,
         colors = colors,
         modifier = modifier
@@ -291,7 +292,8 @@ private fun Button(
         )
     ) {
         Box(contentAlignment = Alignment.Center) {
-            // Always include the text. When loading, hide it with alpha to keep the width
+            // Always include the text. When loading or showing success, hide it with alpha to keep the width
+            val isTextVisible = state == WooPosButtonState.ENABLED || state == WooPosButtonState.DISABLED
             WooPosText(
                 text = text,
                 style = textStyle,
@@ -299,7 +301,7 @@ private fun Button(
                 maxLines = maxLines,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.alpha(if (state == WooPosButtonState.LOADING) 0f else 1f)
+                modifier = Modifier.alpha(if (isTextVisible) 1f else 0f)
             )
             when (state) {
                 WooPosButtonState.ENABLED,
@@ -308,6 +310,14 @@ private fun Button(
 
                 WooPosButtonState.LOADING -> {
                     ButtonsLoadingIndicator(size = loadingIndicatorSize)
+                }
+
+                WooPosButtonState.SUCCESS -> {
+                    Icon(
+                        imageVector = WooPosIcons.Check,
+                        contentDescription = null,
+                        modifier = Modifier.size(loadingIndicatorSize),
+                    )
                 }
             }
         }
@@ -370,6 +380,12 @@ fun WooPosButtonsPreview() {
             WooPosOutlinedButton(
                 text = "Button Outlined",
                 state = WooPosButtonState.LOADING,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {}
+            )
+            WooPosOutlinedButton(
+                text = "Button Outlined",
+                state = WooPosButtonState.SUCCESS,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {}
             )
@@ -485,5 +501,5 @@ fun WooPosSmallButtonsPreview() {
 }
 
 enum class WooPosButtonState {
-    ENABLED, DISABLED, LOADING
+    ENABLED, DISABLED, LOADING, SUCCESS
 }
