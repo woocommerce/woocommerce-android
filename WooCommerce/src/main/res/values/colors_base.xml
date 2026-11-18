@@ -330,5 +330,9 @@
     <color name="woopos_bluetooth_icon_primary">@color/woo_purple_40</color>
     <color name="woopos_bluetooth_icon_secondary">@color/woo_purple_10</color>
     <color name="woopos_bluetooth_icon_tertiary">@color/woo_purple_80</color>
+    <color name="woopos_lock_shackle">@color/woo_purple_20</color>
+    <color name="woopos_lock_outline">@color/woo_purple_90</color>
+    <color name="woopos_lock_body">@color/woo_purple_10</color>
+    <color name="woopos_lock_highlight">@color/woo_purple_0</color>
 
 </resources>
