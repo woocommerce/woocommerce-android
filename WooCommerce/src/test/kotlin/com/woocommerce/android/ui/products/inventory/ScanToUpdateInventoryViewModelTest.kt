@@ -27,6 +27,7 @@ import org.mockito.ArgumentMatchers.eq
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -91,6 +92,52 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
 
         // THEN
         verify(fetchProductByIdentifier).invoke("123", GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8)
+    }
+
+    @Test
+    fun `given restored visible sheet, when view model created, then the sheet stays visible`() = testBlocking {
+        // GIVEN
+        val visibleState = QuickInventoryBottomSheetVisible(
+            ScanToUpdateInventoryViewModel.ProductInfo(
+                id = 1,
+                name = "Product",
+                imageUrl = "",
+                sku = "123",
+                quantity = 1,
+                isStockManaged = true,
+            )
+        )
+        val savedState = SavedStateHandle(mapOf("viewState" to visibleState))
+
+        // WHEN
+        val viewModel = ScanToUpdateInventoryViewModel(
+            fetchProductByIdentifier = fetchProductByIdentifier,
+            savedState = savedState,
+            resourceProvider = resourceProvider,
+            productRepository = productRepo,
+            variationRepository = variationRepo,
+            tracker = tracker
+        )
+
+        // THEN
+        assertEquals(visibleState, viewModel.viewState.value)
+    }
+
+    @Test
+    fun `given visible sheet, when product details opened, then sheet hides without dismiss tracking`() = testBlocking {
+        // GIVEN
+        val product = ProductTestUtils.generateProduct(isStockManaged = true)
+        whenever(fetchProductByIdentifier(any(), any())).thenReturn(Result.success(product))
+        sut.onBarcodeScanningResult(
+            CodeScannerStatus.Success("123", GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8)
+        )
+
+        // WHEN
+        sut.onProductDetailsOpened()
+
+        // THEN
+        assertIs<QuickInventoryBottomSheetHidden>(sut.viewState.value)
+        verify(tracker, never()).track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_DISMISSED)
     }
 
     @Test

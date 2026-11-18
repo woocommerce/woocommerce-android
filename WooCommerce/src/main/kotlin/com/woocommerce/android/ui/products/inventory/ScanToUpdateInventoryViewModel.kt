@@ -63,6 +63,12 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
     fun onBottomSheetDismissed() {
         tracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_DISMISSED)
+        hideBottomSheet()
+    }
+
+    fun onProductDetailsOpened() = hideBottomSheet()
+
+    private fun hideBottomSheet() {
         if (scanToUpdateInventoryState.value == ScanToUpdateInventoryState.UpdatingProduct) return
         scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle
         _viewState.value = ViewState.QuickInventoryBottomSheetHidden
