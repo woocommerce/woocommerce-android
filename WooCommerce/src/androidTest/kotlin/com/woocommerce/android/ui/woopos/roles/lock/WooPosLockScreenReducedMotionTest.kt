@@ -25,10 +25,6 @@ class WooPosLockScreenReducedMotionTest {
             }
         }
 
-        // WHEN
-        composeTestRule.mainClock.advanceTimeByFrame()
-        composeTestRule.mainClock.advanceTimeByFrame()
-
         // THEN
         composeTestRule.onNodeWithText("1").assertIsDisplayed().assertIsEnabled()
     }

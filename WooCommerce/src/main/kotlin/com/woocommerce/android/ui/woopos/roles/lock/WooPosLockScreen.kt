@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
-import android.animation.ValueAnimator
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -35,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -251,7 +251,10 @@ private fun BoxWithConstraintsScope.calculateLockLayout(
     val titleStyle = WooPosTypography.BodyXLarge.style.copy(fontWeight = FontWeight.Bold)
     val statusStyle = WooPosTypography.BodySmall.style
     val statusMessages = listOf(
-        stringResource(R.string.woopos_lock_wait, LONGEST_WAIT_MINUTES, LONGEST_WAIT_SECONDS),
+        stringResource(
+            R.string.woopos_lock_wait,
+            String.format(LocalConfiguration.current.locales[0], "%d:%02d", LONGEST_WAIT_MINUTES, LONGEST_WAIT_SECONDS),
+        ),
         stringResource(R.string.woopos_lock_incorrect),
         stringResource(R.string.woopos_lock_unavailable),
     )
@@ -302,7 +305,8 @@ private enum class WooPosLockIntroProgress { PENDING, RUNNING, DONE }
 
 @Composable
 private fun rememberLockIntro(animates: Boolean): WooPosLockIntro {
-    val canAnimate = animates && !LocalInspectionMode.current && ValueAnimator.areAnimatorsEnabled()
+    val motionScale = rememberCoroutineScope().coroutineContext[MotionDurationScale]?.scaleFactor ?: 1f
+    val canAnimate = animates && !LocalInspectionMode.current && motionScale > 0f
     var progress by rememberSaveable {
         mutableStateOf(if (canAnimate) WooPosLockIntroProgress.PENDING else WooPosLockIntroProgress.DONE)
     }
@@ -313,10 +317,6 @@ private fun rememberLockIntro(animates: Boolean): WooPosLockIntro {
     val animation = remember { WooPosLockIntroAnimation() }
     LaunchedEffect(isActive) {
         if (!isActive) return@LaunchedEffect
-        if (coroutineContext[MotionDurationScale]?.scaleFactor == 0f) {
-            progress = WooPosLockIntroProgress.DONE
-            return@LaunchedEffect
-        }
         progress = WooPosLockIntroProgress.RUNNING
         animation.shackle.animateTo(0f, tween(INTRO_CLOSE_MILLIS, delayMillis = INTRO_HOLD_MILLIS))
         animation.reveal.animateTo(1f, tween(INTRO_REVEAL_MILLIS, easing = FastOutSlowInEasing))
@@ -426,8 +426,8 @@ private fun LockMessageText(message: WooPosLockMessage, remainingSeconds: Long) 
         WooPosLockMessage.WAIT -> {
             val minutes = remainingSeconds / SECONDS_PER_MINUTE
             val seconds = remainingSeconds % SECONDS_PER_MINUTE
-            val full = stringResource(R.string.woopos_lock_wait, minutes, seconds)
             val duration = String.format(locale, "%d:%02d", minutes, seconds)
+            val full = stringResource(R.string.woopos_lock_wait, duration)
             buildAnnotatedString {
                 append(full)
                 val start = full.indexOf(duration)
