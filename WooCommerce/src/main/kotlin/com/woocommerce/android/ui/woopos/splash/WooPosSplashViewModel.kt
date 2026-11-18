@@ -4,11 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.ui.woopos.common.data.WooPosPopularProductsProvider
+import com.woocommerce.android.ui.woopos.featureflags.WooPosReceiptPrintingEnabled
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.WooPosPrepopulatingDataStatus
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsWooBelowCatalogFixVersion
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersInMemoryCache
+import com.woocommerce.android.ui.woopos.settings.details.store.WooPosSettingsReceiptRepository
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchabilityRefreshPolicy
@@ -43,6 +45,8 @@ class WooPosSplashViewModel @Inject constructor(
     private val preferencesRepository: WooPosPreferencesRepository,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
     private val isWooBelowCatalogFixVersion: WooPosIsWooBelowCatalogFixVersion,
+    private val receiptPrintingEnabled: WooPosReceiptPrintingEnabled,
+    private val receiptRepository: WooPosSettingsReceiptRepository,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosSplashState>(WooPosSplashState.Loading)
@@ -60,6 +64,7 @@ class WooPosSplashViewModel @Inject constructor(
                 return@launch
             }
 
+            refreshReceiptInfo()
             joinAll(
                 launch {
                     productsDataSource.prepopulateCache()
@@ -178,6 +183,13 @@ class WooPosSplashViewModel @Inject constructor(
     private fun prepopulateOrdersCache() {
         appCoroutineScope.launch {
             ordersDataSource.loadOrders().collect {}
+        }
+    }
+
+    private fun refreshReceiptInfo() {
+        if (!receiptPrintingEnabled()) return
+        appCoroutineScope.launch {
+            receiptRepository.getReceiptInfo()
         }
     }
 }

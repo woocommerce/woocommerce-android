@@ -13,7 +13,7 @@ import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSes
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarState.BatteryState
-import com.woocommerce.android.ui.woopos.lock.WooPosLockSession
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
@@ -47,7 +47,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
     private val networkStatus: WooPosNetworkStatus = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
-    private val lockSession: WooPosLockSession = mock()
+    private val accessSession: WooPosAccessSession = mock()
     private val controller: WooPosCardReaderConnectionController = mock()
     private val controllerFactory: WooPosCardReaderConnectionControllerFactory = mock {
         on { create(any()) }.thenReturn(controller)
@@ -92,7 +92,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
     @Test
     fun `given lock flag disabled, when menu opens, then only Orders Settings and Exit are shown`() = runTest {
         // GIVEN
-        whenever(lockSession.isEnabled).thenReturn(false)
+        whenever(accessSession.isEnabled).thenReturn(false)
         val viewModel = createViewModel()
 
         // WHEN
@@ -397,6 +397,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
             port = 0,
             fingerprintBase64 = "fp",
             siteHash = "site-hash",
+            siteUrlHash = null,
         )
         whenever(remoteReaderSession.state).thenReturn(
             MutableStateFlow(WooPosRemoteReaderSession.State.Connected(phone, readerSerial = "serial"))
@@ -413,7 +414,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
     @Test
     fun `given lock flag enabled, when menu reopens, then Lock POS appears once directly before Exit POS`() = runTest {
         // GIVEN
-        whenever(lockSession.isEnabled).thenReturn(true)
+        whenever(accessSession.isEnabled).thenReturn(true)
         val viewModel = createViewModel()
 
         // WHEN
@@ -435,7 +436,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
     @Test
     fun `when Lock POS clicked, then session locks and menu closes without navigation`() = runTest {
         // GIVEN
-        whenever(lockSession.isEnabled).thenReturn(true)
+        whenever(accessSession.isEnabled).thenReturn(true)
         val viewModel = createViewModel()
         viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked)
 
@@ -447,7 +448,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
         )
 
         // THEN
-        verify(lockSession).lock()
+        verify(accessSession).lock()
         assertThat(viewModel.state.value.menu).isEqualTo(WooPosHomeFloatingToolbarState.Menu.Hidden)
         verify(childrenToParentEventSender, never()).sendToParent(any())
     }
@@ -460,6 +461,6 @@ class WooPosHomeFloatingToolbarViewModelTest {
         analyticsTracker,
         WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
         controllerFactory,
-        lockSession,
+        accessSession,
     )
 }
