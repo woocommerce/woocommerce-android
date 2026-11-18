@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.receiptprinting
 
+import androidx.annotation.MainThread
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDevice
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDiscoveryEvent
 import com.woocommerce.android.receiptprinter.ReceiptPrinterResult
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+@MainThread
 class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
     private val receiptPrinterFacade: WooPosReceiptPrinterFacade,
     private val permissionUtils: WooPosPermissionUtils,
