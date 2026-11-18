@@ -227,7 +227,7 @@ class WooPosPrintReceiptCoordinatorTest {
 
                 // THEN
                 assertThat(awaitItem())
-                    .isEqualTo(WooPosPrintReceiptEvent.PrintFailed(WooPosPrintReceiptFailure.PaperEmpty))
+                    .isEqualTo(WooPosPrintReceiptEvent.PrintFailed(ORDER_ID, WooPosPrintReceiptFailure.PaperEmpty))
                 verify(logger).e("Printing the receipt failed: PaperEmpty")
                 assertThat(sut.buttonState.value).isEqualTo(Idle)
             }
@@ -267,7 +267,7 @@ class WooPosPrintReceiptCoordinatorTest {
                 sut.onPrintReceiptClicked(ORDER_ID)
                 runCurrent()
                 assertThat(awaitItem())
-                    .isEqualTo(WooPosPrintReceiptEvent.PrintFailed(WooPosPrintReceiptFailure.PrinterOffline))
+                    .isEqualTo(WooPosPrintReceiptEvent.PrintFailed(ORDER_ID, WooPosPrintReceiptFailure.PrinterOffline))
 
                 // WHEN
                 sut.onPrintReceiptClicked(ORDER_ID)

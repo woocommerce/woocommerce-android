@@ -249,7 +249,7 @@ class WooPosPaymentSuccessViewModelTest {
         val viewModel = createViewModel()
 
         // WHEN
-        printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(WooPosPrintReceiptFailure.CoverOpen))
+        printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(42L, WooPosPrintReceiptFailure.CoverOpen))
 
         // THEN
         assertThat(viewModel.state.value.printReceiptFailure).isEqualTo(WooPosPrintReceiptFailure.CoverOpen)
@@ -264,7 +264,7 @@ class WooPosPaymentSuccessViewModelTest {
             viewModel.viewModelScope.cancel()
 
             // WHEN
-            printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(WooPosPrintReceiptFailure.CoverOpen))
+            printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(42L, WooPosPrintReceiptFailure.CoverOpen))
 
             // THEN
             assertThat(viewModel.state.value.printReceiptFailure).isNull()
@@ -275,7 +275,7 @@ class WooPosPaymentSuccessViewModelTest {
         // GIVEN
         whenever(resourceProvider.getString(any())).thenReturn("test")
         val viewModel = createViewModel()
-        printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(WooPosPrintReceiptFailure.CoverOpen))
+        printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(42L, WooPosPrintReceiptFailure.CoverOpen))
 
         // WHEN
         viewModel.onPrintReceiptFailureDialogDismissed()
@@ -291,7 +291,7 @@ class WooPosPaymentSuccessViewModelTest {
             // GIVEN
             whenever(resourceProvider.getString(any())).thenReturn("test")
             val viewModel = createViewModel(orderId = 42L)
-            printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(WooPosPrintReceiptFailure.CoverOpen))
+            printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(42L, WooPosPrintReceiptFailure.CoverOpen))
 
             // WHEN
             viewModel.onPrintReceiptFailureActionSelected(WooPosPrintReceiptFailureAction.Retry)
@@ -307,7 +307,7 @@ class WooPosPaymentSuccessViewModelTest {
             // GIVEN
             whenever(resourceProvider.getString(any())).thenReturn("test")
             val viewModel = createViewModel(orderId = 42L)
-            printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(WooPosPrintReceiptFailure.CoverOpen))
+            printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(42L, WooPosPrintReceiptFailure.CoverOpen))
 
             viewModel.navigationEvent.test {
                 // WHEN

@@ -336,10 +336,12 @@ class WooPosTotalsViewModel @Inject constructor(
                     WooPosPrintReceiptEvent.ShowPrinterSetup ->
                         childrenToParentEventSender.sendToParent(ChildToParentEvent.ShowReceiptPrinterSetupDialog)
 
-                    is WooPosPrintReceiptEvent.PrintFailed ->
+                    is WooPosPrintReceiptEvent.PrintFailed -> {
+                        if (event.orderId != dataState.value.orderId) return@collect
                         childrenToParentEventSender.sendToParent(
                             ChildToParentEvent.ShowPrintReceiptFailureDialog(event.failure)
                         )
+                    }
                 }
             }
         }

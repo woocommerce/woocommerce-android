@@ -233,6 +233,7 @@ class WooPosTotalsViewModelTest {
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
         private const val CREATED_ORDER_ID = 23L
+        private const val PREVIOUS_ORDER_ID = 22L
         private const val COUPON_ID = 10L
     }
 
@@ -1766,21 +1767,36 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `when the coordinator reports a failed print, then the parent is asked to show the failure dialog`() =
+    fun `given an order was created, when its print fails, then the parent is asked to show the failure dialog`() =
         runTest {
             // GIVEN
-            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
-                on { events }.thenReturn(mock())
-            }
-            createViewModel(parentToChildrenEventReceiver = parentToChildrenEventReceiver)
+            createViewModelAndSetupForSuccessfulOrderCreation()
 
             // WHEN
-            printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(WooPosPrintReceiptFailure.PaperEmpty))
+            printReceiptEvents.emit(
+                WooPosPrintReceiptEvent.PrintFailed(CREATED_ORDER_ID, WooPosPrintReceiptFailure.PaperEmpty)
+            )
 
             // THEN
             verify(childrenToParentEventSender).sendToParent(
                 ChildToParentEvent.ShowPrintReceiptFailureDialog(WooPosPrintReceiptFailure.PaperEmpty)
             )
+        }
+
+    @Test
+    fun `given an order was created, when the print of a previous order fails, then the parent is not asked to show the failure dialog`() =
+        runTest {
+            // GIVEN
+            createViewModelAndSetupForSuccessfulOrderCreation()
+
+            // WHEN
+            printReceiptEvents.emit(
+                WooPosPrintReceiptEvent.PrintFailed(PREVIOUS_ORDER_ID, WooPosPrintReceiptFailure.PaperEmpty)
+            )
+
+            // THEN
+            verify(childrenToParentEventSender, never())
+                .sendToParent(isA<ChildToParentEvent.ShowPrintReceiptFailureDialog>())
         }
 
     @Test
