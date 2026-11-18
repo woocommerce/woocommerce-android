@@ -46,6 +46,7 @@ fun ScanToUpdateInventoryScreen(
                 onHardwareScannerInfoClicked = onHardwareScannerInfoClicked,
             )
         },
+        onHardwareScannerInfoClicked = onHardwareScannerInfoClicked,
     )
     if (isHardwareScannerInfoVisible.value) {
         HardwareBarcodeScannerInfoSheet(
