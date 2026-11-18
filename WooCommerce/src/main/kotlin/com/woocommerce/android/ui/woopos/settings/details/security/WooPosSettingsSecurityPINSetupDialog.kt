@@ -65,6 +65,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWo
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDots
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPad
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPadStyle
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Choose
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Confirm
@@ -116,7 +117,7 @@ private fun PINSetupContent(
             PINSetupHeader(state, onUIEvent, onClose)
             Box(contentAlignment = Alignment.Center) {
                 // The entry keeps the dialog's size while loading and success replace it.
-                val entry = state as? Entry ?: Confirm(WooPosPINHash.PIN_LENGTH)
+                val entry = state as? Entry ?: Confirm(state.role, WooPosPINHash.PIN_LENGTH)
                 val showsEntry = state is Entry
                 PINEntry(
                     entry = entry,
@@ -126,10 +127,10 @@ private fun PINSetupContent(
                         .alpha(if (showsEntry) 1f else 0f)
                         .then(if (showsEntry) Modifier else Modifier.clearAndSetSemantics {}),
                 )
-                if (state == Saved) PINSetupSaved(onContinue = onClose, minHeight = entryHeight)
+                if (state is Saved) PINSetupSaved(state.role, onContinue = onClose, minHeight = entryHeight)
             }
         }
-        if (state == Saving) {
+        if (state is Saving) {
             WooPosCircularLoadingIndicator(
                 Modifier
                     .size(WooPosComponentSize.Medium.value)
@@ -146,9 +147,19 @@ private fun PINSetupHeader(
     onClose: () -> Unit,
 ) {
     val title = when (state) {
-        is Choose -> stringResource(R.string.woopos_security_choose_pin)
-        is Confirm -> stringResource(R.string.woopos_security_confirm_pin)
-        Saving, Saved -> null
+        is Choose -> stringResource(
+            when (state.role) {
+                WooPosLocalRole.ADMIN -> R.string.woopos_security_choose_pin
+                WooPosLocalRole.CASHIER -> R.string.woopos_security_choose_cashier_pin
+            }
+        )
+        is Confirm -> stringResource(
+            when (state.role) {
+                WooPosLocalRole.ADMIN -> R.string.woopos_security_confirm_pin
+                WooPosLocalRole.CASHIER -> R.string.woopos_security_confirm_cashier_pin
+            }
+        )
+        is Saving, is Saved -> null
     }
     Box(
         modifier = Modifier
@@ -178,7 +189,7 @@ private fun PINSetupHeader(
                     },
             )
         }
-        if (state != Saving) {
+        if (state !is Saving) {
             WooPosBackButton(
                 modifier = Modifier.align(Alignment.CenterEnd),
                 iconRes = R.drawable.ic_close_24dp,
@@ -256,6 +267,7 @@ private fun PINStatus(enteredDigits: Int, error: Error?, isSettled: Boolean) {
                 text = stringResource(
                     when (error) {
                         Error.MISMATCH -> R.string.woopos_security_mismatch
+                        Error.PIN_TAKEN -> R.string.woopos_security_pin_taken
                         Error.SAVE_FAILED -> R.string.woopos_security_save_failed
                     }
                 ),
@@ -277,7 +289,7 @@ private fun PINStatus(enteredDigits: Int, error: Error?, isSettled: Boolean) {
 }
 
 @Composable
-private fun PINSetupSaved(onContinue: () -> Unit, minHeight: Dp) {
+private fun PINSetupSaved(role: WooPosLocalRole, onContinue: () -> Unit, minHeight: Dp) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -287,7 +299,8 @@ private fun PINSetupSaved(onContinue: () -> Unit, minHeight: Dp) {
     ) {
         Spacer(Modifier)
         WooPosSettingsSecurityProtectedMessage(
-            Modifier
+            role = role,
+            modifier = Modifier
                 .padding(vertical = WooPosSpacing.Large.value)
                 .semantics { liveRegion = LiveRegionMode.Polite }
         )
@@ -302,43 +315,55 @@ private fun PINSetupSaved(onContinue: () -> Unit, minHeight: Dp) {
 @WooPosPreview
 @Composable
 fun WooPosSettingsSecurityPINSetupChoosePreview() {
-    PINSetupDialogPreview(Choose())
+    PINSetupDialogPreview(Choose(WooPosLocalRole.ADMIN))
 }
 
 @WooPosPreview
 @Composable
 fun WooPosSettingsSecurityPINSetupPartialPreview() {
-    PINSetupDialogPreview(Choose(enteredDigits = 2))
+    PINSetupDialogPreview(Choose(WooPosLocalRole.ADMIN, enteredDigits = 2))
 }
 
 @WooPosPreview
 @Composable
 fun WooPosSettingsSecurityPINSetupConfirmPreview() {
-    PINSetupDialogPreview(Confirm())
+    PINSetupDialogPreview(Confirm(WooPosLocalRole.CASHIER))
 }
 
 @WooPosPreview
 @Composable
 fun WooPosSettingsSecurityPINSetupMismatchPreview() {
-    PINSetupDialogPreview(Choose(error = Error.MISMATCH))
+    PINSetupDialogPreview(Choose(WooPosLocalRole.ADMIN, error = Error.MISMATCH))
 }
 
 @WooPosPreview
 @Composable
 fun WooPosSettingsSecurityPINSetupFailurePreview() {
-    PINSetupDialogPreview(Choose(error = Error.SAVE_FAILED))
+    PINSetupDialogPreview(Choose(WooPosLocalRole.ADMIN, error = Error.SAVE_FAILED))
+}
+
+@WooPosPreview
+@Composable
+fun WooPosSettingsSecurityPINSetupTakenPreview() {
+    PINSetupDialogPreview(Choose(WooPosLocalRole.CASHIER, error = Error.PIN_TAKEN))
+}
+
+@WooPosPreview
+@Composable
+fun WooPosSettingsSecurityPINSetupCashierSavedPreview() {
+    PINSetupDialogPreview(Saved(WooPosLocalRole.CASHIER))
 }
 
 @WooPosPreview
 @Composable
 fun WooPosSettingsSecurityPINSetupSavingPreview() {
-    PINSetupDialogPreview(Saving)
+    PINSetupDialogPreview(Saving(WooPosLocalRole.ADMIN))
 }
 
 @WooPosPreview
 @Composable
 fun WooPosSettingsSecurityPINSetupSavedPreview() {
-    PINSetupDialogPreview(Saved)
+    PINSetupDialogPreview(Saved(WooPosLocalRole.ADMIN))
 }
 
 @Composable

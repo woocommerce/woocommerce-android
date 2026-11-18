@@ -15,14 +15,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDetailDestination
+import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDialogState
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsState
 import com.woocommerce.android.ui.woopos.settings.details.hardware.WooPosHardwareSettingsScreen
 import com.woocommerce.android.ui.woopos.settings.details.hardware.barcodescanner.WooPosSettingsHardwareBarcodeScannerScreen
@@ -31,6 +35,8 @@ import com.woocommerce.android.ui.woopos.settings.details.help.WooPosHelpDetailS
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSettingsLocalCatalogScreen
 import com.woocommerce.android.ui.woopos.settings.details.payments.WooPosSettingsPaymentsScreen
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityScreen
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityState.Protected
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityViewModel
 import com.woocommerce.android.ui.woopos.settings.details.store.WooPosSettingsStoreScreen
 
 @Composable
@@ -39,7 +45,7 @@ fun WooPosSettingsDetailPaneScreen(
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
-    onShowPinSetupDialog: () -> Unit,
+    onShowPinSetupDialog: (WooPosLocalRole) -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -65,7 +71,10 @@ fun WooPosSettingsDetailPaneScreen(
         ) { destination ->
             when (destination) {
                 is WooPosSettingsDetailDestination.Security.Overview -> {
-                    WooPosSettingsSecurityScreen(onGetStartedClicked = onShowPinSetupDialog)
+                    WooPosSettingsSecurityScreen(
+                        isPINSetupVisible = state.dialogState is WooPosSettingsDialogState.PinSetupDialog,
+                        onSetUpPIN = onShowPinSetupDialog,
+                    )
                 }
 
                 is WooPosSettingsDetailDestination.Hardware.Overview -> {
@@ -104,7 +113,8 @@ fun WooPosSettingsDetailPaneScreen(
 
 @Composable
 private fun DetailPaneHeader(destination: WooPosSettingsDetailDestination, onBack: (() -> Unit)?) {
-    val hasHeading = destination.showsHeading
+    val hasHeading = destination.showsHeading || destination is WooPosSettingsDetailDestination.Security &&
+        hiltViewModel<WooPosSettingsSecurityViewModel>().state.collectAsState().value is Protected
     if (!hasHeading && onBack == null) return
     WooPosToolbar(
         modifier = Modifier

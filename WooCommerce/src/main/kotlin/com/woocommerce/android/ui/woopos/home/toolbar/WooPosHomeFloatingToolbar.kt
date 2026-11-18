@@ -136,6 +136,7 @@ private fun WooPosFloatingToolbar(
                                 contentDescription = labels.floatingToolbarPopUpMenuOpenContentDescription
                             },
                         menuItems = menu.items,
+                        activeRoleTitle = menu.activeRoleTitle,
                         onClick = { menuItem ->
                             onUIEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
                         }
@@ -443,7 +444,8 @@ fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
                             title = R.string.woopos_exit_confirmation_title,
                             icon = R.drawable.ic_exit_to_app_24dp,
                         ),
-                    )
+                    ),
+                    activeRoleTitle = R.string.woopos_role_cashier,
                 ),
             )
         )

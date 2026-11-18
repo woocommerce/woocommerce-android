@@ -21,9 +21,15 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 
 @Composable
-fun WooPosSettingsSecurityProtectedMessage(modifier: Modifier = Modifier) {
+fun WooPosSettingsSecurityProtectedMessage(role: WooPosLocalRole, modifier: Modifier = Modifier) {
+    val (title, message) = when (role) {
+        WooPosLocalRole.ADMIN -> R.string.woopos_security_success to R.string.woopos_security_success_message
+        WooPosLocalRole.CASHIER ->
+            R.string.woopos_security_cashier_success to R.string.woopos_security_cashier_success_message
+    }
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -35,7 +41,7 @@ fun WooPosSettingsSecurityProtectedMessage(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value),
         )
         WooPosText(
-            text = stringResource(R.string.woopos_security_success),
+            text = stringResource(title),
             style = WooPosTypography.BodyXLarge,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
@@ -43,7 +49,7 @@ fun WooPosSettingsSecurityProtectedMessage(modifier: Modifier = Modifier) {
             modifier = Modifier.semantics { heading() },
         )
         WooPosText(
-            text = stringResource(R.string.woopos_security_success_message),
+            text = stringResource(message),
             style = WooPosTypography.BodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

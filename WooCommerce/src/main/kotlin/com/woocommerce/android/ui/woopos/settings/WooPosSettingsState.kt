@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.settings
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -147,7 +148,7 @@ sealed class WooPosSettingsDialogState : Parcelable {
     data object ScanningSetupDialog : WooPosSettingsDialogState()
 
     @Parcelize
-    data object PinSetupDialog : WooPosSettingsDialogState()
+    data class PinSetupDialog(val role: WooPosLocalRole) : WooPosSettingsDialogState()
 
     @Parcelize
     data class SyncErrorDialog(

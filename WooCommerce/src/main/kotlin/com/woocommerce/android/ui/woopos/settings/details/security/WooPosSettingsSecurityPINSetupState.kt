@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.woopos.settings.details.security
 
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 
 sealed interface WooPosSettingsSecurityPINSetupState {
+    val role: WooPosLocalRole
     val canGoBack: Boolean get() = false
     val canClose: Boolean get() = true
 
@@ -12,22 +14,23 @@ sealed interface WooPosSettingsSecurityPINSetupState {
     }
 
     data class Choose(
+        override val role: WooPosLocalRole,
         override val enteredDigits: Int = 0,
         val error: Error? = null,
     ) : Entry
 
-    data class Confirm(override val enteredDigits: Int = 0) : Entry {
+    data class Confirm(override val role: WooPosLocalRole, override val enteredDigits: Int = 0) : Entry {
         override val canGoBack: Boolean get() = canEnterDigits
         override val canClose: Boolean get() = canEnterDigits
     }
 
-    data object Saving : WooPosSettingsSecurityPINSetupState {
+    data class Saving(override val role: WooPosLocalRole) : WooPosSettingsSecurityPINSetupState {
         override val canClose: Boolean get() = false
     }
 
-    data object Saved : WooPosSettingsSecurityPINSetupState
+    data class Saved(override val role: WooPosLocalRole) : WooPosSettingsSecurityPINSetupState
 
-    enum class Error { MISMATCH, SAVE_FAILED }
+    enum class Error { MISMATCH, PIN_TAKEN, SAVE_FAILED }
 }
 
 sealed interface WooPosSettingsSecurityPINSetupUIEvent {
