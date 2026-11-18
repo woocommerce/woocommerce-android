@@ -46,14 +46,17 @@ class WooPosEncryptedPINStorageTest {
         assertThat(directory.canonicalPath).startsWith(context.noBackupFilesDir.canonicalPath)
         assertThat(directory.canonicalPath).doesNotStartWith(context.filesDir.canonicalPath)
 
-        val recreated = WooPosPINAuthenticator(
-            WooPosLocalPINStore(WooPosEncryptedPINStorage(context, "woopos.pin-test"), CoroutineDispatchers()),
+        val recreatedStore = WooPosLocalPINStore(
+            WooPosEncryptedPINStorage(context, "woopos.pin-test"),
             CoroutineDispatchers()
         )
-        assertThat(recreated.authenticate(1, "1234").getOrThrow()).isEqualTo(WooPosLocalRole.ADMIN)
-        assertThat(recreated.authenticate(1, "5678").getOrThrow()).isEqualTo(WooPosLocalRole.CASHIER)
-        assertThat(recreated.authenticate(2, "1234").getOrThrow()).isNull()
-        assertThat(recreated.authenticate(2, "0000").getOrThrow()).isNotNull()
+        val recreated = WooPosPINAuthenticator(CoroutineDispatchers())
+        val pins = recreatedStore.getPINs(1).getOrThrow()
+        val otherStorePINs = recreatedStore.getPINs(2).getOrThrow()
+        assertThat(recreated.authenticate(pins, "1234").getOrThrow()).isEqualTo(WooPosLocalRole.ADMIN)
+        assertThat(recreated.authenticate(pins, "5678").getOrThrow()).isEqualTo(WooPosLocalRole.CASHIER)
+        assertThat(recreated.authenticate(otherStorePINs, "1234").getOrThrow()).isNull()
+        assertThat(recreated.authenticate(otherStorePINs, "0000").getOrThrow()).isNotNull()
     }
 
     @Test
@@ -111,9 +114,9 @@ class WooPosEncryptedPINStorageTest {
         try {
             assertThat(store.setPIN(1, WooPosLocalRole.ADMIN, "5678").exceptionOrNull())
                 .isEqualTo(WooPosPINError.StorageFailure)
-            val authenticator = WooPosPINAuthenticator(store, CoroutineDispatchers())
-            assertThat(authenticator.authenticate(1, "1234").getOrThrow()).isNotNull()
-            assertThat(authenticator.authenticate(1, "5678").getOrThrow()).isNull()
+            val authenticator = WooPosPINAuthenticator(CoroutineDispatchers())
+            assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "1234").getOrThrow()).isNotNull()
+            assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "5678").getOrThrow()).isNull()
         } finally {
             check(directory.setWritable(true))
         }
@@ -131,7 +134,10 @@ class WooPosEncryptedPINStorageTest {
         } finally {
             check(directory.setExecutable(true))
         }
-        assertThat(WooPosPINAuthenticator(store, CoroutineDispatchers()).authenticate(1, "1234").getOrThrow())
+        assertThat(
+            WooPosPINAuthenticator(CoroutineDispatchers())
+                .authenticate(store.getPINs(1).getOrThrow(), "1234").getOrThrow()
+        )
             .isNotNull()
     }
 
@@ -196,7 +202,10 @@ class WooPosEncryptedPINStorageTest {
                 .containsAlias("woopos.pin-test")
         ).isFalse()
         store.setPIN(1, WooPosLocalRole.ADMIN, "0000").getOrThrow()
-        assertThat(WooPosPINAuthenticator(store, CoroutineDispatchers()).authenticate(1, "1234").getOrThrow()).isNull()
+        assertThat(
+            WooPosPINAuthenticator(CoroutineDispatchers())
+                .authenticate(store.getPINs(1).getOrThrow(), "1234").getOrThrow()
+        ).isNull()
     }
 
     @Test

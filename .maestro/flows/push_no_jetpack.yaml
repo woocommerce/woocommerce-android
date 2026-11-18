@@ -64,6 +64,13 @@ onFlowComplete:
 - inputText: ${MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD}
 - tapOn: "Continue"
 
+# In GDPR countries the privacy banner covers the dashboard after the login.
+- extendedWaitUntil:
+    visible: "${STRING_MY_STORE}|${STRING_PRIVACY_BANNER_TITLE}"
+    timeout: 60000
+- runFlow:
+    file: ../subflows/dismiss_privacy_banner.yaml
+
 - extendedWaitUntil:
     visible:
       id: "dashboard_container"
