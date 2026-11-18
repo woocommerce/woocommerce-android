@@ -4,7 +4,7 @@
 
 26.2
 -----
-- [*] External barcode scanners can open product inventory without camera permission [https://github.com/woocommerce/woocommerce-android/pull/16876]
+- [*] Fixed an issue where external barcode scanners could not be used without camera permission [https://github.com/woocommerce/woocommerce-android/pull/16876]
 - [Internal] The excerpt logged for a store's error page is now built off the main thread [https://github.com/woocommerce/woocommerce-android/pull/16836]
 
 26.1
