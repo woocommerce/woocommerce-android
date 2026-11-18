@@ -1,26 +1,28 @@
 package com.woocommerce.android.ui.woopos.settings.details.security
 
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.platform.WindowInfo
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.DeviceConfigurationOverride
+import androidx.compose.ui.test.FontScale
 import androidx.compose.ui.test.ForcedSize
+import androidx.compose.ui.test.WindowInsets
+import androidx.compose.ui.test.WindowSize
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasProgressBarRangeInfo
+import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.then
 import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowInsetsCompat
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -184,26 +186,61 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun phoneLandscapeShowsTheBottomKeypadRowWithoutScrolling() {
-        setPhoneDialog(Confirm(), DpSize(800.dp, 380.dp))
+        setPhoneDialog(Confirm(), DpSize(800.dp, 340.dp))
 
         composeTestRule.onNodeWithText("0").assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(context.getString(R.string.woopos_lock_delete_digit))
             .assertIsDisplayed()
     }
 
-    private fun setPhoneDialog(state: WooPosSettingsSecurityPINSetupState, size: DpSize) {
+    @Test
+    fun shortPhoneWithLargeTextCanScrollToTheBottomKeypadRow() {
+        setPhoneDialog(Confirm(), DpSize(800.dp, 320.dp), fontScale = 2f)
+
+        composeTestRule.onNodeWithText("0").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(context.getString(R.string.woopos_lock_delete_digit))
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun tabletSuccessKeepsItsHeightAfterStateRestoration() {
+        val restorationTester = StateRestorationTester(composeTestRule)
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Confirm())
+        restorationTester.setContent {
+            WooPosTheme {
+                WooPosSettingsSecurityPINSetupDialog(
+                    state.value,
+                    isVisible = true,
+                    isFullScreen = false,
+                    onUIEvent = {},
+                    onClose = {},
+                )
+            }
+        }
+        composeTestRule.runOnIdle { state.value = Saved }
+        val closeNode = composeTestRule.onNodeWithContentDescription(close)
+        val originalBounds = closeNode.getUnclippedBoundsInRoot()
+
+        restorationTester.emulateSavedInstanceStateRestore()
+
+        assertThat(closeNode.getUnclippedBoundsInRoot()).isEqualTo(originalBounds)
+    }
+
+    private fun setPhoneDialog(state: WooPosSettingsSecurityPINSetupState, size: DpSize, fontScale: Float = 1f) {
         composeTestRule.setContent {
-            DeviceConfigurationOverride(DeviceConfigurationOverride.ForcedSize(size)) {
-                val windowInfo = LocalWindowInfo.current
-                val windowSize = with(LocalDensity.current) { IntSize(size.width.roundToPx(), size.height.roundToPx()) }
-                CompositionLocalProvider(
-                    LocalWindowInfo provides object : WindowInfo by windowInfo {
-                        override val containerSize = windowSize
-                    }
-                ) {
-                    WooPosTheme {
-                        WooPosSettingsSecurityPINSetupDialog(state, isVisible = true, onUIEvent = {}, onClose = {})
-                    }
+            val configuration = DeviceConfigurationOverride.ForcedSize(size) then
+                DeviceConfigurationOverride.WindowSize(size) then
+                DeviceConfigurationOverride.WindowInsets(WindowInsetsCompat.CONSUMED) then
+                DeviceConfigurationOverride.FontScale(fontScale)
+            DeviceConfigurationOverride(configuration) {
+                WooPosTheme {
+                    WooPosSettingsSecurityPINSetupDialog(
+                        state,
+                        isVisible = true,
+                        isFullScreen = true,
+                        onUIEvent = {},
+                        onClose = {},
+                    )
                 }
             }
         }

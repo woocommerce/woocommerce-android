@@ -4,8 +4,11 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.AccessUnavailable
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Choose
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Confirm
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Error
@@ -17,6 +20,7 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -43,7 +47,12 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         on { getOrNull() }.thenReturn(SiteModel().apply { id = 1 })
     }
     private val store: WooPosLocalPINStore = mock()
-    private val session: WooPosAccessSession = mock()
+    private val accessState = MutableStateFlow<WooPosAccessSessionState>(
+        WooPosAccessSessionState.Unlocked(WooPosLocalRole.ADMIN),
+    )
+    private val session: WooPosAccessSession = mock {
+        on { state }.thenReturn(accessState)
+    }
     private val viewModel = WooPosSettingsSecurityPINSetupViewModel(selectedSite, store, session)
 
     @Test
@@ -481,6 +490,19 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
             verify(store).setPIN(any(), any(), any())
             assertThat(viewModel.state.value).isEqualTo(Saved)
         }
+
+    @Test
+    fun `when the PIN is saved but Admin access is unavailable, then setup does not show success`() = runTest {
+        givenNoPINs()
+        accessState.value = WooPosAccessSessionState.Locked(Status.StorageUnavailable)
+        whenever(store.setPIN(1, WooPosLocalRole.ADMIN, "1234")).thenReturn(Result.success(Unit))
+
+        chooseAndConfirm("1234")
+
+        assertThat(viewModel.state.value).isEqualTo(AccessUnavailable)
+        verify(session).unlock("1234")
+        verify(store, never()).removePIN(any(), any())
+    }
 
     private suspend fun givenNoPINs() {
         whenever(store.getPINs(1)).thenReturn(Result.success(emptyMap()))
