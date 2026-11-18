@@ -107,7 +107,7 @@ class WooPosLockScreenPresentationTest {
         setLockScreen(WooPosLockScreenState(isLocked = true, status = Status.Wait(90)))
 
         composeTestRule.onNodeWithText("1").assertIsNotEnabled()
-        composeTestRule.onNodeWithText(context.getString(R.string.woopos_lock_wait, 1L, 30L)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_lock_wait, "1:30")).assertIsDisplayed()
     }
 
     @Test
@@ -217,7 +217,7 @@ class WooPosLockScreenPresentationTest {
         composeTestRule.mainClock.advanceTimeBy(SHAKE_MILLIS)
 
         // THEN
-        composeTestRule.onNodeWithText(context.getString(R.string.woopos_lock_wait, 0L, 30L)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_lock_wait, "0:30")).assertIsDisplayed()
     }
 
     @Test
@@ -231,7 +231,7 @@ class WooPosLockScreenPresentationTest {
         composeTestRule.waitForIdle()
 
         // THEN
-        composeTestRule.onNodeWithText(context.getString(R.string.woopos_lock_wait, 0L, 30L)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_lock_wait, "0:30")).assertIsDisplayed()
         composeTestRule.onNode(dots(entered = 4)).assertDoesNotExist()
     }
 

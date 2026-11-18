@@ -258,7 +258,10 @@ private fun BoxWithConstraintsScope.calculateLockLayout(
     val titleStyle = WooPosTypography.BodyXLarge.style.copy(fontWeight = FontWeight.Bold)
     val statusStyle = WooPosTypography.BodySmall.style
     val statusMessages = listOf(
-        stringResource(R.string.woopos_lock_wait, LONGEST_WAIT_MINUTES, LONGEST_WAIT_SECONDS),
+        stringResource(
+            R.string.woopos_lock_wait,
+            String.format(LocalConfiguration.current.locales[0], "%d:%02d", LONGEST_WAIT_MINUTES, LONGEST_WAIT_SECONDS),
+        ),
         stringResource(R.string.woopos_lock_incorrect),
         stringResource(R.string.woopos_lock_unavailable),
     )
@@ -461,8 +464,8 @@ private fun LockMessageText(message: WooPosLockMessage, remainingSeconds: Long) 
         WooPosLockMessage.WAIT -> {
             val minutes = remainingSeconds / SECONDS_PER_MINUTE
             val seconds = remainingSeconds % SECONDS_PER_MINUTE
-            val full = stringResource(R.string.woopos_lock_wait, minutes, seconds)
             val duration = String.format(locale, "%d:%02d", minutes, seconds)
+            val full = stringResource(R.string.woopos_lock_wait, duration)
             buildAnnotatedString {
                 append(full)
                 val start = full.indexOf(duration)
