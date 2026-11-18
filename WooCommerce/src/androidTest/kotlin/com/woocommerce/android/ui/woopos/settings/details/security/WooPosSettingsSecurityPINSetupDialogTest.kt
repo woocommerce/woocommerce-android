@@ -143,6 +143,22 @@ class WooPosSettingsSecurityPINSetupDialogTest {
         composeTestRule.onNodeWithText(context.getString(R.string.woopos_security_choose_pin)).assertDoesNotExist()
     }
 
+    @Test
+    fun keypadTapsDuringTheClosingAnimationAreIgnored() {
+        val isVisible = mutableStateOf(true)
+        setDialog(mutableStateOf(Choose(enteredDigits = 1)), isVisible)
+        composeTestRule.waitForIdle()
+        composeTestRule.mainClock.autoAdvance = false
+
+        // WHEN
+        isVisible.value = false
+        composeTestRule.mainClock.advanceTimeByFrame()
+        composeTestRule.onNodeWithText("2").performClick()
+
+        // THEN
+        assertThat(events).isEmpty()
+    }
+
     private fun setDialog(
         state: State<WooPosSettingsSecurityPINSetupState>,
         isVisible: State<Boolean> = mutableStateOf(true),

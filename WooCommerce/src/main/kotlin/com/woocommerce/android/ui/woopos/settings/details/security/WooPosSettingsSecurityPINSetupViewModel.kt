@@ -36,6 +36,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
     val state: StateFlow<WooPosSettingsSecurityPINSetupState> = _state.asStateFlow()
     private var entry = ""
     private var chosenPIN = ""
+    private var chosenSiteId: Int? = null
     private var job: Job? = null
 
     fun reset() {
@@ -43,6 +44,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
         job = null
         entry = ""
         chosenPIN = ""
+        chosenSiteId = null
         _state.value = Choose()
     }
 
@@ -74,13 +76,16 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
 
     private suspend fun choose(pin: String) {
         chosenPIN = pin
+        chosenSiteId = selectedSite.getOrNull()?.id
         delay(FILLED_DOTS_HOLD_MILLIS)
         _state.value = Confirm()
     }
 
     private suspend fun confirm(pin: String) {
         val chosen = chosenPIN
+        val siteId = chosenSiteId ?: return reset()
         chosenPIN = ""
+        chosenSiteId = null
         if (pin != chosen) {
             delay(FILLED_DOTS_HOLD_MILLIS)
             _state.value = Choose(error = Error.MISMATCH)
@@ -92,17 +97,18 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
                 _state.value = WooPosSettingsSecurityPINSetupState.Saving
                 delay(MINIMUM_SAVING_MILLIS)
             }
-            save(pin).also { if (it != SaveResult.SAVED) presentation.cancel() }
+            save(siteId, pin).also { if (it != SaveResult.SAVED) presentation.cancel() }
         }
-        _state.value = when (result) {
+        val outcome = if (isSelected(siteId)) result else SaveResult.STALE
+        _state.value = when (outcome) {
             SaveResult.SAVED -> WooPosSettingsSecurityPINSetupState.Saved
             SaveResult.FAILED -> Choose(error = Error.SAVE_FAILED)
             SaveResult.STALE -> Choose()
         }
     }
 
-    private suspend fun save(pin: String): SaveResult {
-        val id = selectedSite.getOrNull()?.id ?: return SaveResult.STALE
+    private suspend fun save(id: Int, pin: String): SaveResult {
+        if (!isSelected(id)) return SaveResult.STALE
         val pins = store.getPINs(id)
         currentCoroutineContext().ensureActive()
         if (!isSelected(id)) return SaveResult.STALE
