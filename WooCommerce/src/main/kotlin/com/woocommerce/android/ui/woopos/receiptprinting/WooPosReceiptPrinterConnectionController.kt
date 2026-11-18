@@ -83,7 +83,7 @@ class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
             ensureActive()
             _state.value = when (result) {
                 ReceiptPrinterResult.Success -> Connected(device)
-                is ReceiptPrinterResult.Failure -> ConnectionFailed
+                is ReceiptPrinterResult.Failure -> ConnectionFailed(device, result.error)
             }
         }
     }

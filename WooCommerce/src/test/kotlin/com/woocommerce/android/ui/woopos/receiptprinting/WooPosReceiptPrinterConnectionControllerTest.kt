@@ -568,7 +568,7 @@ class WooPosReceiptPrinterConnectionControllerTest {
         runCurrent()
 
         // THEN
-        assertThat(sut.state.value).isEqualTo(ConnectionFailed)
+        assertThat(sut.state.value).isEqualTo(ConnectionFailed(PRINTER, ReceiptPrinterError.PrinterNotFound))
     }
 
     @Test

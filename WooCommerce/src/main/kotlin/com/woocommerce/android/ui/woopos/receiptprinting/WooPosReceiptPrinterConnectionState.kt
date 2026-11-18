@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.receiptprinting
 
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDevice
+import com.woocommerce.android.receiptprinter.ReceiptPrinterError
 
 sealed interface WooPosReceiptPrinterConnectionState {
     data object Idle : WooPosReceiptPrinterConnectionState
@@ -13,5 +14,8 @@ sealed interface WooPosReceiptPrinterConnectionState {
     data class Connected(val device: ReceiptPrinterDevice) : WooPosReceiptPrinterConnectionState
     data object NoPrintersFound : WooPosReceiptPrinterConnectionState
     data object DiscoveryFailed : WooPosReceiptPrinterConnectionState
-    data object ConnectionFailed : WooPosReceiptPrinterConnectionState
+    data class ConnectionFailed(
+        val device: ReceiptPrinterDevice,
+        val error: ReceiptPrinterError,
+    ) : WooPosReceiptPrinterConnectionState
 }
