@@ -31,7 +31,7 @@ class WooPosSettingsReceiptRepositoryTest {
     @Test
     fun `given WooCommerce version is less than 10, when getReceiptInfo, then returns NotAvailable`() = runTest {
         // GIVEN
-        whenever(getWooCoreVersion()).thenReturn("9.9.9")
+        whenever(getWooCoreVersion(siteModel)).thenReturn("9.9.9")
 
         // WHEN
         val result = repository.getReceiptInfo()
@@ -43,7 +43,7 @@ class WooPosSettingsReceiptRepositoryTest {
     @Test
     fun `given WooCommerce version is null, when getReceiptInfo, then returns NotAvailable`() = runTest {
         // GIVEN
-        whenever(getWooCoreVersion()).thenReturn(null)
+        whenever(getWooCoreVersion(siteModel)).thenReturn(null)
 
         // WHEN
         val result = repository.getReceiptInfo()
@@ -55,7 +55,7 @@ class WooPosSettingsReceiptRepositoryTest {
     @Test
     fun `given WooCommerce version is 10 or higher and API succeeds, when getReceiptInfo, then returns Success with receipt info`() = runTest {
         // GIVEN
-        whenever(getWooCoreVersion()).thenReturn("10.0.0")
+        whenever(getWooCoreVersion(siteModel)).thenReturn("10.0.0")
         val settingsMap = mapOf(
             "woocommerce_pos_store_name" to "Test Store",
             "woocommerce_pos_store_address" to "123 Test Street",
@@ -80,7 +80,7 @@ class WooPosSettingsReceiptRepositoryTest {
     @Test
     fun `given WooCommerce version is 10 or higher and API returns empty settings, when getReceiptInfo, then returns Success with empty receipt info`() = runTest {
         // GIVEN
-        whenever(getWooCoreVersion()).thenReturn("10.1.0")
+        whenever(getWooCoreVersion(siteModel)).thenReturn("10.1.0")
         val apiResult = WooResult(emptyMap<String, String>())
         whenever(wooCommerceStore.fetchPosSettings(siteModel)).thenReturn(apiResult)
 
@@ -99,7 +99,7 @@ class WooPosSettingsReceiptRepositoryTest {
     @Test
     fun `given WooCommerce version is 10 or higher and API returns error, when getReceiptInfo, then returns Error`() = runTest {
         // GIVEN
-        whenever(getWooCoreVersion()).thenReturn("10.0.0")
+        whenever(getWooCoreVersion(siteModel)).thenReturn("10.0.0")
         val errorResult = WooResult<Map<String, String>>(
             WooError(WooErrorType.API_ERROR, GenericErrorType.NETWORK_ERROR, "Network error")
         )
@@ -115,7 +115,7 @@ class WooPosSettingsReceiptRepositoryTest {
     @Test
     fun `given WooCommerce version is 10 or higher and API throws exception, when getReceiptInfo, then returns Error`() = runTest {
         // GIVEN
-        whenever(getWooCoreVersion()).thenReturn("10.0.0")
+        whenever(getWooCoreVersion(siteModel)).thenReturn("10.0.0")
         whenever(wooCommerceStore.fetchPosSettings(siteModel)).thenThrow(RuntimeException("API failure"))
 
         // WHEN
@@ -128,7 +128,7 @@ class WooPosSettingsReceiptRepositoryTest {
     @Test
     fun `given WooCommerce version is 11, when getReceiptInfo, then returns Success`() = runTest {
         // GIVEN
-        whenever(getWooCoreVersion()).thenReturn("11.0.0")
+        whenever(getWooCoreVersion(siteModel)).thenReturn("11.0.0")
         val settingsMap = mapOf("woocommerce_pos_store_name" to "Future Store")
         val apiResult = WooResult(settingsMap)
         whenever(wooCommerceStore.fetchPosSettings(siteModel)).thenReturn(apiResult)
@@ -145,7 +145,7 @@ class WooPosSettingsReceiptRepositoryTest {
     @Test
     fun `given WooCommerce version is exactly 10_0_0, when getReceiptInfo, then returns Success`() = runTest {
         // GIVEN
-        whenever(getWooCoreVersion()).thenReturn("10.0.0")
+        whenever(getWooCoreVersion(siteModel)).thenReturn("10.0.0")
         val settingsMap = mapOf("woocommerce_pos_store_name" to "Exact Version Store")
         val apiResult = WooResult(settingsMap)
         whenever(wooCommerceStore.fetchPosSettings(siteModel)).thenReturn(apiResult)
@@ -155,5 +155,94 @@ class WooPosSettingsReceiptRepositoryTest {
 
         // THEN
         assertThat(result).isInstanceOf(WooPosReceiptDataResult.Success::class.java)
+    }
+
+    @Test
+    fun `given an address with CRLF line breaks, when getReceiptInfo, then the lines are joined with commas`() = runTest {
+        // GIVEN
+        whenever(getWooCoreVersion(siteModel)).thenReturn("10.0.0")
+        val settingsMap = mapOf("woocommerce_pos_store_address" to "123 Test Street\r\nSpringfield, CA 90000")
+        whenever(wooCommerceStore.fetchPosSettings(siteModel)).thenReturn(WooResult(settingsMap))
+
+        // WHEN
+        val result = repository.getReceiptInfo()
+
+        // THEN
+        val successData = result as WooPosReceiptDataResult.Success
+        assertThat(successData.receiptInfo.address).isEqualTo("123 Test Street, Springfield, CA 90000")
+    }
+
+    @Test
+    fun `given an address with blank lines, when getReceiptInfo, then the blank lines are dropped`() = runTest {
+        // GIVEN
+        whenever(getWooCoreVersion(siteModel)).thenReturn("10.0.0")
+        val settingsMap = mapOf("woocommerce_pos_store_address" to "123 Test Street,\n \r\nSpringfield, CA 90000\n")
+        whenever(wooCommerceStore.fetchPosSettings(siteModel)).thenReturn(WooResult(settingsMap))
+
+        // WHEN
+        val result = repository.getReceiptInfo()
+
+        // THEN
+        val successData = result as WooPosReceiptDataResult.Success
+        assertThat(successData.receiptInfo.address).isEqualTo("123 Test Street, Springfield, CA 90000")
+    }
+
+    @Test
+    fun `given an address with only line breaks and spaces, when getReceiptInfo, then the address is empty`() = runTest {
+        // GIVEN
+        whenever(getWooCoreVersion(siteModel)).thenReturn("10.0.0")
+        val settingsMap = mapOf("woocommerce_pos_store_address" to " \r \r\n")
+        whenever(wooCommerceStore.fetchPosSettings(siteModel)).thenReturn(WooResult(settingsMap))
+
+        // WHEN
+        val result = repository.getReceiptInfo()
+
+        // THEN
+        val successData = result as WooPosReceiptDataResult.Success
+        assertThat(successData.receiptInfo.address).isEmpty()
+    }
+
+    @Test
+    fun `given nothing was fetched, when getCachedReceiptInfo, then returns null`() {
+        // WHEN
+        val cached = repository.getCachedReceiptInfo(siteModel)
+
+        // THEN
+        assertThat(cached).isNull()
+    }
+
+    @Test
+    fun `given a fetch succeeded and the next one failed, when getCachedReceiptInfo, then returns the last success`() =
+        runTest {
+            // GIVEN
+            whenever(getWooCoreVersion(siteModel)).thenReturn("10.0.0")
+            val error = WooError(WooErrorType.API_ERROR, GenericErrorType.NETWORK_ERROR, "Network error")
+            whenever(wooCommerceStore.fetchPosSettings(siteModel))
+                .thenReturn(WooResult(mapOf("woocommerce_pos_store_name" to "Test Store")))
+                .thenReturn(WooResult(error))
+            repository.getReceiptInfo()
+            repository.getReceiptInfo()
+
+            // WHEN
+            val cached = repository.getCachedReceiptInfo(siteModel)
+
+            // THEN
+            assertThat(cached?.storeName).isEqualTo("Test Store")
+        }
+
+    @Test
+    fun `given a fetch succeeded for another site, when getCachedReceiptInfo, then returns null`() = runTest {
+        // GIVEN
+        whenever(getWooCoreVersion(siteModel)).thenReturn("10.0.0")
+        whenever(wooCommerceStore.fetchPosSettings(siteModel))
+            .thenReturn(WooResult(mapOf("woocommerce_pos_store_name" to "Test Store")))
+        repository.getReceiptInfo()
+        val otherSite: SiteModel = mock { on { id }.thenReturn(2) }
+
+        // WHEN
+        val cached = repository.getCachedReceiptInfo(otherSite)
+
+        // THEN
+        assertThat(cached).isNull()
     }
 }

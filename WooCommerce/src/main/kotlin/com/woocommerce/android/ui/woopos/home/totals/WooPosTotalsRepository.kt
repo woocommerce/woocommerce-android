@@ -19,6 +19,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import java.math.BigDecimal
 import java.util.Date
@@ -165,8 +166,10 @@ class WooPosTotalsRepository @Inject constructor(
 
     suspend fun getCouponsByIds(couponIds: List<Long>): List<Coupon> = couponRepository.getCoupons(couponIds)
 
-    suspend fun getOrderById(orderId: Long) = withContext(IO) {
-        orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.let {
+    suspend fun getOrderById(orderId: Long) = getOrderById(orderId, selectedSite.get())
+
+    suspend fun getOrderById(orderId: Long, site: SiteModel) = withContext(IO) {
+        orderStore.getOrderByIdAndSite(orderId, site)?.let {
             orderMapper.toAppModel(it)
         }
     }

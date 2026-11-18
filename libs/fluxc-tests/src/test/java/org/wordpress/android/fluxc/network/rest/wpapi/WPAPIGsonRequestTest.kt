@@ -86,9 +86,7 @@ class WPAPIGsonRequestTest {
             url = "$SITE/?rest_route=/wp/v2/users/me/application-passwords"
         ) {}
 
-        val error = request.deliverBaseNetworkError(
-            BaseNetworkError(VolleyError(networkResponse(403, HTML, FIREWALL_PAGE)))
-        ) as WPAPINetworkError
+        val error = request.parseAndDeliverError(VolleyError(networkResponse(403, HTML, FIREWALL_PAGE)))
 
         assertThat(error.errorCode).isEmpty()
         assertThat(error.unexpectedStoreResponse?.kind).isEqualTo(UnexpectedStoreResponseKind.UNACCEPTABLE_STATUS_CODE)
@@ -98,18 +96,33 @@ class WPAPIGsonRequestTest {
     }
 
     @Test
-    fun `given a JSON error, when the error is delivered, then it keeps the error code and adds no details`() {
+    fun `given a 403 firewall page, when it is delivered without being parsed first, then it builds no details`() {
         val request = buildRequest(url = "$SITE/wp-json/wc/v3/products") {}
 
         val error = request.deliverBaseNetworkError(
-            BaseNetworkError(
-                VolleyError(networkResponse(400, JSON, """{"code":"rest_invalid_param","message":"Invalid."}"""))
-            )
+            BaseNetworkError(VolleyError(networkResponse(403, HTML, FIREWALL_PAGE)))
         ) as WPAPINetworkError
+
+        assertThat(error.unexpectedStoreResponse).isNull()
+    }
+
+    @Test
+    fun `given a JSON error, when the error is delivered, then it keeps the error code and adds no details`() {
+        val request = buildRequest(url = "$SITE/wp-json/wc/v3/products") {}
+
+        val error = request.parseAndDeliverError(
+            VolleyError(networkResponse(400, JSON, """{"code":"rest_invalid_param","message":"Invalid."}"""))
+        )
 
         assertThat(error.errorCode).isEqualTo("rest_invalid_param")
         assertThat(error.unexpectedStoreResponse).isNull()
     }
+
+    /**
+     * Volley parses an error on the network thread before delivering it.
+     */
+    private fun WPAPIGsonRequest<*>.parseAndDeliverError(volleyError: VolleyError) =
+        deliverBaseNetworkError(BaseNetworkError(parseNetworkError(volleyError))) as WPAPINetworkError
 
     private fun buildRequest(
         method: Int = Method.GET,
