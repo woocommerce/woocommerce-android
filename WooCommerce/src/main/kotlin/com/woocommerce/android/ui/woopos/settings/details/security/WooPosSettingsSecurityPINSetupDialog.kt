@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.SizeTransform
@@ -15,18 +16,22 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.progressSemantics
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +52,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -82,23 +88,73 @@ fun WooPosSettingsSecurityPINSetupDialog(
     // The flow resets when the dialog hides, so the closing animation keeps showing the last visible step.
     val shown = remember(isVisible, state.takeIf { isVisible }) { state }
     val sendEvent = { event: WooPosSettingsSecurityPINSetupUIEvent -> if (isVisible) onUIEvent(event) }
-    val close = { if (shown.canClose) onClose() }
-    WooPosDialogWrapper(
-        modifier = Modifier.widthIn(max = DIALOG_MAX_WIDTH),
-        widthFraction = 1f,
-        isVisible = isVisible,
-        dialogBackgroundContentDescription = stringResource(R.string.woopos_security_setup),
-        onDismissRequest = close,
-    ) {
-        BackHandler(enabled = isVisible && shown.canGoBack) {
-            onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.BackTapped)
+    val close = { if (isVisible && shown.canClose) onClose() }
+    val goBack = { sendEvent(WooPosSettingsSecurityPINSetupUIEvent.BackTapped) }
+    if (currentWooPosBreakpoint() == WooPosBreakpoint.Phone) {
+        BackHandler(enabled = isVisible) {
+            if (shown.canGoBack) goBack() else close()
         }
-        PINSetupContent(state = shown, onUIEvent = sendEvent, onClose = close)
+        AnimatedVisibility(visible = isVisible, enter = fadeIn(), exit = fadeOut()) {
+            Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceBright) {
+                PINSetupPhoneContent(state = shown, onUIEvent = sendEvent, onClose = close)
+            }
+        }
+    } else {
+        WooPosDialogWrapper(
+            modifier = Modifier.widthIn(max = DIALOG_MAX_WIDTH),
+            widthFraction = 1f,
+            isVisible = isVisible,
+            dialogBackgroundContentDescription = stringResource(R.string.woopos_security_setup),
+            onDismissRequest = close,
+        ) {
+            BackHandler(enabled = isVisible && shown.canGoBack, onBack = goBack)
+            PINSetupDialogContent(state = shown, onUIEvent = sendEvent, onClose = close)
+        }
     }
 }
 
 @Composable
-private fun PINSetupContent(
+private fun PINSetupPhoneContent(
+    state: WooPosSettingsSecurityPINSetupState,
+    onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
+    onClose: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .safeDrawingPadding()
+            .padding(horizontal = WooPosSpacing.XLarge.value, vertical = WooPosSpacing.Medium.value),
+    ) {
+        PINSetupHeader(state, onUIEvent, onClose)
+        BoxWithConstraints(
+            modifier = Modifier.weight(1f).fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
+            val bodyHeight = maxHeight
+            val isShort = bodyHeight < PHONE_COMPACT_BODY_HEIGHT
+            val spacing = if (isShort) WooPosSpacing.Medium.value else WooPosSpacing.Large.value
+            val statusHeight = if (isShort) PHONE_COMPACT_STATUS_HEIGHT else STATUS_MIN_HEIGHT
+            val keySpacing = WooPosSpacing.Small.value
+            val keySize = ((bodyHeight - statusHeight - spacing - keySpacing * (KEYPAD_ROWS - 1)) / KEYPAD_ROWS)
+                .coerceIn(PHONE_MIN_KEY_SIZE, PHONE_KEY_SIZE)
+            when (state) {
+                is Entry -> Column(
+                    modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    PINEntry(state, onUIEvent, keySize, statusHeight, spacing)
+                }
+                Saving -> PINSetupProgress()
+                Saved -> Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+                    PINSetupSaved(onContinue = onClose, minHeight = bodyHeight)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PINSetupDialogContent(
     state: WooPosSettingsSecurityPINSetupState,
     onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
     onClose: () -> Unit,
@@ -119,20 +175,26 @@ private fun PINSetupContent(
                 is Entry -> PINEntry(
                     entry = state,
                     onUIEvent = onUIEvent,
+                    keySize = KEY_SIZE,
+                    statusHeight = STATUS_MIN_HEIGHT,
+                    spacing = WooPosSpacing.Large.value,
                     modifier = Modifier.onSizeChanged { entryHeight = with(density) { it.height.toDp() } },
                 )
                 Saving -> Spacer(Modifier.height(entryHeight))
                 Saved -> PINSetupSaved(onContinue = onClose, minHeight = entryHeight)
             }
         }
-        if (state == Saving) {
-            WooPosCircularLoadingIndicator(
-                Modifier
-                    .size(WooPosComponentSize.Medium.value)
-                    .progressSemantics()
-            )
-        }
+        if (state == Saving) PINSetupProgress()
     }
+}
+
+@Composable
+private fun PINSetupProgress() {
+    WooPosCircularLoadingIndicator(
+        Modifier
+            .size(WooPosComponentSize.Medium.value)
+            .progressSemantics()
+    )
 }
 
 @Composable
@@ -189,15 +251,17 @@ private fun PINSetupHeader(
 private fun PINEntry(
     entry: Entry,
     onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
+    keySize: Dp,
+    statusHeight: Dp,
+    spacing: Dp,
     modifier: Modifier = Modifier,
 ) {
-    val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value),
+        verticalArrangement = Arrangement.spacedBy(spacing),
     ) {
-        Box(Modifier.heightIn(min = STATUS_MIN_HEIGHT), contentAlignment = Alignment.Center) {
+        Box(Modifier.heightIn(min = statusHeight), contentAlignment = Alignment.Center) {
             AnimatedContent(
                 targetState = entry,
                 contentKey = { it is Confirm },
@@ -217,7 +281,7 @@ private fun PINEntry(
             onDigit = { onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DigitTapped(it)) },
             onDelete = { onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DeleteTapped) },
             style = WooPosPINPadStyle(
-                keySize = if (isPhone) PHONE_KEY_SIZE else KEY_SIZE,
+                keySize = keySize,
                 keySpacing = WooPosSpacing.Small.value,
             ),
         )
@@ -347,7 +411,11 @@ private fun PINSetupDialogPreview(state: WooPosSettingsSecurityPINSetupState) {
 private const val PAGE_MILLIS = 290
 private const val PAGE_TRAVEL = 1.27f
 private const val MESSAGE_FADE_MILLIS = 120
+private const val KEYPAD_ROWS = 4
 private val DIALOG_MAX_WIDTH = 520.dp
 private val STATUS_MIN_HEIGHT = 84.dp
 private val KEY_SIZE = 90.dp
 private val PHONE_KEY_SIZE = 72.dp
+private val PHONE_MIN_KEY_SIZE = 48.dp
+private val PHONE_COMPACT_BODY_HEIGHT = 380.dp
+private val PHONE_COMPACT_STATUS_HEIGHT = 48.dp

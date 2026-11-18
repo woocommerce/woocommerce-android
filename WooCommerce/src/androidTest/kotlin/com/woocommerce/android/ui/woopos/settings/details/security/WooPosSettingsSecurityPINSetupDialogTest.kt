@@ -1,16 +1,26 @@
 package com.woocommerce.android.ui.woopos.settings.details.security
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.platform.WindowInfo
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.test.DeviceConfigurationOverride
+import androidx.compose.ui.test.ForcedSize
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -157,6 +167,46 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
         // THEN
         assertThat(events).isEmpty()
+    }
+
+    @Test
+    fun phoneSuccessPlacesCloseNearTheTopAndContinueNearTheBottom() {
+        setPhoneDialog(Saved, DpSize(400.dp, 800.dp))
+
+        val closeBounds = composeTestRule.onNodeWithContentDescription(close).getUnclippedBoundsInRoot()
+        val continueBounds = composeTestRule.onNodeWithText(context.getString(R.string.continue_button))
+            .assertIsDisplayed()
+            .getUnclippedBoundsInRoot()
+
+        assertThat((continueBounds.top - closeBounds.bottom).value).isGreaterThan(580f)
+        assertThat((continueBounds.right - continueBounds.left).value).isGreaterThan(320f)
+    }
+
+    @Test
+    fun phoneLandscapeShowsTheBottomKeypadRowWithoutScrolling() {
+        setPhoneDialog(Confirm(), DpSize(800.dp, 380.dp))
+
+        composeTestRule.onNodeWithText("0").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(context.getString(R.string.woopos_lock_delete_digit))
+            .assertIsDisplayed()
+    }
+
+    private fun setPhoneDialog(state: WooPosSettingsSecurityPINSetupState, size: DpSize) {
+        composeTestRule.setContent {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.ForcedSize(size)) {
+                val windowInfo = LocalWindowInfo.current
+                val windowSize = with(LocalDensity.current) { IntSize(size.width.roundToPx(), size.height.roundToPx()) }
+                CompositionLocalProvider(
+                    LocalWindowInfo provides object : WindowInfo by windowInfo {
+                        override val containerSize = windowSize
+                    }
+                ) {
+                    WooPosTheme {
+                        WooPosSettingsSecurityPINSetupDialog(state, isVisible = true, onUIEvent = {}, onClose = {})
+                    }
+                }
+            }
+        }
     }
 
     private fun setDialog(
