@@ -83,6 +83,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLoadingScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -130,13 +131,19 @@ fun WooPosLockScreen(
     onUIEvent: (WooPosLockScreenUIEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceBright)
-            .safeDrawingPadding()
-    ) {
-        BoxWithConstraints(Modifier.fillMaxSize()) {
+    if (state.status == Status.Initializing) {
+        WooPosLoadingScreen(
+            modifier = modifier
+                .background(MaterialTheme.colorScheme.surface)
+                .safeDrawingPadding(),
+        )
+    } else {
+        BoxWithConstraints(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surfaceBright)
+                .safeDrawingPadding(),
+        ) {
             LockContent(state, onUIEvent)
         }
     }
@@ -283,13 +290,11 @@ private class WooPosLockIntroAnimation {
     var slot: LayoutCoordinates? by mutableStateOf(null)
 }
 
-/** Plays the lock intro over the opaque lock background; protection and enforcement never wait for it. */
 private class WooPosLockIntro(val isActive: Boolean, val animation: WooPosLockIntroAnimation) {
     val shackleAngle: Float get() = if (isActive) animation.shackle.value else 0f
     val contentAlpha: Float get() = if (isActive) animation.reveal.value else 1f
     val illustrationAlpha: Float get() = if (isActive && slotTravel() == null) 0f else 1f
 
-    /** Moves the lock from the screen center to its slot; the title and keypad rise by the same distance. */
     fun travel(): Offset = if (isActive) (slotTravel() ?: Offset.Zero) * (1f - animation.reveal.value) else Offset.Zero
 
     private fun slotTravel(): Offset? {
@@ -330,7 +335,6 @@ private fun rememberLockIntro(animates: Boolean): WooPosLockIntro {
 @Composable
 private fun LockIllustration(shackleAngle: () -> Float, modifier: Modifier = Modifier) {
     Box(modifier.size(LOCK_ARTWORK_WIDTH, LOCK_ARTWORK_HEIGHT)) {
-        // The shackle turns around its right hinge behind the fixed lock body.
         Image(
             painter = painterResource(R.drawable.woopos_lock_shackle),
             contentDescription = null,
@@ -349,7 +353,6 @@ private fun LockIllustration(shackleAngle: () -> Float, modifier: Modifier = Mod
     }
 }
 
-/** Keeps a rejected PIN's dots in place while they shake, then lets the error replace them. */
 @Stable
 private class WooPosLockPINFeedback {
     var heldDigits by mutableIntStateOf(0)
@@ -397,7 +400,7 @@ private fun LockStatus(state: WooPosLockScreenState, feedback: WooPosLockPINFeed
         null
     } else {
         when (state.status) {
-            Status.Idle, Status.Checking -> null
+            Status.Initializing, Status.Idle, Status.Checking -> null
             Status.Incorrect -> if (state.enteredDigits == 0) WooPosLockMessage.INCORRECT else null
             is Status.Wait -> WooPosLockMessage.WAIT
             Status.StorageUnavailable -> WooPosLockMessage.UNAVAILABLE
@@ -440,11 +443,8 @@ private fun LockPINDots(enteredDigits: Int, isHidden: Boolean, modifier: Modifie
 
 @Composable
 private fun LockPINDot(filled: Boolean) {
-    Box(
-        Modifier
-            .size(DOT_SIZE)
-            .border(DOT_BORDER_WIDTH, WooPosTheme.colors.outline, CircleShape)
-    ) {
+    Box(Modifier.size(DOT_SIZE)) {
+        Box(Modifier.matchParentSize().border(DOT_BORDER_WIDTH, WooPosTheme.colors.outline, CircleShape))
         AnimatedVisibility(
             visible = filled,
             enter = scaleIn(tween(DOT_POP_MILLIS, easing = FastOutSlowInEasing), initialScale = DOT_POP_SCALE),

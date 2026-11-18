@@ -76,7 +76,7 @@ fun WooPosPINPad(
         ) {
             Spacer(Modifier.size(style.keySize()))
             DigitKey(0, enabled, style, onDigit)
-            PinKey(onClick = onDelete, enabled = enabled && enteredDigits > 0, style = style) {
+            PINKey(onClick = onDelete, enabled = enabled && enteredDigits > 0, style = style) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_woopos_backspace),
                     contentDescription = stringResource(R.string.woopos_lock_delete_digit),
@@ -120,13 +120,13 @@ fun WooPosPINDots(enteredDigits: Int) {
 
 @Composable
 private fun DigitKey(digit: Int, enabled: Boolean, style: WooPosPINPadStyle, onDigit: (Int) -> Unit) {
-    PinKey(enabled = enabled, style = style, onClick = { onDigit(digit) }) {
+    PINKey(enabled = enabled, style = style, onClick = { onDigit(digit) }) {
         WooPosText(text = digit.toString(), style = WooPosTypography.Heading, fontWeight = FontWeight.Bold)
     }
 }
 
 @Composable
-private fun PinKey(
+private fun PINKey(
     enabled: Boolean,
     style: WooPosPINPadStyle,
     onClick: () -> Unit,
@@ -160,7 +160,6 @@ private fun LockScreenKey(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val container = when {
-        // Dark disabled containers are lighter than enabled keys, so dark mode dims only the digits.
         style.showsDisabledKeys && isSystemInDarkTheme() -> MaterialTheme.colorScheme.surfaceDim
         style.showsDisabledKeys -> WooPosTheme.colors.disabledContainer
         isPressed -> MaterialTheme.colorScheme.surfaceContainerLowest

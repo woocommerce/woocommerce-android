@@ -5,6 +5,7 @@ import android.provider.Settings
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -12,6 +13,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTopPositionInRootIsEqualTo
+import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasProgressBarRangeInfo
@@ -22,6 +24,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.data.Offset.offset
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,6 +38,38 @@ class WooPosLockScreenPresentationTest {
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val incorrect: String get() = context.getString(R.string.woopos_lock_incorrect)
+
+    @Test
+    fun filledDotsCoverTheirOutline() {
+        setLockScreen(WooPosLockScreenState(isLocked = true, enteredDigits = 2))
+        composeTestRule.waitForIdle()
+
+        val pixels = composeTestRule.onNode(dots(entered = 2)).captureToImage().toPixelMap()
+        val edge = pixels[(pixels.height / 40f).toInt(), pixels.height / 2]
+        val center = pixels[pixels.height / 2, pixels.height / 2]
+
+        assertThat(edge.red).isCloseTo(center.red, offset(0.08f))
+        assertThat(edge.green).isCloseTo(center.green, offset(0.08f))
+        assertThat(edge.blue).isCloseTo(center.blue, offset(0.08f))
+    }
+
+    @Test
+    fun startupShowsRegularLoadingUntilProtectionIsKnown() {
+        val state = mutableStateOf(WooPosLockScreenState(isLocked = true, status = Status.Initializing))
+        setLockScreen(state)
+
+        composeTestRule.onNode(hasProgressBarRangeInfo(ProgressBarRangeInfo.Indeterminate)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_lock_enter_pin)).assertDoesNotExist()
+        composeTestRule.onNodeWithText("1").assertDoesNotExist()
+
+        // WHEN
+        composeTestRule.runOnIdle { state.value = WooPosLockScreenState(isLocked = true) }
+
+        // THEN
+        composeTestRule.onNode(hasProgressBarRangeInfo(ProgressBarRangeInfo.Indeterminate)).assertDoesNotExist()
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_lock_enter_pin)).assertIsDisplayed()
+        composeTestRule.onNodeWithText("1").assertIsDisplayed()
+    }
 
     @Test
     fun statusChangesKeepTheKeypadInPlace() {

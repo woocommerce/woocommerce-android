@@ -8,7 +8,6 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
 import kotlin.math.floor
 
-/** Fits the lock content without scrolling: hides the illustration and shrinks keys before content must scroll. */
 internal data class WooPosLockScreenLayout(
     val keySize: Dp,
     val verticalPadding: Dp,
