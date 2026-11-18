@@ -56,20 +56,7 @@ fun WooPosSettingsDetailPaneScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        WooPosToolbar(
-            modifier = Modifier
-                .padding(
-                    top = WooPosSpacing.None.value,
-                    start = WooPosSpacing.Medium.value,
-                    end = WooPosSpacing.Medium.value,
-                ),
-            titleText = stringResource(state.currentDestination.titleRes),
-            onBackClicked = if (showBack) onBack else null,
-            titleStyle = WooPosTypography.Heading,
-            titleFontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
+        DetailPaneHeader(destination = currentDestination, onBack = if (showBack) onBack else null)
 
         AnimatedContent(
             targetState = currentDestination,
@@ -113,6 +100,27 @@ fun WooPosSettingsDetailPaneScreen(
             }
         }
     }
+}
+
+/** Security centers its content in the whole pane without a heading; phones keep the Back control. */
+@Composable
+private fun DetailPaneHeader(destination: WooPosSettingsDetailDestination, onBack: (() -> Unit)?) {
+    val hasHeading = destination !is WooPosSettingsDetailDestination.Security.Overview
+    if (!hasHeading && onBack == null) return
+    WooPosToolbar(
+        modifier = Modifier
+            .padding(
+                top = WooPosSpacing.None.value,
+                start = WooPosSpacing.Medium.value,
+                end = WooPosSpacing.Medium.value,
+            ),
+        titleText = if (hasHeading) stringResource(destination.titleRes) else "",
+        onBackClicked = onBack,
+        titleStyle = WooPosTypography.Heading,
+        titleFontWeight = FontWeight.Bold
+    )
+
+    Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
 }
 
 private fun AnimatedContentTransitionScope<WooPosSettingsDetailDestination>.settingsDetailTransition():
