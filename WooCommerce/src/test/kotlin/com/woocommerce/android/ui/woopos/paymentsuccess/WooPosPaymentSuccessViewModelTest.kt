@@ -256,7 +256,7 @@ class WooPosPaymentSuccessViewModelTest {
     }
 
     @Test
-    fun `given the screen was left, when the coordinator reports a failed print, then the failure is not shown`() =
+    fun `given the view model was cleared, when the coordinator reports a failed print, then the failure is not shown`() =
         runTest {
             // GIVEN
             whenever(resourceProvider.getString(any())).thenReturn("test")
