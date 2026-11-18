@@ -7,16 +7,22 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.cardpayment.WooPosCardPaymentAnalyticsTracker
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButtonState
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptCoordinator
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptEvent
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -33,6 +39,15 @@ class WooPosPaymentSuccessViewModelTest {
     private val totalsRepository: WooPosTotalsRepository = mock()
     private val priceFormat: WooPosFormatPrice = mock()
     private val resourceProvider: ResourceProvider = mock()
+    private val printReceiptEvents = MutableSharedFlow<WooPosPrintReceiptEvent>()
+    private val printReceiptButtonState = MutableStateFlow(WooPosPrintReceiptButtonState.Idle)
+    private val printReceiptCoordinator: WooPosPrintReceiptCoordinator = mock {
+        on { events } doReturn printReceiptEvents
+        on { buttonState } doReturn printReceiptButtonState
+    }
+    private val printReceiptCoordinatorFactory: WooPosPrintReceiptCoordinator.Factory = mock {
+        on { create(any()) } doReturn printReceiptCoordinator
+    }
 
     private fun createViewModel(
         orderId: Long = 123L,
@@ -49,6 +64,7 @@ class WooPosPaymentSuccessViewModelTest {
             totalsRepository = totalsRepository,
             priceFormat = priceFormat,
             resourceProvider = resourceProvider,
+            printReceiptCoordinatorFactory = printReceiptCoordinatorFactory,
             savedStateHandle = savedStateHandle,
         )
     }
@@ -165,4 +181,59 @@ class WooPosPaymentSuccessViewModelTest {
             assertThat(event).isEqualTo(WooPosNavigationEvent.OpenEmailReceipt(42L))
         }
     }
+
+    @Test
+    fun `when the coordinator button state changes, then the print receipt button state follows it`() = runTest {
+        // GIVEN
+        whenever(resourceProvider.getString(any())).thenReturn("test")
+        val viewModel = createViewModel()
+
+        // WHEN
+        printReceiptButtonState.value = WooPosPrintReceiptButtonState.Loading
+
+        // THEN
+        assertThat(viewModel.printReceiptButtonState.value).isEqualTo(WooPosPrintReceiptButtonState.Loading)
+    }
+
+    @Test
+    fun `when print receipt is clicked, then the coordinator gets the order id`() = runTest {
+        // GIVEN
+        whenever(resourceProvider.getString(any())).thenReturn("test")
+        val viewModel = createViewModel(orderId = 42L)
+
+        // WHEN
+        viewModel.onPrintReceiptClicked()
+
+        // THEN
+        verify(printReceiptCoordinator).onPrintReceiptClicked(42L)
+    }
+
+    @Test
+    fun `when the coordinator asks for printer setup, then the setup dialog is shown`() = runTest {
+        // GIVEN
+        whenever(resourceProvider.getString(any())).thenReturn("test")
+        val viewModel = createViewModel()
+
+        // WHEN
+        printReceiptEvents.emit(WooPosPrintReceiptEvent.ShowPrinterSetup)
+
+        // THEN
+        assertThat(viewModel.state.value.isReceiptPrinterSetupDialogVisible).isTrue()
+    }
+
+    @Test
+    fun `given the setup dialog is shown, when it is dismissed, then it is hidden and the coordinator is told`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(any())).thenReturn("test")
+            val viewModel = createViewModel()
+            printReceiptEvents.emit(WooPosPrintReceiptEvent.ShowPrinterSetup)
+
+            // WHEN
+            viewModel.onReceiptPrinterSetupDialogDismissed()
+
+            // THEN
+            assertThat(viewModel.state.value.isReceiptPrinterSetupDialogVisible).isFalse()
+            verify(printReceiptCoordinator).onPrinterSetupClosed()
+        }
 }
