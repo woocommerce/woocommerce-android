@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarS
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
@@ -448,6 +449,20 @@ class WooPosHomeFloatingToolbarViewModelTest {
         // THEN
         val menu = viewModel.state.value.menu as WooPosHomeFloatingToolbarState.Menu.Visible
         assertThat(menu.activeRoleTitle).isEqualTo(R.string.woopos_role_cashier)
+    }
+
+    @Test
+    fun `given an open menu, when POS locks, then the menu closes so its role cannot go stale`() = runTest {
+        // GIVEN
+        accessState.value = WooPosAccessSessionState.Unlocked(WooPosLocalRole.ADMIN)
+        val viewModel = createViewModel()
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked)
+
+        // WHEN
+        accessState.value = WooPosAccessSessionState.Locked(WooPosLockScreenState.Status.Idle)
+
+        // THEN
+        assertThat(viewModel.state.value.menu).isEqualTo(WooPosHomeFloatingToolbarState.Menu.Hidden)
     }
 
     @Test

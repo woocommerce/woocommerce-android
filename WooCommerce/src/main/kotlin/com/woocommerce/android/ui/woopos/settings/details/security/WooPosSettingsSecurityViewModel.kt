@@ -29,47 +29,52 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosSettingsSecurityState>(WooPosSettingsSecurityState.Loading)
     val state: StateFlow<WooPosSettingsSecurityState> = _state.asStateFlow()
-    private var job: Job? = null
+    private var readJob: Job? = null
+    private var removalJob: Job? = null
 
     init {
         viewModelScope.launch { accessSession.state.collect { refresh() } }
     }
 
     fun refresh() {
-        if (isBusy) return
-        job = viewModelScope.launch { read()?.let { _state.value = it } }
+        readJob?.cancel()
+        readJob = viewModelScope.launch { read()?.let { _state.value = it } }
     }
 
     fun onProtectionTurnedOff() {
-        if (isBusy || _state.value !is Protected) return
+        if (removalJob?.isActive == true || _state.value !is Protected || !canManagePINs()) return
         val id = selectedSite.getOrNull()?.id ?: return
-        job = viewModelScope.launch {
+        readJob?.cancel()
+        removalJob = viewModelScope.launch {
             val removed = withContext(NonCancellable) {
                 store.removePIN(id, WooPosLocalRole.ADMIN).also { if (isSelected(id)) accessSession.initialize() }
             }.isSuccess
             currentCoroutineContext().ensureActive()
-            if (!isSelected(id)) return@launch
             val current = read() ?: return@launch
-            _state.value = if (!removed && current is Protected) current.copy(removalFailed = true) else current
+            _state.value = if (!removed && isSelected(id) && current is Protected) {
+                current.copy(removalFailed = true)
+            } else {
+                current
+            }
         }
     }
 
     private suspend fun read(): WooPosSettingsSecurityState? {
+        if (!canManagePINs()) return WooPosSettingsSecurityState.Restricted
         val id = selectedSite.getOrNull()?.id ?: return WooPosSettingsSecurityState.Unavailable
         val pins = store.getPINs(id)
         currentCoroutineContext().ensureActive()
         if (!isSelected(id)) return null
         val saved = pins.getOrNull()
         return when {
-            !accessSession.state.value.allows(WooPosCapability.MANAGE_STORE_SETTINGS) ->
-                WooPosSettingsSecurityState.Restricted
+            !canManagePINs() -> WooPosSettingsSecurityState.Restricted
             saved == null -> WooPosSettingsSecurityState.Unavailable
             saved.isEmpty() -> WooPosSettingsSecurityState.Off
             else -> Protected(hasCashierPIN = WooPosLocalRole.CASHIER in saved, removalFailed = false)
         }
     }
 
-    private val isBusy: Boolean get() = job?.isActive == true
+    private fun canManagePINs() = accessSession.state.value.allows(WooPosCapability.MANAGE_STORE_SETTINGS)
 
     private fun isSelected(localSiteId: Int) = localSiteId == selectedSite.getOrNull()?.id
 }

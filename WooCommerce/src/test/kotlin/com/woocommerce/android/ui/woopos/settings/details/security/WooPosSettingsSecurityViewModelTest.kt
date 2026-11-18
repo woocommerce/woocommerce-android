@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.ADMIN
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.CASHIER
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINError
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
@@ -198,13 +199,14 @@ class WooPosSettingsSecurityViewModelTest {
     }
 
     @Test
-    fun `given a pending removal, when the selected store changes, then the old result is not shown`() = runTest {
+    fun `given a pending removal, when the selected store changes, then the new store's state is shown`() = runTest {
         // GIVEN
         givenAdminSession(ADMIN)
+        whenever(store.getPINs(2)).thenReturn(Result.success(emptyMap()))
         val gate = CompletableDeferred<Unit>()
         whenever(store.removePIN(1, ADMIN)).doSuspendableAnswer {
             gate.await()
-            Result.success(Unit)
+            Result.failure(WooPosPINError.StorageFailure)
         }
         val viewModel = createViewModel()
         advanceUntilIdle()
@@ -217,7 +219,7 @@ class WooPosSettingsSecurityViewModelTest {
 
         // THEN
         verify(session, never()).initialize()
-        assertThat(viewModel.state.value).isEqualTo(Protected(hasCashierPIN = false, removalFailed = false))
+        assertThat(viewModel.state.value).isEqualTo(WooPosSettingsSecurityState.Off)
     }
 
     @Test
@@ -287,6 +289,43 @@ class WooPosSettingsSecurityViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value).isEqualTo(WooPosSettingsSecurityState.Unavailable)
+    }
+
+    @Test
+    fun `given POS locked in a wait, when the countdown updates, then PINs are not read`() = runTest {
+        // GIVEN
+        givenPINs(ADMIN)
+        sessionState.value = WooPosAccessSessionState.Locked(Status.Wait(30))
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        sessionState.value = WooPosAccessSessionState.Locked(Status.Wait(29))
+        advanceUntilIdle()
+
+        // THEN
+        verify(store, never()).getPINs(any())
+        assertThat(viewModel.state.value).isEqualTo(WooPosSettingsSecurityState.Restricted)
+    }
+
+    @Test
+    fun `given a pending read, when the session becomes Cashier, then the stale read is not shown`() = runTest {
+        // GIVEN
+        val gate = CompletableDeferred<Unit>()
+        whenever(store.getPINs(1)).doSuspendableAnswer {
+            gate.await()
+            Result.success(mapOf(ADMIN to HASH))
+        }
+        sessionState.value = WooPosAccessSessionState.Unlocked(ADMIN)
+        val viewModel = createViewModel()
+
+        // WHEN
+        sessionState.value = WooPosAccessSessionState.Unlocked(CASHIER)
+        gate.complete(Unit)
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(viewModel.state.value).isEqualTo(WooPosSettingsSecurityState.Restricted)
     }
 
     private fun createViewModel() = WooPosSettingsSecurityViewModel(selectedSite, store, session)

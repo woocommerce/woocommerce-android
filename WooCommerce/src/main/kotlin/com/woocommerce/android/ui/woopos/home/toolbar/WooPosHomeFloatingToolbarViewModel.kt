@@ -59,6 +59,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
     val state: StateFlow<WooPosHomeFloatingToolbarState> = _state
 
     init {
+        viewModelScope.launch { accessSession.state.collect { hideMenu() } }
         viewModelScope.launch {
             effectiveReaderStatusProvider.flow
                 .flatMapLatest { effective ->
