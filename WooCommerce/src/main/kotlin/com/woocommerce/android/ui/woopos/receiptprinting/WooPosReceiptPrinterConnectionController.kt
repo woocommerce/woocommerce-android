@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterCon
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.MissingBluetoothPermission
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.NoPrintersFound
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.Searching
+import com.woocommerce.android.ui.woopos.util.WooPosBluetoothStatus
 import com.woocommerce.android.ui.woopos.util.WooPosPermissionUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -30,6 +31,7 @@ import kotlinx.coroutines.launch
 class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
     private val receiptPrinterFacade: WooPosReceiptPrinterFacade,
     private val permissionUtils: WooPosPermissionUtils,
+    private val bluetoothStatus: WooPosBluetoothStatus,
     @Assisted private val scope: CoroutineScope,
 ) {
     private val _state = MutableStateFlow<WooPosReceiptPrinterConnectionState>(Idle)
@@ -120,7 +122,7 @@ class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
         !permissionUtils.hasBluetoothScanAndConnectPermissions() ->
             _state.value as? MissingBluetoothPermission ?: MissingBluetoothPermission(permanentlyDenied = false)
 
-        !permissionUtils.isBluetoothEnabled() -> BluetoothOff
+        !bluetoothStatus.isEnabled() -> BluetoothOff
 
         else -> null
     }

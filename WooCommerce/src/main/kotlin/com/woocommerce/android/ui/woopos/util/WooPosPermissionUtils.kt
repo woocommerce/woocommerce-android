@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.util
 
-import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -25,7 +24,4 @@ class WooPosPermissionUtils @Inject constructor(
     fun hasBluetoothScanAndConnectPermissions(): Boolean =
         WooPermissionUtils.hasBluetoothScanPermission(context) &&
             WooPermissionUtils.hasBluetoothConnectPermission(context)
-
-    fun isBluetoothEnabled(): Boolean =
-        context.getSystemService(BluetoothManager::class.java)?.adapter?.isEnabled == true
 }

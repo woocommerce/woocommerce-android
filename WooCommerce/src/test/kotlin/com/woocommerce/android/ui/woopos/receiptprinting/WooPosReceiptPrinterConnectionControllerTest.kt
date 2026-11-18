@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterCon
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.MissingBluetoothPermission
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.NoPrintersFound
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.Searching
+import com.woocommerce.android.ui.woopos.util.WooPosBluetoothStatus
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosPermissionUtils
 import kotlinx.coroutines.CompletableDeferred
@@ -66,7 +67,9 @@ class WooPosReceiptPrinterConnectionControllerTest {
     }
     private val permissionUtils: WooPosPermissionUtils = mock {
         on { hasBluetoothScanAndConnectPermissions() } doReturn true
-        on { isBluetoothEnabled() } doReturn true
+    }
+    private val bluetoothStatus: WooPosBluetoothStatus = mock {
+        on { isEnabled() } doReturn true
     }
 
     @Test
@@ -93,14 +96,14 @@ class WooPosReceiptPrinterConnectionControllerTest {
 
             // THEN
             assertThat(sut.state.value).isEqualTo(MissingBluetoothPermission(permanentlyDenied = false))
-            verify(permissionUtils, never()).isBluetoothEnabled()
+            verify(bluetoothStatus, never()).isEnabled()
             verify(receiptPrinterFacade, never()).discover()
         }
 
     @Test
     fun `given Bluetooth is off, when setup starts, then the state is Bluetooth off and nothing is searched`() = runTest {
         // GIVEN
-        whenever(permissionUtils.isBluetoothEnabled()).thenReturn(false)
+        whenever(bluetoothStatus.isEnabled()).thenReturn(false)
         val sut = createController()
 
         // WHEN
@@ -124,9 +127,9 @@ class WooPosReceiptPrinterConnectionControllerTest {
 
             // THEN
             assertThat(sut.state.value).isEqualTo(Searching)
-            inOrder(permissionUtils, receiptPrinterFacade) {
+            inOrder(permissionUtils, bluetoothStatus, receiptPrinterFacade) {
                 verify(permissionUtils).hasBluetoothScanAndConnectPermissions()
-                verify(permissionUtils).isBluetoothEnabled()
+                verify(bluetoothStatus).isEnabled()
                 verify(receiptPrinterFacade).discover()
             }
         }
@@ -234,10 +237,10 @@ class WooPosReceiptPrinterConnectionControllerTest {
     @Test
     fun `given Bluetooth was off, when it is turned on and rechecked, then the search starts`() = runTest {
         // GIVEN
-        whenever(permissionUtils.isBluetoothEnabled()).thenReturn(false)
+        whenever(bluetoothStatus.isEnabled()).thenReturn(false)
         val sut = createController()
         sut.startSetup()
-        whenever(permissionUtils.isBluetoothEnabled()).thenReturn(true)
+        whenever(bluetoothStatus.isEnabled()).thenReturn(true)
 
         // WHEN
         sut.recheckBluetoothRequirement()
@@ -251,7 +254,7 @@ class WooPosReceiptPrinterConnectionControllerTest {
     @Test
     fun `given Bluetooth is still off, when rechecked, then the state stays Bluetooth off`() = runTest {
         // GIVEN
-        whenever(permissionUtils.isBluetoothEnabled()).thenReturn(false)
+        whenever(bluetoothStatus.isEnabled()).thenReturn(false)
         val sut = createController()
         sut.startSetup()
 
@@ -714,6 +717,7 @@ class WooPosReceiptPrinterConnectionControllerTest {
     private fun TestScope.createController() = WooPosReceiptPrinterConnectionController(
         receiptPrinterFacade = receiptPrinterFacade,
         permissionUtils = permissionUtils,
+        bluetoothStatus = bluetoothStatus,
         scope = backgroundScope,
     )
 
