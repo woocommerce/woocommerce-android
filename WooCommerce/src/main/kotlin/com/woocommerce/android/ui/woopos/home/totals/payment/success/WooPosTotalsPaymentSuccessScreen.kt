@@ -23,7 +23,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmark
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmarkAnimationStage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -34,12 +33,16 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.adaptiveContentWidth
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButtonState
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptButtons
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 @Composable
 fun WooPosPaymentSuccessScreen(
     state: WooPosTotalsViewState.PaymentSuccess,
+    printReceiptButtonState: WooPosPrintReceiptButtonState,
     onReceiptClicked: () -> Unit,
+    onPrintReceiptClicked: () -> Unit,
     onNewTransactionClicked: () -> Unit,
     onBackPressed: () -> Unit,
 ) {
@@ -121,7 +124,10 @@ fun WooPosPaymentSuccessScreen(
             )
 
             val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
-            WooPosOutlinedButton(
+            WooPosReceiptButtons(
+                printReceiptButtonState = printReceiptButtonState,
+                onEmailReceiptClicked = onReceiptClicked,
+                onPrintReceiptClicked = onPrintReceiptClicked,
                 modifier = Modifier
                     .constrainAs(buttonEmailReceipts) {
                         bottom.linkTo(parent.bottom)
@@ -130,8 +136,6 @@ fun WooPosPaymentSuccessScreen(
                     }
                     .adaptiveContentWidth()
                     .padding(horizontal = WooPosSpacing.XLarge.value),
-                onClick = onReceiptClicked,
-                text = stringResource(R.string.woopos_receipt_button),
                 textStyle = if (isPhone) WooPosTypography.BodyMedium else WooPosTypography.BodyLarge,
             )
         }
@@ -146,7 +150,9 @@ fun WooPosPaymentSuccessScreenPreview() {
             state = WooPosTotalsViewState.PaymentSuccess(
                 orderTotalText = "A payment of 13.18 was successfully made",
             ),
+            printReceiptButtonState = WooPosPrintReceiptButtonState.Idle,
             onReceiptClicked = {},
+            onPrintReceiptClicked = {},
             onNewTransactionClicked = {},
             onBackPressed = {},
         )

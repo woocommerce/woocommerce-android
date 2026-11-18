@@ -90,6 +90,7 @@ class WooPosProductsViewModel @Inject constructor(
                     is ParentToChildrenEvent.RemoveProductsClicked,
                     is ParentToChildrenEvent.MissingVariationEvent,
                     is ParentToChildrenEvent.ProductsRemoved,
+                    ParentToChildrenEvent.ReceiptPrinterSetupDialogDismissed,
                     is ParentToChildrenEvent.SettingsEvent,
                     is ParentToChildrenEvent.CustomAmountSubmitted -> Unit
                 }

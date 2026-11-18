@@ -103,6 +103,13 @@ class WooPosHomeViewModel @Inject constructor(
                 )
             }
 
+            WooPosHomeUIEvent.DismissReceiptPrinterSetupDialog -> {
+                _state.value = _state.value.copy(
+                    dialogState = DialogState.Hidden
+                )
+                sendEventToChildren(ParentToChildrenEvent.ReceiptPrinterSetupDialogDismissed)
+            }
+
             WooPosHomeUIEvent.OnPaymentCompletedViaCash -> onOrderSuccessfullyPaid(
                 PaymentMethod.CASH
             )
@@ -284,6 +291,12 @@ class WooPosHomeViewModel @Inject constructor(
                     ChildToParentEvent.ShowCardReaderConnectionDialog -> {
                         _state.value = _state.value.copy(
                             dialogState = DialogState.CardReaderConnectionDialog
+                        )
+                    }
+
+                    ChildToParentEvent.ShowReceiptPrinterSetupDialog -> {
+                        _state.value = _state.value.copy(
+                            dialogState = DialogState.ReceiptPrinterSetupDialog
                         )
                     }
 

@@ -530,6 +530,39 @@ class WooPosHomeViewModelTest {
         }
     }
 
+    @Test
+    fun `when receipt printer setup is requested, then the setup dialog is shown`() = runTest {
+        // GIVEN
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(ChildToParentEvent.ShowReceiptPrinterSetupDialog)
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        assertThat(viewModel.state.value.dialogState)
+            .isEqualTo(WooPosHomeState.DialogState.ReceiptPrinterSetupDialog)
+    }
+
+    @Test
+    fun `given the receipt printer setup dialog is shown, when it is dismissed, then it is hidden and children are told`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(ChildToParentEvent.ShowReceiptPrinterSetupDialog)
+            )
+            val viewModel = createViewModel()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosHomeUIEvent.DismissReceiptPrinterSetupDialog)
+
+            // THEN
+            assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.Hidden)
+            verify(parentToChildrenEventSender)
+                .sendToChildren(ParentToChildrenEvent.ReceiptPrinterSetupDialogDismissed)
+        }
+
     private fun createViewModel(): WooPosHomeViewModel {
         return WooPosHomeViewModel(
             childrenToParentEventReceiver,

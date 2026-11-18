@@ -57,6 +57,7 @@ sealed class ChildToParentEvent {
     data class ToastMessageDisplayed(val message: String) : ChildToParentEvent()
     data object RefreshProductList : ChildToParentEvent()
     data object ShowCardReaderConnectionDialog : ChildToParentEvent()
+    data object ShowReceiptPrinterSetupDialog : ChildToParentEvent()
 
     data class CustomAmountFormRequested(
         val editing: WooPosCartItemViewState.CustomAmount? = null,
