@@ -4,9 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
@@ -195,20 +192,18 @@ class ProductListFragment :
                 onListAtTopChanged = { isListAtTop = it },
             )
             WooTheme {
-                CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onSurface) {
-                    QuickInventoryUpdateSheet(
-                        viewState = inventoryViewModel.viewState.collectAsState(),
-                        onBottomSheetDismissed = {
-                            inventoryViewModel.onBottomSheetDismissed()
-                            reloadProductsAfterInventoryChange()
-                        },
-                        onIncrementQuantityClicked = inventoryViewModel::onIncrementQuantityClicked,
-                        onUpdateQuantityClicked = inventoryViewModel::onUpdateQuantityClicked,
-                        onViewProductDetailsClicked = inventoryViewModel::onViewProductDetailsClicked,
-                        onManualQuantityEntered = inventoryViewModel::onManualQuantityEntered,
-                        onManageStockClicked = inventoryViewModel::onManageStockClicked,
-                    )
-                }
+                QuickInventoryUpdateSheet(
+                    viewState = inventoryViewModel.viewState.collectAsState(),
+                    onBottomSheetDismissed = {
+                        inventoryViewModel.onBottomSheetDismissed()
+                        reloadProductsAfterInventoryChange()
+                    },
+                    onIncrementQuantityClicked = inventoryViewModel::onIncrementQuantityClicked,
+                    onUpdateQuantityClicked = inventoryViewModel::onUpdateQuantityClicked,
+                    onViewProductDetailsClicked = inventoryViewModel::onViewProductDetailsClicked,
+                    onManualQuantityEntered = inventoryViewModel::onManualQuantityEntered,
+                    onManageStockClicked = inventoryViewModel::onManageStockClicked,
+                )
             }
         }
         view.doOnPreDraw { startPostponedEnterTransition() }
