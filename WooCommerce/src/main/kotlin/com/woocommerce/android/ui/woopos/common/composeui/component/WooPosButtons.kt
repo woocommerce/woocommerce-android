@@ -154,10 +154,10 @@ fun WooPosOutlinedButtonSmall(
     text: String,
     onClick: () -> Unit,
 ) {
-    val borderColor = if (state == WooPosButtonState.ENABLED) {
-        MaterialTheme.colorScheme.inverseSurface
-    } else {
+    val borderColor = if (state == WooPosButtonState.DISABLED) {
         WooPosTheme.colors.disabledContainer
+    } else {
+        MaterialTheme.colorScheme.inverseSurface
     }
     Button(
         modifier = modifier,
