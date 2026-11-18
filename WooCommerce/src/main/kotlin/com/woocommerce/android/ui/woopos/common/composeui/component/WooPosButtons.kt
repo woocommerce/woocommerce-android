@@ -309,7 +309,7 @@ private fun Button(
                 }
 
                 WooPosButtonState.LOADING -> {
-                    ButtonsLoadingIndicator(size = loadingIndicatorSize)
+                    ButtonsLoadingIndicator(size = loadingIndicatorSize, isOutlined = border != null)
                 }
 
                 WooPosButtonState.SUCCESS -> {
@@ -325,10 +325,12 @@ private fun Button(
 }
 
 @Composable
-private fun ButtonsLoadingIndicator(size: Dp) {
-    WooPosButtonLoadingIndicator(
-        modifier = Modifier.size(size),
-    )
+private fun ButtonsLoadingIndicator(size: Dp, isOutlined: Boolean) {
+    if (isOutlined) {
+        WooPosCircularLoadingIndicator(modifier = Modifier.size(size))
+    } else {
+        WooPosButtonLoadingIndicator(modifier = Modifier.size(size))
+    }
 }
 
 @Composable
