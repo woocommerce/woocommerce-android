@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import com.woocommerce.android.util.WooPermissionUtils
 import dagger.Reusable
 import javax.inject.Inject
 
@@ -19,4 +20,8 @@ class WooPosPermissionUtils @Inject constructor(
         }
         context.startActivity(intent)
     }
+
+    fun hasBluetoothScanAndConnectPermissions(): Boolean =
+        WooPermissionUtils.hasBluetoothScanPermission(context) &&
+            WooPermissionUtils.hasBluetoothConnectPermission(context)
 }

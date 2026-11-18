@@ -5,6 +5,8 @@
 26.2
 -----
 - [Internal] The excerpt logged for a store's error page is now built off the main thread [https://github.com/woocommerce/woocommerce-android/pull/16836]
+- [*] [POS] The tablet now lists a phone as a card reader when the two devices are logged in to the same store in different ways [https://github.com/woocommerce/woocommerce-android/pull/16829]
+- [Internal] Support session debug builds no longer create application passwords on Jetpack stores [https://github.com/woocommerce/woocommerce-android/pull/16848]
 
 26.1
 -----

@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.woopos.splash
 
 import com.woocommerce.android.ui.woopos.common.data.WooPosPopularProductsProvider
+import com.woocommerce.android.ui.woopos.featureflags.WooPosReceiptPrintingEnabled
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.WooPosPrepopulatingDataStatus
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsWooBelowCatalogFixVersion
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersInMemoryCache
+import com.woocommerce.android.ui.woopos.settings.details.store.WooPosSettingsReceiptRepository
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchabilityRefreshPolicy.UseCacheAndRefresh
@@ -23,6 +25,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
@@ -39,6 +42,8 @@ class WooPosSplashViewModelTest {
         mock()
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
     private val isWooBelowCatalogFixVersion: WooPosIsWooBelowCatalogFixVersion = mock()
+    private val receiptPrintingEnabled: WooPosReceiptPrintingEnabled = mock()
+    private val receiptRepository: WooPosSettingsReceiptRepository = mock()
 
     @Rule
     @JvmField
@@ -72,6 +77,42 @@ class WooPosSplashViewModelTest {
 
         // THEN
         assertThat(sut.state.value).isEqualTo(WooPosSplashState.Syncing)
+    }
+
+    @Test
+    fun `given receipt printing is enabled, when vm created, then the receipt settings are refreshed`() = runTest {
+        // GIVEN
+        whenever(receiptPrintingEnabled()).thenReturn(true)
+
+        // WHEN
+        createSut()
+
+        // THEN
+        verify(receiptRepository).getReceiptInfo()
+    }
+
+    @Test
+    fun `given receipt printing is disabled, when vm created, then the receipt settings are not fetched`() = runTest {
+        // WHEN
+        createSut()
+
+        // THEN
+        verify(receiptRepository, never()).getReceiptInfo()
+    }
+
+    @Test
+    fun `given site not eligible, when vm created, then the receipt settings are not fetched`() = runTest {
+        // GIVEN
+        whenever(receiptPrintingEnabled()).thenReturn(true)
+        whenever(posCanBeLaunchedInTab(UseCacheAndRefresh)).thenReturn(
+            WooPosLaunchability.NotLaunchable(WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion)
+        )
+
+        // WHEN
+        createSut()
+
+        // THEN
+        verify(receiptRepository, never()).getReceiptInfo()
     }
 
     @Test
@@ -424,6 +465,8 @@ class WooPosSplashViewModelTest {
             preferencesRepository,
             getWooCoreVersion,
             isWooBelowCatalogFixVersion,
+            receiptPrintingEnabled,
+            receiptRepository,
             CoroutineScope(coroutinesTestRule.testDispatcher),
         )
     }
