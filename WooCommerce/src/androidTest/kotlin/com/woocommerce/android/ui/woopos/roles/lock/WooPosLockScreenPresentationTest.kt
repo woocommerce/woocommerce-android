@@ -1,13 +1,14 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
-import android.animation.ValueAnimator
-import android.provider.Settings
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.compose.ui.MotionDurationScale
 import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.DeviceConfigurationOverride
+import androidx.compose.ui.test.ForcedSize
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
@@ -19,6 +20,8 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.R
@@ -29,12 +32,11 @@ import org.assertj.core.data.Offset.offset
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.FileInputStream
 
 @RunWith(AndroidJUnit4::class)
 class WooPosLockScreenPresentationTest {
     @get:Rule
-    val composeTestRule = createComposeRule()
+    val composeTestRule = createComposeRule(effectContext = EnabledMotion)
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val incorrect: String get() = context.getString(R.string.woopos_lock_incorrect)
@@ -126,9 +128,9 @@ class WooPosLockScreenPresentationTest {
     }
 
     @Test
-    fun introKeepsKeypadHiddenUntilLockClosesAndContentRises() = withAnimationsEnabled {
+    fun introKeepsKeypadHiddenUntilLockClosesAndContentRises() {
         composeTestRule.mainClock.autoAdvance = false
-        setLockScreen(WooPosLockScreenState(isLocked = true))
+        setLockScreen(WooPosLockScreenState(isLocked = true), fixedSize = true)
 
         // WHEN the lock is open and then closing
         composeTestRule.mainClock.advanceTimeBy(INTRO_HOLD_AND_CLOSE_MILLIS - FRAME_MILLIS)
@@ -144,15 +146,17 @@ class WooPosLockScreenPresentationTest {
     }
 
     @Test
-    fun interruptedIntroDoesNotReplayAfterStateRestoration() = withAnimationsEnabled {
+    fun interruptedIntroDoesNotReplayAfterStateRestoration() {
         composeTestRule.mainClock.autoAdvance = false
         val showsScreen = mutableStateOf(true)
         composeTestRule.setContent {
             val stateHolder = rememberSaveableStateHolder()
             if (showsScreen.value) {
                 stateHolder.SaveableStateProvider("lock") {
-                    WooPosTheme {
-                        WooPosLockScreen(WooPosLockScreenState(isLocked = true, enteredDigits = 2), onUIEvent = {})
+                    DeviceConfigurationOverride(DeviceConfigurationOverride.ForcedSize(INTRO_SIZE)) {
+                        WooPosTheme {
+                            WooPosLockScreen(WooPosLockScreenState(isLocked = true, enteredDigits = 2), onUIEvent = {})
+                        }
                     }
                 }
             }
@@ -249,36 +253,23 @@ class WooPosLockScreenPresentationTest {
         composeTestRule.onNodeWithText(incorrect).assertDoesNotExist()
     }
 
-    private fun withAnimationsEnabled(test: () -> Unit) {
-        val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val originalScale = Settings.Global.getString(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE)
-        fun setScale(command: String) {
-            instrumentation.uiAutomation.executeShellCommand(command).use { descriptor ->
-                FileInputStream(descriptor.fileDescriptor).use { it.readBytes() }
-            }
-        }
-        try {
-            setScale("settings put global animator_duration_scale 1")
-            composeTestRule.waitUntil { ValueAnimator.areAnimatorsEnabled() }
-            test()
-        } finally {
-            val command = if (originalScale == null) {
-                "settings delete global animator_duration_scale"
+    private fun setLockScreen(state: WooPosLockScreenState, fixedSize: Boolean = false) =
+        setLockScreen(mutableStateOf(state), fixedSize)
+
+    private fun setLockScreen(state: State<WooPosLockScreenState>, fixedSize: Boolean = false) {
+        composeTestRule.setContent {
+            if (fixedSize) {
+                DeviceConfigurationOverride(DeviceConfigurationOverride.ForcedSize(INTRO_SIZE)) {
+                    WooPosTheme { WooPosLockScreen(state.value, onUIEvent = {}) }
+                }
             } else {
-                "settings put global animator_duration_scale $originalScale"
+                WooPosTheme { WooPosLockScreen(state.value, onUIEvent = {}) }
             }
-            setScale(command)
         }
     }
 
-    private fun setLockScreen(state: WooPosLockScreenState) = setLockScreen(mutableStateOf(state))
-
-    private fun setLockScreen(state: State<WooPosLockScreenState>) {
-        composeTestRule.setContent {
-            WooPosTheme {
-                WooPosLockScreen(state.value, onUIEvent = {})
-            }
-        }
+    private object EnabledMotion : MotionDurationScale {
+        override val scaleFactor: Float = 1f
     }
 
     private fun dots(entered: Int): SemanticsMatcher =
@@ -288,6 +279,7 @@ class WooPosLockScreenPresentationTest {
         )
 
     private companion object {
+        val INTRO_SIZE = DpSize(800.dp, 1000.dp)
         const val FRAME_MILLIS = 16L
         const val INTRO_HOLD_AND_CLOSE_MILLIS = 600L
         const val INTRO_REVEAL_MILLIS = 280L

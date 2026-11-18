@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
-import android.animation.ValueAnimator
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
@@ -41,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -309,7 +309,8 @@ private enum class WooPosLockIntroProgress { PENDING, RUNNING, DONE }
 
 @Composable
 private fun rememberLockIntro(animates: Boolean): WooPosLockIntro {
-    val canAnimate = animates && !LocalInspectionMode.current && ValueAnimator.areAnimatorsEnabled()
+    val motionScale = rememberCoroutineScope().coroutineContext[MotionDurationScale]?.scaleFactor ?: 1f
+    val canAnimate = animates && !LocalInspectionMode.current && motionScale > 0f
     var progress by rememberSaveable {
         mutableStateOf(if (canAnimate) WooPosLockIntroProgress.PENDING else WooPosLockIntroProgress.DONE)
     }
@@ -320,10 +321,6 @@ private fun rememberLockIntro(animates: Boolean): WooPosLockIntro {
     val animation = remember { WooPosLockIntroAnimation() }
     LaunchedEffect(isActive) {
         if (!isActive) return@LaunchedEffect
-        if (coroutineContext[MotionDurationScale]?.scaleFactor == 0f) {
-            progress = WooPosLockIntroProgress.DONE
-            return@LaunchedEffect
-        }
         progress = WooPosLockIntroProgress.RUNNING
         animation.shackle.animateTo(0f, tween(INTRO_CLOSE_MILLIS, delayMillis = INTRO_HOLD_MILLIS))
         animation.reveal.animateTo(1f, tween(INTRO_REVEAL_MILLIS, easing = FastOutSlowInEasing))
