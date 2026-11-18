@@ -5,7 +5,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -63,6 +63,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircul
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -111,36 +112,38 @@ private fun PINSetupContent(
 ) {
     val density = LocalDensity.current
     var entryHeight by remember { mutableStateOf(0.dp) }
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value),
-    ) {
-        PINSetupHeader(state, onUIEvent, onClose)
-        Box(contentAlignment = Alignment.Center) {
-            // The entry keeps the dialog's size while loading and success replace it.
-            val entry = state as? Choose ?: state as? Confirm ?: Confirm(WooPosPINHash.PIN_LENGTH)
-            val showsEntry = state is Choose || state is Confirm
-            PINEntry(
-                entry = entry,
-                enabled = showsEntry,
-                onUIEvent = onUIEvent,
-                modifier = Modifier
-                    .onSizeChanged { entryHeight = with(density) { it.height.toDp() } }
-                    .alpha(if (showsEntry) 1f else 0f)
-                    .then(if (showsEntry) Modifier else Modifier.clearAndSetSemantics {}),
-            )
-            when (state) {
-                Saving -> WooPosCircularLoadingIndicator(
-                    Modifier
-                        .size(WooPosIconSize.XLarge.value)
-                        .progressSemantics()
+    // Loading centers in the whole card, so it is placed over the column rather than under the header.
+    Box(contentAlignment = Alignment.Center) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value),
+        ) {
+            PINSetupHeader(state, onUIEvent, onClose)
+            Box(contentAlignment = Alignment.Center) {
+                // The entry keeps the dialog's size while loading and success replace it.
+                val entry = state as? Choose ?: state as? Confirm ?: Confirm(WooPosPINHash.PIN_LENGTH)
+                val showsEntry = state is Choose || state is Confirm
+                PINEntry(
+                    entry = entry,
+                    enabled = showsEntry,
+                    onUIEvent = onUIEvent,
+                    modifier = Modifier
+                        .onSizeChanged { entryHeight = with(density) { it.height.toDp() } }
+                        .alpha(if (showsEntry) 1f else 0f)
+                        .then(if (showsEntry) Modifier else Modifier.clearAndSetSemantics {}),
                 )
-                Saved -> PINSetupSaved(onContinue = onClose, minHeight = entryHeight)
-                is Choose, is Confirm -> Unit
+                if (state == Saved) PINSetupSaved(onContinue = onClose, minHeight = entryHeight)
             }
+        }
+        if (state == Saving) {
+            WooPosCircularLoadingIndicator(
+                Modifier
+                    .size(WooPosComponentSize.Medium.value)
+                    .progressSemantics()
+            )
         }
     }
 }
@@ -241,10 +244,12 @@ private fun AnimatedContentTransitionScope<WooPosSettingsSecurityPINSetupState>.
     isRtl: Boolean,
 ): ContentTransform {
     val direction = (if (targetState is Confirm) 1 else -1) * (if (isRtl) -1 else 1)
-    val spec = tween<IntOffset>(PAGE_MILLIS, easing = FastOutSlowInEasing)
-    val fade = tween<Float>(PAGE_MILLIS, easing = FastOutSlowInEasing)
-    return (slideInHorizontally(spec) { it * direction } + fadeIn(fade)) togetherWith
-        (slideOutHorizontally(spec) { -it * direction } + fadeOut(fade)) using
+    val spec = tween<IntOffset>(PAGE_MILLIS, easing = LinearOutSlowInEasing)
+    val fade = tween<Float>(PAGE_MILLIS, easing = LinearOutSlowInEasing)
+    // The groups travel slightly more than their width so a gap separates them, as in the design.
+    val travel = { width: Int -> (width * PAGE_TRAVEL).toInt() * direction }
+    return (slideInHorizontally(spec) { travel(it) } + fadeIn(fade)) togetherWith
+        (slideOutHorizontally(spec) { -travel(it) } + fadeOut(fade)) using
         SizeTransform(clip = true)
 }
 
@@ -394,10 +399,11 @@ private fun PINSetupDialogPreview(state: WooPosSettingsSecurityPINSetupState) {
     }
 }
 
-private const val PAGE_MILLIS = 240
+private const val PAGE_MILLIS = 290
+private const val PAGE_TRAVEL = 1.27f
 private const val MESSAGE_FADE_MILLIS = 120
 private val DIALOG_MAX_WIDTH = 520.dp
 private val MESSAGE_MAX_WIDTH = 470.dp
-private val STATUS_MIN_HEIGHT = 56.dp
+private val STATUS_MIN_HEIGHT = 84.dp
 private val KEY_SIZE = 90.dp
 private val PHONE_KEY_SIZE = 72.dp
