@@ -36,13 +36,13 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
     }
 
     fun refresh() {
-        if (job?.isActive == true) return
+        if (isBusy) return
         job = viewModelScope.launch { read()?.let { _state.value = it } }
     }
 
     fun onProtectionToggled(isEnabled: Boolean) {
-        val id = selectedSite.getOrNull()?.id
-        if (isEnabled || id == null || job?.isActive == true || _state.value !is Protected) return
+        if (isEnabled || isBusy || _state.value !is Protected) return
+        val id = selectedSite.getOrNull()?.id ?: return
         job = viewModelScope.launch {
             val removed = withContext(NonCancellable) { store.removePIN(id, WooPosLocalRole.ADMIN) }.isSuccess
             currentCoroutineContext().ensureActive()
@@ -67,6 +67,8 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
             else -> Protected(hasCashierPIN = WooPosLocalRole.CASHIER in saved, removalFailed = false)
         }
     }
+
+    private val isBusy: Boolean get() = job?.isActive == true
 
     private fun isSelected(localSiteId: Int) = localSiteId == selectedSite.getOrNull()?.id
 }

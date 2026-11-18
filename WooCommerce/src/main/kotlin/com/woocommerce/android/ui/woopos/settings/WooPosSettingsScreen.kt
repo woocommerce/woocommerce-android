@@ -249,7 +249,7 @@ private fun SettingsDialogs(
     LaunchedEffect(pinSetupRole) { pinSetupRole?.let(pinSetup::start) ?: pinSetup.reset() }
     WooPosSettingsSecurityPINSetupDialog(
         state = pinSetupState,
-        isVisible = pinSetupRole != null,
+        isVisible = pinSetupRole != null && pinSetupState.role == pinSetupRole,
         onUIEvent = pinSetup::onUIEvent,
         onClose = onDismissDialog,
     )

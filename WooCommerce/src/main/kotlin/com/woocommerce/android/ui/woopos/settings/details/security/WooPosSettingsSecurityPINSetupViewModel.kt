@@ -66,7 +66,9 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
         if (entry.length < WooPosPINHash.PIN_LENGTH) return
         val pin = entry
         entry = ""
-        job = viewModelScope.launch { if (current is Confirm) confirm(current.role, pin) else choose(current.role, pin) }
+        job = viewModelScope.launch {
+            if (current is Confirm) confirm(current.role, pin) else choose(current.role, pin)
+        }
     }
 
     private fun onDelete() {

@@ -4,11 +4,11 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.ADMIN
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.CASHIER
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
-import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINError
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINError
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Choose
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Confirm
