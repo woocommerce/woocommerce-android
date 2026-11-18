@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
+import com.woocommerce.android.ui.woopos.roles.WooPosCapability
 import com.woocommerce.android.ui.woopos.roles.WooPosCapability.MANAGE_STORE_SETTINGS
 import com.woocommerce.android.ui.woopos.roles.WooPosCapability.PROCESS_SALES
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
@@ -10,7 +11,9 @@ import org.junit.Test
 class WooPosAccessSessionStateTest {
     @Test
     fun `when POS is unprotected, then every capability is allowed`() {
-        assertThat(WooPosAccessSessionState.Unprotected.allows(MANAGE_STORE_SETTINGS)).isTrue()
+        WooPosCapability.entries.forEach {
+            assertThat(WooPosAccessSessionState.Unprotected.allows(it)).isTrue()
+        }
     }
 
     @Test
@@ -24,6 +27,8 @@ class WooPosAccessSessionStateTest {
 
     @Test
     fun `when locked, then no capability is allowed`() {
-        assertThat(WooPosAccessSessionState.Locked(Status.Idle).allows(PROCESS_SALES)).isFalse()
+        WooPosCapability.entries.forEach {
+            assertThat(WooPosAccessSessionState.Locked(Status.Idle).allows(it)).isFalse()
+        }
     }
 }

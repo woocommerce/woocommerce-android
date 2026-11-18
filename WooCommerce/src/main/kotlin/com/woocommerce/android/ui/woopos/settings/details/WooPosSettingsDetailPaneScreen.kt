@@ -15,11 +15,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -35,8 +33,7 @@ import com.woocommerce.android.ui.woopos.settings.details.help.WooPosHelpDetailS
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSettingsLocalCatalogScreen
 import com.woocommerce.android.ui.woopos.settings.details.payments.WooPosSettingsPaymentsScreen
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityScreen
-import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityState.Protected
-import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityViewModel
+import com.woocommerce.android.ui.woopos.settings.details.security.wooPosSettingsSecurityShowsHeading
 import com.woocommerce.android.ui.woopos.settings.details.store.WooPosSettingsStoreScreen
 
 @Composable
@@ -113,8 +110,8 @@ fun WooPosSettingsDetailPaneScreen(
 
 @Composable
 private fun DetailPaneHeader(destination: WooPosSettingsDetailDestination, onBack: (() -> Unit)?) {
-    val hasHeading = destination.showsHeading || destination is WooPosSettingsDetailDestination.Security &&
-        hiltViewModel<WooPosSettingsSecurityViewModel>().state.collectAsState().value is Protected
+    val hasHeading = destination.showsHeading ||
+        destination is WooPosSettingsDetailDestination.Security && wooPosSettingsSecurityShowsHeading()
     if (!hasHeading && onBack == null) return
     WooPosToolbar(
         modifier = Modifier

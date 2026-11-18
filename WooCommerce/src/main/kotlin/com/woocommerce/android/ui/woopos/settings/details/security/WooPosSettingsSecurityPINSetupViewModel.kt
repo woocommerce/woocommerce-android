@@ -41,14 +41,18 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
     private var job: Job? = null
 
     fun start(role: WooPosLocalRole) {
+        if (role != _state.value.role) restart(role)
+    }
+
+    fun reset() = restart(_state.value.role)
+
+    private fun restart(role: WooPosLocalRole) {
         job?.cancel()
         job = null
         entry = ""
         chosenPIN = ""
         _state.value = Choose(role)
     }
-
-    fun reset() = start(_state.value.role)
 
     fun onUIEvent(event: WooPosSettingsSecurityPINSetupUIEvent) {
         when (event) {

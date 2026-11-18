@@ -4151,6 +4151,7 @@
     <string name="woopos_security_set_up">Set up</string>
     <string name="woopos_role_admin">Admin</string>
     <string name="woopos_role_cashier">Cashier</string>
+    <string name="woopos_role_active">Current role: %1$s</string>
     <string name="woopos_lock_forgot_pin">Forgot PIN?</string>
     <string name="woopos_lock_incorrect">Incorrect PIN. Try again.</string>
     <string name="woopos_lock_unavailable">Something went wrong. Try again later.</string>

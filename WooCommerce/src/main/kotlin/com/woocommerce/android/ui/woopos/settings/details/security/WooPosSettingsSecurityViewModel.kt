@@ -40,14 +40,15 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
         job = viewModelScope.launch { read()?.let { _state.value = it } }
     }
 
-    fun onProtectionToggled(isEnabled: Boolean) {
-        if (isEnabled || isBusy || _state.value !is Protected) return
+    fun onProtectionTurnedOff() {
+        if (isBusy || _state.value !is Protected) return
         val id = selectedSite.getOrNull()?.id ?: return
         job = viewModelScope.launch {
-            val removed = withContext(NonCancellable) { store.removePIN(id, WooPosLocalRole.ADMIN) }.isSuccess
+            val removed = withContext(NonCancellable) {
+                store.removePIN(id, WooPosLocalRole.ADMIN).also { if (isSelected(id)) accessSession.initialize() }
+            }.isSuccess
             currentCoroutineContext().ensureActive()
             if (!isSelected(id)) return@launch
-            accessSession.initialize()
             val current = read() ?: return@launch
             _state.value = if (!removed && current is Protected) current.copy(removalFailed = true) else current
         }

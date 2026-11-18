@@ -20,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.style.TextOverflow
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
@@ -58,8 +60,11 @@ fun WooPosToolbarPopUpMenu(
 
 @Composable
 private fun WooPosToolbarPopUpMenuActiveRole(@StringRes title: Int) {
+    val description = stringResource(R.string.woopos_role_active, stringResource(title))
     Row(
-        modifier = Modifier.padding(ButtonDefaults.TextButtonContentPadding),
+        modifier = Modifier
+            .clearAndSetSemantics { contentDescription = description }
+            .padding(ButtonDefaults.TextButtonContentPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))

@@ -550,6 +550,33 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         verifyNoInteractions(store, session)
     }
 
+    @Test
+    fun `given a partial entry, when setup starts again for the same role, then the entry is kept`() = runTest {
+        // GIVEN
+        enter("12")
+
+        // WHEN
+        viewModel.start(ADMIN)
+
+        // THEN
+        assertThat(viewModel.state.value).isEqualTo(Choose(ADMIN, enteredDigits = 2))
+    }
+
+    @Test
+    fun `given no PINs, when a restored Cashier setup is confirmed, then nothing unlocks`() = runTest {
+        // GIVEN
+        givenNoPINs()
+        whenever(store.setPIN(1, CASHIER, "5678")).thenReturn(Result.failure(WooPosPINError.AdminRequired))
+        viewModel.start(CASHIER)
+
+        // WHEN
+        chooseAndConfirm("5678")
+
+        // THEN
+        verify(session, never()).unlock(any())
+        assertThat(viewModel.state.value).isEqualTo(Choose(CASHIER, error = Error.SAVE_FAILED))
+    }
+
     private suspend fun givenAdminPIN() {
         whenever(store.getPINs(1)).thenReturn(Result.success(mapOf(ADMIN to WooPosPINHash.create("1234"))))
         sessionState.value = WooPosAccessSessionState.Unlocked(ADMIN)

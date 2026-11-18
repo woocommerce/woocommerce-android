@@ -55,15 +55,22 @@ fun WooPosSettingsSecurityScreen(isPINSetupVisible: Boolean, onSetUpPIN: (WooPos
     WooPosSettingsSecurityScreen(
         state = state,
         onSetUpPIN = onSetUpPIN,
-        onProtectionToggled = viewModel::onProtectionToggled,
+        onProtectionTurnedOff = viewModel::onProtectionTurnedOff,
     )
+}
+
+/** The setup empty state is centered without the pane heading; PIN management shows it. */
+@Composable
+fun wooPosSettingsSecurityShowsHeading(): Boolean {
+    val viewModel: WooPosSettingsSecurityViewModel = hiltViewModel()
+    return viewModel.state.collectAsState().value is WooPosSettingsSecurityState.Protected
 }
 
 @Composable
 fun WooPosSettingsSecurityScreen(
     state: WooPosSettingsSecurityState,
     onSetUpPIN: (WooPosLocalRole) -> Unit,
-    onProtectionToggled: (Boolean) -> Unit,
+    onProtectionTurnedOff: () -> Unit,
 ) {
     when (state) {
         WooPosSettingsSecurityState.Loading -> Unit
@@ -81,7 +88,7 @@ fun WooPosSettingsSecurityScreen(
                 textAlign = TextAlign.Center,
             )
         }
-        is WooPosSettingsSecurityState.Protected -> PINProtection(state, onSetUpPIN, onProtectionToggled)
+        is WooPosSettingsSecurityState.Protected -> PINProtection(state, onSetUpPIN, onProtectionTurnedOff)
     }
 }
 
@@ -106,7 +113,7 @@ private fun CenteredContent(content: @Composable () -> Unit) {
 private fun PINProtection(
     state: WooPosSettingsSecurityState.Protected,
     onSetUpPIN: (WooPosLocalRole) -> Unit,
-    onProtectionToggled: (Boolean) -> Unit,
+    onProtectionTurnedOff: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -123,7 +130,7 @@ private fun PINProtection(
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.semantics { heading() },
                 )
-                PINProtectionToggle(onProtectionToggled)
+                PINProtectionToggle(onProtectionTurnedOff)
                 if (state.removalFailed) {
                     WooPosText(
                         text = stringResource(R.string.woopos_security_save_failed),
@@ -155,11 +162,11 @@ private fun PINProtection(
 }
 
 @Composable
-private fun PINProtectionToggle(onProtectionToggled: (Boolean) -> Unit) {
+private fun PINProtectionToggle(onProtectionTurnedOff: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .toggleable(value = true, role = Role.Switch, onValueChange = onProtectionToggled)
+            .toggleable(value = true, role = Role.Switch, onValueChange = { onProtectionTurnedOff() })
             .padding(vertical = WooPosSpacing.Small.value),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
@@ -256,7 +263,7 @@ fun WooPosSettingsSecurityScreenRestrictedPreview() {
 @Composable
 private fun SecurityScreenPreview(state: WooPosSettingsSecurityState) {
     WooPosTheme {
-        WooPosSettingsSecurityScreen(state = state, onSetUpPIN = {}, onProtectionToggled = {})
+        WooPosSettingsSecurityScreen(state = state, onSetUpPIN = {}, onProtectionTurnedOff = {})
     }
 }
 

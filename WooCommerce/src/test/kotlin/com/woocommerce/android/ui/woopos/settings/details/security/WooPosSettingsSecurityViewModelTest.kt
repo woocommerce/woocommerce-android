@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.settings.details.security
 
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.ADMIN
@@ -13,6 +14,7 @@ import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSetting
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -148,7 +150,7 @@ class WooPosSettingsSecurityViewModelTest {
         advanceUntilIdle()
 
         // WHEN
-        viewModel.onProtectionToggled(false)
+        viewModel.onProtectionTurnedOff()
         advanceUntilIdle()
 
         // THEN
@@ -166,7 +168,7 @@ class WooPosSettingsSecurityViewModelTest {
         advanceUntilIdle()
 
         // WHEN
-        viewModel.onProtectionToggled(false)
+        viewModel.onProtectionTurnedOff()
         advanceUntilIdle()
 
         // THEN
@@ -186,8 +188,8 @@ class WooPosSettingsSecurityViewModelTest {
         advanceUntilIdle()
 
         // WHEN
-        viewModel.onProtectionToggled(false)
-        viewModel.onProtectionToggled(false)
+        viewModel.onProtectionTurnedOff()
+        viewModel.onProtectionTurnedOff()
         gate.complete(Unit)
         advanceUntilIdle()
 
@@ -206,7 +208,7 @@ class WooPosSettingsSecurityViewModelTest {
         }
         val viewModel = createViewModel()
         advanceUntilIdle()
-        viewModel.onProtectionToggled(false)
+        viewModel.onProtectionTurnedOff()
 
         // WHEN
         whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { id = 2 })
@@ -227,11 +229,64 @@ class WooPosSettingsSecurityViewModelTest {
         advanceUntilIdle()
 
         // WHEN
-        viewModel.onProtectionToggled(false)
+        viewModel.onProtectionTurnedOff()
         advanceUntilIdle()
 
         // THEN
         verify(store, never()).removePIN(any(), any())
+    }
+
+    @Test
+    fun `given Admin Security, when the session becomes Cashier, then PIN controls close and stay ignored`() = runTest {
+        // GIVEN
+        givenAdminSession(ADMIN, CASHIER)
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        sessionState.value = WooPosAccessSessionState.Unlocked(CASHIER)
+        advanceUntilIdle()
+        viewModel.onProtectionTurnedOff()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(viewModel.state.value).isEqualTo(WooPosSettingsSecurityState.Restricted)
+        verify(store, never()).removePIN(any(), any())
+    }
+
+    @Test
+    fun `given a pending removal, when Settings closes, then the session still reads the removed PINs`() = runTest {
+        // GIVEN
+        givenAdminSession(ADMIN)
+        val gate = CompletableDeferred<Unit>()
+        whenever(store.removePIN(1, ADMIN)).doSuspendableAnswer {
+            gate.await()
+            Result.success(Unit)
+        }
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.onProtectionTurnedOff()
+
+        // WHEN
+        viewModel.viewModelScope.cancel()
+        gate.complete(Unit)
+        advanceUntilIdle()
+
+        // THEN
+        verify(session).initialize()
+    }
+
+    @Test
+    fun `given no selected store, when Security opens, then it never offers setup`() = runTest {
+        // GIVEN
+        whenever(selectedSite.getOrNull()).thenReturn(null)
+
+        // WHEN
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(viewModel.state.value).isEqualTo(WooPosSettingsSecurityState.Unavailable)
     }
 
     private fun createViewModel() = WooPosSettingsSecurityViewModel(selectedSite, store, session)
