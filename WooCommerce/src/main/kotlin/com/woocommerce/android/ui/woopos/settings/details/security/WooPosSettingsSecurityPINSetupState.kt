@@ -27,6 +27,10 @@ sealed interface WooPosSettingsSecurityPINSetupState {
 
     data object Saved : WooPosSettingsSecurityPINSetupState
 
+    data object AccessUnavailable : WooPosSettingsSecurityPINSetupState {
+        override val canClose: Boolean get() = false
+    }
+
     enum class Error { MISMATCH, SAVE_FAILED }
 }
 

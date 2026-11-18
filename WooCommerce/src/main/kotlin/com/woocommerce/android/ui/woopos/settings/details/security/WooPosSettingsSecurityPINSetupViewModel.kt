@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.AccessUnavailable
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Choose
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Confirm
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Entry
@@ -102,6 +104,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
         val outcome = if (isSelected(siteId)) result else SaveResult.STALE
         _state.value = when (outcome) {
             SaveResult.SAVED -> WooPosSettingsSecurityPINSetupState.Saved
+            SaveResult.ACCESS_UNAVAILABLE -> AccessUnavailable
             SaveResult.FAILED -> Choose(error = Error.SAVE_FAILED)
             SaveResult.STALE -> Choose()
         }
@@ -123,13 +126,15 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
         return when {
             !saved -> SaveResult.FAILED
             !isSelected(id) -> SaveResult.STALE
+            accessSession.state.value != WooPosAccessSessionState.Unlocked(WooPosLocalRole.ADMIN) ->
+                SaveResult.ACCESS_UNAVAILABLE
             else -> SaveResult.SAVED
         }
     }
 
     private fun isSelected(localSiteId: Int) = localSiteId == selectedSite.getOrNull()?.id
 
-    private enum class SaveResult { SAVED, FAILED, STALE }
+    private enum class SaveResult { SAVED, ACCESS_UNAVAILABLE, FAILED, STALE }
 
     companion object {
         private const val MIN_DIGIT = 0

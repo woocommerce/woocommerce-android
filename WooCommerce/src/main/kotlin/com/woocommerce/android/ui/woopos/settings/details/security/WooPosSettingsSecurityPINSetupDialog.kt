@@ -34,8 +34,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,6 +72,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWo
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDots
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPad
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPadStyle
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.AccessUnavailable
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Choose
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Confirm
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Entry
@@ -84,13 +86,14 @@ fun WooPosSettingsSecurityPINSetupDialog(
     isVisible: Boolean,
     onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
     onClose: () -> Unit,
+    isFullScreen: Boolean = currentWooPosBreakpoint() == WooPosBreakpoint.Phone,
 ) {
     // The flow resets when the dialog hides, so the closing animation keeps showing the last visible step.
     val shown = remember(isVisible, state.takeIf { isVisible }) { state }
     val sendEvent = { event: WooPosSettingsSecurityPINSetupUIEvent -> if (isVisible) onUIEvent(event) }
     val close = { if (isVisible && shown.canClose) onClose() }
     val goBack = { sendEvent(WooPosSettingsSecurityPINSetupUIEvent.BackTapped) }
-    if (currentWooPosBreakpoint() == WooPosBreakpoint.Phone) {
+    if (isFullScreen) {
         BackHandler(enabled = isVisible) {
             if (shown.canGoBack) goBack() else close()
         }
@@ -144,7 +147,7 @@ private fun PINSetupPhoneContent(
                 ) {
                     PINEntry(state, onUIEvent, keySize, statusHeight, spacing)
                 }
-                Saving -> PINSetupProgress()
+                Saving, AccessUnavailable -> PINSetupProgress()
                 Saved -> Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
                     PINSetupSaved(onContinue = onClose, minHeight = bodyHeight)
                 }
@@ -161,7 +164,7 @@ private fun PINSetupDialogContent(
 ) {
     val density = LocalDensity.current
     // Loading and success keep the height the entry had, so the dialog does not resize between steps.
-    var entryHeight by remember { mutableStateOf(0.dp) }
+    var entryHeight by rememberSaveable { mutableFloatStateOf(0f) }
     Box(contentAlignment = Alignment.Center) {
         Column(
             modifier = Modifier
@@ -178,13 +181,13 @@ private fun PINSetupDialogContent(
                     keySize = KEY_SIZE,
                     statusHeight = STATUS_MIN_HEIGHT,
                     spacing = WooPosSpacing.Large.value,
-                    modifier = Modifier.onSizeChanged { entryHeight = with(density) { it.height.toDp() } },
+                    modifier = Modifier.onSizeChanged { entryHeight = with(density) { it.height.toDp().value } },
                 )
-                Saving -> Spacer(Modifier.height(entryHeight))
-                Saved -> PINSetupSaved(onContinue = onClose, minHeight = entryHeight)
+                Saving, AccessUnavailable -> Spacer(Modifier.height(entryHeight.dp))
+                Saved -> PINSetupSaved(onContinue = onClose, minHeight = entryHeight.dp)
             }
         }
-        if (state == Saving) PINSetupProgress()
+        if (state == Saving || state == AccessUnavailable) PINSetupProgress()
     }
 }
 
@@ -206,7 +209,7 @@ private fun PINSetupHeader(
     val title = when (state) {
         is Choose -> stringResource(R.string.woopos_security_choose_pin)
         is Confirm -> stringResource(R.string.woopos_security_confirm_pin)
-        Saving, Saved -> null
+        Saving, Saved, AccessUnavailable -> null
     }
     Box(
         modifier = Modifier
@@ -236,7 +239,7 @@ private fun PINSetupHeader(
                     },
             )
         }
-        if (state != Saving) {
+        if (state is Entry || state == Saved) {
             WooPosBackButton(
                 modifier = Modifier.align(Alignment.CenterEnd),
                 iconRes = R.drawable.ic_close_24dp,

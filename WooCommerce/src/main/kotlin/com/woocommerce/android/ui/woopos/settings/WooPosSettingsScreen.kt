@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCateg
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPaneScreen
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSyncErrorDialog
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupDialog
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.AccessUnavailable
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupViewModel
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialog
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialogState
@@ -164,6 +165,7 @@ private fun WooPosSettingsPhoneContent(
 
     SettingsDialogs(
         dialogState = state.dialogState,
+        isPhoneLayout = true,
         onRetrySync = onRetrySync,
         onDismissDialog = onDismissDialog,
     )
@@ -221,6 +223,7 @@ private fun WooPosSettingsTabletContent(
 
     SettingsDialogs(
         dialogState = state.dialogState,
+        isPhoneLayout = false,
         onRetrySync = onRetrySync,
         onDismissDialog = onDismissDialog,
     )
@@ -233,6 +236,7 @@ private fun Modifier.hiddenBehindPinSetup(dialogState: WooPosSettingsDialogState
 @Composable
 private fun SettingsDialogs(
     dialogState: WooPosSettingsDialogState,
+    isPhoneLayout: Boolean,
     onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit,
 ) {
@@ -246,9 +250,13 @@ private fun SettingsDialogs(
     val pinSetupState by pinSetup.state.collectAsState()
     val isPinSetupVisible = dialogState is WooPosSettingsDialogState.PinSetupDialog
     LaunchedEffect(isPinSetupVisible) { if (!isPinSetupVisible) pinSetup.reset() }
+    LaunchedEffect(isPinSetupVisible, pinSetupState == AccessUnavailable) {
+        if (isPinSetupVisible && pinSetupState == AccessUnavailable) onDismissDialog()
+    }
     WooPosSettingsSecurityPINSetupDialog(
         state = pinSetupState,
         isVisible = isPinSetupVisible,
+        isFullScreen = isPhoneLayout,
         onUIEvent = pinSetup::onUIEvent,
         onClose = onDismissDialog,
     )
