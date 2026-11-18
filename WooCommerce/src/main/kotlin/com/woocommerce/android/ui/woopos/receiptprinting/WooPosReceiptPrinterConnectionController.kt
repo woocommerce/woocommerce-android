@@ -67,9 +67,9 @@ class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
     }
 
     fun connect(device: ReceiptPrinterDevice) {
-        val discoveryJob = setupJob?.apply { cancel() }
+        val previousJob = setupJob?.apply { cancel() }
         launchSetup(Connecting(device)) {
-            discoveryJob?.join()
+            previousJob?.join()
             val result = receiptPrinterFacade.connect(device)
             ensureActive()
             _state.value = when (result) {
