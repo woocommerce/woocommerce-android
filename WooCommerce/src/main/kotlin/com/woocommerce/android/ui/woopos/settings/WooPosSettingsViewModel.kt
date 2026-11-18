@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventReceiver
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventSender
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.HardwareTapped
@@ -88,7 +89,7 @@ class WooPosSettingsViewModel @Inject constructor(
 
     private fun trackCategorySelection(category: WooPosSettingsCategory) {
         val event = when (category) {
-            // TODO WOOMOB-4602: Add Security tracking with PIN setup integration.
+            // TODO WOOMOB-4609: Add Security tracking with the Roles analytics events.
             WooPosSettingsCategory.SECURITY -> return
             WooPosSettingsCategory.STORE -> StoreDetailsTapped
             WooPosSettingsCategory.PAYMENTS -> PaymentsTapped
@@ -118,8 +119,8 @@ class WooPosSettingsViewModel @Inject constructor(
         }
     }
 
-    fun showPinSetupDialog() {
-        _state.update { it.copy(dialogState = WooPosSettingsDialogState.PinSetupDialog) }
+    fun showPinSetupDialog(role: WooPosLocalRole) {
+        _state.update { it.copy(dialogState = WooPosSettingsDialogState.PinSetupDialog(role)) }
     }
 
     fun showProductInfoDialog() {

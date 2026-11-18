@@ -24,7 +24,7 @@ data class WooPosHomeFloatingToolbarState(
 
     sealed class Menu {
         data object Hidden : Menu()
-        data class Visible(val items: List<MenuItem>) : Menu()
+        data class Visible(val items: List<MenuItem>, @StringRes val activeRoleTitle: Int?) : Menu()
         data class MenuItem(
             @StringRes val title: Int,
             @DrawableRes val icon: Int,

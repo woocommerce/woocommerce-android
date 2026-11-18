@@ -16,6 +16,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.ADMIN
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.CASHIER
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Choose
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Confirm
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Error
@@ -39,14 +41,14 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun confirmationOffersBackWhileChooseOffersOnlyClose() {
-        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Choose(enteredDigits = 1))
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Choose(ADMIN, enteredDigits = 1))
         setDialog(state)
 
         composeTestRule.onNodeWithText(context.getString(R.string.woopos_security_choose_pin)).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(back).assertDoesNotExist()
 
         // WHEN
-        state.value = Confirm(enteredDigits = 2)
+        state.value = Confirm(ADMIN, enteredDigits = 2)
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithContentDescription(back).performClick()
         Espresso.pressBack()
@@ -62,7 +64,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun heldConfirmationDisablesKeysAndIgnoresClose() {
-        setDialog(mutableStateOf(Confirm(enteredDigits = 4)))
+        setDialog(mutableStateOf(Confirm(ADMIN, enteredDigits = 4)))
 
         // WHEN
         composeTestRule.onNodeWithContentDescription(close).performClick()
@@ -76,7 +78,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun savingShowsOnlyProgressAndCannotClose() {
-        setDialog(mutableStateOf(Saving))
+        setDialog(mutableStateOf(Saving(ADMIN)))
 
         // WHEN
         Espresso.pressBack()
@@ -91,13 +93,13 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun mismatchMessageAppearsAfterTheDotsReturn() {
-        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Confirm(enteredDigits = 4))
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Confirm(ADMIN, enteredDigits = 4))
         setDialog(state)
         composeTestRule.waitForIdle()
         composeTestRule.mainClock.autoAdvance = false
 
         // WHEN
-        state.value = Choose(error = Error.MISMATCH)
+        state.value = Choose(ADMIN, error = Error.MISMATCH)
         composeTestRule.mainClock.advanceTimeByFrame()
 
         // THEN
@@ -113,8 +115,28 @@ class WooPosSettingsSecurityPINSetupDialogTest {
     }
 
     @Test
+    fun takenCashierPINShowsCashierTitleAndTakenMessage() {
+        setDialog(mutableStateOf(Choose(CASHIER, error = Error.PIN_TAKEN)))
+
+        // THEN
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_security_choose_cashier_pin))
+            .assertIsDisplayed()
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_security_pin_taken)).assertIsDisplayed()
+    }
+
+    @Test
+    fun cashierSuccessExplainsTheCashierPIN() {
+        setDialog(mutableStateOf(Saved(CASHIER)))
+
+        // THEN
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_security_cashier_success)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_security_cashier_success_message))
+            .assertIsDisplayed()
+    }
+
+    @Test
     fun successContinueClosesTheFlow() {
-        setDialog(mutableStateOf(Saved))
+        setDialog(mutableStateOf(Saved(ADMIN)))
 
         // WHEN
         composeTestRule.onNodeWithText(context.getString(R.string.continue_button)).assertIsEnabled().performClick()
@@ -126,7 +148,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun closingKeepsTheLastStepWhileTheFlowResetsBehindIt() {
-        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Saved)
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Saved(ADMIN))
         val isVisible = mutableStateOf(true)
         setDialog(state, isVisible)
         composeTestRule.waitForIdle()
@@ -135,7 +157,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
         // WHEN
         isVisible.value = false
         composeTestRule.mainClock.advanceTimeByFrame()
-        state.value = Choose()
+        state.value = Choose(ADMIN)
         composeTestRule.mainClock.advanceTimeByFrame()
 
         // THEN
@@ -146,7 +168,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
     @Test
     fun keypadTapsDuringTheClosingAnimationAreIgnored() {
         val isVisible = mutableStateOf(true)
-        setDialog(mutableStateOf(Choose(enteredDigits = 1)), isVisible)
+        setDialog(mutableStateOf(Choose(ADMIN, enteredDigits = 1)), isVisible)
         composeTestRule.waitForIdle()
         composeTestRule.mainClock.autoAdvance = false
 
