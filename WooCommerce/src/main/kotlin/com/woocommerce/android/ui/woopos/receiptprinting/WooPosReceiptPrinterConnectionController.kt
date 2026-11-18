@@ -45,9 +45,7 @@ class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
         .map { (it as? ReceiptPrinterConnectionStatus.Connected)?.device?.name }
 
     private var setupJob: Job? = null
-    private var foundDevices = emptyList<ReceiptPrinterDevice>()
     private var excludedDeviceIds = emptySet<String>()
-    private var isBluetoothPermissionPermanentlyDenied = false
 
     fun startSetup() {
         excludedDeviceIds = emptySet()
@@ -56,8 +54,11 @@ class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
 
     fun onBluetoothPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
         if (_state.value !is MissingBluetoothPermission) return
-        isBluetoothPermissionPermanentlyDenied = !granted && !shouldShowRationale
-        startSetup()
+        if (granted) {
+            startSetup()
+        } else {
+            _state.value = MissingBluetoothPermission(permanentlyDenied = !shouldShowRationale)
+        }
     }
 
     fun recheckBluetoothRequirement() {
@@ -68,7 +69,6 @@ class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
         val found = _state.value as? FoundOne ?: return
         excludedDeviceIds += found.device.id
         if (setupJob?.isActive == true) {
-            foundDevices = emptyList()
             _state.value = Searching
         } else {
             startDiscovery()
@@ -100,7 +100,6 @@ class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
             _state.value = unmetRequirement
             return
         }
-        foundDevices = emptyList()
         launchSetup(Searching) {
             receiptPrinterFacade.discover().collect { event ->
                 when (event) {
@@ -128,7 +127,7 @@ class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
 
     private fun unmetBluetoothRequirement(): WooPosReceiptPrinterConnectionState? = when {
         !permissionUtils.hasBluetoothScanAndConnectPermissions() ->
-            MissingBluetoothPermission(permanentlyDenied = isBluetoothPermissionPermanentlyDenied)
+            _state.value as? MissingBluetoothPermission ?: MissingBluetoothPermission(permanentlyDenied = false)
 
         !permissionUtils.isBluetoothEnabled() -> BluetoothOff
 
@@ -136,9 +135,13 @@ class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
     }
 
     private fun onPrinterFound(device: ReceiptPrinterDevice) {
+        val foundDevices = when (val current = _state.value) {
+            is FoundOne -> listOf(current.device)
+            is FoundMultiple -> current.devices
+            else -> emptyList()
+        }
         if (device.id in excludedDeviceIds || foundDevices.any { it.id == device.id }) return
-        foundDevices = foundDevices + device
-        _state.value = foundDevices.singleOrNull()?.let { FoundOne(it) } ?: FoundMultiple(foundDevices)
+        _state.value = if (foundDevices.isEmpty()) FoundOne(device) else FoundMultiple(foundDevices + device)
     }
 
     @AssistedFactory

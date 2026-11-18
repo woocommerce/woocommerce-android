@@ -169,6 +169,22 @@ class WooPosReceiptPrinterConnectionControllerTest {
         }
 
     @Test
+    fun `given the permission was permanently denied, when rechecked without the permission, then it stays permanently denied`() =
+        runTest {
+            // GIVEN
+            whenever(permissionUtils.hasBluetoothScanAndConnectPermissions()).thenReturn(false)
+            val sut = createController()
+            sut.startSetup()
+            sut.onBluetoothPermissionResult(granted = false, shouldShowRationale = false)
+
+            // WHEN
+            sut.recheckBluetoothRequirement()
+
+            // THEN
+            assertThat(sut.state.value).isEqualTo(MissingBluetoothPermission(permanentlyDenied = true))
+        }
+
+    @Test
     fun `given the permission was missing, when it is granted, then the search starts`() = runTest {
         // GIVEN
         whenever(permissionUtils.hasBluetoothScanAndConnectPermissions()).thenReturn(false)
