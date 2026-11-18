@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -33,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -66,7 +66,6 @@ import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDots
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPad
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPadStyle
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
-import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Choose
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Confirm
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Entry
@@ -83,6 +82,7 @@ fun WooPosSettingsSecurityPINSetupDialog(
 ) {
     // The flow resets when the dialog hides, so the closing animation keeps showing the last visible step.
     val shown = remember(isVisible, state.takeIf { isVisible }) { state }
+    val sendEvent = { event: WooPosSettingsSecurityPINSetupUIEvent -> if (isVisible) onUIEvent(event) }
     val close = { if (shown.canClose) onClose() }
     WooPosDialogWrapper(
         modifier = Modifier.widthIn(max = DIALOG_MAX_WIDTH),
@@ -94,7 +94,7 @@ fun WooPosSettingsSecurityPINSetupDialog(
         BackHandler(enabled = isVisible && shown.canGoBack) {
             onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.BackTapped)
         }
-        PINSetupContent(state = shown, onUIEvent = onUIEvent, onClose = close)
+        PINSetupContent(state = shown, onUIEvent = sendEvent, onClose = close)
     }
 }
 
@@ -105,6 +105,7 @@ private fun PINSetupContent(
     onClose: () -> Unit,
 ) {
     val density = LocalDensity.current
+    // Loading and success keep the height the entry had, so the dialog does not resize between steps.
     var entryHeight by remember { mutableStateOf(0.dp) }
     Box(contentAlignment = Alignment.Center) {
         Column(
@@ -115,19 +116,14 @@ private fun PINSetupContent(
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value),
         ) {
             PINSetupHeader(state, onUIEvent, onClose)
-            Box(contentAlignment = Alignment.Center) {
-                // The entry keeps the dialog's size while loading and success replace it.
-                val entry = state as? Entry ?: Confirm(state.role, WooPosPINHash.PIN_LENGTH)
-                val showsEntry = state is Entry
-                PINEntry(
-                    entry = entry,
+            when (state) {
+                is Entry -> PINEntry(
+                    entry = state,
                     onUIEvent = onUIEvent,
-                    modifier = Modifier
-                        .onSizeChanged { entryHeight = with(density) { it.height.toDp() } }
-                        .alpha(if (showsEntry) 1f else 0f)
-                        .then(if (showsEntry) Modifier else Modifier.clearAndSetSemantics {}),
+                    modifier = Modifier.onSizeChanged { entryHeight = with(density) { it.height.toDp() } },
                 )
-                if (state is Saved) PINSetupSaved(state.role, onContinue = onClose, minHeight = entryHeight)
+                is Saving -> Spacer(Modifier.height(entryHeight))
+                is Saved -> PINSetupSaved(state.role, onContinue = onClose, minHeight = entryHeight)
             }
         }
         if (state is Saving) {

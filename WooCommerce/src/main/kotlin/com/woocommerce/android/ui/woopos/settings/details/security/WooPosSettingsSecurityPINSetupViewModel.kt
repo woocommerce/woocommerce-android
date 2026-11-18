@@ -38,6 +38,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
     val state: StateFlow<WooPosSettingsSecurityPINSetupState> = _state.asStateFlow()
     private var entry = ""
     private var chosenPIN = ""
+    private var chosenSiteId: Int? = null
     private var job: Job? = null
 
     fun start(role: WooPosLocalRole) {
@@ -51,6 +52,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
         job = null
         entry = ""
         chosenPIN = ""
+        chosenSiteId = null
         _state.value = Choose(role)
     }
 
@@ -87,13 +89,16 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
 
     private suspend fun choose(role: WooPosLocalRole, pin: String) {
         chosenPIN = pin
+        chosenSiteId = selectedSite.getOrNull()?.id
         delay(FILLED_DOTS_HOLD_MILLIS)
         _state.value = Confirm(role)
     }
 
     private suspend fun confirm(role: WooPosLocalRole, pin: String) {
         val chosen = chosenPIN
+        val siteId = chosenSiteId ?: return reset()
         chosenPIN = ""
+        chosenSiteId = null
         if (pin != chosen) {
             delay(FILLED_DOTS_HOLD_MILLIS)
             _state.value = Choose(role, error = Error.MISMATCH)
@@ -105,9 +110,10 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
                 _state.value = WooPosSettingsSecurityPINSetupState.Saving(role)
                 delay(MINIMUM_SAVING_MILLIS)
             }
-            save(role, pin).also { if (it != SaveResult.SAVED) presentation.cancel() }
+            save(role, siteId, pin).also { if (it != SaveResult.SAVED) presentation.cancel() }
         }
-        _state.value = when (result) {
+        val outcome = if (isSelected(siteId)) result else SaveResult.STALE
+        _state.value = when (outcome) {
             SaveResult.SAVED -> WooPosSettingsSecurityPINSetupState.Saved(role)
             SaveResult.PIN_TAKEN -> Choose(role, error = Error.PIN_TAKEN)
             SaveResult.FAILED -> Choose(role, error = Error.SAVE_FAILED)
@@ -115,8 +121,8 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
         }
     }
 
-    private suspend fun save(role: WooPosLocalRole, pin: String): SaveResult {
-        val id = selectedSite.getOrNull()?.id ?: return SaveResult.STALE
+    private suspend fun save(role: WooPosLocalRole, id: Int, pin: String): SaveResult {
+        if (!isSelected(id)) return SaveResult.STALE
         val pins = store.getPINs(id).getOrNull()
         currentCoroutineContext().ensureActive()
         if (!isSelected(id)) return SaveResult.STALE

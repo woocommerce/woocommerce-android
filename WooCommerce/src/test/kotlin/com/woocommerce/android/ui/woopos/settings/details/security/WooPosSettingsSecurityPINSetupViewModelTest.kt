@@ -397,6 +397,41 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         }
 
     @Test
+    fun `given a chosen PIN, when the selected store changes before confirmation, then nothing is saved`() = runTest {
+        // GIVEN
+        givenNoPINs()
+        choose("1234")
+
+        // WHEN
+        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { id = 2 })
+        enter("1234")
+        advanceUntilIdle()
+
+        // THEN
+        verifyNoInteractions(store, session)
+        assertThat(viewModel.state.value).isEqualTo(Choose(ADMIN))
+    }
+
+    @Test
+    fun `given a fast save, when the selected store changes during loading, then success is not shown`() = runTest {
+        // GIVEN
+        givenNoPINs()
+        whenever(store.setPIN(1, ADMIN, "1234")).thenReturn(Result.success(Unit))
+        choose("1234")
+        enter("1234")
+
+        // WHEN
+        advanceTimeBy(FILLED_DOTS_HOLD_MILLIS)
+        runCurrent()
+        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { id = 2 })
+        advanceUntilIdle()
+
+        // THEN
+        verify(store).setPIN(1, ADMIN, "1234")
+        assertThat(viewModel.state.value).isEqualTo(Choose(ADMIN))
+    }
+
+    @Test
     fun `given a committed save after dialog close, when it completes, then the session receives the saved PIN`() =
         runTest {
             // GIVEN
