@@ -4068,6 +4068,12 @@
     <string name="woopos_settings_hardware_barcode_scanners_subtitle">Configure barcode scanner settings</string>
     <string name="woopos_settings_hardware_card_readers">Card Readers</string>
     <string name="woopos_settings_hardware_card_readers_subtitle">Manage card reader connections</string>
+    <string name="woopos_settings_hardware_receipt_printers">Receipt printers</string>
+    <string name="woopos_settings_hardware_receipt_printers_subtitle">Manage receipt printer connections</string>
+    <string name="woopos_settings_hardware_receipt_printers_connect_title">Connect printer</string>
+    <string name="woopos_settings_hardware_receipt_printers_connect_subtitle">Connect your receipt printer and start printing receipts</string>
+    <string name="woopos_settings_hardware_receipt_printers_device_name_title">Device name</string>
+    <string name="woopos_settings_hardware_receipt_printers_disconnect_button">Disconnect printer</string>
     <string name="woopos_settings_local_catalog_category">Product catalog</string>
     <string name="woopos_settings_local_catalog_category_subtitle">Manage catalog settings</string>
     <string name="woopos_settings_local_catalog_status">Catalog Status</string>
@@ -4137,9 +4143,8 @@
     <string name="woopos_security_success">Your admin PIN is set</string>
     <string name="woopos_lock_forgot_pin">Forgot PIN?</string>
     <string name="woopos_lock_incorrect">Incorrect PIN. Try again.</string>
-    <!-- Finalize storage error copy in WOOMOB-4623 before translation. -->
-    <string name="woopos_lock_storage_error" translatable="false">PIN storage is unavailable. Try again later.</string>
-    <string name="woopos_lock_wait">Too many incorrect attempts.\nTry again in %1$d:%2$02d.</string>
+    <string name="woopos_lock_unavailable">Something went wrong. Try again later.</string>
+    <string name="woopos_lock_wait">Too many incorrect attempts.\nTry again in %1$s.</string>
     <string name="woopos_lock_enter_pin">Enter your PIN to unlock POS</string>
     <string name="woopos_lock_delete_digit">Delete</string>
     <string name="woopos_lock_pin_entry">PIN entry</string>

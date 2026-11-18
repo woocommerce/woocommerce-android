@@ -56,6 +56,9 @@ class WooPosSettingsViewModel @Inject constructor(
                     is ChildToParentEvent.SettingsEvent.ShowCardReaderUpdateDialog -> {
                         showCardReaderUpdateDialog()
                     }
+                    is ChildToParentEvent.SettingsEvent.ShowReceiptPrinterSetupDialog -> {
+                        showReceiptPrinterSetupDialog()
+                    }
                     else -> Unit
                 }
             }
@@ -154,6 +157,12 @@ class WooPosSettingsViewModel @Inject constructor(
     fun showCardReaderUpdateDialog() {
         _state.update { currentState ->
             currentState.copy(dialogState = WooPosSettingsDialogState.CardReaderUpdateDialog)
+        }
+    }
+
+    fun showReceiptPrinterSetupDialog() {
+        _state.update { currentState ->
+            currentState.copy(dialogState = WooPosSettingsDialogState.ReceiptPrinterSetupDialog)
         }
     }
 
