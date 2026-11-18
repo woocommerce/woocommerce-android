@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.receiptprinting
 
-import com.woocommerce.android.receiptprinter.ReceiptPrinterConnectionStatus
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDevice
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDiscoveryEvent
 import com.woocommerce.android.receiptprinter.ReceiptPrinterResult
@@ -23,11 +22,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
@@ -37,12 +34,6 @@ class WooPosReceiptPrinterConnectionController @AssistedInject constructor(
 ) {
     private val _state = MutableStateFlow<WooPosReceiptPrinterConnectionState>(Idle)
     val state: StateFlow<WooPosReceiptPrinterConnectionState> = _state.asStateFlow()
-
-    val isConnected: Flow<Boolean> = receiptPrinterFacade.connectionStatus
-        .map { it is ReceiptPrinterConnectionStatus.Connected }
-
-    val connectedPrinterName: Flow<String?> = receiptPrinterFacade.connectionStatus
-        .map { (it as? ReceiptPrinterConnectionStatus.Connected)?.device?.name }
 
     private var setupJob: Job? = null
     private var excludedDeviceIds = emptySet<String>()

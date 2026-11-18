@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.receiptprinting
 
-import com.woocommerce.android.receiptprinter.ReceiptPrinterConnectionStatus
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDevice
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDiscoveryEvent
 import com.woocommerce.android.receiptprinter.ReceiptPrinterError
@@ -23,8 +22,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onCompletion
@@ -55,15 +52,11 @@ class WooPosReceiptPrinterConnectionControllerTest {
     @JvmField
     val coroutineTestRule = WooPosCoroutineTestRule()
 
-    private val connectionStatus = MutableStateFlow<ReceiptPrinterConnectionStatus>(
-        ReceiptPrinterConnectionStatus.Disconnected
-    )
     private val discoveryEvents = Channel<ReceiptPrinterDiscoveryEvent>(Channel.UNLIMITED)
     private var isDiscovering = false
     private var searchesStarted = 0
 
     private val receiptPrinterFacade: WooPosReceiptPrinterFacade = mock {
-        on { connectionStatus } doReturn connectionStatus
         on { discover() } doReturn discoveryEvents.receiveAsFlow()
             .onStart {
                 isDiscovering = true
@@ -717,30 +710,6 @@ class WooPosReceiptPrinterConnectionControllerTest {
         assertThat(sut.state.value).isEqualTo(FoundOne(PRINTER))
         assertThat(isDiscovering).isTrue()
     }
-
-    @Test
-    fun `given a printer is connected, when reading the connection, then it is connected with the printer name`() =
-        runTest {
-            // GIVEN
-            connectionStatus.value = ReceiptPrinterConnectionStatus.Connected(PRINTER)
-            val sut = createController()
-
-            // THEN
-            assertThat(sut.isConnected.first()).isTrue()
-            assertThat(sut.connectedPrinterName.first()).isEqualTo(PRINTER.name)
-        }
-
-    @Test
-    fun `given a printer is still connecting, when reading the connection, then it is not connected and has no name`() =
-        runTest {
-            // GIVEN
-            connectionStatus.value = ReceiptPrinterConnectionStatus.Connecting(PRINTER)
-            val sut = createController()
-
-            // THEN
-            assertThat(sut.isConnected.first()).isFalse()
-            assertThat(sut.connectedPrinterName.first()).isNull()
-        }
 
     private fun TestScope.createController() = WooPosReceiptPrinterConnectionController(
         receiptPrinterFacade = receiptPrinterFacade,
