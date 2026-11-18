@@ -132,9 +132,6 @@ private fun PermissionDeniedContent(
     }
 }
 
-/**
- * Keeps the external scanner option reachable when the camera can't be used.
- */
 @Composable
 private fun CameraPermissionDeniedPanel(
     title: String,

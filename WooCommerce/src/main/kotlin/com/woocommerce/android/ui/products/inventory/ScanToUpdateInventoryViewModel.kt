@@ -45,7 +45,6 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         savedState.getStateFlow(this, ScanToUpdateInventoryState.Idle, "productSearchState")
 
     init {
-        // Work in progress doesn't survive process death, so don't restore a state that waits for it.
         if (_viewState.value !is ViewState.QuickInventoryBottomSheetVisible) {
             _viewState.value = ViewState.QuickInventoryBottomSheetHidden
             scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle
