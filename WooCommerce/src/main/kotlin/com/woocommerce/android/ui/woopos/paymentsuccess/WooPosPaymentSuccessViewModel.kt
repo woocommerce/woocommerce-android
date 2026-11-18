@@ -9,6 +9,8 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButtonState
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptCoordinator
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptEvent
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailure
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailureAction
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -62,6 +64,9 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
                 when (event) {
                     WooPosPrintReceiptEvent.ShowPrinterSetup ->
                         _state.update { it.copy(isReceiptPrinterSetupDialogVisible = true) }
+
+                    is WooPosPrintReceiptEvent.PrintFailed ->
+                        _state.update { it.copy(printReceiptFailure = event.failure) }
                 }
             }
         }
@@ -135,6 +140,18 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
         printReceiptCoordinator.onPrinterSetupClosed(orderId)
     }
 
+    fun onPrintReceiptFailureDialogDismissed() {
+        _state.update { it.copy(printReceiptFailure = null) }
+    }
+
+    fun onPrintReceiptFailureActionSelected(action: WooPosPrintReceiptFailureAction) {
+        onPrintReceiptFailureDialogDismissed()
+        when (action) {
+            WooPosPrintReceiptFailureAction.Retry -> onPrintReceiptClicked()
+            WooPosPrintReceiptFailureAction.EmailReceipt -> onEmailReceiptClicked()
+        }
+    }
+
     private suspend fun emitNavigateBack() {
         when (source) {
             PaymentSuccessSource.CARD_CHECKOUT,
@@ -150,4 +167,5 @@ data class PaymentSuccessViewState(
     val orderTotalText: String,
     val receiptSentMessage: String?,
     val isReceiptPrinterSetupDialogVisible: Boolean = false,
+    val printReceiptFailure: WooPosPrintReceiptFailure? = null,
 )

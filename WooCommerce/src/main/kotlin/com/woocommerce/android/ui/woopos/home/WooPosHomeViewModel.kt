@@ -97,7 +97,8 @@ class WooPosHomeViewModel @Inject constructor(
                 )
             }
 
-            WooPosHomeUIEvent.DismissCardReaderConnectionDialog -> {
+            WooPosHomeUIEvent.DismissCardReaderConnectionDialog,
+            WooPosHomeUIEvent.DismissPrintReceiptFailureDialog -> {
                 _state.value = _state.value.copy(
                     dialogState = DialogState.Hidden
                 )
@@ -108,6 +109,11 @@ class WooPosHomeViewModel @Inject constructor(
                     dialogState = DialogState.Hidden
                 )
                 sendEventToChildren(ParentToChildrenEvent.ReceiptPrinterSetupDialogDismissed)
+            }
+
+            is WooPosHomeUIEvent.PrintReceiptFailureActionSelected -> {
+                _state.value = _state.value.copy(dialogState = DialogState.Hidden)
+                sendEventToChildren(ParentToChildrenEvent.PrintReceiptFailureActionSelected(event.action))
             }
 
             WooPosHomeUIEvent.OnPaymentCompletedViaCash -> onOrderSuccessfullyPaid(
@@ -298,6 +304,14 @@ class WooPosHomeViewModel @Inject constructor(
                         _state.value = _state.value.copy(
                             dialogState = DialogState.ReceiptPrinterSetupDialog
                         )
+                    }
+
+                    is ChildToParentEvent.ShowPrintReceiptFailureDialog -> {
+                        if (_state.value.screenPositionState is ScreenPositionState.Checkout.FullScreenTotals) {
+                            _state.value = _state.value.copy(
+                                dialogState = DialogState.PrintReceiptFailureDialog(event.failure)
+                            )
+                        }
                     }
 
                     is ChildToParentEvent.CustomAmountFormRequested -> {

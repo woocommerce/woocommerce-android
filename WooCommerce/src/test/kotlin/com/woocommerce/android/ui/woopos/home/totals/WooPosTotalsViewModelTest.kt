@@ -62,6 +62,8 @@ import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogI
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButtonState
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptCoordinator
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptEvent
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailure
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailureAction
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -1761,6 +1763,74 @@ class WooPosTotalsViewModelTest {
 
             // THEN
             verify(printReceiptCoordinator).onPrinterSetupClosed(CREATED_ORDER_ID)
+        }
+
+    @Test
+    fun `when the coordinator reports a failed print, then the parent is asked to show the failure dialog`() =
+        runTest {
+            // GIVEN
+            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+                on { events }.thenReturn(mock())
+            }
+            createViewModel(parentToChildrenEventReceiver = parentToChildrenEventReceiver)
+
+            // WHEN
+            printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(WooPosPrintReceiptFailure.PaperEmpty))
+
+            // THEN
+            verify(childrenToParentEventSender).sendToParent(
+                ChildToParentEvent.ShowPrintReceiptFailureDialog(WooPosPrintReceiptFailure.PaperEmpty)
+            )
+        }
+
+    @Test
+    fun `given an order was created, when retry is selected after a failed print, then the coordinator gets the order id`() =
+        runTest {
+            // GIVEN
+            val events = MutableStateFlow<ParentToChildrenEvent>(
+                ParentToChildrenEvent.CheckoutClicked(
+                    listOf(
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                    )
+                )
+            )
+            createViewModelAndSetupForSuccessfulOrderCreation(parentToChildrenEventFlow = events)
+
+            // WHEN
+            events.value = ParentToChildrenEvent.PrintReceiptFailureActionSelected(
+                WooPosPrintReceiptFailureAction.Retry
+            )
+
+            // THEN
+            verify(printReceiptCoordinator).onPrintReceiptClicked(CREATED_ORDER_ID)
+        }
+
+    @Test
+    fun `given an order was created, when email receipt is selected after a failed print, then email receipt opens for the order`() =
+        runTest {
+            // GIVEN
+            val events = MutableStateFlow<ParentToChildrenEvent>(
+                ParentToChildrenEvent.CheckoutClicked(
+                    listOf(
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                    )
+                )
+            )
+            createViewModelAndSetupForSuccessfulOrderCreation(parentToChildrenEventFlow = events)
+
+            // WHEN
+            events.value = ParentToChildrenEvent.PrintReceiptFailureActionSelected(
+                WooPosPrintReceiptFailureAction.EmailReceipt
+            )
+
+            // THEN
+            verify(childrenToParentEventSender)
+                .sendToParent(ChildToParentEvent.NavigationEvent.ToEmailReceipt(CREATED_ORDER_ID))
+            verify(printReceiptCoordinator, never()).onPrintReceiptClicked(any())
         }
 
     @Test

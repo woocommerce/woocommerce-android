@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogI
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButtonState
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptCoordinator
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptEvent
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailureAction
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.FeatureFlag
@@ -334,6 +335,11 @@ class WooPosTotalsViewModel @Inject constructor(
                 when (event) {
                     WooPosPrintReceiptEvent.ShowPrinterSetup ->
                         childrenToParentEventSender.sendToParent(ChildToParentEvent.ShowReceiptPrinterSetupDialog)
+
+                    is WooPosPrintReceiptEvent.PrintFailed ->
+                        childrenToParentEventSender.sendToParent(
+                            ChildToParentEvent.ShowPrintReceiptFailureDialog(event.failure)
+                        )
                 }
             }
         }
@@ -811,6 +817,13 @@ class WooPosTotalsViewModel @Inject constructor(
 
                     ParentToChildrenEvent.ReceiptPrinterSetupDialogDismissed ->
                         printReceiptCoordinator.onPrinterSetupClosed(dataState.value.orderId)
+
+                    is ParentToChildrenEvent.PrintReceiptFailureActionSelected -> when (event.action) {
+                        WooPosPrintReceiptFailureAction.Retry ->
+                            printReceiptCoordinator.onPrintReceiptClicked(dataState.value.orderId)
+
+                        WooPosPrintReceiptFailureAction.EmailReceipt -> handleEmailReceiptClicked()
+                    }
 
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     is ParentToChildrenEvent.ItemClickedInItemsList,

@@ -54,7 +54,10 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
                     delay(SUCCESS_DURATION)
                 }
 
-                is ReceiptPrinterResult.Failure -> logger.e("Printing the receipt failed: ${result.error}")
+                is ReceiptPrinterResult.Failure -> {
+                    logger.e("Printing the receipt failed: ${result.error}")
+                    _events.tryEmit(WooPosPrintReceiptEvent.PrintFailed(WooPosPrintReceiptFailure.from(result.error)))
+                }
             }
             _buttonState.value = WooPosPrintReceiptButtonState.Idle
         }
@@ -77,4 +80,5 @@ enum class WooPosPrintReceiptButtonState { Hidden, Idle, Loading, Success }
 
 sealed interface WooPosPrintReceiptEvent {
     data object ShowPrinterSetup : WooPosPrintReceiptEvent
+    data class PrintFailed(val failure: WooPosPrintReceiptFailure) : WooPosPrintReceiptEvent
 }

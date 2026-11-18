@@ -212,7 +212,7 @@ class WooPosPrintReceiptCoordinatorTest {
         }
 
     @Test
-    fun `given a printer is connected, when printing fails, then the failure is logged and the button is idle`() =
+    fun `given a printer is connected, when printing fails, then the failure is reported and the button is idle`() =
         runTest {
             // GIVEN
             connectPrinter()
@@ -220,13 +220,63 @@ class WooPosPrintReceiptCoordinatorTest {
                 .thenReturn(ReceiptPrinterResult.Failure(ReceiptPrinterError.PaperEmpty))
             val sut = createCoordinator()
 
+            sut.events.test {
+                // WHEN
+                sut.onPrintReceiptClicked(ORDER_ID)
+                runCurrent()
+
+                // THEN
+                assertThat(awaitItem())
+                    .isEqualTo(WooPosPrintReceiptEvent.PrintFailed(WooPosPrintReceiptFailure.PaperEmpty))
+                verify(logger).e("Printing the receipt failed: PaperEmpty")
+                assertThat(sut.buttonState.value).isEqualTo(Idle)
+            }
+        }
+
+    @Test
+    fun `given printing failed and the printer is still connected, when print receipt is clicked, then it is printed again`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID))
+                .thenReturn(ReceiptPrinterResult.Failure(ReceiptPrinterError.PaperEmpty))
+            val sut = createCoordinator()
+            sut.onPrintReceiptClicked(ORDER_ID)
+            runCurrent()
+
             // WHEN
             sut.onPrintReceiptClicked(ORDER_ID)
             runCurrent()
 
             // THEN
-            verify(logger).e("Printing the receipt failed: PaperEmpty")
-            assertThat(sut.buttonState.value).isEqualTo(Idle)
+            verify(receiptPrinterFacade, times(2)).printReceipt(ORDER_ID)
+        }
+
+    @Test
+    fun `given printing failed because the connection was lost, when print receipt is clicked, then setup is requested`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).doSuspendableAnswer {
+                connectionStatus.value = ReceiptPrinterConnectionStatus.Disconnected
+                ReceiptPrinterResult.Failure(ReceiptPrinterError.ConnectionLost())
+            }
+            val sut = createCoordinator()
+
+            sut.events.test {
+                sut.onPrintReceiptClicked(ORDER_ID)
+                runCurrent()
+                assertThat(awaitItem())
+                    .isEqualTo(WooPosPrintReceiptEvent.PrintFailed(WooPosPrintReceiptFailure.PrinterOffline))
+
+                // WHEN
+                sut.onPrintReceiptClicked(ORDER_ID)
+                runCurrent()
+
+                // THEN
+                assertThat(awaitItem()).isEqualTo(WooPosPrintReceiptEvent.ShowPrinterSetup)
+                verify(receiptPrinterFacade, times(1)).printReceipt(ORDER_ID)
+            }
         }
 
     private fun connectPrinter() {

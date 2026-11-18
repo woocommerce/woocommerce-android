@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.paymentsuccess
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
@@ -10,11 +11,14 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButtonState
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptCoordinator
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptEvent
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailure
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailureAction
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
@@ -24,6 +28,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
@@ -235,5 +240,82 @@ class WooPosPaymentSuccessViewModelTest {
             // THEN
             assertThat(viewModel.state.value.isReceiptPrinterSetupDialogVisible).isFalse()
             verify(printReceiptCoordinator).onPrinterSetupClosed(42L)
+        }
+
+    @Test
+    fun `when the coordinator reports a failed print, then the failure is shown`() = runTest {
+        // GIVEN
+        whenever(resourceProvider.getString(any())).thenReturn("test")
+        val viewModel = createViewModel()
+
+        // WHEN
+        printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(WooPosPrintReceiptFailure.CoverOpen))
+
+        // THEN
+        assertThat(viewModel.state.value.printReceiptFailure).isEqualTo(WooPosPrintReceiptFailure.CoverOpen)
+    }
+
+    @Test
+    fun `given the screen was left, when the coordinator reports a failed print, then the failure is not shown`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(any())).thenReturn("test")
+            val viewModel = createViewModel()
+            viewModel.viewModelScope.cancel()
+
+            // WHEN
+            printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(WooPosPrintReceiptFailure.CoverOpen))
+
+            // THEN
+            assertThat(viewModel.state.value.printReceiptFailure).isNull()
+        }
+
+    @Test
+    fun `given a print failure is shown, when it is dismissed, then it is hidden and nothing is printed`() = runTest {
+        // GIVEN
+        whenever(resourceProvider.getString(any())).thenReturn("test")
+        val viewModel = createViewModel()
+        printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(WooPosPrintReceiptFailure.CoverOpen))
+
+        // WHEN
+        viewModel.onPrintReceiptFailureDialogDismissed()
+
+        // THEN
+        assertThat(viewModel.state.value.printReceiptFailure).isNull()
+        verify(printReceiptCoordinator, never()).onPrintReceiptClicked(any())
+    }
+
+    @Test
+    fun `given a print failure is shown, when retry is selected, then it is hidden and the coordinator gets the order id`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(any())).thenReturn("test")
+            val viewModel = createViewModel(orderId = 42L)
+            printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(WooPosPrintReceiptFailure.CoverOpen))
+
+            // WHEN
+            viewModel.onPrintReceiptFailureActionSelected(WooPosPrintReceiptFailureAction.Retry)
+
+            // THEN
+            assertThat(viewModel.state.value.printReceiptFailure).isNull()
+            verify(printReceiptCoordinator).onPrintReceiptClicked(42L)
+        }
+
+    @Test
+    fun `given a print failure is shown, when email receipt is selected, then it is hidden and email receipt opens`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(any())).thenReturn("test")
+            val viewModel = createViewModel(orderId = 42L)
+            printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(WooPosPrintReceiptFailure.CoverOpen))
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onPrintReceiptFailureActionSelected(WooPosPrintReceiptFailureAction.EmailReceipt)
+
+                // THEN
+                assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.OpenEmailReceipt(42L))
+                assertThat(viewModel.state.value.printReceiptFailure).isNull()
+            }
         }
 }

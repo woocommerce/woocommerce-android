@@ -145,6 +145,7 @@ class WooPosItemsViewModel @Inject constructor(
                     is ParentToChildrenEvent.RemoveProductsClicked,
                     is ParentToChildrenEvent.ProductsRemoved,
                     ParentToChildrenEvent.ReceiptPrinterSetupDialogDismissed,
+                    is ParentToChildrenEvent.PrintReceiptFailureActionSelected,
                     is ParentToChildrenEvent.CustomAmountSubmitted -> Unit
 
                     ParentToChildrenEvent.RefreshProductList,

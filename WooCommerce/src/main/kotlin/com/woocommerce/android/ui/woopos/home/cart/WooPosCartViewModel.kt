@@ -244,6 +244,7 @@ class WooPosCartViewModel @Inject constructor(
                     ParentToChildrenEvent.RefreshProductList,
                     is ParentToChildrenEvent.CouponsRemoved,
                     ParentToChildrenEvent.ReceiptPrinterSetupDialogDismissed,
+                    is ParentToChildrenEvent.PrintReceiptFailureActionSelected,
                     is ParentToChildrenEvent.SettingsEvent -> Unit
 
                     is ParentToChildrenEvent.CouponsValidationFailed -> {
