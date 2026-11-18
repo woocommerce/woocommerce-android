@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.receiptprinting
 
-import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.Labels
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.LabeledText
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.Row
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -11,7 +11,7 @@ class WooPosThermalReceiptRendererTest {
     @Test
     fun `given a card payment, when rendering, then the receipt has every section and the payment method`() {
         // WHEN
-        val text = sut.render(FULL_RECEIPT, LABELS)
+        val text = sut.render(FULL_RECEIPT)
 
         // THEN
         assertThat(text).isEqualTo(
@@ -49,7 +49,7 @@ class WooPosThermalReceiptRendererTest {
     @Test
     fun `given a cash payment, when rendering, then the receipt has no payment method`() {
         // WHEN
-        val text = sut.render(FULL_RECEIPT.copy(paymentMethod = null), LABELS)
+        val text = sut.render(FULL_RECEIPT.copy(paymentMethod = null))
 
         // THEN
         assertThat(text).isEqualTo(
@@ -92,7 +92,7 @@ class WooPosThermalReceiptRendererTest {
         )
 
         // WHEN
-        val text = sut.render(receipt, LABELS)
+        val text = sut.render(receipt)
 
         // THEN
         assertThat(text).isEqualTo(
@@ -123,7 +123,7 @@ class WooPosThermalReceiptRendererTest {
         }
 
         // WHEN
-        val texts = receipts.map { sut.render(it, LABELS) }
+        val texts = receipts.map { sut.render(it) }
 
         // THEN
         assertThat(texts.distinct()).hasSize(1)
@@ -143,7 +143,7 @@ class WooPosThermalReceiptRendererTest {
         )
 
         // WHEN
-        val text = sut.render(receipt, LABELS)
+        val text = sut.render(receipt)
 
         // THEN
         assertThat(text).isEqualTo(
@@ -169,10 +169,10 @@ class WooPosThermalReceiptRendererTest {
     @Test
     fun `given a word longer than 48 characters, when rendering, then the word is split across lines`() {
         // GIVEN
-        val receipt = MINIMAL_RECEIPT.copy(orderNote = "Code ${"0123456789".repeat(10)} thanks")
+        val receipt = MINIMAL_RECEIPT.copy(orderNote = note("Code ${"0123456789".repeat(10)} thanks"))
 
         // WHEN
-        val text = sut.render(receipt, LABELS)
+        val text = sut.render(receipt)
 
         // THEN
         assertThat(text).endsWith(
@@ -194,7 +194,7 @@ class WooPosThermalReceiptRendererTest {
         )
 
         // WHEN
-        val text = sut.render(receipt, LABELS)
+        val text = sut.render(receipt)
 
         // THEN
         assertThat(text).startsWith(
@@ -215,7 +215,7 @@ class WooPosThermalReceiptRendererTest {
         )
 
         // WHEN
-        val text = sut.render(MINIMAL_RECEIPT.copy(totals = totals), LABELS)
+        val text = sut.render(MINIMAL_RECEIPT.copy(totals = totals))
 
         // THEN
         assertThat(text).endsWith(
@@ -237,7 +237,7 @@ class WooPosThermalReceiptRendererTest {
         )
 
         // WHEN
-        val text = sut.render(MINIMAL_RECEIPT.copy(totals = totals), LABELS)
+        val text = sut.render(MINIMAL_RECEIPT.copy(totals = totals))
 
         // THEN
         assertThat(text).endsWith(
@@ -254,10 +254,10 @@ class WooPosThermalReceiptRendererTest {
     fun `given a split that would fall inside an emoji, when rendering, then the emoji moves to the next line`() {
         // GIVEN
         val emoji = "\uD83D\uDE00"
-        val receipt = MINIMAL_RECEIPT.copy(orderNote = "a".repeat(47) + emoji)
+        val receipt = MINIMAL_RECEIPT.copy(orderNote = note("a".repeat(47) + emoji))
 
         // WHEN
-        val text = sut.render(receipt, LABELS)
+        val text = sut.render(receipt)
 
         // THEN
         assertThat(text).endsWith("Notes\n${"a".repeat(47)}\n$emoji\n")
@@ -274,7 +274,7 @@ class WooPosThermalReceiptRendererTest {
         )
 
         // WHEN
-        val text = sut.render(receipt, LABELS)
+        val text = sut.render(receipt)
 
         // THEN
         assertThat(text).contains(
@@ -289,17 +289,17 @@ class WooPosThermalReceiptRendererTest {
         // GIVEN
         val receipt = MINIMAL_RECEIPT.copy(
             storeName = " ",
-            datePaid = "",
+            datePaid = LabeledText(label = "Date Paid", text = ""),
             orderNumber = "",
             lineItems = emptyList(),
-            paymentMethod = " ",
+            paymentMethod = LabeledText(label = "Payment Method", text = " "),
             totals = listOf(Row(label = "Subtotal", amount = ""), Row(label = "Amount Paid", amount = "")),
-            orderNote = "\n",
+            orderNote = note("\n"),
             refundPolicy = "\t",
         )
 
         // WHEN
-        val text = sut.render(receipt, LABELS)
+        val text = sut.render(receipt)
 
         // THEN
         assertThat(text).isEqualTo("Subtotal\nAmount Paid\n")
@@ -311,7 +311,7 @@ class WooPosThermalReceiptRendererTest {
         val receipt = MINIMAL_RECEIPT.copy(storeName = "", lineItems = emptyList())
 
         // WHEN
-        val text = sut.render(receipt, LABELS)
+        val text = sut.render(receipt)
 
         // THEN
         assertThat(text).isEqualTo(
@@ -335,32 +335,31 @@ class WooPosThermalReceiptRendererTest {
             storeAddress = "$wide\r\n$wide",
             storePhone = wide,
             storeEmail = wide,
-            datePaid = wide,
+            datePaid = LabeledText(label = wide, text = wide),
             orderNumber = wide,
-            paymentMethod = wide,
+            paymentMethod = LabeledText(label = wide, text = wide),
             lineItems = listOf(Row(label = wide, amount = wide)),
             totals = listOf(Row(label = wide, amount = wide)),
-            orderNote = wide,
+            orderNote = LabeledText(label = wide, text = wide),
             refundPolicy = wide,
         )
-        val labels = Labels(datePaid = wide, paymentMethod = wide, notes = wide)
 
         // WHEN
-        val text = sut.render(receipt, labels)
+        val text = sut.render(receipt)
 
         // THEN
         assertThat(text.lines().maxOf { it.length }).isEqualTo(48)
     }
 
     private companion object {
-        val LABELS = Labels(datePaid = "Date Paid", paymentMethod = "Payment Method", notes = "Notes")
+        fun note(text: String) = LabeledText(label = "Notes", text = text)
 
         val MINIMAL_RECEIPT = WooPosThermalReceipt(
             storeName = "Everyday Pay",
             storeAddress = null,
             storePhone = null,
             storeEmail = null,
-            datePaid = "Nov 12, 2026, 2:30 PM",
+            datePaid = LabeledText(label = "Date Paid", text = "Nov 12, 2026, 2:30 PM"),
             orderNumber = "Order #1042",
             paymentMethod = null,
             lineItems = listOf(Row(label = "Coffee Mug x1", amount = "$12.00")),
@@ -373,7 +372,7 @@ class WooPosThermalReceiptRendererTest {
             storeAddress = "12345 Example Street S",
             storePhone = "05555 465 5556",
             storeEmail = "shop@everyday-pay.example",
-            paymentMethod = "Visa - 4242",
+            paymentMethod = LabeledText(label = "Payment Method", text = "Visa - 4242"),
             lineItems = listOf(
                 Row(label = "T-Shirt. Color Blue, Size M x2", amount = "$50.00"),
                 Row(label = "Coffee Mug x1", amount = "$12.00"),
@@ -386,7 +385,7 @@ class WooPosThermalReceiptRendererTest {
                 Row(label = "Taxes", amount = "$4.94"),
                 Row(label = "Amount Paid", amount = "$66.74"),
             ),
-            orderNote = "Thanks for shopping with us!",
+            orderNote = note("Thanks for shopping with us!"),
             refundPolicy = "Returns accepted within 30 days with the original receipt.",
         )
     }

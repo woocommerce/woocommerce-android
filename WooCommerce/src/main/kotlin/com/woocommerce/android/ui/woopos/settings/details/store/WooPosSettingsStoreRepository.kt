@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.settings.details.store
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.settings.Settings
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -11,9 +12,10 @@ class WooPosSettingsStoreRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) {
-    suspend fun getStoreInfo(): WooPosSettingsStoreState.StoreInfo =
+    suspend fun getStoreInfo(): WooPosSettingsStoreState.StoreInfo = getStoreInfo(selectedSite.get())
+
+    suspend fun getStoreInfo(site: SiteModel): WooPosSettingsStoreState.StoreInfo =
         withContext(Dispatchers.IO) {
-            val site = selectedSite.get()
             val settings = wooCommerceStore.getSiteSettings(site)
             val storeAddress = buildStoreAddress(settings)
 

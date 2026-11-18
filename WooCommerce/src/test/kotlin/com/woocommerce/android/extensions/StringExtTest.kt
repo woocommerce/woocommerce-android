@@ -54,4 +54,54 @@ class StringExtTest {
         // Then
         assertThat(result).isEqualTo("888.2 PB")
     }
+
+    @Test
+    fun `given html, when stripHtml called, then tags are removed, entities decoded and paragraphs kept as lines`() {
+        // Given
+        val inputs = mapOf(
+            "Plain text" to "Plain text",
+            "<b>Bold</b> &amp; <i>italic</i>" to "Bold & italic",
+            "<p>First</p><p>Second</p>" to "\nFirst\nSecond",
+            "First<br/>Second" to "First\nSecond",
+            "" to "",
+        )
+
+        // When & then
+        inputs.forEach { (input, expected) ->
+            assertThat(input.stripHtml()).isEqualTo(expected)
+        }
+    }
+
+    @Test
+    fun `given only tags, when stripHtml called, then returns an empty string`() {
+        // Given
+        val inputs = listOf("<p></p>", "<img src=\"a.png\" />", "<div><span></span></div>")
+
+        // When & then
+        inputs.forEach { input ->
+            assertThat(input.stripHtml()).isEmpty()
+        }
+    }
+
+    @Test
+    fun `given only tags, when fastStripHtml called, then returns the input`() {
+        // Given
+        val inputs = listOf("<p></p>", "<img src=\"a.png\" />", "<div><span></span></div>")
+
+        // When & then
+        inputs.forEach { input ->
+            assertThat(input.fastStripHtml()).isEqualTo(input)
+        }
+    }
+
+    @Test
+    fun `given text with tags, when fastStripHtml called, then returns the same as stripHtml`() {
+        // Given
+        val inputs = listOf("Plain text", "<b>Bold</b> &amp; <i>italic</i>", "<p>First</p><p>Second</p>", "A<br>B", "")
+
+        // When & then
+        inputs.forEach { input ->
+            assertThat(input.fastStripHtml()).isEqualTo(input.stripHtml())
+        }
+    }
 }
