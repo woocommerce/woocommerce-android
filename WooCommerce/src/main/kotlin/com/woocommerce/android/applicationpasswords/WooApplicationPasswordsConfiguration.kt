@@ -2,6 +2,7 @@ package com.woocommerce.android.applicationpasswords
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.DeviceInfo
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -11,12 +12,13 @@ import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.Appli
 class WooApplicationPasswordsConfiguration @Inject constructor(
     private val appPrefs: AppPrefsWrapper,
     private val featureFlagRepository: FeatureFlagRepository,
+    private val buildConfigWrapper: BuildConfigWrapper,
 ) : ApplicationPasswordsConfiguration {
     override val applicationName: String =
         "${BuildConfig.APPLICATION_ID}.app-client.${DeviceInfo.name.toApplicationPasswordSafeDeviceName()}"
 
     override suspend fun isEnabledForJetpackAccess(): Boolean {
-        if (!appPrefs.jetpackAppPasswordsEnabled) return false
+        if (buildConfigWrapper.isSupportSession || !appPrefs.jetpackAppPasswordsEnabled) return false
 
         featureFlagRepository.awaitRemoteFlagsLoaded()
         return featureFlagRepository.isEnabled(FeatureFlag.APP_PASSWORDS_FOR_JETPACK_SITES)

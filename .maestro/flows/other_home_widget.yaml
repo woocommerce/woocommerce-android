@@ -43,6 +43,22 @@ tags:
     text: "WooCommerce Stats Today"
     label: "Add the Today stats widget"
 
+# The Pixel Launcher on Android 16 and later shows an Add button under the tapped
+# preview instead of adding the widget right away.
+- extendedWaitUntil:
+    visible:
+      id: "widget_add_button"
+    timeout: 5000
+    optional: true
+- runFlow:
+    when:
+      visible:
+        id: "widget_add_button"
+    commands:
+      - tapOn:
+          id: "widget_add_button"
+          label: "Confirm adding the widget"
+
 - extendedWaitUntil:
     visible:
       id: "com.woocommerce.android:id/widget_title"

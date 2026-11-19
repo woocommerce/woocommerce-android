@@ -5,6 +5,10 @@
 26.2
 -----
 - [**] Order refunds: on stores with WooCommerce 11.1 or newer, the refund amount now comes from the store, so it matches what the store refunds [https://github.com/woocommerce/woocommerce-android/pull/16863]
+- [*] Orders: the list no longer jumps away from where you scrolled when a new order arrives [https://github.com/woocommerce/woocommerce-android/pull/16868]
+- [Internal] The excerpt logged for a store's error page is now built off the main thread [https://github.com/woocommerce/woocommerce-android/pull/16836]
+- [*] [POS] The tablet now lists a phone as a card reader when the two devices are logged in to the same store in different ways [https://github.com/woocommerce/woocommerce-android/pull/16829]
+- [Internal] Support session debug builds no longer create application passwords on Jetpack stores [https://github.com/woocommerce/woocommerce-android/pull/16848]
 
 26.1
 -----
@@ -27,6 +31,7 @@
 
 26.0
 -----
+- [*] Fixed the app freezing when a store returns a large error page [https://github.com/woocommerce/woocommerce-android/pull/16826]
 - [*] You can now use a Bluetooth or USB barcode scanner on the Orders and Products screens [https://github.com/woocommerce/woocommerce-android/pull/16756]
 - [*] Shipping labels: carrier outage notices from WooCommerce Shipping now show on the label creation screen, and a purchase that fails during an outage explains the incident instead of showing a generic error [https://github.com/woocommerce/woocommerce-android/pull/16778]
 - [*] The gaps between sections on product details are no longer pure black in dark mode [https://github.com/woocommerce/woocommerce-android/pull/16781]

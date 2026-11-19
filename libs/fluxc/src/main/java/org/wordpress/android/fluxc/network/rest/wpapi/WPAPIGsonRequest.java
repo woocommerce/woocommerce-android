@@ -4,6 +4,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Response;
 import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 
 import org.json.JSONException;
@@ -29,6 +30,7 @@ import kotlin.jvm.functions.Function1;
 
 public class WPAPIGsonRequest<T> extends GsonRequest<T> {
     @Nullable private Function1<T, Boolean> mReadableBodyCheck;
+    @Nullable private UnexpectedStoreResponse mUnexpectedStoreResponse;
 
     public WPAPIGsonRequest(int method, String url, Map<String, String> params, Map<String, Object> body,
                             Class<T> clazz, Listener<T> listener, OnWPAPIErrorListener errorListener) {
@@ -86,6 +88,18 @@ public class WPAPIGsonRequest<T> extends GsonRequest<T> {
         return data == null || !mReadableBodyCheck.invoke(data);
     }
 
+    /**
+     * Volley calls this on the network thread, so the excerpt is built before the error reaches the main thread.
+     */
+    @Override
+    @NonNull
+    protected VolleyError parseNetworkError(@NonNull VolleyError volleyError) {
+        NetworkResponse response = volleyError.networkResponse;
+        mUnexpectedStoreResponse =
+                response != null ? UnexpectedStoreResponse.from(response, getMethod(), getUrl()) : null;
+        return super.parseNetworkError(volleyError);
+    }
+
     @Override
     public BaseNetworkError deliverBaseNetworkError(@NonNull BaseNetworkError error) {
         String errorCode = null;
@@ -95,8 +109,7 @@ public class WPAPIGsonRequest<T> extends GsonRequest<T> {
                     ((UnexpectedStoreResponseParseError) error.volleyError).getUnexpectedStoreResponse();
         }
         if (error.hasVolleyError() && error.volleyError.networkResponse != null) {
-            error.unexpectedStoreResponse =
-                    UnexpectedStoreResponse.from(error.volleyError.networkResponse, getMethod(), getUrl());
+            error.unexpectedStoreResponse = mUnexpectedStoreResponse;
             String jsonString;
             try {
                 jsonString = new String(error.volleyError.networkResponse.data,

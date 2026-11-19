@@ -85,6 +85,24 @@ class UnexpectedStoreResponseExcerptTest {
     }
 
     @Test
+    fun `given a less-than sign that starts no tag, when the excerpt is built, then it stays in the text`() {
+        val body = "<p>Price < 10 and <5 items</p>"
+
+        val excerpt = UnexpectedStoreResponseExcerpt.from(body)
+
+        assertThat(excerpt).isEqualTo("Price < 10 and <5 items")
+    }
+
+    @Test
+    fun `given a less-than sign before a hidden element, when the excerpt is built, then the element is left out`() {
+        val body = "<p>Price < 10</p><DIV-box hidden>private-secret</DIV-box><p>Shown</p>"
+
+        val excerpt = UnexpectedStoreResponseExcerpt.from(body)
+
+        assertThat(excerpt).isEqualTo("Price < 10 Shown")
+    }
+
+    @Test
     fun `given a tag that is never closed, when the excerpt is built, then the rest of the page is left out`() {
         val body = "<p>Blocked</p><input value=\"abc123"
 

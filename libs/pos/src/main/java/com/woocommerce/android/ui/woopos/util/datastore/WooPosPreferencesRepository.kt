@@ -56,6 +56,20 @@ class WooPosPreferencesRepository @Inject constructor(
             preferences[isPaymentSuccessSoundEnabledKey] ?: true
         }
 
+    suspend fun getCustomAmountLastTaxable(): Boolean {
+        val siteId = selectedSite.getOrNull()?.id ?: return false
+        val key = booleanPreferencesKey("${siteId}_v2_$CUSTOM_AMOUNT_LAST_TAXABLE_KEY")
+        return dataStore.data.first()[key] ?: false
+    }
+
+    suspend fun setCustomAmountLastTaxable(isTaxable: Boolean) {
+        val siteId = selectedSite.getOrNull()?.id ?: return
+        val key = booleanPreferencesKey("${siteId}_v2_$CUSTOM_AMOUNT_LAST_TAXABLE_KEY")
+        dataStore.edit { preferences ->
+            preferences[key] = isTaxable
+        }
+    }
+
     suspend fun addRecentProductSearch(search: String) {
         dataStore.edit { preferences ->
             val currentSearches = preferences[recentProductSearchesSiteSpecificKey]?.let {
@@ -143,6 +157,7 @@ class WooPosPreferencesRepository @Inject constructor(
         stringPreferencesKey("${selectedSite.getOrNull()?.id}_v2_$key")
 
     private companion object {
+        const val CUSTOM_AMOUNT_LAST_TAXABLE_KEY = "custom_amount_last_taxable_key"
         const val RECENT_PRODUCT_SEARCHES_KEY = "recent_product_searches_key"
         const val RECENT_COUPON_SEARCHES_KEY = "recent_coupon_searches_key"
         const val POS_WAS_OPENED_ONCE_KEY = "pos_was_opened_once_key"

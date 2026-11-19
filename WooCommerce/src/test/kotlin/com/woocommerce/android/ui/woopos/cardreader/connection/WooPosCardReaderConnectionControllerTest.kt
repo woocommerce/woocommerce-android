@@ -270,5 +270,6 @@ class WooPosCardReaderConnectionControllerTest {
         port = port,
         fingerprintBase64 = fingerprintBase64,
         siteHash = "site-hash",
+        siteUrlHash = null,
     )
 }

@@ -24,14 +24,18 @@ fun WooPosCustomAmountScreen(
 
     // The view model is scoped to this route's back stack entry, so each opening gets a fresh one. It must not be
     // reset on dispose: rotation recreates the activity and would otherwise wipe the merchant's input and step.
+    var initialized by remember(viewModel, mode) { mutableStateOf(false) }
     LaunchedEffect(mode) {
         viewModel.initializeFor(mode)
+        initialized = true
     }
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(state.isSubmitted, state.isClosed) {
         if (state.isSubmitted || state.isClosed) close()
     }
+
+    if (!initialized) return
 
     when (state.screen) {
         WooPosCustomAmountFormState.Screen.AMOUNT -> {

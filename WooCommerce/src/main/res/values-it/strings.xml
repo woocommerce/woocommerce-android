@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-19 14:55:32+0000
+Translation-Revision-Date: 2026-11-03 10:55:34+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_service_status_severity_info">Informazioni</string>
+    <string name="woo_shipping_labels_service_status_severity_warning">Attenzione</string>
+    <string name="woo_shipping_labels_service_status_severity_error">Errore</string>
+    <string name="woo_shipping_labels_service_status_dismiss">Ignora avviso: %1$s</string>
+    <string name="woo_shipping_labels_service_status_view_status_page">Visualizza pagina stato</string>
+    <string name="woo_shipping_labels_purchase_service_status_error">Impossibile acquistare l\'etichetta di spedizione a causa di un problema con il servizio del corriere: %1$s</string>
+    <string name="woopos_remote_ttp_explainer_local_network_body">Consenti l\'accesso alla rete locale in modo che POS possa trovare il tuo telefono sulla stessa rete Wi-Fi.</string>
+    <string name="woopos_remote_ttp_explainer_local_network_heading">Consenti a POS di trovare il tuo telefono</string>
+    <string name="woopos_remote_ttp_explainer_allow_local_network">Consenti l\'accesso alla rete locale</string>
+    <string name="woopos_remote_reader_failed_insecure_environment">Tocca per pagare è stato bloccato sul telefono per motivi di sicurezza. Sul telefono, verifica che i servizi di accessibilità e la registrazione dello schermo siano disattivati.</string>
+    <string name="login_text_backup_code">Usa un codice di backup</string>
+    <string name="support_request_ai_chat_transcript_disclosure">Con questa richiesta sarà inclusa anche la trascrizione della chat di supporto con l\'IA.</string>
+    <string name="enter_verification_code_backup">Inserisci un codice di backup per continuare.</string>
+    <string name="enter_verification_code_email">Controlla la tua e-mail per trovare il codice di verifica inviato da WordPress.com, quindi inseriscilo per continuare.</string>
+    <string name="enter_verification_code_authenticator">Inserisci il codice di verifica dalla tua app di autenticazione.</string>
+    <string name="ai_support_chat_escalation_consent_message_v2">Entrambe le opzioni includono la trascrizione di questa chat. Invia la richiesta ora o apri il modulo di contatto per aggiungere prima ulteriori dettagli.</string>
+    <string name="ai_support_chat_login_unexpected_response_message">Non riesco ad accedere al mio negozio. L\'app dice che il mio negozio ha restituito una risposta inattesa. Come posso risolvere questo problema?</string>
+    <string name="card_reader_payment_failed_insecure_environment">Tocca per pagare è stato bloccato per motivi di sicurezza. Verifica che i servizi di accessibilità e la registrazione dello schermo siano disattivati.</string>
+    <string name="barcode_scanning_hardware_scanner_no_enter_suffix">Scansione non terminata. Imposta lo scanner in modo da inviare il tasto Invio dopo ogni codice a barre.</string>
+    <string name="customer_list_enable_analytics_error">Impossibile attivare WooCommerce Analytics. Riprova.</string>
+    <string name="customer_list_enable_analytics_confirmation_action">Attiva</string>
+    <string name="customer_list_enable_analytics_confirmation_message">Questo modifica un\'impostazione per l\'intero negozio. Rimane attiva finché qualcuno non la disattiva in WooCommerce › Impostazioni › Avanzate › Funzionalità. I clienti risalenti al periodo in cui Analytics era disattivato potrebbero essere visualizzati solo dopo aver importato i dati storici in WooCommerce › Analytics › Impostazioni.</string>
+    <string name="customer_list_enable_analytics_confirmation_title">Attivare WooCommerce Analytics?</string>
+    <string name="customer_list_enable_analytics">Attiva Analytics</string>
+    <string name="customer_list_analytics_unavailable_message">Gli elenchi dei clienti richiedono WooCommerce Analytics, che al momento non è disponibile per questo negozio. Chiedi a un amministratore del negozio di verificare che sia attivato.</string>
+    <string name="customer_list_analytics_permission_denied_message">Gli elenchi dei clienti richiedono WooCommerce Analytics, che non è disponibile per questo negozio. Chiedi a un amministratore del negozio di attivarlo in WooCommerce › Impostazioni › Avanzate › Funzionalità.</string>
+    <string name="customer_list_analytics_disabled_message">Gli elenchi dei clienti richiedono WooCommerce Analytics, che è disattivato per questo negozio. Puoi attivarlo qui oppure nell\'amministrazione del negozio in WooCommerce › Impostazioni › Avanzate › Funzionalità, quindi tocca Riprova.</string>
+    <string name="customer_list_analytics_unavailable_title">Impossibile caricare i clienti</string>
+    <string name="login_unexpected_response_message">Il tuo negozio ha restituito una risposta inattesa, quindi non è stato possibile completare l\'accesso. Riprova o contatta il supporto per ricevere assistenza.</string>
+    <string name="login_unexpected_response_title">Impossibile accedere</string>
     <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s richiede un numero di telefono del destinatario.</string>
     <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">Deve contenere al massimo %1$s caratteri.</string>
     <string name="woo_shipping_labels_customs_product_details_gtin_required">Inserisci il GTIN/EAN o seleziona \"Nessun codice a barre\"</string>
@@ -354,7 +384,6 @@ Language: it
     <string name="ai_support_chat_support_request_subject_mobile_app">Richiesta di supporto per app mobili</string>
     <string name="ai_support_chat_escalation_consent_contact_form">Modulo di contatto</string>
     <string name="ai_support_chat_escalation_consent_send_request">Invia la richiesta</string>
-    <string name="ai_support_chat_escalation_consent_message">Possiamo creare una richiesta di supporto usando questa trascrizione della chat, oppure puoi aprire il modulo di contatto e inserire tu stesso i dettagli.</string>
     <string name="ai_support_chat_escalation_transcript_header">Di seguito è riportata la trascrizione di una sessione di chat di supporto AI in-app:</string>
     <string name="ai_support_chat_escalation_consent_title">Inviare questa chat al supporto?</string>
     <string name="ai_support_chat_mark_resolved_confirmation_message">In questo modo verranno chiuse le azioni della chat per questa conversazione.</string>
@@ -3273,7 +3302,6 @@ Language: it
     <string name="empty_order_list_message">Scopri come puoi aumentare le vendite del tuo negozio.</string>
     <string name="empty_product_message">Inizia a vendere oggi aggiungendo il tuo primo prodotto al negozio.</string>
     <string name="empty_product_add_product_button">Aggiungi prodotto</string>
-    <string name="variable_product_attributes">Attributi della variante</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Attiva il Bluetooth del dispositivo mobile</string>
     <string name="card_reader_payment_receipt_email_subject">La tua ricevuta da %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Aggiornamento dell\'ordine</string>
@@ -3707,7 +3735,6 @@ Language: it
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_refund_title">Rimborso dell\'etichetta %1$s richiesto</string>
     <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
-    <string name="product_variation_options">%1$s (%2$s opzioni)</string>
     <string name="shipping_labels">Etichette di spedizione</string>
     <string name="product_add_category_dialog_message">Attendi…</string>
     <string name="product_add_category_dialog_title">Aggiunta della categoria</string>
@@ -3846,7 +3873,6 @@ Language: it
     <string name="order_refunds_select_quantity">Seleziona quantità</string>
     <string name="order_refunds_shipping_refund">Rimborso spedizione</string>
     <string name="order_refunds_products_refund">Rimborso prodotti</string>
-    <string name="order_refunds_items_selected">%d elementi selezionati</string>
     <string name="order_refunds_items_select_none">Non selezionare nessuno</string>
     <string name="order_refunds_items_select_all">Seleziona tutto</string>
     <string name="order_refunds_amount_refund_confirmation_message">In attesa della conferma del rimborso…</string>
@@ -4090,8 +4116,6 @@ Language: it
     <string name="magic_link_login_title">Accesso tramite link</string>
     <string name="site_address_login_title">Accesso tramite indirizzo sito</string>
     <string name="email_address_login_title">Accesso tramite indirizzo e-mail</string>
-    <string name="signup_with_google_progress">Registrazione con Google…</string>
-    <string name="google_error_timeout">Tempo di risposta di Google troppo lungo. Potresti dover attendere fino a quando non disporrai di una connessione Internet più forte.</string>
     <string name="signup_magic_link_progress">Invio e-mail in corso</string>
     <string name="signup_magic_link_error_button_positive">Riprova</string>
     <string name="signup_magic_link_error_button_negative">Chiudi</string>
@@ -4106,7 +4130,6 @@ Language: it
     <string name="notification_login_title_success">Accesso effettuato!</string>
     <string name="login_error_generic_start">Il login tramite Google non può essere inizializzato.</string>
     <string name="login_empty_password">Inserisci una password</string>
-    <string name="login_error_suffix">\nPuoi provare un account diverso?</string>
     <string name="login_error_generic">Si sono verificati dei problemi con la connessione con l’account Google.</string>
     <string name="login_error_button">Chiudi</string>
     <string name="error_generic_network">Si è verificato un errore di rete. Controlla la connessione e riprova.</string>
@@ -4266,6 +4289,10 @@ Language: it
     <plurals name="more_menu_unseen_reviews_state_description">
         <item quantity="one">%d recensione non vista</item>
         <item quantity="other">%d recensioni non viste</item>
+    </plurals>
+    <plurals name="order_refunds_items_selected_count">
+        <item quantity="one">%d elemento selezionato</item>
+        <item quantity="other">%d elementi selezionati</item>
     </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Subtotale elementi (%d elemento)</item>

@@ -579,6 +579,7 @@ class WooPosCardPaymentViewModelTest {
             port = 1234,
             fingerprintBase64 = "fp",
             siteHash = "site-hash",
+            siteUrlHash = null,
             isSimulated = true,
         )
 }

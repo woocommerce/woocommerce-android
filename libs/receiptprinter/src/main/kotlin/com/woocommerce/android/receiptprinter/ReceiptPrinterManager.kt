@@ -24,5 +24,6 @@ interface ReceiptPrinterManager {
      */
     suspend fun disconnect()
 
+    /** Prints [text] as it is, so it must arrive already laid out for the paper width. */
     suspend fun printReceipt(text: String): ReceiptPrinterResult
 }

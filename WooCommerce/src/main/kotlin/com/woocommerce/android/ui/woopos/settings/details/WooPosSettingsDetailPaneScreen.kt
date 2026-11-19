@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.settings.details
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -25,17 +27,21 @@ import com.woocommerce.android.ui.woopos.settings.WooPosSettingsState
 import com.woocommerce.android.ui.woopos.settings.details.hardware.WooPosHardwareSettingsScreen
 import com.woocommerce.android.ui.woopos.settings.details.hardware.barcodescanner.WooPosSettingsHardwareBarcodeScannerScreen
 import com.woocommerce.android.ui.woopos.settings.details.hardware.cardreader.WooPosSettingsHardwareCardReaderScreen
+import com.woocommerce.android.ui.woopos.settings.details.hardware.receiptprinter.WooPosSettingsHardwareReceiptPrinterScreen
 import com.woocommerce.android.ui.woopos.settings.details.help.WooPosHelpDetailScreen
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSettingsLocalCatalogScreen
 import com.woocommerce.android.ui.woopos.settings.details.payments.WooPosSettingsPaymentsScreen
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityScreen
 import com.woocommerce.android.ui.woopos.settings.details.store.WooPosSettingsStoreScreen
 
+@Suppress("CyclomaticComplexMethod")
 @Composable
 fun WooPosSettingsDetailPaneScreen(
     state: WooPosSettingsState,
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
+    onShowPinSetupDialog: () -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -69,23 +75,14 @@ fun WooPosSettingsDetailPaneScreen(
 
         AnimatedContent(
             targetState = currentDestination,
-            transitionSpec = {
-                val isNavigatingForward = targetState.parentDestination == initialState
-                val isCategorySwitch = initialState.parentDestination == null && targetState.parentDestination == null
-
-                if (isCategorySwitch) {
-                    fadeIn() togetherWith fadeOut()
-                } else if (isNavigatingForward) {
-                    (slideInHorizontally(initialOffsetX = { it }) + fadeIn()) togetherWith
-                        (slideOutHorizontally(targetOffsetX = { -it }) + fadeOut())
-                } else {
-                    (slideInHorizontally(initialOffsetX = { -it }) + fadeIn()) togetherWith
-                        (slideOutHorizontally(targetOffsetX = { it }) + fadeOut())
-                }
-            },
+            transitionSpec = { settingsDetailTransition() },
             label = "settings_detail_animation"
         ) { destination ->
             when (destination) {
+                is WooPosSettingsDetailDestination.Security.Overview -> {
+                    WooPosSettingsSecurityScreen(onGetStartedClicked = onShowPinSetupDialog)
+                }
+
                 is WooPosSettingsDetailDestination.Hardware.Overview -> {
                     WooPosHardwareSettingsScreen(onNavigate = onNavigate)
                 }
@@ -98,6 +95,10 @@ fun WooPosSettingsDetailPaneScreen(
 
                 is WooPosSettingsDetailDestination.Hardware.CardReaders -> {
                     WooPosSettingsHardwareCardReaderScreen()
+                }
+
+                is WooPosSettingsDetailDestination.Hardware.ReceiptPrinters -> {
+                    WooPosSettingsHardwareReceiptPrinterScreen()
                 }
 
                 is WooPosSettingsDetailDestination.Store.Overview -> {
@@ -117,5 +118,21 @@ fun WooPosSettingsDetailPaneScreen(
                 }
             }
         }
+    }
+}
+
+private fun AnimatedContentTransitionScope<WooPosSettingsDetailDestination>.settingsDetailTransition():
+    ContentTransform {
+    val isNavigatingForward = targetState.parentDestination == initialState
+    val isCategorySwitch = initialState.parentDestination == null && targetState.parentDestination == null
+
+    return if (isCategorySwitch) {
+        fadeIn() togetherWith fadeOut()
+    } else if (isNavigatingForward) {
+        (slideInHorizontally(initialOffsetX = { it }) + fadeIn()) togetherWith
+            (slideOutHorizontally(targetOffsetX = { -it }) + fadeOut())
+    } else {
+        (slideInHorizontally(initialOffsetX = { -it }) + fadeIn()) togetherWith
+            (slideOutHorizontally(targetOffsetX = { it }) + fadeOut())
     }
 }

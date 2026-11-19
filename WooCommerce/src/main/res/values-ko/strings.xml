@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-10-20 09:55:25+0000
+Translation-Revision-Date: 2026-11-04 09:56:32+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_service_status_severity_info">정보</string>
+    <string name="woo_shipping_labels_service_status_severity_warning">경고</string>
+    <string name="woo_shipping_labels_service_status_severity_error">오류</string>
+    <string name="woo_shipping_labels_service_status_dismiss">공지 해제 %1$s</string>
+    <string name="woo_shipping_labels_service_status_view_status_page">상태 페이지 보기</string>
+    <string name="woo_shipping_labels_purchase_service_status_error">배송업체 서비스 문제(%1$s)로 인해 배송 레이블을 구매할 수 없습니다.</string>
+    <string name="woopos_remote_ttp_explainer_local_network_body">POS가 동일한 와이파이에서 회원님의 스마트폰을 찾을 수 있도록 로컬 네트워크 접근을 허용하세요.</string>
+    <string name="woopos_remote_ttp_explainer_local_network_heading">POS가 회원님 스마트폰 찾게 하기</string>
+    <string name="woopos_remote_ttp_explainer_allow_local_network">로컬 네트워크 접근 허용</string>
+    <string name="woopos_remote_reader_failed_insecure_environment">Tap to Pay가 보안상의 이유로 스마트폰에서 차단되었습니다. 스마트폰에서 접근성 서비스와 화면 녹화가 꺼져 있는지 확인하세요.</string>
+    <string name="login_text_backup_code">백업 코드를 대신 사용</string>
+    <string name="support_request_ai_chat_transcript_disclosure">AI 지원 채팅 대본도 이 요청에 포함됩니다.</string>
+    <string name="enter_verification_code_backup">계속하려면 백업 코드를 입력하세요.</string>
+    <string name="enter_verification_code_email">이메일에서 워드프레스닷컴의 확인 코드를 확인한 다음에 입력하여 계속하세요.</string>
+    <string name="enter_verification_code_authenticator">OTP 앱의 확인 코드를 입력하세요.</string>
+    <string name="ai_support_chat_escalation_consent_message_v2">두 옵션에 모두 이 채팅 대본이 포함합니다. 지금 요청을 보내거나 문의 양식을 열어 자세한 내용을 먼저 추가하세요.</string>
+    <string name="ai_support_chat_login_unexpected_response_message">내 스토어에 로그인할 수 없습니다. 내 스토어에서 예기치 않은 응답이 반환된다고 앱에 표시됩니다. 어떻게 해결할 수 있나요?</string>
+    <string name="card_reader_payment_failed_insecure_environment">Tap to Pay가 보안상의 이유로 차단되었습니다. 접근성 서비스와 화면 녹화가 꺼져 있는지 확인하세요.</string>
+    <string name="barcode_scanning_hardware_scanner_no_enter_suffix">스캔이 마무리되지 않았습니다. 각 바코드 뒤에 Enter 키를 보내도록 스캐너를 설정하세요.</string>
+    <string name="customer_list_enable_analytics_error">우커머스 분석을 활성화할 수 없습니다. 다시 시도해 주세요.</string>
+    <string name="customer_list_enable_analytics_confirmation_action">활성화</string>
+    <string name="customer_list_enable_analytics_confirmation_message">그러면 스토어 전체의 설정이 변경됩니다. 누군가 우커머스 › 설정 › 고급 › 기능에서 끄기로 전환할 때까지 그대로 유지됩니다. 분석이 꺼진 시점의 고객은 우커머스 › 분석 › 설정에서 과거 데이터를 가져온 후에만 표시될 수 있습니다.</string>
+    <string name="customer_list_enable_analytics_confirmation_title">WooCommerce Analytics 활성화</string>
+    <string name="customer_list_enable_analytics">분석 활성화</string>
+    <string name="customer_list_analytics_unavailable_message">지금 이 스토어에서는 이용할 수 없는 우커머스 분석이 고객 목록에 필요합니다. 스토어 관리자에게 해당 기능이 켜져 있는지 확인하세요.</string>
+    <string name="customer_list_analytics_permission_denied_message">이 스토어에서는 이용할 수 없는 우커머스 분석이 고객 목록에 필요합니다. 우커머스 › 설정 › 고급 › 기능에서 켜기로 전환해 달라고 스토어 관리자에게 요청하세요.</string>
+    <string name="customer_list_analytics_disabled_message">이 스토어에서는 꺼져 있는 우커머스 분석이 고객 목록에 필요합니다. 여기 또는 우커머스 › 설정 › 고급 › 기능 아래의 스토어 관리자에서 활성화한 다음에 다시 시도를 누르면 됩니다.</string>
+    <string name="customer_list_analytics_unavailable_title">고객을 로드할 수 없음</string>
+    <string name="login_unexpected_response_message">스토어에서 예기치 않은 응답이 반환되어서 로그인을 마무리할 수 없습니다. 다시 시도하거나 지원팀에 도움말을 문의하세요.</string>
+    <string name="login_unexpected_response_title">로그인할 수 없음</string>
     <string name="woo_shipping_labels_purchase_phone_required_by_service">%1$s에는 받는 사람의 전화번호가 필요합니다.</string>
     <string name="woo_shipping_labels_customs_product_details_eu_identifier_too_long">%1$s자 이하여야 합니다.</string>
     <string name="woo_shipping_labels_customs_product_details_gtin_required">GTIN/EAN을 입력하거나 \"바코드 없음\"을 선택합니다.</string>
@@ -355,7 +385,6 @@ Language: ko_KR
     <string name="ai_support_chat_escalation_transcript_header">다음은 앱 내 AI 지원 채팅 세션의 대본입니다.</string>
     <string name="ai_support_chat_escalation_consent_contact_form">문의 양식</string>
     <string name="ai_support_chat_escalation_consent_send_request">요청 보내기</string>
-    <string name="ai_support_chat_escalation_consent_message">이 채팅 대본을 사용하여 지원 요청을 생성해 드리거나, 회원님이 문의 양식을 열어서 상세 정보를 직접 입력하실 수 있습니다.</string>
     <string name="ai_support_chat_escalation_consent_title">지원팀에 이 채팅을 보낼까요?</string>
     <string name="ai_support_chat_mark_resolved_confirmation_message">그러면 이 대화의 채팅 작업이 종료됩니다.</string>
     <string name="ai_support_chat_mark_resolved_confirmation_title">채팅을 해결됨으로 표시할까요?</string>
@@ -3273,7 +3302,6 @@ Language: ko_KR
     <string name="empty_order_list_message">스토어 판매를 늘리는 방법을 살펴보세요.</string>
     <string name="empty_product_message">스토어에 첫 번째 상품을 추가하고 지금 바로 판매를 시작하세요.</string>
     <string name="empty_product_add_product_button">상품 추가</string>
-    <string name="variable_product_attributes">변형 속성</string>
     <string name="card_reader_detail_not_connected_third_hint_label">모바일 장치 블루투스 켜기</string>
     <string name="card_reader_payment_receipt_email_subject">%s에서 받은 영수증</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">주문 새로 고치기</string>
@@ -3707,7 +3735,6 @@ Language: ko_KR
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_refund_title">%1$s 레이블 환불 요청됨</string>
     <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
-    <string name="product_variation_options">%1$s(옵션 %2$s개)</string>
     <string name="shipping_labels">배송 레이블</string>
     <string name="product_add_category_dialog_message">기다려주세요…</string>
     <string name="product_add_category_dialog_title">카테고리 추가 중</string>
@@ -3846,7 +3873,6 @@ Language: ko_KR
     <string name="order_refunds_select_quantity">수량 선택</string>
     <string name="order_refunds_shipping_refund">배송비 환불</string>
     <string name="order_refunds_products_refund">제품 환불</string>
-    <string name="order_refunds_items_selected">%d개 항목 선택됨</string>
     <string name="order_refunds_items_select_none">아무것도 선택하지 않음</string>
     <string name="order_refunds_items_select_all">모두 선택</string>
     <string name="order_refunds_amount_refund_confirmation_message">환불 확인을 기다리는 중…</string>
@@ -4090,8 +4116,6 @@ Language: ko_KR
     <string name="magic_link_login_title">매직 링크 로그인</string>
     <string name="site_address_login_title">사이트 주소 로그인</string>
     <string name="email_address_login_title">이메일 주소 로그인</string>
-    <string name="signup_with_google_progress">Google로 가입하는 중…</string>
-    <string name="google_error_timeout">Google에서 응답하는 데 너무 오래 걸립니다. 더 강한 인터넷 연결이 있을 때까지 기다려야 할 수 있습니다.</string>
     <string name="signup_magic_link_progress">이메일 전송 중</string>
     <string name="signup_magic_link_error_button_positive">다시 시도</string>
     <string name="signup_magic_link_error_button_negative">닫기</string>
@@ -4106,7 +4130,6 @@ Language: ko_KR
     <string name="notification_login_title_success">로그인됨!</string>
     <string name="login_error_generic_start">Google 로그인을 시작할 수 없습니다.</string>
     <string name="login_empty_password">비밀번호를 입력하세요.</string>
-    <string name="login_error_suffix">\n다른 계정을 사용해 보세요.</string>
     <string name="login_error_generic">Google 계정과 연결하는 데 문제가 발생했습니다.</string>
     <string name="login_error_button">닫기</string>
     <string name="error_generic_network">네트워크 오류가 발생했습니다. 연결을 확인하고 다시 시도하세요.</string>
@@ -4263,6 +4286,9 @@ Language: ko_KR
     </plurals>
     <plurals name="more_menu_unseen_reviews_state_description">
         <item quantity="other">표시되지 않는 리뷰 %d개</item>
+    </plurals>
+    <plurals name="order_refunds_items_selected_count">
+        <item quantity="other">%d개 아이템 선택됨</item>
     </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">품목 소계(%d개 품목)</item>
