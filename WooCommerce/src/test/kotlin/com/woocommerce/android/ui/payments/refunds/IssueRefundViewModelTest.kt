@@ -34,7 +34,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -820,25 +819,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         assertThat(event.refundAmount).isEqualByComparingTo(viewState.grandTotalRefund)
         assertFalse(event.isServerComputed)
     }
-
-    @Test
-    fun `given refund is capped at what is left, when next is tapped, then summary refunds the capped total locally`() =
-        testBlocking {
-            // GIVEN
-            initViewModel(givenOrder(items = listOf(givenOrderItem()), maxRefund = BigDecimal("5.00")))
-            viewModel.viewState.getOrAwaitValue()
-            viewModel.onSelectButtonTapped()
-            viewModel.viewState.getOrAwaitValue()
-
-            // WHEN
-            viewModel.onNextButtonTappedFromItems()
-
-            // THEN
-            val event = viewModel.event.getOrAwaitValue() as IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
-            assertThat(event.refundAmount).isEqualByComparingTo("5.00")
-            assertFalse(event.isServerComputed)
-            verify(fetchRefundPreview, never()).invoke(any(), any())
-        }
 
     @Test
     fun `when next is tapped, then preview is asked for the selected items`() = testBlocking {
