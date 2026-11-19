@@ -38,6 +38,8 @@ import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCateg
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPaneScreen
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSyncErrorDialog
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupDialog
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupViewModel
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialog
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialogState
 import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
@@ -67,6 +69,7 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
             onBack = containerViewModel::navigateBack,
             onDismissDetail = containerViewModel::dismissDetail,
             onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
+            onShowPinSetupDialog = containerViewModel::showPinSetupDialog,
             onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
             onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
             onDismissDialog = containerViewModel::hideDialog,
@@ -82,6 +85,7 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
             onNavigate = containerViewModel::navigateToDetail,
             onBack = containerViewModel::navigateBack,
             onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
+            onShowPinSetupDialog = containerViewModel::showPinSetupDialog,
             onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
             onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
             onDismissDialog = containerViewModel::hideDialog,
@@ -99,6 +103,7 @@ private fun WooPosSettingsPhoneContent(
     onBack: () -> Unit,
     onDismissDetail: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
+    onShowPinSetupDialog: () -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit,
@@ -143,6 +148,7 @@ private fun WooPosSettingsPhoneContent(
                 onNavigate = onNavigate,
                 onBack = handleDetailBack,
                 onShowProductInfoDialog = onShowProductInfoDialog,
+                onShowPinSetupDialog = onShowPinSetupDialog,
                 onShowScanningSetupDialog = onShowScanningSetupDialog,
                 onNavigationEvent = onNavigationEvent,
                 modifier = Modifier
@@ -169,6 +175,7 @@ private fun WooPosSettingsTabletContent(
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
+    onShowPinSetupDialog: () -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit,
@@ -199,6 +206,7 @@ private fun WooPosSettingsTabletContent(
             onNavigate = onNavigate,
             onBack = onBack,
             onShowProductInfoDialog = onShowProductInfoDialog,
+            onShowPinSetupDialog = onShowPinSetupDialog,
             onShowScanningSetupDialog = onShowScanningSetupDialog,
             onNavigationEvent = onNavigationEvent,
             modifier = Modifier
@@ -224,6 +232,17 @@ private fun SettingsDialogs(
         state = WooPosSettingsProductInfoDialogState,
         isVisible = dialogState is WooPosSettingsDialogState.ProductsInfoDialog,
         onDismissRequest = onDismissDialog
+    )
+
+    val pinSetup: WooPosSettingsSecurityPINSetupViewModel = hiltViewModel()
+    val pinSetupState by pinSetup.state.collectAsState()
+    val isPinSetupVisible = dialogState is WooPosSettingsDialogState.PinSetupDialog
+    LaunchedEffect(isPinSetupVisible) { if (!isPinSetupVisible) pinSetup.reset() }
+    WooPosSettingsSecurityPINSetupDialog(
+        state = pinSetupState,
+        isVisible = isPinSetupVisible,
+        onUIEvent = pinSetup::onUIEvent,
+        onClose = onDismissDialog,
     )
 
     WooPosScanningSetupDialog(

@@ -228,6 +228,7 @@
     <string name="login_store_suggestion_log_in">Log in to this store</string>
     <string name="login_store_suggestion_use_different_store">Use a different store</string>
     <string name="login_store_suggestion_redirected">This address leads to a different site. Only continue if it\'s your store.</string>
+    <string name="login_store_suggestion_unavailable">We couldn\'t confirm this store from the link. Enter your store address to continue.</string>
 
     <!-- QR login prologue -->
     <string name="login_qr_prologue_title">Scan to log in</string>
@@ -2636,6 +2637,7 @@
     <string name="ai_support_chat_history_delete_error">Unable to delete chat history.</string>
     <string name="ai_support_chat_history_default_title">Support conversation</string>
     <string name="ai_support_chat_placeholder">Coming soon</string>
+    <string name="ai_support_chat_ai_disclosure">You’re chatting with AI from Woo Support.</string>
     <string name="ai_support_chat_greeting">Hello! I\'m your Woo Mobile Support Bot. Is there anything I can help you with today?</string>
     <string name="ai_support_chat_input_hint">Type a message…</string>
     <string name="ai_support_chat_send">Send</string>
@@ -4066,6 +4068,12 @@
     <string name="woopos_settings_hardware_barcode_scanners_subtitle">Configure barcode scanner settings</string>
     <string name="woopos_settings_hardware_card_readers">Card Readers</string>
     <string name="woopos_settings_hardware_card_readers_subtitle">Manage card reader connections</string>
+    <string name="woopos_settings_hardware_receipt_printers">Receipt printers</string>
+    <string name="woopos_settings_hardware_receipt_printers_subtitle">Manage receipt printer connections</string>
+    <string name="woopos_settings_hardware_receipt_printers_connect_title">Connect printer</string>
+    <string name="woopos_settings_hardware_receipt_printers_connect_subtitle">Connect your receipt printer and start printing receipts</string>
+    <string name="woopos_settings_hardware_receipt_printers_device_name_title">Device name</string>
+    <string name="woopos_settings_hardware_receipt_printers_disconnect_button">Disconnect printer</string>
     <string name="woopos_settings_local_catalog_category">Product catalog</string>
     <string name="woopos_settings_local_catalog_category_subtitle">Manage catalog settings</string>
     <string name="woopos_settings_local_catalog_status">Catalog Status</string>
@@ -4123,6 +4131,24 @@
     <string name="woopos_get_support_title">Get Support</string>
     <string name="woopos_product_limitations_title">Where are my products?</string>
     <string name="woopos_documentation_title">Documentation</string>
+    <string name="woopos_lock_pos">Lock POS</string>
+    <string name="woopos_settings_security_category">Security</string>
+    <string name="woopos_settings_security_subtitle">Manage PINs and lock settings</string>
+    <string name="woopos_security_setup">Set up access control</string>
+    <string name="woopos_security_description">Use PINs to manage what your team can do in the app.</string>
+    <string name="woopos_security_get_started">Get started</string>
+    <string name="woopos_security_choose_pin">Choose your admin PIN</string>
+    <string name="woopos_security_confirm_pin">Confirm your admin PIN</string>
+    <string name="woopos_security_mismatch">The PINs didn’t match. Try again.</string>
+    <string name="woopos_security_success">Your admin PIN is set</string>
+    <string name="woopos_lock_forgot_pin">Forgot PIN?</string>
+    <string name="woopos_lock_incorrect">Incorrect PIN. Try again.</string>
+    <string name="woopos_lock_unavailable">Something went wrong. Try again later.</string>
+    <string name="woopos_lock_wait">Too many incorrect attempts.\nTry again in %1$s.</string>
+    <string name="woopos_lock_enter_pin">Enter your PIN to unlock POS</string>
+    <string name="woopos_lock_delete_digit">Delete</string>
+    <string name="woopos_lock_pin_entry">PIN entry</string>
+    <string name="woopos_lock_digits_entered">%1$d of %2$d digits entered</string>
     <string name="woopos_orders_title">Orders</string>
     <string name="woopos_order_title">Order %s</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
@@ -4547,6 +4573,19 @@
     <string name="woopos_remote_ttp_explainer_allow_local_network">Allow local network access</string>
     <string name="woopos_remote_ttp_explainer_local_network_heading">Let POS find your phone</string>
     <string name="woopos_remote_ttp_explainer_local_network_body">Allow local network access so POS can find your phone on the same Wi-Fi.</string>
+
+    <string name="woopos_receipt_date_paid">Date Paid</string>
+    <string name="woopos_receipt_order_number">Order #%1$s</string>
+    <string name="woopos_receipt_item_with_attributes">%1$s. %2$s</string>
+    <string name="woopos_receipt_item_and_quantity">%1$s x%2$s</string>
+    <string name="woopos_receipt_subtotal">Subtotal</string>
+    <string name="woopos_receipt_discount">Discount</string>
+    <string name="woopos_receipt_discount_with_coupons">Discount (%1$s)</string>
+    <string name="woopos_receipt_fees">Fees</string>
+    <string name="woopos_receipt_shipping">Shipping</string>
+    <string name="woopos_receipt_taxes">Taxes</string>
+    <string name="woopos_receipt_amount_paid">Amount Paid</string>
+    <string name="woopos_receipt_notes">Notes</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>

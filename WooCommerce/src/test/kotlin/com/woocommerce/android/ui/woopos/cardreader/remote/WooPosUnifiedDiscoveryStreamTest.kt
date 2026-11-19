@@ -9,8 +9,10 @@ import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.S
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.Chipper2X
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.util.pairingIdentity
 import com.woocommerce.android.util.siteIdHash
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -230,6 +232,45 @@ class WooPosUnifiedDiscoveryStreamTest {
     }
 
     @Test
+    fun `given tablet has no blog id and phone has same store url, when discovered, then phone is surfaced`() = runTest {
+        // GIVEN
+        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { url = STORE_URL })
+        val wpComIdentity = requireNotNull(
+            SiteModel().apply {
+                siteId = TABLET_SITE_ID
+                url = STORE_URL
+            }.pairingIdentity()
+        )
+        val matchingPhone = phone(
+            name = "Pixel 7",
+            siteHash = wpComIdentity.siteHash,
+            siteUrlHash = wpComIdentity.siteUrlHash,
+        )
+
+        // WHEN / THEN
+        discoverPhone(matchingPhone).test {
+            assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
+            val found = awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound
+            assertThat(found.readers).containsExactly(matchingPhone)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `given tablet has no blog id and older phone advertises id zero hash, when discovered, then phone is not surfaced`() =
+        runTest {
+            // GIVEN
+            whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { url = STORE_URL })
+            val olderPhone = phone(name = "Pixel 7", siteHash = siteIdHash(0L))
+
+            // WHEN / THEN
+            discoverPhone(olderPhone).test {
+                assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
+                awaitComplete()
+            }
+        }
+
+    @Test
     fun `given phone advertises matching site hash, when discovered, then phone is surfaced`() = runTest {
         // GIVEN
         whenever(cardReaderManager.discoverReaders(false, types)).thenReturn(
@@ -343,9 +384,28 @@ class WooPosUnifiedDiscoveryStreamTest {
         verify(remoteDiscovery, never()).discover()
     }
 
+    private fun discoverPhone(phone: WooPosDiscoveredReader.Phone): Flow<WooPosUnifiedDiscoveryEvent> {
+        whenever(cardReaderManager.discoverReaders(false, types)).thenReturn(
+            flowOf(CardReaderDiscoveryEvents.Started)
+        )
+        whenever(remoteDiscovery.discover()).thenReturn(flowOf(WooPosPhoneDiscoveryEvent.Added(phone)))
+        return WooPosUnifiedDiscoveryStream(
+            cardReaderManager,
+            remoteDiscovery,
+            simulatedRemoteDiscovery,
+            selectedSite,
+            logger,
+        ).discover(
+            isSimulated = false,
+            cardReaderTypesToDiscover = types,
+            transports = setOf(WooPosDiscoveryTransport.Bluetooth, WooPosDiscoveryTransport.WifiLan),
+        )
+    }
+
     private fun phone(
         name: String,
         siteHash: String = siteIdHash(TABLET_SITE_ID),
+        siteUrlHash: String? = null,
         serviceName: String = "woopos-remote-${name.hashCode().toString(16)}",
         fingerprintBase64: String = "AB4F",
         deviceId: String = "device-${name.hashCode().toString(16)}",
@@ -359,10 +419,12 @@ class WooPosUnifiedDiscoveryStreamTest {
         port = port,
         fingerprintBase64 = fingerprintBase64,
         siteHash = siteHash,
+        siteUrlHash = siteUrlHash,
     )
 
     private companion object {
         const val TABLET_SITE_ID = 123L
         const val OTHER_SITE_ID = 456L
+        const val STORE_URL = "https://store.example.com"
     }
 }

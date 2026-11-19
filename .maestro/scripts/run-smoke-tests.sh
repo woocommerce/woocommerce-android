@@ -946,14 +946,17 @@ create_push_order() {
 
 # The flows on the store without Jetpack connect it to WordPress.com or install
 # Jetpack, so for a flow tagged no_jetpack_store the runner resets the store first.
-# If Jetpack is active, wp-cli deregisters the site on WordPress.com, then Jetpack
-# is uninstalled and the site's own connection is removed, as Jurassic Ninja keeps
-# the site ID. The check runs in a separate wp-cli call, as the previous one still
-# holds the removed tokens. The flow checks NO_JETPACK_DISCONNECTED first.
+# It clears auto_login, which makes Jurassic Ninja send the site's first login to
+# wp-admin instead of where the app asked, so the app's login gets a redirect it
+# can't follow. If Jetpack is active, wp-cli deregisters the site on WordPress.com,
+# then Jetpack is uninstalled and the site's own connection is removed, as Jurassic
+# Ninja keeps the site ID. The check runs in a separate wp-cli call, as the
+# previous one still holds the removed tokens. The flow checks
+# NO_JETPACK_DISCONNECTED first.
 NO_JETPACK_DISCONNECTED="no"
 reset_no_jetpack_store() {
   if disconnect_jn_site "${MAESTRO_WOO_NO_JETPACK_SITE_URL:-}" "${MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD:-}" \
-    'wp plugin is-active jetpack >/dev/null 2>&1 && wp jetpack disconnect blog >/dev/null 2>&1; wp plugin uninstall jetpack --deactivate >/dev/null 2>&1; wp eval '\''$options = get_option( "jetpack_options" ); unset( $options["id"], $options["master_user"] ); update_option( "jetpack_options", $options ); $tokens = get_option( "jetpack_private_options" ); unset( $tokens["blog_token"], $tokens["user_tokens"] ); update_option( "jetpack_private_options", $tokens );'\'' && wp eval '\''$manager = new Automattic\Jetpack\Connection\Manager(); echo $manager->is_connected() || $manager->has_connected_owner() ? "CONNECTED" : "DISCONNECTED";'\'''; then
+    'wp option update auto_login 0 >/dev/null 2>&1; wp plugin is-active jetpack >/dev/null 2>&1 && wp jetpack disconnect blog >/dev/null 2>&1; wp plugin uninstall jetpack --deactivate >/dev/null 2>&1; wp eval '\''$options = get_option( "jetpack_options" ); unset( $options["id"], $options["master_user"] ); update_option( "jetpack_options", $options ); $tokens = get_option( "jetpack_private_options" ); unset( $tokens["blog_token"], $tokens["user_tokens"] ); update_option( "jetpack_private_options", $tokens );'\'' && wp eval '\''$manager = new Automattic\Jetpack\Connection\Manager(); echo $manager->is_connected() || $manager->has_connected_owner() ? "CONNECTED" : "DISCONNECTED";'\'''; then
     NO_JETPACK_DISCONNECTED="yes"
   else
     echo "  resetting the store without Jetpack failed"
@@ -961,16 +964,16 @@ reset_no_jetpack_store() {
 }
 
 # The Jetpack-not-connected login flow connects Jetpack from the app, so for a flow
-# tagged jetpack_not_connected the runner disconnects Jetpack first: wp-cli
-# deregisters the site on WordPress.com, then the site's own connection is removed,
-# as Jurassic Ninja keeps the site ID. The check runs in a separate wp-cli call, as
-# the previous one still holds the removed tokens. The flow checks
-# JETPACK_DISCONNECTED first.
+# tagged jetpack_not_connected the runner disconnects Jetpack first, after clearing
+# auto_login as for the store without Jetpack: wp-cli deregisters the site on
+# WordPress.com, then the site's own connection is removed, as Jurassic Ninja keeps
+# the site ID. The check runs in a separate wp-cli call, as the previous one still
+# holds the removed tokens. The flow checks JETPACK_DISCONNECTED first.
 JETPACK_DISCONNECTED="no"
 disconnect_jetpack_not_connected_store() {
   if disconnect_jn_site "${MAESTRO_WOO_JETPACK_NOT_CONNECTED_SITE_URL:-}" \
     "${MAESTRO_WOO_JETPACK_NOT_CONNECTED_SITE_ADMIN_PASSWORD:-}" \
-    'wp jetpack disconnect blog >/dev/null 2>&1; wp eval '\''$options = get_option( "jetpack_options" ); unset( $options["id"], $options["master_user"] ); update_option( "jetpack_options", $options ); $tokens = get_option( "jetpack_private_options" ); unset( $tokens["blog_token"], $tokens["user_tokens"] ); update_option( "jetpack_private_options", $tokens );'\'' && wp eval '\''$manager = new Automattic\Jetpack\Connection\Manager(); echo $manager->is_connected() || $manager->has_connected_owner() ? "CONNECTED" : "DISCONNECTED";'\'''; then
+    'wp option update auto_login 0 >/dev/null 2>&1; wp jetpack disconnect blog >/dev/null 2>&1; wp eval '\''$options = get_option( "jetpack_options" ); unset( $options["id"], $options["master_user"] ); update_option( "jetpack_options", $options ); $tokens = get_option( "jetpack_private_options" ); unset( $tokens["blog_token"], $tokens["user_tokens"] ); update_option( "jetpack_private_options", $tokens );'\'' && wp eval '\''$manager = new Automattic\Jetpack\Connection\Manager(); echo $manager->is_connected() || $manager->has_connected_owner() ? "CONNECTED" : "DISCONNECTED";'\'''; then
     JETPACK_DISCONNECTED="yes"
   else
     echo "  disconnecting Jetpack on the store with Jetpack not connected failed"

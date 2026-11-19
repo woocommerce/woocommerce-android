@@ -1350,6 +1350,7 @@ fun WooPosCardReaderConnectionDialogMissingLocalNetworkPermissionPreview() {
                     port = 8443,
                     fingerprintBase64 = "AAAA",
                     siteHash = "site-hash",
+                    siteUrlHash = null,
                 ),
                 onRequestPermissionClicked = {},
                 onCancelClicked = {},

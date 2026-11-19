@@ -71,13 +71,16 @@ object UnexpectedStoreResponseExcerpt {
     }
 
     private fun String.nextTag(from: Int): Tag? {
-        val start = TAG_NAME_PATTERN.find(this, from) ?: return null
-        val end = tagEnd(start.range.last + 1) ?: return null
+        val start = nextTagStart(from) { hasTagNameAt(it) } ?: return null
+        val isClosing = this[start + 1] == '/'
+        val nameStart = if (isClosing) start + 2 else start + 1
+        val nameEnd = tagNameEnd(nameStart)
+        val end = tagEnd(nameEnd) ?: return null
         return Tag(
-            name = start.groupValues[2].lowercase(Locale.ROOT),
-            isClosing = start.groupValues[1].isNotEmpty(),
-            attributes = substring(start.range.last + 1, end - 1),
-            start = start.range.first,
+            name = substring(nameStart, nameEnd).lowercase(Locale.ROOT),
+            isClosing = isClosing,
+            attributes = substring(nameEnd, end - 1),
+            start = start,
             end = end
         )
     }
@@ -95,10 +98,15 @@ object UnexpectedStoreResponseExcerpt {
 
     private class Tag(val name: String, val isClosing: Boolean, attributes: String, val start: Int, val end: Int) {
         val isEmpty = name in VOID_ELEMENTS || attributes.trimEnd().endsWith('/')
-        val isHiddenStart = !isClosing &&
-            (HIDDEN_ATTRIBUTE_PATTERN.containsMatchIn(attributes.replace(QUOTED_VALUE_PATTERN, "")) ||
-                HIDDEN_STYLE_PATTERN.containsMatchIn(attributes))
+        val isHiddenStart = !isClosing && (attributes.hasHiddenAttribute() || attributes.hasHiddenStyle())
     }
+
+    private fun String.hasHiddenAttribute(): Boolean =
+        contains("hidden", ignoreCase = true) &&
+            HIDDEN_ATTRIBUTE_PATTERN.containsMatchIn(replace(QUOTED_VALUE_PATTERN, ""))
+
+    private fun String.hasHiddenStyle(): Boolean =
+        contains("style", ignoreCase = true) && HIDDEN_STYLE_PATTERN.containsMatchIn(this)
 
     /**
      * Replaces each tag with a space. A tag that is never closed drops the rest of the page.
@@ -107,7 +115,7 @@ object UnexpectedStoreResponseExcerpt {
         val result = StringBuilder()
         var index: Int? = 0
         while (index != null && index < length) {
-            val tagStart = TAG_OPEN_PATTERN.find(this, index)?.range?.first ?: length
+            val tagStart = nextTagStart(index) { hasTagOpenAt(it) } ?: length
             result.append(this, index, tagStart).append(' ')
             index = if (tagStart < length) tagEnd(tagStart + 1) else null
         }
@@ -129,6 +137,38 @@ object UnexpectedStoreResponseExcerpt {
         }
         return null
     }
+
+    /**
+     * Uses `indexOf` because on Android each regex search from an index copies the whole string, which blocks the
+     * thread on a page with many tags.
+     */
+    private inline fun String.nextTagStart(from: Int, isTagStart: (Int) -> Boolean): Int? {
+        var index = indexOf('<', from)
+        while (index != -1 && !isTagStart(index)) {
+            index = indexOf('<', index + 1)
+        }
+        return index.takeIf { it != -1 }
+    }
+
+    private fun String.hasTagOpenAt(index: Int): Boolean =
+        getOrNull(index + 1)?.let { it.isAsciiLetter() || it in TAG_OPEN_SYMBOLS } == true
+
+    private fun String.hasTagNameAt(index: Int): Boolean {
+        val nameStart = if (getOrNull(index + 1) == '/') index + 2 else index + 1
+        return getOrNull(nameStart)?.isAsciiLetter() == true
+    }
+
+    private fun String.tagNameEnd(from: Int): Int {
+        var index = from
+        while (index < length && this[index].isTagNameCharacter()) {
+            index++
+        }
+        return index
+    }
+
+    private fun Char.isTagNameCharacter(): Boolean = isAsciiLetter() || this in '0'..'9' || this == '-'
+
+    private fun Char.isAsciiLetter(): Boolean = this in 'a'..'z' || this in 'A'..'Z'
 
     private fun String.substringBeforeJson(): String {
         val jsonStart = indexOfFirst { it == '{' || it == '[' }
@@ -153,6 +193,7 @@ object UnexpectedStoreResponseExcerpt {
     private const val MAX_LENGTH = 300
     private const val ELLIPSIS = "…"
     private const val MAX_CLEANED_LENGTH = 4096
+    private const val TAG_OPEN_SYMBOLS = "/!?"
     private val TITLE_PATTERN = Regex(
         pattern = """<title\b[^<>]*>([^<]*)</title\s*>""",
         option = RegexOption.IGNORE_CASE
@@ -165,8 +206,6 @@ object UnexpectedStoreResponseExcerpt {
         pattern = """<head\b[^<>]*>.*?(?:</head\s*>|(?=<body\b)|\z)""",
         options = setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)
     )
-    private val TAG_OPEN_PATTERN = Regex("""<[A-Za-z/!?]""")
-    private val TAG_NAME_PATTERN = Regex("""<(/?)([A-Za-z][A-Za-z0-9-]*)""")
     private val QUOTED_VALUE_PATTERN = Regex(""""[^"]*"|'[^']*'""")
     private val HIDDEN_ATTRIBUTE_PATTERN = Regex("""(?:^|\s)hidden(?=[\s=/]|$)""", RegexOption.IGNORE_CASE)
     private val HIDDEN_STYLE_PATTERN = Regex(

@@ -747,6 +747,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
             woo_pos_mark_order_as_complete: true (remote)
             woo_pos_phone: true (remote)
             woo_pos_receipt_printing: true (remote)
+            woo_pos_roles: true (remote)
             woo_pos_scan_to_pay: true (remote)
             woo_pos_tablet_promo_banner: true (remote)
             woo_pos_tap_to_pay: true (remote)

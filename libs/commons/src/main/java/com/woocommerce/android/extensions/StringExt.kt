@@ -38,10 +38,14 @@ fun StringBuilder.appendWithIfNotEmpty(line: String?, separator: String = ", "):
  *
  * Replicated from HtmlUtils.fastStripHtml and HtmlUtils.trimStart
  */
-fun String.fastStripHtml(): String {
+fun String.fastStripHtml(): String = stripHtml().ifEmpty { this }
+
+/**
+ * Same as [fastStripHtml], but returns an empty string when no text is left after stripping.
+ */
+fun String.stripHtml(): String {
     // insert a line break before P tags unless the only one is at the start
     var str = this
-    if (str.isEmpty()) return str
 
     if (str.lastIndexOf("<p") > 0) {
         str = str.replace(Regex("<p(.|\n)*?>"), "\n<p>")
@@ -52,16 +56,8 @@ fun String.fastStripHtml(): String {
         str = str.replace(Regex("<br(.|\n)*?>"), "\n")
     }
 
-    val htmlString = StringEscapeUtils.unescapeHtml4(str.replace(Regex("<(.|\n)*?>"), ""))
-    if (htmlString.isEmpty()) return str
-
-    var start = 0
-    while (start != 0 && (Character.isWhitespace(htmlString[start]) || htmlString[start].code == 160)) {
-        start++
-    }
-
     // use regex to strip tags, then convert entities in the result
-    return htmlString.substring(start)
+    return StringEscapeUtils.unescapeHtml4(str.replace(Regex("<(.|\n)*?>"), ""))
 }
 
 fun String.semverCompareTo(otherVersion: String): Int {

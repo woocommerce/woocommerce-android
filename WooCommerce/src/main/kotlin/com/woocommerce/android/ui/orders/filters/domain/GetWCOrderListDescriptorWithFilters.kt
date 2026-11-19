@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DA
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.SALES_CHANNEL
 import com.woocommerce.android.ui.orders.filters.data.SalesChannel
 import com.woocommerce.android.util.DateUtils
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import javax.inject.Inject
 
@@ -21,7 +22,9 @@ class GetWCOrderListDescriptorWithFilters @Inject constructor(
     private val selectedSite: SelectedSite,
     private val dateUtils: DateUtils
 ) {
-    operator fun invoke(): WCOrderListDescriptor {
+    operator fun invoke(): WCOrderListDescriptor = invoke(selectedSite.get())
+
+    operator fun invoke(site: SiteModel): WCOrderListDescriptor {
         val selectedDateRange = orderFiltersRepository.getCurrentFilterSelection(DATE_RANGE)
             .map { DateRange.fromValue(it) }
             .firstOrNull()
@@ -38,7 +41,7 @@ class GetWCOrderListDescriptorWithFilters @Inject constructor(
             }
 
         return WCOrderListDescriptor(
-            site = selectedSite.get(),
+            site = site,
             statusFilter = orderStatusFilters,
             beforeFilter = rangeStartAndEnd.second,
             afterFilter = rangeStartAndEnd.first,

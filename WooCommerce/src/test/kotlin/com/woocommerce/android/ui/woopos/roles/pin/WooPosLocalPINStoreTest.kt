@@ -1,0 +1,222 @@
+package com.woocommerce.android.ui.woopos.roles.pin
+
+import com.woocommerce.android.ui.woopos.roles.WooPosCapability
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
+import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Rule
+import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class WooPosLocalPINStoreTest {
+    @get:Rule
+    val coroutineRule = WooPosCoroutineTestRule()
+    private val storage = MemoryStorage()
+    private val store = WooPosLocalPINStore(storage, coroutineRule.testDispatchers)
+    private val authenticator = WooPosPINAuthenticator(coroutineRule.testDispatchers)
+
+    @Test
+    fun `given no Admin PIN, when reading PINs, then protection is off`() = runTest {
+        assertThat(store.getPINs(1).getOrThrow()).isEmpty()
+        assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "1234").getOrThrow()).isNull()
+        WooPosLocalRole.entries.filter { it != WooPosLocalRole.ADMIN }.forEach { role ->
+            assertThat(store.setPIN(1, role, "5678").exceptionOrNull())
+                .isEqualTo(WooPosPINError.AdminRequired)
+        }
+        assertThat(storage.writtenSiteIds).isEmpty()
+    }
+
+    @Test
+    fun `given Admin and Cashier PINs, when authenticating, then each has its permission set`() = runTest {
+        // GIVEN
+        store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+        store.setPIN(1, WooPosLocalRole.CASHIER, "5678").getOrThrow()
+
+        // THEN
+        assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "1234").getOrThrow()?.capabilities)
+            .containsExactlyInAnyOrderElementsOf(WooPosCapability.entries)
+        assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "5678").getOrThrow()?.capabilities)
+            .containsExactlyInAnyOrder(
+                WooPosCapability.PROCESS_SALES,
+                WooPosCapability.VIEW_ORDERS,
+                WooPosCapability.APPLY_COUPONS
+            )
+        assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "9999").getOrThrow()).isNull()
+    }
+
+    @Test
+    fun `given same PIN for both roles, when setting either role, then the existing PINs remain`() = runTest {
+        // GIVEN
+        store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+        store.setPIN(1, WooPosLocalRole.CASHIER, "5678").getOrThrow()
+
+        // THEN
+        assertThat(store.setPIN(1, WooPosLocalRole.CASHIER, "1234").exceptionOrNull())
+            .isEqualTo(WooPosPINError.MatchesOtherRole)
+        assertThat(store.setPIN(1, WooPosLocalRole.ADMIN, "5678").exceptionOrNull())
+            .isEqualTo(WooPosPINError.MatchesOtherRole)
+        assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "1234").getOrThrow()).isNotNull()
+        assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "5678").getOrThrow()).isNotNull()
+    }
+
+    @Test
+    fun `given a configured store, when switching stores and recreating repository, then PINs stay separate`() = runTest {
+        // GIVEN
+        store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+        store.setPIN(2, WooPosLocalRole.ADMIN, "5678").getOrThrow()
+        val recreatedStore = WooPosLocalPINStore(storage, coroutineRule.testDispatchers)
+        val recreated = WooPosPINAuthenticator(coroutineRule.testDispatchers)
+
+        // THEN
+        assertThat(recreated.authenticate(recreatedStore.getPINs(1).getOrThrow(), "1234").getOrThrow()).isNotNull()
+        assertThat(recreated.authenticate(recreatedStore.getPINs(2).getOrThrow(), "1234").getOrThrow()).isNull()
+        assertThat(recreated.authenticate(recreatedStore.getPINs(2).getOrThrow(), "5678").getOrThrow()).isNotNull()
+    }
+
+    @Test
+    fun `given a non-Admin PIN, when it is removed, then only Admin remains`() = runTest {
+        // GIVEN
+        store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+        WooPosLocalRole.entries.filter { it != WooPosLocalRole.ADMIN }.forEach { role ->
+            store.setPIN(1, role, "5678").getOrThrow()
+
+            // WHEN
+            store.removePIN(1, role).getOrThrow()
+
+            // THEN
+            assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "1234").getOrThrow()).isNotNull()
+            assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "5678").getOrThrow()).isNull()
+            assertThat(store.getPINs(1).getOrThrow()).hasSize(1)
+        }
+    }
+
+    @Test
+    fun `given both PINs, when Admin PIN is removed, then both PINs are removed only from that store`() = runTest {
+        // GIVEN
+        store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+        store.setPIN(1, WooPosLocalRole.CASHIER, "5678").getOrThrow()
+        store.setPIN(2, WooPosLocalRole.ADMIN, "0000").getOrThrow()
+
+        // WHEN
+        store.removePIN(1, WooPosLocalRole.ADMIN).getOrThrow()
+
+        // THEN
+        assertThat(store.getPINs(1).getOrThrow()).isEmpty()
+        assertThat(store.getPINs(2).getOrThrow()).hasSize(1)
+    }
+
+    @Test
+    fun `given multiple stores, when clearing for logout, then all local PINs are removed`() = runTest {
+        // GIVEN
+        store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+        store.setPIN(2, WooPosLocalRole.ADMIN, "5678").getOrThrow()
+
+        // WHEN
+        store.clearAll().getOrThrow()
+
+        // THEN
+        assertThat(store.getPINs(1).getOrThrow()).isEmpty()
+        assertThat(store.getPINs(2).getOrThrow()).isEmpty()
+    }
+
+    @Test
+    fun `given invalid PIN formats, when setting PINs, then each is rejected without storage writes`() = runTest {
+        val unreadable = byteArrayOf(1, 2, 3)
+        storage.entries[1] = unreadable
+        listOf("", "123", "12345", "12a4", "１２３４", "١٢٣٤", " 123", "123\n").forEach { pin ->
+            assertThat(store.setPIN(1, WooPosLocalRole.ADMIN, pin).exceptionOrNull())
+                .isEqualTo(WooPosPINError.InvalidFormat)
+        }
+        assertThat(storage.writtenSiteIds).isEmpty()
+        assertThat(storage.entries.getValue(1)).containsExactly(*unreadable)
+    }
+
+    @Test
+    fun `given invalid site identity, when changing PINs, then storage is unchanged`() = runTest {
+        // GIVEN
+        val records = mapOf(0 to byteArrayOf(0), -1 to byteArrayOf(-1), 1 to byteArrayOf(1))
+        storage.entries.putAll(records)
+
+        // WHEN
+        listOf(0, -1).forEach { siteId ->
+            WooPosLocalRole.entries.forEach { role ->
+                assertThat(store.setPIN(siteId, role, "1234").exceptionOrNull())
+                    .isEqualTo(WooPosPINError.StorageFailure)
+                assertThat(store.removePIN(siteId, role).exceptionOrNull())
+                    .isEqualTo(WooPosPINError.StorageFailure)
+            }
+        }
+
+        // THEN
+        assertThat(storage.writtenSiteIds).isEmpty()
+        assertThat(storage.entries).isEqualTo(records)
+    }
+
+    @Test
+    fun `given malformed records, when reading or replacing PINs, then storage fails and records are preserved`() = runTest {
+        // GIVEN
+        storage.entries[1] = byteArrayOf(1, 2, 3)
+
+        // THEN
+        assertThat(store.getPINs(1).exceptionOrNull()).isEqualTo(WooPosPINError.StorageFailure)
+        assertThat(store.setPIN(1, WooPosLocalRole.ADMIN, "1234").exceptionOrNull())
+            .isEqualTo(WooPosPINError.StorageFailure)
+        assertThat(storage.entries[1]).containsExactly(1, 2, 3)
+    }
+
+    @Test
+    fun `given unreadable secure storage, when reading PINs, then failure is not protection off`() = runTest {
+        // GIVEN
+        val failingStorage: WooPosPINStorage = mock {
+            on { read(any()) } doThrow IllegalStateException("Keystore unavailable")
+        }
+        val failingStore = WooPosLocalPINStore(failingStorage, coroutineRule.testDispatchers)
+
+        // THEN
+        assertThat(failingStore.getPINs(1).exceptionOrNull()).isEqualTo(WooPosPINError.StorageFailure)
+    }
+
+    @Test
+    fun `given cancelled storage operation, when reading PINs, then cancellation propagates`() = runTest {
+        // GIVEN
+        val cancelledStorage: WooPosPINStorage = mock()
+        whenever(cancelledStorage.read(1)).thenThrow(CancellationException())
+        val cancelledStore = WooPosLocalPINStore(cancelledStorage, coroutineRule.testDispatchers)
+
+        // WHEN
+        val failure = runCatching { cancelledStore.getPINs(1) }.exceptionOrNull()
+
+        // THEN
+        assertThat(failure).isInstanceOf(CancellationException::class.java)
+    }
+
+    @Test
+    fun `given an unreadable record, when removing Admin PIN, then it can still be erased`() = runTest {
+        // GIVEN
+        storage.entries[1] = byteArrayOf(1, 2, 3)
+
+        // WHEN
+        store.removePIN(1, WooPosLocalRole.ADMIN).getOrThrow()
+
+        // THEN
+        assertThat(storage.entries).isEmpty()
+    }
+
+    private class MemoryStorage : WooPosPINStorage {
+        val entries = mutableMapOf<Int, ByteArray>()
+        val writtenSiteIds = mutableListOf<Int>()
+        override fun read(localSiteId: Int): ByteArray? = entries[localSiteId]
+        override fun write(localSiteId: Int, bytes: ByteArray?) {
+            writtenSiteIds.add(localSiteId)
+            if (bytes == null) entries.remove(localSiteId) else entries[localSiteId] = bytes
+        }
+        override fun clearAll() = entries.clear()
+    }
+}
