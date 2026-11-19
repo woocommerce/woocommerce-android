@@ -4,26 +4,41 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDevice
 import com.woocommerce.android.ui.woopos.util.WooPosPermissionUtils
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ReceiptPrinterSetupSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class WooPosReceiptPrinterSetupViewModel @Inject constructor(
     controllerFactory: WooPosReceiptPrinterConnectionController.Factory,
     private val permissionUtils: WooPosPermissionUtils,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private val controller = controllerFactory.create(viewModelScope)
 
     val state: StateFlow<WooPosReceiptPrinterConnectionState> = controller.state
 
+    private lateinit var source: ReceiptPrinterSetupSource
+
     // The dialog calls this again when the Activity is recreated (for example when a Bluetooth scanner connects),
     // so a setup that is already running is left alone instead of being restarted.
-    fun startSetup() {
-        if (state.value is WooPosReceiptPrinterConnectionState.Idle) controller.startSetup()
+    fun startSetup(source: ReceiptPrinterSetupSource) {
+        if (state.value !is WooPosReceiptPrinterConnectionState.Idle) return
+        this.source = source
+        track(WooPosAnalyticsEvent.Event.ReceiptPrinterSetupStarted(source))
+        controller.startSetup()
     }
 
     fun dismissDialog() {
+        controller.cancelSetup()
+    }
+
+    fun onConnected() {
+        track(WooPosAnalyticsEvent.Event.ReceiptPrinterConnected(source))
         controller.cancelSetup()
     }
 
@@ -57,5 +72,9 @@ class WooPosReceiptPrinterSetupViewModel @Inject constructor(
 
     fun onSearchAgainClicked() {
         controller.startSetup()
+    }
+
+    private fun track(event: WooPosAnalyticsEvent) {
+        viewModelScope.launch { analyticsTracker.track(event) }
     }
 }

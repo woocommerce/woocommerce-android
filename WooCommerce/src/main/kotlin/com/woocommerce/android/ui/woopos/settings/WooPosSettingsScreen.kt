@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSetting
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupViewModel
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialog
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialogState
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ReceiptPrinterSetupSource
 import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 
 @Composable
@@ -275,6 +276,7 @@ private fun SettingsDialogs(
 
     if (dialogState is WooPosSettingsDialogState.ReceiptPrinterSetupDialog) {
         WooPosReceiptPrinterSetupDialog(
+            source = ReceiptPrinterSetupSource.SETTINGS,
             onDismiss = onDismissDialog,
             onConnectionSuccess = onDismissDialog
         )

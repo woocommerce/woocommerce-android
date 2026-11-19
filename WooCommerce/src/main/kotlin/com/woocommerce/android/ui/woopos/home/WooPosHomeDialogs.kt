@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitCo
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailureDialog
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterSetupDialog
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupDialog
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ReceiptPrinterSetupSource
 
 @Composable
 fun WooPosHomeDialogs(
@@ -38,6 +39,7 @@ fun WooPosHomeDialogs(
 
     if (dialogState is WooPosHomeState.DialogState.ReceiptPrinterSetupDialog) {
         WooPosReceiptPrinterSetupDialog(
+            source = ReceiptPrinterSetupSource.PRINT_RECEIPT,
             onDismiss = { onHomeUIEvent(WooPosHomeUIEvent.DismissReceiptPrinterSetupDialog) },
             onConnectionSuccess = { onHomeUIEvent(WooPosHomeUIEvent.ReceiptPrinterConnected) }
         )

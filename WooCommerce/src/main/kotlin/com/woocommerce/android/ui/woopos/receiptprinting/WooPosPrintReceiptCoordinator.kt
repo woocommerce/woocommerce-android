@@ -2,9 +2,12 @@ package com.woocommerce.android.ui.woopos.receiptprinting
 
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardDetails
 import com.woocommerce.android.receiptprinter.ReceiptPrinterConnectionStatus
+import com.woocommerce.android.receiptprinter.ReceiptPrinterError
 import com.woocommerce.android.receiptprinter.ReceiptPrinterResult
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.WooPosReceiptPrintingEnabled
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -24,6 +27,7 @@ import kotlin.time.Duration.Companion.seconds
 class WooPosPrintReceiptCoordinator @AssistedInject constructor(
     private val receiptPrinterFacade: WooPosReceiptPrinterFacade,
     private val logger: WooPosLogWrapper,
+    private val analyticsTracker: WooPosAnalyticsTracker,
     isReceiptPrintingEnabled: WooPosReceiptPrintingEnabled,
     @Assisted private val scope: CoroutineScope,
 ) {
@@ -40,6 +44,17 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
 
     fun onPrintReceiptClicked(orderId: Long) {
         if (_buttonState.value != WooPosPrintReceiptButtonState.Idle) return
+        track(WooPosAnalyticsEvent.Event.ReceiptPrintTapped)
+        printOrShowPrinterSetup(orderId)
+    }
+
+    fun onPrintRetryClicked(orderId: Long) {
+        if (_buttonState.value != WooPosPrintReceiptButtonState.Idle) return
+        track(WooPosAnalyticsEvent.Event.ReceiptPrintRetryTapped)
+        printOrShowPrinterSetup(orderId)
+    }
+
+    private fun printOrShowPrinterSetup(orderId: Long) {
         if (isPrinterConnected()) {
             print(orderId)
         } else {
@@ -66,7 +81,9 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
         val cardDetails = cardPayment?.takeIf { it.first == orderId }?.second
         scope.launch {
             // A receipt that was asked for is printed even if the screen that asked for it is left meanwhile.
-            val result = withContext(NonCancellable) { receiptPrinterFacade.printReceipt(orderId, cardDetails) }
+            val result = withContext(NonCancellable) {
+                receiptPrinterFacade.printReceipt(orderId, cardDetails).also { trackPrintResult(it) }
+            }
             when (result) {
                 ReceiptPrinterResult.Success -> {
                     _buttonState.value = WooPosPrintReceiptButtonState.Success
@@ -86,6 +103,22 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
         }
     }
 
+    private suspend fun trackPrintResult(result: ReceiptPrinterResult) {
+        val event = when (result) {
+            ReceiptPrinterResult.Success -> WooPosAnalyticsEvent.Event.ReceiptPrintSuccess
+            is ReceiptPrinterResult.Failure -> WooPosAnalyticsEvent.Error.ReceiptPrintFailed(
+                errorContext = this::class,
+                errorType = result.error.analyticsType,
+                errorDescription = result.error.analyticsDescription,
+            )
+        }
+        analyticsTracker.track(event)
+    }
+
+    private fun track(event: WooPosAnalyticsEvent) {
+        scope.launch { analyticsTracker.track(event) }
+    }
+
     private fun isPrinterConnected() =
         receiptPrinterFacade.connectionStatus.value is ReceiptPrinterConnectionStatus.Connected
 
@@ -98,6 +131,24 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
         val SUCCESS_DURATION = 2.seconds
     }
 }
+
+private val ReceiptPrinterError.analyticsType: String
+    get() = when (this) {
+        ReceiptPrinterError.DiscoveryFailure -> "discoveryFailure"
+        ReceiptPrinterError.PrinterNotFound -> "printerNotFound"
+        ReceiptPrinterError.PrinterNotConnected -> "printerNotConnected"
+        ReceiptPrinterError.PaperEmpty -> "paperEmpty"
+        ReceiptPrinterError.CoverOpen -> "coverOpen"
+        is ReceiptPrinterError.ConnectionLost -> "connectionLost"
+        is ReceiptPrinterError.PrintFailed -> "printFailed"
+    }
+
+private val ReceiptPrinterError.analyticsDescription: String
+    get() = when (this) {
+        is ReceiptPrinterError.ConnectionLost -> cause?.message
+        is ReceiptPrinterError.PrintFailed -> cause?.message
+        else -> null
+    } ?: analyticsType
 
 enum class WooPosPrintReceiptButtonState { Hidden, Idle, Loading, Success }
 
