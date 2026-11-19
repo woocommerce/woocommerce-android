@@ -5,6 +5,7 @@ source 'https://rubygems.org'
 gem 'danger-dangermattic', '~> 1.4'
 gem 'fastlane', '~> 2.241'
 gem 'fastlane-plugin-firebase_app_distribution', '~> 1.0'
+gem 'minitest', '~> 5.27'
 gem 'rubocop', '~> 1.92'
 
 ### Fastlane Plugins
