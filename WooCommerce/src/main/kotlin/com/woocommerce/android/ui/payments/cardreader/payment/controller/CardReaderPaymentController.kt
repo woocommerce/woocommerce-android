@@ -30,6 +30,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalI
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_CARD
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_READ_METHOD
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardDetails
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
@@ -143,6 +144,7 @@ class CardReaderPaymentController(
     private var paymentFlowJob: Job? = null
     private var refundFlowJob: Job? = null
     private var paymentDataForRetry: PaymentData? = null
+    private var cardDetails: CardDetails? = null
 
     private var refetchOrderJob: Job? = null
 
@@ -515,6 +517,7 @@ class CardReaderPaymentController(
         previousStatusKey: String?,
     ) {
         paymentReceiptHelper.storeReceiptUrl(orderId, paymentStatus.receiptUrl)
+        cardDetails = paymentStatus.cardDetails
         appPrefs.setCardReaderSuccessfulPaymentTime()
         newOrderNotificationSuppressionCache.onOrderPaidRemotely(
             siteId = selectedSite.get().siteId,
@@ -689,7 +692,8 @@ class CardReaderPaymentController(
                     amountLabel = amountLabel,
                     onPrintReceiptClicked = onPrintReceiptClicked,
                     onSendReceiptClicked = onSendReceiptClicked,
-                    onSaveUserClicked = onSaveUserClicked
+                    onSaveUserClicked = onSaveUserClicked,
+                    cardDetails = cardDetails,
                 )
             } else {
                 _paymentState.value = paymentStateProvider.providePaymentSuccessfulReceiptSentAutomaticallyState(
@@ -697,7 +701,8 @@ class CardReaderPaymentController(
                     amountLabel = amountLabel,
                     recipientEmail = order.billingAddress.email,
                     onPrintReceiptClicked = onPrintReceiptClicked,
-                    onSaveUserClicked = onSaveUserClicked
+                    onSaveUserClicked = onSaveUserClicked,
+                    cardDetails = cardDetails,
                 )
             }
         }

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.receiptprinting
 
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardDetails
 import com.woocommerce.android.receiptprinter.ReceiptPrinterConnectionStatus
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDevice
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDiscoveryEvent
@@ -39,7 +40,7 @@ class WooPosReceiptPrinterFacadeTest {
         on { printReceipt(RECEIPT_TEXT) } doReturn ReceiptPrinterResult.Success
     }
     private val buildThermalReceipt: WooPosBuildThermalReceipt = mock {
-        on { invoke(ORDER_ID) } doReturn RECEIPT
+        on { invoke(ORDER_ID, null) } doReturn RECEIPT
     }
 
     private val sut = WooPosReceiptPrinterFacade(
@@ -83,11 +84,24 @@ class WooPosReceiptPrinterFacadeTest {
     @Test
     fun `given an order, when printReceipt is called, then the rendered receipt is printed`() = runTest {
         // WHEN
-        val result = sut.printReceipt(ORDER_ID)
+        val result = sut.printReceipt(ORDER_ID, null)
 
         // THEN
         verify(receiptPrinterManager).printReceipt(RECEIPT_TEXT)
         assertThat(result).isEqualTo(ReceiptPrinterResult.Success)
+    }
+
+    @Test
+    fun `given card details, when printReceipt is called, then the receipt is built with them`() = runTest {
+        // GIVEN
+        val cardDetails = CardDetails(brand = "visa", last4 = "4242")
+        whenever(buildThermalReceipt(ORDER_ID, cardDetails)).thenReturn(RECEIPT)
+
+        // WHEN
+        sut.printReceipt(ORDER_ID, cardDetails)
+
+        // THEN
+        verify(buildThermalReceipt).invoke(ORDER_ID, cardDetails)
     }
 
     @Test
@@ -97,7 +111,7 @@ class WooPosReceiptPrinterFacadeTest {
             .thenReturn(ReceiptPrinterResult.Failure(ReceiptPrinterError.PaperEmpty))
 
         // WHEN
-        val result = sut.printReceipt(ORDER_ID)
+        val result = sut.printReceipt(ORDER_ID, null)
 
         // THEN
         assertThat(result).isEqualTo(ReceiptPrinterResult.Failure(ReceiptPrinterError.PaperEmpty))
@@ -106,10 +120,10 @@ class WooPosReceiptPrinterFacadeTest {
     @Test
     fun `given the order is not found, when printReceipt is called, then it fails without printing`() = runTest {
         // GIVEN
-        whenever(buildThermalReceipt(ORDER_ID)).thenReturn(null)
+        whenever(buildThermalReceipt(ORDER_ID, null)).thenReturn(null)
 
         // WHEN
-        val result = sut.printReceipt(ORDER_ID)
+        val result = sut.printReceipt(ORDER_ID, null)
 
         // THEN
         assertThat(result).isEqualTo(ReceiptPrinterResult.Failure(ReceiptPrinterError.PrintFailed()))

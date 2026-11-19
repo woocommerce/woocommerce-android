@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.ReaderType
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardDetails
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
@@ -753,7 +754,7 @@ class WooPosTotalsViewModel @Inject constructor(
             )
             when (result) {
                 WooPosRemoteReaderPaymentFlow.Result.Completed -> {
-                    notifyOrderPaidByCard()
+                    notifyOrderPaidByCard(cardDetails = null)
                 }
                 is WooPosRemoteReaderPaymentFlow.Result.Failed -> {
                     uiState.value = PaymentFailed(
@@ -870,7 +871,8 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun notifyOrderPaidByCard() {
+    private suspend fun notifyOrderPaidByCard(cardDetails: CardDetails?) {
+        printReceiptCoordinator.onOrderPaidByCard(dataState.value.orderId, cardDetails)
         childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.CARD))
     }
 
@@ -885,7 +887,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 isTTPPaymentInProgress = false
                 resetTapToPayProgress()
                 viewModelScope.launch { builtInReaderConnector.disconnectIfConnected() }
-                notifyOrderPaidByCard()
+                notifyOrderPaidByCard(paymentState.cardDetails)
             }
 
             is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment -> {
@@ -923,7 +925,7 @@ class WooPosTotalsViewModel @Inject constructor(
             is CardReaderPaymentState.PaymentCapturing -> handleCapturingPaymentState()
 
             is CardReaderPaymentState.PaymentSuccessful ->
-                notifyOrderPaidByCard()
+                notifyOrderPaidByCard(paymentState.cardDetails)
 
             is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment -> {
                 uiState.value = buildPaymentFailedState(paymentState)

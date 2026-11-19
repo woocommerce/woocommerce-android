@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.receiptprinting
 
 import app.cash.turbine.test
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardDetails
 import com.woocommerce.android.receiptprinter.ReceiptPrinterConnectionStatus
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDevice
 import com.woocommerce.android.receiptprinter.ReceiptPrinterError
@@ -27,6 +28,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
@@ -77,7 +79,7 @@ class WooPosPrintReceiptCoordinatorTest {
         runTest {
             // GIVEN
             connectPrinter()
-            whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).thenReturn(ReceiptPrinterResult.Success)
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).thenReturn(ReceiptPrinterResult.Success)
             val sut = createCoordinator()
 
             sut.events.test {
@@ -86,7 +88,7 @@ class WooPosPrintReceiptCoordinatorTest {
                 runCurrent()
 
                 // THEN
-                verify(receiptPrinterFacade).printReceipt(ORDER_ID)
+                verify(receiptPrinterFacade).printReceipt(ORDER_ID, null)
                 expectNoEvents()
             }
         }
@@ -105,7 +107,7 @@ class WooPosPrintReceiptCoordinatorTest {
                 // THEN
                 assertThat(awaitItem()).isEqualTo(WooPosPrintReceiptEvent.ShowPrinterSetup)
                 assertThat(sut.buttonState.value).isEqualTo(Idle)
-                verify(receiptPrinterFacade, never()).printReceipt(any())
+                verify(receiptPrinterFacade, never()).printReceipt(any(), anyOrNull())
             }
         }
 
@@ -113,7 +115,7 @@ class WooPosPrintReceiptCoordinatorTest {
     fun `given setup was requested, when setup reports a connected printer, then the receipt is printed`() =
         runTest {
             // GIVEN
-            whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).thenReturn(ReceiptPrinterResult.Success)
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).thenReturn(ReceiptPrinterResult.Success)
             val sut = createCoordinator()
             sut.onPrintReceiptClicked(ORDER_ID)
 
@@ -123,7 +125,7 @@ class WooPosPrintReceiptCoordinatorTest {
             runCurrent()
 
             // THEN
-            verify(receiptPrinterFacade).printReceipt(ORDER_ID)
+            verify(receiptPrinterFacade).printReceipt(ORDER_ID, null)
         }
 
     @Test
@@ -138,14 +140,14 @@ class WooPosPrintReceiptCoordinatorTest {
             runCurrent()
 
             // THEN
-            verify(receiptPrinterFacade, never()).printReceipt(any())
+            verify(receiptPrinterFacade, never()).printReceipt(any(), anyOrNull())
         }
 
     @Test
     fun `given the coordinator was recreated during setup, when setup reports a connected printer, then the receipt is printed`() =
         runTest {
             // GIVEN
-            whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).thenReturn(ReceiptPrinterResult.Success)
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).thenReturn(ReceiptPrinterResult.Success)
             createCoordinator().onPrintReceiptClicked(ORDER_ID)
             val recreated = createCoordinator()
 
@@ -155,14 +157,14 @@ class WooPosPrintReceiptCoordinatorTest {
             runCurrent()
 
             // THEN
-            verify(receiptPrinterFacade).printReceipt(ORDER_ID)
+            verify(receiptPrinterFacade).printReceipt(ORDER_ID, null)
         }
 
     @Test
     fun `given a printer is connected, when the receipt is printing, then the button is loading`() = runTest {
         // GIVEN
         connectPrinter()
-        whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).doSuspendableAnswer {
+        whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).doSuspendableAnswer {
             CompletableDeferred<ReceiptPrinterResult>().await()
         }
         val sut = createCoordinator()
@@ -179,7 +181,7 @@ class WooPosPrintReceiptCoordinatorTest {
     fun `given the receipt is printing, when print receipt is clicked again, then it is printed once`() = runTest {
         // GIVEN
         connectPrinter()
-        whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).doSuspendableAnswer {
+        whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).doSuspendableAnswer {
             CompletableDeferred<ReceiptPrinterResult>().await()
         }
         val sut = createCoordinator()
@@ -191,14 +193,14 @@ class WooPosPrintReceiptCoordinatorTest {
         runCurrent()
 
         // THEN
-        verify(receiptPrinterFacade, times(1)).printReceipt(ORDER_ID)
+        verify(receiptPrinterFacade, times(1)).printReceipt(ORDER_ID, null)
     }
 
     @Test
     fun `given the receipt is printing, when setup reports a connected printer, then it is printed once`() = runTest {
         // GIVEN
         connectPrinter()
-        whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).doSuspendableAnswer {
+        whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).doSuspendableAnswer {
             CompletableDeferred<ReceiptPrinterResult>().await()
         }
         val sut = createCoordinator()
@@ -210,7 +212,7 @@ class WooPosPrintReceiptCoordinatorTest {
         runCurrent()
 
         // THEN
-        verify(receiptPrinterFacade, times(1)).printReceipt(ORDER_ID)
+        verify(receiptPrinterFacade, times(1)).printReceipt(ORDER_ID, null)
     }
 
     @Test
@@ -220,7 +222,7 @@ class WooPosPrintReceiptCoordinatorTest {
         val printStarted = CompletableDeferred<Unit>()
         val printMayFinish = CompletableDeferred<Unit>()
         var isPrintFinished = false
-        whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).doSuspendableAnswer {
+        whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).doSuspendableAnswer {
             printStarted.complete(Unit)
             printMayFinish.await()
             isPrintFinished = true
@@ -246,7 +248,7 @@ class WooPosPrintReceiptCoordinatorTest {
         runTest {
             // GIVEN
             connectPrinter()
-            whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).thenReturn(ReceiptPrinterResult.Success)
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).thenReturn(ReceiptPrinterResult.Success)
             val sut = createCoordinator()
 
             // WHEN
@@ -266,7 +268,7 @@ class WooPosPrintReceiptCoordinatorTest {
         runTest {
             // GIVEN
             connectPrinter()
-            whenever(receiptPrinterFacade.printReceipt(ORDER_ID))
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null))
                 .thenReturn(ReceiptPrinterResult.Failure(ReceiptPrinterError.PaperEmpty))
             val sut = createCoordinator()
 
@@ -288,7 +290,7 @@ class WooPosPrintReceiptCoordinatorTest {
         runTest {
             // GIVEN
             connectPrinter()
-            whenever(receiptPrinterFacade.printReceipt(ORDER_ID))
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null))
                 .thenReturn(ReceiptPrinterResult.Failure(ReceiptPrinterError.PaperEmpty))
             val sut = createCoordinator()
             sut.onPrintReceiptClicked(ORDER_ID)
@@ -299,7 +301,7 @@ class WooPosPrintReceiptCoordinatorTest {
             runCurrent()
 
             // THEN
-            verify(receiptPrinterFacade, times(2)).printReceipt(ORDER_ID)
+            verify(receiptPrinterFacade, times(2)).printReceipt(ORDER_ID, null)
         }
 
     @Test
@@ -307,7 +309,7 @@ class WooPosPrintReceiptCoordinatorTest {
         runTest {
             // GIVEN
             connectPrinter()
-            whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).doSuspendableAnswer {
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).doSuspendableAnswer {
                 connectionStatus.value = ReceiptPrinterConnectionStatus.Disconnected
                 ReceiptPrinterResult.Failure(ReceiptPrinterError.ConnectionLost())
             }
@@ -325,7 +327,7 @@ class WooPosPrintReceiptCoordinatorTest {
 
                 // THEN
                 assertThat(awaitItem()).isEqualTo(WooPosPrintReceiptEvent.ShowPrinterSetup)
-                verify(receiptPrinterFacade, times(1)).printReceipt(ORDER_ID)
+                verify(receiptPrinterFacade, times(1)).printReceipt(ORDER_ID, null)
             }
         }
 
@@ -335,7 +337,7 @@ class WooPosPrintReceiptCoordinatorTest {
             // GIVEN
             connectPrinter()
             val printResult = CompletableDeferred<ReceiptPrinterResult>()
-            whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).doSuspendableAnswer { printResult.await() }
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).doSuspendableAnswer { printResult.await() }
             val sut = createCoordinator()
 
             sut.events.test {
@@ -359,7 +361,7 @@ class WooPosPrintReceiptCoordinatorTest {
             // GIVEN
             connectPrinter()
             val printResult = CompletableDeferred<ReceiptPrinterResult>()
-            whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).doSuspendableAnswer { printResult.await() }
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).doSuspendableAnswer { printResult.await() }
             val sut = createCoordinator()
 
             sut.events.test {
@@ -377,8 +379,79 @@ class WooPosPrintReceiptCoordinatorTest {
                 // THEN
                 assertThat(awaitItem())
                     .isEqualTo(WooPosPrintReceiptEvent.PrintFailed(ORDER_ID, WooPosPrintReceiptFailure.PaperEmpty))
-                verify(receiptPrinterFacade, times(2)).printReceipt(ORDER_ID)
+                verify(receiptPrinterFacade, times(2)).printReceipt(ORDER_ID, null)
             }
+        }
+
+    @Test
+    fun `given the order was paid by card, when its receipt is printed, then the card details are printed`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, CARD_DETAILS)).thenReturn(ReceiptPrinterResult.Success)
+            val sut = createCoordinator()
+            sut.onOrderPaidByCard(ORDER_ID, CARD_DETAILS)
+
+            // WHEN
+            sut.onPrintReceiptClicked(ORDER_ID)
+            runCurrent()
+
+            // THEN
+            verify(receiptPrinterFacade).printReceipt(ORDER_ID, CARD_DETAILS)
+        }
+
+    @Test
+    fun `given another order was paid by card, when a receipt is printed, then no card details are printed`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).thenReturn(ReceiptPrinterResult.Success)
+            val sut = createCoordinator()
+            sut.onOrderPaidByCard(OTHER_ORDER_ID, CARD_DETAILS)
+
+            // WHEN
+            sut.onPrintReceiptClicked(ORDER_ID)
+            runCurrent()
+
+            // THEN
+            verify(receiptPrinterFacade).printReceipt(ORDER_ID, null)
+        }
+
+    @Test
+    fun `given the order was paid by card without card details, when its receipt is printed, then no card details are printed`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).thenReturn(ReceiptPrinterResult.Success)
+            val sut = createCoordinator()
+            sut.onOrderPaidByCard(ORDER_ID, CARD_DETAILS)
+            sut.onOrderPaidByCard(ORDER_ID, null)
+
+            // WHEN
+            sut.onPrintReceiptClicked(ORDER_ID)
+            runCurrent()
+
+            // THEN
+            verify(receiptPrinterFacade).printReceipt(ORDER_ID, null)
+        }
+
+    @Test
+    fun `given a card receipt was printed, when it is printed again, then the card details are printed again`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, CARD_DETAILS)).thenReturn(ReceiptPrinterResult.Success)
+            val sut = createCoordinator()
+            sut.onOrderPaidByCard(ORDER_ID, CARD_DETAILS)
+            sut.onPrintReceiptClicked(ORDER_ID)
+            advanceTimeBy(3_000)
+
+            // WHEN
+            sut.onPrintReceiptClicked(ORDER_ID)
+            runCurrent()
+
+            // THEN
+            verify(receiptPrinterFacade, times(2)).printReceipt(ORDER_ID, CARD_DETAILS)
         }
 
     private fun connectPrinter() {
@@ -396,5 +469,7 @@ class WooPosPrintReceiptCoordinatorTest {
 
     private companion object {
         const val ORDER_ID = 123L
+        const val OTHER_ORDER_ID = 456L
+        val CARD_DETAILS = CardDetails(brand = "visa", last4 = "4242")
     }
 }

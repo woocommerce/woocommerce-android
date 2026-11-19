@@ -4615,6 +4615,8 @@
 
     <string name="woopos_receipt_date_paid">Date Paid</string>
     <string name="woopos_receipt_order_number">Order #%1$s</string>
+    <string name="woopos_receipt_payment_method">Payment Method</string>
+    <string name="woopos_receipt_card_brand_and_last4">%1$s - %2$s</string>
     <string name="woopos_receipt_item_with_attributes">%1$s. %2$s</string>
     <string name="woopos_receipt_item_and_quantity">%1$s x%2$s</string>
     <string name="woopos_receipt_subtotal">Subtotal</string>

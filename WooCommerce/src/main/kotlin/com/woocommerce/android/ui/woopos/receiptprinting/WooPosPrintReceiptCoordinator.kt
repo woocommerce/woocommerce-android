@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.receiptprinting
 
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardDetails
 import com.woocommerce.android.receiptprinter.ReceiptPrinterConnectionStatus
 import com.woocommerce.android.receiptprinter.ReceiptPrinterResult
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
@@ -35,6 +36,7 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
     val events: SharedFlow<WooPosPrintReceiptEvent> = _events.asSharedFlow()
 
     private var isPrintFailureIgnored = false
+    private var cardPayment: Pair<Long, CardDetails>? = null
 
     fun onPrintReceiptClicked(orderId: Long) {
         if (_buttonState.value != WooPosPrintReceiptButtonState.Idle) return
@@ -50,6 +52,10 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
         print(orderId)
     }
 
+    fun onOrderPaidByCard(orderId: Long, cardDetails: CardDetails?) {
+        cardPayment = cardDetails?.let { orderId to it }
+    }
+
     fun onEmailReceiptOpened() {
         isPrintFailureIgnored = true
     }
@@ -57,9 +63,11 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
     private fun print(orderId: Long) {
         _buttonState.value = WooPosPrintReceiptButtonState.Loading
         isPrintFailureIgnored = false
+        val cardDetails = cardPayment?.takeIf { it.first == orderId }?.second
         scope.launch {
             // A receipt that was asked for is printed even if the screen that asked for it is left meanwhile.
-            when (val result = withContext(NonCancellable) { receiptPrinterFacade.printReceipt(orderId) }) {
+            val result = withContext(NonCancellable) { receiptPrinterFacade.printReceipt(orderId, cardDetails) }
+            when (result) {
                 ReceiptPrinterResult.Success -> {
                     _buttonState.value = WooPosPrintReceiptButtonState.Success
                     delay(SUCCESS_DURATION)
