@@ -13,8 +13,12 @@ import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButto
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButtonState.Success
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
@@ -192,6 +196,34 @@ class WooPosPrintReceiptCoordinatorTest {
     }
 
     @Test
+    fun `given the receipt is being printed, when the scope is cancelled, then the print still completes`() = runTest {
+        // GIVEN
+        connectPrinter()
+        val printStarted = CompletableDeferred<Unit>()
+        val printMayFinish = CompletableDeferred<Unit>()
+        var isPrintFinished = false
+        whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).doSuspendableAnswer {
+            printStarted.complete(Unit)
+            printMayFinish.await()
+            isPrintFinished = true
+            ReceiptPrinterResult.Success
+        }
+        val scope = CoroutineScope(StandardTestDispatcher(testScheduler) + Job())
+        val sut = createCoordinator(scope)
+        sut.onPrintReceiptClicked(ORDER_ID)
+        runCurrent()
+        assertThat(printStarted.isCompleted).isTrue()
+
+        // WHEN
+        scope.cancel()
+        printMayFinish.complete(Unit)
+        runCurrent()
+
+        // THEN
+        assertThat(isPrintFinished).isTrue()
+    }
+
+    @Test
     fun `given a printer is connected, when the receipt is printed, then the button shows success for 2 seconds`() =
         runTest {
             // GIVEN
@@ -235,11 +267,11 @@ class WooPosPrintReceiptCoordinatorTest {
         )
     }
 
-    private fun TestScope.createCoordinator() = WooPosPrintReceiptCoordinator(
+    private fun TestScope.createCoordinator(scope: CoroutineScope = backgroundScope) = WooPosPrintReceiptCoordinator(
         receiptPrinterFacade = receiptPrinterFacade,
         logger = logger,
         isReceiptPrintingEnabled = isReceiptPrintingEnabled,
-        scope = backgroundScope,
+        scope = scope,
     )
 
     private companion object {
