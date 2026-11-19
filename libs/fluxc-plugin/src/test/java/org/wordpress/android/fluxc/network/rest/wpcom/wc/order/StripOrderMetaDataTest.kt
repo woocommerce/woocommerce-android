@@ -97,4 +97,50 @@ class StripOrderMetaDataTest {
             )
         )
     }
+
+    @Test
+    fun `when metadata contains additional checkout field keys, then keep them in the list`() {
+        // Given
+        val rawMetadata = listOf(
+            WCMetaData(id = 1L, key = "_wc_billing/my-plugin/gov-id", value = "B-123"),
+            WCMetaData(id = 2L, key = "_wc_shipping/my-plugin/gov-id", value = "S-456"),
+            WCMetaData(id = 3L, key = "_wc_other/my-plugin/gift-message", value = "Happy birthday")
+        )
+
+        // When
+        val result = sut(rawMetadata)
+
+        // Then
+        assertThat(result).isEqualTo(rawMetadata)
+    }
+
+    @Test
+    fun `when metadata contains other internal wc keys, then remove them from the list`() {
+        // Given
+        val rawMetadata = listOf(
+            WCMetaData(id = 1L, key = "_wc_foo/my-plugin/field", value = "value"),
+            WCMetaData(id = 2L, key = "_wc_billing", value = "value"),
+            WCMetaData(id = 3L, key = "_wc_other/my-plugin/field", value = "value")
+        )
+
+        // When
+        val result = sut(rawMetadata)
+
+        // Then
+        assertThat(result.map { it.key }).containsExactly("_wc_other/my-plugin/field")
+    }
+
+    @Test
+    fun `when metadata contains order attribution keys, then keep them in the list`() {
+        // Given
+        val rawMetadata = listOf(
+            WCMetaData(id = 1L, key = "_wc_order_attribution_source_type", value = "utm")
+        )
+
+        // When
+        val result = sut(rawMetadata)
+
+        // Then
+        assertThat(result).isEqualTo(rawMetadata)
+    }
 }

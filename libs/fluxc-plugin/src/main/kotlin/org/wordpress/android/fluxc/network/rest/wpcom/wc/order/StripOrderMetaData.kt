@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.order
 
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
+import org.wordpress.android.fluxc.model.metadata.WCMetaData.AdditionalCheckoutFieldsKeys
 import org.wordpress.android.fluxc.model.metadata.WCMetaData.OrderAttributionInfoKeys
 import org.wordpress.android.fluxc.model.metadata.WCMetaData.SubscriptionMetadataKeys
 import javax.inject.Inject
@@ -16,7 +17,9 @@ class StripOrderMetaData @Inject internal constructor() {
     operator fun invoke(metaData: List<WCMetaData>): List<WCMetaData> {
         return metaData
             .filter {
-                it.isDisplayable || it.key in SUPPORTED_KEYS
+                it.isDisplayable ||
+                    it.key in SUPPORTED_KEYS ||
+                    AdditionalCheckoutFieldsKeys.ALL_PREFIXES.any { prefix -> it.key.startsWith(prefix) }
             }
     }
 }

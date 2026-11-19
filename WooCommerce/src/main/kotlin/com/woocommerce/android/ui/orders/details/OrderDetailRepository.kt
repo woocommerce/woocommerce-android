@@ -373,4 +373,7 @@ class OrderDetailRepository @Inject constructor(
     suspend fun getOrderAttributionInfo(orderId: Long) = OrderAttributionInfo(
         orderStore.getOrderMetadata(orderId, selectedSite.get())
     )
+
+    suspend fun getAdditionalCheckoutFields(orderId: Long) =
+        orderStore.getOrderMetadata(orderId, selectedSite.get()).toAdditionalCheckoutFields()
 }

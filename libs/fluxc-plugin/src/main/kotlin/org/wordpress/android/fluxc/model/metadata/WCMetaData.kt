@@ -106,6 +106,19 @@ data class WCMetaData(
             )
     }
 
+    object AdditionalCheckoutFieldsKeys {
+        const val BILLING_PREFIX = "_wc_billing/"
+        const val SHIPPING_PREFIX = "_wc_shipping/"
+        const val OTHER_PREFIX = "_wc_other/"
+
+        val ALL_PREFIXES
+            get() = setOf(
+                BILLING_PREFIX,
+                SHIPPING_PREFIX,
+                OTHER_PREFIX
+            )
+    }
+
     object AddOnsMetadataKeys {
         const val ADDONS_METADATA_KEY = "_product_addons"
     }
