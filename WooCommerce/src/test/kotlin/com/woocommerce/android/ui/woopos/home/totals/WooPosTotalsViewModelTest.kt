@@ -1742,7 +1742,7 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `given an order was created, when the receipt printer setup dialog is dismissed, then the coordinator gets the order id`() =
+    fun `given an order was created, when a receipt printer connects from setup, then the coordinator gets the order id`() =
         runTest {
             // GIVEN
             val events = MutableStateFlow<ParentToChildrenEvent>(
@@ -1757,10 +1757,10 @@ class WooPosTotalsViewModelTest {
             createViewModelAndSetupForSuccessfulOrderCreation(parentToChildrenEventFlow = events)
 
             // WHEN
-            events.value = ParentToChildrenEvent.ReceiptPrinterSetupDialogDismissed
+            events.value = ParentToChildrenEvent.ReceiptPrinterConnected
 
             // THEN
-            verify(printReceiptCoordinator).onPrinterSetupClosed(CREATED_ORDER_ID)
+            verify(printReceiptCoordinator).onPrinterConnected(CREATED_ORDER_ID)
         }
 
     @Test

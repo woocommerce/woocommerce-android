@@ -24,6 +24,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
@@ -222,11 +223,11 @@ class WooPosPaymentSuccessViewModelTest {
     }
 
     @Test
-    fun `given the setup dialog is shown, when it is dismissed, then it is hidden and the coordinator gets the order id`() =
+    fun `given the setup dialog is shown, when it is dismissed, then it is hidden and nothing is printed`() =
         runTest {
             // GIVEN
             whenever(resourceProvider.getString(any())).thenReturn("test")
-            val viewModel = createViewModel(orderId = 42L)
+            val viewModel = createViewModel()
             printReceiptEvents.emit(WooPosPrintReceiptEvent.ShowPrinterSetup)
 
             // WHEN
@@ -234,6 +235,22 @@ class WooPosPaymentSuccessViewModelTest {
 
             // THEN
             assertThat(viewModel.state.value.isReceiptPrinterSetupDialogVisible).isFalse()
-            verify(printReceiptCoordinator).onPrinterSetupClosed(42L)
+            verify(printReceiptCoordinator, never()).onPrinterConnected(any())
+        }
+
+    @Test
+    fun `given the setup dialog is shown, when a printer connects, then it is hidden and the coordinator gets the order id`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(any())).thenReturn("test")
+            val viewModel = createViewModel(orderId = 42L)
+            printReceiptEvents.emit(WooPosPrintReceiptEvent.ShowPrinterSetup)
+
+            // WHEN
+            viewModel.onReceiptPrinterConnected()
+
+            // THEN
+            assertThat(viewModel.state.value.isReceiptPrinterSetupDialogVisible).isFalse()
+            verify(printReceiptCoordinator).onPrinterConnected(42L)
         }
 }

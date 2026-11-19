@@ -43,8 +43,9 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
         }
     }
 
-    fun onPrinterSetupClosed(orderId: Long) {
-        if (isPrinterConnected()) print(orderId)
+    fun onPrinterConnected(orderId: Long) {
+        if (_buttonState.value != WooPosPrintReceiptButtonState.Idle) return
+        print(orderId)
     }
 
     private fun print(orderId: Long) {

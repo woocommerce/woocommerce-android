@@ -60,8 +60,7 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
         viewModelScope.launch {
             printReceiptCoordinator.events.collect { event ->
                 when (event) {
-                    WooPosPrintReceiptEvent.ShowPrinterSetup ->
-                        _state.update { it.copy(isReceiptPrinterSetupDialogVisible = true) }
+                    WooPosPrintReceiptEvent.ShowPrinterSetup -> setReceiptPrinterSetupDialogVisible(true)
                 }
             }
         }
@@ -131,8 +130,16 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
     }
 
     fun onReceiptPrinterSetupDialogDismissed() {
-        _state.update { it.copy(isReceiptPrinterSetupDialogVisible = false) }
-        printReceiptCoordinator.onPrinterSetupClosed(orderId)
+        setReceiptPrinterSetupDialogVisible(false)
+    }
+
+    fun onReceiptPrinterConnected() {
+        setReceiptPrinterSetupDialogVisible(false)
+        printReceiptCoordinator.onPrinterConnected(orderId)
+    }
+
+    private fun setReceiptPrinterSetupDialogVisible(isVisible: Boolean) {
+        _state.update { it.copy(isReceiptPrinterSetupDialogVisible = isVisible) }
     }
 
     private suspend fun emitNavigateBack() {

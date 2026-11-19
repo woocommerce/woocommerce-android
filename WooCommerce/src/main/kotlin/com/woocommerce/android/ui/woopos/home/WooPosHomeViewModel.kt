@@ -97,17 +97,18 @@ class WooPosHomeViewModel @Inject constructor(
                 )
             }
 
-            WooPosHomeUIEvent.DismissCardReaderConnectionDialog -> {
+            WooPosHomeUIEvent.DismissCardReaderConnectionDialog,
+            WooPosHomeUIEvent.DismissReceiptPrinterSetupDialog -> {
                 _state.value = _state.value.copy(
                     dialogState = DialogState.Hidden
                 )
             }
 
-            WooPosHomeUIEvent.DismissReceiptPrinterSetupDialog -> {
+            WooPosHomeUIEvent.ReceiptPrinterConnected -> {
                 _state.value = _state.value.copy(
                     dialogState = DialogState.Hidden
                 )
-                sendEventToChildren(ParentToChildrenEvent.ReceiptPrinterSetupDialogDismissed)
+                sendEventToChildren(ParentToChildrenEvent.ReceiptPrinterConnected)
             }
 
             WooPosHomeUIEvent.OnPaymentCompletedViaCash -> onOrderSuccessfullyPaid(

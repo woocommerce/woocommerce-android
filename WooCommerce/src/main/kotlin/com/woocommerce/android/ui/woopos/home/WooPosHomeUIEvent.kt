@@ -8,6 +8,7 @@ sealed class WooPosHomeUIEvent {
     data object DismissScanningSetupDialog : WooPosHomeUIEvent()
     data object DismissCardReaderConnectionDialog : WooPosHomeUIEvent()
     data object DismissReceiptPrinterSetupDialog : WooPosHomeUIEvent()
+    data object ReceiptPrinterConnected : WooPosHomeUIEvent()
     data object OnPaymentCompletedViaCash : WooPosHomeUIEvent()
     data object ExitPosClicked : WooPosHomeUIEvent()
     data object PhoneOpenCartClicked : WooPosHomeUIEvent()
