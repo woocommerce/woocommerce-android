@@ -25,6 +25,7 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymen
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentIntentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentIntentAction.ProcessPaymentIntentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
@@ -534,6 +535,50 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     }
 
     @Test
+    fun `given card present charge, when capturing payment succeeds, then PaymentCompleted contains card details`() =
+        testBlocking {
+            val intent = createPaymentIntent(
+                REQUIRES_CAPTURE,
+                cardPresentDetails = CardDetails(brand = "visa", last4 = "4242"),
+            )
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(intent))
+
+            val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+            assertThat((result.last() as PaymentCompleted).cardDetails)
+                .isEqualTo(CardPaymentStatus.CardDetails(brand = "visa", last4 = "4242"))
+        }
+
+    @Test
+    fun `given interac charge, when capturing payment succeeds, then PaymentCompleted contains card details`() =
+        testBlocking {
+            val intent = createPaymentIntent(
+                SUCCEEDED,
+                interacPresentDetails = CardDetails(brand = "interac", last4 = "1234"),
+            )
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(intent))
+
+            val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+            assertThat((result.last() as PaymentCompleted).cardDetails)
+                .isEqualTo(CardPaymentStatus.CardDetails(brand = "interac", last4 = "1234"))
+        }
+
+    @Test
+    fun `given charge without last 4, when capturing payment succeeds, then PaymentCompleted has no card details`() =
+        testBlocking {
+            val intent = createPaymentIntent(REQUIRES_CAPTURE, cardPresentDetails = CardDetails(brand = "visa"))
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(intent))
+
+            val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+            assertThat((result.last() as PaymentCompleted).cardDetails).isNull()
+        }
+
+    @Test
     fun `given payment already captured, when capturing payment, then PaymentCompleted is emitted`() = testBlocking {
         whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
             .thenReturn(CapturePaymentResponse.Successful.PaymentAlreadyCaptured)
@@ -895,6 +940,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         val brand: String? = null,
         val network: String? = null,
         val availableNetworks: List<String>? = null,
+        val last4: String? = null,
     ) {
         fun toPaymentMethodCardPresent(): PaymentMethod.CardPresent =
             mock<PaymentMethod.CardPresent>().also {
@@ -910,6 +956,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
             mock<Charge.CardPresent>().also {
                 whenever(it.brand).thenReturn(brand)
                 whenever(it.network).thenReturn(network)
+                whenever(it.last4).thenReturn(last4)
             }
     }
 
