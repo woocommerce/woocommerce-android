@@ -818,8 +818,8 @@ class WooPosTotalsViewModel @Inject constructor(
                         }
                     }
 
-                    ParentToChildrenEvent.ReceiptPrinterSetupDialogDismissed ->
-                        printReceiptCoordinator.onPrinterSetupClosed(dataState.value.orderId)
+                    ParentToChildrenEvent.ReceiptPrinterConnected ->
+                        printReceiptCoordinator.onPrinterConnected(dataState.value.orderId)
 
                     is ParentToChildrenEvent.PrintReceiptFailureActionSelected -> when (event.action) {
                         WooPosPrintReceiptFailureAction.Retry ->

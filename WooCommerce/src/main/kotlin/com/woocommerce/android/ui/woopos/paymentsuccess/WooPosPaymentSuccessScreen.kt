@@ -67,7 +67,7 @@ fun WooPosPaymentSuccessScreen(
     if (state.isReceiptPrinterSetupDialogVisible) {
         WooPosReceiptPrinterSetupDialog(
             onDismiss = viewModel::onReceiptPrinterSetupDialogDismissed,
-            onConnectionSuccess = viewModel::onReceiptPrinterSetupDialogDismissed,
+            onConnectionSuccess = viewModel::onReceiptPrinterConnected,
         )
     }
 

@@ -74,7 +74,7 @@ sealed class ParentToChildrenEvent {
 
     data class OrderCreated(val data: WooPosOrderCreatedData) : ParentToChildrenEvent()
 
-    data object ReceiptPrinterSetupDialogDismissed : ParentToChildrenEvent()
+    data object ReceiptPrinterConnected : ParentToChildrenEvent()
 
     data class PrintReceiptFailureActionSelected(
         val action: WooPosPrintReceiptFailureAction

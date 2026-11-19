@@ -13,8 +13,12 @@ import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButto
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButtonState.Success
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
@@ -106,7 +110,7 @@ class WooPosPrintReceiptCoordinatorTest {
         }
 
     @Test
-    fun `given setup was requested, when setup closes with a printer connected, then the receipt is printed`() =
+    fun `given setup was requested, when setup reports a connected printer, then the receipt is printed`() =
         runTest {
             // GIVEN
             whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).thenReturn(ReceiptPrinterResult.Success)
@@ -115,7 +119,7 @@ class WooPosPrintReceiptCoordinatorTest {
 
             // WHEN
             connectPrinter()
-            sut.onPrinterSetupClosed(ORDER_ID)
+            sut.onPrinterConnected(ORDER_ID)
             runCurrent()
 
             // THEN
@@ -123,14 +127,13 @@ class WooPosPrintReceiptCoordinatorTest {
         }
 
     @Test
-    fun `given setup was requested, when setup closes without a printer, then the pending print is dropped`() =
+    fun `given setup was requested, when a printer connects without setup reporting it, then nothing is printed`() =
         runTest {
             // GIVEN
             val sut = createCoordinator()
             sut.onPrintReceiptClicked(ORDER_ID)
 
             // WHEN
-            sut.onPrinterSetupClosed(ORDER_ID)
             connectPrinter()
             runCurrent()
 
@@ -139,7 +142,7 @@ class WooPosPrintReceiptCoordinatorTest {
         }
 
     @Test
-    fun `given the coordinator was recreated during setup, when setup closes with a printer connected, then the receipt is printed`() =
+    fun `given the coordinator was recreated during setup, when setup reports a connected printer, then the receipt is printed`() =
         runTest {
             // GIVEN
             whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).thenReturn(ReceiptPrinterResult.Success)
@@ -148,7 +151,7 @@ class WooPosPrintReceiptCoordinatorTest {
 
             // WHEN
             connectPrinter()
-            recreated.onPrinterSetupClosed(ORDER_ID)
+            recreated.onPrinterConnected(ORDER_ID)
             runCurrent()
 
             // THEN
@@ -189,6 +192,53 @@ class WooPosPrintReceiptCoordinatorTest {
 
         // THEN
         verify(receiptPrinterFacade, times(1)).printReceipt(ORDER_ID)
+    }
+
+    @Test
+    fun `given the receipt is printing, when setup reports a connected printer, then it is printed once`() = runTest {
+        // GIVEN
+        connectPrinter()
+        whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).doSuspendableAnswer {
+            CompletableDeferred<ReceiptPrinterResult>().await()
+        }
+        val sut = createCoordinator()
+        sut.onPrintReceiptClicked(ORDER_ID)
+        runCurrent()
+
+        // WHEN
+        sut.onPrinterConnected(ORDER_ID)
+        runCurrent()
+
+        // THEN
+        verify(receiptPrinterFacade, times(1)).printReceipt(ORDER_ID)
+    }
+
+    @Test
+    fun `given the receipt is being printed, when the scope is cancelled, then the print still completes`() = runTest {
+        // GIVEN
+        connectPrinter()
+        val printStarted = CompletableDeferred<Unit>()
+        val printMayFinish = CompletableDeferred<Unit>()
+        var isPrintFinished = false
+        whenever(receiptPrinterFacade.printReceipt(ORDER_ID)).doSuspendableAnswer {
+            printStarted.complete(Unit)
+            printMayFinish.await()
+            isPrintFinished = true
+            ReceiptPrinterResult.Success
+        }
+        val scope = CoroutineScope(StandardTestDispatcher(testScheduler) + Job())
+        val sut = createCoordinator(scope)
+        sut.onPrintReceiptClicked(ORDER_ID)
+        runCurrent()
+        assertThat(printStarted.isCompleted).isTrue()
+
+        // WHEN
+        scope.cancel()
+        printMayFinish.complete(Unit)
+        runCurrent()
+
+        // THEN
+        assertThat(isPrintFinished).isTrue()
     }
 
     @Test
@@ -337,11 +387,11 @@ class WooPosPrintReceiptCoordinatorTest {
         )
     }
 
-    private fun TestScope.createCoordinator() = WooPosPrintReceiptCoordinator(
+    private fun TestScope.createCoordinator(scope: CoroutineScope = backgroundScope) = WooPosPrintReceiptCoordinator(
         receiptPrinterFacade = receiptPrinterFacade,
         logger = logger,
         isReceiptPrintingEnabled = isReceiptPrintingEnabled,
-        scope = backgroundScope,
+        scope = scope,
     )
 
     private companion object {

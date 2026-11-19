@@ -9,6 +9,7 @@ sealed class WooPosHomeUIEvent {
     data object DismissScanningSetupDialog : WooPosHomeUIEvent()
     data object DismissCardReaderConnectionDialog : WooPosHomeUIEvent()
     data object DismissReceiptPrinterSetupDialog : WooPosHomeUIEvent()
+    data object ReceiptPrinterConnected : WooPosHomeUIEvent()
     data object DismissPrintReceiptFailureDialog : WooPosHomeUIEvent()
     data class PrintReceiptFailureActionSelected(
         val action: WooPosPrintReceiptFailureAction
