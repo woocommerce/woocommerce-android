@@ -247,10 +247,10 @@ platform :android do
 
     buildkite_annotate(style: moved_prs.empty? ? 'success' : 'warning', context: 'start-code-freeze', message: moved_prs_info) if is_ci
 
-    testing_details = if release_testing.to_s.strip.empty?
-                        'No PRs currently labeled `testing: release smoke test` were found in this release range.'
-                      else
+    testing_details = if release_testing.to_s.match?(/^\* /)
                         "Review the test steps in any PRs listed below. Internal changes are included.\n\n#{release_testing}"
+                      else
+                        'No PRs currently labeled `testing: release smoke test` were found in this release range.'
                       end
     testing_message = "## Release smoke testing\n\nSmoke test the final APK before release.\n\n#{testing_details}"
     UI.message(testing_message)

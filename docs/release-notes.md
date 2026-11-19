@@ -29,12 +29,3 @@ Release managers edit the extracted Play Store text, use the **Android Wear** se
 When an RC is used as the base, late fixes from the preceding release can appear again in the draft. Remove entries already covered by that release during the usual review of store text; the freeze and translation steps stay in place.
 
 Regenerate only before editorial review: generation replaces the version's draft. Release managers still add late-fix and hotfix notes and testing requirements in the release PR; the code-freeze testing report is a snapshot.
-
-## Rollout checklist
-
-Before merging this workflow:
-
-- Ensure `impact: user-visible`, `impact: internal`, and `testing: release smoke test` exist in the repository.
-- Review PRs already merged for the upcoming release and apply impact, Wear, and smoke-testing labels as appropriate. Unlabeled PRs are included in the generated notes.
-- Remove handwritten entries from open feature PRs and apply the new labels.
-- Update the ReleasesV2 checklist to review the **Android Wear** section, turn the generated Markdown into store-ready text, and check both the freeze-time smoke report and late-fix/hotfix PRs for testing requirements.
