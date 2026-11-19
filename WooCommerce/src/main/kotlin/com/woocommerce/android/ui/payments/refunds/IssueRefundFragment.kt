@@ -299,7 +299,6 @@ class IssueRefundFragment :
         }
     }
 
-    // Not a DialogFragment: one would be restored after rotation and could outlive the preview.
     private fun showProgressDialog() {
         if (calculatingDialog != null) return
         val dialogView = View.inflate(requireContext(), R.layout.view_progress_dialog, null)

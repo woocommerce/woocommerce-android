@@ -98,7 +98,6 @@ class RefundSummaryViewModel @Inject constructor(
         }
     }
 
-    // A store without `compute_totals` ignores the flag and books a zero refund, so it needs a preview in this process.
     private val isServerComputedRefund: Boolean by lazy {
         val flow = resolveRefundFlow()
         navArgs.isServerComputed &&

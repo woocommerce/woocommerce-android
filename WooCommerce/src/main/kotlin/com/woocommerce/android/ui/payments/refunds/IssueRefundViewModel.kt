@@ -355,7 +355,6 @@ class IssueRefundViewModel @Inject constructor(
             )
         )
 
-        // Read before the preview so the summary refunds exactly what was previewed.
         val state = requireNotNull(viewState.value) { "View state is not ready yet" }
         if (state.isRefundCapped) {
             showRefundSummary(state, refundAmount = state.grandTotalRefund, isServerComputed = false)
