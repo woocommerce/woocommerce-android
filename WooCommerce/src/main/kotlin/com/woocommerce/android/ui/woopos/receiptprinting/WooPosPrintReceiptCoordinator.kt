@@ -34,6 +34,8 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
     private val _events = MutableSharedFlow<WooPosPrintReceiptEvent>(extraBufferCapacity = 1)
     val events: SharedFlow<WooPosPrintReceiptEvent> = _events.asSharedFlow()
 
+    private var isPrintFailureIgnored = false
+
     fun onPrintReceiptClicked(orderId: Long) {
         if (_buttonState.value != WooPosPrintReceiptButtonState.Idle) return
         if (isPrinterConnected()) {
@@ -48,8 +50,13 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
         print(orderId)
     }
 
+    fun onEmailReceiptOpened() {
+        isPrintFailureIgnored = true
+    }
+
     private fun print(orderId: Long) {
         _buttonState.value = WooPosPrintReceiptButtonState.Loading
+        isPrintFailureIgnored = false
         scope.launch {
             // A receipt that was asked for is printed even if the screen that asked for it is left meanwhile.
             when (val result = withContext(NonCancellable) { receiptPrinterFacade.printReceipt(orderId) }) {
@@ -58,7 +65,14 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
                     delay(SUCCESS_DURATION)
                 }
 
-                is ReceiptPrinterResult.Failure -> logger.e("Printing the receipt failed: ${result.error}")
+                is ReceiptPrinterResult.Failure -> {
+                    logger.e("Printing the receipt failed: ${result.error}")
+                    if (!isPrintFailureIgnored) {
+                        _events.tryEmit(
+                            WooPosPrintReceiptEvent.PrintFailed(orderId, WooPosPrintReceiptFailure.from(result.error))
+                        )
+                    }
+                }
             }
             _buttonState.value = WooPosPrintReceiptButtonState.Idle
         }
@@ -81,4 +95,5 @@ enum class WooPosPrintReceiptButtonState { Hidden, Idle, Loading, Success }
 
 sealed interface WooPosPrintReceiptEvent {
     data object ShowPrinterSetup : WooPosPrintReceiptEvent
+    data class PrintFailed(val orderId: Long, val failure: WooPosPrintReceiptFailure) : WooPosPrintReceiptEvent
 }

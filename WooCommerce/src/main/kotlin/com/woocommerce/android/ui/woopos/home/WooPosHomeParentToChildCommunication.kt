@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home
 
 import com.woocommerce.android.ui.barcodescanner.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailureAction
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
@@ -74,6 +75,10 @@ sealed class ParentToChildrenEvent {
     data class OrderCreated(val data: WooPosOrderCreatedData) : ParentToChildrenEvent()
 
     data object ReceiptPrinterConnected : ParentToChildrenEvent()
+
+    data class PrintReceiptFailureActionSelected(
+        val action: WooPosPrintReceiptFailureAction
+    ) : ParentToChildrenEvent()
 
     sealed class SettingsEvent : ParentToChildrenEvent() {
         data object RetrySyncRequested : SettingsEvent()

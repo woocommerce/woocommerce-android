@@ -4590,6 +4590,17 @@
     <string name="woopos_receipt_printer_setup_bluetooth_permission_denied_message">Bluetooth access is turned off. Tap Open Settings and allow Nearby devices, then come back to search for your printer.</string>
     <string name="woopos_receipt_printer_setup_open_settings_button">Open Settings</string>
 
+    <string name="woopos_print_receipt_failure_dialog_background_content_description">Receipt printing failed dialog</string>
+    <string name="woopos_print_receipt_failure_paper_empty_title">Check the printer paper</string>
+    <string name="woopos_print_receipt_failure_paper_empty_message">Make sure a paper roll is loaded and seated correctly, then try again.</string>
+    <string name="woopos_print_receipt_failure_cover_open_title">Printer cover is open</string>
+    <string name="woopos_print_receipt_failure_cover_open_message">Close the printer cover, then try again.</string>
+    <string name="woopos_print_receipt_failure_printer_offline_title">Can\'t reach your printer</string>
+    <string name="woopos_print_receipt_failure_printer_offline_message">Make sure your printer is on and nearby with Bluetooth turned on, then try again.</string>
+    <string name="woopos_print_receipt_failure_generic_title">Couldn\'t print the receipt</string>
+    <string name="woopos_print_receipt_failure_generic_message">Something went wrong while printing. Please try again.</string>
+    <string name="woopos_print_receipt_failure_retry_button">Retry</string>
+
     <string name="woopos_remote_ttp_hint_strip_text">Use an Android phone as a card reader</string>
     <string name="woopos_remote_ttp_explainer_title">No card reader? No problem</string>
     <string name="woopos_remote_ttp_explainer_intro">Use the Woo app on your phone to take card payments.</string>

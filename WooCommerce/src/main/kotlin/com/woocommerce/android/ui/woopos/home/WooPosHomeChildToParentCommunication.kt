@@ -4,6 +4,7 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccess
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.customamount.WooPosCustomAmountFormState
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailure
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
@@ -58,6 +59,7 @@ sealed class ChildToParentEvent {
     data object RefreshProductList : ChildToParentEvent()
     data object ShowCardReaderConnectionDialog : ChildToParentEvent()
     data object ShowReceiptPrinterSetupDialog : ChildToParentEvent()
+    data class ShowPrintReceiptFailureDialog(val failure: WooPosPrintReceiptFailure) : ChildToParentEvent()
 
     data class CustomAmountFormRequested(
         val editing: WooPosCartItemViewState.CustomAmount? = null,
