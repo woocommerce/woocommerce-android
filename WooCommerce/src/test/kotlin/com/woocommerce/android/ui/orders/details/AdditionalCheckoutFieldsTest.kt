@@ -67,6 +67,35 @@ class AdditionalCheckoutFieldsTest {
     }
 
     @Test
+    fun `given boolean false value, when toAdditionalCheckoutFields, then it is an unchecked checkbox value`() {
+        // GIVEN
+        val metadata = listOf(
+            WCMetaData(id = 1, key = "_wc_other/ns/newsletter", value = WCMetaDataValue(false))
+        )
+
+        // WHEN
+        val result = metadata.toAdditionalCheckoutFields()
+
+        // THEN
+        assertThat(result.other.single().value).isEqualTo(Value.Checkbox(false))
+    }
+
+    @Test
+    fun `given keys without field id, when toAdditionalCheckoutFields, then they are skipped`() {
+        // GIVEN
+        val metadata = listOf(
+            WCMetaData(id = 1, key = "_wc_other/", value = "x"),
+            WCMetaData(id = 2, key = "_wc_other/ns/", value = "y")
+        )
+
+        // WHEN
+        val result = metadata.toAdditionalCheckoutFields()
+
+        // THEN
+        assertThat(result.other).isEmpty()
+    }
+
+    @Test
     fun `given blank and JSON values, when toAdditionalCheckoutFields, then they are skipped`() {
         // GIVEN
         val metadata = listOf(

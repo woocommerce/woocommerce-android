@@ -1,17 +1,15 @@
 package com.woocommerce.android.ui.orders.details.views
 
 import android.content.Context
-import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Parcelable
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.style.StyleSpan
+import android.text.SpannableStringBuilder
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import androidx.core.view.isVisible
 import androidx.navigation.findNavController
@@ -45,10 +43,15 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     private companion object {
         const val KEY_SUPER_STATE = "ORDER-DETAIL-CUSTOMER-INFO-VIEW-SUPER-STATE"
         const val KEY_IS_CUSTOMER_INFO_VIEW_EXPANDED = "ORDER-DETAIL-CUSTOMER-INFO-VIEW-IS_CUSTOMER_INFO_VIEW_EXPANDED"
+        const val LABEL_PLACEHOLDER = "%1${'$'}s"
+        const val VALUE_PLACEHOLDER = "%2${'$'}s"
     }
 
     private val binding = OrderDetailCustomerInfoBinding.inflate(LayoutInflater.from(ctx), this)
     private var isCustomerInfoViewExpanded = false
+    private var billingCheckoutFields: List<AdditionalCheckoutField> = emptyList()
+    private var shippingCheckoutFields: List<AdditionalCheckoutField> = emptyList()
+    private var lastCustomerInfo: CustomerInfo? = null
 
     var viewCustomerOrdersListener: ((Order) -> Unit)? = null
 
@@ -74,8 +77,12 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         isReadOnly: Boolean,
         viewOrdersButtonVissible: Boolean = false,
     ) {
-        val noBillingInfo = order.billingAddress.hasInfo().not() && order.formatBillingInformationForDisplay().isEmpty()
-        val noShippingInfo = order.formatShippingInformationForDisplay().isEmpty()
+        lastCustomerInfo = CustomerInfo(order, isVirtualOrder, isReadOnly, viewOrdersButtonVissible)
+        val noBillingInfo = order.billingAddress.hasInfo().not() &&
+            order.formatBillingInformationForDisplay().isEmpty() &&
+            billingCheckoutFields.isEmpty()
+        val noShippingInfo = order.formatShippingInformationForDisplay().isEmpty() &&
+            (isVirtualOrder || shippingCheckoutFields.isEmpty())
         val noCustomerNoteInfo = order.customerNote.isEmpty()
 
         // hide this entire view if there is no info to display
@@ -84,10 +91,13 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             hide()
             return
         }
+        show()
 
+        binding.customerInfoBillingCheckoutFields.showCheckoutFields(billingCheckoutFields)
+        binding.customerInfoShippingCheckoutFields.showCheckoutFields(shippingCheckoutFields)
         showCustomerNote(order, isReadOnly)
         showShippingAddress(order, isVirtualOrder, isReadOnly)
-        showBillingInfo(order, isReadOnly)
+        showBillingInfo(order, isVirtualOrder, isReadOnly)
         showViewOrdersButton(order, viewOrdersButtonVissible)
         restoreCustomerInfoViewExpandedOrCollapsedState()
     }
@@ -96,8 +106,11 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         billing: List<AdditionalCheckoutField>,
         shipping: List<AdditionalCheckoutField>
     ) {
-        binding.customerInfoBillingCheckoutFields.showCheckoutFields(billing)
-        binding.customerInfoShippingCheckoutFields.showCheckoutFields(shipping)
+        billingCheckoutFields = billing
+        shippingCheckoutFields = shipping
+        lastCustomerInfo?.let {
+            updateCustomerInfo(it.order, it.isVirtualOrder, it.isReadOnly, it.viewOrdersButtonVisible)
+        }
     }
 
     private fun TextView.showCheckoutFields(fields: List<AdditionalCheckoutField>) {
@@ -111,11 +124,26 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     }
 
     private fun AdditionalCheckoutField.toFormattedLine(): CharSequence {
-        val line = context.getString(R.string.order_detail_additional_checkout_field, label, value.toDisplayText())
-        val labelStart = line.indexOf(label)
-        if (labelStart < 0) return line
-        return SpannableString(line).apply {
-            setSpan(StyleSpan(Typeface.BOLD), labelStart, labelStart + label.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        val template = context.getString(R.string.order_detail_additional_checkout_field)
+        val labelStart = template.indexOf(LABEL_PLACEHOLDER)
+        val valueStart = template.indexOf(VALUE_PLACEHOLDER)
+        if (labelStart < 0 || valueStart < 0) {
+            return buildSpannedString {
+                bold { append(label) }
+                append(" ")
+                append(value.toDisplayText())
+            }
+        }
+        val boldLabel = buildSpannedString { bold { append(label) } }
+        val displayValue = value.toDisplayText()
+        return SpannableStringBuilder(template).apply {
+            if (valueStart > labelStart) {
+                replace(valueStart, valueStart + VALUE_PLACEHOLDER.length, displayValue)
+                replace(labelStart, labelStart + LABEL_PLACEHOLDER.length, boldLabel)
+            } else {
+                replace(labelStart, labelStart + LABEL_PLACEHOLDER.length, boldLabel)
+                replace(valueStart, valueStart + VALUE_PLACEHOLDER.length, displayValue)
+            }
         }
     }
 
@@ -124,14 +152,18 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         is AdditionalCheckoutField.Value.Checkbox -> context.getString(if (isChecked) R.string.yes else R.string.no)
     }
 
-    private fun showBillingInfo(order: Order, isReadOnly: Boolean) {
+    private fun hasShippingContent(order: Order, isVirtualOrder: Boolean) =
+        order.formatShippingInformationForDisplay().isNotEmpty() ||
+            (!isVirtualOrder && shippingCheckoutFields.isNotEmpty())
+
+    private fun showBillingInfo(order: Order, isVirtualOrder: Boolean, isReadOnly: Boolean) {
         val billingAddress = order.formatBillingInformationForDisplay()
-        val shippingAddress = order.formatShippingInformationForDisplay()
+        val hasBillingCheckoutFields = billingCheckoutFields.isNotEmpty()
 
         if (isReadOnly && billingAddress.isEmpty()) {
-            binding.customerInfoBillingLabel.hide()
+            binding.customerInfoBillingLabel.isVisible = hasBillingCheckoutFields
             // if the address is empty but we have details like email or phone, show "No address specified"
-            if (order.billingAddress.hasInfo()) {
+            if (order.billingAddress.hasInfo() || hasBillingCheckoutFields) {
                 binding.customerInfoBillingAddr.setText(resources.getString(R.string.orderdetail_empty_address), 0)
             } else {
                 // hide the entire billing section since billing address is empty
@@ -145,7 +177,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             // a customer makes an order, but it will be empty once we offer order creation
             if (billingAddress.isEmpty() && !isReadOnly) {
                 expandCustomerInfoView()
-                binding.customerInfoBillingLabel.hide()
+                binding.customerInfoBillingLabel.isVisible = hasBillingCheckoutFields
                 binding.customerInfoViewMore.hide()
             } else {
                 binding.customerInfoBillingLabel.show()
@@ -170,9 +202,9 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         // in read-only mode, if billing info is the only thing available automatically expand it and hide
         // the "Show billing" button
         if (isReadOnly) {
-            val hasBilling = billingAddress.isNotEmpty() || order.billingAddress.hasInfo()
+            val hasBilling = billingAddress.isNotEmpty() || order.billingAddress.hasInfo() || hasBillingCheckoutFields
             if (hasBilling &&
-                shippingAddress.isEmpty() &&
+                !hasShippingContent(order, isVirtualOrder) &&
                 order.customerNote.isEmpty()
             ) {
                 expandCustomerInfoView()
@@ -303,12 +335,9 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
     private fun showShippingAddress(order: Order, isVirtualOrder: Boolean, isReadOnly: Boolean) {
         val shippingAddress = order.formatShippingInformationForDisplay()
-        if (shippingAddress.isEmpty()) {
-            binding.customerInfoShippingLabel.hide()
-        } else {
-            binding.customerInfoShippingLabel.show()
-        }
-        if (shippingAddress.isEmpty() && isReadOnly) {
+        val hasShippingCheckoutFields = shippingCheckoutFields.isNotEmpty()
+        binding.customerInfoShippingLabel.isVisible = shippingAddress.isNotEmpty() || hasShippingCheckoutFields
+        if (shippingAddress.isEmpty() && !hasShippingCheckoutFields && isReadOnly) {
             binding.customerInfoShippingSection.hide()
             return
         }
@@ -367,6 +396,13 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             .actionOrderDetailFragmentToBillingAddressEditingFragment(storedAddress = address)
             .let { findNavController().navigateSafely(it) }
     }
+
+    private data class CustomerInfo(
+        val order: Order,
+        val isVirtualOrder: Boolean,
+        val isReadOnly: Boolean,
+        val viewOrdersButtonVisible: Boolean
+    )
 
     private fun showContactCustomerOptionsPopup(order: Order) {
         val popup = PopupMenu(context, binding.customerInfoCallOrMessageBtn)
