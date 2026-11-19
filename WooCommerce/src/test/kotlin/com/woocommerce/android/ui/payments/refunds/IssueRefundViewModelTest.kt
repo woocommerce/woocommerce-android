@@ -34,6 +34,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -63,7 +64,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         private const val TAX_RATE_ID = 1L
         private const val SHIPPING_LINE_ID = 8L
         private const val FEE_LINE_ID = 9L
-        private const val WOO_VERSION = "11.3.0"
     }
 
     private val orderStore: WCOrderStore = mock()
@@ -107,10 +107,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         on { invoke(any(), any()) } doReturn FetchRefundPreview.Result.FallbackToLocal
     }
 
-    private val resolveRefundFlow: ResolveRefundFlow = mock {
-        on { invoke() } doReturn RefundCalculationFlow.LocalComputed
-    }
-
     private val savedState = IssueRefundFragmentArgs(ORDER_ID).toSavedStateHandle()
 
     private lateinit var viewModel: IssueRefundViewModel
@@ -132,7 +128,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             analyticsTrackerWrapper = analyticsTrackerWrapper,
             parameterRepository = parameterRepository,
             fetchRefundPreview = fetchRefundPreview,
-            resolveRefundFlow = resolveRefundFlow,
         )
     }
 
@@ -827,33 +822,13 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given server calculated refunds, when selecting more than is left, then refund is not capped`() =
+    fun `given refund is capped at what is left, when next is tapped, then summary refunds the capped total locally`() =
         testBlocking {
             // GIVEN
-            whenever(resolveRefundFlow.invoke()).thenReturn(RefundCalculationFlow.ServerComputed(WOO_VERSION))
-            val orderMapper = givenOrder(items = listOf(givenOrderItem()), maxRefund = BigDecimal("5.00"))
-
-            // WHEN
-            initViewModel(orderMapper)
-            viewModel.viewState.getOrAwaitValue()
-            viewModel.onSelectButtonTapped()
-
-            // THEN
-            val viewState = viewModel.viewState.getOrAwaitValue()
-            assertThat(viewState.grandTotalRefund).isEqualByComparingTo("10.49")
-            assertThat(viewState.refundCapNotice).isNull()
-        }
-
-    @Test
-    fun `given server refunds turn out unavailable, when next is tapped, then summary refunds what is left`() =
-        testBlocking {
-            // GIVEN
-            whenever(resolveRefundFlow.invoke()).thenReturn(RefundCalculationFlow.ServerComputed(WOO_VERSION))
             initViewModel(givenOrder(items = listOf(givenOrderItem()), maxRefund = BigDecimal("5.00")))
             viewModel.viewState.getOrAwaitValue()
             viewModel.onSelectButtonTapped()
             viewModel.viewState.getOrAwaitValue()
-            whenever(resolveRefundFlow.invoke()).thenReturn(RefundCalculationFlow.LocalComputed)
 
             // WHEN
             viewModel.onNextButtonTappedFromItems()
@@ -862,7 +837,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val event = viewModel.event.getOrAwaitValue() as IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
             assertThat(event.refundAmount).isEqualByComparingTo("5.00")
             assertFalse(event.isServerComputed)
-            assertThat(viewModel.viewState.getOrAwaitValue().grandTotalRefund).isEqualByComparingTo("5.00")
+            verify(fetchRefundPreview, never()).invoke(any(), any())
         }
 
     @Test

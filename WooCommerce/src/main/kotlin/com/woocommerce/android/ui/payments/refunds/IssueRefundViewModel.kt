@@ -61,7 +61,6 @@ class IssueRefundViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val parameterRepository: ParameterRepository,
     private val fetchRefundPreview: FetchRefundPreview,
-    private val resolveRefundFlow: ResolveRefundFlow,
 ) : ScopedViewModel(savedState) {
     private val orderFlow: SharedFlow<Order> = flow {
         val order = requireNotNull(
@@ -141,30 +140,24 @@ class IssueRefundViewModel @Inject constructor(
 
     private val refundNotice = combine(orderFlow, refundsFlow) { order, refunds -> prepareRefundNotice(order, refunds) }
 
-    // The server rejects a refund worth more than is left on the order, so only the local calculation caps it.
-    private val isLocalRefundFlow = MutableStateFlow(isLocalRefund())
-
     val viewState = combine(
-        combine(orderFlow, currencyDecimalsFlow, isLocalRefundFlow, ::Triple),
+        combine(orderFlow, currencyDecimalsFlow, ::Pair),
         productsRefundSection,
         shippingRefundSection,
         feesRefundSection,
         refundNotice
-    ) { (order, decimals, isLocal), productsSection, shippingSection, feesSection, refundNotice ->
+    ) { (order, decimals), productsSection, shippingSection, feesSection, refundNotice ->
         val selectedTotal = productsSection.productsRefund + shippingSection.shippingRefund + feesSection.feesRefund
-        val refundTotal = max(selectedTotal, BigDecimal.ZERO)
+        val isRefundCapped = selectedTotal > order.maxRefund && order.maxRefund > BigDecimal.ZERO
         IssueRefundViewState(
             currency = order.currency,
             productsSection = productsSection,
             feesSection = feesSection,
             shippingSection = shippingSection,
             refundNotice = refundNotice,
-            grandTotalRefund = if (isLocal) min(refundTotal, order.maxRefund) else refundTotal,
-            refundCapNotice = if (isLocal) {
-                prepareRefundCapNotice(selectedTotal = selectedTotal, maxRefund = order.maxRefund)
-            } else {
-                null
-            }
+            grandTotalRefund = min(max(selectedTotal, BigDecimal.ZERO), order.maxRefund),
+            isRefundCapped = isRefundCapped,
+            refundCapNotice = if (isRefundCapped) prepareRefundCapNotice(order.maxRefund) else null
         ).withAmountsOfRefundLines(decimals)
     }.asLiveData()
 
@@ -252,12 +245,8 @@ class IssueRefundViewModel @Inject constructor(
         }
     }
 
-    private fun prepareRefundCapNotice(selectedTotal: BigDecimal, maxRefund: BigDecimal): String? =
-        if (selectedTotal > maxRefund && maxRefund > BigDecimal.ZERO) {
-            resourceProvider.getString(R.string.order_refunds_amount_capped_notice, formatCurrency(maxRefund))
-        } else {
-            null
-        }
+    private fun prepareRefundCapNotice(maxRefund: BigDecimal): String =
+        resourceProvider.getString(R.string.order_refunds_amount_capped_notice, formatCurrency(maxRefund))
 
     private fun prepareProductsRefundSection(
         items: List<ProductRefundListItem>
@@ -368,6 +357,10 @@ class IssueRefundViewModel @Inject constructor(
 
         // Read before the preview so the summary refunds exactly what was previewed.
         val state = requireNotNull(viewState.value) { "View state is not ready yet" }
+        if (state.isRefundCapped) {
+            showRefundSummary(state, refundAmount = state.grandTotalRefund, isServerComputed = false)
+            return
+        }
         previewJob = launch {
             isCalculatingRefundFlow.value = true
             val result = try {
@@ -379,11 +372,8 @@ class IssueRefundViewModel @Inject constructor(
                 is FetchRefundPreview.Result.ServerCalculated ->
                     showRefundSummary(state, refundAmount = result.preview.total, isServerComputed = true)
 
-                FetchRefundPreview.Result.FallbackToLocal -> {
-                    isLocalRefundFlow.value = isLocalRefund()
-                    val refundAmount = state.grandTotalRefund.min(order.maxRefund)
-                    showRefundSummary(state, refundAmount = refundAmount, isServerComputed = false)
-                }
+                FetchRefundPreview.Result.FallbackToLocal ->
+                    showRefundSummary(state, refundAmount = state.grandTotalRefund, isServerComputed = false)
 
                 is FetchRefundPreview.Result.Error -> triggerEvent(
                     result.storeMessage?.let { ShowUiStringSnackbar(UiStringText(it)) }
@@ -392,8 +382,6 @@ class IssueRefundViewModel @Inject constructor(
             }
         }
     }
-
-    private fun isLocalRefund() = resolveRefundFlow() is RefundCalculationFlow.LocalComputed
 
     fun onOpenStoreAdminLinkClicked() {
         triggerEvent(Event.LaunchUrlInAuthenticatedWebView(selectedSite.get().adminUrlOrDefault))
@@ -492,6 +480,7 @@ class IssueRefundViewModel @Inject constructor(
         val shippingSection: ShippingRefundSection,
         val refundNotice: String?,
         val grandTotalRefund: BigDecimal,
+        val isRefundCapped: Boolean,
         val refundCapNotice: String?,
     ) {
         val selectedRefundItems: List<RefundItem>
