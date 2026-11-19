@@ -239,6 +239,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     is ParentToChildrenEvent.RemoveProductsClicked -> Unit
                     is ParentToChildrenEvent.ProductsRemoved -> Unit
                     is ParentToChildrenEvent.MissingVariationEvent -> Unit
+                    is ParentToChildrenEvent.ReceiptPrinterConnected -> Unit
                     is ParentToChildrenEvent.SettingsEvent -> Unit
                     is ParentToChildrenEvent.CustomAmountSubmitted -> Unit
                     is ParentToChildrenEvent.ItemClickedInItemsList -> {

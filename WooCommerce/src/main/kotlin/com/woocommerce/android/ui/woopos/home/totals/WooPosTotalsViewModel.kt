@@ -48,6 +48,9 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Payme
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Totals
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButtonState
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptCoordinator
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptEvent
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.FeatureFlag
@@ -93,6 +96,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val builtInReaderConnector: WooPosBuiltInReaderConnector,
     private val remoteReaderPaymentFlow: WooPosRemoteReaderPaymentFlow,
     private val effectiveReaderStatusProvider: WooPosEffectiveReaderStatusProvider,
+    printReceiptCoordinatorFactory: WooPosPrintReceiptCoordinator.Factory,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -116,6 +120,9 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private val _screenEvents = MutableSharedFlow<WooPosTotalsScreenEvent>(extraBufferCapacity = 1)
     val screenEvents: SharedFlow<WooPosTotalsScreenEvent> = _screenEvents.asSharedFlow()
+
+    private val printReceiptCoordinator = printReceiptCoordinatorFactory.create(viewModelScope)
+    val printReceiptButtonState: StateFlow<WooPosPrintReceiptButtonState> = printReceiptCoordinator.buttonState
 
     private var createDraftOrderJob: Job? = null
     private var leaveFailedPaymentJob: Job? = null
@@ -167,6 +174,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     init {
         listenUpEvents()
+        listenPrintReceiptEvents()
         observeCardReaderStatus()
         trackTapToPayUnavailableReasonIfNeeded()
     }
@@ -269,6 +277,9 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.OnStartReceiptFlowClicked -> handleEmailReceiptClicked()
 
+            WooPosTotalsUIEvent.OnPrintReceiptClicked ->
+                printReceiptCoordinator.onPrintReceiptClicked(dataState.value.orderId)
+
             WooPosTotalsUIEvent.OnCashPaymentClicked -> handleOtherPaymentMethodClicked(OtherPaymentMethod.CASH)
 
             WooPosTotalsUIEvent.OnTapToPayClicked -> startTapToPayPayment()
@@ -314,6 +325,17 @@ class WooPosTotalsViewModel @Inject constructor(
             childrenToParentEventSender.sendToParent(
                 ToEmailReceipt(dataState.value.orderId)
             )
+        }
+    }
+
+    private fun listenPrintReceiptEvents() {
+        viewModelScope.launch {
+            printReceiptCoordinator.events.collect { event ->
+                when (event) {
+                    WooPosPrintReceiptEvent.ShowPrinterSetup ->
+                        childrenToParentEventSender.sendToParent(ChildToParentEvent.ShowReceiptPrinterSetupDialog)
+                }
+            }
         }
     }
 
@@ -786,6 +808,9 @@ class WooPosTotalsViewModel @Inject constructor(
                             )
                         }
                     }
+
+                    ParentToChildrenEvent.ReceiptPrinterConnected ->
+                        printReceiptCoordinator.onPrinterConnected(dataState.value.orderId)
 
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     is ParentToChildrenEvent.ItemClickedInItemsList,
