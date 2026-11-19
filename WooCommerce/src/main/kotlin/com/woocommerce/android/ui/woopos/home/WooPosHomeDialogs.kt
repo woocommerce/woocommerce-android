@@ -39,7 +39,7 @@ fun WooPosHomeDialogs(
     if (dialogState is WooPosHomeState.DialogState.ReceiptPrinterSetupDialog) {
         WooPosReceiptPrinterSetupDialog(
             onDismiss = { onHomeUIEvent(WooPosHomeUIEvent.DismissReceiptPrinterSetupDialog) },
-            onConnectionSuccess = { onHomeUIEvent(WooPosHomeUIEvent.DismissReceiptPrinterSetupDialog) }
+            onConnectionSuccess = { onHomeUIEvent(WooPosHomeUIEvent.ReceiptPrinterConnected) }
         )
     }
 

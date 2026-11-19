@@ -9,6 +9,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.seconds
 
 class WooPosPrintReceiptCoordinator @AssistedInject constructor(
@@ -45,8 +47,9 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
         }
     }
 
-    fun onPrinterSetupClosed(orderId: Long) {
-        if (isPrinterConnected()) print(orderId)
+    fun onPrinterConnected(orderId: Long) {
+        if (_buttonState.value != WooPosPrintReceiptButtonState.Idle) return
+        print(orderId)
     }
 
     fun onOrderPaidByCard(orderId: Long, cardDetails: CardDetails?) {
@@ -62,7 +65,9 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
         isPrintFailureIgnored = false
         val cardDetails = cardPayment?.takeIf { it.first == orderId }?.second
         scope.launch {
-            when (val result = receiptPrinterFacade.printReceipt(orderId, cardDetails)) {
+            // A receipt that was asked for is printed even if the screen that asked for it is left meanwhile.
+            val result = withContext(NonCancellable) { receiptPrinterFacade.printReceipt(orderId, cardDetails) }
+            when (result) {
                 ReceiptPrinterResult.Success -> {
                     _buttonState.value = WooPosPrintReceiptButtonState.Success
                     delay(SUCCESS_DURATION)
