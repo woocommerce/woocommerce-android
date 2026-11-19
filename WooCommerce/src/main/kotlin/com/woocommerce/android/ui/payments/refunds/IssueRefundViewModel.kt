@@ -148,6 +148,7 @@ class IssueRefundViewModel @Inject constructor(
         refundNotice
     ) { (order, decimals), productsSection, shippingSection, feesSection, refundNotice ->
         val selectedTotal = productsSection.productsRefund + shippingSection.shippingRefund + feesSection.feesRefund
+        val isRefundCapped = selectedTotal > order.maxRefund && order.maxRefund > BigDecimal.ZERO
         IssueRefundViewState(
             currency = order.currency,
             productsSection = productsSection,
@@ -155,7 +156,8 @@ class IssueRefundViewModel @Inject constructor(
             shippingSection = shippingSection,
             refundNotice = refundNotice,
             grandTotalRefund = min(max(selectedTotal, BigDecimal.ZERO), order.maxRefund),
-            refundCapNotice = prepareRefundCapNotice(selectedTotal = selectedTotal, maxRefund = order.maxRefund)
+            isRefundCapped = isRefundCapped,
+            refundCapNotice = if (isRefundCapped) prepareRefundCapNotice(order.maxRefund) else null
         ).withAmountsOfRefundLines(decimals)
     }.asLiveData()
 
@@ -243,12 +245,8 @@ class IssueRefundViewModel @Inject constructor(
         }
     }
 
-    private fun prepareRefundCapNotice(selectedTotal: BigDecimal, maxRefund: BigDecimal): String? =
-        if (selectedTotal > maxRefund && maxRefund > BigDecimal.ZERO) {
-            resourceProvider.getString(R.string.order_refunds_amount_capped_notice, formatCurrency(maxRefund))
-        } else {
-            null
-        }
+    private fun prepareRefundCapNotice(maxRefund: BigDecimal): String =
+        resourceProvider.getString(R.string.order_refunds_amount_capped_notice, formatCurrency(maxRefund))
 
     private fun prepareProductsRefundSection(
         items: List<ProductRefundListItem>
@@ -359,6 +357,11 @@ class IssueRefundViewModel @Inject constructor(
 
         // Read before the preview so the summary refunds exactly what was previewed.
         val state = requireNotNull(viewState.value) { "View state is not ready yet" }
+        // The server preview rejects lines worth more than is left on the order, so a capped refund stays local.
+        if (state.isRefundCapped) {
+            showRefundSummary(state, refundAmount = state.grandTotalRefund, isServerComputed = false)
+            return
+        }
         previewJob = launch {
             isCalculatingRefundFlow.value = true
             val result = try {
@@ -478,6 +481,7 @@ class IssueRefundViewModel @Inject constructor(
         val shippingSection: ShippingRefundSection,
         val refundNotice: String?,
         val grandTotalRefund: BigDecimal,
+        val isRefundCapped: Boolean,
         val refundCapNotice: String?,
     ) {
         val selectedRefundItems: List<RefundItem>
