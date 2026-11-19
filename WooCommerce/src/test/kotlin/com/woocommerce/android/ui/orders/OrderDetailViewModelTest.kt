@@ -30,6 +30,8 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartWooShippingL
 import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
 import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
+import com.woocommerce.android.ui.orders.details.AdditionalCheckoutField
+import com.woocommerce.android.ui.orders.details.AdditionalCheckoutFields
 import com.woocommerce.android.ui.orders.details.GetOrderSubscriptions
 import com.woocommerce.android.ui.orders.details.GetShippingLabelSupport
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
@@ -2005,6 +2007,26 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val attributionState = viewModel.orderAttributionInfo.getOrAwaitValue()
 
         assertThat(attributionState).isEqualTo(attribution)
+    }
+
+    @Test
+    fun `when additional checkout fields are loaded, then update state`() = testBlocking {
+        val fields = AdditionalCheckoutFields(
+            billing = emptyList(),
+            shipping = emptyList(),
+            other = listOf(
+                AdditionalCheckoutField("Gift message", AdditionalCheckoutField.Value.Text("Happy birthday"))
+            )
+        )
+        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+        whenever(orderDetailRepository.getAdditionalCheckoutFields(ORDER_ID)).thenReturn(fields)
+
+        createViewModel()
+        viewModel.start()
+
+        val fieldsState = viewModel.additionalCheckoutFields.getOrAwaitValue()
+
+        assertThat(fieldsState).isEqualTo(fields)
     }
 
     @Test

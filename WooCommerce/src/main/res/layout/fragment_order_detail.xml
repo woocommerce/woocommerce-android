@@ -93,6 +93,11 @@
                         android:id="@+id/customFieldsCard"
                         layout="@layout/order_detail_custom_fields_card" />
 
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/orderDetail_additionalCheckoutInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
                     <!-- Refunds Info -->
                     <com.woocommerce.android.ui.orders.details.views.OrderDetailRefundsView
                         android:id="@+id/orderDetail_refundsInfo"

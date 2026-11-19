@@ -1066,6 +1066,7 @@
     <string name="order_detail_custom_amounts_header">CUSTOM AMOUNTS</string>
     <string name="order_detail_shipping_header">SHIPPING</string>
     <string name="order_detail_attribution_header">Order attribution</string>
+    <string name="order_detail_additional_checkout_info_header">Additional checkout information</string>
     <string name="order_detail_attribution_origin">Origin</string>
     <string name="order_detail_attribution_organic_origin">Organic: %1$s</string>
     <string name="order_detail_attribution_referral_origin">Referral: %1$s</string>

@@ -178,6 +178,9 @@ class OrderDetailViewModel @Inject constructor(
     private val _orderAttributionInfo = MutableLiveData<OrderAttributionInfo>()
     val orderAttributionInfo: LiveData<OrderAttributionInfo> = _orderAttributionInfo
 
+    private val _additionalCheckoutFields = MutableLiveData<AdditionalCheckoutFields>()
+    val additionalCheckoutFields: LiveData<AdditionalCheckoutFields> = _additionalCheckoutFields
+
     private val _shippingLineList = MutableStateFlow<List<Order.ShippingLine>>(emptyList())
     val shippingLineList =
         combine(
@@ -959,6 +962,7 @@ class OrderDetailViewModel @Inject constructor(
         _shippingLineList.value = awaitOrder().shippingLines
 
         _orderAttributionInfo.value = orderDetailRepository.getOrderAttributionInfo(navArgs.orderId)
+        _additionalCheckoutFields.value = orderDetailRepository.getAdditionalCheckoutFields(navArgs.orderId)
 
         val isOrderEligibleForLegacySLCreation = isOrderEligibleForLegacySLCreation()
 

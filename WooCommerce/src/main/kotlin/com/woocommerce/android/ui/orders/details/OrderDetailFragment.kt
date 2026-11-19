@@ -76,6 +76,7 @@ import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.Communicat
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
+import com.woocommerce.android.ui.orders.details.views.OrderDetailAdditionalCheckoutInfoView
 import com.woocommerce.android.ui.orders.details.views.OrderDetailAttributionInfoView
 import com.woocommerce.android.ui.orders.details.views.OrderDetailWooShippingShipmentListView
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
@@ -471,6 +472,7 @@ class OrderDetailFragment :
         showShippingLines(viewModel.shippingLineList)
 
         setupOrderAttributionInfoCard(viewModel.orderAttributionInfo)
+        setupAdditionalCheckoutInfoCard(viewModel.additionalCheckoutFields)
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -576,6 +578,20 @@ class OrderDetailFragment :
                 orderAttributionInfo.observeAsState().value?.let {
                     LegacyWooThemeWithBackground {
                         OrderDetailAttributionInfoView(attributionInfo = it)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setupAdditionalCheckoutInfoCard(additionalCheckoutFields: LiveData<AdditionalCheckoutFields>) {
+        binding.orderDetailAdditionalCheckoutInfo.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
+            setContent {
+                additionalCheckoutFields.observeAsState().value?.let {
+                    LegacyWooThemeWithBackground {
+                        OrderDetailAdditionalCheckoutInfoView(fields = it.other)
                     }
                 }
             }
