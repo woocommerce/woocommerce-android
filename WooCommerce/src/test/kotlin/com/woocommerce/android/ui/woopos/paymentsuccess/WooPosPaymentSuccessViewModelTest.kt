@@ -53,13 +53,13 @@ class WooPosPaymentSuccessViewModelTest {
     private fun createViewModel(
         orderId: Long = 123L,
         source: PaymentSuccessSource = PaymentSuccessSource.CARD_CHECKOUT,
-    ): WooPosPaymentSuccessViewModel {
-        val savedStateHandle = SavedStateHandle(
+        savedStateHandle: SavedStateHandle = SavedStateHandle(
             mapOf(
                 PAYMENT_SUCCESS_ORDER_ID_KEY to orderId,
                 PAYMENT_SUCCESS_SOURCE_KEY to source.name,
             )
-        )
+        ),
+    ): WooPosPaymentSuccessViewModel {
         return WooPosPaymentSuccessViewModel(
             analyticsTracker = analyticsTracker,
             totalsRepository = totalsRepository,
@@ -252,5 +252,26 @@ class WooPosPaymentSuccessViewModelTest {
             // THEN
             assertThat(viewModel.state.value.isReceiptPrinterSetupDialogVisible).isFalse()
             verify(printReceiptCoordinator).onPrinterConnected(42L)
+        }
+
+    @Test
+    fun `given the setup dialog was shown, when the ViewModel is recreated from saved state, then the dialog is shown`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(any())).thenReturn("test")
+            val savedStateHandle = SavedStateHandle(
+                mapOf(
+                    PAYMENT_SUCCESS_ORDER_ID_KEY to 42L,
+                    PAYMENT_SUCCESS_SOURCE_KEY to PaymentSuccessSource.CARD_CHECKOUT.name,
+                )
+            )
+            createViewModel(savedStateHandle = savedStateHandle)
+            printReceiptEvents.emit(WooPosPrintReceiptEvent.ShowPrinterSetup)
+
+            // WHEN
+            val recreatedViewModel = createViewModel(savedStateHandle = savedStateHandle)
+
+            // THEN
+            assertThat(recreatedViewModel.state.value.isReceiptPrinterSetupDialogVisible).isTrue()
         }
 }
