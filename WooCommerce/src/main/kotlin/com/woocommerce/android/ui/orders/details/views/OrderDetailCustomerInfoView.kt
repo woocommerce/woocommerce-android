@@ -1,14 +1,17 @@
 package com.woocommerce.android.ui.orders.details.views
 
 import android.content.Context
+import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Parcelable
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.StyleSpan
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.TextView
-import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import androidx.core.view.isVisible
 import androidx.navigation.findNavController
@@ -102,10 +105,17 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         text = buildSpannedString {
             fields.forEachIndexed { index, field ->
                 if (index > 0) append("\n")
-                bold { append(field.label) }
-                append(": ")
-                append(field.value.toDisplayText())
+                append(field.toFormattedLine())
             }
+        }
+    }
+
+    private fun AdditionalCheckoutField.toFormattedLine(): CharSequence {
+        val line = context.getString(R.string.order_detail_additional_checkout_field, label, value.toDisplayText())
+        val labelStart = line.indexOf(label)
+        if (labelStart < 0) return line
+        return SpannableString(line).apply {
+            setSpan(StyleSpan(Typeface.BOLD), labelStart, labelStart + label.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
     }
 

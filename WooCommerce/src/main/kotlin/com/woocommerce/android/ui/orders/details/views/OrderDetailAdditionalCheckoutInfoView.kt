@@ -14,7 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
@@ -59,6 +61,7 @@ private fun AdditionalCheckoutFieldRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
             .fillMaxWidth()
+            .semantics(mergeDescendants = true) {}
             .padding(
                 horizontal = dimensionResource(id = R.dimen.major_100),
                 vertical = dimensionResource(id = R.dimen.minor_100)
@@ -68,12 +71,16 @@ private fun AdditionalCheckoutFieldRow(
             text = title,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.onSurface,
-            modifier = Modifier.padding(end = dimensionResource(id = R.dimen.major_100))
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = dimensionResource(id = R.dimen.major_100))
         )
         Text(
             text = value,
             style = MaterialTheme.typography.body1,
-            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
+            textAlign = TextAlign.End,
+            modifier = Modifier.weight(1f)
         )
     }
 }

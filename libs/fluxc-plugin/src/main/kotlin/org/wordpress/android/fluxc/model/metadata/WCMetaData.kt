@@ -111,12 +111,11 @@ data class WCMetaData(
         const val SHIPPING_PREFIX = "_wc_shipping/"
         const val OTHER_PREFIX = "_wc_other/"
 
-        val ALL_PREFIXES
-            get() = setOf(
-                BILLING_PREFIX,
-                SHIPPING_PREFIX,
-                OTHER_PREFIX
-            )
+        val ALL_PREFIXES = setOf(
+            BILLING_PREFIX,
+            SHIPPING_PREFIX,
+            OTHER_PREFIX
+        )
     }
 
     object AddOnsMetadataKeys {

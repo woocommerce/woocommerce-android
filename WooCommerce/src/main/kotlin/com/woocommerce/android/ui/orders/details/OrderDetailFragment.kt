@@ -10,6 +10,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -24,8 +25,10 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.transition.TransitionManager
@@ -100,6 +103,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.util.DisplayUtils
@@ -473,11 +478,15 @@ class OrderDetailFragment :
 
         setupOrderAttributionInfoCard(viewModel.orderAttributionInfo)
         setupAdditionalCheckoutInfoCard(viewModel.additionalCheckoutFields)
-        viewModel.additionalCheckoutFields.observe(viewLifecycleOwner) {
-            binding.orderDetailCustomerInfo.updateAdditionalCheckoutFields(
-                billing = it.billing,
-                shipping = it.shipping
-            )
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.additionalCheckoutFields.filterNotNull().collect {
+                    binding.orderDetailCustomerInfo.updateAdditionalCheckoutFields(
+                        billing = it.billing,
+                        shipping = it.shipping
+                    )
+                }
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -590,12 +599,12 @@ class OrderDetailFragment :
         }
     }
 
-    private fun setupAdditionalCheckoutInfoCard(additionalCheckoutFields: LiveData<AdditionalCheckoutFields>) {
+    private fun setupAdditionalCheckoutInfoCard(additionalCheckoutFields: StateFlow<AdditionalCheckoutFields?>) {
         binding.orderDetailAdditionalCheckoutInfo.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                additionalCheckoutFields.observeAsState().value?.let {
+                additionalCheckoutFields.collectAsState().value?.let {
                     LegacyWooThemeWithBackground {
                         OrderDetailAdditionalCheckoutInfoView(fields = it.other)
                     }

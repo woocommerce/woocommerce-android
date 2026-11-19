@@ -2024,7 +2024,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         createViewModel()
         viewModel.start()
 
-        val fieldsState = viewModel.additionalCheckoutFields.getOrAwaitValue()
+        val fieldsState = viewModel.additionalCheckoutFields.value
 
         assertThat(fieldsState).isEqualTo(fields)
     }

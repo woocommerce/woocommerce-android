@@ -83,6 +83,8 @@ import kotlinx.coroutines.CoroutineStart.LAZY
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
@@ -178,8 +180,8 @@ class OrderDetailViewModel @Inject constructor(
     private val _orderAttributionInfo = MutableLiveData<OrderAttributionInfo>()
     val orderAttributionInfo: LiveData<OrderAttributionInfo> = _orderAttributionInfo
 
-    private val _additionalCheckoutFields = MutableLiveData<AdditionalCheckoutFields>()
-    val additionalCheckoutFields: LiveData<AdditionalCheckoutFields> = _additionalCheckoutFields
+    private val _additionalCheckoutFields = MutableStateFlow<AdditionalCheckoutFields?>(null)
+    val additionalCheckoutFields: StateFlow<AdditionalCheckoutFields?> = _additionalCheckoutFields.asStateFlow()
 
     private val _shippingLineList = MutableStateFlow<List<Order.ShippingLine>>(emptyList())
     val shippingLineList =
