@@ -4,6 +4,9 @@ import com.woocommerce.android.receiptprinter.ReceiptPrinterDevice
 import com.woocommerce.android.receiptprinter.ReceiptPrinterError
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosPermissionUtils
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ReceiptPrinterSetupSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
@@ -14,6 +17,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 
 @ExperimentalCoroutinesApi
 class WooPosReceiptPrinterSetupViewModelTest {
@@ -32,6 +36,7 @@ class WooPosReceiptPrinterSetupViewModelTest {
         on { create(any()) }.thenReturn(controller)
     }
     private val permissionUtils: WooPosPermissionUtils = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     @Test
     fun `when the controller state changes, then the state follows it`() = runTest {
@@ -51,7 +56,7 @@ class WooPosReceiptPrinterSetupViewModelTest {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.startSetup()
+        viewModel.startSetup(ReceiptPrinterSetupSource.SETTINGS)
 
         // THEN
         verify(controller).startSetup()
@@ -64,7 +69,7 @@ class WooPosReceiptPrinterSetupViewModelTest {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.startSetup()
+        viewModel.startSetup(ReceiptPrinterSetupSource.SETTINGS)
 
         // THEN
         verify(controller, never()).startSetup()
@@ -182,9 +187,69 @@ class WooPosReceiptPrinterSetupViewModelTest {
         verify(controller).startSetup()
     }
 
+    @Test
+    fun `given no setup is running, when setup starts from print receipt, then setup started is tracked with that source`() =
+        runTest {
+            // GIVEN
+            val viewModel = createViewModel()
+
+            // WHEN
+            viewModel.startSetup(ReceiptPrinterSetupSource.PRINT_RECEIPT)
+
+            // THEN
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event.ReceiptPrinterSetupStarted(ReceiptPrinterSetupSource.PRINT_RECEIPT)
+            )
+        }
+
+    @Test
+    fun `given a setup is running, when setup starts again, then setup started is not tracked`() = runTest {
+        // GIVEN
+        controllerState.value = WooPosReceiptPrinterConnectionState.Searching
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.startSetup(ReceiptPrinterSetupSource.SETTINGS)
+
+        // THEN
+        verifyNoInteractions(analyticsTracker)
+    }
+
+    @Test
+    fun `given a failed setup, when search again is clicked, then setup started is not tracked`() = runTest {
+        // GIVEN
+        controllerState.value = WooPosReceiptPrinterConnectionState.NoPrintersFound
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onSearchAgainClicked()
+
+        // THEN
+        verifyNoInteractions(analyticsTracker)
+    }
+
+    @Test
+    fun `given setup started from settings, when a printer is connected, then connected is tracked with that source`() =
+        runTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            viewModel.startSetup(ReceiptPrinterSetupSource.SETTINGS)
+            controllerState.value = WooPosReceiptPrinterConnectionState.Connected(PRINTER)
+
+            // WHEN
+            viewModel.onConnected()
+
+            // THEN
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event.ReceiptPrinterConnected(ReceiptPrinterSetupSource.SETTINGS)
+            )
+            verify(controller).cancelSetup()
+        }
+
     private fun createViewModel() = WooPosReceiptPrinterSetupViewModel(
         controllerFactory = controllerFactory,
         permissionUtils = permissionUtils,
+        analyticsTracker = analyticsTracker,
     )
 
     private companion object {
