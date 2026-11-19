@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'lib/release_notes'
+
 default_platform(:android)
 fastlane_require 'dotenv'
 
@@ -158,7 +160,7 @@ platform :android do
 
     # Validate release prerequisites before creating the branch.
     ensure_branch_does_not_exist!(new_release_branch)
-    previous_release_tag = resolve_release_notes_base_tag(previous_version: release_version_current, new_version: new_version)
+    previous_release_tag = ReleaseNotes.resolve_base_tag(previous_version: release_version_current, new_version: new_version)
 
     UI.message 'Creating release branch...'
     Fastlane::Helper::GitHelper.create_branch(new_release_branch, from: DEFAULT_BRANCH)
@@ -247,12 +249,7 @@ platform :android do
 
     buildkite_annotate(style: moved_prs.empty? ? 'success' : 'warning', context: 'start-code-freeze', message: moved_prs_info) if is_ci
 
-    testing_details = if release_testing.to_s.match?(/^\* /)
-                        "Review the test steps in any PRs listed below. Internal changes are included.\n\n#{release_testing}"
-                      else
-                        'No PRs currently labeled `testing: release smoke test` were found in this release range.'
-                      end
-    testing_message = "## Release smoke testing\n\nSmoke test the final APK before release.\n\n#{testing_details}"
+    testing_message = ReleaseNotes.smoke_testing_message(release_testing)
     UI.message(testing_message)
     buildkite_annotate(style: 'info', context: 'release-smoke-testing', message: testing_message) if is_ci
   end
@@ -1703,29 +1700,6 @@ end
 # -----------------------------------------------------------------------------------
 # Release Management Utils
 # -----------------------------------------------------------------------------------
-def resolve_release_notes_base_tag(previous_version:, new_version:)
-  release_tags = remote_release_tags(version: previous_version)
-  base_tag = if release_tags.include?(previous_version)
-               previous_version
-             else
-               release_tags.find { |tag| tag.match?(/\A#{Regexp.escape(previous_version)}-rc-\d+\z/) }
-             end
-  UI.user_error!("No final or RC tag for #{previous_version} was found on origin. Cannot generate release notes for #{new_version}.") if base_tag.nil?
-  UI.message("Using #{base_tag} as the base for release notes and the smoke-testing report.")
-  if base_tag != previous_version
-    UI.important("Release #{previous_version} is not tagged yet. Review the generated draft for fixes already shipped in that release before publishing the notes.")
-  end
-  base_tag
-end
-
-# Tags are returned in descending version order.
-def remote_release_tags(version:)
-  sh(
-    'git', 'ls-remote', '--tags', '--refs', '--sort=-version:refname', 'origin',
-    "refs/tags/#{version}", "refs/tags/#{version}-rc-*", log: false
-  ).lines.map { |line| line.split.last.delete_prefix('refs/tags/') }
-end
-
 def create_backmerge_pr
   version = release_version_current
 

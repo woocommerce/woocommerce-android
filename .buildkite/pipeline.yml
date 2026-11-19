@@ -109,6 +109,22 @@ steps:
   - group: "🔬 Tests"
     steps:
 
+      - label: ":fastlane: Release helper tests"
+        key: release-helper-tests
+        if_changed:
+          - fastlane/Fastfile
+          - fastlane/lib/**
+          - fastlane/test/**
+          - Gemfile
+          - Gemfile.lock
+          - .ruby-version
+          - .bundle/config
+          - .buildkite/pipeline.yml
+        command: |
+          install_gems
+          bundle exec ruby fastlane/test/release_notes_test.rb
+        plugins: [$CI_TOOLKIT]
+
       - label: "Unit tests"
         key: unit-tests
         command: .buildkite/commands/run-unit-tests.sh
