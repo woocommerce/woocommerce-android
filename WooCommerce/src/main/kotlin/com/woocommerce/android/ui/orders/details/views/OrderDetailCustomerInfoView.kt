@@ -7,6 +7,9 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.PopupMenu
+import android.widget.TextView
+import androidx.core.text.bold
+import androidx.core.text.buildSpannedString
 import androidx.core.view.isVisible
 import androidx.navigation.findNavController
 import com.google.android.material.card.MaterialCardView
@@ -23,6 +26,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderCustomerHelper
+import com.woocommerce.android.ui.orders.details.AdditionalCheckoutField
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.PhoneContactOption
@@ -83,6 +87,31 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         showBillingInfo(order, isReadOnly)
         showViewOrdersButton(order, viewOrdersButtonVissible)
         restoreCustomerInfoViewExpandedOrCollapsedState()
+    }
+
+    fun updateAdditionalCheckoutFields(
+        billing: List<AdditionalCheckoutField>,
+        shipping: List<AdditionalCheckoutField>
+    ) {
+        binding.customerInfoBillingCheckoutFields.showCheckoutFields(billing)
+        binding.customerInfoShippingCheckoutFields.showCheckoutFields(shipping)
+    }
+
+    private fun TextView.showCheckoutFields(fields: List<AdditionalCheckoutField>) {
+        isVisible = fields.isNotEmpty()
+        text = buildSpannedString {
+            fields.forEachIndexed { index, field ->
+                if (index > 0) append("\n")
+                bold { append(field.label) }
+                append(": ")
+                append(field.value.toDisplayText())
+            }
+        }
+    }
+
+    private fun AdditionalCheckoutField.Value.toDisplayText(): String = when (this) {
+        is AdditionalCheckoutField.Value.Text -> text
+        is AdditionalCheckoutField.Value.Checkbox -> context.getString(if (isChecked) R.string.yes else R.string.no)
     }
 
     private fun showBillingInfo(order: Order, isReadOnly: Boolean) {

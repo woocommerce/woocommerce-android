@@ -87,6 +87,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/customerInfo_shippingCheckoutFields"
+                    style="@style/Woo.Card.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    tools:text="Gov id: S-456"
+                    tools:visibility="visible" />
+
             </LinearLayout>
 
             <!-- Label: Shipping method -->
@@ -171,6 +180,18 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingLabel" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/customerInfo_billingCheckoutFields"
+                    style="@style/Woo.Card.Body"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingAddr"
+                    tools:text="Gov id: B-123"
+                    tools:visibility="visible" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

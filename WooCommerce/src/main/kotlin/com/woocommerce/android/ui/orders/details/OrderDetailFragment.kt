@@ -473,6 +473,12 @@ class OrderDetailFragment :
 
         setupOrderAttributionInfoCard(viewModel.orderAttributionInfo)
         setupAdditionalCheckoutInfoCard(viewModel.additionalCheckoutFields)
+        viewModel.additionalCheckoutFields.observe(viewLifecycleOwner) {
+            binding.orderDetailCustomerInfo.updateAdditionalCheckoutFields(
+                billing = it.billing,
+                shipping = it.shipping
+            )
+        }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
