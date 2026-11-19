@@ -21,6 +21,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -878,6 +879,36 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         // THEN
         verify(fetchRefundPreview, times(1)).invoke(any(), any())
         pendingResult.complete(FetchRefundPreview.Result.FallbackToLocal)
+    }
+
+    @Test
+    fun `given preview in progress, when next is tapped again, then next tap is tracked once`() = testBlocking {
+        // GIVEN
+        givenItemSelected()
+        val pendingResult = CompletableDeferred<FetchRefundPreview.Result>()
+        whenever(fetchRefundPreview.invoke(any(), any())).doSuspendableAnswer { pendingResult.await() }
+        viewModel.onNextButtonTappedFromItems()
+
+        // WHEN
+        viewModel.onNextButtonTappedFromItems()
+
+        // THEN
+        verify(analyticsTrackerWrapper, times(1))
+            .track(eq(AnalyticsEvent.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED), any())
+        pendingResult.complete(FetchRefundPreview.Result.FallbackToLocal)
+    }
+
+    @Test
+    fun `given preview throws, when next is tapped, then refund is no longer shown as calculating`() = testBlocking {
+        // GIVEN
+        givenItemSelected()
+        whenever(fetchRefundPreview.invoke(any(), any())).doSuspendableAnswer { throw CancellationException() }
+
+        // WHEN
+        viewModel.onNextButtonTappedFromItems()
+
+        // THEN
+        assertFalse(viewModel.isCalculatingRefund.getOrAwaitValue())
     }
 
     @Test

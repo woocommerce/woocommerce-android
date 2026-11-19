@@ -348,6 +348,8 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onNextButtonTappedFromItems() {
+        if (previewJob?.isActive == true) return
+
         analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
             mapOf(
@@ -355,13 +357,15 @@ class IssueRefundViewModel @Inject constructor(
             )
         )
 
-        if (previewJob?.isActive == true) return
         // Read before the preview so the summary refunds exactly what was previewed.
         val state = requireNotNull(viewState.value) { "View state is not ready yet" }
         previewJob = launch {
             isCalculatingRefundFlow.value = true
-            val result = fetchRefundPreview(arguments.orderId, state.selectedRefundItems)
-            isCalculatingRefundFlow.value = false
+            val result = try {
+                fetchRefundPreview(arguments.orderId, state.selectedRefundItems)
+            } finally {
+                isCalculatingRefundFlow.value = false
+            }
             when (result) {
                 is FetchRefundPreview.Result.ServerCalculated ->
                     showRefundSummary(state, refundAmount = result.preview.total, isServerComputed = true)
