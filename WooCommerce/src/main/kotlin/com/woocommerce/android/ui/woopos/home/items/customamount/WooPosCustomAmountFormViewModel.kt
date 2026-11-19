@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +20,7 @@ class WooPosCustomAmountFormViewModel @Inject constructor(
     private val getCurrencyFormattingParameters: WooPosGetCurrencyFormattingParameters,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val resourceProvider: ResourceProvider,
-    private val taxableRepository: WooPosCustomAmountTaxableRepository,
+    private val preferencesRepository: WooPosPreferencesRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(WooPosCustomAmountFormState())
@@ -57,10 +58,11 @@ class WooPosCustomAmountFormViewModel @Inject constructor(
         }
     }
 
-    fun initializeFor(mode: WooPosCustomAmountFormState.Mode) {
+    suspend fun initializeFor(mode: WooPosCustomAmountFormState.Mode) {
         if (hasInitializedFor == mode) return
-        hasInitializedFor = mode
         val editing = mode as? WooPosCustomAmountFormState.Mode.Edit
+        val isTaxable = editing?.isTaxable ?: preferencesRepository.getCustomAmountLastTaxable()
+        hasInitializedFor = mode
         amountBeforeEditing = null
 
         _state.value = _state.value.copy(
@@ -69,7 +71,7 @@ class WooPosCustomAmountFormViewModel @Inject constructor(
             // A blank name is saved as the default name, so show it as unset again when editing.
             name = editing?.name?.takeUnless { it == defaultName() }.orEmpty(),
             nameDraft = "",
-            isTaxable = editing?.isTaxable ?: taxableRepository.getLastIsTaxable(),
+            isTaxable = isTaxable,
             isSubmitting = false,
             isSubmitted = false,
             isClosed = false,
@@ -163,7 +165,7 @@ class WooPosCustomAmountFormViewModel @Inject constructor(
                         editingItemNumber = editingItemNumber,
                     )
                 )
-                taxableRepository.saveLastIsTaxable(current.isTaxable)
+                preferencesRepository.setCustomAmountLastTaxable(current.isTaxable)
                 hasInitializedFor = null
                 _state.value = _state.value.copy(isSubmitted = true)
             } finally {

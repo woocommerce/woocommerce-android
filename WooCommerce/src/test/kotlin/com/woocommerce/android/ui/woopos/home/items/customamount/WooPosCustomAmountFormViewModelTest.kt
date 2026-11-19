@@ -4,6 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -43,7 +44,9 @@ class WooPosCustomAmountFormViewModelTest {
         on { getString(R.string.woopos_custom_amount_dialog_name_placeholder) }
             .thenReturn(DEFAULT_NAME)
     }
-    private val taxableRepository: WooPosCustomAmountTaxableRepository = mock()
+    private val preferencesRepository: WooPosPreferencesRepository = mock {
+        on { getCustomAmountLastTaxable() }.thenReturn(false)
+    }
 
     @Test
     fun `given add mode, when initialized, then state has empty fields and currency params`() = runTest {
@@ -645,7 +648,7 @@ class WooPosCustomAmountFormViewModelTest {
     @Test
     fun `given last choice was charge taxes, when a new custom amount opens, then charge taxes is on`() = runTest {
         // GIVEN
-        whenever(taxableRepository.getLastIsTaxable()).thenReturn(true)
+        whenever(preferencesRepository.getCustomAmountLastTaxable()).thenReturn(true)
         val sut = createSut()
         advanceUntilIdle()
 
@@ -659,7 +662,7 @@ class WooPosCustomAmountFormViewModelTest {
     @Test
     fun `given last choice was charge taxes, when an existing item without taxes opens, then charge taxes is off`() = runTest {
         // GIVEN
-        whenever(taxableRepository.getLastIsTaxable()).thenReturn(true)
+        whenever(preferencesRepository.getCustomAmountLastTaxable()).thenReturn(true)
         val sut = createSut()
         advanceUntilIdle()
 
@@ -691,7 +694,7 @@ class WooPosCustomAmountFormViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        verify(taxableRepository).saveLastIsTaxable(true)
+        verify(preferencesRepository).setCustomAmountLastTaxable(true)
     }
 
     @Test
@@ -714,7 +717,7 @@ class WooPosCustomAmountFormViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        verify(taxableRepository).saveLastIsTaxable(false)
+        verify(preferencesRepository).setCustomAmountLastTaxable(false)
     }
 
     @Test
@@ -734,14 +737,60 @@ class WooPosCustomAmountFormViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        verify(taxableRepository, never()).saveLastIsTaxable(any())
+        verify(preferencesRepository, never()).setCustomAmountLastTaxable(any())
+    }
+
+    @Test
+    fun `given preference write in flight, when submitted again, then form stays open and submits only once`() = runTest {
+        // GIVEN
+        val saveGate = CompletableDeferred<Unit>()
+        whenever(preferencesRepository.setCustomAmountLastTaxable(true)).doSuspendableAnswer {
+            saveGate.await()
+        }
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(WooPosCustomAmountFormState.Mode.Add)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal.TEN))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.TaxableToggled(true))
+
+        // WHEN
+        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
+        advanceUntilIdle()
+        sut.onUIEvent(WooPosCustomAmountUIEvent.SubmitClicked)
+
+        // THEN
+        assertThat(sut.state.value.isSubmitted).isFalse()
+        assertThat(sut.state.value.isSubmitting).isTrue()
+        verify(childrenToParentEventSender, times(1)).sendToParent(any())
+        saveGate.complete(Unit)
+        advanceUntilIdle()
+        assertThat(sut.state.value.isSubmitted).isTrue()
+    }
+
+    @Test
+    fun `given initialized add mode, when initialized again, then draft and tax choice are preserved`() = runTest {
+        // GIVEN
+        whenever(preferencesRepository.getCustomAmountLastTaxable()).thenReturn(true)
+        val sut = createSut()
+        advanceUntilIdle()
+        sut.initializeFor(WooPosCustomAmountFormState.Mode.Add)
+        sut.onUIEvent(WooPosCustomAmountUIEvent.AmountChanged(BigDecimal.TEN))
+        sut.onUIEvent(WooPosCustomAmountUIEvent.TaxableToggled(false))
+
+        // WHEN
+        sut.initializeFor(WooPosCustomAmountFormState.Mode.Add)
+
+        // THEN
+        assertThat(sut.state.value.amount).isEqualByComparingTo(BigDecimal.TEN)
+        assertThat(sut.state.value.isTaxable).isFalse()
+        verify(preferencesRepository, times(1)).getCustomAmountLastTaxable()
     }
 
     private fun createSut() = WooPosCustomAmountFormViewModel(
         getCurrencyFormattingParameters = getCurrencyFormattingParameters,
         childrenToParentEventSender = childrenToParentEventSender,
         resourceProvider = resourceProvider,
-        taxableRepository = taxableRepository,
+        preferencesRepository = preferencesRepository,
     )
 
     private companion object {
