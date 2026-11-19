@@ -306,6 +306,48 @@ class WooPosPaymentSuccessViewModelTest {
     }
 
     @Test
+    fun `given a print failure was shown, when the ViewModel is recreated from saved state, then the failure is shown`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(any())).thenReturn("test")
+            val savedStateHandle = SavedStateHandle(
+                mapOf(
+                    PAYMENT_SUCCESS_ORDER_ID_KEY to 42L,
+                    PAYMENT_SUCCESS_SOURCE_KEY to PaymentSuccessSource.CARD_CHECKOUT.name,
+                )
+            )
+            createViewModel(savedStateHandle = savedStateHandle)
+            printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(42L, WooPosPrintReceiptFailure.CoverOpen))
+
+            // WHEN
+            val recreatedViewModel = createViewModel(savedStateHandle = savedStateHandle)
+
+            // THEN
+            assertThat(recreatedViewModel.state.value.printReceiptFailure)
+                .isEqualTo(WooPosPrintReceiptFailure.CoverOpen)
+        }
+
+    @Test
+    fun `given a restored print failure, when it is dismissed, then it is not restored again`() = runTest {
+        // GIVEN
+        whenever(resourceProvider.getString(any())).thenReturn("test")
+        val savedStateHandle = SavedStateHandle(
+            mapOf(
+                PAYMENT_SUCCESS_ORDER_ID_KEY to 42L,
+                PAYMENT_SUCCESS_SOURCE_KEY to PaymentSuccessSource.CARD_CHECKOUT.name,
+            )
+        )
+        val viewModel = createViewModel(savedStateHandle = savedStateHandle)
+        printReceiptEvents.emit(WooPosPrintReceiptEvent.PrintFailed(42L, WooPosPrintReceiptFailure.CoverOpen))
+
+        // WHEN
+        viewModel.onPrintReceiptFailureDialogDismissed()
+
+        // THEN
+        assertThat(createViewModel(savedStateHandle = savedStateHandle).state.value.printReceiptFailure).isNull()
+    }
+
+    @Test
     fun `given the view model was cleared, when the coordinator reports a failed print, then the failure is not shown`() =
         runTest {
             // GIVEN
