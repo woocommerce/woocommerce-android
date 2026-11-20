@@ -1,5 +1,5 @@
 <!--
-Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
+Contains editorialized release notes. Developer notes in `RELEASE-NOTES.txt` are generated from PR titles and labels at code freeze; see `docs/release-notes.md`.
 -->
 ## 26.1
 Custom amounts in Woo POS now open on their own screen, so you can set the amount, name, and taxes before adding them to the cart. Orders show the customer's shipping phone with the shipping address, and long product names wrap instead of being cut off. Plus fixes for POS card payments, product photos, custom date range stats, and sign-in.
