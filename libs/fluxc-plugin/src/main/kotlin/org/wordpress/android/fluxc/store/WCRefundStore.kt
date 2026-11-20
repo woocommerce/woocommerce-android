@@ -117,7 +117,7 @@ class WCRefundStore @Inject internal constructor(
      * A store without `compute_totals` drops the param and books a zero-amount refund, and still
      * answers 201. It also restocks when [restockItems] is true. Call this only after
      * [previewRefund] succeeded on a store running WooCommerce 11.1.0 or newer. POS checks the
-     * version in `WooPosResolveRefundFlow` and the preview result in
+     * version in `ResolveRefundFlow` and the preview result in
      * `WooPosRefundViewModel.buildSubmissionRequest`.
      *
      * No parameter has a default: each one moves the merchant's money or stock.

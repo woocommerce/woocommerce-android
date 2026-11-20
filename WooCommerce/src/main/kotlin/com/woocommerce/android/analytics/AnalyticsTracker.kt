@@ -486,6 +486,9 @@ class AnalyticsTracker private constructor(
 
         const val KEY_REFUND_IS_FULL = "is_full"
         const val KEY_REFUND_METHOD = "gateway"
+        const val KEY_REFUND_FLOW = "refund_flow"
+        const val VALUE_REFUND_FLOW_SERVER_COMPUTED = "server_computed"
+        const val VALUE_REFUND_FLOW_LOCAL = "local"
         const val KEY_AMOUNT = "amount"
         const val KEY_AMOUNT_NORMALIZED = "amount_normalized"
         const val KEY_URL_WAS_NORMALIZED_TO_HTTPS = "url_was_normalized_to_https"

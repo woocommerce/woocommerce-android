@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.refunds.RefundCalculationFlow
+import com.woocommerce.android.ui.payments.refunds.ResolveRefundFlow
+import com.woocommerce.android.ui.payments.refunds.ServerRefundAvailabilityCache
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.WooLog
@@ -15,7 +18,7 @@ import javax.inject.Inject
 /**
  * Fetches a server-calculated refund preview, probing the store for server-refund support.
  *
- * The store's eligibility is decided by [WooPosResolveRefundFlow]; when eligible, the preview
+ * The store's eligibility is decided by [ResolveRefundFlow]; when eligible, the preview
  * request doubles as the availability probe: a success marks the store available (unlocking the
  * computed create), a 404 (`rest_no_route` on stores older than the release shipping the preview
  * route) marks it unavailable and falls back to the local-calculation flow.
@@ -23,8 +26,8 @@ import javax.inject.Inject
 class WooPosRefundPreview @Inject constructor(
     private val refundStore: WCRefundStore,
     private val selectedSite: SelectedSite,
-    private val availabilityCache: WooPosServerRefundAvailabilityCache,
-    private val resolveRefundFlow: WooPosResolveRefundFlow,
+    private val availabilityCache: ServerRefundAvailabilityCache,
+    private val resolveRefundFlow: ResolveRefundFlow,
     private val analyticsTracker: WooPosAnalyticsTracker,
 ) {
     suspend operator fun invoke(
@@ -35,7 +38,7 @@ class WooPosRefundPreview @Inject constructor(
         val localSiteId = site.localId().value
 
         val flow = resolveRefundFlow()
-        if (flow !is WooPosRefundFlow.ServerComputed) {
+        if (flow !is RefundCalculationFlow.ServerComputed) {
             return Result.FallbackToLocal
         }
 
