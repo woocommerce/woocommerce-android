@@ -13,7 +13,6 @@ import androidx.test.uiautomator.UiDevice
 import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.NestedScrollViewExtension
 import com.woocommerce.android.e2e.helpers.util.OrderData
-import com.woocommerce.android.e2e.helpers.util.ProductData
 import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.ui.orders.list.OrderListTestTags
 import org.hamcrest.Matchers
@@ -112,37 +111,6 @@ class SingleOrderScreen : Screen(R.id.orderDetail_container) {
         assertCustomerName(order.customerName)
         assertPayments(order)
         assertCustomerNote(order.customerNote)
-        return this
-    }
-
-    fun assertOrderHasProduct(product: ProductData): SingleOrderScreen {
-        Espresso.onView(
-            Matchers.allOf(
-                // We start with making sure that there's a product name on screen
-                Matchers.allOf(
-                    withId(R.id.productInfo_name),
-                    withText(product.name)
-                ),
-                // And that this product has a sibling with expected Price
-                ViewMatchers.hasSibling(
-                    Matchers.allOf(
-                        withId(R.id.productInfo_total),
-                        withText("$${product.priceDiscountedRaw}.00")
-                    )
-                ),
-                // And that this product has a sibling with expected SKU
-                ViewMatchers.hasSibling(
-                    Matchers.allOf(
-                        withId(R.id.productInfo_SKU),
-                        withText("SKU: ${product.sku}")
-                    )
-                ),
-                // And that all of them are children of Products List
-                ViewMatchers.isDescendantOfA(withId(R.id.orderDetail_productList)),
-            )
-        )
-            .check(ViewAssertions.matches(isDisplayed()))
-
         return this
     }
 
