@@ -12,6 +12,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ER
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_COUPON
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_ID
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_PARAM
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_PRODUCT_ID
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_RESPONSE
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_VARIATION_ID
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.NO_CONNECTION
@@ -75,7 +76,8 @@ class WooPosSearchByIdentifierGlobalUniqueSearch @Inject constructor(
             INVALID_ID,
             API_NOT_FOUND,
             EMPTY_RESPONSE,
-            INVALID_VARIATION_ID -> WooPosSearchByIdentifierResult.Error.NotFound
+            INVALID_VARIATION_ID,
+            INVALID_PRODUCT_ID -> WooPosSearchByIdentifierResult.Error.NotFound
 
             GENERIC_ERROR -> WooPosSearchByIdentifierResult.Error.UnknownError(
                 message?.ifEmpty { null } ?: "Generic error occurred"
