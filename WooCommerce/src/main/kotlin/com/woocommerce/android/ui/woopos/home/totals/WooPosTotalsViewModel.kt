@@ -1060,6 +1060,14 @@ class WooPosTotalsViewModel @Inject constructor(
                     isRemoveProductSupported = deletedVariationFromApiError != null
                 )
             }
+            wooError != null && wooError.type == WooErrorType.INVALID_PRODUCT_ID -> {
+                totalsAnalyticsTracker.trackCheckoutOutdatedItemDetectedScreenShown()
+                uiState.value = WooPosTotalsViewState.ProductNotFoundError(
+                    message = resourceProvider.getString(R.string.woopos_totals_product_not_found_error),
+                    reason = resourceProvider.getString(R.string.woopos_totals_product_not_found_reason),
+                    isRemoveProductSupported = false
+                )
+            }
             else -> {
                 uiState.value = WooPosTotalsViewState.Error(
                     resourceProvider.getString(R.string.woopos_totals_order_creation_error)
