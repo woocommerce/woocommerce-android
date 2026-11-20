@@ -15,6 +15,10 @@ sealed class CardReaderRemoteError(val code: String) {
 
     data object CreateIntentFailed : CardReaderRemoteError(CODE_CREATE_INTENT_FAILED)
 
+    data object Canceled : CardReaderRemoteError(CODE_CANCELED)
+
+    data object CardReadTimedOut : CardReaderRemoteError(CODE_CARD_READ_TIMED_OUT)
+
     data object UnexpectedReply : CardReaderRemoteError(CODE_UNEXPECTED_REPLY)
 
     data class Unknown(val raw: String) : CardReaderRemoteError(raw)
@@ -27,6 +31,8 @@ sealed class CardReaderRemoteError(val code: String) {
         private const val CODE_CONNECT_FAILED = "connect_failed"
         private const val CODE_COLLECT_FAILED = "collect_failed"
         private const val CODE_CREATE_INTENT_FAILED = "create_intent_failed"
+        private const val CODE_CANCELED = "canceled"
+        private const val CODE_CARD_READ_TIMED_OUT = "card_read_timed_out"
         private const val CODE_UNEXPECTED_REPLY = "unexpected_reply"
 
         fun fromCode(code: String): CardReaderRemoteError = when (code) {
@@ -37,6 +43,8 @@ sealed class CardReaderRemoteError(val code: String) {
             CODE_CONNECT_FAILED -> ConnectFailed
             CODE_COLLECT_FAILED -> CollectFailed
             CODE_CREATE_INTENT_FAILED -> CreateIntentFailed
+            CODE_CANCELED -> Canceled
+            CODE_CARD_READ_TIMED_OUT -> CardReadTimedOut
             CODE_UNEXPECTED_REPLY -> UnexpectedReply
             else -> Unknown(code)
         }
