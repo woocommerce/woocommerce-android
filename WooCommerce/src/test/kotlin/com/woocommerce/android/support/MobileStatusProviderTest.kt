@@ -129,6 +129,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
         on { isProductAddonsEnabled } doReturn true
         on { jetpackAppPasswordsEnabled } doReturn false
         on { wooPosLocalCatalogEnabled } doReturn true
+        on { isAppFunctionsEnabled } doReturn true
         on { getCardReaderPreferredPlugin(any(), any(), any()) } doReturn PluginType.WOOCOMMERCE_PAYMENTS
         on { getCardReaderPreferredPluginVersion(any(), any(), any(), any()) } doReturn "11.0.0"
         on { isCardReaderPluginExplicitlySelected(any(), any(), any()) } doReturn true
@@ -758,6 +759,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
             Product add-ons: true
             Jetpack app passwords: false
             POS local catalog: true
+            Assistant access (AppFunctions): true
 
             # Selected store: https://example.com
 

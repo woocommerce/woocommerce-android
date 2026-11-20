@@ -48,6 +48,7 @@ internal class ProductVariationsConfirmationPreviewProvider @Inject constructor(
                     put("regular_price", variation.regularPrice)
                     put("sale_price", variation.salePrice)
                     put("stock_quantity", variation.stockQuantity.formatStockQuantity())
+                    put("manage_stock", variation.manageStock.toString())
                     put("stock_status", variation.stockStatus)
                     put("sku", variation.sku)
                     put("status", variation.status)

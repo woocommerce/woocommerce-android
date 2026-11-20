@@ -223,6 +223,10 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun onAppFunctionsOrderRequested(orderId: Long) {
+        triggerEvent(ViewOrderDetail(orderId))
+    }
+
     fun removeOrderNotifications() {
         notificationHandler.removeNotificationsOfTypeFromSystemsBar(
             NotificationChannelType.NEW_ORDER,

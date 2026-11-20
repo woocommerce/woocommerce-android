@@ -58,6 +58,7 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.aiassistant.appfunctions.AppFunctionsAccessPolicy
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
@@ -175,6 +176,7 @@ class MainActivity :
 
         // push notification-related constants
         const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
+        const val FIELD_APP_FUNCTIONS_ORDER_ID = "app-functions-order-id"
         const val FIELD_REMOTE_NOTIFICATION = "remote-notification"
         const val FIELD_LOCAL_NOTIFICATION = "local-notification"
         const val FIELD_PUSH_ID = "local-push-id"
@@ -202,6 +204,9 @@ class MainActivity :
 
     @Inject
     lateinit var selectedSite: SelectedSite
+
+    @Inject
+    lateinit var appFunctionsAccessPolicy: AppFunctionsAccessPolicy
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
@@ -450,6 +455,7 @@ class MainActivity :
         if (savedInstanceState == null) {
             viewModel.handleIncomingAppLink(intent?.data)
             viewModel.handleShortcutAction(intent?.action?.lowercase(Locale.ROOT))
+            handleIncomingAppFunctionsOrder()
             handleIncomingImages()
         }
 
@@ -462,6 +468,15 @@ class MainActivity :
                 (0 until it.itemCount).map { index -> it.getItemAt(index).uri.toString() }
             }
         )
+    }
+
+    private fun handleIncomingAppFunctionsOrder() {
+        val incomingIntent = intent ?: return
+        val orderId = incomingIntent.getLongExtra(FIELD_APP_FUNCTIONS_ORDER_ID, 0L)
+        incomingIntent.removeExtra(FIELD_APP_FUNCTIONS_ORDER_ID)
+        if (orderId > 0 && appFunctionsAccessPolicy.isAllowed()) {
+            viewModel.onAppFunctionsOrderRequested(orderId)
+        }
     }
 
     override fun hideProgressDialog() {
