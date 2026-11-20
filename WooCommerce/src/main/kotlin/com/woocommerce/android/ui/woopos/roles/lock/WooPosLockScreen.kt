@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -8,17 +7,13 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,7 +24,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -61,11 +55,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -90,6 +82,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
+import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDots
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPad
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPadStyle
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
@@ -224,7 +217,7 @@ private fun BoxWithConstraintsScope.LockContent(
                     enabled = state.canEnterPIN && !intro.isActive,
                     onDigit = { onUIEvent(WooPosLockScreenUIEvent.DigitTapped(it)) },
                     onDelete = { onUIEvent(WooPosLockScreenUIEvent.DeleteTapped) },
-                    style = WooPosPINPadStyle.LockScreen(
+                    style = WooPosPINPadStyle(
                         keySize = layout.keySize,
                         keySpacing = metrics.keySpacing,
                         showsDisabledKeys = state.isLocked && when (state.status) {
@@ -410,7 +403,7 @@ private fun LockStatus(state: WooPosLockScreenState, feedback: WooPosLockPINFeed
     val dotsAlpha by animateFloatAsState(if (message == null) 1f else 0f, feedbackSpec, label = "lockDots")
     Box(Modifier.heightIn(min = statusHeight), contentAlignment = Alignment.Center) {
         // The dots stay composed under messages so the next digit still pops in.
-        LockPINDots(
+        WooPosPINDots(
             enteredDigits = feedback.heldDigits.takeIf { it > 0 } ?: state.enteredDigits,
             isHidden = message != null,
             modifier = Modifier.graphicsLayer {
@@ -420,37 +413,6 @@ private fun LockStatus(state: WooPosLockScreenState, feedback: WooPosLockPINFeed
         )
         Crossfade(targetState = message, animationSpec = feedbackSpec, label = "lockStatus") { shown ->
             if (shown != null) LockMessageText(shown, (state.status as? Status.Wait)?.remainingSeconds ?: 0L)
-        }
-    }
-}
-
-@Composable
-private fun LockPINDots(enteredDigits: Int, isHidden: Boolean, modifier: Modifier = Modifier) {
-    val label = stringResource(R.string.woopos_lock_pin_entry)
-    val description = stringResource(R.string.woopos_lock_digits_entered, enteredDigits, WooPosPINHash.PIN_LENGTH)
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(DOT_SPACING),
-        modifier = modifier.clearAndSetSemantics {
-            if (!isHidden) {
-                contentDescription = label
-                stateDescription = description
-            }
-        },
-    ) {
-        repeat(WooPosPINHash.PIN_LENGTH) { index -> LockPINDot(filled = index < enteredDigits) }
-    }
-}
-
-@Composable
-private fun LockPINDot(filled: Boolean) {
-    Box(Modifier.size(DOT_SIZE)) {
-        Box(Modifier.matchParentSize().border(DOT_BORDER_WIDTH, WooPosTheme.colors.outline, CircleShape))
-        AnimatedVisibility(
-            visible = filled,
-            enter = scaleIn(tween(DOT_POP_MILLIS, easing = FastOutSlowInEasing), initialScale = DOT_POP_SCALE),
-            exit = fadeOut(tween(FEEDBACK_MILLIS)),
-        ) {
-            Box(Modifier.size(DOT_SIZE).background(MaterialTheme.colorScheme.onSurface, CircleShape))
         }
     }
 }
@@ -528,8 +490,6 @@ private const val INTRO_REVEAL_MILLIS = 280
 private const val LOCK_OPEN_ANGLE = 30f
 private const val SHAKE_MILLIS = 400
 private const val SHAKE_COUNT = 3
-private const val DOT_POP_MILLIS = 200
-private const val DOT_POP_SCALE = 1.2f
 private const val FEEDBACK_MILLIS = 120
 private const val LONGEST_WAIT_MINUTES = 59L
 private const val LONGEST_WAIT_SECONDS = 59L
@@ -544,7 +504,4 @@ private val PHONE_KEY_SIZE = 72.dp
 private val CONTENT_MAX_WIDTH = 420.dp
 private val COMPACT_HEIGHT = 480.dp
 private val STATUS_ROW_HEIGHT = 24.dp
-private val DOT_SIZE = 20.dp
-private val DOT_SPACING = 12.dp
-private val DOT_BORDER_WIDTH = 1.dp
 private val SHAKE_TRAVEL = 8.dp
