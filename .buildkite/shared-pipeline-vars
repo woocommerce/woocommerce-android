@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if [ "${BUILDKITE_BRANCH:-}" = "issue/ainfra-3829-android-staging" ] && [ -z "${PIPELINE:-}" ]; then
+  export PIPELINE=android-staging-smoke.yml
+fi
+
 # This file is `source`'d before calling `buildkite-agent pipeline upload`, and can be used
 # to set up some variables that will be interpolated in the `.yml` pipeline before uploading it.
 
