@@ -12,7 +12,6 @@ import com.woocommerce.android.e2e.helpers.util.OrderData
 import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.helpers.util.allText
 import com.woocommerce.android.e2e.helpers.util.composeTestTagWithNumericSuffix
-import com.woocommerce.android.e2e.screens.shared.FilterScreen
 import com.woocommerce.android.ui.orders.list.OrderListTestTags
 
 class OrderListScreen : Screen(R.id.order_list_compose_container) {
@@ -66,25 +65,9 @@ class OrderListScreen : Screen(R.id.order_list_compose_container) {
         return this
     }
 
-    fun tapFilters(): FilterScreen {
-        composeUi.waitForTag(OrderListTestTags.FILTERS, "Orders filters").click()
-        return FilterScreen()
-    }
-
     fun createFABTap(): UnifiedOrderScreen {
         composeUi.waitForTag(OrderListTestTags.CREATE_ORDER_FAB, "Create order button").click()
         return UnifiedOrderScreen()
-    }
-
-    fun waitForOrders(): OrderListScreen {
-        composeUi.waitForTag(OrderListTestTags.LIST, "Orders list")
-        waitForOrderRows(minimumCount = 1)
-        return this
-    }
-
-    fun waitForEmptyState(): OrderListScreen {
-        composeUi.waitForTag(OrderListTestTags.EMPTY, "empty Orders state")
-        return this
     }
 
     fun assertOrderCard(order: OrderData): OrderListScreen {

@@ -16,7 +16,6 @@ import com.woocommerce.android.e2e.helpers.util.ProductData
 import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.helpers.util.allText
 import com.woocommerce.android.e2e.helpers.util.composeTestTagWithNumericSuffix
-import com.woocommerce.android.e2e.screens.shared.FilterScreen
 import com.woocommerce.android.ui.products.list.ProductListTestTags
 
 class ProductListScreen(
@@ -83,11 +82,6 @@ class ProductListScreen(
         searchInput().text = term
         composeUi.waitForTag(ProductListTestTags.EMPTY)
         return this
-    }
-
-    fun tapFilters(): FilterScreen {
-        composeUi.waitForTag(ProductListTestTags.FILTERS).click()
-        return FilterScreen()
     }
 
     fun tapSort(): ProductListScreen {
