@@ -47,7 +47,6 @@ import com.woocommerce.android.R
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Matcher
-import org.hamcrest.Matchers
 import org.hamcrest.Matchers.`is`
 import tools.fastlane.screengrab.Screengrab
 import java.util.function.Supplier
@@ -170,17 +169,6 @@ open class Screen {
         waitForElementToBeEnabled(elementID)
         clickOn(onView(withId(elementID)))
         idleFor(500) // allow for transitions
-    }
-
-    fun clickByTextAndId(text: String, id: Int) {
-        val element = onView(
-            Matchers.allOf(
-                withText(text),
-                withId(id)
-            )
-        )
-
-        clickOn(element)
     }
 
     fun scrollTo(elementID: Int) {
