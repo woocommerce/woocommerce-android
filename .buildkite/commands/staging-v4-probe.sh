@@ -4,7 +4,8 @@ set -euo pipefail
 test "$BUILDKITE_SOURCE" = api
 test "$BUILDKITE_PULL_REQUEST" = false
 test "$(git rev-parse HEAD)" = "$BUILDKITE_COMMIT"
-git merge-base --is-ancestor "$BUILDKITE_COMMIT" "refs/remotes/origin/$BUILDKITE_BRANCH"
+branch_tip=$(git ls-remote --exit-code origin "refs/heads/$BUILDKITE_BRANCH" | cut -f1)
+test "$branch_tip" = "$BUILDKITE_COMMIT"
 buildkite-agent --version
 echo "Checkout verified for $BUILDKITE_BRANCH at $BUILDKITE_COMMIT"
 
