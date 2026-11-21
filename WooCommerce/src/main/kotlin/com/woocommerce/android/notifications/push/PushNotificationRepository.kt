@@ -121,14 +121,14 @@ class PushNotificationRepository @Inject constructor(
             metadata = metadata
         )
         return if (!result.isError) {
-            result.model?.let { tokenId ->
+            result.model?.let { (tokenId, blogId) ->
                 notificationAnalyticsTracker.track(
                     stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_SUCCESS,
                     siteId = selectedSite.siteId
                 )
                 val wasRegistered = pushNotificationsDataStore.data.first()
                     .getPushRegistration(selectedSite.siteId) != null
-                savePushTokenForSite(selectedSite, WooPushRegistrationData(tokenId, token, deviceLocale, uuid))
+                savePushTokenForSite(selectedSite, WooPushRegistrationData(tokenId, token, deviceLocale, uuid, blogId))
                 // Already disabled when the store registered; repeating it on refreshes would override user settings.
                 if (!wasRegistered) disableWpComNotificationsForSite(selectedSite.siteId)
                 Result.success(Unit)
@@ -285,7 +285,7 @@ class PushNotificationRepository @Inject constructor(
 
     fun observeWooPushTokenRegisteredForSite(site: SiteModel): Flow<Boolean> {
         return pushNotificationsDataStore.data.map { preferences ->
-            val isTokenStored = preferences.getPushRegistration(site.siteId)?.tokenId.isNotNullOrEmpty()
+            val isTokenStored = preferences.getPushRegistration(site.siteId) != null
             val supportResult = checkWooPluginPushNotificationsSupport(site, forceRefresh = false)
             // Treat errors as "compatible" to avoid hiding entry points during temporary failures
             val isPluginCompatible = when (supportResult) {
@@ -298,7 +298,10 @@ class PushNotificationRepository @Inject constructor(
     }
 
     suspend fun hasWooPushTokenForSite(siteId: Long): Boolean =
-        pushNotificationsDataStore.data.first().getPushRegistration(siteId)?.tokenId.isNotNullOrEmpty()
+        pushNotificationsDataStore.data.first().getPushRegistration(siteId) != null
+
+    internal suspend fun getWooPushRegistration(site: SiteModel): WooPushRegistrationData? =
+        pushNotificationsDataStore.data.first().getPushRegistration(site.siteId)
 
     suspend fun getWooPushRegisteredSiteIds(): Set<Long> =
         pushNotificationsDataStore.data.first().getRegisteredSiteIds()

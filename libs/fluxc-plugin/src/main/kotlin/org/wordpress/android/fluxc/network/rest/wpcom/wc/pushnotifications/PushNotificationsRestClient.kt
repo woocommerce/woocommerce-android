@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications
 
+import com.google.gson.annotations.SerializedName
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences
@@ -78,6 +79,10 @@ class PushNotificationsRestClient @Inject constructor(private val wooNetwork: Wo
 
     /**
      * @param id The unique ID of the push token record in Woo Core
+     * @param blogId The store's WordPress.com blog ID, or null when unavailable
      */
-    data class PushTokenIdResponse(val id: String)
+    data class PushTokenIdResponse(
+        val id: String,
+        @SerializedName("blog_id") val blogId: Long?
+    )
 }

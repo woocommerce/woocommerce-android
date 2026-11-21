@@ -38,17 +38,19 @@ class PushNotificationsStoreTest {
     }
 
     @Test
-    fun `when registerPushToken succeeds, then returns token id`() {
+    fun `when registerPushToken succeeds, then returns token id and blog id`() {
         runBlocking {
             val site = SiteModel().apply { id = 123 }
             val tokenId = "101"
+            val blogId = 456L
             whenever(restClient.registerPushToken(any(), any()))
-                .thenReturn(WooPayload(PushTokenIdResponse(tokenId)))
+                .thenReturn(WooPayload(PushTokenIdResponse(tokenId, blogId)))
 
             val result = sut.registerPushToken(site, "token", "uuid", "en_US")
 
             assertThat(result.isError).isFalse()
-            assertThat(result.model).isEqualTo(tokenId)
+            assertThat(result.model?.tokenId).isEqualTo(tokenId)
+            assertThat(result.model?.blogId).isEqualTo(blogId)
         }
     }
 
