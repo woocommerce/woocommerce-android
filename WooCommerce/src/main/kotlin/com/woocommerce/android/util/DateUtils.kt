@@ -11,6 +11,7 @@ import org.apache.commons.lang3.time.DateUtils
 import org.wordpress.android.fluxc.utils.SiteUtils
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -524,6 +525,14 @@ class DateUtils @Inject constructor(
         if (isoStringDate.isEmpty()) return null
         val iso8601DateString = iso8601OnSiteTimeZoneFromIso8601UTC(isoStringDate)
         return getDateFromFullDateString(iso8601DateString)
+    }
+
+    fun millisUntilNextSiteDay(): Long {
+        val zone = selectedSite.getOrNull()?.let { SiteUtils.getNormalizedTimezone(it.timezone).toZoneId() }
+            ?: ZoneId.systemDefault()
+        val now = ZonedDateTime.now(zone)
+        val midnight = now.toLocalDate().plusDays(1).atStartOfDay(zone)
+        return Duration.between(now, midnight).toMillis().coerceAtLeast(1)
     }
 
     fun getCurrentDateInSiteTimeZone(): Date? {

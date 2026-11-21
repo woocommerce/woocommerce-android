@@ -6,9 +6,11 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.dashboard.data.CustomDateRangeDataStore
 import com.woocommerce.android.util.CalendarHelper
 import com.woocommerce.android.util.DateUtils
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import java.util.Date
@@ -28,7 +30,14 @@ abstract class GetSelectedDateRange(
 
         val customRangeFlow = customDateRangeDataStore.dateRange
 
-        return combine(selectedRangeTypeFlow, customRangeFlow) { selectionType, customRange ->
+        val siteDayChanges = flow {
+            while (true) {
+                val untilMidnight = dateUtils.millisUntilNextSiteDay()
+                emit(Unit)
+                delay(untilMidnight)
+            }
+        }
+        return combine(selectedRangeTypeFlow, customRangeFlow, siteDayChanges) { selectionType, customRange, _ ->
             val calendar = calendarHelper.getCalendarForSelectedSite()
             when (selectionType) {
                 SelectionType.CUSTOM -> {
@@ -41,11 +50,12 @@ abstract class GetSelectedDateRange(
                 }
 
                 else -> {
+                    val today = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
                     selectionType.generateSelectionData(
                         calendar = calendar,
                         locale = Locale.getDefault(),
-                        referenceStartDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
-                        referenceEndDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
+                        referenceStartDate = today,
+                        referenceEndDate = today
                     )
                 }
             }

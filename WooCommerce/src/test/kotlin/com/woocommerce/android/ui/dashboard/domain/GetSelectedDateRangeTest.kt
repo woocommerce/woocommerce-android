@@ -15,6 +15,9 @@ import com.woocommerce.commons.stats.StatsTimeRange
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -39,6 +42,7 @@ class GetSelectedDateRangeTest : BaseUnitTest() {
         on { dateRange } doReturn flowOf(null)
     }
     private val dateUtils: DateUtils = mock {
+        on { millisUntilNextSiteDay() } doReturn 60_000L
         on { getCurrentDateInSiteTimeZone() } doReturn date("2026-06-15")
     }
     private val calendarHelper: CalendarHelper = mock()
@@ -97,6 +101,14 @@ class GetSelectedDateRangeTest : BaseUnitTest() {
         assertThat(selection.currentRange.start).isEqualTo(date("2026-06-02"))
         assertThat(selection.currentRange.end).isEqualTo(endOfDay("2026-06-04"))
         verify(calendarHelper).getCalendarForSelectedSite()
+    }
+
+    @Test
+    fun `today moves to the next day without changing the selected period`() = runTest {
+        givenSiteCalendar(Calendar.MONDAY)
+        whenever(dateUtils.getCurrentDateInSiteTimeZone()).thenReturn(date("2026-11-20"), date("2026-11-21"))
+        val days = createGetSelectedDateRange(TODAY).invoke().take(2).toList()
+        assertThat(days.map { it.currentRange.start }).containsExactly(date("2026-11-20"), date("2026-11-21"))
     }
 
     private suspend fun givenSiteCalendar(firstDayOfWeek: Int) {
