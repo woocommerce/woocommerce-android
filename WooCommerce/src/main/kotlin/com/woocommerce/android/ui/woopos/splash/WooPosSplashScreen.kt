@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLoadingScreen
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -43,7 +44,7 @@ fun WooPosSplashScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
 
     when (val currentState = state.value) {
         is WooPosSplashState.Loading -> {
-            Loading()
+            WooPosLoadingScreen()
         }
         is WooPosSplashState.Syncing,
         is WooPosSplashState.SyncPreparing,
@@ -101,16 +102,6 @@ internal fun WooPosSplashNavigationEffect(
             is WooPosSplashState.SyncProgress,
             is WooPosSplashState.SyncFailed -> Unit
         }
-    }
-}
-
-@Composable
-private fun Loading() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        WooPosCircularLoadingIndicator(modifier = Modifier.size(WooPosComponentSize.XLarge.value))
     }
 }
 
@@ -232,7 +223,7 @@ private fun SyncFailed(
 @WooPosPreview
 fun WooPosSplashScreenLoadingPreview() {
     WooPosTheme {
-        Loading()
+        WooPosLoadingScreen()
     }
 }
 

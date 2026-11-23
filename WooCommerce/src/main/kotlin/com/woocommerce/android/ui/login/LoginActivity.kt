@@ -24,7 +24,6 @@ import androidx.lifecycle.withStarted
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -70,6 +69,7 @@ import com.woocommerce.android.ui.login.storesuggestion.SuggestedStoreLogin
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial.ThreeQuarters
 import com.woocommerce.android.util.UrlUtils
@@ -229,6 +229,9 @@ class LoginActivity :
 
     @Inject
     internal lateinit var qrLoginAvailability: QrLoginAvailability
+
+    @Inject
+    internal lateinit var buildConfigWrapper: BuildConfigWrapper
 
     @Inject
     internal lateinit var suggestedStoreLogin: SuggestedStoreLogin
@@ -592,9 +595,7 @@ class LoginActivity :
         clearCachedSites()
 
         if (authOptions != null) {
-            val forcePasswordLogin = BuildConfig.DEBUG && BuildConfig.FORCE_PASSWORD_LOGIN
-
-            if (authOptions.isPasswordless && !forcePasswordLogin) {
+            if (authOptions.isPasswordless && !buildConfigWrapper.isSupportSession) {
                 showMagicLinkRequestScreen(
                     email = email,
                     verifyEmail = verifyEmail,
