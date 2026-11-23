@@ -12,11 +12,9 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -29,10 +27,10 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -45,8 +43,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosConnectionDialogContent
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosFoundDeviceRow
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
@@ -354,34 +352,35 @@ private fun MultiplePrintersFoundContent(
             textAlign = TextAlign.Center,
         )
 
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+        WooPosText(
+            text = stringResource(R.string.woopos_receipt_printer_setup_multiple_found_description),
+            style = WooPosTypography.BodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center,
+        )
+
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
         devices.forEach { device ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = WooPosSpacing.Small.value),
-            ) {
-                WooPosText(
-                    text = device.name,
-                    style = WooPosTypography.BodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f),
-                )
-
-                Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
-
-                WooPosOutlinedButtonSmall(
-                    text = stringResource(R.string.woopos_receipt_printer_setup_connect_button),
-                    onClick = { onConnectClicked(device) },
-                )
-            }
+            WooPosFoundDeviceRow(
+                name = device.name,
+                suffix = device.idSuffix(),
+                icon = painterResource(R.drawable.ic_bluetooth_24dp),
+                iconContentDescription = stringResource(
+                    R.string.woopos_receipt_printer_setup_printer_icon_content_description
+                ),
+                onClick = { onConnectClicked(device) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
         }
     }
 }
+
+private fun ReceiptPrinterDevice.idSuffix(): String =
+    id.filter { it.isLetterOrDigit() }.takeLast(ID_SUFFIX_LENGTH).uppercase()
 
 @Composable
 private fun SetupDialogPreview(state: WooPosReceiptPrinterConnectionState) {
@@ -418,8 +417,9 @@ fun WooPosReceiptPrinterSetupDialogFoundMultiplePreview() {
     SetupDialogPreview(
         FoundMultiple(
             listOf(
-                ReceiptPrinterDevice(id = "1", name = "Star mC-Print3"),
-                ReceiptPrinterDevice(id = "2", name = "Star TSP100"),
+                ReceiptPrinterDevice(id = "00:11:62:4C:73:F0", name = "Star mC-Print3"),
+                ReceiptPrinterDevice(id = "00:11:62:5A:19:2B", name = "Star mC-Print3"),
+                ReceiptPrinterDevice(id = "00:11:62:61:08:C7", name = "TSP100IV-D0029"),
             )
         )
     )
@@ -471,3 +471,5 @@ fun WooPosReceiptPrinterSetupDialogBluetoothPermissionDeniedPreview() {
 fun WooPosReceiptPrinterSetupDialogBluetoothOffPreview() {
     SetupDialogPreview(BluetoothOff)
 }
+
+private const val ID_SUFFIX_LENGTH = 4

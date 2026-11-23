@@ -4570,7 +4570,8 @@
     <string name="woopos_receipt_printer_setup_connect_to_printer_button">Connect to printer</string>
     <string name="woopos_receipt_printer_setup_keep_searching_button">Keep searching</string>
     <string name="woopos_receipt_printer_setup_multiple_found_title">Several printers found</string>
-    <string name="woopos_receipt_printer_setup_connect_button">Connect</string>
+    <string name="woopos_receipt_printer_setup_multiple_found_description">Choose a printer</string>
+    <string name="woopos_receipt_printer_setup_printer_icon_content_description">Bluetooth printer</string>
     <string name="woopos_receipt_printer_setup_connecting_title">Connecting to %1$s…</string>
     <string name="woopos_receipt_printer_setup_no_printers_title">No printers found</string>
     <string name="woopos_receipt_printer_setup_no_printers_message">Make sure your printer is on and paired in Android Bluetooth settings, then search again.</string>
