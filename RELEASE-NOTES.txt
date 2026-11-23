@@ -4,6 +4,7 @@
 
 26.2
 -----
+- [*] [POS] Checkout shows the missing product screen, not a general error, when a product in the cart was deleted from the store [https://github.com/woocommerce/woocommerce-android/pull/16905]
 - [*] Fixed an issue where external barcode scanners could not be used without camera permission [https://github.com/woocommerce/woocommerce-android/pull/16876]
 - [**] Order refunds: on stores with WooCommerce 11.1 or newer, the refund amount now comes from the store, so it matches what the store refunds [https://github.com/woocommerce/woocommerce-android/pull/16863]
 - [*] Orders: the list no longer jumps away from where you scrolled when a new order arrives [https://github.com/woocommerce/woocommerce-android/pull/16868]

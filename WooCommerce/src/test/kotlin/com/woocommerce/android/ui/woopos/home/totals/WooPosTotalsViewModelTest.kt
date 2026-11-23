@@ -2395,6 +2395,39 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
+    fun `when INVALID_PRODUCT_ID, then ProductNotFoundError with remove button disabled`() =
+        runTest {
+            // GIVEN
+            val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(emptyList()))
+            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+                on { events }.thenReturn(parentToChildrenEventFlow)
+            }
+            val wooError = WooErrorTestUtils.createInvalidProductIdError()
+            val totalsRepository: WooPosTotalsRepository = mock {
+                on { createOrderFromCartItems(any()) }.thenReturn(
+                    Result.failure(WooException(wooError))
+                )
+            }
+
+            whenever(resourceProvider.getString(R.string.woopos_totals_product_not_found_error))
+                .thenReturn("Product not found")
+            whenever(resourceProvider.getString(R.string.woopos_totals_product_not_found_reason))
+                .thenReturn("Product was removed")
+
+            // WHEN
+            val viewModel = createViewModel(
+                parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+                totalsRepository = totalsRepository,
+            )
+
+            // THEN
+            val state = viewModel.state.value
+            assertThat(state).isInstanceOf(WooPosTotalsViewState.ProductNotFoundError::class.java)
+            val productNotFoundState = state as WooPosTotalsViewState.ProductNotFoundError
+            assertThat(productNotFoundState.isRemoveProductSupported).isFalse()
+        }
+
+    @Test
     fun `when INVALID_VARIATION_ID, then should track checkout outdated item detected event`() =
         runTest {
             // GIVEN
@@ -2403,6 +2436,41 @@ class WooPosTotalsViewModelTest {
                 on { events }.thenReturn(parentToChildrenEventFlow)
             }
             val wooError = WooErrorTestUtils.createInvalidVariationIdError()
+            val totalsRepository: WooPosTotalsRepository = mock {
+                on { createOrderFromCartItems(any()) }.thenReturn(
+                    Result.failure(WooException(wooError))
+                )
+            }
+
+            whenever(resourceProvider.getString(any())).thenReturn("")
+            whenever(productsDataSource.getCurrentSyncStrategy()).thenReturn(
+                WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE
+            )
+
+            // WHEN
+            createViewModel(
+                parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+                totalsRepository = totalsRepository,
+            )
+
+            // THEN
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event.CheckoutOutdatedItemDetectedScreenShown(
+                    reason = "deleted",
+                    syncStrategy = WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE
+                )
+            )
+        }
+
+    @Test
+    fun `when INVALID_PRODUCT_ID, then should track checkout outdated item detected event`() =
+        runTest {
+            // GIVEN
+            val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(emptyList()))
+            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+                on { events }.thenReturn(parentToChildrenEventFlow)
+            }
+            val wooError = WooErrorTestUtils.createInvalidProductIdError()
             val totalsRepository: WooPosTotalsRepository = mock {
                 on { createOrderFromCartItems(any()) }.thenReturn(
                     Result.failure(WooException(wooError))
