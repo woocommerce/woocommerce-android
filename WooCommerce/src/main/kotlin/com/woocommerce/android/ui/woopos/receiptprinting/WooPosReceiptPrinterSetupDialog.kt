@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.receiptprinting
 
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
@@ -22,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -75,6 +77,7 @@ fun WooPosReceiptPrinterSetupDialog(
 ) {
     val state by viewModel.state.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
+    val activity = LocalActivity.current
     val currentOnConnectionSuccess by rememberUpdatedState(onConnectionSuccess)
 
     val requestBluetoothPermission =
@@ -90,11 +93,16 @@ fun WooPosReceiptPrinterSetupDialog(
         viewModel.startSetup()
     }
 
-    LaunchedEffect(state) {
-        if (state is Connected) {
-            viewModel.dismissDialog()
-            currentOnConnectionSuccess()
+    // The host can replace this dialog without dismissing it, so the setup is cancelled whenever the dialog leaves
+    // the screen, except when the Activity is only being recreated.
+    DisposableEffect(viewModel) {
+        onDispose {
+            if (activity?.isChangingConfigurations != true) viewModel.dismissDialog()
         }
+    }
+
+    LaunchedEffect(state) {
+        if (state is Connected) currentOnConnectionSuccess()
     }
 
     LaunchedEffect(lifecycleOwner) {
@@ -105,10 +113,7 @@ fun WooPosReceiptPrinterSetupDialog(
 
     WooPosReceiptPrinterSetupDialogContent(
         state = state,
-        onDismiss = {
-            viewModel.dismissDialog()
-            onDismiss()
-        },
+        onDismiss = onDismiss,
         onGrantPermissionClicked = requestBluetoothPermission,
         onOpenAppSettingsClicked = viewModel::onOpenAppSettingsClicked,
         onEnableBluetoothClicked = {
