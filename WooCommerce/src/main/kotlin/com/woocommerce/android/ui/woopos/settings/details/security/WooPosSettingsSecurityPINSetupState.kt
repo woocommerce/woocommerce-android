@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.settings.details.security
 
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
-import kotlinx.coroutines.delay
 
 sealed interface WooPosSettingsSecurityPINSetupState {
     val canGoBack: Boolean get() = false
@@ -45,18 +44,6 @@ sealed interface WooPosSettingsSecurityPINSetupState {
 
     enum class Error { MISMATCH, PIN_TAKEN, SAVE_FAILED }
 }
-
-internal suspend fun presentPINSetupRejection(
-    page: WooPosSettingsSecurityPINSetupState.Page,
-    error: WooPosSettingsSecurityPINSetupState.Error,
-    show: (WooPosSettingsSecurityPINSetupState.Entry) -> Unit,
-) {
-    show(WooPosSettingsSecurityPINSetupState.Rejected(page))
-    delay(PIN_SETUP_REJECTION_PAUSE_MILLIS)
-    show(WooPosSettingsSecurityPINSetupState.Choose(error = error))
-}
-
-internal const val PIN_SETUP_REJECTION_PAUSE_MILLIS = 550L
 
 sealed interface WooPosSettingsSecurityPINSetupUIEvent {
     data class DigitTapped(val digit: Int) : WooPosSettingsSecurityPINSetupUIEvent

@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.roles.lock
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -82,6 +81,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
+import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDotShake
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDots
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPad
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPadStyle
@@ -89,8 +89,6 @@ import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlin.math.PI
-import kotlin.math.sin
 
 @Composable
 fun WooPosLockScreenDialog(
@@ -152,6 +150,8 @@ private fun BoxWithConstraintsScope.LockContent(
     val layout = calculateLockLayout(metrics, isCompactHeight)
     val intro = rememberLockIntro(animates = layout.showsIllustration)
     val feedback = rememberLockPINFeedback(state)
+    val showsBlockedPINPad = state.isLocked &&
+        (state.status is Status.Wait || state.status == Status.StorageUnavailable)
     val contentModifier = Modifier.graphicsLayer {
         alpha = intro.contentAlpha
         translationY = intro.travel().y
@@ -217,14 +217,8 @@ private fun BoxWithConstraintsScope.LockContent(
                     enabled = state.canEnterPIN && !intro.isActive,
                     onDigit = { onUIEvent(WooPosLockScreenUIEvent.DigitTapped(it)) },
                     onDelete = { onUIEvent(WooPosLockScreenUIEvent.DeleteTapped) },
-                    style = WooPosPINPadStyle(
-                        keySize = layout.keySize,
-                        keySpacing = metrics.keySpacing,
-                        showsDisabledKeys = state.isLocked && when (state.status) {
-                            is Status.Wait, Status.StorageUnavailable -> true
-                            else -> false
-                        },
-                    ),
+                    keySize = layout.keySize,
+                    style = if (showsBlockedPINPad) WooPosPINPadStyle.BLOCKED else WooPosPINPadStyle.STANDARD,
                 )
             }
         }
@@ -349,10 +343,7 @@ private fun LockIllustration(shackleAngle: () -> Float, modifier: Modifier = Mod
 @Stable
 private class WooPosLockPINFeedback {
     var heldDigits by mutableIntStateOf(0)
-    val shake = Animatable(0f)
-
-    val shakeOffset: Float
-        get() = if (heldDigits > 0) sin(shake.value * PI.toFloat() * SHAKE_COUNT) else 0f
+    val shake = WooPosPINDotShake()
 }
 
 @Composable
@@ -370,8 +361,7 @@ private fun rememberLockPINFeedback(state: WooPosLockScreenState): WooPosLockPIN
                 shakeJob = launch {
                     try {
                         feedback.heldDigits = WooPosPINHash.PIN_LENGTH
-                        feedback.shake.snapTo(0f)
-                        feedback.shake.animateTo(1f, tween(SHAKE_MILLIS, easing = LinearEasing))
+                        feedback.shake.play()
                     } finally {
                         feedback.heldDigits = 0
                     }
@@ -408,7 +398,7 @@ private fun LockStatus(state: WooPosLockScreenState, feedback: WooPosLockPINFeed
             isHidden = message != null,
             modifier = Modifier.graphicsLayer {
                 alpha = dotsAlpha
-                translationX = feedback.shakeOffset * SHAKE_TRAVEL.toPx()
+                translationX = if (feedback.heldDigits > 0) feedback.shake.offset.toPx() else 0f
             },
         )
         Crossfade(targetState = message, animationSpec = feedbackSpec, label = "lockStatus") { shown ->
@@ -488,8 +478,6 @@ private const val INTRO_HOLD_MILLIS = 400
 private const val INTRO_CLOSE_MILLIS = 200
 private const val INTRO_REVEAL_MILLIS = 280
 private const val LOCK_OPEN_ANGLE = 30f
-private const val SHAKE_MILLIS = 400
-private const val SHAKE_COUNT = 3
 private const val FEEDBACK_MILLIS = 120
 private const val LONGEST_WAIT_MINUTES = 59L
 private const val LONGEST_WAIT_SECONDS = 59L
@@ -504,4 +492,3 @@ private val PHONE_KEY_SIZE = 72.dp
 private val CONTENT_MAX_WIDTH = 420.dp
 private val COMPACT_HEIGHT = 480.dp
 private val STATUS_ROW_HEIGHT = 24.dp
-private val SHAKE_TRAVEL = 8.dp

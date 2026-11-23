@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSetting
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Entry
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Error
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Page
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Rejected
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
@@ -28,7 +29,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-/** Sets the first Admin PIN. Presentation pauses run alongside the single save and never delay protection. */
 @HiltViewModel
 class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
@@ -90,7 +90,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
         chosenPIN = ""
         chosenSiteId = null
         if (pin != chosen) {
-            presentPINSetupRejection(Page.CONFIRM, Error.MISMATCH) { _state.value = it }
+            presentRejection(Page.CONFIRM, Error.MISMATCH)
             return
         }
         val result = coroutineScope {
@@ -108,6 +108,12 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
             SaveResult.FAILED -> Choose(error = Error.SAVE_FAILED)
             SaveResult.STALE -> Choose()
         }
+    }
+
+    private suspend fun presentRejection(page: Page, error: Error) {
+        _state.value = Rejected(page)
+        delay(PIN_SETUP_REJECTION_PAUSE_MILLIS)
+        _state.value = Choose(error = error)
     }
 
     private suspend fun save(id: Int, pin: String): SaveResult {
@@ -139,6 +145,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
     companion object {
         private const val MIN_DIGIT = 0
         private const val MAX_DIGIT = 9
+        internal const val PIN_SETUP_REJECTION_PAUSE_MILLIS = 550L
         const val FILLED_DOTS_HOLD_MILLIS = 500L
         const val MINIMUM_SAVING_MILLIS = 1_000L
     }

@@ -86,14 +86,15 @@ class WooPosSettingsSecurityPINSetupDialogTest {
     }
 
     @Test
-    fun heldConfirmationDisablesKeysAndIgnoresClose() {
+    fun heldConfirmationDisablesKeysAndNavigation() {
         setDialog(mutableStateOf(Confirm(enteredDigits = 4)))
 
         // WHEN
-        composeTestRule.onNodeWithContentDescription(close).performClick()
         Espresso.pressBack()
 
         // THEN
+        composeTestRule.onNodeWithContentDescription(back).assertIsNotEnabled()
+        composeTestRule.onNodeWithContentDescription(close).assertIsNotEnabled()
         composeTestRule.onNodeWithText("1").assertIsNotEnabled()
         assertThat(events).isEmpty()
         assertThat(closeCount).isZero()
@@ -146,6 +147,33 @@ class WooPosSettingsSecurityPINSetupDialogTest {
         val above = pixels[centerX, row.top.toInt() - 1]
         assertThat(abs(center.red - background.red)).isGreaterThan(0.5f)
         assertThat(above.red).isCloseTo(center.red, offset(0.1f))
+    }
+
+    @Test
+    fun switchingToConfirmKeepsTheDotsInsideTheirTrack() {
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Choose(enteredDigits = 4))
+        setDialog(state)
+        val dots = composeTestRule.onNodeWithContentDescription(context.getString(R.string.woopos_lock_pin_entry))
+        val row = dots.fetchSemanticsNode().boundsInRoot
+        val root = composeTestRule.onRoot()
+        val padding = row.height / 2
+        val y = row.center.y.toInt()
+        val start = (row.left - padding).toInt()
+        val end = (row.right + padding).toInt()
+        val background = root.captureToImage().toPixelMap()[start - 2, y]
+        composeTestRule.mainClock.autoAdvance = false
+        composeTestRule.runOnUiThread { state.value = Confirm() }
+
+        repeat(5) {
+            composeTestRule.mainClock.advanceTimeBy(32)
+            val pixels = root.captureToImage().toPixelMap()
+            for (x in (start - row.width.toInt()).coerceAtLeast(0) until start - 1) {
+                assertThat(pixels[x, y].red).isCloseTo(background.red, offset(0.05f))
+            }
+            for (x in end + 1 until (end + row.width.toInt()).coerceAtMost(pixels.width)) {
+                assertThat(pixels[x, y].red).isCloseTo(background.red, offset(0.05f))
+            }
+        }
     }
 
     @Test
@@ -273,15 +301,15 @@ class WooPosSettingsSecurityPINSetupDialogTest {
     }
 
     @Test
-    fun phoneSuccessPlacesCloseNearTheTopAndContinueNearTheBottom() {
+    fun phoneSuccessOffersOnlyContinueNearTheBottom() {
         setPhoneDialog(Saved, DpSize(400.dp, 800.dp))
 
-        val closeBounds = composeTestRule.onNodeWithContentDescription(close).getUnclippedBoundsInRoot()
+        composeTestRule.onNodeWithContentDescription(close).assertDoesNotExist()
         val continueBounds = composeTestRule.onNodeWithText(context.getString(R.string.continue_button))
             .assertIsDisplayed()
             .getUnclippedBoundsInRoot()
 
-        assertThat((continueBounds.top - closeBounds.bottom).value).isGreaterThan(580f)
+        assertThat(continueBounds.top.value).isGreaterThan(700f)
         assertThat((continueBounds.right - continueBounds.left).value).isGreaterThan(320f)
     }
 
@@ -343,12 +371,12 @@ class WooPosSettingsSecurityPINSetupDialogTest {
             }
         }
         composeTestRule.runOnIdle { state.value = Saved }
-        val closeNode = composeTestRule.onNodeWithContentDescription(close)
-        val originalBounds = closeNode.getUnclippedBoundsInRoot()
+        val continueNode = composeTestRule.onNodeWithText(context.getString(R.string.continue_button))
+        val originalBounds = continueNode.getUnclippedBoundsInRoot()
 
         restorationTester.emulateSavedInstanceStateRestore()
 
-        assertThat(closeNode.getUnclippedBoundsInRoot()).isEqualTo(originalBounds)
+        assertThat(continueNode.getUnclippedBoundsInRoot()).isEqualTo(originalBounds)
     }
 
     private fun setPhoneDialog(state: WooPosSettingsSecurityPINSetupState, size: DpSize, fontScale: Float = 1f) {

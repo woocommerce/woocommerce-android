@@ -34,8 +34,11 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
-fun WooPosSettingsSecurityScreen(isPINSetupVisible: Boolean, onGetStartedClicked: () -> Unit) {
-    val viewModel: WooPosSettingsSecurityViewModel = hiltViewModel()
+fun WooPosSettingsSecurityScreen(
+    isPINSetupVisible: Boolean,
+    onGetStartedClicked: () -> Unit,
+    viewModel: WooPosSettingsSecurityViewModel = hiltViewModel(),
+) {
     val isProtectionEnabled by viewModel.isProtectionEnabled.collectAsState()
     WooPosSettingsSecurityContent(
         isProtectionEnabled = isProtectionEnabled && !isPINSetupVisible,
