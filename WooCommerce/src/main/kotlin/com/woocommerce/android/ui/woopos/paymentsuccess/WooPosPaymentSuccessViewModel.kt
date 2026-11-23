@@ -44,6 +44,7 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
             orderTotalText = "",
             receiptSentMessage = null,
             isReceiptPrinterSetupDialogVisible = savedStateHandle[KEY_RECEIPT_PRINTER_SETUP_DIALOG_VISIBLE] ?: false,
+            printReceiptFailure = savedStateHandle[KEY_PRINT_RECEIPT_FAILURE],
         )
     )
     val state: StateFlow<PaymentSuccessViewState> = _state.asStateFlow()
@@ -65,8 +66,7 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
                 when (event) {
                     WooPosPrintReceiptEvent.ShowPrinterSetup -> setReceiptPrinterSetupDialogVisible(true)
 
-                    is WooPosPrintReceiptEvent.PrintFailed ->
-                        _state.update { it.copy(printReceiptFailure = event.failure) }
+                    is WooPosPrintReceiptEvent.PrintFailed -> setPrintReceiptFailure(event.failure)
                 }
             }
         }
@@ -151,7 +151,7 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
     }
 
     fun onPrintReceiptFailureDialogDismissed() {
-        _state.update { it.copy(printReceiptFailure = null) }
+        setPrintReceiptFailure(null)
     }
 
     fun onPrintReceiptFailureActionSelected(action: WooPosPrintReceiptFailureAction) {
@@ -160,6 +160,11 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
             WooPosPrintReceiptFailureAction.Retry -> printReceiptCoordinator.onPrintRetryClicked(orderId)
             WooPosPrintReceiptFailureAction.EmailReceipt -> onEmailReceiptClicked()
         }
+    }
+
+    private fun setPrintReceiptFailure(failure: WooPosPrintReceiptFailure?) {
+        savedStateHandle[KEY_PRINT_RECEIPT_FAILURE] = failure
+        _state.update { it.copy(printReceiptFailure = failure) }
     }
 
     private suspend fun emitNavigateBack() {
@@ -174,6 +179,7 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
 
     private companion object {
         const val KEY_RECEIPT_PRINTER_SETUP_DIALOG_VISIBLE = "receipt_printer_setup_dialog_visible"
+        const val KEY_PRINT_RECEIPT_FAILURE = "print_receipt_failure"
     }
 }
 

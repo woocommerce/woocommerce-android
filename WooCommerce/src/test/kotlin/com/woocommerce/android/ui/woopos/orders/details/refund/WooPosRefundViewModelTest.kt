@@ -8,6 +8,8 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.payments.refunds.ResolveRefundFlow
+import com.woocommerce.android.ui.payments.refunds.ServerRefundAvailabilityCache
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.orders.WooPosGetPaymentMethod
@@ -52,7 +54,7 @@ import java.math.BigDecimal
 import java.util.Date
 
 /** The store version these tests report; availability verdicts are recorded against it. */
-private const val MIN_VERSION = WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
+private const val MIN_VERSION = ResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosRefundViewModelTest {
@@ -67,7 +69,7 @@ class WooPosRefundViewModelTest {
     private val groupRefundItems: WooPosGroupRefundItems = mock()
     private val buildRefundLineItems = WooPosBuildRefundLineItems()
     private val refundPreview: WooPosRefundPreview = mock()
-    private val serverRefundAvailabilityCache = WooPosServerRefundAvailabilityCache()
+    private val serverRefundAvailabilityCache = ServerRefundAvailabilityCache()
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
     private val calculateRefundSubtotal = WooPosCalculateRefundSubtotal()
     private val calculateRefundTax = WooPosCalculateRefundTax()
@@ -126,7 +128,7 @@ class WooPosRefundViewModelTest {
     fun setUp() = runTest {
         // Default to a version that supports server refunds; version-gating tests override this.
         // An unknown (null) version fails closed to the local flow.
-        whenever(getWooCoreVersion.invoke()).thenReturn(WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS)
+        whenever(getWooCoreVersion.invoke()).thenReturn(ResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS)
         val testSettings = Settings(
             currencyCode = "USD",
             currencyPosition = CurrencyPosition.LEFT,
@@ -181,7 +183,7 @@ class WooPosRefundViewModelTest {
             groupRefundItems = groupRefundItems,
             buildRefundLineItems = buildRefundLineItems,
             refundPreview = refundPreview,
-            resolveRefundFlow = WooPosResolveRefundFlow(
+            resolveRefundFlow = ResolveRefundFlow(
                 selectedSite = selectedSite,
                 availabilityCache = serverRefundAvailabilityCache,
                 getWooCoreVersion = getWooCoreVersion,
