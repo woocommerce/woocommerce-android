@@ -87,6 +87,8 @@ import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundDetai
 import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListState
 import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListViewModel
 import com.woocommerce.android.ui.woopos.orders.list.WooPosScreenType
+import com.woocommerce.android.ui.woopos.roles.approval.LocalWooPosRequestApproval
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import kotlinx.coroutines.delay
@@ -105,6 +107,7 @@ fun WooPosOrdersScreen(
     val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
     val listViewModel: WooPosOrdersListViewModel = hiltViewModel()
     val detailViewModel: WooPosOrderDetailsViewModel = hiltViewModel()
+    val requestApproval = LocalWooPosRequestApproval.current
 
     val listState by listViewModel.state.collectAsState()
     val detailState by detailViewModel.state.collectAsState()
@@ -148,14 +151,20 @@ fun WooPosOrdersScreen(
     val handleOrdersUIEvent: (WooPosOrdersUIEvent) -> Unit = { event ->
         val issueRefundAction = (event as? WooPosOrdersUIEvent.OrderActionClicked)
             ?.action as? WooPosOrdersState.OrderAction.IssueRefund
-        if (issueRefundAction != null) {
-            listViewModel.onRefundStarted()
-            detailPaneIssueRefundInstanceId += 1
-            detailPaneIssueRefundOrderId = issueRefundAction.orderId
-            detailPaneIssueRefundDismissRequestToken = 0
-            detailPaneIssueRefundHasPendingChanges = false
-            pendingOrderSelectionAfterRefundDismiss = null
-            pendingOrderSelectionConfirmation = null
+        val orderNumber = (detailViewModel.state.value as? WooPosOrderDetailsState.Loaded)?.details?.number
+        if (issueRefundAction != null && orderNumber != null) {
+            requestApproval(WooPosApprovalAction.IssueRefund(orderNumber)) {
+                val details = (detailViewModel.state.value as? WooPosOrderDetailsState.Loaded)?.details
+                if (details?.actions?.contains(issueRefundAction) == true) {
+                    listViewModel.onRefundStarted()
+                    detailPaneIssueRefundInstanceId += 1
+                    detailPaneIssueRefundOrderId = issueRefundAction.orderId
+                    detailPaneIssueRefundDismissRequestToken = 0
+                    detailPaneIssueRefundHasPendingChanges = false
+                    pendingOrderSelectionAfterRefundDismiss = null
+                    pendingOrderSelectionConfirmation = null
+                }
+            }
         } else {
             detailViewModel.onUIEvent(event)
         }

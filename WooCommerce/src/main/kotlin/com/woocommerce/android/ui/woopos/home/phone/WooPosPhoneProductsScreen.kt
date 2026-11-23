@@ -53,6 +53,8 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarS
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarViewModel
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarPopUpMenu
+import com.woocommerce.android.ui.woopos.roles.approval.LocalWooPosRequestApproval
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
 
 @Composable
 fun WooPosPhoneProductsScreen(
@@ -62,6 +64,7 @@ fun WooPosPhoneProductsScreen(
 ) {
     val itemsState by itemsViewModel.viewState.collectAsState()
     val toolbarState by toolbarViewModel.state.collectAsState()
+    val requestApproval = LocalWooPosRequestApproval.current
 
     WooPosPhoneProductsContent(
         modifier = modifier,
@@ -76,7 +79,15 @@ fun WooPosPhoneProductsScreen(
         onMenuItemClicked = { menuItem ->
             toolbarViewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
         },
-        onItemsUIEvent = { itemsViewModel.onUIEvent(it) },
+        onItemsUIEvent = { event ->
+            if (event == WooPosItemsUIEvent.AddCouponIconClicked) {
+                requestApproval(WooPosApprovalAction.CreateCoupon) {
+                    if (itemsState is WooPosItemsToolbarViewState.CouponList) itemsViewModel.onUIEvent(event)
+                }
+            } else {
+                itemsViewModel.onUIEvent(event)
+            }
+        },
     )
 }
 

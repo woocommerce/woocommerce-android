@@ -7,7 +7,12 @@ import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINAuthenticator
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -24,6 +29,12 @@ class WooPosLocalRateLimiter @Inject internal constructor(
     private val dispatchers: CoroutineDispatchers,
 ) {
     private val mutex = Mutex()
+    private val _logoutVersion = MutableStateFlow(0L)
+    internal val logoutVersion = _logoutVersion.asStateFlow()
+
+    internal fun onLogout() {
+        _logoutVersion.update { it + 1 }
+    }
 
     suspend fun isProtectionEnabled(localSiteId: Int): Result<Boolean> =
         store.getPINs(localSiteId).map { it.isNotEmpty() }
@@ -37,36 +48,44 @@ class WooPosLocalRateLimiter @Inject internal constructor(
         localSiteId: Int,
         pin: String,
         requiredCapability: WooPosCapability? = null,
-    ): WooPosLocalRateLimiterResult = operation {
-        val pins = store.getPINs(localSiteId).getOrThrow()
-        if (pins.isEmpty()) return@operation WooPosLocalRateLimiterResult.ProtectionOff
-        val (attempts, time) = load(localSiteId)
-        val wait = seconds(attempts.remainingMillis(time))
-        if (wait > 0) return@operation WooPosLocalRateLimiterResult.Waiting(wait)
-        // Persist before comparing: a process kill must not create an unrecorded PIN oracle.
-        val chargedAttempt = attempts.failed(time)
-        storage.write(localSiteId, chargedAttempt)
-        val authenticated = authenticator.authenticate(pins, pin)
-        if (authenticated.isFailure) {
-            storage.write(localSiteId, attempts)
-            return@operation WooPosLocalRateLimiterResult.Unavailable
-        }
-        val role = authenticated.getOrThrow()
-        when {
-            role == null || (requiredCapability != null && !role.hasCapability(requiredCapability)) -> {
-                WooPosLocalRateLimiterResult.Incorrect(seconds(chargedAttempt.waitMillis))
+    ): WooPosLocalRateLimiterResult {
+        val approval = if (requiredCapability != null) currentCoroutineContext()[Job] else null
+        val logoutVersionAtStart = logoutVersion.value
+        fun isRetired() = approval?.isActive == false || logoutVersionAtStart != logoutVersion.value
+
+        return operation {
+            if (isRetired()) return@operation WooPosLocalRateLimiterResult.Unavailable
+            val pins = store.getPINs(localSiteId).getOrThrow()
+            if (pins.isEmpty()) return@operation WooPosLocalRateLimiterResult.ProtectionOff
+            val (attempts, time) = load(localSiteId)
+            val wait = seconds(attempts.remainingMillis(time))
+            if (wait > 0) return@operation WooPosLocalRateLimiterResult.Waiting(wait)
+            // Persist before comparing: a process kill must not create an unrecorded PIN oracle.
+            val chargedAttempt = attempts.failed(time)
+            storage.write(localSiteId, chargedAttempt)
+            val authenticated = authenticator.authenticate(pins, pin)
+            if (isRetired()) return@operation WooPosLocalRateLimiterResult.Unavailable
+            if (authenticated.isFailure) {
+                storage.write(localSiteId, attempts)
+                return@operation WooPosLocalRateLimiterResult.Unavailable
             }
-            else -> {
-                val next = if (role.hasCapability(WooPosCapability.MANAGE_STORE_SETTINGS)) {
-                    WooPosPINAttemptState.NO_FAILURES
-                } else {
-                    attempts
+            val role = authenticated.getOrThrow()
+            when {
+                role == null || (requiredCapability != null && !role.hasCapability(requiredCapability)) -> {
+                    WooPosLocalRateLimiterResult.Incorrect(seconds(chargedAttempt.waitMillis))
                 }
-                storage.write(localSiteId, next)
-                WooPosLocalRateLimiterResult.Authenticated(role)
+                else -> {
+                    val next = if (role.hasCapability(WooPosCapability.MANAGE_STORE_SETTINGS)) {
+                        WooPosPINAttemptState.NO_FAILURES
+                    } else {
+                        attempts
+                    }
+                    storage.write(localSiteId, next)
+                    WooPosLocalRateLimiterResult.Authenticated(role)
+                }
             }
-        }
-    }.getOrDefault(WooPosLocalRateLimiterResult.Unavailable)
+        }.getOrDefault(WooPosLocalRateLimiterResult.Unavailable)
+    }
 
     internal suspend fun resetAfterRecovery(localSiteId: Int): Result<Unit> = operation {
         storage.write(localSiteId, WooPosPINAttemptState.NO_FAILURES)

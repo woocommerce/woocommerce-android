@@ -4165,6 +4165,10 @@
     <string name="woopos_lock_incorrect">Incorrect PIN. Try again.</string>
     <string name="woopos_lock_unavailable">Something went wrong. Try again later.</string>
     <string name="woopos_lock_wait">Too many incorrect attempts.\nTry again in %1$s.</string>
+    <string name="woopos_approval_required">Approval required</string>
+    <string name="woopos_approval_create_coupon">Enter the Admin PIN to create a coupon.</string>
+    <string name="woopos_approval_issue_refund">Enter the Admin PIN to issue a refund for order %1$s.</string>
+    <string name="woopos_approval_exit">Enter the Admin PIN to exit Point of Sale.</string>
     <string name="woopos_lock_enter_pin">Enter your PIN to unlock POS</string>
     <string name="woopos_lock_delete_digit">Delete</string>
     <string name="woopos_lock_pin_entry">PIN entry</string>

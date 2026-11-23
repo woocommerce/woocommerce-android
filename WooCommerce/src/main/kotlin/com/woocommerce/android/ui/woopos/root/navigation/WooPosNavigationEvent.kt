@@ -6,8 +6,11 @@ import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 
 sealed class WooPosNavigationEvent {
     data object OpenSplashScreen : WooPosNavigationEvent()
-    data object ExitPosClicked : WooPosNavigationEvent()
-    data object BackFromSplashClicked : WooPosNavigationEvent()
+    sealed class Exit : WooPosNavigationEvent()
+    data object ExitPosClicked : Exit()
+    data object BackFromSplashClicked : Exit()
+    data object RequestExitFromHome : Exit()
+    data object ConfirmExitFromHome : Exit()
     data object OpenHomeFromSplash : WooPosNavigationEvent()
     data class OpenCashPayment(val orderId: Long) : WooPosNavigationEvent()
     data class OpenMarkOrderAsPaid(val orderId: Long) : WooPosNavigationEvent()

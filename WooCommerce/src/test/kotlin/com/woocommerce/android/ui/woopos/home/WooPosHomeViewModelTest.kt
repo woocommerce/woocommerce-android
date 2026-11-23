@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import app.cash.turbine.test
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
-import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.ExitPosClicked
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
@@ -96,19 +95,19 @@ class WooPosHomeViewModelTest {
         }
 
     @Test
-    fun `given state is Cart, when SystemBackClicked passed, then should show exit confirmation dialog`() = runTest {
+    fun `given home can go back, when SystemBackClicked passed, then exit is requested`() = runTest {
         // GIVEN
         val eventsFlow = MutableSharedFlow<ChildToParentEvent>()
         whenever(childrenToParentEventReceiver.events).thenReturn(eventsFlow)
         val viewModel = createViewModel()
 
-        // WHEN
-        viewModel.onUIEvent(SystemBackClicked)
+        viewModel.navigationEvent.test {
+            // WHEN
+            viewModel.onUIEvent(SystemBackClicked)
 
-        // THEN
-        assertThat(viewModel.state.value.dialogState).isEqualTo(
-            WooPosHomeState.DialogState.ExitConfirmationDialog
-        )
+            // THEN
+            assertThat(awaitItem()).isEqualTo(ChildToParentEvent.NavigationEvent.RequestExitPos)
+        }
     }
 
     @Test
@@ -198,27 +197,27 @@ class WooPosHomeViewModelTest {
             val viewModel = createViewModel()
 
             // WHEN
-            viewModel.onUIEvent(ExitPosClicked)
+            viewModel.onExitConfirmed()
 
             // THEN
             verify(analyticsTracker).track(ExitConfirmed)
         }
 
     @Test
-    fun `given state is Cart NotEmpty, when ExitPosClicked passed, then exit confirmation dialog should be shown`() =
+    fun `when ExitPosClicked comes from the toolbar, then exit is requested`() =
         runTest {
             // GIVEN
             val eventsFlow = MutableSharedFlow<ChildToParentEvent>()
             whenever(childrenToParentEventReceiver.events).thenReturn(eventsFlow)
             val viewModel = createViewModel()
 
-            // WHEN
-            eventsFlow.emit(ChildToParentEvent.ExitPosClicked)
+            viewModel.navigationEvent.test {
+                // WHEN
+                eventsFlow.emit(ChildToParentEvent.ExitPosClicked)
 
-            // THEN
-            assertThat(viewModel.state.value.dialogState).isEqualTo(
-                WooPosHomeState.DialogState.ExitConfirmationDialog
-            )
+                // THEN
+                assertThat(awaitItem()).isEqualTo(ChildToParentEvent.NavigationEvent.RequestExitPos)
+            }
         }
 
     @Test
@@ -469,7 +468,7 @@ class WooPosHomeViewModelTest {
         val events = MutableSharedFlow<ChildToParentEvent>()
         whenever(childrenToParentEventReceiver.events).thenReturn(events)
         val viewModel = createViewModel()
-        events.emit(ChildToParentEvent.ExitPosClicked)
+        viewModel.showExitConfirmation()
         assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.ExitConfirmationDialog)
 
         // WHEN

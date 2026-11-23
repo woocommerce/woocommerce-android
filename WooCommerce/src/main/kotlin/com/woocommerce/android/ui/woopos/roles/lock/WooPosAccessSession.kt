@@ -31,8 +31,39 @@ class WooPosAccessSession @Inject constructor(
     val state = _state.asStateFlow()
     private var localSiteId: Int? = null
     private var generation = 0L
+    internal val logoutVersion = rateLimiter.logoutVersion
+    private val initialLogoutVersion = logoutVersion.value
 
     val isEnabled: Boolean get() = flagEnabled && _state.value != WooPosAccessSessionState.Unprotected
+
+    fun allows(capability: WooPosCapability): Boolean =
+        !flagEnabled || (isSessionCurrent && _state.value.allows(capability))
+
+    private val isSessionCurrent: Boolean
+        get() = initialLogoutVersion == logoutVersion.value && localSiteId == selectedSite.getOrNull()?.id
+
+    internal fun approvalScope(): ApprovalScope? {
+        val id = localSiteId ?: return null
+        return if (_state.value is WooPosAccessSessionState.Unlocked && isSessionCurrent) {
+            ApprovalScope(id, generation)
+        } else {
+            null
+        }
+    }
+
+    internal suspend fun approvalWait(scope: ApprovalScope): Result<Long> =
+        rateLimiter.remainingSeconds(scope.siteId)
+
+    internal suspend fun approve(
+        scope: ApprovalScope,
+        pin: String,
+        capability: WooPosCapability,
+    ): WooPosLocalRateLimiterResult {
+        if (approvalScope() != scope) return WooPosLocalRateLimiterResult.Unavailable
+        return rateLimiter.authenticate(scope.siteId, pin, capability)
+    }
+
+    internal data class ApprovalScope(val siteId: Int, val generation: Long)
 
     suspend fun initialize() {
         if (!flagEnabled) return

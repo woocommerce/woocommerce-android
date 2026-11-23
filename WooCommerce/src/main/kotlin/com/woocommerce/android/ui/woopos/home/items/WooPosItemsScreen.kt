@@ -34,6 +34,8 @@ import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScree
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreen
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreenPreview
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsScreen
+import com.woocommerce.android.ui.woopos.roles.approval.LocalWooPosRequestApproval
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -45,13 +47,22 @@ fun WooPosItemsScreen(
 ) {
     val productsViewState = rememberLazyListState()
     val couponsListState = rememberLazyListState()
+    val requestApproval = LocalWooPosRequestApproval.current
     WooPosItemsScreen(
         modifier = modifier,
         itemsStateFlow = viewModel.viewState,
         bannerStateFlow = viewModel.bannerState,
         productsViewState = productsViewState,
         couponsListState = couponsListState,
-        onUIEvent = { viewModel.onUIEvent(it) },
+        onUIEvent = { event ->
+            if (event == WooPosItemsUIEvent.AddCouponIconClicked) {
+                requestApproval(WooPosApprovalAction.CreateCoupon) {
+                    if (viewModel.viewState.value is WooPosItemsToolbarViewState.CouponList) viewModel.onUIEvent(event)
+                }
+            } else {
+                viewModel.onUIEvent(event)
+            }
+        },
     )
 }
 
