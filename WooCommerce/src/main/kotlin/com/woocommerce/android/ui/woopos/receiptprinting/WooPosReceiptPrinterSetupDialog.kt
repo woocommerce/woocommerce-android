@@ -54,7 +54,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.rememberWooPosBluetoothPermissionLauncher
+import com.woocommerce.android.ui.woopos.common.composeui.rememberWooPosBluetoothPermissionRequest
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.BluetoothOff
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.Connected
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.Connecting
@@ -66,7 +66,6 @@ import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterCon
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.MissingBluetoothPermission
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.NoPrintersFound
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.Searching
-import com.woocommerce.android.util.WooPermissionUtils
 
 @Composable
 fun WooPosReceiptPrinterSetupDialog(
@@ -78,8 +77,8 @@ fun WooPosReceiptPrinterSetupDialog(
     val lifecycleOwner = LocalLifecycleOwner.current
     val currentOnConnectionSuccess by rememberUpdatedState(onConnectionSuccess)
 
-    val bluetoothPermissionLauncher =
-        rememberWooPosBluetoothPermissionLauncher(viewModel::onBluetoothPermissionResult)
+    val requestBluetoothPermission =
+        rememberWooPosBluetoothPermissionRequest(viewModel::onBluetoothPermissionResult)
 
     val bluetoothEnableLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -110,9 +109,7 @@ fun WooPosReceiptPrinterSetupDialog(
             viewModel.dismissDialog()
             onDismiss()
         },
-        onGrantPermissionClicked = {
-            WooPermissionUtils.requestScanAndConnectBluetoothPermission(bluetoothPermissionLauncher)
-        },
+        onGrantPermissionClicked = requestBluetoothPermission,
         onOpenAppSettingsClicked = viewModel::onOpenAppSettingsClicked,
         onEnableBluetoothClicked = {
             bluetoothEnableLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))

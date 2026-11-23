@@ -1296,9 +1296,6 @@
     <ID>UnitTestNamingRule:OrdersDaoDecoratorTest.kt$OrdersDaoDecoratorTest$@Test fun testDeleteOrdersForSite()</ID>
     <ID>UnitTestNamingRule:OrdersDaoDecoratorTest.kt$OrdersDaoDecoratorTest$@Test fun testGetOrdersForSite()</ID>
     <ID>UnitTestNamingRule:OrdersDaoDecoratorTest.kt$OrdersDaoDecoratorTest$@Test fun testInsertAndUpdateOrder()</ID>
-    <ID>UnitTestNamingRule:OrdersRealAPI.kt$OrdersRealAPI$@Retry(numberOfTimes = 1) @Test fun e2eRealApiOrderDetails()</ID>
-    <ID>UnitTestNamingRule:OrdersRealAPI.kt$OrdersRealAPI$@Retry(numberOfTimes = 1) @Test fun e2eRealApiOrdersFilter()</ID>
-    <ID>UnitTestNamingRule:OrdersRealAPI.kt$OrdersRealAPI$@Retry(numberOfTimes = 1) @Test fun e2eRealApiOrdersSearch()</ID>
     <ID>UnitTestNamingRule:OrdersRepositoryTest.kt$OrdersRepositoryTest$@Test fun `getStoredOrders returns empty list when no orders are available`()</ID>
     <ID>UnitTestNamingRule:OrdersRepositoryTest.kt$OrdersRepositoryTest$@Test fun `getStoredOrders returns orders sorted by descending dateCreated`()</ID>
     <ID>UnitTestNamingRule:OrdersUITest.kt$OrdersUITest$@Retry(numberOfTimes = 1) @Test fun e2eCreateOrderTest()</ID>
@@ -1638,10 +1635,6 @@
     <ID>UnitTestNamingRule:ProductsDaoTest.kt$ProductsDaoTest$@Test fun testInsertOrUpdateProduct()</ID>
     <ID>UnitTestNamingRule:ProductsDaoTest.kt$ProductsDaoTest$@Test fun testInsertOrUpdateProductWithDecimalQuantity()</ID>
     <ID>UnitTestNamingRule:ProductsDaoTest.kt$ProductsDaoTest$@Test fun testInsertOrUpdateProducts()</ID>
-    <ID>UnitTestNamingRule:ProductsRealAPI.kt$ProductsRealAPI$@Retry(numberOfTimes = 1) @Test fun e2eRealApiProductsFilter()</ID>
-    <ID>UnitTestNamingRule:ProductsRealAPI.kt$ProductsRealAPI$@Retry(numberOfTimes = 1) @Test fun e2eRealApiProductsSearchBySKU()</ID>
-    <ID>UnitTestNamingRule:ProductsRealAPI.kt$ProductsRealAPI$@Retry(numberOfTimes = 1) @Test fun e2eRealApiProductsSearchUsual()</ID>
-    <ID>UnitTestNamingRule:ProductsRealAPI.kt$ProductsRealAPI$@Retry(numberOfTimes = 1) @Test fun e2eRealApiProductsSort()</ID>
     <ID>UnitTestNamingRule:ProductsRestClientTest.kt$ProductsRestClientTest$@Test fun `returns error on unsuccessful fetch`()</ID>
     <ID>UnitTestNamingRule:ProductsRestClientTest.kt$ProductsRestClientTest$@Test fun `returns products on successful fetch`()</ID>
     <ID>UnitTestNamingRule:ProductsStoreTest.kt$ProductsStoreTest$@Test fun fetchProductsAction()</ID>
