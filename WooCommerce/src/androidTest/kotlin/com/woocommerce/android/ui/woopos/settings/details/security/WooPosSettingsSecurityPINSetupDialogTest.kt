@@ -10,11 +10,13 @@ import androidx.compose.ui.test.FontScale
 import androidx.compose.ui.test.ForcedSize
 import androidx.compose.ui.test.WindowInsets
 import androidx.compose.ui.test.WindowSize
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -36,6 +38,8 @@ import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSetting
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Choose
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Confirm
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Error
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Page
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Rejected
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Saved
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Saving
 import org.assertj.core.api.Assertions.assertThat
@@ -47,8 +51,10 @@ import kotlin.math.abs
 
 @RunWith(AndroidJUnit4::class)
 class WooPosSettingsSecurityPINSetupDialogTest {
+    private val motion = TestMotion()
+
     @get:Rule
-    val composeTestRule = createComposeRule(effectContext = EnabledMotion)
+    val composeTestRule = createComposeRule(effectContext = motion)
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val back: String get() = context.getString(R.string.back)
@@ -144,9 +150,10 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun mismatchMessageAppearsAfterTheDotsReturn() {
-        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Confirm(enteredDigits = 4))
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Rejected(Page.CONFIRM))
         setDialog(state)
         composeTestRule.waitForIdle()
+        val keyBounds = composeTestRule.onNodeWithText("1").getUnclippedBoundsInRoot()
         composeTestRule.mainClock.autoAdvance = false
 
         // WHEN
@@ -158,11 +165,64 @@ class WooPosSettingsSecurityPINSetupDialogTest {
         composeTestRule.onNodeWithText(mismatch).assertDoesNotExist()
 
         // WHEN
-        composeTestRule.mainClock.advanceTimeBy(MESSAGE_SHOWN_MILLIS)
+        composeTestRule.mainClock.advanceTimeBy(PAGE_SETTLED_MILLIS)
+        composeTestRule.onNodeWithText(mismatch).assertDoesNotExist()
+        composeTestRule.mainClock.advanceTimeBy(MESSAGE_REVEAL_MILLIS)
 
         // THEN
         composeTestRule.onNodeWithText(mismatch).assertIsDisplayed()
         composeTestRule.onNodeWithText(context.getString(R.string.woopos_security_choose_pin)).assertIsDisplayed()
+        assertThat(composeTestRule.onNodeWithText("1").getUnclippedBoundsInRoot()).isEqualTo(keyBounds)
+    }
+
+    @Test
+    fun duplicateClearsTheSameRowBeforeShowingTheError() {
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Rejected(Page.CHOOSE))
+        setDialog(state)
+        val key = composeTestRule.onNodeWithText("1")
+        val keyBounds = key.getUnclippedBoundsInRoot()
+        key.assertIsNotEnabled()
+        val dots = hasContentDescription(context.getString(R.string.woopos_lock_pin_entry))
+        val message = context.getString(R.string.woopos_security_pin_taken)
+        composeTestRule.mainClock.autoAdvance = false
+
+        composeTestRule.runOnUiThread { state.value = Choose(error = Error.PIN_TAKEN) }
+        composeTestRule.mainClock.advanceTimeByFrame()
+
+        composeTestRule.onAllNodes(dots).assertCountEquals(1)
+        composeTestRule.onNodeWithText(message).assertDoesNotExist()
+        composeTestRule.mainClock.advanceTimeBy(PAGE_SETTLED_MILLIS)
+
+        composeTestRule.onNodeWithText(message).assertIsDisplayed()
+        assertThat(key.getUnclippedBoundsInRoot()).isEqualTo(keyBounds)
+    }
+
+    @Test
+    fun typingBeforeTheMismatchMessagePreventsItFromAppearing() {
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Rejected(Page.CONFIRM))
+        setDialog(state)
+        composeTestRule.waitForIdle()
+        composeTestRule.mainClock.autoAdvance = false
+        composeTestRule.runOnUiThread { state.value = Choose(error = Error.MISMATCH) }
+        composeTestRule.mainClock.advanceTimeBy(PAGE_SETTLED_MILLIS)
+
+        composeTestRule.runOnUiThread { state.value = Choose(enteredDigits = 1) }
+        composeTestRule.mainClock.advanceTimeBy(MESSAGE_REVEAL_MILLIS)
+
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_security_mismatch)).assertDoesNotExist()
+    }
+
+    @Test
+    fun reducedMotionShowsTheErrorWithoutWaitingForTheSlide() {
+        motion.scaleFactor = 0f
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Rejected(Page.CONFIRM))
+        setDialog(state)
+
+        composeTestRule.runOnIdle { state.value = Choose(error = Error.MISMATCH) }
+
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_security_mismatch)).assertIsDisplayed()
+        composeTestRule.onAllNodes(hasContentDescription(context.getString(R.string.woopos_lock_pin_entry)))
+            .assertCountEquals(1)
     }
 
     @Test
@@ -345,11 +405,12 @@ class WooPosSettingsSecurityPINSetupDialogTest {
         }
     }
 
-    private object EnabledMotion : MotionDurationScale {
-        override val scaleFactor: Float = 1f
+    private class TestMotion : MotionDurationScale {
+        override var scaleFactor: Float = 1f
     }
 
     private companion object {
-        const val MESSAGE_SHOWN_MILLIS = 500L
+        const val PAGE_SETTLED_MILLIS = 340L
+        const val MESSAGE_REVEAL_MILLIS = 300L
     }
 }

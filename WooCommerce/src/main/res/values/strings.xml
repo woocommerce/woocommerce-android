@@ -4141,6 +4141,7 @@
     <string name="woopos_security_choose_pin">Choose your admin PIN</string>
     <string name="woopos_security_confirm_pin">Confirm your admin PIN</string>
     <string name="woopos_security_mismatch">The PINs didn’t match. Try again.</string>
+    <string name="woopos_security_pin_taken">This PIN is already taken. Please choose a different PIN.</string>
     <string name="woopos_security_success">Your admin PIN is set</string>
     <string name="woopos_security_success_message">Use your admin PIN to unlock Point of Sale with full access.</string>
     <string name="woopos_security_save_failed">Couldn’t update PINs. Try again.</string>

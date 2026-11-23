@@ -12,6 +12,8 @@ import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSetting
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Choose
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Confirm
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Error
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Page
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Rejected
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Saved
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Saving
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupViewModel.Companion.FILLED_DOTS_HOLD_MILLIS
@@ -120,10 +122,10 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         enter("4321")
 
         // THEN
-        assertThat(viewModel.state.value).isEqualTo(Confirm(enteredDigits = 4))
+        assertThat(viewModel.state.value).isEqualTo(Rejected(Page.CONFIRM))
 
         // WHEN
-        advanceTimeBy(FILLED_DOTS_HOLD_MILLIS)
+        advanceTimeBy(PIN_SETUP_REJECTION_PAUSE_MILLIS)
         runCurrent()
 
         // THEN

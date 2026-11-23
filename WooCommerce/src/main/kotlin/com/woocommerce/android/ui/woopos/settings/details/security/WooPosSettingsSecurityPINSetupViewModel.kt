@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSetting
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Confirm
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Entry
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Error
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Page
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
@@ -89,8 +90,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
         chosenPIN = ""
         chosenSiteId = null
         if (pin != chosen) {
-            delay(FILLED_DOTS_HOLD_MILLIS)
-            _state.value = Choose(error = Error.MISMATCH)
+            presentPINSetupRejection(Page.CONFIRM, Error.MISMATCH) { _state.value = it }
             return
         }
         val result = coroutineScope {

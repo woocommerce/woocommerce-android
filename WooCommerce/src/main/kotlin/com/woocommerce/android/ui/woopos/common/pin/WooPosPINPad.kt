@@ -160,7 +160,7 @@ private fun PINKey(
 
 private const val PIN_DOT_POP_MILLIS = 200
 private const val PIN_DOT_POP_SCALE = 1.2f
-private const val PIN_DOT_CLEAR_MILLIS = 120
-private val PIN_DOT_SIZE = 20.dp
+internal const val PIN_DOT_CLEAR_MILLIS = 120
+internal val PIN_DOT_SIZE = 20.dp
 private val PIN_DOT_SPACING = 12.dp
 private val PIN_DOT_BORDER_WIDTH = 1.dp
