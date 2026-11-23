@@ -13,6 +13,6 @@ steps:
       echo "OK: Ruby 3.2.2 absent"
       install_gems
       bundle exec fastlane --version
-      ./gradlew :WooCommerce:testJalapenoDebugUnitTest
+      ./gradlew :WooCommerce:testJalapenoDebugUnitTest --rerun
     artifact_paths:
       - "WooCommerce/build/test-results/testJalapenoDebugUnitTest/TEST-*.xml"
