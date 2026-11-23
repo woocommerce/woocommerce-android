@@ -1,10 +1,8 @@
 package com.woocommerce.android.ui.woopos.cardreader.connection
 
-import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
-import android.os.Build
 import android.provider.Settings
 import android.util.Patterns
 import androidx.activity.compose.BackHandler
@@ -83,7 +81,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
-import com.woocommerce.android.ui.woopos.common.composeui.rememberWooPosBluetoothPermissionLauncher
+import com.woocommerce.android.ui.woopos.common.composeui.rememberWooPosBluetoothPermissionRequest
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooPermissionUtils
 import kotlinx.coroutines.delay
@@ -128,8 +126,8 @@ private fun WooPosCardReaderDialogInternal(
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
 
-    val bluetoothPermissionLauncher =
-        rememberWooPosBluetoothPermissionLauncher(viewModel::onBluetoothPermissionResult)
+    val requestBluetoothPermission =
+        rememberWooPosBluetoothPermissionRequest(viewModel::onBluetoothPermissionResult)
 
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -195,15 +193,7 @@ private fun WooPosCardReaderDialogInternal(
             viewModel.event.collect { event ->
                 when (event) {
                     WooPosCardReaderConnectionViewModel.Event.RequestBluetoothPermission -> {
-                        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                            arrayOf(
-                                Manifest.permission.BLUETOOTH_SCAN,
-                                Manifest.permission.BLUETOOTH_CONNECT
-                            )
-                        } else {
-                            arrayOf(Manifest.permission.BLUETOOTH)
-                        }
-                        bluetoothPermissionLauncher.launch(permissions)
+                        requestBluetoothPermission()
                     }
                     WooPosCardReaderConnectionViewModel.Event.RequestEnableBluetooth -> {
                         @Suppress("DEPRECATION")

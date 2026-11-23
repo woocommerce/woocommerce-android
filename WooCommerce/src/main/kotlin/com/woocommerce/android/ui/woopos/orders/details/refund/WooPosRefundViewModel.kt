@@ -7,6 +7,9 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.refunds.RefundCalculationFlow
+import com.woocommerce.android.ui.payments.refunds.ResolveRefundFlow
+import com.woocommerce.android.ui.payments.refunds.ServerRefundAvailabilityCache
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.orders.WooPosGetPaymentMethod
@@ -42,8 +45,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val groupRefundItems: WooPosGroupRefundItems,
     private val buildRefundLineItems: WooPosBuildRefundLineItems,
     private val refundPreview: WooPosRefundPreview,
-    private val resolveRefundFlow: WooPosResolveRefundFlow,
-    private val serverRefundAvailabilityCache: WooPosServerRefundAvailabilityCache,
+    private val resolveRefundFlow: ResolveRefundFlow,
+    private val serverRefundAvailabilityCache: ServerRefundAvailabilityCache,
     private val calculateRefundSubtotal: WooPosCalculateRefundSubtotal,
     private val calculateRefundTax: WooPosCalculateRefundTax,
     private val resourceProvider: ResourceProvider,
@@ -596,7 +599,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     private fun isServerComputedRefundConfirmed(): Boolean {
         val flow = resolveRefundFlow()
-        return flow is WooPosRefundFlow.ServerComputed &&
+        return flow is RefundCalculationFlow.ServerComputed &&
             serverRefundAvailabilityCache.isAvailable(
                 localSiteId = selectedSite.get().localId().value,
                 wooVersion = flow.wooVersion,

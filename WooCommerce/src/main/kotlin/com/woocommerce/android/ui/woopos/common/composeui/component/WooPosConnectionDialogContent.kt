@@ -18,11 +18,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 fun WooPosConnectionDialogContent(
     title: String,
     visual: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         WooPosText(
             text = title,

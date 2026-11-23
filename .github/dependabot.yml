@@ -39,6 +39,10 @@ updates:
       - dependency-name: "org.wordpress:wellsql"
       - dependency-name: "org.wordpress.wellsql:wellsql-processor"
       - dependency-name: "com.github.PhilJay:MPAndroidChart"
+      # The order list and FluxC's ListStore use Paging 2 APIs, so Paging 3 needs a migration, not a version bump.
+      # The wildcard covers paging-common and paging-runtime, which share one version in libs.versions.toml.
+      - dependency-name: "androidx.paging:*"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "bundler"
     open-pull-requests-limit: 5
