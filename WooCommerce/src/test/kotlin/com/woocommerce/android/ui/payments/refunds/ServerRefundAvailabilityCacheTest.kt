@@ -1,11 +1,11 @@
-package com.woocommerce.android.ui.woopos.orders.details.refund
+package com.woocommerce.android.ui.payments.refunds
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class WooPosServerRefundAvailabilityCacheTest {
+class ServerRefundAvailabilityCacheTest {
 
-    private val cache = WooPosServerRefundAvailabilityCache()
+    private val cache = ServerRefundAvailabilityCache()
 
     @Test
     fun `given site not probed, when isAvailable, then returns null`() {

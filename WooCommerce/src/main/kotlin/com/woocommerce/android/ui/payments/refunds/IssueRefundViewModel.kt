@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.model.refundedItemsOf
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -22,12 +23,16 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.max
 import com.woocommerce.android.util.min
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableListStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -55,6 +60,7 @@ class IssueRefundViewModel @Inject constructor(
     private val orderMapper: OrderMapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val parameterRepository: ParameterRepository,
+    private val fetchRefundPreview: FetchRefundPreview,
 ) : ScopedViewModel(savedState) {
     private val orderFlow: SharedFlow<Order> = flow {
         val order = requireNotNull(
@@ -142,6 +148,7 @@ class IssueRefundViewModel @Inject constructor(
         refundNotice
     ) { (order, decimals), productsSection, shippingSection, feesSection, refundNotice ->
         val selectedTotal = productsSection.productsRefund + shippingSection.shippingRefund + feesSection.feesRefund
+        val isRefundCapped = selectedTotal > order.maxRefund && order.maxRefund > BigDecimal.ZERO
         IssueRefundViewState(
             currency = order.currency,
             productsSection = productsSection,
@@ -149,9 +156,14 @@ class IssueRefundViewModel @Inject constructor(
             shippingSection = shippingSection,
             refundNotice = refundNotice,
             grandTotalRefund = min(max(selectedTotal, BigDecimal.ZERO), order.maxRefund),
-            refundCapNotice = prepareRefundCapNotice(selectedTotal = selectedTotal, maxRefund = order.maxRefund)
+            isRefundCapped = isRefundCapped,
+            refundCapNotice = if (isRefundCapped) prepareRefundCapNotice(order.maxRefund) else null
         ).withAmountsOfRefundLines(decimals)
     }.asLiveData()
+
+    private val isCalculatingRefundFlow = MutableStateFlow(false)
+    val isCalculatingRefund = isCalculatingRefundFlow.asLiveData()
+    private var previewJob: Job? = null
 
     private val order: Order
         get() = requireNotNull(orderFlow.replayCache.firstOrNull()) {
@@ -233,12 +245,8 @@ class IssueRefundViewModel @Inject constructor(
         }
     }
 
-    private fun prepareRefundCapNotice(selectedTotal: BigDecimal, maxRefund: BigDecimal): String? =
-        if (selectedTotal > maxRefund && maxRefund > BigDecimal.ZERO) {
-            resourceProvider.getString(R.string.order_refunds_amount_capped_notice, formatCurrency(maxRefund))
-        } else {
-            null
-        }
+    private fun prepareRefundCapNotice(maxRefund: BigDecimal): String =
+        resourceProvider.getString(R.string.order_refunds_amount_capped_notice, formatCurrency(maxRefund))
 
     private fun prepareProductsRefundSection(
         items: List<ProductRefundListItem>
@@ -338,6 +346,8 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onNextButtonTappedFromItems() {
+        if (previewJob?.isActive == true) return
+
         analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
             mapOf(
@@ -345,21 +355,44 @@ class IssueRefundViewModel @Inject constructor(
             )
         )
 
-        showRefundSummary()
+        val state = requireNotNull(viewState.value) { "View state is not ready yet" }
+        if (state.isRefundCapped) {
+            showRefundSummary(state, refundAmount = state.grandTotalRefund, isServerComputed = false)
+            return
+        }
+        previewJob = launch {
+            isCalculatingRefundFlow.value = true
+            val result = try {
+                fetchRefundPreview(arguments.orderId, state.selectedRefundItems)
+            } finally {
+                isCalculatingRefundFlow.value = false
+            }
+            when (result) {
+                is FetchRefundPreview.Result.ServerCalculated ->
+                    showRefundSummary(state, refundAmount = result.preview.total, isServerComputed = true)
+
+                FetchRefundPreview.Result.FallbackToLocal ->
+                    showRefundSummary(state, refundAmount = state.grandTotalRefund, isServerComputed = false)
+
+                is FetchRefundPreview.Result.Error -> triggerEvent(
+                    result.storeMessage?.let { ShowUiStringSnackbar(UiStringText(it)) }
+                        ?: ShowSnackbar(R.string.order_refunds_amount_refund_error)
+                )
+            }
+        }
     }
 
     fun onOpenStoreAdminLinkClicked() {
         triggerEvent(Event.LaunchUrlInAuthenticatedWebView(selectedSite.get().adminUrlOrDefault))
     }
 
-    private fun showRefundSummary() {
-        val state = requireNotNull(viewState.value) { "View state is not ready yet" }
-
+    private fun showRefundSummary(state: IssueRefundViewState, refundAmount: BigDecimal, isServerComputed: Boolean) {
         triggerEvent(
             IssueRefundEvent.ShowRefundSummary(
                 orderId = arguments.orderId,
-                refundAmount = state.grandTotalRefund,
-                refundItems = state.selectedRefundItems
+                refundAmount = refundAmount,
+                refundItems = state.selectedRefundItems,
+                isServerComputed = isServerComputed
             )
         )
     }
@@ -446,6 +479,7 @@ class IssueRefundViewModel @Inject constructor(
         val shippingSection: ShippingRefundSection,
         val refundNotice: String?,
         val grandTotalRefund: BigDecimal,
+        val isRefundCapped: Boolean,
         val refundCapNotice: String?,
     ) {
         val selectedRefundItems: List<RefundItem>
@@ -508,7 +542,8 @@ class IssueRefundViewModel @Inject constructor(
         data class ShowRefundSummary(
             val orderId: Long,
             val refundAmount: BigDecimal,
-            val refundItems: List<RefundItem>
+            val refundItems: List<RefundItem>,
+            val isServerComputed: Boolean
         ) : IssueRefundEvent()
     }
 

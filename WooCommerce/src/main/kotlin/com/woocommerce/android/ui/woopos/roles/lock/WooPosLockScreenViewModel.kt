@@ -31,7 +31,16 @@ class WooPosLockScreenViewModel @Inject constructor(
         viewModelScope.launch {
             accessSession.state.collect { session ->
                 pin = ""
-                _state.value = WooPosLockScreenState(isLocked = session.isLocked, status = session.status)
+                val enteredDigits = if (_state.value.status == Status.Checking && session.status == Status.Checking) {
+                    _state.value.enteredDigits
+                } else {
+                    0
+                }
+                _state.value = WooPosLockScreenState(
+                    isLocked = session.isLocked,
+                    enteredDigits = enteredDigits,
+                    status = session.status,
+                )
             }
         }
         viewModelScope.launch {
@@ -58,10 +67,6 @@ class WooPosLockScreenViewModel @Inject constructor(
             when (event) {
                 is WooPosLockScreenUIEvent.DigitTapped -> enterDigit(event.digit)
                 WooPosLockScreenUIEvent.DeleteTapped -> deleteDigit()
-                WooPosLockScreenUIEvent.ForgotPINTapped -> {
-                    pin = ""
-                    accessSession.recover()
-                }
             }
         }
     }
@@ -73,7 +78,7 @@ class WooPosLockScreenViewModel @Inject constructor(
         if (pin.length == WooPosPINHash.PIN_LENGTH) {
             val submitted = pin
             pin = ""
-            _state.value = _state.value.copy(enteredDigits = 0, status = Status.Checking)
+            _state.value = _state.value.copy(status = Status.Checking)
             accessSession.unlock(submitted)
         }
     }
@@ -93,6 +98,5 @@ class WooPosLockScreenViewModel @Inject constructor(
 
 sealed interface WooPosLockScreenUIEvent {
     data class DigitTapped(val digit: Int) : WooPosLockScreenUIEvent
-    data object ForgotPINTapped : WooPosLockScreenUIEvent
     data object DeleteTapped : WooPosLockScreenUIEvent
 }

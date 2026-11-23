@@ -49,6 +49,8 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.lifecycle.Observer
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCPullToRefreshBox
@@ -92,7 +94,7 @@ internal fun OrderListScreen(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    val pagedList by viewModel.pagedListData.observeAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
     val emptyViewType by viewModel.emptyViewType.observeAsState(EmptyViewType.ORDER_LIST_LOADING)
     val isFetchingFirstPage by viewModel.isFetchingFirstPage.observeAsState(false)
     val isLoadingMore by viewModel.isLoadingMore.observeAsState(false)
@@ -124,8 +126,11 @@ internal fun OrderListScreen(
     DisposableEffect(presenter) {
         onDispose(presenter::close)
     }
-    LaunchedEffect(presenter, pagedList) {
-        presenter.submit(pagedList)
+    DisposableEffect(presenter, viewModel, lifecycleOwner) {
+        // A refreshed PagedList can equal the one it replaces, so a State would drop it.
+        val observer = Observer<PagedOrdersList?>(presenter::submit)
+        viewModel.pagedListData.observe(lifecycleOwner, observer)
+        onDispose { viewModel.pagedListData.removeObserver(observer) }
     }
     LaunchedEffect(presenter, viewModel) {
         viewModel.orderListContentRevision.drop(1).collect {
