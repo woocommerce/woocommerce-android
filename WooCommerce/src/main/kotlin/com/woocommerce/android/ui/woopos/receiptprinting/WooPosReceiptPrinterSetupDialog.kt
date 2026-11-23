@@ -30,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -164,7 +163,7 @@ private fun WooPosReceiptPrinterSetupDialogContent(
                 is FoundOne -> MessageContent(
                     title = stringResource(R.string.woopos_receipt_printer_setup_found_title, currentState.device.name),
                     message = stringResource(R.string.woopos_receipt_printer_setup_found_message),
-                    icon = ImageVector.vectorResource(R.drawable.ic_woopos_receipt_printer),
+                    icon = WooPosIcons.ReceiptPrinter,
                     primaryButton = SetupButton(
                         text = stringResource(R.string.woopos_receipt_printer_setup_connect_to_printer_button),
                         onClick = { onConnectClicked(currentState.device) },
@@ -187,7 +186,7 @@ private fun WooPosReceiptPrinterSetupDialogContent(
                 NoPrintersFound -> MessageContent(
                     title = stringResource(R.string.woopos_receipt_printer_setup_no_printers_title),
                     message = stringResource(R.string.woopos_receipt_printer_setup_no_printers_message),
-                    icon = ImageVector.vectorResource(R.drawable.ic_woopos_receipt_printer),
+                    icon = WooPosIcons.ReceiptPrinter,
                     primaryButton = SetupButton(
                         text = stringResource(R.string.woopos_receipt_printer_setup_search_again_button),
                         onClick = onSearchAgainClicked,
