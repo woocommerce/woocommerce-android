@@ -23,6 +23,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.doOnApplyWindowInsets
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.CancelJetpackActivation
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.ContinueJetpackActivation
+import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.IgnoreMagicLink
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.OpenLogin
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.OpenSitePicker
 import com.woocommerce.android.ui.login.jetpack.dispatcher.JetpackActivationDispatcherFragmentArgs
@@ -32,6 +33,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
+import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -102,6 +104,10 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
         viewModel.event.observe(this) { event ->
             when (event) {
                 OpenSitePicker, CancelJetpackActivation -> openMainActivity()
+                IgnoreMagicLink -> {
+                    ToastUtils.showToast(this, R.string.magic_link_ignored_logged_in, ToastUtils.Duration.LONG)
+                    openMainActivity()
+                }
                 OpenLogin -> showLoginScreen()
                 is ContinueJetpackActivation -> continueJetpackActivation(event)
                 is ShowSnackbar -> showSnackBar(event.message)
