@@ -22,13 +22,16 @@ class WooPosLocalPINStore @Inject constructor(
         load(localSiteId)
     }
 
+    suspend fun validatePINUniqueness(localSiteId: Int, role: WooPosLocalRole, pin: String): Result<Unit> = operation {
+        if (!WooPosPINHash.isValidPIN(pin)) throw WooPosPINError.InvalidFormat
+        load(localSiteId).requireUniquePIN(role, pin)
+    }
+
     suspend fun setPIN(localSiteId: Int, role: WooPosLocalRole, pin: String): Result<Unit> = operation {
         if (!WooPosPINHash.isValidPIN(pin)) throw WooPosPINError.InvalidFormat
         val pins = load(localSiteId).toMutableMap()
         if (role != WooPosLocalRole.ADMIN && WooPosLocalRole.ADMIN !in pins) throw WooPosPINError.AdminRequired
-        if (pins.any { (storedRole, hash) -> storedRole != role && hash.matches(pin) }) {
-            throw WooPosPINError.MatchesOtherRole
-        }
+        pins.requireUniquePIN(role, pin)
         pins[role] = WooPosPINHash.create(pin)
         storage.write(localSiteId, codec.encode(pins))
     }
@@ -48,6 +51,12 @@ class WooPosLocalPINStore @Inject constructor(
     private fun load(localSiteId: Int): Map<WooPosLocalRole, WooPosPINHash> {
         require(localSiteId > 0)
         return storage.read(localSiteId)?.let(codec::decode).orEmpty()
+    }
+
+    private fun Map<WooPosLocalRole, WooPosPINHash>.requireUniquePIN(role: WooPosLocalRole, pin: String) {
+        if (any { (storedRole, hash) -> storedRole != role && hash.matches(pin) }) {
+            throw WooPosPINError.MatchesOtherRole
+        }
     }
 
     @Suppress("TooGenericExceptionCaught")

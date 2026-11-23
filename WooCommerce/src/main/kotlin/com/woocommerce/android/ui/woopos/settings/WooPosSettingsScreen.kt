@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolba
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupDialog
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategoriesPaneScreen
@@ -41,6 +42,8 @@ import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPa
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSyncErrorDialog
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupDialog
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupViewModel
+import com.woocommerce.android.ui.woopos.settings.details.security.pinSetupChooseTitleRes
+import com.woocommerce.android.ui.woopos.settings.details.security.pinSetupConfirmTitleRes
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialog
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialogState
 import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
@@ -104,7 +107,7 @@ private fun WooPosSettingsPhoneContent(
     onBack: () -> Unit,
     onDismissDetail: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
-    onShowPinSetupDialog: () -> Unit,
+    onShowPinSetupDialog: (WooPosLocalRole) -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit,
@@ -178,7 +181,7 @@ private fun WooPosSettingsTabletContent(
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
-    onShowPinSetupDialog: () -> Unit,
+    onShowPinSetupDialog: (WooPosLocalRole) -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit,
@@ -247,12 +250,15 @@ private fun SettingsDialogs(
 
     val pinSetup: WooPosSettingsSecurityPINSetupViewModel = hiltViewModel()
     val pinSetupState by pinSetup.state.collectAsState()
-    val isPinSetupVisible = dialogState is WooPosSettingsDialogState.PinSetupDialog
-    LaunchedEffect(isPinSetupVisible) { if (!isPinSetupVisible) pinSetup.reset() }
+    val pinSetupRole = (dialogState as? WooPosSettingsDialogState.PinSetupDialog)?.role
+    LaunchedEffect(pinSetupRole) { pinSetupRole?.let(pinSetup::start) ?: pinSetup.reset() }
+    val isPinSetupVisible = pinSetupRole != null && pinSetupState.role == pinSetupRole
     WooPosSettingsSecurityPINSetupDialog(
         state = pinSetupState,
         isVisible = isPinSetupVisible,
         isFullScreen = isPhoneLayout,
+        chooseTitle = stringResource(pinSetupState.role.pinSetupChooseTitleRes),
+        confirmTitle = stringResource(pinSetupState.role.pinSetupConfirmTitleRes),
         onUIEvent = pinSetup::onUIEvent,
         onClose = onDismissDialog,
     )

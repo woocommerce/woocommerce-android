@@ -67,6 +67,21 @@ class WooPosLocalPINStoreTest {
     }
 
     @Test
+    fun `given an Admin PIN, when checking Cashier PIN uniqueness, then a match fails without writing`() = runTest {
+        // GIVEN
+        store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+
+        // WHEN
+        val duplicate = store.validatePINUniqueness(1, WooPosLocalRole.CASHIER, "1234")
+        val unique = store.validatePINUniqueness(1, WooPosLocalRole.CASHIER, "5678")
+
+        // THEN
+        assertThat(duplicate.exceptionOrNull()).isEqualTo(WooPosPINError.MatchesOtherRole)
+        assertThat(unique.isSuccess).isTrue()
+        assertThat(storage.writtenSiteIds).containsExactly(1)
+    }
+
+    @Test
     fun `given a configured store, when switching stores and recreating repository, then PINs stay separate`() = runTest {
         // GIVEN
         store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()

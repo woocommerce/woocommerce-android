@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.MotionDurationScale
 import androidx.compose.ui.graphics.toPixelMap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.DeviceConfigurationOverride
 import androidx.compose.ui.test.FontScale
@@ -34,6 +35,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.ADMIN
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.CASHIER
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.AccessUnavailable
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Choose
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Confirm
@@ -64,14 +67,14 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun confirmationOffersBackWhileChooseOffersOnlyClose() {
-        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Choose(enteredDigits = 1))
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Choose(ADMIN, enteredDigits = 1))
         setDialog(state)
 
         composeTestRule.onNodeWithText(context.getString(R.string.woopos_security_choose_pin)).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(back).assertDoesNotExist()
 
         // WHEN
-        state.value = Confirm(enteredDigits = 2)
+        state.value = Confirm(ADMIN, enteredDigits = 2)
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithContentDescription(back).performClick()
         Espresso.pressBack()
@@ -87,7 +90,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun heldConfirmationDisablesKeysAndIgnoresClose() {
-        setDialog(mutableStateOf(Confirm(enteredDigits = 4)))
+        setDialog(mutableStateOf(Confirm(ADMIN, enteredDigits = 4)))
 
         // WHEN
         composeTestRule.onNodeWithContentDescription(close).performClick()
@@ -101,7 +104,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun savingShowsOnlyProgressAndCannotClose() {
-        setDialog(mutableStateOf(Saving))
+        setDialog(mutableStateOf(Saving(ADMIN)))
 
         // WHEN
         Espresso.pressBack()
@@ -116,7 +119,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun unavailableAdminAccessClosesTheVisibleFlowOnce() {
-        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Saving)
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Saving(ADMIN))
         val isVisible = mutableStateOf(true)
         setDialog(state, isVisible)
 
@@ -130,13 +133,13 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun fillingADotDrawsBeyondItsRestingBounds() {
-        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Choose())
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Choose(ADMIN))
         setDialog(state)
         val layout = composeTestRule.onNodeWithContentDescription(context.getString(R.string.woopos_lock_pin_entry))
         val row = layout.fetchSemanticsNode().boundsInRoot
         val centerX = (row.left + row.height / 2).toInt()
         composeTestRule.mainClock.autoAdvance = false
-        composeTestRule.runOnUiThread { state.value = Choose(enteredDigits = 1) }
+        composeTestRule.runOnUiThread { state.value = Choose(ADMIN, enteredDigits = 1) }
         composeTestRule.mainClock.advanceTimeByFrame()
         composeTestRule.mainClock.advanceTimeByFrame()
 
@@ -150,14 +153,14 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun mismatchMessageAppearsAfterTheDotsReturn() {
-        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Rejected(Page.CONFIRM))
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Rejected(ADMIN, Page.CONFIRM))
         setDialog(state)
         composeTestRule.waitForIdle()
         val keyBounds = composeTestRule.onNodeWithText("1").getUnclippedBoundsInRoot()
         composeTestRule.mainClock.autoAdvance = false
 
         // WHEN
-        state.value = Choose(error = Error.MISMATCH)
+        state.value = Choose(ADMIN, error = Error.MISMATCH)
         composeTestRule.mainClock.advanceTimeByFrame()
 
         // THEN
@@ -177,7 +180,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun duplicateClearsTheSameRowBeforeShowingTheError() {
-        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Rejected(Page.CHOOSE))
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Rejected(CASHIER, Page.CHOOSE))
         setDialog(state)
         val key = composeTestRule.onNodeWithText("1")
         val keyBounds = key.getUnclippedBoundsInRoot()
@@ -186,7 +189,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
         val message = context.getString(R.string.woopos_security_pin_taken)
         composeTestRule.mainClock.autoAdvance = false
 
-        composeTestRule.runOnUiThread { state.value = Choose(error = Error.PIN_TAKEN) }
+        composeTestRule.runOnUiThread { state.value = Choose(CASHIER, error = Error.PIN_TAKEN) }
         composeTestRule.mainClock.advanceTimeByFrame()
 
         composeTestRule.onAllNodes(dots).assertCountEquals(1)
@@ -194,19 +197,21 @@ class WooPosSettingsSecurityPINSetupDialogTest {
         composeTestRule.mainClock.advanceTimeBy(PAGE_SETTLED_MILLIS)
 
         composeTestRule.onNodeWithText(message).assertIsDisplayed()
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_security_choose_cashier_pin))
+            .assertIsDisplayed()
         assertThat(key.getUnclippedBoundsInRoot()).isEqualTo(keyBounds)
     }
 
     @Test
     fun typingBeforeTheMismatchMessagePreventsItFromAppearing() {
-        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Rejected(Page.CONFIRM))
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Rejected(ADMIN, Page.CONFIRM))
         setDialog(state)
         composeTestRule.waitForIdle()
         composeTestRule.mainClock.autoAdvance = false
-        composeTestRule.runOnUiThread { state.value = Choose(error = Error.MISMATCH) }
+        composeTestRule.runOnUiThread { state.value = Choose(ADMIN, error = Error.MISMATCH) }
         composeTestRule.mainClock.advanceTimeBy(PAGE_SETTLED_MILLIS)
 
-        composeTestRule.runOnUiThread { state.value = Choose(enteredDigits = 1) }
+        composeTestRule.runOnUiThread { state.value = Choose(ADMIN, enteredDigits = 1) }
         composeTestRule.mainClock.advanceTimeBy(MESSAGE_REVEAL_MILLIS)
 
         composeTestRule.onNodeWithText(context.getString(R.string.woopos_security_mismatch)).assertDoesNotExist()
@@ -215,10 +220,10 @@ class WooPosSettingsSecurityPINSetupDialogTest {
     @Test
     fun reducedMotionShowsTheErrorWithoutWaitingForTheSlide() {
         motion.scaleFactor = 0f
-        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Rejected(Page.CONFIRM))
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Rejected(ADMIN, Page.CONFIRM))
         setDialog(state)
 
-        composeTestRule.runOnIdle { state.value = Choose(error = Error.MISMATCH) }
+        composeTestRule.runOnIdle { state.value = Choose(ADMIN, error = Error.MISMATCH) }
 
         composeTestRule.onNodeWithText(context.getString(R.string.woopos_security_mismatch)).assertIsDisplayed()
         composeTestRule.onAllNodes(hasContentDescription(context.getString(R.string.woopos_lock_pin_entry)))
@@ -226,8 +231,18 @@ class WooPosSettingsSecurityPINSetupDialogTest {
     }
 
     @Test
+    fun cashierSuccessExplainsTheCashierPIN() {
+        setDialog(mutableStateOf(Saved(CASHIER)))
+
+        // THEN
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_security_cashier_success)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_security_cashier_success_message))
+            .assertIsDisplayed()
+    }
+
+    @Test
     fun successContinueClosesTheFlow() {
-        setDialog(mutableStateOf(Saved))
+        setDialog(mutableStateOf(Saved(ADMIN)))
 
         // WHEN
         composeTestRule.onNodeWithText(context.getString(R.string.continue_button)).assertIsEnabled().performClick()
@@ -239,7 +254,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun closingKeepsTheLastStepWhileTheFlowResetsBehindIt() {
-        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Saved)
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Saved(ADMIN))
         val isVisible = mutableStateOf(true)
         setDialog(state, isVisible)
         composeTestRule.waitForIdle()
@@ -248,7 +263,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
         // WHEN
         isVisible.value = false
         composeTestRule.mainClock.advanceTimeByFrame()
-        state.value = Choose()
+        state.value = Choose(ADMIN)
         composeTestRule.mainClock.advanceTimeByFrame()
 
         // THEN
@@ -259,7 +274,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
     @Test
     fun keypadTapsDuringTheClosingAnimationAreIgnored() {
         val isVisible = mutableStateOf(true)
-        setDialog(mutableStateOf(Choose(enteredDigits = 1)), isVisible)
+        setDialog(mutableStateOf(Choose(ADMIN, enteredDigits = 1)), isVisible)
         composeTestRule.waitForIdle()
         composeTestRule.mainClock.autoAdvance = false
 
@@ -274,7 +289,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun phoneSuccessPlacesCloseNearTheTopAndContinueNearTheBottom() {
-        setPhoneDialog(Saved, DpSize(400.dp, 800.dp))
+        setPhoneDialog(Saved(CASHIER), DpSize(400.dp, 800.dp))
 
         val closeBounds = composeTestRule.onNodeWithContentDescription(close).getUnclippedBoundsInRoot()
         val continueBounds = composeTestRule.onNodeWithText(context.getString(R.string.continue_button))
@@ -287,7 +302,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun phoneKeepsTheKeypadInPlaceWhenTheConfirmationTitleWraps() {
-        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Choose())
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Choose(ADMIN))
         val chooseTitle = "Choose a PIN"
         val confirmTitle = "Confirm the PIN you just entered for this account"
         setPhoneDialog(state, DpSize(360.dp, 780.dp), 1.5f, chooseTitle, confirmTitle)
@@ -299,7 +314,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
         assertThat(chooseBounds.top)
             .isGreaterThan(composeTestRule.onNodeWithContentDescription(close).getUnclippedBoundsInRoot().bottom)
 
-        composeTestRule.runOnIdle { state.value = Confirm() }
+        composeTestRule.runOnIdle { state.value = Confirm(ADMIN) }
 
         val confirmBounds = composeTestRule.onNodeWithText(confirmTitle)
             .assertIsDisplayed()
@@ -311,7 +326,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun phoneLandscapeShowsTheBottomKeypadRowWithoutScrolling() {
-        setPhoneDialog(Confirm(), DpSize(800.dp, 340.dp))
+        setPhoneDialog(Confirm(CASHIER), DpSize(800.dp, 340.dp))
 
         composeTestRule.onNodeWithText("0").assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(context.getString(R.string.woopos_lock_delete_digit))
@@ -320,7 +335,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun shortPhoneWithLargeTextCanScrollToTheBottomKeypadRow() {
-        setPhoneDialog(Confirm(), DpSize(800.dp, 320.dp), fontScale = 2f)
+        setPhoneDialog(Confirm(CASHIER), DpSize(800.dp, 320.dp), fontScale = 2f)
 
         composeTestRule.onNodeWithText("0").performScrollTo().assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(context.getString(R.string.woopos_lock_delete_digit))
@@ -330,7 +345,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
     @Test
     fun tabletSuccessKeepsItsHeightAfterStateRestoration() {
         val restorationTester = StateRestorationTester(composeTestRule)
-        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Confirm())
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Confirm(ADMIN))
         restorationTester.setContent {
             WooPosTheme {
                 WooPosSettingsSecurityPINSetupDialog(
@@ -342,7 +357,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
                 )
             }
         }
-        composeTestRule.runOnIdle { state.value = Saved }
+        composeTestRule.runOnIdle { state.value = Saved(ADMIN) }
         val closeNode = composeTestRule.onNodeWithContentDescription(close)
         val originalBounds = closeNode.getUnclippedBoundsInRoot()
 
@@ -356,8 +371,8 @@ class WooPosSettingsSecurityPINSetupDialogTest {
             mutableStateOf(state),
             size,
             fontScale,
-            context.getString(R.string.woopos_security_choose_pin),
-            context.getString(R.string.woopos_security_confirm_pin),
+            context.getString(state.role.pinSetupChooseTitleRes),
+            context.getString(state.role.pinSetupConfirmTitleRes),
         )
     }
 
@@ -398,6 +413,8 @@ class WooPosSettingsSecurityPINSetupDialogTest {
                 WooPosSettingsSecurityPINSetupDialog(
                     state = state.value,
                     isVisible = isVisible.value,
+                    chooseTitle = stringResource(state.value.role.pinSetupChooseTitleRes),
+                    confirmTitle = stringResource(state.value.role.pinSetupConfirmTitleRes),
                     onUIEvent = { events += it },
                     onClose = { closeCount++ },
                 )

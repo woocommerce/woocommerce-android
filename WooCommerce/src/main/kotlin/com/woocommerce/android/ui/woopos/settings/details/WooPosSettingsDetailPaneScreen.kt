@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDetailDestination
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDialogState
@@ -36,6 +37,7 @@ import com.woocommerce.android.ui.woopos.settings.details.help.WooPosHelpDetailS
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSettingsLocalCatalogScreen
 import com.woocommerce.android.ui.woopos.settings.details.payments.WooPosSettingsPaymentsScreen
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityScreen
+import com.woocommerce.android.ui.woopos.settings.details.security.wooPosSettingsSecurityShowsHeading
 import com.woocommerce.android.ui.woopos.settings.details.store.WooPosSettingsStoreScreen
 
 @Suppress("CyclomaticComplexMethod")
@@ -45,7 +47,7 @@ fun WooPosSettingsDetailPaneScreen(
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
-    onShowPinSetupDialog: () -> Unit,
+    onShowPinSetupDialog: (WooPosLocalRole) -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -54,6 +56,7 @@ fun WooPosSettingsDetailPaneScreen(
 ) {
     val currentDestination = state.currentDestination
     val showBack = state.canGoBack || showBackOnRoot
+    val pinSetupRole = (state.dialogState as? WooPosSettingsDialogState.PinSetupDialog)?.role
 
     BackHandler(enabled = registerBackHandler && showBack) {
         onBack()
@@ -62,7 +65,11 @@ fun WooPosSettingsDetailPaneScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        DetailPaneHeader(destination = currentDestination, onBack = if (showBack) onBack else null)
+        DetailPaneHeader(
+            destination = currentDestination,
+            onBack = if (showBack) onBack else null,
+            isAdminPINSetupVisible = pinSetupRole == WooPosLocalRole.ADMIN,
+        )
 
         AnimatedContent(
             targetState = currentDestination,
@@ -72,8 +79,8 @@ fun WooPosSettingsDetailPaneScreen(
             when (destination) {
                 is WooPosSettingsDetailDestination.Security.Overview -> {
                     WooPosSettingsSecurityScreen(
-                        isPINSetupVisible = state.dialogState is WooPosSettingsDialogState.PinSetupDialog,
-                        onGetStartedClicked = onShowPinSetupDialog,
+                        pinSetupRole = pinSetupRole,
+                        onSetUpPIN = onShowPinSetupDialog,
                     )
                 }
 
@@ -116,8 +123,14 @@ fun WooPosSettingsDetailPaneScreen(
 }
 
 @Composable
-private fun DetailPaneHeader(destination: WooPosSettingsDetailDestination, onBack: (() -> Unit)?) {
-    val hasHeading = destination.showsHeading
+private fun DetailPaneHeader(
+    destination: WooPosSettingsDetailDestination,
+    onBack: (() -> Unit)?,
+    isAdminPINSetupVisible: Boolean,
+) {
+    val hasHeading = destination.showsHeading ||
+        destination is WooPosSettingsDetailDestination.Security &&
+        !isAdminPINSetupVisible && wooPosSettingsSecurityShowsHeading()
     if (!hasHeading && onBack == null) {
         Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
         return
