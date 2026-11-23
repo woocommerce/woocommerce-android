@@ -171,6 +171,7 @@ class DefaultCardReaderRemoteTabletClientTest : CardReaderBaseUnitTest() {
         fingerprintBase64 = "AB4F",
         deviceName = "Pixel",
         siteHash = "site-hash",
+        siteUrlHash = null,
         deviceId = "test-device-id",
     )
 

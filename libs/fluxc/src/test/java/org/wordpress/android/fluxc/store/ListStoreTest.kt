@@ -9,6 +9,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -136,6 +137,57 @@ class ListStoreTest {
         val listModel = databaseRule.db.listDao().getList(testListDescriptor)!!
         val items = databaseRule.db.listDao().getListItems(listModel.id)
         assertThat(items).isEmpty()
+    }
+
+    @Test
+    fun `given a longer saved list, when save list fetched, then items after the first page are kept`() = runTest {
+        store.saveListFetched(testListDescriptor, listOf(3L, 2L, 1L), canLoadMore = true)
+
+        store.saveListFetched(testListDescriptor, listOf(4L, 3L), canLoadMore = true)
+
+        val listModel = databaseRule.db.listDao().getList(testListDescriptor)!!
+        val items = databaseRule.db.listDao().getListItems(listModel.id)
+        assertThat(items.map { it.remoteItemId }).containsExactly(4L, 3L, 2L, 1L)
+    }
+
+    @Test
+    fun `given no more pages and a longer saved list, when save list fetched, then later items are dropped`() =
+        runTest {
+            store.saveListFetched(testListDescriptor, listOf(3L, 2L, 1L), canLoadMore = true)
+
+            store.saveListFetched(testListDescriptor, listOf(3L, 2L), canLoadMore = false)
+
+            val listModel = databaseRule.db.listDao().getList(testListDescriptor)!!
+            val items = databaseRule.db.listDao().getListItems(listModel.id)
+            assertThat(items.map { it.remoteItemId }).containsExactly(3L, 2L)
+        }
+
+    @Test
+    fun `when save list fetched, then the saved list changes and only the other lists are asked to refresh`() =
+        runTest {
+            store.saveListFetched(testListDescriptor, listOf(1L), canLoadMore = false)
+
+            val captor = argumentCaptor<OnChanged<*>>()
+            verify(dispatcher, times(3)).emitChange(captor.capture())
+            val listChanged = captor.allValues.filterIsInstance<ListStore.OnListChanged>().single()
+            assertThat(listChanged.listDescriptors).containsExactly(testListDescriptor)
+            assertThat(listChanged.causeOfChange)
+                .isEqualTo(ListStore.OnListChanged.CauseOfListChange.FIRST_PAGE_FETCHED)
+            val refresh = captor.allValues.filterIsInstance<ListStore.OnListRequiresRefresh>().single()
+            assertThat(refresh.type).isEqualTo(testListDescriptor.typeIdentifier)
+            assertThat(refresh.upToDateList).isEqualTo(testListDescriptor)
+        }
+
+    @Test
+    fun `when save list fetched, then the list state is emitted without an error`() = runTest {
+        store.saveListFetched(testListDescriptor, listOf(1L), canLoadMore = false)
+
+        val captor = argumentCaptor<OnChanged<*>>()
+        verify(dispatcher, times(3)).emitChange(captor.capture())
+        val stateChanged = captor.allValues.filterIsInstance<ListStore.OnListStateChanged>().single()
+        assertThat(stateChanged.listDescriptor).isEqualTo(testListDescriptor)
+        assertThat(stateChanged.newState).isEqualTo(ListState.FETCHED)
+        assertThat(stateChanged.error).isNull()
     }
     // endregion
 

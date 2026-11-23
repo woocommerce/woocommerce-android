@@ -62,10 +62,7 @@ fladle {
     environmentVariables = [
             // Per-test timeout (AndroidJUnitRunner), unlike `testTimeout` above which applies to a whole shard.
             // A hanging test fails with a stack trace instead of the whole shard timing out.
-            "timeout_msec": "180000",
-            "API_URL"     : secretProperties.getProperty("e2eApiUrl", ""),
-            "API_EMAIL"   : secretProperties.getProperty("e2eApiEmail", ""),
-            "API_PASSWORD": secretProperties.getProperty("e2eApiPassword", "")
+            "timeout_msec": "180000"
     ]
 }
 
@@ -140,10 +137,7 @@ android {
         targetSdkVersion gradle.ext.targetSdkVersion
 
         testInstrumentationRunner 'com.woocommerce.android.WooCommerceTestRunner'
-        testInstrumentationRunnerArguments clearPackageData: 'true',
-                API_URL: secretProperties.getProperty("e2eApiUrl", ""),
-                API_EMAIL: secretProperties.getProperty("e2eApiEmail", ""),
-                API_PASSWORD: secretProperties.getProperty("e2eApiPassword", "")
+        testInstrumentationRunnerArguments clearPackageData: 'true'
         // TODO remove this once the hilt migration is complete
         javaCompileOptions.annotationProcessorOptions.arguments['dagger.hilt.disableModulesHaveInstallInCheck'] = 'true'
 

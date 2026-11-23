@@ -29,6 +29,10 @@
         <argument
             android:name="refundItems"
             app:argType="com.woocommerce.android.ui.payments.refunds.RefundItem[]" />
+        <argument
+            android:name="isServerComputed"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/issueRefundFragment"

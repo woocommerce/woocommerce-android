@@ -20,12 +20,12 @@ class WooPosLocalPINStoreTest {
     val coroutineRule = WooPosCoroutineTestRule()
     private val storage = MemoryStorage()
     private val store = WooPosLocalPINStore(storage, coroutineRule.testDispatchers)
-    private val authenticator = WooPosPINAuthenticator(store, coroutineRule.testDispatchers)
+    private val authenticator = WooPosPINAuthenticator(coroutineRule.testDispatchers)
 
     @Test
     fun `given no Admin PIN, when reading PINs, then protection is off`() = runTest {
         assertThat(store.getPINs(1).getOrThrow()).isEmpty()
-        assertThat(authenticator.authenticate(1, "1234").getOrThrow()).isNull()
+        assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "1234").getOrThrow()).isNull()
         WooPosLocalRole.entries.filter { it != WooPosLocalRole.ADMIN }.forEach { role ->
             assertThat(store.setPIN(1, role, "5678").exceptionOrNull())
                 .isEqualTo(WooPosPINError.AdminRequired)
@@ -40,15 +40,15 @@ class WooPosLocalPINStoreTest {
         store.setPIN(1, WooPosLocalRole.CASHIER, "5678").getOrThrow()
 
         // THEN
-        assertThat(authenticator.authenticate(1, "1234").getOrThrow()?.capabilities)
+        assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "1234").getOrThrow()?.capabilities)
             .containsExactlyInAnyOrderElementsOf(WooPosCapability.entries)
-        assertThat(authenticator.authenticate(1, "5678").getOrThrow()?.capabilities)
+        assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "5678").getOrThrow()?.capabilities)
             .containsExactlyInAnyOrder(
                 WooPosCapability.PROCESS_SALES,
                 WooPosCapability.VIEW_ORDERS,
                 WooPosCapability.APPLY_COUPONS
             )
-        assertThat(authenticator.authenticate(1, "9999").getOrThrow()).isNull()
+        assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "9999").getOrThrow()).isNull()
     }
 
     @Test
@@ -62,8 +62,8 @@ class WooPosLocalPINStoreTest {
             .isEqualTo(WooPosPINError.MatchesOtherRole)
         assertThat(store.setPIN(1, WooPosLocalRole.ADMIN, "5678").exceptionOrNull())
             .isEqualTo(WooPosPINError.MatchesOtherRole)
-        assertThat(authenticator.authenticate(1, "1234").getOrThrow()).isNotNull()
-        assertThat(authenticator.authenticate(1, "5678").getOrThrow()).isNotNull()
+        assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "1234").getOrThrow()).isNotNull()
+        assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "5678").getOrThrow()).isNotNull()
     }
 
     @Test
@@ -71,15 +71,13 @@ class WooPosLocalPINStoreTest {
         // GIVEN
         store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
         store.setPIN(2, WooPosLocalRole.ADMIN, "5678").getOrThrow()
-        val recreated = WooPosPINAuthenticator(
-            WooPosLocalPINStore(storage, coroutineRule.testDispatchers),
-            coroutineRule.testDispatchers
-        )
+        val recreatedStore = WooPosLocalPINStore(storage, coroutineRule.testDispatchers)
+        val recreated = WooPosPINAuthenticator(coroutineRule.testDispatchers)
 
         // THEN
-        assertThat(recreated.authenticate(1, "1234").getOrThrow()).isNotNull()
-        assertThat(recreated.authenticate(2, "1234").getOrThrow()).isNull()
-        assertThat(recreated.authenticate(2, "5678").getOrThrow()).isNotNull()
+        assertThat(recreated.authenticate(recreatedStore.getPINs(1).getOrThrow(), "1234").getOrThrow()).isNotNull()
+        assertThat(recreated.authenticate(recreatedStore.getPINs(2).getOrThrow(), "1234").getOrThrow()).isNull()
+        assertThat(recreated.authenticate(recreatedStore.getPINs(2).getOrThrow(), "5678").getOrThrow()).isNotNull()
     }
 
     @Test
@@ -93,8 +91,8 @@ class WooPosLocalPINStoreTest {
             store.removePIN(1, role).getOrThrow()
 
             // THEN
-            assertThat(authenticator.authenticate(1, "1234").getOrThrow()).isNotNull()
-            assertThat(authenticator.authenticate(1, "5678").getOrThrow()).isNull()
+            assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "1234").getOrThrow()).isNotNull()
+            assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "5678").getOrThrow()).isNull()
             assertThat(store.getPINs(1).getOrThrow()).hasSize(1)
         }
     }
@@ -168,7 +166,6 @@ class WooPosLocalPINStoreTest {
 
         // THEN
         assertThat(store.getPINs(1).exceptionOrNull()).isEqualTo(WooPosPINError.StorageFailure)
-        assertThat(authenticator.authenticate(1, "1234").exceptionOrNull()).isEqualTo(WooPosPINError.StorageFailure)
         assertThat(store.setPIN(1, WooPosLocalRole.ADMIN, "1234").exceptionOrNull())
             .isEqualTo(WooPosPINError.StorageFailure)
         assertThat(storage.entries[1]).containsExactly(1, 2, 3)

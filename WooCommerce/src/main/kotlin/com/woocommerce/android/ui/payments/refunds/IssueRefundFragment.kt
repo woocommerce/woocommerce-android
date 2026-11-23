@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.refunds
 
+import android.app.Dialog
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -11,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentIssueRefundBinding
@@ -23,6 +25,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.extensions.withOldValue
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.FeesRefundSection
@@ -54,6 +57,9 @@ class IssueRefundFragment :
     @Inject
     lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
 
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+
     private var _binding: FragmentIssueRefundBinding? = null
     private val binding get() = _binding!!
 
@@ -67,6 +73,8 @@ class IssueRefundFragment :
     private val feeLinesBinding get() = _feeLinesBinding!!
 
     private val viewModel: IssueRefundViewModel by hiltNavGraphViewModels(R.id.nav_graph_refunds)
+
+    private var calculatingDialog: Dialog? = null
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -90,6 +98,7 @@ class IssueRefundFragment :
 
     override fun onDestroyView() {
         super.onDestroyView()
+        hideProgressDialog()
         _binding = null
         _productsBinding = null
         _shippingLinesBinding = null
@@ -185,6 +194,10 @@ class IssueRefundFragment :
             }
         }
 
+        viewModel.isCalculatingRefund.observe(viewLifecycleOwner) { isCalculating ->
+            if (isCalculating) showProgressDialog() else hideProgressDialog()
+        }
+
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowNumberPicker -> {
@@ -201,7 +214,8 @@ class IssueRefundFragment :
                     val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundSummaryFragment(
                         orderId = event.orderId,
                         refundAmount = event.refundAmount.toString(),
-                        refundItems = event.refundItems.toTypedArray()
+                        refundItems = event.refundItems.toTypedArray(),
+                        isServerComputed = event.isServerComputed
                     )
                     findNavController().navigateSafely(action)
                 }
@@ -209,6 +223,10 @@ class IssueRefundFragment :
                 is Event.LaunchUrlInAuthenticatedWebView -> {
                     authenticatedWebViewLauncher.showAuthenticatedWebView(event)
                 }
+
+                is Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+
+                is Event.ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
 
                 else -> event.isHandled = false
             }
@@ -279,6 +297,22 @@ class IssueRefundFragment :
         new.feesRefundTotalFormatted.takeIfNotEqualTo(old?.feesRefundTotalFormatted) {
             feeLinesBinding.issueRefundFeesTotal.text = it
         }
+    }
+
+    private fun showProgressDialog() {
+        if (calculatingDialog != null) return
+        val dialogView = View.inflate(requireContext(), R.layout.view_progress_dialog, null)
+        dialogView.findViewById<TextView>(R.id.progress_title).text = getString(R.string.order_refunds_calculating)
+        dialogView.findViewById<TextView>(R.id.progress_text).text = getString(R.string.please_wait)
+        calculatingDialog = MaterialAlertDialogBuilder(requireContext())
+            .setView(dialogView)
+            .setCancelable(false)
+            .show()
+    }
+
+    private fun hideProgressDialog() {
+        calculatingDialog?.dismiss()
+        calculatingDialog = null
     }
 
     private fun updateRefundNoticeView(capNoticeText: String?, refundNoticeText: String?) {

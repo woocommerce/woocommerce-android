@@ -97,6 +97,7 @@ sealed class ChildToParentEvent {
         ) : SettingsEvent()
         data object ShowCardReaderConnectionDialog : SettingsEvent()
         data object ShowCardReaderUpdateDialog : SettingsEvent()
+        data object ShowReceiptPrinterSetupDialog : SettingsEvent()
     }
 }
 
