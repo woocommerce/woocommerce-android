@@ -13,7 +13,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,7 +28,7 @@ class WooPosManagerApprovalViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            combine(accessSession.state, accessSession.logoutVersion) { _, _ -> Unit }.collect {
+            accessSession.approvalScopeChanges.collect {
                 pending?.let { if (!it.isCurrent()) cancel() }
             }
         }
@@ -48,7 +47,7 @@ class WooPosManagerApprovalViewModel @Inject constructor(
         val scope = accessSession.approvalScope() ?: return
         val request = PendingAction(scope, action, onApproved)
         pending = request
-        _state.value = WooPosManagerApprovalState(action, Status.Checking)
+        _state.value = WooPosManagerApprovalState(action, Status.Initializing)
         job = viewModelScope.launch { refreshWait(request) }
     }
 

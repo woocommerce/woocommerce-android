@@ -14,6 +14,7 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 @MainThread
@@ -30,9 +31,10 @@ class WooPosAccessSession @Inject constructor(
     )
     val state = _state.asStateFlow()
     private var localSiteId: Int? = null
-    private var generation = 0L
-    internal val logoutVersion = rateLimiter.logoutVersion
+    private val generation = MutableStateFlow(0L)
+    private val logoutVersion = rateLimiter.logoutVersion
     private val initialLogoutVersion = logoutVersion.value
+    internal val approvalScopeChanges = combine(state, generation, logoutVersion) { _, _, _ -> Unit }
 
     val isEnabled: Boolean get() = flagEnabled && _state.value != WooPosAccessSessionState.Unprotected
 
@@ -45,7 +47,7 @@ class WooPosAccessSession @Inject constructor(
     internal fun approvalScope(): ApprovalScope? {
         val id = localSiteId ?: return null
         return if (_state.value is WooPosAccessSessionState.Unlocked && isSessionCurrent) {
-            ApprovalScope(id, generation)
+            ApprovalScope(id, generation.value)
         } else {
             null
         }
@@ -72,7 +74,7 @@ class WooPosAccessSession @Inject constructor(
             localSiteId = id
             _state.value = WooPosAccessSessionState.Locked(Status.Initializing)
         }
-        val request = ++generation
+        val request = ++generation.value
         if (id == null) {
             _state.value = WooPosAccessSessionState.Locked(Status.StorageUnavailable)
             return
@@ -90,7 +92,7 @@ class WooPosAccessSession @Inject constructor(
 
     suspend fun lock() {
         if (!isEnabled) return
-        generation++
+        generation.value++
         _state.value = WooPosAccessSessionState.Locked(Status.Checking)
         refreshWait()
     }
@@ -106,7 +108,7 @@ class WooPosAccessSession @Inject constructor(
         val previous = _state.value as? WooPosAccessSessionState.Locked ?: return
         if (previous.status == Status.Initializing || previous.status == Status.Checking) return
         val id = localSiteId ?: return
-        val request = ++generation
+        val request = ++generation.value
         _state.value = WooPosAccessSessionState.Locked(Status.Checking)
         try {
             val role = recoveryRole(id)
@@ -150,7 +152,7 @@ class WooPosAccessSession @Inject constructor(
             _state.value = WooPosAccessSessionState.Locked(Status.StorageUnavailable)
             return
         }
-        val request = generation
+        val request = generation.value
         val wait = rateLimiter.remainingSeconds(id)
         if (!isCurrent(request, id) || _state.value != current) return
         _state.value = WooPosAccessSessionState.Locked(
@@ -166,7 +168,7 @@ class WooPosAccessSession @Inject constructor(
 
     private suspend fun authenticate(action: suspend (Int) -> WooPosLocalRateLimiterResult) {
         val previous = _state.value
-        val request = ++generation
+        val request = ++generation.value
         val id = localSiteId ?: selectedSite.getOrNull()?.id
         if (id == null || !isCurrent(request, id)) {
             _state.value = WooPosAccessSessionState.Locked(Status.StorageUnavailable)
@@ -195,5 +197,5 @@ class WooPosAccessSession @Inject constructor(
     }
 
     private fun isCurrent(request: Long, id: Int): Boolean =
-        request == generation && id == selectedSite.getOrNull()?.id
+        request == generation.value && id == selectedSite.getOrNull()?.id
 }

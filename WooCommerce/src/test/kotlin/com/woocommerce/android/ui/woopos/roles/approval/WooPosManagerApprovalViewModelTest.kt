@@ -182,6 +182,27 @@ class WooPosManagerApprovalViewModelTest {
     }
 
     @Test
+    fun `given an approval is open, when the session refreshes without a role change, then the prompt closes`() =
+        runTest {
+            // GIVEN
+            val viewModel = signIn(CASHIER_PIN)
+            var performed = false
+            viewModel.run(WooPosApprovalAction.Exit, onAllowed = { performed = true })
+            runCurrent()
+            assertThat(viewModel.state.value?.status).isEqualTo(Status.Idle)
+            viewModel.onDigit(ADMIN_PIN.first().digitToInt())
+
+            // WHEN
+            access.initialize()
+            runCurrent()
+
+            // THEN
+            assertThat(access.state.value.activeRole).isEqualTo(WooPosLocalRole.CASHIER)
+            assertThat(viewModel.state.value).isNull()
+            assertThat(performed).isFalse()
+        }
+
+    @Test
     fun `given a PIN check in progress, when locking starts, then late approval cannot execute`() = runTest {
         // GIVEN
         val viewModel = signIn(CASHIER_PIN)
