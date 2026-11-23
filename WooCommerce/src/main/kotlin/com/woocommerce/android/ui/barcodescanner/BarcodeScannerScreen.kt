@@ -78,6 +78,7 @@ fun BarcodeScannerScreen(
             PermissionDeniedContent(
                 title = stringResource(id = permissionState.title),
                 message = stringResource(id = permissionState.message),
+                panelMessage = stringResource(id = R.string.barcode_scanning_camera_permission_denied_message),
                 ctaLabel = stringResource(id = permissionState.ctaLabel),
                 dismissCtaLabel = stringResource(id = permissionState.dismissCtaLabel),
                 ctaAction = { permissionState.ctaAction.invoke(cameraPermissionLauncher) },
@@ -89,6 +90,9 @@ fun BarcodeScannerScreen(
             PermissionDeniedContent(
                 title = stringResource(id = permissionState.title),
                 message = stringResource(id = permissionState.message),
+                panelMessage = stringResource(
+                    id = R.string.barcode_scanning_camera_permission_permanently_denied_message
+                ),
                 ctaLabel = stringResource(id = permissionState.ctaLabel),
                 dismissCtaLabel = stringResource(id = permissionState.dismissCtaLabel),
                 ctaAction = { permissionState.ctaAction.invoke(cameraPermissionLauncher) },
@@ -106,6 +110,7 @@ fun BarcodeScannerScreen(
 private fun PermissionDeniedContent(
     title: String,
     message: String,
+    panelMessage: String,
     ctaLabel: String,
     dismissCtaLabel: String,
     ctaAction: () -> Unit,
@@ -124,7 +129,7 @@ private fun PermissionDeniedContent(
     } else {
         CameraPermissionDeniedPanel(
             title = title,
-            message = message,
+            message = panelMessage,
             ctaLabel = ctaLabel,
             ctaAction = ctaAction,
             onHardwareScannerInfoClicked = onHardwareScannerInfoClicked,
@@ -257,7 +262,7 @@ fun CameraPermissionDeniedPanelPreview() {
     LegacyWooThemeWithBackground {
         CameraPermissionDeniedPanel(
             title = stringResource(id = R.string.barcode_scanning_alert_dialog_title),
-            message = stringResource(id = R.string.barcode_scanning_alert_dialog_permanently_denied_message),
+            message = stringResource(id = R.string.barcode_scanning_camera_permission_permanently_denied_message),
             ctaLabel = stringResource(id = R.string.barcode_scanning_alert_dialog_permanently_denied_cta_label),
             ctaAction = {},
             onHardwareScannerInfoClicked = {},

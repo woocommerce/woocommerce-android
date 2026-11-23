@@ -545,7 +545,7 @@ class ProductListViewModel @Inject constructor(
             )
         )
 
-        if (isWindowClassLargeThanCompact()) {
+        if (isWindowClassLargeThanCompact() && _productList.value.orEmpty().any { it.remoteId == productId }) {
             selectedProductIdOnBigScreen.value = productId
         }
         triggerEvent(ProductListEvent.OpenProduct(productId))

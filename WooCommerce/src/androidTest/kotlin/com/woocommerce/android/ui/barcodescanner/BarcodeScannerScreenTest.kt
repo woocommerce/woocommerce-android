@@ -35,6 +35,9 @@ class BarcodeScannerScreenTest {
         // THEN
         composeTestRule.onNodeWithText(context.getString(R.string.barcode_scanning_alert_dialog_title))
             .assertIsDisplayed()
+        composeTestRule.onNodeWithText(
+            context.getString(R.string.barcode_scanning_camera_permission_permanently_denied_message)
+        ).assertIsDisplayed()
         composeTestRule.onNodeWithText(context.getString(R.string.barcode_scanning_hardware_scanner_info_link))
             .assertIsDisplayed()
             .performClick()

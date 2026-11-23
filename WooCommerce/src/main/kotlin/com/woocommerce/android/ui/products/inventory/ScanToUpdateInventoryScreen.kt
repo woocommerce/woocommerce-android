@@ -1,11 +1,15 @@
 package com.woocommerce.android.ui.products.inventory
 
 import androidx.camera.core.ImageProxy
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.colorResource
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
@@ -55,7 +59,7 @@ fun ScanToUpdateInventoryScreen(
             onDismissRequest = onHardwareScannerInfoDismissed,
         )
     }
-    QuickInventoryUpdateSheet(
+    QuickInventoryUpdateOverlay(
         viewState = viewState,
         onBottomSheetDismissed = onBottomSheetDismissed,
         onIncrementQuantityClicked = onIncrementQuantityClicked,
@@ -68,7 +72,7 @@ fun ScanToUpdateInventoryScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuickInventoryUpdateSheet(
+fun QuickInventoryUpdateOverlay(
     viewState: State<ScanToUpdateInventoryViewModel.ViewState>,
     onBottomSheetDismissed: () -> Unit,
     onIncrementQuantityClicked: () -> Unit,
@@ -78,7 +82,9 @@ fun QuickInventoryUpdateSheet(
     onManageStockClicked: () -> Unit,
 ) {
     if (viewState.value is ScanToUpdateInventoryViewModel.ViewState.Loading) {
-        ProgressIndicator(backgroundColor = colorResource(id = R.color.color_scrim_background))
+        Box(modifier = Modifier.fillMaxSize().pointerInput(Unit) {}) {
+            ProgressIndicator(backgroundColor = colorResource(id = R.color.color_scrim_background))
+        }
     }
     val modalState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     viewState.value.let { state ->

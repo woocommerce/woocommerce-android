@@ -48,7 +48,7 @@ import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.Upd
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.ui.products.details.ProductDetailFragmentArgs
 import com.woocommerce.android.ui.products.filter.ProductFilterResult
-import com.woocommerce.android.ui.products.inventory.QuickInventoryUpdateSheet
+import com.woocommerce.android.ui.products.inventory.QuickInventoryUpdateOverlay
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel
 import com.woocommerce.android.ui.products.list.ProductListEvent.HardwareBarcodeScanned
 import com.woocommerce.android.ui.products.list.ProductListEvent.OpenEmptyProduct
@@ -192,7 +192,7 @@ class ProductListFragment :
                 onListAtTopChanged = { isListAtTop = it },
             )
             WooTheme {
-                QuickInventoryUpdateSheet(
+                QuickInventoryUpdateOverlay(
                     viewState = inventoryViewModel.viewState.collectAsState(),
                     onBottomSheetDismissed = {
                         inventoryViewModel.onBottomSheetDismissed()
