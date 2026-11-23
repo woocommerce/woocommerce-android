@@ -11,9 +11,12 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -23,6 +26,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDetailDestination
+import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDialogState
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsState
 import com.woocommerce.android.ui.woopos.settings.details.hardware.WooPosHardwareSettingsScreen
 import com.woocommerce.android.ui.woopos.settings.details.hardware.barcodescanner.WooPosSettingsHardwareBarcodeScannerScreen
@@ -67,7 +71,10 @@ fun WooPosSettingsDetailPaneScreen(
         ) { destination ->
             when (destination) {
                 is WooPosSettingsDetailDestination.Security.Overview -> {
-                    WooPosSettingsSecurityScreen(onGetStartedClicked = onShowPinSetupDialog)
+                    WooPosSettingsSecurityScreen(
+                        isPINSetupVisible = state.dialogState is WooPosSettingsDialogState.PinSetupDialog,
+                        onGetStartedClicked = onShowPinSetupDialog,
+                    )
                 }
 
                 is WooPosSettingsDetailDestination.Hardware.Overview -> {
@@ -111,7 +118,10 @@ fun WooPosSettingsDetailPaneScreen(
 @Composable
 private fun DetailPaneHeader(destination: WooPosSettingsDetailDestination, onBack: (() -> Unit)?) {
     val hasHeading = destination.showsHeading
-    if (!hasHeading && onBack == null) return
+    if (!hasHeading && onBack == null) {
+        Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+        return
+    }
     WooPosToolbar(
         modifier = Modifier
             .padding(

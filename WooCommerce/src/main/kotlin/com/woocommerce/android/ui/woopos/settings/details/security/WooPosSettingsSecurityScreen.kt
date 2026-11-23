@@ -34,14 +34,17 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
-fun WooPosSettingsSecurityScreen(onGetStartedClicked: () -> Unit) {
+fun WooPosSettingsSecurityScreen(isPINSetupVisible: Boolean, onGetStartedClicked: () -> Unit) {
     val viewModel: WooPosSettingsSecurityViewModel = hiltViewModel()
     val isProtectionEnabled by viewModel.isProtectionEnabled.collectAsState()
-    WooPosSettingsSecurityScreen(isProtectionEnabled = isProtectionEnabled, onGetStartedClicked = onGetStartedClicked)
+    WooPosSettingsSecurityContent(
+        isProtectionEnabled = isProtectionEnabled && !isPINSetupVisible,
+        onGetStartedClicked = onGetStartedClicked,
+    )
 }
 
 @Composable
-fun WooPosSettingsSecurityScreen(isProtectionEnabled: Boolean, onGetStartedClicked: () -> Unit) {
+private fun WooPosSettingsSecurityContent(isProtectionEnabled: Boolean, onGetStartedClicked: () -> Unit) {
     BoxWithConstraints(Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -102,7 +105,7 @@ private fun AccessControlSetup(onGetStartedClicked: () -> Unit) {
 @Composable
 fun WooPosSettingsSecurityScreenPreview() {
     WooPosTheme {
-        WooPosSettingsSecurityScreen(isProtectionEnabled = false, onGetStartedClicked = {})
+        WooPosSettingsSecurityContent(isProtectionEnabled = false, onGetStartedClicked = {})
     }
 }
 
@@ -110,7 +113,7 @@ fun WooPosSettingsSecurityScreenPreview() {
 @Composable
 fun WooPosSettingsSecurityScreenProtectedPreview() {
     WooPosTheme {
-        WooPosSettingsSecurityScreen(isProtectionEnabled = true, onGetStartedClicked = {})
+        WooPosSettingsSecurityContent(isProtectionEnabled = true, onGetStartedClicked = {})
     }
 }
 

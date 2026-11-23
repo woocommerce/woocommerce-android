@@ -47,9 +47,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         on { getOrNull() }.thenReturn(SiteModel().apply { id = 1 })
     }
     private val store: WooPosLocalPINStore = mock()
-    private val accessState = MutableStateFlow<WooPosAccessSessionState>(
-        WooPosAccessSessionState.Unlocked(WooPosLocalRole.ADMIN),
-    )
+    private val accessState = MutableStateFlow<WooPosAccessSessionState>(WooPosAccessSessionState.Unprotected)
     private val session: WooPosAccessSession = mock {
         on { state }.thenReturn(accessState)
     }
@@ -493,8 +491,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
 
     @Test
     fun `when the PIN is saved but Admin access is unavailable, then setup does not show success`() = runTest {
-        givenNoPINs()
-        accessState.value = WooPosAccessSessionState.Locked(Status.StorageUnavailable)
+        givenNoPINs(WooPosAccessSessionState.Locked(Status.StorageUnavailable))
         whenever(store.setPIN(1, WooPosLocalRole.ADMIN, "1234")).thenReturn(Result.success(Unit))
 
         chooseAndConfirm("1234")
@@ -504,8 +501,21 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         verify(store, never()).removePIN(any(), any())
     }
 
-    private suspend fun givenNoPINs() {
+    @Test
+    fun `when saving leaves the session unprotected, then setup does not show success`() = runTest {
+        givenNoPINs(WooPosAccessSessionState.Unprotected)
+        whenever(store.setPIN(1, WooPosLocalRole.ADMIN, "1234")).thenReturn(Result.success(Unit))
+
+        chooseAndConfirm("1234")
+
+        assertThat(viewModel.state.value).isEqualTo(AccessUnavailable)
+    }
+
+    private suspend fun givenNoPINs(
+        accessAfterUnlock: WooPosAccessSessionState = WooPosAccessSessionState.Unlocked(WooPosLocalRole.ADMIN),
+    ) {
         whenever(store.getPINs(1)).thenReturn(Result.success(emptyMap()))
+        whenever(session.unlock(any())).doSuspendableAnswer { accessState.value = accessAfterUnlock }
     }
 
     private suspend fun givenPendingSave(): CompletableDeferred<Unit> {

@@ -40,7 +40,6 @@ import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCateg
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPaneScreen
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSyncErrorDialog
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupDialog
-import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.AccessUnavailable
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupViewModel
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialog
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialogState
@@ -250,9 +249,6 @@ private fun SettingsDialogs(
     val pinSetupState by pinSetup.state.collectAsState()
     val isPinSetupVisible = dialogState is WooPosSettingsDialogState.PinSetupDialog
     LaunchedEffect(isPinSetupVisible) { if (!isPinSetupVisible) pinSetup.reset() }
-    LaunchedEffect(isPinSetupVisible, pinSetupState == AccessUnavailable) {
-        if (isPinSetupVisible && pinSetupState == AccessUnavailable) onDismissDialog()
-    }
     WooPosSettingsSecurityPINSetupDialog(
         state = pinSetupState,
         isVisible = isPinSetupVisible,
