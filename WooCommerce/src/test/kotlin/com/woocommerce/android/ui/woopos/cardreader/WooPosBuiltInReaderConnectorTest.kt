@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -62,6 +63,7 @@ class WooPosBuiltInReaderConnectorTest {
         fineLocationPermissionCheck,
         logger,
         trackingInfoKeeper,
+        CoroutineScope(coroutinesTestRule.testDispatcher),
     )
 
     @Before
@@ -75,6 +77,31 @@ class WooPosBuiltInReaderConnectorTest {
                 )
             )
         }
+    }
+
+    @Test
+    fun `given reader connected, when disconnectInBackground, then reader is disconnected`() = runTest {
+        readerStatus.value = CardReaderStatus.Connected(mock { on { type } doReturn "TAP_TO_PAY_DEVICE" })
+
+        sut.disconnectInBackground()
+
+        verify(cardReaderManager).disconnectReader()
+    }
+
+    @Test
+    fun `given external reader connected, when disconnectInBackground, then reader stays connected`() = runTest {
+        readerStatus.value = CardReaderStatus.Connected(mock { on { type } doReturn "STRIPE_M2" })
+
+        sut.disconnectInBackground()
+
+        verify(cardReaderManager, never()).disconnectReader()
+    }
+
+    @Test
+    fun `given no reader connected, when disconnectInBackground, then disconnect is not called`() = runTest {
+        sut.disconnectInBackground()
+
+        verify(cardReaderManager, never()).disconnectReader()
     }
 
     @Test

@@ -7,7 +7,9 @@ import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.BuiltInReaders
+import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.ReaderType.BuildInReader.TapToPayDevice
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderLocationRepository
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderLocationRepository.LocationIdFetchingResult
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
@@ -18,8 +20,10 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.CardReaderTransport
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.TAP_TO_PAY_READER_MODEL
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -32,6 +36,7 @@ class WooPosBuiltInReaderConnector @Inject constructor(
     private val fineLocationPermissionCheck: WooPosFineLocationPermissionCheck,
     private val logger: WooPosLogWrapper,
     private val trackingInfoKeeper: CardReaderTrackingInfoKeeper,
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
 ) {
     @Suppress("ReturnCount")
     suspend fun connect(): Result<Unit> {
@@ -129,12 +134,16 @@ class WooPosBuiltInReaderConnector @Inject constructor(
     }
 
     suspend fun disconnectIfConnected() {
-        if (cardReaderManager.readerStatus.value !is CardReaderStatus.Connected) return
         runCatching {
             withContext(Dispatchers.Main.immediate) {
-                cardReaderManager.disconnectReader()
+                val reader = (cardReaderManager.readerStatus.value as? CardReaderStatus.Connected)?.cardReader
+                if (ReaderType.isBuiltInReaderType(reader?.type)) cardReaderManager.disconnectReader()
             }
         }.onFailure { logger.e("Failed to disconnect built-in reader", it) }
+    }
+
+    fun disconnectInBackground() {
+        appCoroutineScope.launch { disconnectIfConnected() }
     }
 
     private suspend fun fetchLocationId(): LocationIdFetchingResult {
