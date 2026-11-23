@@ -23,6 +23,7 @@ sealed class WooPosSettingsDetailDestination : Parcelable {
     abstract val titleRes: Int
     abstract val parentDestination: WooPosSettingsDetailDestination?
     abstract val childDestinations: List<WooPosSettingsDetailDestination>
+    open val showsHeading: Boolean get() = true
 
     sealed class Hardware : WooPosSettingsDetailDestination() {
         @Parcelize
@@ -121,6 +122,8 @@ sealed class WooPosSettingsDetailDestination : Parcelable {
         data object Overview : Security() {
             @IgnoredOnParcel
             override val titleRes: Int = R.string.woopos_settings_security_category
+
+            override val showsHeading: Boolean get() = false
 
             @IgnoredOnParcel
             override val parentDestination: WooPosSettingsDetailDestination? = null
