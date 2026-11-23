@@ -4584,7 +4584,7 @@
     <string name="woopos_receipt_printer_setup_connection_failed_title">Something went wrong</string>
     <string name="woopos_receipt_printer_setup_connection_failed_message">We couldn\'t connect to your printer. Please try again.</string>
     <string name="woopos_receipt_printer_setup_bluetooth_off_title">Bluetooth is off</string>
-    <string name="woopos_receipt_printer_setup_bluetooth_off_message">Bluetooth is turned off on this device. Turn it on and the search for your printer will continue.</string>
+    <string name="woopos_receipt_printer_setup_bluetooth_off_message">Turn on Bluetooth to find and connect to your receipt printer.</string>
     <string name="woopos_receipt_printer_setup_turn_on_bluetooth_button">Turn on Bluetooth</string>
     <string name="woopos_receipt_printer_setup_bluetooth_permission_title">Bluetooth permission required</string>
     <string name="woopos_receipt_printer_setup_bluetooth_permission_message">Bluetooth permission is required to find and connect to a receipt printer.</string>
