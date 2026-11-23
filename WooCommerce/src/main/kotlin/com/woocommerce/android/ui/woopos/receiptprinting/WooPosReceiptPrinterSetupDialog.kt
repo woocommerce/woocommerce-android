@@ -168,7 +168,10 @@ private fun WooPosReceiptPrinterSetupDialogContent(
                 )
 
                 is FoundOne -> MessageContent(
-                    title = stringResource(R.string.woopos_receipt_printer_setup_found_title, currentState.device.name),
+                    title = stringResource(
+                        R.string.woopos_receipt_printer_setup_found_title,
+                        "${currentState.device.name} · ${currentState.device.idSuffix()}",
+                    ),
                     message = stringResource(R.string.woopos_receipt_printer_setup_found_message),
                     icon = WooPosIcons.ReceiptPrinter,
                     primaryButton = SetupButton(
@@ -195,7 +198,7 @@ private fun WooPosReceiptPrinterSetupDialogContent(
                 NoPrintersFound -> MessageContent(
                     title = stringResource(R.string.woopos_receipt_printer_setup_no_printers_title),
                     message = stringResource(R.string.woopos_receipt_printer_setup_no_printers_message),
-                    icon = WooPosIcons.ReceiptPrinter,
+                    icon = WooPosIcons.NotFound,
                     primaryButton = SetupButton(
                         text = stringResource(R.string.woopos_receipt_printer_setup_search_again_button),
                         onClick = onSearchAgainClicked,
@@ -315,11 +318,12 @@ private fun MessageContent(
 
             WooPosText(
                 text = link.text,
-                style = WooPosTypography.BodyLarge,
+                style = WooPosTypography.BodyMedium,
                 color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.Center,
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier
+                    .fillMaxWidth()
                     .clickable(role = Role.Button, onClick = link.onClick)
                     .padding(horizontal = WooPosSpacing.Large.value, vertical = WooPosSpacing.Small.value),
             )
@@ -461,7 +465,7 @@ fun WooPosReceiptPrinterSetupDialogSearchingPreview() {
 @WooPosPreview
 @Composable
 fun WooPosReceiptPrinterSetupDialogFoundOnePreview() {
-    SetupDialogPreview(FoundOne(ReceiptPrinterDevice(id = "1", name = "Star mC-Print3")))
+    SetupDialogPreview(FoundOne(ReceiptPrinterDevice(id = "00:11:62:4C:73:F0", name = "Star mC-Print3")))
 }
 
 @WooPosPreview
