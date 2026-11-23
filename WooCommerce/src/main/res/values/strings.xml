@@ -1451,6 +1451,7 @@
     <string name="order_refunds_amount_refund_confirmation_message">Waiting for refund confirmation…</string>
     <string name="order_refunds_amount_refund_successful">The refund was successfully submitted.</string>
     <string name="order_refunds_amount_refund_error">Something went wrong with the refund. Please try again.</string>
+    <string name="order_refunds_calculating">Calculating refund</string>
     <string name="order_refunds_refund_manual_refund_note">The payment method does not support automatic refunds. Complete the refund by transferring the money to the customer manually.</string>
     <string name="order_refunds_items_select_all">Select all</string>
     <string name="order_refunds_items_select_none">Select none</string>
@@ -4143,9 +4144,8 @@
     <string name="woopos_security_success">Your admin PIN is set</string>
     <string name="woopos_lock_forgot_pin">Forgot PIN?</string>
     <string name="woopos_lock_incorrect">Incorrect PIN. Try again.</string>
-    <!-- Finalize storage error copy in WOOMOB-4623 before translation. -->
-    <string name="woopos_lock_storage_error" translatable="false">PIN storage is unavailable. Try again later.</string>
-    <string name="woopos_lock_wait">Too many incorrect attempts.\nTry again in %1$d:%2$02d.</string>
+    <string name="woopos_lock_unavailable">Something went wrong. Try again later.</string>
+    <string name="woopos_lock_wait">Too many incorrect attempts.\nTry again in %1$s.</string>
     <string name="woopos_lock_enter_pin">Enter your PIN to unlock POS</string>
     <string name="woopos_lock_delete_digit">Delete</string>
     <string name="woopos_lock_pin_entry">PIN entry</string>
