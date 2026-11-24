@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.woopos.root
 import android.os.Bundle
 import android.os.Build
 import android.app.ActivityManager
+import android.view.Window
+import android.view.MotionEvent
+import android.view.KeyEvent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.IntentFilter
@@ -66,8 +69,14 @@ class WooPosActivity : AppCompatActivity() {
         override fun onActivityStarted(activity: Activity) {
             if (visibleActivities.isEmpty()) lockViewModel.onForeground()
             visibleActivities.add(activity)
+            if (activity !== this@WooPosActivity) {
+                activity.window.callback?.let { original ->
+                    activity.window.callback = InteractionCallback(original, lockViewModel::onUserInteraction)
+                }
+            }
         }
         override fun onActivityStopped(activity: Activity) {
+            restoreWindowCallback(activity)
             visibleActivities.remove(activity)
             if (visibleActivities.isEmpty() && !paymentActivityVisible && !hasVisiblePaymentTask() &&
                 !activity.isChangingConfigurations) {
@@ -146,6 +155,7 @@ class WooPosActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         endPosSessionIfFinishing()
+        visibleActivities.forEach(::restoreWindowCallback)
         application.unregisterActivityLifecycleCallbacks(appVisibility)
         unregisterReceiver(paymentVisibility)
         super.onDestroy()
@@ -153,6 +163,24 @@ class WooPosActivity : AppCompatActivity() {
 
     private fun endPosSessionIfFinishing() {
         if (isFinishing) analyticsEntryPointKeeper.onPosSessionEnded()
+    }
+
+    private fun restoreWindowCallback(activity: Activity) {
+        (activity.window.callback as? InteractionCallback)?.let { activity.window.callback = it.original }
+    }
+
+    private class InteractionCallback(
+        val original: Window.Callback,
+        private val onInteraction: () -> Unit,
+    ) : Window.Callback by original {
+        override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+            onInteraction()
+            return original.dispatchTouchEvent(event)
+        }
+        override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+            onInteraction()
+            return original.dispatchKeyEvent(event)
+        }
     }
 
     companion object {

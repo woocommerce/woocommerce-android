@@ -158,10 +158,19 @@ class WooPosAccessSession @Inject constructor(
     }
 
     suspend fun unlock(pin: String) {
-        if (!flagEnabled || isPaymentPending || _state.value == WooPosAccessSessionState.Exiting) return
-        if (_state.value == WooPosAccessSessionState.Unprotected) initialize()
-        val locked = _state.value as? WooPosAccessSessionState.Locked ?: return
-        if (!locked.status.canEnterPIN) return
+        if (!flagEnabled || _state.value == WooPosAccessSessionState.Exiting) return
+        if (isPaymentPending) {
+            if (_state.value == WooPosAccessSessionState.Unprotected) {
+                initialize()
+                if (isEnabled) lockOnBackground()
+            }
+            return
+        }
+        val previous = _state.value
+        if (previous is WooPosAccessSessionState.Unlocked) return
+        if (previous.isLocked && !previous.status.canEnterPIN &&
+            previous.status != WooPosPINEntryStatus.Initializing
+        ) return
         authenticate { id -> rateLimiter.authenticate(id, pin) }
     }
 
@@ -260,6 +269,19 @@ class WooPosAccessSession @Inject constructor(
         }
         currentCoroutineContext().ensureActive()
         if (!isCurrent(request, id) || isPaymentPending) return
+        if (result is WooPosLocalRateLimiterResult.Authenticated &&
+            (previous == WooPosAccessSessionState.Unprotected || previous.status == WooPosPINEntryStatus.Initializing)
+        ) {
+            val retained = lockPreferences.settings(id).first().fold(
+                onSuccess = { lockPreferences.retainPOS(id) { isCurrent(request, id) } },
+                onFailure = { Result.failure(it) },
+            )
+            if (!isCurrent(request, id) || isPaymentPending) return
+            if (retained.isFailure) {
+                _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
+                return
+            }
+        }
         _state.value = when (result) {
             is WooPosLocalRateLimiterResult.Authenticated -> WooPosAccessSessionState.Unlocked(result.role)
             is WooPosLocalRateLimiterResult.Incorrect -> WooPosAccessSessionState.Locked(

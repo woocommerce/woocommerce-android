@@ -6,6 +6,7 @@ import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.runCurrent
@@ -159,6 +160,29 @@ class WooPosCardReaderPaymentProtectionTest {
         states.value = CardReaderPaymentState.LoadingData {}
         runCurrent()
         states.value = failed.copy(amountWithCurrencyLabel = "new attempt")
+        runCurrent()
+
+        // THEN
+        assertThat(facade.isPaymentPending).isFalse()
+    }
+
+    @Test
+    fun `given cancellation is owned by the payment, when its UI caller ends, then confirmation still controls release`() = runTest {
+        // GIVEN
+        val confirmation = CompletableDeferred<Boolean>()
+        facade.beginPayment { confirmation.await() }
+        val caller = async { facade.cancelPayment() }
+        runCurrent()
+
+        // WHEN
+        caller.cancelAndJoin()
+
+        // THEN
+        assertThat(facade.isPaymentPending).isTrue()
+        assertThat(facade.beginPayment { true }).isNull()
+
+        // WHEN
+        confirmation.complete(true)
         runCurrent()
 
         // THEN

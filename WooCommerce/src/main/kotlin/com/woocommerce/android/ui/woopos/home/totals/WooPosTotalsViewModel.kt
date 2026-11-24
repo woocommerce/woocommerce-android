@@ -357,6 +357,7 @@ class WooPosTotalsViewModel @Inject constructor(
         val settings = lockPreferences.settings(scope.siteId).first()
         if (accessSession.approvalScope() != scope) return
         childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
+        if (accessSession.approvalScope() != scope) return
         when {
             settings.isFailure -> accessSession.blockForStorageFailure()
             settings.getOrThrow().afterSale -> accessSession.lock()

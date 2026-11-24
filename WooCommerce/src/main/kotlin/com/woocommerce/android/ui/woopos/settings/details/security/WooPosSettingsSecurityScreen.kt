@@ -49,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.wooPosUserInteraction
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
@@ -386,7 +387,7 @@ private fun LockSettingsCard(
                     WooPosText(inactivityLabel(settings.inactivityMinutes), style = WooPosTypography.BodyMedium)
                 }
                 DropdownMenu(
-                    modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLowest),
+                    modifier = Modifier.wooPosUserInteraction().background(MaterialTheme.colorScheme.surfaceContainerLowest),
                     expanded = pickerOpen,
                     onDismissRequest = { pickerOpen = false },
                 ) {

@@ -193,7 +193,9 @@ class WooPosTotalsViewModelTest {
         )
     }
 
-    private val cardReaderFacade: WooPosCardReaderFacade = mock()
+    private val cardReaderFacade: WooPosCardReaderFacade = mock {
+        on { retryPayment(any(), any()) }.thenAnswer { it.getArgument<() -> Unit>(1).invoke(); true }
+    }
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
@@ -3457,7 +3459,7 @@ class WooPosTotalsViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            verify(remoteReaderPaymentFlow, org.mockito.kotlin.times(2)).collect(any(), any())
+            verify(remoteReaderPaymentFlow, org.mockito.kotlin.times(2)).collect(any(), any(), any())
         }
 
     @Test
@@ -3502,7 +3504,7 @@ class WooPosTotalsViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            verify(remoteReaderPaymentFlow).collect(any(), any())
+            verify(remoteReaderPaymentFlow).collect(any(), any(), any())
             verify(childrenToParentEventSender).sendToParent(
                 ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.CARD)
             )
@@ -3733,6 +3735,41 @@ class WooPosTotalsViewModelTest {
         return vm
     }
 
+    @Test
+    fun `given after sale locking, when New Order follows payment success, then the operator is cleared`() = runTest {
+        // GIVEN
+        val fixture = com.woocommerce.android.ui.woopos.roles.lock.WooPosLocalRateLimiterTestFixture(
+            coroutinesTestRule.testDispatchers,
+        )
+        whenever(fixture.lockPreferences.settings(1)).thenReturn(kotlinx.coroutines.flow.flowOf(Result.success(
+            com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLockSettings(afterSale = true)
+        )))
+        val flags: com.woocommerce.android.util.FeatureFlagRepository = mock {
+            on { isEnabled(com.woocommerce.android.util.FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
+        }
+        val session = com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession(
+            flags, selectedSite, fixture.rateLimiter(), fixture.recovery, fixture.lockPreferences, fixture.cardReaderFacade,
+        )
+        session.initialize()
+        session.unlock("1234")
+        val savedState = createMockSavedStateHandle().apply {
+            set("woo_pos_totals_view_state", WooPosTotalsViewState.PaymentSuccess(""))
+        }
+        val receiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(kotlinx.coroutines.flow.MutableSharedFlow())
+        }
+        val viewModel = createViewModel(savedState = savedState, parentToChildrenEventReceiver = receiver,
+            accessSession = session, lockPreferences = fixture.lockPreferences)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked)
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OnNewTransactionStarted)
+        assertThat(session.state.value.isLocked).isTrue()
+        assertThat(session.state.value.activeRole).isNull()
+    }
+
     private fun createViewModel(
         resourceProvider: ResourceProvider = this.resourceProvider,
         parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock(),
@@ -3740,9 +3777,13 @@ class WooPosTotalsViewModelTest {
         priceFormat: WooPosFormatPrice = mock(),
         savedState: SavedStateHandle = SavedStateHandle(),
         cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory = paymentControllerFactory,
+        accessSession: com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession = mock {
+            on { allows(any()) }.thenReturn(true)
+        },
+        lockPreferences: com.woocommerce.android.ui.woopos.roles.lock.WooPosLockPreferences = mock(),
     ) = WooPosTotalsViewModel(
-        accessSession = mock { on { allows(any()) }.thenReturn(true) },
-        lockPreferences = mock(),
+        accessSession = accessSession,
+        lockPreferences = lockPreferences,
         selectedSite = selectedSite,
         resourceProvider = resourceProvider,
         parentToChildrenEventReceiver = parentToChildrenEventReceiver,

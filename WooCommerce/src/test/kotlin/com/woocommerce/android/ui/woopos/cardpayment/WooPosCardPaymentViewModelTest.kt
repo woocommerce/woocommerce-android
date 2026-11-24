@@ -53,6 +53,7 @@ class WooPosCardPaymentViewModelTest {
 
     private val readerStatusFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock<CardReader>()))
     private val cardReaderFacade: WooPosCardReaderFacade = mock {
+        on { retryPayment(any(), any()) }.thenAnswer { it.getArgument<() -> Unit>(1).invoke(); true }
         on { readerStatus }.thenReturn(readerStatusFlow)
     }
     private val controllerPaymentState =
@@ -575,7 +576,7 @@ class WooPosCardPaymentViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        verify(remoteReaderPaymentFlow, times(2)).collect(any(), any())
+        verify(remoteReaderPaymentFlow, times(2)).collect(any(), any(), any())
     }
 
     private fun simulatedRemoteReader() =

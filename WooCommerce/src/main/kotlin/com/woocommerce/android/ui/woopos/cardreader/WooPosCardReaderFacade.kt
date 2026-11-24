@@ -12,6 +12,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -72,7 +74,9 @@ class WooPosCardReaderFacade @Inject constructor(
                     is CardReaderPaymentState.PaymentSuccessful -> finishPayment(owner)
                     is CardReaderPaymentState.PaymentFailed -> {
                         if (payment.errorType == PaymentFlowError.CaptureOutcomeUnknown) markUnresolved(owner)
-                        else finishPayment(owner)
+                        else if (_paymentState.value !is PaymentState.Cancelling ||
+                            payment.errorType != PaymentFlowError.Canceled
+                        ) finishPayment(owner)
                     }
                     else -> Unit
                 }
@@ -103,12 +107,17 @@ class WooPosCardReaderFacade @Inject constructor(
         }
     }
 
-    @Suppress("TooGenericExceptionCaught")
     suspend fun cancelPayment() {
         val current = _paymentState.value as? PaymentState.Pending ?: return
         if (current is PaymentState.Cancelling) return
         val owner = current.owner
         _paymentState.value = PaymentState.Cancelling(owner, finished = false)
+        owner.cancellation = scope.async { cancelOwnedPayment(owner) }
+        owner.cancellation?.await()
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    private suspend fun cancelOwnedPayment(owner: PaymentOwner) {
         var cancelled = false
         try {
             cancelled = owner.cancel()
@@ -131,6 +140,7 @@ class WooPosCardReaderFacade @Inject constructor(
 
     class PaymentOwner internal constructor(internal val cancel: suspend () -> Boolean) {
         internal var observer: Job? = null
+        internal var cancellation: Deferred<Unit>? = null
     }
 
     sealed interface PaymentState {

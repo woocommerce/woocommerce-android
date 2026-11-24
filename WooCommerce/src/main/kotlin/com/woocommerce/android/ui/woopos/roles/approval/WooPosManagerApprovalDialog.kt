@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.wooPosUserInteraction
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -81,9 +82,9 @@ private fun ApprovalContent(
     val onDismiss = { onUIEvent(WooPosManagerApprovalUIEvent.DismissRequested) }
     Surface(
         modifier = if (fullScreen) {
-            Modifier.fillMaxSize()
+            Modifier.wooPosUserInteraction().fillMaxSize()
         } else {
-            Modifier
+            Modifier.wooPosUserInteraction()
                 .padding(WooPosSpacing.Large.value)
                 .widthIn(max = APPROVAL_CARD_MAX_WIDTH.toAdaptiveComponentSize())
                 .fillMaxWidth()

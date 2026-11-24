@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -132,6 +133,45 @@ class WooPosAutoLockTest {
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
         assertThat(session.state.value.status).isEqualTo(com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus.StorageUnavailable)
+        viewModel.viewModelScope.cancel()
+    }
+
+    @Test
+    fun `given a pending payment, when terminal confirmation arrives, then inactivity starts a full interval`() = runTest {
+        // GIVEN
+        val payment = MutableStateFlow<WooPosCardReaderFacade.PaymentState>(WooPosCardReaderFacade.PaymentState.Idle)
+        whenever(fixture.cardReaderFacade.paymentState).thenReturn(payment)
+        whenever(fixture.cardReaderFacade.isPaymentPending).thenAnswer {
+            payment.value is WooPosCardReaderFacade.PaymentState.Pending
+        }
+        val (viewModel, session) = create()
+        viewModel.onForeground()
+        fixture.elapsed += 40_000
+        advanceTimeBy(40_000)
+        val owner = WooPosCardReaderFacade.PaymentOwner { false }
+        payment.value = WooPosCardReaderFacade.PaymentState.Active(owner)
+        runCurrent()
+
+        // WHEN
+        fixture.elapsed += 120_000
+        advanceTimeBy(120_000)
+        payment.value = WooPosCardReaderFacade.PaymentState.Unresolved(owner)
+        runCurrent()
+
+        // THEN
+        assertThat(session.state.value.activeRole).isEqualTo(WooPosLocalRole.ADMIN)
+
+        // WHEN
+        payment.value = WooPosCardReaderFacade.PaymentState.Idle
+        runCurrent()
+        advanceTimeBy(59_999)
+        runCurrent()
+
+        // THEN
+        assertThat(session.state.value.activeRole).isEqualTo(WooPosLocalRole.ADMIN)
+        advanceTimeBy(1)
+        runCurrent()
+        assertThat(session.state.value.isLocked).isTrue()
         viewModel.viewModelScope.cancel()
     }
 
