@@ -50,18 +50,9 @@ fun WooPosSettingsSecurityScreen(
     onProtectionTurnedOff: () -> Unit,
 ) {
     when (state) {
-        WooPosSettingsSecurityState.Loading -> Unit
+        WooPosSettingsSecurityState.Loading, WooPosSettingsSecurityState.Restricted -> Unit
         WooPosSettingsSecurityState.Off -> CenteredContent {
             AccessControlSetup(onGetStartedClicked = { onSetUpPIN(WooPosLocalRole.ADMIN) })
-        }
-        WooPosSettingsSecurityState.Restricted -> CenteredContent {
-            WooPosText(
-                text = stringResource(R.string.woopos_security_admin_only),
-                style = WooPosTypography.BodyXLarge,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.semantics { heading() },
-            )
         }
         WooPosSettingsSecurityState.Unavailable -> CenteredContent {
             WooPosText(
@@ -235,12 +226,6 @@ fun WooPosSettingsSecurityScreenProtectedPreview() {
 @Composable
 fun WooPosSettingsSecurityScreenCashierSetPreview() {
     SecurityScreenPreview(WooPosSettingsSecurityState.Protected(hasCashierPIN = true, removalFailed = true))
-}
-
-@WooPosPreview
-@Composable
-fun WooPosSettingsSecurityScreenRestrictedPreview() {
-    SecurityScreenPreview(WooPosSettingsSecurityState.Restricted)
 }
 
 @Composable
