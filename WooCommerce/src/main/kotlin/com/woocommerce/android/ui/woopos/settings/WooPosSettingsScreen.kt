@@ -251,7 +251,7 @@ private fun SettingsDialogs(
     val editor = dialogState as? WooPosSettingsDialogState.PinSetupDialog
     val pinSetupRole = editor?.role
     LaunchedEffect(editor) {
-        if (editor == null) pinSetup.reset() else pinSetup.start(editor.role, editor.changingPIN)
+        if (editor == null) pinSetup.reset()
     }
     val isPinSetupVisible = pinSetupRole != null && pinSetupState.role == pinSetupRole
     WooPosSettingsSecurityPINSetupDialog(

@@ -41,6 +41,7 @@ class WooPosSettingsViewModel @Inject constructor(
     val state: StateFlow<WooPosSettingsState> = _state
 
     init {
+        if (_state.value.dialogState is WooPosSettingsDialogState.PinSetupDialog) hideDialog()
         listenToChildEvents()
     }
 

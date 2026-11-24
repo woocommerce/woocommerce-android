@@ -8,6 +8,8 @@ internal sealed class WooPosManagerApprovalAction(
     val capability: WooPosCapability,
     @StringRes val reason: Int,
 ) {
+    open val requiresDurableCompletion: Boolean get() = false
+
     data object CreateCoupon : WooPosManagerApprovalAction(
         WooPosCapability.CREATE_COUPONS,
         R.string.woopos_approval_create_coupon,
@@ -26,7 +28,9 @@ internal sealed class WooPosManagerApprovalAction(
     data object DisablePINProtection : WooPosManagerApprovalAction(
         WooPosCapability.MANAGE_STORE_SETTINGS,
         R.string.woopos_security_approve_disable,
-    )
+    ) {
+        override val requiresDurableCompletion: Boolean get() = true
+    }
 
     data object Exit : WooPosManagerApprovalAction(WooPosCapability.EXIT_POS, R.string.woopos_approval_exit)
 }

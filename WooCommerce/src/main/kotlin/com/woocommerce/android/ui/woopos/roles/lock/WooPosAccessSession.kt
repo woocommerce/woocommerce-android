@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
+import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosCapability
@@ -34,7 +35,9 @@ class WooPosAccessSession @Inject constructor(
         }
     )
     val state = _state.asStateFlow()
-    private var localSiteId: Int? = null
+
+    // Store commit guards read the session off main; mutations stay on main.
+    @Volatile private var localSiteId: Int? = null
     private val generation = MutableStateFlow(0L)
     private val logoutVersion = rateLimiter.logoutVersion
     private val initialLogoutVersion = logoutVersion.value
@@ -42,12 +45,15 @@ class WooPosAccessSession @Inject constructor(
 
     val isEnabled: Boolean get() = flagEnabled && _state.value != WooPosAccessSessionState.Unprotected
 
+    @AnyThread
     fun allows(capability: WooPosCapability): Boolean =
         !flagEnabled || (isSessionCurrent && _state.value.allows(capability))
 
+    @get:AnyThread
     private val isSessionCurrent: Boolean
         get() = initialLogoutVersion == logoutVersion.value && localSiteId == selectedSite.getOrNull()?.id
 
+    @AnyThread
     internal fun approvalScope(): ApprovalScope? {
         val id = localSiteId ?: return null
         return if (_state.value is WooPosAccessSessionState.Unlocked && isSessionCurrent) {

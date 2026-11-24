@@ -122,12 +122,13 @@ fun WooPosSettingsSecurityPINSetupDialog(
             if (shown.canGoBack) goBack() else close()
         }
         AnimatedVisibility(visible = isVisible, enter = fadeIn(), exit = fadeOut()) {
+            val shownSavedActionLabel = remember { savedActionLabel }
             Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceBright) {
                 PINSetupPhoneContent(
                     shown,
                     resolvedChooseTitle,
                     resolvedConfirmTitle,
-                    savedActionLabel,
+                    shownSavedActionLabel,
                     sendEvent,
                     close,
                 )
@@ -141,8 +142,16 @@ fun WooPosSettingsSecurityPINSetupDialog(
             dialogBackgroundContentDescription = stringResource(R.string.woopos_security_setup),
             onDismissRequest = close,
         ) {
+            val shownSavedActionLabel = remember { savedActionLabel }
             BackHandler(enabled = isVisible && shown.canGoBack, onBack = goBack)
-            PINSetupDialogContent(shown, resolvedChooseTitle, resolvedConfirmTitle, savedActionLabel, sendEvent, close)
+            PINSetupDialogContent(
+                shown,
+                resolvedChooseTitle,
+                resolvedConfirmTitle,
+                shownSavedActionLabel,
+                sendEvent,
+                close,
+            )
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosCapability
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalAction
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityState.Protected
@@ -42,6 +43,11 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
     }
 
     suspend fun removeProtection(): Boolean = removePIN(WooPosLocalRole.ADMIN)
+
+    internal fun approvalForPINChange(role: WooPosLocalRole): WooPosManagerApprovalAction? = when (role) {
+        WooPosLocalRole.ADMIN -> WooPosManagerApprovalAction.ChangeAdminPIN
+        WooPosLocalRole.CASHIER -> null
+    }
 
     fun deleteCashierPIN() {
         if (removalJob?.isActive == true) return

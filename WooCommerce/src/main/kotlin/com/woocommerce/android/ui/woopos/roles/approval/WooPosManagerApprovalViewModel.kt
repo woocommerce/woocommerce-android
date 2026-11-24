@@ -109,7 +109,7 @@ class WooPosManagerApprovalViewModel @Inject constructor(
     }
 
     private suspend fun complete(request: PendingAction) {
-        if (request.action == WooPosManagerApprovalAction.DisablePINProtection) {
+        if (request.action.requiresDurableCompletion) {
             val completed = request.perform()
             currentCoroutineContext().ensureActive()
             if (pending === request) {

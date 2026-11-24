@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.woopos.settings.details.security
 
-import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.ADMIN
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.CASHIER
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalAction
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -47,6 +46,37 @@ class WooPosSettingsSecurityViewModelTest {
         on { state }.thenReturn(sessionState)
         on { allows(any()) }.thenAnswer { sessionState.value.allows(it.getArgument(0)) }
         on { approvalScope() }.thenReturn(WooPosAccessSession.ApprovalScope(1, 1))
+    }
+
+    @Test
+    fun `given an Admin change, when approval is requested, then a fresh Admin challenge is required`() = runTest {
+        givenAdminSession(ADMIN)
+        assertThat(createViewModel().approvalForPINChange(ADMIN))
+            .isEqualTo(WooPosManagerApprovalAction.ChangeAdminPIN)
+    }
+
+    @Test
+    fun `given a Cashier change, when approval is requested, then no additional challenge is required`() = runTest {
+        givenAdminSession(ADMIN)
+        assertThat(createViewModel().approvalForPINChange(CASHIER)).isNull()
+    }
+
+    @Test
+    fun `given Cashier removal fails, when deletion completes, then both PINs remain protected`() = runTest {
+        // GIVEN
+        givenAdminSession(ADMIN, CASHIER)
+        whenever(store.removePIN(eq(1), eq(CASHIER), any()))
+            .thenReturn(Result.failure(WooPosPINError.StaleRequest))
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.deleteCashierPIN()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(viewModel.state.value).isEqualTo(Protected(hasCashierPIN = true, removalFailed = true))
+        verify(session, never()).initialize()
     }
 
     @Test
@@ -264,25 +294,59 @@ class WooPosSettingsSecurityViewModelTest {
     }
 
     @Test
-    fun `given a pending removal, when Settings closes, then the session still reads the removed PINs`() = runTest {
+    fun `given committed removal, when its approval request is cancelled, then the session reads the removed PINs`() =
+        runTest {
+            // GIVEN
+            givenAdminSession(ADMIN)
+            val gate = CompletableDeferred<Unit>()
+            whenever(store.removePIN(eq(1), eq(ADMIN), any())).doSuspendableAnswer {
+                assertThat(it.getArgument<() -> Boolean>(2).invoke()).isTrue()
+                givenPINs()
+                gate.await()
+                Result.success(Unit)
+            }
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+            val request = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.removeProtection() }
+
+            // WHEN
+            request.cancel()
+            gate.complete(Unit)
+            advanceUntilIdle()
+
+            // THEN
+            verify(session).initialize()
+        }
+
+    @Test
+    fun `given removal before commit, when its approval request is cancelled, then protection is preserved`() = runTest {
         // GIVEN
-        givenAdminSession(ADMIN)
+        givenAdminSession(ADMIN, CASHIER)
         val gate = CompletableDeferred<Unit>()
+        var committed = false
         whenever(store.removePIN(eq(1), eq(ADMIN), any())).doSuspendableAnswer {
             gate.await()
-            Result.success(Unit)
+            if (it.getArgument<() -> Boolean>(2).invoke()) {
+                committed = true
+                givenPINs()
+                Result.success(Unit)
+            } else {
+                Result.failure(WooPosPINError.StaleRequest)
+            }
         }
         val viewModel = createViewModel()
         advanceUntilIdle()
-        launch(start = CoroutineStart.UNDISPATCHED) { viewModel.removeProtection() }
+        val request = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.removeProtection() }
 
         // WHEN
-        viewModel.viewModelScope.cancel()
+        request.cancel()
         gate.complete(Unit)
         advanceUntilIdle()
 
         // THEN
-        verify(session).initialize()
+        assertThat(committed).isFalse()
+        assertThat(viewModel.state.value).isEqualTo(Protected(hasCashierPIN = true, removalFailed = false))
+        verify(session, never()).initialize()
     }
 
     @Test
