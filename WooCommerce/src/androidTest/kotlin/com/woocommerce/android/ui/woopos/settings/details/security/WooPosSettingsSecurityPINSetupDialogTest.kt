@@ -153,7 +153,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
 
     @Test
     fun switchingToConfirmKeepsTheDotsInsideTheirTrack() {
-        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Choose(enteredDigits = 4))
+        val state = mutableStateOf<WooPosSettingsSecurityPINSetupState>(Choose(ADMIN, enteredDigits = 4))
         setDialog(state)
         val dots = composeTestRule.onNodeWithContentDescription(context.getString(R.string.woopos_lock_pin_entry))
         val row = dots.fetchSemanticsNode().boundsInRoot
@@ -164,7 +164,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
         val end = (row.right + padding).toInt()
         val background = root.captureToImage().toPixelMap()[start - 2, y]
         composeTestRule.mainClock.autoAdvance = false
-        composeTestRule.runOnUiThread { state.value = Confirm() }
+        composeTestRule.runOnUiThread { state.value = Confirm(ADMIN) }
 
         repeat(5) {
             composeTestRule.mainClock.advanceTimeBy(32)
