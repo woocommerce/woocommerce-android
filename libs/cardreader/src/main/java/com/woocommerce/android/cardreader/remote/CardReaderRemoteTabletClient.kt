@@ -67,7 +67,11 @@ sealed class CollectPaymentOutcome {
         val status: String,
         val paymentMethodType: PaymentMethodType?,
     ) : CollectPaymentOutcome()
-    data class Rejected(val error: CardReaderRemoteError, val description: String) : CollectPaymentOutcome()
+    data class Rejected(
+        val error: CardReaderRemoteError,
+        val description: String,
+        val stripeErrorCode: String? = null,
+    ) : CollectPaymentOutcome()
     data object TimedOut : CollectPaymentOutcome()
     data class Failed(val cause: Throwable) : CollectPaymentOutcome()
 }
@@ -184,8 +188,11 @@ internal class DefaultCardReaderRemoteTabletClient(
                     reply.status,
                     reply.paymentMethodType
                 )
-                is ErrorMessage ->
-                    CollectPaymentOutcome.Rejected(CardReaderRemoteError.fromCode(reply.code), reply.description)
+                is ErrorMessage -> CollectPaymentOutcome.Rejected(
+                    error = CardReaderRemoteError.fromCode(reply.code),
+                    description = reply.description,
+                    stripeErrorCode = reply.stripeErrorCode,
+                )
                 is CancelPayment,
                 is ConnectAck,
                 is ConnectRequest,

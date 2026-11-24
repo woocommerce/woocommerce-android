@@ -5,10 +5,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.describeWithCauses
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteConnectionLostException
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteError
 import com.woocommerce.android.cardreader.remote.CollectPaymentOutcome
 import com.woocommerce.android.di.PointOfSaleMode
 import com.woocommerce.android.model.Order
@@ -51,7 +53,11 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
         val result = collectInternal(order, onCaptureStarting)
         when (result) {
             Result.Completed -> paymentsFlowTracker.trackPaymentSucceeded(order)
-            is Result.Failed -> paymentsFlowTracker.trackPaymentFailed(result.errorDescription)
+            is Result.Failed -> paymentsFlowTracker.trackPaymentFailed(
+                errorMessage = result.errorDescription,
+                errorType = result.errorType,
+                stripeErrorCode = result.stripeErrorCode,
+            )
         }
         return result
     }
@@ -122,13 +128,18 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
                 capture(orderId, outcome.paymentIntentId)
             }
             is CollectPaymentOutcome.Rejected -> {
-                logger.e("Remote payment rejected: ${outcome.error.code} - ${outcome.description}")
+                logger.e(
+                    "Remote payment rejected: ${outcome.error.code} " +
+                        "(stripe: ${outcome.stripeErrorCode}) - ${outcome.description}"
+                )
                 Result.Failed(
                     message = errorMapper.toUserMessage(
                         error = outcome.error,
                         fallback = R.string.woopos_remote_payment_failed_generic,
                     ),
                     errorDescription = "remote_rejected: ${outcome.error.code} - ${outcome.description}",
+                    errorType = outcome.error.toPaymentErrorType(),
+                    stripeErrorCode = outcome.stripeErrorCode,
                 )
             }
             CollectPaymentOutcome.TimedOut -> {
@@ -146,6 +157,20 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun CardReaderRemoteError.toPaymentErrorType(): CardPaymentStatusErrorType = when (this) {
+        CardReaderRemoteError.Canceled -> CardPaymentStatusErrorType.Canceled
+        CardReaderRemoteError.CardReadTimedOut -> CardPaymentStatusErrorType.CardReadTimeOut
+        CardReaderRemoteError.PhoneNotEligible,
+        CardReaderRemoteError.NfcDisabled,
+        CardReaderRemoteError.InsecureEnvironment,
+        CardReaderRemoteError.TokenInvalid,
+        CardReaderRemoteError.ConnectFailed,
+        CardReaderRemoteError.CollectFailed,
+        CardReaderRemoteError.CreateIntentFailed,
+        CardReaderRemoteError.UnexpectedReply,
+        is CardReaderRemoteError.Unknown -> CardPaymentStatusErrorType.Generic
     }
 
     private fun mapFailureToUserMessage(cause: Throwable): String =
@@ -187,6 +212,8 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
         data class Failed(
             val message: String,
             val errorDescription: String = message,
+            val errorType: CardPaymentStatusErrorType = CardPaymentStatusErrorType.Generic,
+            val stripeErrorCode: String? = null,
         ) : Result()
     }
 
