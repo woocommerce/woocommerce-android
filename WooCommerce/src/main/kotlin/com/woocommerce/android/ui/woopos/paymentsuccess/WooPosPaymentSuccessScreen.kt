@@ -23,7 +23,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmark
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmarkAnimationStage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -32,6 +31,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.adaptiveContentWidth
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButtonState
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptButtons
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterSetupDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
@@ -40,6 +42,7 @@ fun WooPosPaymentSuccessScreen(
     viewModel: WooPosPaymentSuccessViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val printReceiptButtonState by viewModel.printReceiptButtonState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { event ->
@@ -54,9 +57,18 @@ fun WooPosPaymentSuccessScreen(
     PaymentSuccessContent(
         orderTotalText = state.orderTotalText,
         receiptSentMessage = state.receiptSentMessage,
+        printReceiptButtonState = printReceiptButtonState,
         onDoneClicked = viewModel::onDoneClicked,
         onEmailReceiptClicked = viewModel::onEmailReceiptClicked,
+        onPrintReceiptClicked = viewModel::onPrintReceiptClicked,
     )
+
+    if (state.isReceiptPrinterSetupDialogVisible) {
+        WooPosReceiptPrinterSetupDialog(
+            onDismiss = viewModel::onReceiptPrinterSetupDialogDismissed,
+            onConnectionSuccess = viewModel::onReceiptPrinterConnected,
+        )
+    }
 }
 
 @Suppress("DestructuringDeclarationWithTooManyEntries")
@@ -64,8 +76,10 @@ fun WooPosPaymentSuccessScreen(
 private fun PaymentSuccessContent(
     orderTotalText: String,
     receiptSentMessage: String?,
+    printReceiptButtonState: WooPosPrintReceiptButtonState,
     onDoneClicked: () -> Unit,
     onEmailReceiptClicked: () -> Unit,
+    onPrintReceiptClicked: () -> Unit,
 ) {
     val animationStage = remember { mutableStateOf(WooPosSuccessCheckmarkAnimationStage.INITIAL) }
 
@@ -155,17 +169,17 @@ private fun PaymentSuccessContent(
                 text = stringResource(R.string.woopos_card_payment_done_button)
             )
 
-            WooPosOutlinedButton(
+            WooPosReceiptButtons(
+                printReceiptButtonState = printReceiptButtonState,
+                onEmailReceiptClicked = onEmailReceiptClicked,
+                onPrintReceiptClicked = onPrintReceiptClicked,
                 modifier = Modifier
                     .constrainAs(buttonEmailReceipts) {
                         bottom.linkTo(parent.bottom)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-                    .height(WooPosComponentSize.Small.value)
                     .adaptiveContentWidth(),
-                onClick = onEmailReceiptClicked,
-                text = stringResource(R.string.woopos_receipt_button)
             )
         }
     }
@@ -178,8 +192,10 @@ fun PaymentSuccessScreenPreview() {
         PaymentSuccessContent(
             orderTotalText = "A card payment of $12.50 was successfully made.",
             receiptSentMessage = "A receipt has been sent to customer@example.com.",
+            printReceiptButtonState = WooPosPrintReceiptButtonState.Idle,
             onDoneClicked = {},
             onEmailReceiptClicked = {},
+            onPrintReceiptClicked = {},
         )
     }
 }

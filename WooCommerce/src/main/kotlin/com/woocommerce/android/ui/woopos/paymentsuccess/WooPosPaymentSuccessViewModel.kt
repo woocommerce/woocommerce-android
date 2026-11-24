@@ -6,6 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.cardpayment.WooPosCardPaymentAnalyticsTracker
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButtonState
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptCoordinator
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptEvent
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -16,6 +19,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,7 +29,8 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
     private val totalsRepository: WooPosTotalsRepository,
     private val priceFormat: WooPosFormatPrice,
     private val resourceProvider: ResourceProvider,
-    savedStateHandle: SavedStateHandle,
+    printReceiptCoordinatorFactory: WooPosPrintReceiptCoordinator.Factory,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val orderId: Long = requireNotNull(savedStateHandle[PAYMENT_SUCCESS_ORDER_ID_KEY])
     private val source: PaymentSuccessSource = savedStateHandle.get<String>(PAYMENT_SUCCESS_SOURCE_KEY)
@@ -36,6 +41,7 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
         PaymentSuccessViewState(
             orderTotalText = "",
             receiptSentMessage = null,
+            isReceiptPrinterSetupDialogVisible = savedStateHandle[KEY_RECEIPT_PRINTER_SETUP_DIALOG_VISIBLE] ?: false,
         )
     )
     val state: StateFlow<PaymentSuccessViewState> = _state.asStateFlow()
@@ -43,8 +49,22 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
     private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
+    private val printReceiptCoordinator = printReceiptCoordinatorFactory.create(viewModelScope)
+    val printReceiptButtonState: StateFlow<WooPosPrintReceiptButtonState> = printReceiptCoordinator.buttonState
+
     init {
         loadOrderDetails()
+        listenPrintReceiptEvents()
+    }
+
+    private fun listenPrintReceiptEvents() {
+        viewModelScope.launch {
+            printReceiptCoordinator.events.collect { event ->
+                when (event) {
+                    WooPosPrintReceiptEvent.ShowPrinterSetup -> setReceiptPrinterSetupDialogVisible(true)
+                }
+            }
+        }
     }
 
     private fun loadOrderDetails() {
@@ -71,10 +91,12 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
                 PaymentSuccessSource.SCAN_TO_PAY,
                 PaymentSuccessSource.MARK_ORDER_AS_COMPLETE -> null
             }
-            _state.value = PaymentSuccessViewState(
-                orderTotalText = orderTotalText,
-                receiptSentMessage = receiptSentMessage,
-            )
+            _state.update {
+                it.copy(
+                    orderTotalText = orderTotalText,
+                    receiptSentMessage = receiptSentMessage,
+                )
+            }
         }
     }
 
@@ -104,6 +126,24 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
         }
     }
 
+    fun onPrintReceiptClicked() {
+        printReceiptCoordinator.onPrintReceiptClicked(orderId)
+    }
+
+    fun onReceiptPrinterSetupDialogDismissed() {
+        setReceiptPrinterSetupDialogVisible(false)
+    }
+
+    fun onReceiptPrinterConnected() {
+        setReceiptPrinterSetupDialogVisible(false)
+        printReceiptCoordinator.onPrinterConnected(orderId)
+    }
+
+    private fun setReceiptPrinterSetupDialogVisible(isVisible: Boolean) {
+        savedStateHandle[KEY_RECEIPT_PRINTER_SETUP_DIALOG_VISIBLE] = isVisible
+        _state.update { it.copy(isReceiptPrinterSetupDialogVisible = isVisible) }
+    }
+
     private suspend fun emitNavigateBack() {
         when (source) {
             PaymentSuccessSource.CARD_CHECKOUT,
@@ -113,9 +153,14 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
             }
         }
     }
+
+    private companion object {
+        const val KEY_RECEIPT_PRINTER_SETUP_DIALOG_VISIBLE = "receipt_printer_setup_dialog_visible"
+    }
 }
 
 data class PaymentSuccessViewState(
     val orderTotalText: String,
     val receiptSentMessage: String?,
+    val isReceiptPrinterSetupDialogVisible: Boolean = false,
 )

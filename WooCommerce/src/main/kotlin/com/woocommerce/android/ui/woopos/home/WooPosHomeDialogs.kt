@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionDialog
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterSetupDialog
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupDialog
 
 @Composable
@@ -31,6 +32,13 @@ fun WooPosHomeDialogs(
         WooPosCardReaderConnectionDialog(
             onDismiss = { onHomeUIEvent(WooPosHomeUIEvent.DismissCardReaderConnectionDialog) },
             onConnectionSuccess = { onHomeUIEvent(WooPosHomeUIEvent.DismissCardReaderConnectionDialog) }
+        )
+    }
+
+    if (dialogState is WooPosHomeState.DialogState.ReceiptPrinterSetupDialog) {
+        WooPosReceiptPrinterSetupDialog(
+            onDismiss = { onHomeUIEvent(WooPosHomeUIEvent.DismissReceiptPrinterSetupDialog) },
+            onConnectionSuccess = { onHomeUIEvent(WooPosHomeUIEvent.ReceiptPrinterConnected) }
         )
     }
 }

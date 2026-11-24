@@ -73,6 +73,7 @@ class WooPosItemsSearchHelper @Inject constructor(
                     is ParentToChildrenEvent.MissingVariationEvent -> Unit
                     is ParentToChildrenEvent.ProductsRemoved -> Unit
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> Unit
+                    is ParentToChildrenEvent.ReceiptPrinterConnected -> Unit
                     is ParentToChildrenEvent.SettingsEvent -> Unit
                     is ParentToChildrenEvent.CustomAmountSubmitted -> Unit
                 }
