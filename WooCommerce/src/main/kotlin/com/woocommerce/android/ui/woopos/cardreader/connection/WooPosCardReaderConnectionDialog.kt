@@ -1,10 +1,8 @@
 package com.woocommerce.android.ui.woopos.cardreader.connection
 
-import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
-import android.os.Build
 import android.provider.Settings
 import android.util.Patterns
 import androidx.activity.compose.BackHandler
@@ -16,22 +14,17 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -53,7 +46,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -69,19 +61,21 @@ import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderHin
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosConnectionDialogContent
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosFoundDeviceRow
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosUpdateProgressIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
+import com.woocommerce.android.ui.woopos.common.composeui.rememberWooPosBluetoothPermissionRequest
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooPermissionUtils
 import kotlinx.coroutines.delay
@@ -126,23 +120,8 @@ private fun WooPosCardReaderDialogInternal(
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
 
-    val bluetoothPermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val allGranted = permissions.values.all { it }
-        val shouldShowRationale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            ActivityCompat.shouldShowRequestPermissionRationale(
-                context as Activity,
-                Manifest.permission.BLUETOOTH_SCAN
-            ) || ActivityCompat.shouldShowRequestPermissionRationale(
-                context,
-                Manifest.permission.BLUETOOTH_CONNECT
-            )
-        } else {
-            true
-        }
-        viewModel.onBluetoothPermissionResult(allGranted, shouldShowRationale)
-    }
+    val requestBluetoothPermission =
+        rememberWooPosBluetoothPermissionRequest(viewModel::onBluetoothPermissionResult)
 
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -208,15 +187,7 @@ private fun WooPosCardReaderDialogInternal(
             viewModel.event.collect { event ->
                 when (event) {
                     WooPosCardReaderConnectionViewModel.Event.RequestBluetoothPermission -> {
-                        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                            arrayOf(
-                                Manifest.permission.BLUETOOTH_SCAN,
-                                Manifest.permission.BLUETOOTH_CONNECT
-                            )
-                        } else {
-                            arrayOf(Manifest.permission.BLUETOOTH)
-                        }
-                        bluetoothPermissionLauncher.launch(permissions)
+                        requestBluetoothPermission()
                     }
                     WooPosCardReaderConnectionViewModel.Event.RequestEnableBluetooth -> {
                         @Suppress("DEPRECATION")
@@ -460,7 +431,7 @@ private fun CardReaderDialogContent(
     icon: ImageVector,
     content: @Composable () -> Unit,
 ) {
-    CardReaderDialogContent(
+    WooPosConnectionDialogContent(
         title = title,
         visual = {
             Image(
@@ -471,36 +442,6 @@ private fun CardReaderDialogContent(
         },
         content = content,
     )
-}
-
-@Composable
-private fun CardReaderDialogContent(
-    title: String,
-    visual: @Composable () -> Unit,
-    content: @Composable () -> Unit,
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        WooPosText(
-            text = title,
-            style = WooPosTypography.Heading,
-            color = MaterialTheme.colorScheme.onSurface,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-
-        visual()
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-
-        content()
-    }
 }
 
 @Composable
@@ -661,58 +602,22 @@ private fun FoundReaderRow(
     reader: WooPosCardReaderConnectionState.FoundReader,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
-        modifier = modifier.clickable(onClick = reader.onConnectClicked)
-            .height(WooPosComponentSize.Small.value),
-        shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
-        color = WooPosTheme.colors.transparent,
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.inverseSurface),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    PaddingValues(
-                        horizontal = WooPosSpacing.Medium.value,
-                        vertical = WooPosSpacing.Small.value,
-                    )
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            val (iconRes, iconContentDescription) = when (reader.transport) {
-                WooPosDiscoveryTransport.Bluetooth ->
-                    R.drawable.ic_bluetooth_24dp to
-                        stringResource(R.string.woopos_card_reader_bluetooth_icon_content_description)
-                WooPosDiscoveryTransport.WifiLan ->
-                    R.drawable.ic_smartphone_24dp to
-                        stringResource(R.string.woopos_card_reader_phone_icon_content_description)
-            }
-            Icon(
-                painter = painterResource(iconRes),
-                contentDescription = iconContentDescription,
-                tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.size(WooPosIconSize.Small.value),
-            )
-            Spacer(modifier = Modifier.size(WooPosSpacing.Small.value))
-            WooPosText(
-                text = reader.name,
-                style = WooPosTypography.BodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                fontWeight = FontWeight.Bold,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f),
-            )
-            reader.fingerprintSuffix?.let { suffix ->
-                WooPosText(
-                    text = suffix,
-                    style = WooPosTypography.BodySmall,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
+    val (iconRes, iconContentDescription) = when (reader.transport) {
+        WooPosDiscoveryTransport.Bluetooth ->
+            R.drawable.ic_bluetooth_24dp to
+                stringResource(R.string.woopos_card_reader_bluetooth_icon_content_description)
+        WooPosDiscoveryTransport.WifiLan ->
+            R.drawable.ic_smartphone_24dp to
+                stringResource(R.string.woopos_card_reader_phone_icon_content_description)
     }
+    WooPosFoundDeviceRow(
+        name = reader.name,
+        suffix = reader.fingerprintSuffix,
+        icon = painterResource(iconRes),
+        iconContentDescription = iconContentDescription,
+        onClick = reader.onConnectClicked,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -934,7 +839,7 @@ private fun UpdateRequiredContent(
     showCancelWarning: Boolean,
     onCancelClicked: () -> Unit,
 ) {
-    CardReaderDialogContent(
+    WooPosConnectionDialogContent(
         title = stringResource(R.string.woopos_card_reader_updating_title),
         visual = {
             WooPosUpdateProgressIndicator(
@@ -985,7 +890,7 @@ private fun UpdateOptionalContent(
         stringResource(R.string.woopos_card_reader_update_optional_message)
     }
 
-    CardReaderDialogContent(
+    WooPosConnectionDialogContent(
         title = stringResource(R.string.woopos_card_reader_updating_optional_title),
         visual = {
             WooPosUpdateProgressIndicator(
@@ -1024,7 +929,7 @@ private fun UpdateOptionalContent(
 
 @Composable
 private fun UpdateCompletedContent() {
-    CardReaderDialogContent(
+    WooPosConnectionDialogContent(
         title = stringResource(R.string.woopos_card_reader_update_completed_title),
         visual = {
             WooPosUpdateProgressIndicator(

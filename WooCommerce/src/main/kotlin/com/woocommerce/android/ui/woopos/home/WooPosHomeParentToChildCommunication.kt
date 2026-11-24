@@ -73,6 +73,8 @@ sealed class ParentToChildrenEvent {
 
     data class OrderCreated(val data: WooPosOrderCreatedData) : ParentToChildrenEvent()
 
+    data object ReceiptPrinterConnected : ParentToChildrenEvent()
+
     sealed class SettingsEvent : ParentToChildrenEvent() {
         data object RetrySyncRequested : SettingsEvent()
     }

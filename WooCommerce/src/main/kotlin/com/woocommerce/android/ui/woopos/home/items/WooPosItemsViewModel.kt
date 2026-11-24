@@ -144,6 +144,7 @@ class WooPosItemsViewModel @Inject constructor(
                     is ParentToChildrenEvent.MissingVariationEvent,
                     is ParentToChildrenEvent.RemoveProductsClicked,
                     is ParentToChildrenEvent.ProductsRemoved,
+                    ParentToChildrenEvent.ReceiptPrinterConnected,
                     is ParentToChildrenEvent.CustomAmountSubmitted -> Unit
 
                     ParentToChildrenEvent.RefreshProductList,

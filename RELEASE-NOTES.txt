@@ -4,9 +4,14 @@
 
 26.2
 -----
+- [*] [POS] When a phone used as card reader cancels or times out the card read, the tablet now shows the same message as Tap to Pay [https://github.com/woocommerce/woocommerce-android/pull/16907]
+- [*] [POS] Checkout shows the missing product screen, not a general error, when a product in the cart was deleted from the store [https://github.com/woocommerce/woocommerce-android/pull/16905]
+- [*] Fixed an issue where external barcode scanners could not be used without camera permission [https://github.com/woocommerce/woocommerce-android/pull/16876]
+- [**] Order refunds: on stores with WooCommerce 11.1 or newer, the refund amount now comes from the store, so it matches what the store refunds [https://github.com/woocommerce/woocommerce-android/pull/16863]
 - [*] Orders: the list no longer jumps away from where you scrolled when a new order arrives [https://github.com/woocommerce/woocommerce-android/pull/16868]
 - [Internal] The excerpt logged for a store's error page is now built off the main thread [https://github.com/woocommerce/woocommerce-android/pull/16836]
 - [*] [POS] The tablet now lists a phone as a card reader when the two devices are logged in to the same store in different ways [https://github.com/woocommerce/woocommerce-android/pull/16829]
+- [*] Orders created with some tax plugins (like AvaTax) now show their products again after the plugin is turned off [https://github.com/woocommerce/woocommerce-android/pull/16888]
 - [Internal] Support session debug builds no longer create application passwords on Jetpack stores [https://github.com/woocommerce/woocommerce-android/pull/16848]
 
 26.1

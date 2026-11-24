@@ -48,6 +48,9 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Payme
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Totals
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButtonState
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptCoordinator
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptEvent
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.FeatureFlag
@@ -93,6 +96,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val builtInReaderConnector: WooPosBuiltInReaderConnector,
     private val remoteReaderPaymentFlow: WooPosRemoteReaderPaymentFlow,
     private val effectiveReaderStatusProvider: WooPosEffectiveReaderStatusProvider,
+    printReceiptCoordinatorFactory: WooPosPrintReceiptCoordinator.Factory,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -116,6 +120,9 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private val _screenEvents = MutableSharedFlow<WooPosTotalsScreenEvent>(extraBufferCapacity = 1)
     val screenEvents: SharedFlow<WooPosTotalsScreenEvent> = _screenEvents.asSharedFlow()
+
+    private val printReceiptCoordinator = printReceiptCoordinatorFactory.create(viewModelScope)
+    val printReceiptButtonState: StateFlow<WooPosPrintReceiptButtonState> = printReceiptCoordinator.buttonState
 
     private var createDraftOrderJob: Job? = null
     private var leaveFailedPaymentJob: Job? = null
@@ -167,6 +174,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     init {
         listenUpEvents()
+        listenPrintReceiptEvents()
         observeCardReaderStatus()
         trackTapToPayUnavailableReasonIfNeeded()
     }
@@ -269,6 +277,9 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.OnStartReceiptFlowClicked -> handleEmailReceiptClicked()
 
+            WooPosTotalsUIEvent.OnPrintReceiptClicked ->
+                printReceiptCoordinator.onPrintReceiptClicked(dataState.value.orderId)
+
             WooPosTotalsUIEvent.OnCashPaymentClicked -> handleOtherPaymentMethodClicked(OtherPaymentMethod.CASH)
 
             WooPosTotalsUIEvent.OnTapToPayClicked -> startTapToPayPayment()
@@ -314,6 +325,17 @@ class WooPosTotalsViewModel @Inject constructor(
             childrenToParentEventSender.sendToParent(
                 ToEmailReceipt(dataState.value.orderId)
             )
+        }
+    }
+
+    private fun listenPrintReceiptEvents() {
+        viewModelScope.launch {
+            printReceiptCoordinator.events.collect { event ->
+                when (event) {
+                    WooPosPrintReceiptEvent.ShowPrinterSetup ->
+                        childrenToParentEventSender.sendToParent(ChildToParentEvent.ShowReceiptPrinterSetupDialog)
+                }
+            }
         }
     }
 
@@ -455,11 +477,12 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun handleGoBackToCheckoutClickedWhenPaymentFailed() {
+        if (isPaymentInFlight()) return
         leaveFailedPayment {
-            childrenToParentEventSender.sendToParent(ChildToParentEvent.GoBackToCheckoutAfterFailedPayment)
-            if (lastFailedPaymentWasTapToPay()) {
+            if (isTapToPayFlowActive()) {
                 returnToCheckoutAfterTapToPayFailed()
             } else {
+                childrenToParentEventSender.sendToParent(ChildToParentEvent.GoBackToCheckoutAfterFailedPayment)
                 retryPaymentCollectionFromScratch()
             }
         }
@@ -502,6 +525,8 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
+    private fun isTapToPayFlowActive(): Boolean = isTapToPayPayment || lastFailedPaymentWasTapToPay()
+
     private fun lastFailedPaymentWasTapToPay(): Boolean =
         cardReaderPaymentController?.paymentState?.value is
         CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment
@@ -509,8 +534,9 @@ class WooPosTotalsViewModel @Inject constructor(
     private suspend fun returnToCheckoutAfterTapToPayFailed() {
         cardReaderPaymentController?.stop()
         cardReaderPaymentController = null
-        isTapToPayPayment = false
         isTTPPaymentInProgress = false
+        builtInReaderConnector.disconnectIfConnected()
+        isTapToPayPayment = false
         childrenToParentEventSender.sendToParent(
             ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout
         )
@@ -576,10 +602,14 @@ class WooPosTotalsViewModel @Inject constructor(
                     if (isPaymentInFlight()) return@launch
 
                     leaveFailedPayment {
-                        childrenToParentEventSender.sendToParent(
-                            ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout
-                        )
-                        retryPaymentCollectionFromScratch()
+                        if (isTapToPayFlowActive()) {
+                            returnToCheckoutAfterTapToPayFailed()
+                        } else {
+                            childrenToParentEventSender.sendToParent(
+                                ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout
+                            )
+                            retryPaymentCollectionFromScratch()
+                        }
                     }
                 }
 
@@ -665,8 +695,10 @@ class WooPosTotalsViewModel @Inject constructor(
         } else {
             val orderId = dataState.value.orderId
             check(orderId != EMPTY_ORDER_ID)
+            val readerStatus = cardReaderFacade.readerStatus.value
             if (
-                cardReaderFacade.readerStatus.value is Connected &&
+                readerStatus is Connected &&
+                !ReaderType.isBuiltInReaderType(readerStatus.cardReader.type) &&
                 dataState.value.orderTotal?.compareTo(BigDecimal.ZERO) == 1
             ) {
                 val state = uiState.value
@@ -787,6 +819,9 @@ class WooPosTotalsViewModel @Inject constructor(
                         }
                     }
 
+                    ParentToChildrenEvent.ReceiptPrinterConnected ->
+                        printReceiptCoordinator.onPrinterConnected(dataState.value.orderId)
+
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     is ParentToChildrenEvent.ItemClickedInItemsList,
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
@@ -850,11 +885,10 @@ class WooPosTotalsViewModel @Inject constructor(
             is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment -> {
                 wooPosLogWrapper.e("Tap to Pay payment failed: ${paymentState.errorType}")
                 isTTPPaymentInProgress = false
-                resetTapToPayProgress()
-                viewModelScope.launch { builtInReaderConnector.disconnectIfConnected() }
                 if (paymentState.errorType == PaymentFlowError.Canceled) {
                     returnToCheckoutAfterTapToPayFailed()
                 } else {
+                    resetTapToPayProgress()
                     uiState.value = buildBuiltInPaymentFailedState(paymentState)
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentFailed)
                 }
@@ -999,6 +1033,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     override fun onCleared() {
+        if (isTapToPayFlowActive()) builtInReaderConnector.disconnectInBackground()
         cardReaderPaymentController?.stop()
         cancelRemotePaymentAction()
     }
@@ -1058,6 +1093,14 @@ class WooPosTotalsViewModel @Inject constructor(
                     message = resourceProvider.getString(R.string.woopos_totals_product_not_found_error),
                     reason = resourceProvider.getString(R.string.woopos_totals_product_not_found_reason),
                     isRemoveProductSupported = deletedVariationFromApiError != null
+                )
+            }
+            wooError != null && wooError.type == WooErrorType.INVALID_PRODUCT_ID -> {
+                totalsAnalyticsTracker.trackCheckoutOutdatedItemDetectedScreenShown()
+                uiState.value = WooPosTotalsViewState.ProductNotFoundError(
+                    message = resourceProvider.getString(R.string.woopos_totals_product_not_found_error),
+                    reason = resourceProvider.getString(R.string.woopos_totals_product_not_found_reason),
+                    isRemoveProductSupported = false
                 )
             }
             else -> {

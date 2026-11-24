@@ -1,13 +1,17 @@
 package org.wordpress.android.fluxc.model.order
 
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
+import org.wordpress.android.fluxc.utils.JsonElementToLongSerializerDeserializer
 import java.math.BigDecimal
 
 /**
  * Tax information for a line item, it can be part of a line item or a shipping line or a fee line.
  */
 data class WCLineTaxEntry(
+    // Some tax plugins (e.g. AvaTax) leave non-numeric ids, which are parsed as null.
     @SerializedName("id")
+    @JsonAdapter(JsonElementToLongSerializerDeserializer::class)
     val rateId: Long? = null,
     @SerializedName("total")
     private val totalString: String? = null,
