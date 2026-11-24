@@ -37,6 +37,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
+import java.util.concurrent.atomic.AtomicReference
 
 private const val EFTPOS_AU_NETWORK = "eftpos_au"
 
@@ -51,7 +52,7 @@ internal class PaymentManager(
     private val errorMapper: PaymentErrorMapper,
     private val cardReaderConfigFactory: CardReaderConfigFactory,
 ) {
-    private var activePayment: ActivePayment? = null
+    @Volatile private var activePayment: ActivePayment? = null
 
     @Suppress("TooGenericExceptionCaught")
     fun acceptPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> = flow {
@@ -76,10 +77,24 @@ internal class PaymentManager(
         return processPaymentIntent(orderId, intent)
     }
 
-    @Suppress("TooGenericExceptionCaught")
     suspend fun cancelActivePaymentAndAwait(): Boolean {
         val attempt = activePayment ?: return false
+        val confirmation = CompletableDeferred<Boolean>()
+        while (true) {
+            val current = attempt.cancellation.get()
+            if (current?.isActive == true) return current.await()
+            if (attempt.cancellation.compareAndSet(current, confirmation)) break
+        }
         attempt.cancelRequested = true
+        return try {
+            cancelAttempt(attempt).also { confirmation.complete(it) }
+        } finally {
+            confirmation.complete(false)
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    private suspend fun cancelAttempt(attempt: ActivePayment): Boolean {
         return try {
             val intent = attempt.intent.await().getOrThrow() ?: return true
             if (attempt.captureOutcome == CaptureOutcome.IN_PROGRESS ||
@@ -104,16 +119,22 @@ internal class PaymentManager(
 
     private class ActivePayment {
         val intent = CompletableDeferred<Result<PaymentIntent?>>()
-        var cancelRequested = false
-        var captureOutcome: CaptureOutcome? = null
+        val cancellation = AtomicReference<CompletableDeferred<Boolean>?>(null)
+        @Volatile var cancelRequested = false
+        @Volatile var captureOutcome: CaptureOutcome? = null
     }
 
     @Suppress("TooGenericExceptionCaught")
     suspend fun createPaymentIntentOnly(paymentInfo: PaymentInfo): CreatePaymentIntentResult {
-        validateRemoteState(paymentInfo)?.let { return CreatePaymentIntentResult.Failed(it) }
+        val attempt = ActivePayment().also { activePayment = it }
+        validateRemoteState(paymentInfo)?.let {
+            attempt.intent.complete(Result.success(null))
+            return CreatePaymentIntentResult.Failed(it)
+        }
         return try {
             when (val result = createPaymentAction.createPaymentIntent(paymentInfo)) {
                 is Success -> {
+                    attempt.intent.complete(Result.success(result.paymentIntent))
                     val id = result.paymentIntent.id
                     val secret = result.paymentIntent.clientSecret
                     if (id == null || secret == null) {
@@ -124,19 +145,27 @@ internal class PaymentManager(
                         CreatePaymentIntentResult.Success(paymentIntentId = id, clientSecret = secret)
                     }
                 }
-                is Failure -> CreatePaymentIntentResult.Failed(result.exception)
+                is Failure -> {
+                    attempt.intent.complete(Result.success(null))
+                    CreatePaymentIntentResult.Failed(result.exception)
+                }
             }
         } catch (cancel: CancellationException) {
+            attempt.intent.complete(Result.failure(cancel))
             throw cancel
         } catch (cause: Exception) {
+            attempt.intent.complete(Result.failure(cause))
             CreatePaymentIntentResult.Failed(cause)
         }
     }
 
     @Suppress("TooGenericExceptionCaught")
-    suspend fun retrieveAndCollectPayment(clientSecret: String, paymentInfo: PaymentInfo): RetrieveAndCollectResult =
-        try {
+    suspend fun retrieveAndCollectPayment(clientSecret: String, paymentInfo: PaymentInfo): RetrieveAndCollectResult {
+        val attempt = activePayment ?: ActivePayment().also { activePayment = it }
+        return try {
             val retrieved = terminalWrapper.retrievePaymentIntent(clientSecret)
+            attempt.intent.complete(Result.success(retrieved))
+            if (attempt.cancelRequested) return remoteCancellationResult(attempt)
             val processed = processPaymentIntentForRemoteReader(paymentInfo, retrieved)
             val id = processed.id
             val status = processed.status?.name?.lowercase()
@@ -154,8 +183,19 @@ internal class PaymentManager(
         } catch (cancel: CancellationException) {
             throw cancel
         } catch (cause: Exception) {
-            RetrieveAndCollectResult.Failed(cause)
+            attempt.intent.complete(Result.failure(cause))
+            if (attempt.cancelRequested) remoteCancellationResult(attempt)
+            else RetrieveAndCollectResult.Failed(cause)
         }
+    }
+
+    private suspend fun remoteCancellationResult(attempt: ActivePayment): RetrieveAndCollectResult {
+        val confirmed = attempt.cancellation.get()?.await() == true
+        return RetrieveAndCollectResult.Failed(TerminalException(
+            if (confirmed) TerminalErrorCode.CANCELED else TerminalErrorCode.CANCEL_FAILED,
+            if (confirmed) "Payment cancellation confirmed" else "Payment cancellation unconfirmed",
+        ))
+    }
 
     private fun validateRemoteState(paymentInfo: PaymentInfo): Throwable? {
         val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(paymentInfo.countryCode)

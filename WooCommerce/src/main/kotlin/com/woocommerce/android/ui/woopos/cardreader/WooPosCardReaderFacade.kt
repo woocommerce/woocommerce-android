@@ -95,6 +95,9 @@ class WooPosCardReaderFacade @Inject constructor(
             is PaymentState.Cancelling -> if (current.owner === owner) {
                 _paymentState.value = current.copy(finished = true)
             }
+            is PaymentState.CancellationUnconfirmed -> if (current.owner === owner) {
+                _paymentState.value = current.copy(finished = true)
+            }
             is PaymentState.Pending -> if (current.owner === owner) release(owner)
             PaymentState.Idle -> Unit
         }
@@ -102,16 +105,23 @@ class WooPosCardReaderFacade @Inject constructor(
 
     internal fun markUnresolved(owner: PaymentOwner) {
         val current = _paymentState.value
-        if (current is PaymentState.Pending && current.owner === owner && current !is PaymentState.Cancelling) {
+        if (current is PaymentState.Pending && current.owner === owner && current !is PaymentState.Cancelling && current !is PaymentState.CancellationUnconfirmed) {
             _paymentState.value = PaymentState.Unresolved(owner)
         }
+    }
+
+    internal fun markCancellationUnconfirmed(owner: PaymentOwner) {
+        val current = _paymentState.value as? PaymentState.Cancelling ?: return
+        if (current.owner === owner) _paymentState.value = PaymentState.CancellationUnconfirmed(owner, current.finished)
     }
 
     suspend fun cancelPayment() {
         val current = _paymentState.value as? PaymentState.Pending ?: return
         if (current is PaymentState.Cancelling) return
         val owner = current.owner
-        _paymentState.value = PaymentState.Cancelling(owner, finished = false)
+        _paymentState.value = PaymentState.Cancelling(
+            owner, finished = (current as? PaymentState.CancellationUnconfirmed)?.finished == true,
+        )
         owner.cancellation = scope.async { cancelOwnedPayment(owner) }
         owner.cancellation?.await()
     }
@@ -122,6 +132,7 @@ class WooPosCardReaderFacade @Inject constructor(
         try {
             cancelled = owner.cancel()
         } catch (error: CancellationException) {
+            markCancellationUnconfirmed(owner)
             throw error
         } catch (_: Exception) {
             // The reader must confirm cancellation before another collection can start.
@@ -149,6 +160,7 @@ class WooPosCardReaderFacade @Inject constructor(
         data class Active(override val owner: PaymentOwner) : Pending
         data class Cancelling(override val owner: PaymentOwner, val finished: Boolean) : Pending
         data class Unresolved(override val owner: PaymentOwner) : Pending
+        data class CancellationUnconfirmed(override val owner: PaymentOwner, val finished: Boolean) : Pending
     }
 
     fun cancelReconnection() {

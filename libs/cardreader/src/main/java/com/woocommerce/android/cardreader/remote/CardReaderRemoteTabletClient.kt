@@ -12,6 +12,7 @@ import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.Payment
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.Ping
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -19,11 +20,12 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import java.io.IOException
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.CancelPaymentResult
 
 interface CardReaderRemoteTabletClient {
     val connectionClosed: StateFlow<Boolean>
@@ -40,11 +42,14 @@ interface CardReaderRemoteTabletClient {
         timeoutMillis: Long = DEFAULT_COLLECT_PAYMENT_TIMEOUT_MILLIS,
     ): CollectPaymentOutcome
 
+    suspend fun cancelPayment(timeoutMillis: Long = DEFAULT_CANCEL_TIMEOUT_MILLIS): RemotePaymentCancellation
+
     fun disconnect()
 
     companion object {
         const val DEFAULT_COLLECT_PAYMENT_TIMEOUT_MILLIS: Long = 90_000
         const val DEFAULT_CONNECT_TIMEOUT_MILLIS: Long = 30_000
+        const val DEFAULT_CANCEL_TIMEOUT_MILLIS: Long = 30_000
 
         fun create(logWrapper: LogWrapper): CardReaderRemoteTabletClient =
             DefaultCardReaderRemoteTabletClient(
@@ -76,6 +81,8 @@ sealed class CollectPaymentOutcome {
     data class Failed(val cause: Throwable) : CollectPaymentOutcome()
 }
 
+enum class RemotePaymentCancellation { CONFIRMED, FAILED, UNCONFIRMED }
+
 internal class DefaultCardReaderRemoteTabletClient(
     private val tlsClient: CardReaderRemoteTlsClient,
     private val logWrapper: LogWrapper,
@@ -85,6 +92,9 @@ internal class DefaultCardReaderRemoteTabletClient(
     private var closedBridgeJob: Job? = null
     private var heartbeatJob: Job? = null
     private var phoneSupportsCancelPayment = false
+    private var phoneSupportsConfirmedCancellation = false
+    private var replies: ReplyChannels? = null
+    private var lastCollection: Pair<CardReaderRemoteConnection, String>? = null
     private val _connectionClosed = MutableStateFlow(true)
     override val connectionClosed: StateFlow<Boolean> = _connectionClosed.asStateFlow()
 
@@ -101,15 +111,14 @@ internal class DefaultCardReaderRemoteTabletClient(
                 logWrapper.d(TAG, "Opening TLS connection")
                 val opened = tlsClient.connect(reader.host, reader.port, reader.fingerprintBase64)
                 connection = opened
+                startReplyPump(opened)
                 val requestId = UUID.randomUUID().toString()
                 logWrapper.d(TAG, "Sending ConnectRequest requestId=$requestId")
-                opened.send(ConnectRequest(requestId, connectionToken, locationId))
-                logWrapper.d(TAG, "ConnectRequest sent, awaiting reply")
-                val reply = opened.receive().firstOrNull { it.requestId == requestId }
-                    ?: throw IllegalStateException(CONNECT_FAILED_MESSAGE)
+                val reply = requestReply(opened, ConnectRequest(requestId, connectionToken, locationId))
                 when (reply) {
                     is ConnectAck -> {
                         phoneSupportsCancelPayment = reply.supportsCancelPayment
+                        phoneSupportsConfirmedCancellation = reply.supportsConfirmedCancellation
                         bridgeClosedSignal(opened)
                         startHeartbeat(opened)
                         ConnectOutcome.Success(reply.readerSerial)
@@ -118,6 +127,7 @@ internal class DefaultCardReaderRemoteTabletClient(
                         disconnect()
                         ConnectOutcome.Rejected(CardReaderRemoteError.fromCode(reply.code), reply.description)
                     }
+                    is CancelPaymentResult,
                     is CancelPayment,
                     is ConnectRequest,
                     is CollectPaymentRequest,
@@ -147,12 +157,15 @@ internal class DefaultCardReaderRemoteTabletClient(
     }
 
     private fun mapToConnectFailedIfIo(cause: Exception): Exception =
-        if (cause is IOException) IllegalStateException(CONNECT_FAILED_MESSAGE, cause) else cause
+        if (cause is IOException || cause is CardReaderRemoteConnectionLostException) {
+            IllegalStateException(CONNECT_FAILED_MESSAGE, cause)
+        } else cause
 
     private fun bridgeClosedSignal(connection: CardReaderRemoteConnection) {
         closedBridgeJob?.cancel()
         closedBridgeJob = scope.launch {
             connection.closed.collect { isClosed ->
+                if (this@DefaultCardReaderRemoteTabletClient.connection !== connection) return@collect
                 _connectionClosed.value = isClosed
                 if (isClosed) {
                     heartbeatJob?.cancel()
@@ -176,11 +189,10 @@ internal class DefaultCardReaderRemoteTabletClient(
             IllegalStateException("Not connected to a remote reader"),
         )
         val requestId = UUID.randomUUID().toString()
+        lastCollection = active to requestId
         return try {
-            active.send(paymentInfo.toCollectPaymentRequest(requestId))
             val reply = withTimeout(timeoutMillis) {
-                active.receive().firstOrNull { it.requestId == requestId }
-                    ?: throw CardReaderRemoteConnectionLostException(null)
+                requestReply(active, paymentInfo.toCollectPaymentRequest(requestId))
             }
             when (reply) {
                 is PaymentIntentResult -> CollectPaymentOutcome.Success(
@@ -193,6 +205,7 @@ internal class DefaultCardReaderRemoteTabletClient(
                     description = reply.description,
                     stripeErrorCode = reply.stripeErrorCode,
                 )
+                is CancelPaymentResult,
                 is CancelPayment,
                 is ConnectAck,
                 is ConnectRequest,
@@ -213,6 +226,79 @@ internal class DefaultCardReaderRemoteTabletClient(
         }
     }
 
+    override suspend fun cancelPayment(timeoutMillis: Long): RemotePaymentCancellation {
+        val (active, requestId) = lastCollection ?: return RemotePaymentCancellation.UNCONFIRMED
+        val channels = replies?.takeIf { it.connection === active }
+            ?: return RemotePaymentCancellation.UNCONFIRMED
+        if (!phoneSupportsConfirmedCancellation) {
+            cancelOnPhone(active, requestId)
+            return RemotePaymentCancellation.UNCONFIRMED
+        }
+        val cancellationId = UUID.randomUUID().toString()
+        val response = CompletableDeferred<CancelPaymentResult>()
+        channels.cancellations[cancellationId] = response
+        val completion = channels.job?.invokeOnCompletion {
+            response.completeExceptionally(CardReaderRemoteConnectionLostException(it))
+        }
+        return try {
+            active.send(CancelPayment(requestId, cancellationId))
+            val reply = withTimeout(timeoutMillis) { response.await() }
+            if (reply.cancelled) RemotePaymentCancellation.CONFIRMED else RemotePaymentCancellation.FAILED
+        } catch (timeout: TimeoutCancellationException) {
+            RemotePaymentCancellation.UNCONFIRMED
+        } catch (cancel: CancellationException) {
+            throw cancel
+        } catch (@Suppress("TooGenericExceptionCaught") error: Exception) {
+            RemotePaymentCancellation.UNCONFIRMED
+        } finally {
+            completion?.dispose()
+            channels.cancellations.remove(cancellationId, response)
+        }
+    }
+
+    private fun startReplyPump(active: CardReaderRemoteConnection) {
+        val channels = ReplyChannels(active)
+        replies = channels
+        channels.job = scope.launch {
+            try {
+                active.receive().collect { reply ->
+                    if (reply is CancelPaymentResult) channels.cancellations[reply.cancellationId]?.complete(reply)
+                    else channels.payments[reply.requestId]?.complete(reply)
+                }
+            } catch (cancel: CancellationException) {
+                throw cancel
+            } catch (@Suppress("TooGenericExceptionCaught") error: Exception) {
+                logWrapper.w(TAG, "Remote reply stream failed: ${error::class.java.simpleName}")
+            }
+        }
+    }
+
+    private suspend fun requestReply(
+        active: CardReaderRemoteConnection,
+        request: CardReaderRemoteMessage,
+    ): CardReaderRemoteMessage {
+        val channels = replies?.takeIf { it.connection === active }
+            ?: throw CardReaderRemoteConnectionLostException(null)
+        val response = CompletableDeferred<CardReaderRemoteMessage>()
+        channels.payments[request.requestId] = response
+        val completion = channels.job?.invokeOnCompletion {
+            response.completeExceptionally(CardReaderRemoteConnectionLostException(it))
+        }
+        return try {
+            active.send(request)
+            response.await()
+        } finally {
+            completion?.dispose()
+            channels.payments.remove(request.requestId, response)
+        }
+    }
+
+    private class ReplyChannels(val connection: CardReaderRemoteConnection) {
+        val payments = ConcurrentHashMap<String, CompletableDeferred<CardReaderRemoteMessage>>()
+        val cancellations = ConcurrentHashMap<String, CompletableDeferred<CancelPaymentResult>>()
+        var job: Job? = null
+    }
+
     private fun cancelOnPhone(active: CardReaderRemoteConnection, requestId: String) {
         if (!phoneSupportsCancelPayment) return
         scope.launch {
@@ -227,6 +313,9 @@ internal class DefaultCardReaderRemoteTabletClient(
         heartbeatJob?.cancel()
         heartbeatJob = null
         connection?.close()
+        replies?.job?.cancel()
+        replies = null
+        lastCollection = null
         connection = null
         _connectionClosed.value = true
     }

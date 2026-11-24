@@ -200,6 +200,12 @@ class WooPosRemoteReaderSession @Inject constructor(
         return activeClient.collectPayment(paymentInfo, timeoutMillis)
     }
 
+    suspend fun cancelPayment(): com.woocommerce.android.cardreader.remote.RemotePaymentCancellation {
+        val activeClient = mutex.withLock { client }
+            ?: return com.woocommerce.android.cardreader.remote.RemotePaymentCancellation.UNCONFIRMED
+        return activeClient.cancelPayment()
+    }
+
     private fun disconnectInternal() {
         monitorScope?.cancel()
         monitorScope = null

@@ -453,6 +453,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 activePaymentMode = PaymentMode.BLUETOOTH
                 createCardReaderPaymentController(orderId, CardReaderType.BUILT_IN)
                 if (cardReaderPaymentController == null) {
+                    resetTapToPayProgress()
                     viewModelScope.launch { showPaymentStatusCheckFailedToast() }
                     return
                 }
@@ -615,6 +616,11 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun handleRetryFailedTransactionClicked() {
         viewModelScope.launch {
+            if (cardReaderFacade.isPaymentPending) {
+                cardReaderFacade.cancelPayment()
+                if (cardReaderFacade.isPaymentPending) showPaymentStatusCheckFailedToast()
+                return@launch
+            }
             when (activePaymentMode) {
                 PaymentMode.REMOTE -> {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
@@ -837,9 +843,6 @@ class WooPosTotalsViewModel @Inject constructor(
             val result = remoteReaderPaymentFlow.collect(
                 order = order,
                 onCaptureStarting = { handleCapturingPaymentState() },
-                onResolved = {
-                    if (saleSiteId == selectedSite.getOrNull()?.id) notifyOrderPaidByCard()
-                },
             )
             when (result) {
                 WooPosRemoteReaderPaymentFlow.Result.Completed -> {

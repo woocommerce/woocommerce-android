@@ -45,6 +45,18 @@ class CardReaderRemoteProtocolTest {
     }
 
     @Test
+    fun `given a cancellation reply, when round tripped, then both request identities and confirmation survive`() {
+        val original = CardReaderRemoteMessage.CancelPaymentResult("payment-1", "cancel-2", true)
+        assertThat(roundTrip(original)).isEqualTo(original)
+    }
+
+    @Test
+    fun `given a legacy connection reply, when decoded, then confirmed cancellation is unsupported`() {
+        val decoded = readRaw("""{"type":"connect_ack","requestId":"connect-1","supportsCancelPayment":true}""")
+        assertThat((decoded as CardReaderRemoteMessage.ConnectAck).supportsConfirmedCancellation).isFalse()
+    }
+
+    @Test
     fun `given a CollectPaymentRequest, when written and read back, then fields match`() {
         // GIVEN
         val original = CardReaderRemoteMessage.CollectPaymentRequest(

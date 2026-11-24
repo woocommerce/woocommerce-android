@@ -17,6 +17,7 @@ internal sealed class CardReaderRemoteMessage {
         override val requestId: String,
         val readerSerial: String?,
         val supportsCancelPayment: Boolean,
+        val supportsConfirmedCancellation: Boolean = false,
     ) : CardReaderRemoteMessage()
 
     data class CollectPaymentRequest(
@@ -40,6 +41,13 @@ internal sealed class CardReaderRemoteMessage {
 
     data class CancelPayment(
         override val requestId: String,
+        val cancellationId: String? = null,
+    ) : CardReaderRemoteMessage()
+
+    data class CancelPaymentResult(
+        override val requestId: String,
+        val cancellationId: String,
+        val cancelled: Boolean,
     ) : CardReaderRemoteMessage()
 
     data class PaymentIntentResult(

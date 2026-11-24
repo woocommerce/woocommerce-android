@@ -69,7 +69,6 @@ class WooPosRemoteReaderPaymentFlowTest {
         trackingInfoKeeper = trackingInfo,
         paymentsFlowTracker = tracker,
         appPrefs = appPrefs,
-        orderRepository = mock(),
         cardReaderFacade = mock(),
         featureFlags = mock(),
     )

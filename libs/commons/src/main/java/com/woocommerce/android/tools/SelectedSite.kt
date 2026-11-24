@@ -26,7 +26,7 @@ class SelectedSite @Inject constructor(
 
         fun getEventBus(): EventBus = EventBus.getDefault()
 
-        private fun getSelectedSiteId(context: Context): Int = PreferenceUtils.getInt(
+        fun getSelectedSiteId(context: Context): Int = PreferenceUtils.getInt(
             PreferenceManager.getDefaultSharedPreferences(context),
             SELECTED_SITE_LOCAL_ID,
             -1

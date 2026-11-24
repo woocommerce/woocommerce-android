@@ -12,6 +12,7 @@ class WooPosRestorePOS @Inject constructor(
     private val rateLimiter: WooPosLocalRateLimiter,
 ) {
     suspend operator fun invoke(): Boolean {
+        featureFlags.awaitRemoteFlagsLoaded()
         if (!featureFlags.isEnabled(FeatureFlag.WOO_POS_ROLES)) {
             preferences.clearRestoreState()
             return false

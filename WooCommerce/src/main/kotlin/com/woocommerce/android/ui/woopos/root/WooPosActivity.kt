@@ -17,6 +17,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.Intent
 import androidx.activity.viewModels
+import androidx.activity.addCallback
 import androidx.lifecycle.lifecycleScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
@@ -55,6 +56,7 @@ class WooPosActivity : AppCompatActivity() {
     @Inject lateinit var productsDataSource: WooPosProductsDataSource
     private var saleSiteId: Int? = null
     private var paymentActivityVisible = false
+    private var observingVisibility = false
     private val paymentVisibility = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             paymentActivityVisible = intent.getBooleanExtra(WooCommerce.POS_PAYMENT_VISIBLE, false)
@@ -97,37 +99,55 @@ class WooPosActivity : AppCompatActivity() {
             }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        saleSiteId = selectedSite.getOrNull()?.id
-        val rolesEnabled = featureFlags.isEnabled(FeatureFlag.WOO_POS_ROLES)
+        val discardSavedSale = intent.getBooleanExtra(DISCARD_SAVED_SALE, false)
+        intent.removeExtra(DISCARD_SAVED_SALE)
         val savedSale = savedInstanceState?.takeIf {
-            (rolesEnabled || initializedProcess) && it.getInt(SALE_SITE_ID) == saleSiteId && saleSiteId != null
+            !discardSavedSale && it.getInt(SALE_SITE_ID) == SelectedSite.getSelectedSiteId(this) &&
+                SelectedSite.hasSelectedSiteId(this)
         }
-        initializedProcess = true
-        val prepareSavedSale = savedSale != null && productsDataSource.getCurrentSyncStrategyOrNull() == null
         super.onCreate(savedSale)
-        application.registerActivityLifecycleCallbacks(appVisibility)
-        ContextCompat.registerReceiver(this, paymentVisibility, IntentFilter(WooCommerce.POS_PAYMENT_VISIBILITY_ACTION),
-            ContextCompat.RECEIVER_NOT_EXPORTED)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        lockWooPosOrientation()
-
-        lifecycle.addObserver(wooPosGetSupportFacade)
-        lifecycle.addObserver(wooPosCouponCreationFacade)
-        lifecycle.addObserver(wooPosPeriodicSyncFacade)
-
+        saleSiteId = selectedSite.getOrNull()?.id
+        onBackPressedDispatcher.addCallback(this) { }
         lifecycleScope.launch {
-            selectedSite.observe().distinctUntilChangedBy { it?.id }.collect { site ->
-                if (site?.id != saleSiteId) finish()
+            featureFlags.awaitRemoteFlagsLoaded()
+            val rolesEnabled = featureFlags.isEnabled(FeatureFlag.WOO_POS_ROLES)
+            if (savedSale != null && (savedSale.getInt(SALE_SITE_ID) != saleSiteId ||
+                (!rolesEnabled && !initializedProcess))) {
+                intent.putExtra(DISCARD_SAVED_SALE, true)
+                recreate()
+                return@launch
             }
-        }
+            initializedProcess = true
+            val prepareSavedSale = savedSale != null && productsDataSource.getCurrentSyncStrategyOrNull() == null
+            application.registerActivityLifecycleCallbacks(appVisibility)
+            observingVisibility = true
+            if (lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.STARTED)) {
+                visibleActivities.add(this@WooPosActivity)
+                lockViewModel.onForeground()
+            }
+            ContextCompat.registerReceiver(this@WooPosActivity, paymentVisibility, IntentFilter(WooCommerce.POS_PAYMENT_VISIBILITY_ACTION),
+                ContextCompat.RECEIVER_NOT_EXPORTED)
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            lockWooPosOrientation()
 
-        setContent {
-            WooPosTheme {
-                WooPosRootScreen(
-                    modifier = Modifier.gesturesOrButtonsNavigationPadding(),
-                    lockViewModel = lockViewModel,
-                    prepareSavedSale = prepareSavedSale,
-                )
+            lifecycle.addObserver(wooPosGetSupportFacade)
+            lifecycle.addObserver(wooPosCouponCreationFacade)
+            lifecycle.addObserver(wooPosPeriodicSyncFacade)
+
+            lifecycleScope.launch {
+                selectedSite.observe().distinctUntilChangedBy { it?.id }.collect { site ->
+                    if (site?.id != saleSiteId) finish()
+                }
+            }
+
+            setContent {
+                WooPosTheme {
+                    WooPosRootScreen(
+                        modifier = Modifier.gesturesOrButtonsNavigationPadding(),
+                        lockViewModel = lockViewModel,
+                        prepareSavedSale = prepareSavedSale,
+                    )
+                }
             }
         }
     }
@@ -140,7 +160,10 @@ class WooPosActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        if (intent.action == Intent.ACTION_MAIN) lockViewModel.onLauncherEntry()
+        if (intent.action == Intent.ACTION_MAIN) lifecycleScope.launch {
+            featureFlags.awaitRemoteFlagsLoaded()
+            lockViewModel.onLauncherEntry()
+        }
     }
 
     override fun onUserInteraction() {
@@ -155,9 +178,11 @@ class WooPosActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         endPosSessionIfFinishing()
-        visibleActivities.forEach(::restoreWindowCallback)
-        application.unregisterActivityLifecycleCallbacks(appVisibility)
-        unregisterReceiver(paymentVisibility)
+        if (observingVisibility) {
+            visibleActivities.forEach(::restoreWindowCallback)
+            application.unregisterActivityLifecycleCallbacks(appVisibility)
+            unregisterReceiver(paymentVisibility)
+        }
         super.onDestroy()
     }
 
@@ -186,5 +211,6 @@ class WooPosActivity : AppCompatActivity() {
     companion object {
         private var initializedProcess = false
         private const val SALE_SITE_ID = "pos_sale_site_id"
+        private const val DISCARD_SAVED_SALE = "discard_pos_saved_sale"
     }
 }

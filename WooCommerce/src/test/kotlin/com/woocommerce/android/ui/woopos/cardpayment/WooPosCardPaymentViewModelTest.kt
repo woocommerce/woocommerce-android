@@ -518,7 +518,7 @@ class WooPosCardPaymentViewModelTest {
             reader = simulatedRemoteReader(),
             readerSerial = "SIM-1",
         )
-        whenever(remoteReaderPaymentFlow.collect(any(), any(), any()))
+        whenever(remoteReaderPaymentFlow.collect(any(), any()))
             .doSuspendableAnswer { awaitCancellation() }
 
         viewModel = createViewModel()
@@ -541,7 +541,7 @@ class WooPosCardPaymentViewModelTest {
             reader = simulatedRemoteReader(),
             readerSerial = "SIM-1",
         )
-        whenever(remoteReaderPaymentFlow.collect(any(), any(), any()))
+        whenever(remoteReaderPaymentFlow.collect(any(), any()))
             .doSuspendableAnswer { awaitCancellation() }
 
         viewModel = createViewModel()
@@ -564,7 +564,7 @@ class WooPosCardPaymentViewModelTest {
             reader = simulatedRemoteReader(),
             readerSerial = "SIM-1",
         )
-        whenever(remoteReaderPaymentFlow.collect(any(), any(), any()))
+        whenever(remoteReaderPaymentFlow.collect(any(), any()))
             .thenReturn(WooPosRemoteReaderPaymentFlow.Result.Failed("error"))
 
         viewModel = createViewModel()
@@ -576,7 +576,7 @@ class WooPosCardPaymentViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        verify(remoteReaderPaymentFlow, times(2)).collect(any(), any(), any())
+        verify(remoteReaderPaymentFlow, times(2)).collect(any(), any())
     }
 
     private fun simulatedRemoteReader() =

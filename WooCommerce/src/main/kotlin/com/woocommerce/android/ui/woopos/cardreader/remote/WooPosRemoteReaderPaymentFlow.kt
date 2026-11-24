@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.cardreader.remote
 
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.ui.woopos.cardpayment.WooPosCardPaymentRepository
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
@@ -30,8 +29,8 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.CompletableDeferred
+import com.woocommerce.android.cardreader.remote.RemotePaymentCancellation
 import kotlinx.coroutines.delay
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -51,27 +50,32 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     private val appPrefs: AppPrefs = AppPrefs,
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val featureFlags: FeatureFlagRepository,
-    private val orderRepository: WooPosCardPaymentRepository,
 ) {
     private val terminalPaymentPreparationResolver = TerminalPaymentPreparationResolver(wooStore, appPrefs)
 
     suspend fun collect(
         order: Order,
         onCaptureStarting: suspend () -> Unit = {},
-        onResolved: suspend () -> Unit = {},
     ): Result {
-        val siteId = selectedSite.get().id
-        val collection = currentCoroutineContext()[Job]
-        val owner = if (featureFlags.isEnabled(FeatureFlag.WOO_POS_ROLES) || cardReaderFacade.isPaymentPending) {
+        val finished = CompletableDeferred<Unit>()
+        var owner: WooPosCardReaderFacade.PaymentOwner? = null
+        owner = if (featureFlags.isEnabled(FeatureFlag.WOO_POS_ROLES) || cardReaderFacade.isPaymentPending) {
             cardReaderFacade.beginPayment {
-                collection?.cancel()
-                val paid = selectedSite.getOrNull()?.id == siteId &&
-                    orderRepository.fetchOrder(order.id)?.isOrderPaid == true
-                if (paid && selectedSite.getOrNull()?.id == siteId) {
-                    onResolved()
+                if (isSimulatedReaderConnected()) {
+                    finished.await()
                     true
                 } else {
-                    false
+                    when (remoteReaderSession.cancelPayment()) {
+                        RemotePaymentCancellation.CONFIRMED -> {
+                            finished.await()
+                            true
+                        }
+                        RemotePaymentCancellation.FAILED -> false
+                        RemotePaymentCancellation.UNCONFIRMED -> {
+                            owner?.let(cardReaderFacade::markCancellationUnconfirmed)
+                            false
+                        }
+                    }
                 }
             } ?: return Result.Failed(genericFailureMessage(), "payment_unresolved")
         } else {
@@ -87,6 +91,8 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
         } catch (error: CancellationException) {
             if (owner != null) cardReaderFacade.markUnresolved(owner)
             throw error
+        } finally {
+            finished.complete(Unit)
         }
     }
 

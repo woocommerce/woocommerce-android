@@ -15,6 +15,7 @@ import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RetrieveAndCollectResult
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.CancelPayment
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.CancelPaymentResult
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.CollectPaymentRequest
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectAck
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectRequest
@@ -231,7 +232,17 @@ class CardReaderRemoteSession internal constructor(
             is CollectPaymentRequest -> collectQueue.enqueue(message.requestId) {
                 handleCollectPaymentRequest(message, accepted)
             }
-            is CancelPayment -> collectQueue.cancel(message.requestId)
+            is CancelPayment -> CoroutineScope(currentCoroutineContext()).launch {
+                val cancelled = when {
+                    collectQueue.cancelQueued(message.requestId) -> true
+                    collectQueue.isCurrent(message.requestId) -> cardReaderManager.cancelActivePaymentAndAwait()
+                    else -> false
+                }
+                message.cancellationId?.let {
+                    accepted.send(CancelPaymentResult(message.requestId, it, cancelled))
+                }
+            }
+            is CancelPaymentResult,
             is Ping,
             is ConnectAck,
             is PaymentIntentResult,
@@ -262,6 +273,7 @@ class CardReaderRemoteSession internal constructor(
                         requestId = request.requestId,
                         readerSerial = reader.id,
                         supportsCancelPayment = true,
+                        supportsConfirmedCancellation = true,
                     )
                 )
                 logWrapper.d(LOG_TAG, "ConnectAck sent, transitioning to WaitingForPayment")

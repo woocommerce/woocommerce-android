@@ -170,9 +170,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
                 title = resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title),
                 subtitle = resourceProvider.getString(R.string.woopos_success_totals_payment_processing_subtitle),
             )
-            when (val result = remoteReaderPaymentFlow.collect(order, onResolved = {
-                if (saleSiteId == selectedSite.getOrNull()?.id) handlePaymentSuccessful()
-            })) {
+            when (val result = remoteReaderPaymentFlow.collect(order)) {
                 WooPosRemoteReaderPaymentFlow.Result.Completed -> handlePaymentSuccessful()
                 is WooPosRemoteReaderPaymentFlow.Result.Failed -> {
                     _state.value = WooPosCardPaymentState.PaymentFailed(
@@ -371,7 +369,11 @@ class WooPosCardPaymentViewModel @Inject constructor(
         }
     }
 
-    fun onRetryClicked() {
+    fun onRetryClicked() = viewModelScope.launch {
+        if (cardReaderFacade.isPaymentPending) {
+            cardReaderFacade.cancelPayment()
+            return@launch
+        }
         when (activePaymentMode) {
             PaymentMode.REMOTE -> collectPaymentRemote()
             PaymentMode.BLUETOOTH -> retryBluetoothPayment()
