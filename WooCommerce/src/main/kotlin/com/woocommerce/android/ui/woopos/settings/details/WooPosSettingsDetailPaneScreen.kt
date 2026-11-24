@@ -11,9 +11,12 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -23,6 +26,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDetailDestination
+import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDialogState
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsState
 import com.woocommerce.android.ui.woopos.settings.details.hardware.WooPosHardwareSettingsScreen
 import com.woocommerce.android.ui.woopos.settings.details.hardware.barcodescanner.WooPosSettingsHardwareBarcodeScannerScreen
@@ -58,20 +62,7 @@ fun WooPosSettingsDetailPaneScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        WooPosToolbar(
-            modifier = Modifier
-                .padding(
-                    top = WooPosSpacing.None.value,
-                    start = WooPosSpacing.Medium.value,
-                    end = WooPosSpacing.Medium.value,
-                ),
-            titleText = stringResource(state.currentDestination.titleRes),
-            onBackClicked = if (showBack) onBack else null,
-            titleStyle = WooPosTypography.Heading,
-            titleFontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
+        DetailPaneHeader(destination = currentDestination, onBack = if (showBack) onBack else null)
 
         AnimatedContent(
             targetState = currentDestination,
@@ -80,7 +71,10 @@ fun WooPosSettingsDetailPaneScreen(
         ) { destination ->
             when (destination) {
                 is WooPosSettingsDetailDestination.Security.Overview -> {
-                    WooPosSettingsSecurityScreen(onGetStartedClicked = onShowPinSetupDialog)
+                    WooPosSettingsSecurityScreen(
+                        isPINSetupVisible = state.dialogState is WooPosSettingsDialogState.PinSetupDialog,
+                        onGetStartedClicked = onShowPinSetupDialog,
+                    )
                 }
 
                 is WooPosSettingsDetailDestination.Hardware.Overview -> {
@@ -119,6 +113,29 @@ fun WooPosSettingsDetailPaneScreen(
             }
         }
     }
+}
+
+@Composable
+private fun DetailPaneHeader(destination: WooPosSettingsDetailDestination, onBack: (() -> Unit)?) {
+    val hasHeading = destination.showsHeading
+    if (!hasHeading && onBack == null) {
+        Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+        return
+    }
+    WooPosToolbar(
+        modifier = Modifier
+            .padding(
+                top = WooPosSpacing.None.value,
+                start = WooPosSpacing.Medium.value,
+                end = WooPosSpacing.Medium.value,
+            ),
+        titleText = if (hasHeading) stringResource(destination.titleRes) else "",
+        onBackClicked = onBack,
+        titleStyle = WooPosTypography.Heading,
+        titleFontWeight = FontWeight.Bold
+    )
+
+    Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
 }
 
 private fun AnimatedContentTransitionScope<WooPosSettingsDetailDestination>.settingsDetailTransition():
