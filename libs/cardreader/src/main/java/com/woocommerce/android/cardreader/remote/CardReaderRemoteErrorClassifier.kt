@@ -10,6 +10,16 @@ internal fun Throwable.toCardReaderRemoteError(fallback: CardReaderRemoteError):
     else -> terminalErrorCode()?.toCardReaderRemoteError() ?: fallback
 }
 
+internal fun Throwable.toCollectRemoteError(): CardReaderRemoteError =
+    when (terminalErrorCode()) {
+        TerminalErrorCode.CANCELED,
+        TerminalErrorCode.CANCELED_BY_READER -> CardReaderRemoteError.Canceled
+        TerminalErrorCode.CARD_READ_TIMED_OUT -> CardReaderRemoteError.CardReadTimedOut
+        else -> toCardReaderRemoteError(CardReaderRemoteError.CollectFailed)
+    }
+
+internal fun Throwable.stripeErrorCode(): String? = terminalErrorCode()?.name
+
 private fun Throwable.terminalErrorCode(): TerminalErrorCode? {
     val visited = mutableListOf<Throwable>()
     var current: Throwable? = this

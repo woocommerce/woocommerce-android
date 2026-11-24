@@ -2561,6 +2561,39 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
+    fun `when INVALID_PRODUCT_ID, then ProductNotFoundError with remove button disabled`() =
+        runTest {
+            // GIVEN
+            val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(emptyList()))
+            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+                on { events }.thenReturn(parentToChildrenEventFlow)
+            }
+            val wooError = WooErrorTestUtils.createInvalidProductIdError()
+            val totalsRepository: WooPosTotalsRepository = mock {
+                on { createOrderFromCartItems(any()) }.thenReturn(
+                    Result.failure(WooException(wooError))
+                )
+            }
+
+            whenever(resourceProvider.getString(R.string.woopos_totals_product_not_found_error))
+                .thenReturn("Product not found")
+            whenever(resourceProvider.getString(R.string.woopos_totals_product_not_found_reason))
+                .thenReturn("Product was removed")
+
+            // WHEN
+            val viewModel = createViewModel(
+                parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+                totalsRepository = totalsRepository,
+            )
+
+            // THEN
+            val state = viewModel.state.value
+            assertThat(state).isInstanceOf(WooPosTotalsViewState.ProductNotFoundError::class.java)
+            val productNotFoundState = state as WooPosTotalsViewState.ProductNotFoundError
+            assertThat(productNotFoundState.isRemoveProductSupported).isFalse()
+        }
+
+    @Test
     fun `when INVALID_VARIATION_ID, then should track checkout outdated item detected event`() =
         runTest {
             // GIVEN
@@ -2569,6 +2602,41 @@ class WooPosTotalsViewModelTest {
                 on { events }.thenReturn(parentToChildrenEventFlow)
             }
             val wooError = WooErrorTestUtils.createInvalidVariationIdError()
+            val totalsRepository: WooPosTotalsRepository = mock {
+                on { createOrderFromCartItems(any()) }.thenReturn(
+                    Result.failure(WooException(wooError))
+                )
+            }
+
+            whenever(resourceProvider.getString(any())).thenReturn("")
+            whenever(productsDataSource.getCurrentSyncStrategy()).thenReturn(
+                WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE
+            )
+
+            // WHEN
+            createViewModel(
+                parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+                totalsRepository = totalsRepository,
+            )
+
+            // THEN
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event.CheckoutOutdatedItemDetectedScreenShown(
+                    reason = "deleted",
+                    syncStrategy = WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE
+                )
+            )
+        }
+
+    @Test
+    fun `when INVALID_PRODUCT_ID, then should track checkout outdated item detected event`() =
+        runTest {
+            // GIVEN
+            val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(emptyList()))
+            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+                on { events }.thenReturn(parentToChildrenEventFlow)
+            }
+            val wooError = WooErrorTestUtils.createInvalidProductIdError()
             val totalsRepository: WooPosTotalsRepository = mock {
                 on { createOrderFromCartItems(any()) }.thenReturn(
                     Result.failure(WooException(wooError))
@@ -3298,13 +3366,217 @@ class WooPosTotalsViewModelTest {
         verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
     }
 
-    private suspend fun givenTtpInFlight(): Pair<
+    @Test
+    fun `given TTP in flight, when card declined, then built-in reader stays connected for retry`() = runTest {
+        // GIVEN
+        mockPaymentFailedTexts()
+        val (vm, paymentState) = givenTtpInFlight()
+        advanceUntilIdle()
+
+        // WHEN
+        paymentState.value = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
+            errorType = PaymentFlowError.Declined.InsufficientFunds,
+            onRetry = {},
+        )
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.PaymentFailed::class.java)
+        verify(builtInReaderConnector, never()).disconnectIfConnected()
+    }
+
+    @Test
+    fun `given TTP card declined, when go back to checkout clicked, then built-in reader is disconnected`() = runTest {
+        // GIVEN
+        mockPaymentFailedTexts()
+        val (vm, paymentState) = givenTtpInFlight()
+        advanceUntilIdle()
+        paymentState.value = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
+            errorType = PaymentFlowError.Declined.InsufficientFunds,
+            onRetry = {},
+        )
+        advanceUntilIdle()
+
+        // WHEN
+        vm.onUIEvent(WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment)
+        advanceUntilIdle()
+
+        // THEN
+        verify(builtInReaderConnector).disconnectIfConnected()
+        assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.Checkout::class.java)
+    }
+
+    @Test
+    fun `given TTP card declined, when back pressed, then built-in reader is disconnected without new collection`() =
+        runTest {
+            // GIVEN
+            mockPaymentFailedTexts()
+            val builtInReader: CardReader = mock {
+                on { type } doReturn ReaderType.BuildInReader.TapToPayDevice.name
+            }
+            whenever(cardReaderFacade.readerStatus).thenReturn(
+                MutableStateFlow(CardReaderStatus.Connected(builtInReader))
+            )
+            val mockController: CardReaderPaymentController = mock()
+            val (vm, paymentState) = givenTtpInFlight(mockController)
+            advanceUntilIdle()
+            paymentState.value = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
+                errorType = PaymentFlowError.Declined.InsufficientFunds,
+                onRetry = {},
+            )
+            advanceUntilIdle()
+            clearInvocations(childrenToParentEventSender)
+
+            // WHEN
+            vm.onUIEvent(OnBackClicked)
+            advanceUntilIdle()
+
+            // THEN
+            verify(builtInReaderConnector).disconnectIfConnected()
+            verify(mockController, times(1)).start()
+            verify(childrenToParentEventSender, times(1))
+                .sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
+            assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.Checkout::class.java)
+        }
+
+    @Test
+    fun `given built-in reader still connected, when order created, then payment collection is not started`() =
+        runTest {
+            // GIVEN
+            whenever(networkStatus.isConnected()).thenReturn(true)
+            val builtInReader: CardReader = mock {
+                on { type } doReturn ReaderType.BuildInReader.TapToPayDevice.name
+            }
+            whenever(cardReaderFacade.readerStatus).thenReturn(
+                MutableStateFlow(CardReaderStatus.Connected(builtInReader))
+            )
+            val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+            val factory: WooPosCardReaderPaymentControllerFactory = mock()
+            whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+
+            // WHEN
+            createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+            advanceUntilIdle()
+
+            // THEN
+            verify(mockCardReaderPaymentController, never()).start()
+        }
+
+    @Test
+    fun `given TTP canceled and disconnect pending, when TTP clicked again, then no second connection starts`() =
+        runTest {
+            // GIVEN
+            val disconnectGate = CompletableDeferred<Unit>()
+            whenever(builtInReaderConnector.disconnectIfConnected()).doSuspendableAnswer { disconnectGate.await() }
+            val (vm, paymentState) = givenTtpInFlight()
+            advanceUntilIdle()
+            paymentState.value = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
+                errorType = PaymentFlowError.Canceled,
+                onRetry = {},
+            )
+            advanceUntilIdle()
+
+            // WHEN
+            vm.onUIEvent(WooPosTotalsUIEvent.OnTapToPayClicked)
+            advanceUntilIdle()
+            disconnectGate.complete(Unit)
+            advanceUntilIdle()
+
+            // THEN
+            verify(builtInReaderConnector, times(1)).connect()
+        }
+
+    @Test
+    fun `given TTP card declined, when go back clicked, then parent is told once after disconnect finishes`() =
+        runTest {
+            // GIVEN
+            mockPaymentFailedTexts()
+            val disconnectGate = CompletableDeferred<Unit>()
+            whenever(builtInReaderConnector.disconnectIfConnected()).doSuspendableAnswer { disconnectGate.await() }
+            val (vm, paymentState) = givenTtpInFlight()
+            advanceUntilIdle()
+            paymentState.value = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
+                errorType = PaymentFlowError.Declined.InsufficientFunds,
+                onRetry = {},
+            )
+            advanceUntilIdle()
+            clearInvocations(childrenToParentEventSender)
+
+            // WHEN
+            vm.onUIEvent(WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment)
+            advanceUntilIdle()
+
+            // THEN
+            verify(childrenToParentEventSender, never())
+                .sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
+            verify(childrenToParentEventSender, never())
+                .sendToParent(ChildToParentEvent.GoBackToCheckoutAfterFailedPayment)
+            disconnectGate.complete(Unit)
+            advanceUntilIdle()
+            verify(childrenToParentEventSender, times(1))
+                .sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
+            verify(childrenToParentEventSender, never())
+                .sendToParent(ChildToParentEvent.GoBackToCheckoutAfterFailedPayment)
+        }
+
+    @Test
+    fun `given TTP retry in flight, when go back clicked, then built-in reader is disconnected`() = runTest {
+        // GIVEN
+        mockPaymentFailedTexts()
+        val (vm, paymentState) = givenTtpInFlight()
+        advanceUntilIdle()
+        paymentState.value = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
+            errorType = PaymentFlowError.Declined.InsufficientFunds,
+            onRetry = { paymentState.value = CardReaderPaymentState.LoadingData {} },
+        )
+        advanceUntilIdle()
+        vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
+        advanceUntilIdle()
+
+        // WHEN
+        vm.onUIEvent(WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment)
+        advanceUntilIdle()
+
+        // THEN
+        verify(builtInReaderConnector).disconnectIfConnected()
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
+    }
+
+    @Test
+    fun `given TTP retry processing card, when go back clicked, then payment is not stopped`() = runTest {
+        // GIVEN
+        mockPaymentFailedTexts()
+        val mockController: CardReaderPaymentController = mock()
+        val (vm, paymentState) = givenTtpInFlight(mockController)
+        advanceUntilIdle()
+        paymentState.value = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
+            errorType = PaymentFlowError.Declined.InsufficientFunds,
+            onRetry = {
+                paymentState.value = CardReaderPaymentState.ProcessingPayment.BuiltInReaderProcessingPayment("")
+            },
+        )
+        advanceUntilIdle()
+        vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
+        advanceUntilIdle()
+
+        // WHEN
+        vm.onUIEvent(WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment)
+        advanceUntilIdle()
+
+        // THEN
+        verify(mockController, never()).stop()
+        verify(builtInReaderConnector, never()).disconnectIfConnected()
+        assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.PaymentFailed::class.java)
+    }
+
+    private suspend fun givenTtpInFlight(
+        mockController: CardReaderPaymentController = mock(),
+    ): Pair<
         WooPosTotalsViewModel,
         MutableStateFlow<CardReaderPaymentOrRefundState>
         > {
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(builtInReaderConnector.connect()).thenReturn(Result.success(Unit))
-        val mockController: CardReaderPaymentController = mock()
         val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
             CardReaderPaymentState.LoadingData {}
         )

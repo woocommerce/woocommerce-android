@@ -49,6 +49,9 @@ class BarcodeScanningFragment : BaseFragment() {
         viewModel.permissionState.observe(viewLifecycleOwner) { permissionState ->
             view.setContent {
                 LegacyWooThemeWithBackground {
+                    val onHardwareScannerInfoClicked = {
+                        viewModel.onHardwareScannerInfoClicked(ScanningSource.BARCODE_SCANNER)
+                    }
                     BarcodeScannerScreen(
                         onNewFrame = viewModel::onNewFrame,
                         onBindingException = viewModel::onBindingException,
@@ -60,12 +63,9 @@ class BarcodeScanningFragment : BaseFragment() {
                             )
                         },
                         overlayContent = {
-                            DefaultScannerOverlay(
-                                onHardwareScannerInfoClicked = {
-                                    viewModel.onHardwareScannerInfoClicked(ScanningSource.BARCODE_SCANNER)
-                                },
-                            )
+                            DefaultScannerOverlay(onHardwareScannerInfoClicked = onHardwareScannerInfoClicked)
                         },
+                        onHardwareScannerInfoClicked = onHardwareScannerInfoClicked,
                     )
                     val isHardwareScannerInfoVisible by viewModel.isHardwareScannerInfoVisible.collectAsState()
                     if (isHardwareScannerInfoVisible) {

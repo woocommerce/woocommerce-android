@@ -51,6 +51,7 @@ enum class WooErrorType {
     EMPTY_RESPONSE,
     INVALID_COUPON,
     INVALID_VARIATION_ID,
+    INVALID_PRODUCT_ID,
     RESOURCE_ALREADY_EXISTS,
     REST_INVALID_SIGNATURE
 }
@@ -102,6 +103,7 @@ private fun GenericErrorType?.getWooErrorType(apiError: String?) = when (this) {
             "rest_no_route" -> WooErrorType.API_NOT_FOUND
             "woocommerce_rest_invalid_coupon" -> WooErrorType.INVALID_COUPON
             "order_item_product_invalid_variation_id" -> WooErrorType.INVALID_VARIATION_ID
+            "woocommerce_rest_invalid_product_id" -> WooErrorType.INVALID_PRODUCT_ID
             WooError.REST_INVALID_SIGNATURE_CODE -> WooErrorType.REST_INVALID_SIGNATURE
             else -> WooErrorType.GENERIC_ERROR
         }

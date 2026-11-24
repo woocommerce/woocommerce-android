@@ -53,6 +53,7 @@ internal sealed class CardReaderRemoteMessage {
         override val requestId: String,
         val code: String,
         val description: String,
+        val stripeErrorCode: String? = null,
     ) : CardReaderRemoteMessage()
 
     data class Ping(

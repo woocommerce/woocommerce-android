@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
@@ -133,6 +134,35 @@ class DefaultCardReaderRemoteTabletClientTest : CardReaderBaseUnitTest() {
             // THEN
             val received = withTimeoutOrNull(SILENCE_MILLIS) { phone.receive().first() }
             assertThat(received).isNull()
+        }
+    }
+
+    @Test
+    fun `given the phone rejects the collect with a stripe code, when collect, then Rejected carries both codes`() {
+        runBlocking {
+            // GIVEN
+            val phone = connectToPhone(supportsCancelPayment = true)
+            val collect = async(Dispatchers.IO) { client.collectPayment(aPaymentInfo()) }
+            val request = withTimeout(WAIT_MILLIS) { phone.receive().first() }
+
+            // WHEN
+            phone.send(
+                CardReaderRemoteMessage.ErrorMessage(
+                    requestId = request.requestId,
+                    code = "canceled",
+                    description = "TerminalException: canceled",
+                    stripeErrorCode = "CANCELED",
+                )
+            )
+
+            // THEN
+            assertThat(withTimeout(WAIT_MILLIS) { collect.await() }).isEqualTo(
+                CollectPaymentOutcome.Rejected(
+                    error = CardReaderRemoteError.Canceled,
+                    description = "TerminalException: canceled",
+                    stripeErrorCode = "CANCELED",
+                )
+            )
         }
     }
 

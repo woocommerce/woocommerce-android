@@ -13,7 +13,10 @@ import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSes
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarState.BatteryState
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
@@ -47,7 +50,8 @@ class WooPosHomeFloatingToolbarViewModelTest {
     private val networkStatus: WooPosNetworkStatus = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
-    private val accessSession: WooPosAccessSession = mock()
+    private val accessState = MutableStateFlow<WooPosAccessSessionState>(WooPosAccessSessionState.Unprotected)
+    private val accessSession: WooPosAccessSession = mock { on { state }.thenReturn(accessState) }
     private val controller: WooPosCardReaderConnectionController = mock()
     private val controllerFactory: WooPosCardReaderConnectionControllerFactory = mock {
         on { create(any()) }.thenReturn(controller)
@@ -115,7 +119,8 @@ class WooPosHomeFloatingToolbarViewModelTest {
                             title = R.string.woopos_exit_confirmation_title,
                             icon = R.drawable.ic_exit_to_app_24dp,
                         ),
-                    )
+                    ),
+                    activeRole = null,
                 )
             )
     }
@@ -431,6 +436,48 @@ class WooPosHomeFloatingToolbarViewModelTest {
             R.string.woopos_lock_pos,
             R.string.woopos_exit_confirmation_title,
         )
+    }
+
+    @Test
+    fun `given a Cashier unlock, when menu opens, then it shows the Cashier role`() = runTest {
+        // GIVEN
+        accessState.value = WooPosAccessSessionState.Unlocked(WooPosLocalRole.CASHIER)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked)
+
+        // THEN
+        val menu = viewModel.state.value.menu as WooPosHomeFloatingToolbarState.Menu.Visible
+        assertThat(menu.activeRole).isEqualTo(WooPosLocalRole.CASHIER)
+    }
+
+    @Test
+    fun `given an open menu, when POS locks, then the menu closes so its role cannot go stale`() = runTest {
+        // GIVEN
+        accessState.value = WooPosAccessSessionState.Unlocked(WooPosLocalRole.ADMIN)
+        val viewModel = createViewModel()
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked)
+
+        // WHEN
+        accessState.value = WooPosAccessSessionState.Locked(WooPosLockScreenState.Status.Idle)
+
+        // THEN
+        assertThat(viewModel.state.value.menu).isEqualTo(WooPosHomeFloatingToolbarState.Menu.Hidden)
+    }
+
+    @Test
+    fun `given an Admin unlock, when menu opens, then it shows the Admin role`() = runTest {
+        // GIVEN
+        accessState.value = WooPosAccessSessionState.Unlocked(WooPosLocalRole.ADMIN)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked)
+
+        // THEN
+        val menu = viewModel.state.value.menu as WooPosHomeFloatingToolbarState.Menu.Visible
+        assertThat(menu.activeRole).isEqualTo(WooPosLocalRole.ADMIN)
     }
 
     @Test

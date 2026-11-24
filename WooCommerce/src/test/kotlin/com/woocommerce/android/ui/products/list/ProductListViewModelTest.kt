@@ -913,6 +913,28 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given tablet and product not in list, when product opened, then list selection is kept`() = testBlocking {
+        // GIVEN
+        whenever(isWindowClassLargeThanCompact()).thenReturn(true)
+        whenever(productRepository.getProductList(any(), anyOrNull(), anyOrNull())).thenReturn(
+            listOf(ProductTestUtils.generateProduct(productId = 2L))
+        )
+        createViewModel()
+        viewModel.reloadProductsFromDb()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever(events::add)
+        events.clear()
+
+        // WHEN
+        viewModel.onOpenProduct(1L)
+        viewModel.reloadProductsFromDb()
+
+        // THEN
+        assertThat(events.filterIsInstance<ProductListEvent.OpenProduct>().map { it.productId }).containsExactly(1L)
+        assertThat(savedStateHandle.get<Long>(SELECTED_PRODUCT_ON_BIG_SCREEN_KEY)).isEqualTo(2L)
+    }
+
+    @Test
     fun `give tablet, when onOpenProduct invoked, then horizontal_size_class regular tracked`() = testBlocking {
         // given
         whenever(isWindowClassLargeThanCompact()).thenReturn(true)
@@ -1359,7 +1381,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         viewModel.onHardwareBarcodeScanned(CodeScannerStatus.Success("1234567890128", BarcodeFormat.FormatEAN13))
 
         // THEN
-        assertThat(events.filterIsInstance<ProductListEvent.ShowScanToUpdateInventory>()).isEmpty()
+        assertThat(events.filterIsInstance<ProductListEvent.HardwareBarcodeScanned>()).isEmpty()
     }
 
     private companion object {

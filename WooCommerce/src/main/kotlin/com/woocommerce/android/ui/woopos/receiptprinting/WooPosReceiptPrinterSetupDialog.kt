@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.receiptprinting
 
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
@@ -11,8 +12,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,11 +31,12 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -43,11 +46,10 @@ import com.woocommerce.android.receiptprinter.ReceiptPrinterDevice
 import com.woocommerce.android.receiptprinter.ReceiptPrinterError
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosConnectionDialogContent
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosFoundDeviceRow
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
@@ -75,6 +77,7 @@ fun WooPosReceiptPrinterSetupDialog(
 ) {
     val state by viewModel.state.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
+    val activity = LocalActivity.current
     val currentOnConnectionSuccess by rememberUpdatedState(onConnectionSuccess)
 
     val requestBluetoothPermission =
@@ -90,11 +93,16 @@ fun WooPosReceiptPrinterSetupDialog(
         viewModel.startSetup()
     }
 
-    LaunchedEffect(state) {
-        if (state is Connected) {
-            viewModel.dismissDialog()
-            currentOnConnectionSuccess()
+    // The host can replace this dialog without dismissing it, so the setup is cancelled whenever the dialog leaves
+    // the screen, except when the Activity is only being recreated.
+    DisposableEffect(viewModel) {
+        onDispose {
+            if (activity?.isChangingConfigurations != true) viewModel.dismissDialog()
         }
+    }
+
+    LaunchedEffect(state) {
+        if (state is Connected) currentOnConnectionSuccess()
     }
 
     LaunchedEffect(lifecycleOwner) {
@@ -105,10 +113,7 @@ fun WooPosReceiptPrinterSetupDialog(
 
     WooPosReceiptPrinterSetupDialogContent(
         state = state,
-        onDismiss = {
-            viewModel.dismissDialog()
-            onDismiss()
-        },
+        onDismiss = onDismiss,
         onGrantPermissionClicked = requestBluetoothPermission,
         onOpenAppSettingsClicked = viewModel::onOpenAppSettingsClicked,
         onEnableBluetoothClicked = {
@@ -139,7 +144,7 @@ private fun WooPosReceiptPrinterSetupDialogContent(
             R.string.woopos_receipt_printer_setup_dialog_background_content_description
         ),
         widthFraction = 0.55f,
-        onCloseClick = onDismiss,
+        onCloseClick = if (state.showsCloseButton()) onDismiss else null,
         onDismissRequest = onDismiss,
     ) {
         AnimatedContent(
@@ -157,14 +162,18 @@ private fun WooPosReceiptPrinterSetupDialogContent(
         ) { currentState ->
             when (currentState) {
                 Idle,
-                Searching -> ProgressContent(
+                Searching -> IllustratedContent(
                     title = stringResource(R.string.woopos_receipt_printer_setup_searching_title),
+                    message = stringResource(R.string.woopos_receipt_printer_setup_searching_message),
                 )
 
                 is FoundOne -> MessageContent(
-                    title = stringResource(R.string.woopos_receipt_printer_setup_found_title, currentState.device.name),
+                    title = stringResource(
+                        R.string.woopos_receipt_printer_setup_found_title,
+                        "${currentState.device.name} · ${currentState.device.idSuffix()}",
+                    ),
                     message = stringResource(R.string.woopos_receipt_printer_setup_found_message),
-                    icon = ImageVector.vectorResource(R.drawable.ic_woopos_receipt_printer),
+                    icon = WooPosIcons.ReceiptPrinter,
                     primaryButton = SetupButton(
                         text = stringResource(R.string.woopos_receipt_printer_setup_connect_to_printer_button),
                         onClick = { onConnectClicked(currentState.device) },
@@ -180,22 +189,25 @@ private fun WooPosReceiptPrinterSetupDialogContent(
                     onConnectClicked = onConnectClicked,
                 )
 
-                is Connecting -> ConnectingContent(currentState.device)
-
-                is Connected -> ConnectingContent(currentState.device)
+                is Connecting,
+                is Connected -> IllustratedContent(
+                    title = stringResource(R.string.woopos_receipt_printer_setup_connecting_title),
+                    message = stringResource(R.string.woopos_receipt_printer_setup_connecting_message),
+                )
 
                 NoPrintersFound -> MessageContent(
                     title = stringResource(R.string.woopos_receipt_printer_setup_no_printers_title),
                     message = stringResource(R.string.woopos_receipt_printer_setup_no_printers_message),
-                    icon = ImageVector.vectorResource(R.drawable.ic_woopos_receipt_printer),
+                    icon = WooPosIcons.NotFound,
                     primaryButton = SetupButton(
                         text = stringResource(R.string.woopos_receipt_printer_setup_search_again_button),
                         onClick = onSearchAgainClicked,
                     ),
-                    secondaryButton = SetupButton(
+                    link = SetupButton(
                         text = stringResource(R.string.woopos_receipt_printer_setup_open_bluetooth_settings_button),
                         onClick = onOpenBluetoothSettingsClicked,
                     ),
+                    onCancelClicked = onDismiss,
                 )
 
                 DiscoveryFailed -> MessageContent(
@@ -206,6 +218,7 @@ private fun WooPosReceiptPrinterSetupDialogContent(
                         text = stringResource(R.string.woopos_receipt_printer_setup_search_again_button),
                         onClick = onSearchAgainClicked,
                     ),
+                    onCancelClicked = onDismiss,
                 )
 
                 is ConnectionFailed -> MessageContent(
@@ -216,12 +229,14 @@ private fun WooPosReceiptPrinterSetupDialogContent(
                         text = stringResource(R.string.woopos_receipt_printer_setup_search_again_button),
                         onClick = onSearchAgainClicked,
                     ),
+                    onCancelClicked = onDismiss,
                 )
 
                 is MissingBluetoothPermission -> MissingBluetoothPermissionContent(
                     permanentlyDenied = currentState.permanentlyDenied,
                     onGrantPermissionClicked = onGrantPermissionClicked,
                     onOpenAppSettingsClicked = onOpenAppSettingsClicked,
+                    onCancelClicked = onDismiss,
                 )
 
                 BluetoothOff -> MessageContent(
@@ -232,10 +247,16 @@ private fun WooPosReceiptPrinterSetupDialogContent(
                         text = stringResource(R.string.woopos_receipt_printer_setup_turn_on_bluetooth_button),
                         onClick = onEnableBluetoothClicked,
                     ),
+                    onCancelClicked = onDismiss,
                 )
             }
         }
     }
+}
+
+private fun WooPosReceiptPrinterConnectionState.showsCloseButton(): Boolean = when (this) {
+    Idle, Searching, is FoundOne, is FoundMultiple, is Connecting, is Connected -> true
+    is MissingBluetoothPermission, BluetoothOff, NoPrintersFound, DiscoveryFailed, is ConnectionFailed -> false
 }
 
 private data class SetupButton(
@@ -244,23 +265,25 @@ private data class SetupButton(
 )
 
 @Composable
-private fun ProgressContent(title: String) {
+private fun IllustratedContent(title: String, message: String) {
     WooPosConnectionDialogContent(
         title = title,
         visual = {
-            WooPosCircularLoadingIndicator(
-                modifier = Modifier.size(WooPosComponentSize.Medium.value)
+            Image(
+                imageVector = WooPosIcons.ReceiptPrinter,
+                contentDescription = null,
+                modifier = Modifier.size(WooPosComponentSize.XLarge.value),
             )
         },
-        content = {},
-    )
-}
-
-@Composable
-private fun ConnectingContent(device: ReceiptPrinterDevice) {
-    ProgressContent(
-        title = stringResource(R.string.woopos_receipt_printer_setup_connecting_title, device.name),
-    )
+    ) {
+        WooPosText(
+            text = message,
+            style = WooPosTypography.BodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+    }
 }
 
 @Composable
@@ -270,6 +293,8 @@ private fun MessageContent(
     icon: ImageVector,
     primaryButton: SetupButton,
     secondaryButton: SetupButton? = null,
+    link: SetupButton? = null,
+    onCancelClicked: (() -> Unit)? = null,
 ) {
     WooPosConnectionDialogContent(
         title = title,
@@ -288,6 +313,22 @@ private fun MessageContent(
             textAlign = TextAlign.Center,
         )
 
+        if (link != null) {
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+            WooPosText(
+                text = link.text,
+                style = WooPosTypography.BodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center,
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(role = Role.Button, onClick = link.onClick)
+                    .padding(horizontal = WooPosSpacing.Large.value, vertical = WooPosSpacing.Small.value),
+            )
+        }
+
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
         WooPosButton(
@@ -305,6 +346,16 @@ private fun MessageContent(
                 onClick = secondaryButton.onClick,
             )
         }
+
+        if (onCancelClicked != null) {
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+            WooPosOutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.woopos_receipt_printer_setup_cancel_button),
+                onClick = onCancelClicked,
+            )
+        }
     }
 }
 
@@ -313,6 +364,7 @@ private fun MissingBluetoothPermissionContent(
     permanentlyDenied: Boolean,
     onGrantPermissionClicked: () -> Unit,
     onOpenAppSettingsClicked: () -> Unit,
+    onCancelClicked: () -> Unit,
 ) {
     val title = stringResource(R.string.woopos_receipt_printer_setup_bluetooth_permission_title)
     if (permanentlyDenied) {
@@ -324,6 +376,7 @@ private fun MissingBluetoothPermissionContent(
                 text = stringResource(R.string.woopos_receipt_printer_setup_open_settings_button),
                 onClick = onOpenAppSettingsClicked,
             ),
+            onCancelClicked = onCancelClicked,
         )
     } else {
         MessageContent(
@@ -334,6 +387,7 @@ private fun MissingBluetoothPermissionContent(
                 text = stringResource(R.string.woopos_receipt_printer_setup_grant_permission_button),
                 onClick = onGrantPermissionClicked,
             ),
+            onCancelClicked = onCancelClicked,
         )
     }
 }
@@ -355,34 +409,35 @@ private fun MultiplePrintersFoundContent(
             textAlign = TextAlign.Center,
         )
 
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+        WooPosText(
+            text = stringResource(R.string.woopos_receipt_printer_setup_multiple_found_description),
+            style = WooPosTypography.BodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center,
+        )
+
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
         devices.forEach { device ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = WooPosSpacing.Small.value),
-            ) {
-                WooPosText(
-                    text = device.name,
-                    style = WooPosTypography.BodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f),
-                )
-
-                Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
-
-                WooPosOutlinedButtonSmall(
-                    text = stringResource(R.string.woopos_receipt_printer_setup_connect_button),
-                    onClick = { onConnectClicked(device) },
-                )
-            }
+            WooPosFoundDeviceRow(
+                name = device.name,
+                suffix = device.idSuffix(),
+                icon = painterResource(R.drawable.ic_bluetooth_24dp),
+                iconContentDescription = stringResource(
+                    R.string.woopos_receipt_printer_setup_printer_icon_content_description
+                ),
+                onClick = { onConnectClicked(device) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
         }
     }
 }
+
+private fun ReceiptPrinterDevice.idSuffix(): String =
+    id.filter { it.isLetterOrDigit() }.takeLast(ID_SUFFIX_LENGTH).uppercase()
 
 @Composable
 private fun SetupDialogPreview(state: WooPosReceiptPrinterConnectionState) {
@@ -410,7 +465,7 @@ fun WooPosReceiptPrinterSetupDialogSearchingPreview() {
 @WooPosPreview
 @Composable
 fun WooPosReceiptPrinterSetupDialogFoundOnePreview() {
-    SetupDialogPreview(FoundOne(ReceiptPrinterDevice(id = "1", name = "Star mC-Print3")))
+    SetupDialogPreview(FoundOne(ReceiptPrinterDevice(id = "00:11:62:4C:73:F0", name = "Star mC-Print3")))
 }
 
 @WooPosPreview
@@ -419,8 +474,9 @@ fun WooPosReceiptPrinterSetupDialogFoundMultiplePreview() {
     SetupDialogPreview(
         FoundMultiple(
             listOf(
-                ReceiptPrinterDevice(id = "1", name = "Star mC-Print3"),
-                ReceiptPrinterDevice(id = "2", name = "Star TSP100"),
+                ReceiptPrinterDevice(id = "00:11:62:4C:73:F0", name = "Star mC-Print3"),
+                ReceiptPrinterDevice(id = "00:11:62:5A:19:2B", name = "Star mC-Print3"),
+                ReceiptPrinterDevice(id = "00:11:62:61:08:C7", name = "TSP100IV-D0029"),
             )
         )
     )
@@ -472,3 +528,5 @@ fun WooPosReceiptPrinterSetupDialogBluetoothPermissionDeniedPreview() {
 fun WooPosReceiptPrinterSetupDialogBluetoothOffPreview() {
     SetupDialogPreview(BluetoothOff)
 }
+
+private const val ID_SUFFIX_LENGTH = 4
