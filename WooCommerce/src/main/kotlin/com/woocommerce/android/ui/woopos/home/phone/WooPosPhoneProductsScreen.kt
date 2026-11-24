@@ -177,6 +177,7 @@ private fun WooPosPhoneProductsContent(
         if (menu is Menu.Visible) {
             WooPosToolbarPopUpMenu(
                 menuItems = menu.items,
+                activeRole = menu.activeRole,
                 onClick = onMenuItemClicked,
                 modifier = Modifier
                     .statusBarsPadding()

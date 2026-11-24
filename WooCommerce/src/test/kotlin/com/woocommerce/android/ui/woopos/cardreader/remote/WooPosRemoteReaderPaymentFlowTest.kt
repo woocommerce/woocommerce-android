@@ -1,9 +1,12 @@
 package com.woocommerce.android.ui.woopos.cardreader.remote
 
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteError
 import com.woocommerce.android.cardreader.remote.CollectPaymentOutcome
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
@@ -48,6 +51,9 @@ class WooPosRemoteReaderPaymentFlowTest {
         on { getPaymentDescription(any()) }.thenReturn("Order")
     }
     private val tracker: PaymentsFlowTracker = mock()
+    private val errorMapper: WooPosRemoteReaderErrorMapper = mock {
+        on { toUserMessage(any(), any()) }.thenReturn("failed")
+    }
     private val trackingInfo = CardReaderTrackingInfoImpl()
     private val appPrefs: AppPrefs = mock()
     private val flow = WooPosRemoteReaderPaymentFlow(
@@ -59,7 +65,7 @@ class WooPosRemoteReaderPaymentFlowTest {
         wooStore = wooStore,
         resourceProvider = mock(),
         logger = mock(),
-        errorMapper = mock(),
+        errorMapper = errorMapper,
         trackingInfoKeeper = trackingInfo,
         paymentsFlowTracker = tracker,
         appPrefs = appPrefs,
@@ -170,4 +176,79 @@ class WooPosRemoteReaderPaymentFlowTest {
         verify(tracker, never()).trackPaymentSucceeded(any())
         verify(tracker).trackPaymentFailed("capture_failed: NetworkError - offline")
     }
+
+    @Test
+    fun `given the phone reports a canceled card read, when collecting, then canceled is tracked with the stripe code`() =
+        runTest {
+            // GIVEN
+            whenever(session.sendCollectPayment(any(), any())).thenReturn(
+                CollectPaymentOutcome.Rejected(
+                    error = CardReaderRemoteError.Canceled,
+                    description = "TerminalException: canceled",
+                    stripeErrorCode = "CANCELED",
+                )
+            )
+            whenever(
+                errorMapper.toUserMessage(CardReaderRemoteError.Canceled, R.string.woopos_remote_payment_failed_generic)
+            ).thenReturn("Transaction was canceled")
+
+            // WHEN
+            val result = flow.collect(order)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                WooPosRemoteReaderPaymentFlow.Result.Failed(
+                    message = "Transaction was canceled",
+                    errorDescription = "remote_rejected: canceled - TerminalException: canceled",
+                    errorType = CardPaymentStatusErrorType.Canceled,
+                    stripeErrorCode = "CANCELED",
+                )
+            )
+            verify(tracker).trackPaymentFailed(
+                errorMessage = "remote_rejected: canceled - TerminalException: canceled",
+                errorType = CardPaymentStatusErrorType.Canceled,
+                stripeErrorCode = "CANCELED",
+            )
+        }
+
+    @Test
+    fun `given the phone reports a timed out card read, when collecting, then card read timeout is tracked`() = runTest {
+        // GIVEN
+        whenever(session.sendCollectPayment(any(), any())).thenReturn(
+            CollectPaymentOutcome.Rejected(
+                error = CardReaderRemoteError.CardReadTimedOut,
+                description = "TerminalException: timed out",
+                stripeErrorCode = "CARD_READ_TIMED_OUT",
+            )
+        )
+
+        // WHEN
+        flow.collect(order)
+
+        // THEN
+        verify(tracker).trackPaymentFailed(
+            errorMessage = "remote_rejected: card_read_timed_out - TerminalException: timed out",
+            errorType = CardPaymentStatusErrorType.CardReadTimeOut,
+            stripeErrorCode = "CARD_READ_TIMED_OUT",
+        )
+    }
+
+    @Test
+    fun `given an older phone reports collect failed, when collecting, then generic is tracked without a stripe code`() =
+        runTest {
+            // GIVEN
+            whenever(session.sendCollectPayment(any(), any())).thenReturn(
+                CollectPaymentOutcome.Rejected(CardReaderRemoteError.CollectFailed, "boom")
+            )
+
+            // WHEN
+            flow.collect(order)
+
+            // THEN
+            verify(tracker).trackPaymentFailed(
+                errorMessage = "remote_rejected: collect_failed - boom",
+                errorType = CardPaymentStatusErrorType.Generic,
+                stripeErrorCode = null,
+            )
+        }
 }

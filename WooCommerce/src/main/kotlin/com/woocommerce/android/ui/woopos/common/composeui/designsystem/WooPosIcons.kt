@@ -189,6 +189,24 @@ object WooPosIcons {
             tertiaryColor = WooPosTheme.colors.tertiaryIconColor
         )
 
+    val ReceiptPrinter: ImageVector
+        @Composable
+        get() = if (isSystemInDarkTheme()) {
+            receiptPrinter(
+                trayColor = Color(0xFFA77EFF),
+                outlineColor = Color(0xFF6108CE),
+                paperColor = Color(0xFFE1D7FF),
+                coinColor = Color(0xFFD1C1FF),
+            )
+        } else {
+            receiptPrinter(
+                trayColor = Color(0xFFB999FF),
+                outlineColor = Color(0xFF2C045D),
+                paperColor = Color(0xFFF2EDFF),
+                coinColor = Color(0xFFD1C1FF),
+            )
+        }
+
     private fun notFound(
         primaryColor: Color,
         secondaryColor: Color,
@@ -973,6 +991,285 @@ object WooPosIcons {
             }
         }.build()
     }
+
+    private fun receiptPrinter(
+        trayColor: Color,
+        outlineColor: Color,
+        paperColor: Color,
+        coinColor: Color,
+    ): ImageVector {
+        return ImageVector.Builder(
+            name = "ReceiptPrinter",
+            defaultWidth = 120.dp,
+            defaultHeight = 120.dp,
+            viewportWidth = 120f,
+            viewportHeight = 120f
+        ).apply {
+            path(fill = SolidColor(trayColor)) {
+                moveTo(99.72f, 6.19f)
+                lineTo(19.38f, 6.19f)
+                curveTo(12.37f, 6.19f, 6.69f, 11.87f, 6.69f, 18.87f)
+                lineTo(6.69f, 34.58f)
+                curveTo(6.69f, 41.58f, 12.37f, 47.25f, 19.38f, 47.25f)
+                lineTo(99.72f, 47.25f)
+                curveTo(106.73f, 47.25f, 112.41f, 41.58f, 112.41f, 34.58f)
+                lineTo(112.41f, 18.87f)
+                curveTo(112.41f, 11.87f, 106.73f, 6.19f, 99.72f, 6.19f)
+                close()
+                moveTo(99.72f, 6.19f)
+            }
+            path(fill = SolidColor(outlineColor)) {
+                moveTo(111.18f, 18.87f)
+                curveTo(111.18f, 12.55f, 106.05f, 7.43f, 99.72f, 7.43f)
+                lineTo(19.38f, 7.43f)
+                curveTo(13.05f, 7.43f, 7.92f, 12.55f, 7.92f, 18.87f)
+                lineTo(7.92f, 34.58f)
+                curveTo(7.92f, 40.89f, 13.05f, 46.02f, 19.38f, 46.02f)
+                lineTo(99.72f, 46.02f)
+                curveTo(106.05f, 46.02f, 111.18f, 40.89f, 111.18f, 34.58f)
+                close()
+                moveTo(113.64f, 34.58f)
+                curveTo(113.64f, 42.26f, 107.41f, 48.48f, 99.72f, 48.48f)
+                lineTo(19.38f, 48.48f)
+                curveTo(11.69f, 48.48f, 5.45f, 42.26f, 5.45f, 34.58f)
+                lineTo(5.45f, 18.87f)
+                curveTo(5.45f, 11.18f, 11.69f, 4.96f, 19.38f, 4.96f)
+                lineTo(99.72f, 4.96f)
+                curveTo(107.41f, 4.96f, 113.64f, 11.18f, 113.64f, 18.87f)
+                close()
+                moveTo(113.64f, 34.58f)
+            }
+            path(fill = SolidColor(outlineColor)) {
+                moveTo(103.62f, 17.02f)
+                curveTo(104.3f, 17.02f, 104.85f, 17.57f, 104.85f, 18.25f)
+                curveTo(104.85f, 18.93f, 104.3f, 19.49f, 103.62f, 19.49f)
+                lineTo(15.48f, 19.49f)
+                curveTo(14.8f, 19.49f, 14.24f, 18.93f, 14.24f, 18.25f)
+                curveTo(14.24f, 17.57f, 14.8f, 17.02f, 15.48f, 17.02f)
+                close()
+                moveTo(103.62f, 17.02f)
+            }
+            path(fill = SolidColor(paperColor)) {
+                moveTo(94.79f, 108.59f)
+                lineTo(91.54f, 111.27f)
+                curveTo(90.5f, 112.13f, 89f, 112.13f, 87.97f, 111.27f)
+                lineTo(86.5f, 110.06f)
+                curveTo(85.46f, 109.21f, 83.96f, 109.21f, 82.93f, 110.06f)
+                lineTo(81.47f, 111.27f)
+                curveTo(80.43f, 112.13f, 78.93f, 112.13f, 77.9f, 111.27f)
+                lineTo(76.43f, 110.06f)
+                curveTo(75.39f, 109.21f, 73.9f, 109.21f, 72.86f, 110.06f)
+                lineTo(71.39f, 111.27f)
+                curveTo(70.36f, 112.13f, 68.86f, 112.13f, 67.82f, 111.27f)
+                lineTo(66.36f, 110.06f)
+                curveTo(65.32f, 109.21f, 63.82f, 109.21f, 62.79f, 110.06f)
+                lineTo(61.32f, 111.27f)
+                curveTo(60.29f, 112.13f, 58.79f, 112.13f, 57.75f, 111.27f)
+                lineTo(56.29f, 110.06f)
+                curveTo(55.25f, 109.21f, 53.75f, 109.21f, 52.72f, 110.06f)
+                lineTo(51.25f, 111.27f)
+                curveTo(50.21f, 112.13f, 48.72f, 112.13f, 47.68f, 111.27f)
+                lineTo(46.21f, 110.06f)
+                curveTo(45.18f, 109.21f, 43.68f, 109.21f, 42.65f, 110.06f)
+                lineTo(41.18f, 111.27f)
+                curveTo(40.14f, 112.13f, 38.65f, 112.13f, 37.61f, 111.27f)
+                lineTo(36.15f, 110.07f)
+                curveTo(35.11f, 109.21f, 33.61f, 109.21f, 32.58f, 110.07f)
+                lineTo(31.12f, 111.27f)
+                curveTo(30.08f, 112.13f, 28.58f, 112.13f, 27.55f, 111.27f)
+                lineTo(24.3f, 108.59f)
+                lineTo(24.3f, 18.25f)
+                lineTo(94.78f, 18.25f)
+                lineTo(94.78f, 108.59f)
+                close()
+                moveTo(94.79f, 108.59f)
+            }
+            path(fill = SolidColor(outlineColor)) {
+                moveTo(94.78f, 17.02f)
+                curveTo(95.46f, 17.02f, 96.01f, 17.57f, 96.01f, 18.25f)
+                lineTo(96.01f, 108.43f)
+                curveTo(96.06f, 108.85f, 95.91f, 109.27f, 95.57f, 109.54f)
+                lineTo(92.32f, 112.23f)
+                curveTo(90.83f, 113.45f, 88.68f, 113.46f, 87.18f, 112.23f)
+                lineTo(85.71f, 111.02f)
+                lineTo(85.71f, 111.01f)
+                curveTo(85.13f, 110.54f, 84.3f, 110.54f, 83.72f, 111.01f)
+                lineTo(82.25f, 112.22f)
+                curveTo(80.81f, 113.42f, 78.74f, 113.46f, 77.25f, 112.34f)
+                lineTo(77.11f, 112.22f)
+                lineTo(75.64f, 111.01f)
+                curveTo(75.07f, 110.54f, 74.23f, 110.54f, 73.65f, 111.01f)
+                lineTo(72.18f, 112.22f)
+                curveTo(70.69f, 113.46f, 68.53f, 113.46f, 67.04f, 112.22f)
+                lineTo(65.57f, 111.01f)
+                curveTo(65f, 110.54f, 64.16f, 110.54f, 63.57f, 111.01f)
+                lineTo(62.11f, 112.22f)
+                curveTo(60.62f, 113.46f, 58.46f, 113.46f, 56.97f, 112.22f)
+                lineTo(55.5f, 111.01f)
+                curveTo(54.94f, 110.55f, 54.14f, 110.54f, 53.56f, 110.97f)
+                lineTo(53.5f, 111.01f)
+                lineTo(52.04f, 112.22f)
+                curveTo(50.55f, 113.46f, 48.39f, 113.46f, 46.9f, 112.22f)
+                lineTo(45.43f, 111.01f)
+                curveTo(44.87f, 110.55f, 44.07f, 110.54f, 43.49f, 110.97f)
+                lineTo(43.43f, 111.01f)
+                lineTo(41.96f, 112.22f)
+                curveTo(40.47f, 113.46f, 38.32f, 113.46f, 36.82f, 112.22f)
+                lineTo(35.36f, 111.02f)
+                curveTo(34.78f, 110.54f, 33.95f, 110.54f, 33.36f, 111.02f)
+                lineTo(31.9f, 112.22f)
+                curveTo(30.41f, 113.46f, 28.25f, 113.46f, 26.76f, 112.22f)
+                lineTo(23.51f, 109.54f)
+                curveTo(23.23f, 109.31f, 23.06f, 108.96f, 23.06f, 108.59f)
+                lineTo(23.06f, 18.25f)
+                curveTo(23.06f, 17.57f, 23.62f, 17.02f, 24.3f, 17.02f)
+                close()
+                moveTo(25.53f, 108.01f)
+                lineTo(28.33f, 110.32f)
+                curveTo(28.91f, 110.8f, 29.75f, 110.8f, 30.33f, 110.32f)
+                lineTo(31.79f, 109.11f)
+                curveTo(33.29f, 107.88f, 35.44f, 107.88f, 36.93f, 109.11f)
+                lineTo(38.4f, 110.32f)
+                curveTo(38.98f, 110.8f, 39.82f, 110.8f, 40.39f, 110.32f)
+                lineTo(41.86f, 109.11f)
+                curveTo(43.31f, 107.92f, 45.38f, 107.88f, 46.86f, 109f)
+                lineTo(47f, 109.11f)
+                lineTo(48.47f, 110.32f)
+                lineTo(48.52f, 110.37f)
+                curveTo(49.1f, 110.8f, 49.91f, 110.79f, 50.47f, 110.32f)
+                lineTo(51.93f, 109.11f)
+                curveTo(53.38f, 107.92f, 55.45f, 107.88f, 56.93f, 109f)
+                lineTo(57.07f, 109.11f)
+                lineTo(58.54f, 110.32f)
+                lineTo(58.59f, 110.37f)
+                curveTo(59.17f, 110.8f, 59.98f, 110.79f, 60.54f, 110.32f)
+                lineTo(62f, 109.11f)
+                curveTo(63.45f, 107.92f, 65.52f, 107.88f, 67f, 109f)
+                lineTo(67.14f, 109.11f)
+                lineTo(68.61f, 110.32f)
+                lineTo(68.61f, 110.32f)
+                curveTo(69.19f, 110.8f, 70.03f, 110.8f, 70.61f, 110.32f)
+                lineTo(72.07f, 109.11f)
+                lineTo(72.22f, 109f)
+                curveTo(73.66f, 107.92f, 75.64f, 107.92f, 77.07f, 109f)
+                lineTo(77.22f, 109.11f)
+                lineTo(78.68f, 110.32f)
+                curveTo(79.26f, 110.8f, 80.1f, 110.8f, 80.68f, 110.32f)
+                lineTo(82.15f, 109.11f)
+                curveTo(83.64f, 107.88f, 85.79f, 107.88f, 87.29f, 109.11f)
+                lineTo(88.75f, 110.32f)
+                lineTo(88.76f, 110.32f)
+                curveTo(89.33f, 110.8f, 90.17f, 110.8f, 90.75f, 110.32f)
+                lineTo(90.75f, 110.32f)
+                lineTo(93.54f, 108.02f)
+                lineTo(93.54f, 19.49f)
+                lineTo(25.53f, 19.49f)
+                close()
+                moveTo(25.53f, 108.01f)
+            }
+            path(fill = SolidColor(coinColor)) {
+                moveTo(59.55f, 66.54f)
+                curveTo(69.27f, 66.54f, 77.16f, 58.65f, 77.16f, 48.93f)
+                curveTo(77.16f, 39.2f, 69.27f, 31.32f, 59.55f, 31.32f)
+                curveTo(49.82f, 31.32f, 41.94f, 39.2f, 41.94f, 48.93f)
+                curveTo(41.94f, 58.65f, 49.82f, 66.54f, 59.55f, 66.54f)
+                close()
+                moveTo(59.55f, 66.54f)
+            }
+            path(fill = SolidColor(outlineColor)) {
+                moveTo(76.1f, 48.93f)
+                curveTo(76.1f, 39.79f, 68.69f, 32.38f, 59.55f, 32.38f)
+                curveTo(50.41f, 32.38f, 43f, 39.79f, 43f, 48.93f)
+                curveTo(43f, 58.07f, 50.41f, 65.48f, 59.55f, 65.48f)
+                curveTo(68.69f, 65.48f, 76.1f, 58.07f, 76.1f, 48.93f)
+                close()
+                moveTo(78.21f, 48.93f)
+                curveTo(78.21f, 59.24f, 69.86f, 67.59f, 59.55f, 67.59f)
+                curveTo(49.24f, 67.59f, 40.88f, 59.24f, 40.88f, 48.93f)
+                curveTo(40.88f, 38.62f, 49.24f, 30.26f, 59.55f, 30.26f)
+                curveTo(69.86f, 30.26f, 78.21f, 38.62f, 78.21f, 48.93f)
+                close()
+                moveTo(78.21f, 48.93f)
+            }
+            path(fill = SolidColor(outlineColor)) {
+                moveTo(60.5f, 57.65f)
+                lineTo(60.5f, 59.17f)
+                curveTo(60.5f, 59.65f, 60.09f, 60.05f, 59.61f, 60.05f)
+                curveTo(59.11f, 60.05f, 58.7f, 59.65f, 58.7f, 59.17f)
+                lineTo(58.7f, 57.67f)
+                curveTo(56.59f, 57.54f, 54.92f, 56.81f, 53.62f, 55.75f)
+                curveTo(53.34f, 55.52f, 53.16f, 55.16f, 53.16f, 54.78f)
+                curveTo(53.16f, 54.12f, 53.72f, 53.56f, 54.39f, 53.56f)
+                curveTo(54.66f, 53.56f, 54.92f, 53.66f, 55.12f, 53.82f)
+                curveTo(56.06f, 54.58f, 57.25f, 55.19f, 58.7f, 55.36f)
+                lineTo(58.7f, 49.84f)
+                curveTo(56.11f, 49.18f, 53.39f, 48.24f, 53.39f, 45.04f)
+                curveTo(53.39f, 42.43f, 55.55f, 40.48f, 58.7f, 40.25f)
+                lineTo(58.7f, 38.68f)
+                curveTo(58.7f, 38.2f, 59.11f, 37.8f, 59.61f, 37.8f)
+                curveTo(60.12f, 37.8f, 60.5f, 38.2f, 60.5f, 38.68f)
+                lineTo(60.5f, 40.28f)
+                curveTo(62.12f, 40.43f, 63.52f, 40.96f, 64.69f, 41.85f)
+                curveTo(64.99f, 42.08f, 65.19f, 42.43f, 65.19f, 42.84f)
+                curveTo(65.19f, 43.5f, 64.66f, 44.06f, 64f, 44.06f)
+                curveTo(63.72f, 44.06f, 63.47f, 43.96f, 63.29f, 43.83f)
+                curveTo(62.45f, 43.14f, 61.52f, 42.79f, 60.5f, 42.61f)
+                lineTo(60.5f, 47.55f)
+                curveTo(63.14f, 48.27f, 65.93f, 49.23f, 65.93f, 52.6f)
+                curveTo(65.93f, 55.03f, 64.36f, 57.34f, 60.5f, 57.64f)
+                close()
+                moveTo(58.7f, 47.07f)
+                lineTo(58.7f, 42.51f)
+                curveTo(57.07f, 42.64f, 56.01f, 43.55f, 56.01f, 44.87f)
+                curveTo(56.01f, 46.09f, 57.18f, 46.64f, 58.7f, 47.07f)
+                close()
+                moveTo(63.34f, 52.83f)
+                curveTo(63.34f, 51.39f, 62.1f, 50.8f, 60.5f, 50.32f)
+                lineTo(60.5f, 55.37f)
+                curveTo(62.58f, 55.14f, 63.34f, 53.89f, 63.34f, 52.83f)
+                close()
+                moveTo(63.34f, 52.83f)
+            }
+            path(fill = SolidColor(outlineColor)) {
+                moveTo(94.79f, 18.41f)
+                lineTo(94.79f, 47.57f)
+                lineTo(100.43f, 47.57f)
+                lineTo(100.43f, 18.41f)
+                close()
+                moveTo(94.79f, 18.41f)
+            }
+            path(fill = SolidColor(outlineColor)) {
+                moveTo(77.17f, 77.02f)
+                curveTo(77.85f, 77.02f, 78.4f, 77.57f, 78.4f, 78.25f)
+                curveTo(78.4f, 78.93f, 77.85f, 79.48f, 77.17f, 79.48f)
+                lineTo(41.93f, 79.48f)
+                curveTo(41.25f, 79.48f, 40.7f, 78.93f, 40.7f, 78.25f)
+                curveTo(40.7f, 77.57f, 41.25f, 77.02f, 41.93f, 77.02f)
+                close()
+                moveTo(77.17f, 77.02f)
+            }
+            path(fill = SolidColor(outlineColor)) {
+                moveTo(59.55f, 94.62f)
+                curveTo(60.23f, 94.62f, 60.78f, 95.17f, 60.78f, 95.85f)
+                curveTo(60.78f, 96.53f, 60.23f, 97.08f, 59.55f, 97.08f)
+                lineTo(41.93f, 97.08f)
+                curveTo(41.25f, 97.08f, 40.7f, 96.53f, 40.7f, 95.85f)
+                curveTo(40.7f, 95.17f, 41.25f, 94.62f, 41.93f, 94.62f)
+                close()
+                moveTo(59.55f, 94.62f)
+            }
+            path(fill = SolidColor(outlineColor)) {
+                moveTo(77.17f, 85.82f)
+                curveTo(77.85f, 85.82f, 78.4f, 86.37f, 78.4f, 87.05f)
+                curveTo(78.4f, 87.73f, 77.85f, 88.28f, 77.17f, 88.28f)
+                lineTo(41.93f, 88.28f)
+                curveTo(41.25f, 88.28f, 40.7f, 87.73f, 40.7f, 87.05f)
+                curveTo(40.7f, 86.37f, 41.25f, 85.82f, 41.93f, 85.82f)
+                close()
+                moveTo(77.17f, 85.82f)
+            }
+        }.build()
+    }
 }
 
 @Suppress("UnusedPrivateMember")
@@ -1119,6 +1416,16 @@ private fun WooPosIconsPreview() {
                     Image(
                         imageVector = WooPosIcons.CardReaderNotConnected,
                         contentDescription = "CardReaderNotConnected",
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
+                    )
+                }
+                Box(
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        imageVector = WooPosIcons.ReceiptPrinter,
+                        contentDescription = "ReceiptPrinter",
                         modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }

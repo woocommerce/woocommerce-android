@@ -15,6 +15,8 @@ class WooPosRemoteReaderErrorMapper @Inject constructor(
             CardReaderRemoteError.NfcDisabled -> R.string.woopos_remote_reader_failed_nfc_disabled
             CardReaderRemoteError.InsecureEnvironment -> R.string.woopos_remote_reader_failed_insecure_environment
             CardReaderRemoteError.TokenInvalid -> R.string.woopos_remote_reader_failed_token_invalid
+            CardReaderRemoteError.Canceled -> R.string.card_reader_payment_failed_canceled
+            CardReaderRemoteError.CardReadTimedOut -> R.string.card_reader_payment_failed_unexpected_error_state
             CardReaderRemoteError.ConnectFailed,
             CardReaderRemoteError.CollectFailed,
             CardReaderRemoteError.CreateIntentFailed,

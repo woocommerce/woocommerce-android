@@ -468,7 +468,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            verify(tracker).trackPaymentFailed(anyOrNull(), anyOrNull())
+            verify(tracker).trackPaymentFailed(anyOrNull(), anyOrNull(), anyOrNull())
         }
 
     @Test

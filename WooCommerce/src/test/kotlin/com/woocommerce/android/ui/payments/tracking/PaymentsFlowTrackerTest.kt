@@ -1048,6 +1048,38 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given a stripe error code, when payment fails, then the stripe code is tracked`() =
+        testBlocking {
+            paymentsFlowTracker.trackPaymentFailed(
+                errorMessage = "error msg",
+                errorType = CardPaymentStatus.CardPaymentStatusErrorType.Canceled,
+                stripeErrorCode = "CANCELED",
+            )
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_FAILED),
+                check { assertThat(it["stripe_error_code"]).isEqualTo("CANCELED") },
+                any(),
+                errorType = eq("CardPaymentStatus\$CardPaymentStatusErrorType\$Canceled"),
+                errorDescription = eq("error msg")
+            )
+        }
+
+    @Test
+    fun `given no stripe error code, when payment fails, then no stripe code is tracked`() =
+        testBlocking {
+            paymentsFlowTracker.trackPaymentFailed("error msg")
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_FAILED),
+                check { assertThat(it).doesNotContainKey("stripe_error_code") },
+                any(),
+                anyOrNull(),
+                eq("error msg")
+            )
+        }
+
+    @Test
     fun `given CardReadTimeOut error type, when payment fails, then CARD_PRESENT_COLLECT_PAYMENT_FAILED tracked with readable error type`() =
         testBlocking {
             val dummyMessage = "error msg"

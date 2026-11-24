@@ -238,13 +238,7 @@
     <fragment
         android:id="@+id/scanToUpdateInventory"
         android:name="com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryBarcodeScannerFragment"
-        android:label="scan_to_update_inventory">
-        <argument
-            android:name="scannedBarcode"
-            android:defaultValue="@null"
-            app:argType="com.woocommerce.android.ui.orders.creation.CodeScannerStatus$Success"
-            app:nullable="true" />
-    </fragment>
+        android:label="scan_to_update_inventory" />
     <fragment
         android:id="@+id/reviews"
         android:name="com.woocommerce.android.ui.reviews.ReviewListFragment"
