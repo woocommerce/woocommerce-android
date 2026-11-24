@@ -21,13 +21,13 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -68,13 +68,49 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a scanned barcode in arguments, when screen opened, then the product is fetched once`() = testBlocking {
+    fun `given restored loading state, when view model created, then it accepts new barcodes`() = testBlocking {
         // GIVEN
-        val scannedBarcode = CodeScannerStatus.Success("123", GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8)
-        val savedState = SavedStateHandle(mapOf("scannedBarcode" to scannedBarcode))
+        val savedState = SavedStateHandle(
+            mapOf(
+                "viewState" to ScanToUpdateInventoryViewModel.ViewState.Loading,
+                "productSearchState" to ScanToUpdateInventoryViewModel.ScanToUpdateInventoryState.FetchingProduct,
+            )
+        )
+        val viewModel = ScanToUpdateInventoryViewModel(
+            fetchProductByIdentifier = fetchProductByIdentifier,
+            savedState = savedState,
+            resourceProvider = resourceProvider,
+            productRepository = productRepo,
+            variationRepository = variationRepo,
+            tracker = tracker
+        )
 
         // WHEN
-        ScanToUpdateInventoryViewModel(
+        viewModel.onBarcodeScanningResult(
+            CodeScannerStatus.Success("123", GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8)
+        )
+
+        // THEN
+        verify(fetchProductByIdentifier).invoke("123", GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8)
+    }
+
+    @Test
+    fun `given restored visible sheet, when view model created, then the sheet stays visible`() = testBlocking {
+        // GIVEN
+        val visibleState = QuickInventoryBottomSheetVisible(
+            ScanToUpdateInventoryViewModel.ProductInfo(
+                id = 1,
+                name = "Product",
+                imageUrl = "",
+                sku = "123",
+                quantity = 1,
+                isStockManaged = true,
+            )
+        )
+        val savedState = SavedStateHandle(mapOf("viewState" to visibleState))
+
+        // WHEN
+        val viewModel = ScanToUpdateInventoryViewModel(
             fetchProductByIdentifier = fetchProductByIdentifier,
             savedState = savedState,
             resourceProvider = resourceProvider,
@@ -84,8 +120,24 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         )
 
         // THEN
-        verify(fetchProductByIdentifier).invoke("123", GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8)
-        assertThat(savedState.contains("scannedBarcode")).isFalse()
+        assertEquals(visibleState, viewModel.viewState.value)
+    }
+
+    @Test
+    fun `given visible sheet, when product details opened, then sheet hides without dismiss tracking`() = testBlocking {
+        // GIVEN
+        val product = ProductTestUtils.generateProduct(isStockManaged = true)
+        whenever(fetchProductByIdentifier(any(), any())).thenReturn(Result.success(product))
+        sut.onBarcodeScanningResult(
+            CodeScannerStatus.Success("123", GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8)
+        )
+
+        // WHEN
+        sut.onProductDetailsOpened()
+
+        // THEN
+        assertIs<QuickInventoryBottomSheetHidden>(sut.viewState.value)
+        verify(tracker, never()).track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_DISMISSED)
     }
 
     @Test

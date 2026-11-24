@@ -872,6 +872,8 @@
     <string name="barcode_scanning_alert_dialog_rationale_cta_label">Grant</string>
     <string name="barcode_scanning_alert_dialog_dismiss_label">Cancel</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Go to settings</string>
+    <string name="barcode_scanning_camera_permission_denied_message">To scan with the camera, allow camera access.</string>
+    <string name="barcode_scanning_camera_permission_permanently_denied_message">To scan with the camera, allow camera access in your device settings.</string>
     <string name="barcode_scanning_scan_product_barcode_label">Scan Product Barcode</string>
     <string name="barcode_scanning_hardware_scanner_info_link">Use an external scanner</string>
     <string name="barcode_scanning_or">or</string>
@@ -1451,6 +1453,7 @@
     <string name="order_refunds_amount_refund_confirmation_message">Waiting for refund confirmation…</string>
     <string name="order_refunds_amount_refund_successful">The refund was successfully submitted.</string>
     <string name="order_refunds_amount_refund_error">Something went wrong with the refund. Please try again.</string>
+    <string name="order_refunds_calculating">Calculating refund</string>
     <string name="order_refunds_refund_manual_refund_note">The payment method does not support automatic refunds. Complete the refund by transferring the money to the customer manually.</string>
     <string name="order_refunds_items_select_all">Select all</string>
     <string name="order_refunds_items_select_none">Select none</string>
