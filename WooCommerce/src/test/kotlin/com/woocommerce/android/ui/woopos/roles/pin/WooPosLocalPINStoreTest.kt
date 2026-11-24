@@ -243,6 +243,53 @@ class WooPosLocalPINStoreTest {
         assertThat(storage.entries).isEmpty()
     }
 
+    @Test
+    fun `given an expired editor, when replacing a PIN, then the old PIN stays usable`() = runTest {
+        // GIVEN
+        store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+        store.setPIN(1, WooPosLocalRole.CASHIER, "5678").getOrThrow()
+
+        // WHEN
+        val result = store.setPIN(1, WooPosLocalRole.ADMIN, "9012") { false }
+
+        // THEN
+        assertThat(result.exceptionOrNull()).isEqualTo(WooPosPINError.StaleRequest)
+        val pins = store.getPINs(1).getOrThrow()
+        assertThat(pins.getValue(WooPosLocalRole.ADMIN).matches("1234")).isTrue()
+        assertThat(pins.getValue(WooPosLocalRole.CASHIER).matches("5678")).isTrue()
+        assertThat(storage.writtenSiteIds).containsExactly(1, 1)
+    }
+
+    @Test
+    fun `given an expired approval, when removing protection, then both PINs remain`() = runTest {
+        // GIVEN
+        store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+        store.setPIN(1, WooPosLocalRole.CASHIER, "5678").getOrThrow()
+
+        // WHEN
+        val result = store.removePIN(1, WooPosLocalRole.ADMIN) { false }
+
+        // THEN
+        assertThat(result.exceptionOrNull()).isEqualTo(WooPosPINError.StaleRequest)
+        assertThat(store.getPINs(1).getOrThrow().keys)
+            .containsExactlyInAnyOrder(WooPosLocalRole.ADMIN, WooPosLocalRole.CASHIER)
+        assertThat(storage.writtenSiteIds).containsExactly(1, 1)
+    }
+
+    @Test
+    fun `given cancelled Cashier setup, when creating the PIN, then Admin protection stays unchanged`() = runTest {
+        // GIVEN
+        store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+
+        // WHEN
+        val result = store.createPIN(1, WooPosLocalRole.CASHIER, "5678") { false }
+
+        // THEN
+        assertThat(result.exceptionOrNull()).isEqualTo(WooPosPINError.StaleRequest)
+        assertThat(store.getPINs(1).getOrThrow().keys).containsExactly(WooPosLocalRole.ADMIN)
+        assertThat(storage.writtenSiteIds).containsExactly(1)
+    }
+
     private class MemoryStorage : WooPosPINStorage {
         val entries = mutableMapOf<Int, ByteArray>()
         val writtenSiteIds = mutableListOf<Int>()

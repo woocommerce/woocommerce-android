@@ -334,7 +334,86 @@ class WooPosApprovalViewModelTest {
         assertThat(viewModel.state.value).isNull()
     }
 
-    private suspend fun signIn(pin: String): WooPosApprovalViewModel {
+    @Test
+    fun `given Admin is active, when disabling protection, then fresh approval is required`() = runTest {
+        // GIVEN
+        val viewModel = signIn(ADMIN_PIN)
+        var performed = false
+
+        // WHEN
+        viewModel.requestFreshApproval(WooPosManagerApprovalAction.DisablePINProtection) {
+            performed = true
+            true
+        }
+        runCurrent()
+
+        // THEN
+        assertThat(performed).isFalse()
+        assertThat(viewModel.state.value?.status).isEqualTo(WooPosPINEntryStatus.Idle)
+        viewModel.enter(CASHIER_PIN)
+        assertThat(performed).isFalse()
+        assertThat(viewModel.state.value?.status).isEqualTo(WooPosPINEntryStatus.Incorrect)
+        viewModel.enter(ADMIN_PIN)
+        assertThat(performed).isTrue()
+        assertThat(viewModel.state.value).isNull()
+    }
+
+    @Test
+    fun `given durable removal is pending, when Admin approves, then the prompt stays open until success`() = runTest {
+        // GIVEN
+        val viewModel = signIn(ADMIN_PIN)
+        val removal = CompletableDeferred<Boolean>()
+        viewModel.requestFreshApproval(WooPosManagerApprovalAction.DisablePINProtection) { removal.await() }
+        runCurrent()
+
+        // WHEN
+        viewModel.enter(ADMIN_PIN)
+
+        // THEN
+        assertThat(viewModel.state.value?.status).isEqualTo(WooPosPINEntryStatus.Checking)
+        removal.complete(true)
+        runCurrent()
+        assertThat(viewModel.state.value).isNull()
+    }
+
+    @Test
+    fun `given durable removal fails, when Admin approves, then the prompt stays open with an error`() = runTest {
+        // GIVEN
+        val viewModel = signIn(ADMIN_PIN)
+        viewModel.requestFreshApproval(WooPosManagerApprovalAction.DisablePINProtection) { false }
+        runCurrent()
+
+        // WHEN
+        viewModel.enter(ADMIN_PIN)
+
+        // THEN
+        assertThat(viewModel.state.value?.status).isEqualTo(WooPosPINEntryStatus.StorageUnavailable)
+    }
+
+    @Test
+    fun `given fresh Admin change is cancelled, when the PIN result arrives, then the editor stays closed`() = runTest {
+        // GIVEN
+        val viewModel = signIn(ADMIN_PIN)
+        var opened = false
+        viewModel.requestFreshApproval(WooPosManagerApprovalAction.ChangeAdminPIN) {
+            opened = true
+            true
+        }
+        runCurrent()
+        fixture.pinReadGate = CompletableDeferred()
+        viewModel.enter(ADMIN_PIN)
+
+        // WHEN
+        viewModel.dismiss()
+        fixture.pinReadGate?.complete(Unit)
+        runCurrent()
+
+        // THEN
+        assertThat(opened).isFalse()
+        assertThat(viewModel.state.value).isNull()
+    }
+
+    private suspend fun signIn(pin: String): WooPosManagerApprovalViewModel {
         access.initialize()
         access.unlock(pin)
         return WooPosApprovalViewModel(access)

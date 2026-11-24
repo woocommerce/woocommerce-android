@@ -104,6 +104,7 @@ fun WooPosSettingsSecurityPINSetupDialog(
     isFullScreen: Boolean = currentWooPosBreakpoint() == WooPosBreakpoint.Phone,
     chooseTitle: String? = null,
     confirmTitle: String? = null,
+    savedActionLabel: String = stringResource(R.string.continue_button),
 ) {
     val shouldDismiss = isVisible && state == AccessUnavailable
     LaunchedEffect(shouldDismiss) {
@@ -122,7 +123,14 @@ fun WooPosSettingsSecurityPINSetupDialog(
         }
         AnimatedVisibility(visible = isVisible, enter = fadeIn(), exit = fadeOut()) {
             Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceBright) {
-                PINSetupPhoneContent(shown, resolvedChooseTitle, resolvedConfirmTitle, sendEvent, close)
+                PINSetupPhoneContent(
+                    shown,
+                    resolvedChooseTitle,
+                    resolvedConfirmTitle,
+                    savedActionLabel,
+                    sendEvent,
+                    close,
+                )
             }
         }
     } else {
@@ -134,7 +142,7 @@ fun WooPosSettingsSecurityPINSetupDialog(
             onDismissRequest = close,
         ) {
             BackHandler(enabled = isVisible && shown.canGoBack, onBack = goBack)
-            PINSetupDialogContent(shown, resolvedChooseTitle, resolvedConfirmTitle, sendEvent, close)
+            PINSetupDialogContent(shown, resolvedChooseTitle, resolvedConfirmTitle, savedActionLabel, sendEvent, close)
         }
     }
 }
@@ -144,6 +152,7 @@ private fun PINSetupPhoneContent(
     state: WooPosSettingsSecurityPINSetupState,
     chooseTitle: String,
     confirmTitle: String,
+    savedActionLabel: String,
     onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
     onClose: () -> Unit,
 ) {
@@ -153,7 +162,7 @@ private fun PINSetupPhoneContent(
             is Entry -> PINSetupPhoneEntry(state, chooseTitle, confirmTitle, onUIEvent)
             is Saving, AccessUnavailable -> PINSetupProgress()
             is Saved -> Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-                PINSetupSaved(state.role, onContinue = onClose, minHeight = bodyHeight)
+                PINSetupSaved(state.role, savedActionLabel, onContinue = onClose, minHeight = bodyHeight)
             }
         }
     }
@@ -192,6 +201,7 @@ private fun PINSetupDialogContent(
     state: WooPosSettingsSecurityPINSetupState,
     chooseTitle: String,
     confirmTitle: String,
+    savedActionLabel: String,
     onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
     onClose: () -> Unit,
 ) {
@@ -225,7 +235,12 @@ private fun PINSetupDialogContent(
                     modifier = Modifier.onSizeChanged { entryHeight = with(density) { it.height.toDp().value } },
                 )
                 is Saving, AccessUnavailable -> Spacer(Modifier.height(entryHeight.dp))
-                is Saved -> PINSetupSaved(state.role, onContinue = onClose, minHeight = entryHeight.dp)
+                is Saved -> PINSetupSaved(
+                    state.role,
+                    savedActionLabel,
+                    onContinue = onClose,
+                    minHeight = entryHeight.dp,
+                )
             }
         }
         if (state is Saving || state == AccessUnavailable) PINSetupProgress()
@@ -433,7 +448,7 @@ private val Error.messageRes: Int
     }
 
 @Composable
-private fun PINSetupSaved(role: WooPosLocalRole, onContinue: () -> Unit, minHeight: Dp) {
+private fun PINSetupSaved(role: WooPosLocalRole, actionLabel: String, onContinue: () -> Unit, minHeight: Dp) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -449,7 +464,7 @@ private fun PINSetupSaved(role: WooPosLocalRole, onContinue: () -> Unit, minHeig
                 .semantics { liveRegion = LiveRegionMode.Polite }
         )
         WooPosButton(
-            text = stringResource(R.string.continue_button),
+            text = actionLabel,
             onClick = onContinue,
             modifier = Modifier.fillMaxWidth(),
         )

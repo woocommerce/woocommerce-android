@@ -160,7 +160,7 @@ sealed class WooPosSettingsDialogState : Parcelable {
     data object ScanningSetupDialog : WooPosSettingsDialogState()
 
     @Parcelize
-    data class PinSetupDialog(val role: WooPosLocalRole) : WooPosSettingsDialogState()
+    data class PinSetupDialog(val role: WooPosLocalRole, val changingPIN: Boolean = false) : WooPosSettingsDialogState()
 
     @Parcelize
     data class SyncErrorDialog(

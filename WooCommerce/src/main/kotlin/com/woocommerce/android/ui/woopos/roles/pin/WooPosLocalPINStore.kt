@@ -27,17 +27,26 @@ class WooPosLocalPINStore @Inject constructor(
         load(localSiteId).requireUniquePIN(role, pin)
     }
 
-    suspend fun createPIN(localSiteId: Int, role: WooPosLocalRole, pin: String): Result<Unit> =
-        savePIN(localSiteId, role, pin, createOnly = true)
+    suspend fun createPIN(
+        localSiteId: Int,
+        role: WooPosLocalRole,
+        pin: String,
+        canCommit: () -> Boolean = { true },
+    ): Result<Unit> = savePIN(localSiteId, role, pin, createOnly = true, canCommit)
 
-    suspend fun setPIN(localSiteId: Int, role: WooPosLocalRole, pin: String): Result<Unit> =
-        savePIN(localSiteId, role, pin, createOnly = false)
+    suspend fun setPIN(
+        localSiteId: Int,
+        role: WooPosLocalRole,
+        pin: String,
+        canCommit: () -> Boolean = { true },
+    ): Result<Unit> = savePIN(localSiteId, role, pin, createOnly = false, canCommit)
 
     private suspend fun savePIN(
         localSiteId: Int,
         role: WooPosLocalRole,
         pin: String,
         createOnly: Boolean,
+        canCommit: () -> Boolean,
     ): Result<Unit> = operation {
         if (!WooPosPINHash.isValidPIN(pin)) throw WooPosPINError.InvalidFormat
         val pins = load(localSiteId).toMutableMap()
@@ -45,15 +54,22 @@ class WooPosLocalPINStore @Inject constructor(
         if (role != WooPosLocalRole.ADMIN && WooPosLocalRole.ADMIN !in pins) throw WooPosPINError.AdminRequired
         pins.requireUniquePIN(role, pin)
         pins[role] = WooPosPINHash.create(pin)
+        if (!canCommit()) throw WooPosPINError.StaleRequest
         storage.write(localSiteId, codec.encode(pins))
     }
 
-    suspend fun removePIN(localSiteId: Int, role: WooPosLocalRole): Result<Unit> = operation {
+    suspend fun removePIN(
+        localSiteId: Int,
+        role: WooPosLocalRole,
+        canCommit: () -> Boolean = { true },
+    ): Result<Unit> = operation {
         require(localSiteId > 0)
         if (role == WooPosLocalRole.ADMIN) {
+            if (!canCommit()) throw WooPosPINError.StaleRequest
             storage.write(localSiteId, null)
         } else {
             val pins = load(localSiteId) - role
+            if (!canCommit()) throw WooPosPINError.StaleRequest
             storage.write(localSiteId, pins.takeIf { it.isNotEmpty() }?.let(codec::encode))
         }
     }

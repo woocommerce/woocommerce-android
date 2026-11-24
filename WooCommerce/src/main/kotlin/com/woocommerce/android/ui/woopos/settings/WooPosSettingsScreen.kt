@@ -106,7 +106,7 @@ private fun WooPosSettingsPhoneContent(
     onBack: () -> Unit,
     onDismissDetail: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
-    onShowPinSetupDialog: (WooPosLocalRole) -> Unit,
+    onShowPinSetupDialog: (WooPosLocalRole, Boolean) -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit,
@@ -180,7 +180,7 @@ private fun WooPosSettingsTabletContent(
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
-    onShowPinSetupDialog: (WooPosLocalRole) -> Unit,
+    onShowPinSetupDialog: (WooPosLocalRole, Boolean) -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit,
@@ -249,8 +249,11 @@ private fun SettingsDialogs(
 
     val pinSetup: WooPosSettingsSecurityPINSetupViewModel = hiltViewModel()
     val pinSetupState by pinSetup.state.collectAsState()
-    val pinSetupRole = (dialogState as? WooPosSettingsDialogState.PinSetupDialog)?.role
-    LaunchedEffect(pinSetupRole) { pinSetupRole?.let(pinSetup::start) ?: pinSetup.reset() }
+    val editor = dialogState as? WooPosSettingsDialogState.PinSetupDialog
+    val pinSetupRole = editor?.role
+    LaunchedEffect(editor) {
+        if (editor == null) pinSetup.reset() else pinSetup.start(editor.role, editor.changingPIN)
+    }
     val isPinSetupVisible = pinSetupRole != null && pinSetupState.role == pinSetupRole
     WooPosSettingsSecurityPINSetupDialog(
         state = pinSetupState,
@@ -258,6 +261,13 @@ private fun SettingsDialogs(
         isFullScreen = isPhoneLayout,
         onUIEvent = pinSetup::onUIEvent,
         onClose = onDismissDialog,
+        savedActionLabel = stringResource(
+            if (editor?.changingPIN == true || pinSetupRole == WooPosLocalRole.CASHIER) {
+                R.string.done
+            } else {
+                R.string.continue_button
+            }
+        ),
     )
 
     WooPosScanningSetupDialog(

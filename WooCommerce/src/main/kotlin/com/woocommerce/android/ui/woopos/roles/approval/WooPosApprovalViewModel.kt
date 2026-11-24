@@ -58,8 +58,20 @@ class WooPosApprovalViewModel @Inject constructor(
             onAllowed()
             return
         }
+        beginApproval(action) {
+            onApproved()
+            true
+        }
+    }
+
+    internal fun requestFreshApproval(action: WooPosManagerApprovalAction, onApproved: suspend () -> Boolean) {
+        if (pending != null || !accessSession.allows(action.capability)) return
+        beginApproval(action, onApproved)
+    }
+
+    private fun beginApproval(action: WooPosManagerApprovalAction, perform: suspend () -> Boolean) {
         val scope = accessSession.approvalScope() ?: return
-        val request = PendingAction(scope, action, onAllowed)
+        val request = PendingAction(scope, action, perform)
         pending = request
         _state.value = WooPosApprovalState(action, WooPosPINEntryStatus.Initializing)
         job = viewModelScope.launch { refreshWait(request) }
@@ -94,8 +106,7 @@ class WooPosApprovalViewModel @Inject constructor(
             }
             when (result) {
                 is WooPosLocalRateLimiterResult.Authenticated -> {
-                    clear()
-                    request.perform()
+                    complete(request)
                 }
                 is WooPosLocalRateLimiterResult.Incorrect ->
                     if (result.remainingSeconds > 0) {
@@ -107,6 +118,19 @@ class WooPosApprovalViewModel @Inject constructor(
                 WooPosLocalRateLimiterResult.ProtectionOff,
                 WooPosLocalRateLimiterResult.Unavailable -> show(request, WooPosPINEntryStatus.StorageUnavailable)
             }
+        }
+    }
+
+    private suspend fun complete(request: PendingAction) {
+        if (request.action == WooPosManagerApprovalAction.DisablePINProtection) {
+            val completed = request.perform()
+            currentCoroutineContext().ensureActive()
+            if (pending === request) {
+                if (completed) clear() else show(request, WooPosPINEntryStatus.StorageUnavailable)
+            }
+        } else {
+            clear()
+            request.perform()
         }
     }
 
@@ -162,8 +186,8 @@ class WooPosApprovalViewModel @Inject constructor(
 
     private class PendingAction(
         val scope: WooPosAccessSession.ApprovalScope,
-        val action: WooPosApprovalAction,
-        val perform: () -> Unit,
+        val action: WooPosManagerApprovalAction,
+        val perform: suspend () -> Boolean,
     )
 }
 

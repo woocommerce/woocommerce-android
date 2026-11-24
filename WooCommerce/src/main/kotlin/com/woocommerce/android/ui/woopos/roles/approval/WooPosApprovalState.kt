@@ -6,4 +6,7 @@ internal data class WooPosApprovalState(
     val action: WooPosApprovalAction,
     val status: WooPosPINEntryStatus,
     val enteredDigits: Int = 0,
-)
+) {
+    val canDismiss: Boolean
+        get() = action != WooPosManagerApprovalAction.DisablePINProtection || status != WooPosPINEntryStatus.Checking
+}
