@@ -54,6 +54,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenu
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenuItem
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -155,7 +156,7 @@ private fun SecurityCards(
                 title = stringResource(R.string.woopos_security_admin_pin),
                 subtitle = stringResource(R.string.woopos_security_admin_pin_detail),
             ) {
-                WooPosButtonSmall(
+                WooPosOutlinedButtonSmall(
                     modifier = Modifier.semantics { contentDescription = changeAdminLabel },
                     text = stringResource(R.string.woopos_security_change),
                     onClick = { onChangePIN(WooPosLocalRole.ADMIN) },
@@ -295,14 +296,15 @@ private fun CashierActions(stacked: Boolean, onChange: () -> Unit, onDelete: () 
     val delete = stringResource(R.string.woopos_security_delete)
     val changeLabel = stringResource(R.string.woopos_security_change_cashier_pin)
     val deleteLabel = stringResource(R.string.woopos_security_delete_cashier_pin)
+    val deleteColor = if (isSystemInDarkTheme()) WooPosTheme.colors.errorLowest else MaterialTheme.colorScheme.error
     if (stacked) {
         FlowRow(horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) {
-            WooPosButtonSmall(
+            WooPosOutlinedButtonSmall(
                 modifier = Modifier.semantics { contentDescription = changeLabel },
                 text = change,
                 onClick = onChange,
             )
-            WooPosButtonSmall(
+            WooPosOutlinedButtonSmall(
                 modifier = Modifier.semantics { contentDescription = deleteLabel },
                 text = delete,
                 onClick = onDelete,
@@ -315,7 +317,7 @@ private fun CashierActions(stacked: Boolean, onChange: () -> Unit, onDelete: () 
                 WooPosOverflowMenuItem(label = change, contentDescription = changeLabel, onClick = onChange),
                 WooPosOverflowMenuItem(
                     label = delete,
-                    color = MaterialTheme.colorScheme.error,
+                    color = deleteColor,
                     contentDescription = deleteLabel,
                     onClick = onDelete,
                 ),
