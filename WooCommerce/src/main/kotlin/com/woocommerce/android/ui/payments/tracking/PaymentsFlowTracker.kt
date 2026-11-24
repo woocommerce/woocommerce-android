@@ -366,9 +366,15 @@ class PaymentsFlowTracker @Inject constructor(
         track(eventProvider.CARD_READER_CONNECTION_SUCCESS)
     }
 
-    fun trackPaymentFailed(errorMessage: String, errorType: CardPaymentStatusErrorType = Generic) {
+    fun trackPaymentFailed(
+        errorMessage: String,
+        errorType: CardPaymentStatusErrorType = Generic,
+        stripeErrorCode: String? = null,
+    ) {
         track(
             eventProvider.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
+            properties = stripeErrorCode?.let { mutableMapOf<String, Any>(KEY_STRIPE_ERROR_CODE to it) }
+                ?: mutableMapOf(),
             errorType = errorType.toString(),
             errorDescription = errorMessage
         )
@@ -664,6 +670,7 @@ class PaymentsFlowTracker @Inject constructor(
     companion object {
         private const val OPTIONAL_UPDATE = "Optional"
         private const val REQUIRED_UPDATE = "Required"
+        private const val KEY_STRIPE_ERROR_CODE = "stripe_error_code"
     }
 }
 
