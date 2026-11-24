@@ -76,6 +76,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.pin.PIN_DOT_CLEAR_MILLIS
 import com.woocommerce.android.ui.woopos.common.pin.PIN_DOT_SIZE
+import com.woocommerce.android.ui.woopos.common.pin.PIN_PAD_PHONE_KEY_SIZE
+import com.woocommerce.android.ui.woopos.common.pin.PIN_PAD_TABLET_KEY_SIZE
 import com.woocommerce.android.ui.woopos.common.pin.PIN_PHONE_COMPACT_BODY_HEIGHT
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDotShake
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDots
@@ -172,7 +174,7 @@ private fun BoxWithConstraintsScope.PINSetupPhoneEntry(
     val keySpacing = WooPosSpacing.Small.value
     val keypadHeight = maxHeight - titleHeight - statusLayout.height - spacing * 2
     val keySize = ((keypadHeight - keySpacing * (KEYPAD_ROWS - 1)) / KEYPAD_ROWS)
-        .coerceIn(PHONE_MIN_KEY_SIZE, PHONE_KEY_SIZE)
+        .coerceIn(PHONE_MIN_KEY_SIZE, PIN_PAD_PHONE_KEY_SIZE)
     Column(
         modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -217,7 +219,7 @@ private fun PINSetupDialogContent(
                 is Entry -> PINEntry(
                     entry = state,
                     onUIEvent = onUIEvent,
-                    keySize = KEY_SIZE,
+                    keySize = PIN_PAD_TABLET_KEY_SIZE,
                     statusLayout = statusLayout,
                     spacing = WooPosSpacing.Large.value,
                     modifier = Modifier.onSizeChanged { entryHeight = with(density) { it.height.toDp().value } },
@@ -539,8 +541,6 @@ private const val MISMATCH_MESSAGE_DELAY_MILLIS = 500L
 private const val KEYPAD_ROWS = 4
 private val DIALOG_MAX_WIDTH = 520.dp
 private val STATUS_MIN_HEIGHT = 84.dp
-private val KEY_SIZE = 90.dp
-private val PHONE_KEY_SIZE = 72.dp
 private val PHONE_MIN_KEY_SIZE = 48.dp
 private val PHONE_COMPACT_STATUS_HEIGHT = 28.dp
 private val PHONE_STATUS_HEIGHT = 48.dp

@@ -64,6 +64,7 @@ class WooPosLocalRateLimiter @Inject internal constructor(
             val chargedAttempt = attempts.failed(time)
             storage.write(localSiteId, chargedAttempt)
             val authenticated = authenticator.authenticate(pins, pin)
+            // A dismissed approval keeps the already charged attempt.
             if (isRetired()) return@operation WooPosLocalRateLimiterResult.Unavailable
             if (authenticated.isFailure) {
                 storage.write(localSiteId, attempts)

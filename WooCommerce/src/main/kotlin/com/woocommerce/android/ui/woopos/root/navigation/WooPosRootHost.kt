@@ -33,7 +33,7 @@ fun WooPosRootHost(
                 is NavigationEvent.ToScanToPay -> onNavigationEvent(OpenScanToPay(it.orderId))
                 is NavigationEvent.ToEmailReceipt -> onNavigationEvent(OpenEmailReceipt(it.orderId))
                 is NavigationEvent.ToCustomAmount -> onNavigationEvent(OpenCustomAmount(it.mode))
-                NavigationEvent.ExitPos -> onNavigationEvent(ConfirmExitFromHome)
+                NavigationEvent.ExitConfirmed -> onNavigationEvent(ConfirmExitFromHome)
                 NavigationEvent.RequestExitPos -> onNavigationEvent(RequestExitFromHome)
                 NavigationEvent.ReturnHomeFromCashWhenCardPaymentStarted -> onNavigationEvent(ReturnHomeFromCashPayment)
                 NavigationEvent.ToSettings -> onNavigationEvent(OpenSettings)

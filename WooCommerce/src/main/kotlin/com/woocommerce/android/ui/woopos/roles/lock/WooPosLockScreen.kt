@@ -67,11 +67,13 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
+import com.woocommerce.android.ui.woopos.common.pin.PIN_PAD_PHONE_KEY_SIZE
+import com.woocommerce.android.ui.woopos.common.pin.PIN_PAD_TABLET_KEY_SIZE
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINEntryFeedback
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPad
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPadStyle
 import com.woocommerce.android.ui.woopos.common.pin.measureWooPosPINStatusHeight
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 
 @Composable
 fun WooPosLockScreenDialog(
@@ -105,7 +107,7 @@ fun WooPosLockScreen(
     onUIEvent: (WooPosLockScreenUIEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (state.status == Status.Initializing) {
+    if (state.status == WooPosPINEntryStatus.Initializing) {
         WooPosLoadingScreen(
             modifier = modifier
                 .background(MaterialTheme.colorScheme.surface)
@@ -233,7 +235,11 @@ private fun BoxWithConstraintsScope.calculateLockLayout(
     }
     // Reserves the longest status message so the keys keep their size when it replaces the dots.
     val statusHeight = measureWooPosPINStatusHeight(textMeasurer, textConstraints.maxWidth, STATUS_ROW_HEIGHT)
-    val preferredKeySize = if (currentWooPosBreakpoint() == WooPosBreakpoint.Phone) PHONE_KEY_SIZE else KEY_SIZE
+    val preferredKeySize = if (currentWooPosBreakpoint() == WooPosBreakpoint.Phone) {
+        PIN_PAD_PHONE_KEY_SIZE
+    } else {
+        PIN_PAD_TABLET_KEY_SIZE
+    }
     return WooPosLockScreenLayout.calculate(
         viewport = DpSize(maxWidth, maxHeight),
         preferredKeySize = preferredKeySize,
@@ -325,7 +331,7 @@ fun WooPosLockScreenPreview() {
 fun WooPosLockScreenIncorrectPreview() {
     WooPosTheme {
         WooPosLockScreen(
-            state = WooPosLockScreenState(isLocked = true, status = Status.Incorrect),
+            state = WooPosLockScreenState(isLocked = true, status = WooPosPINEntryStatus.Incorrect),
             onUIEvent = {},
         )
     }
@@ -335,7 +341,10 @@ fun WooPosLockScreenIncorrectPreview() {
 @Composable
 fun WooPosLockScreenWaitPreview() {
     WooPosTheme {
-        WooPosLockScreen(state = WooPosLockScreenState(isLocked = true, status = Status.Wait(30)), onUIEvent = {})
+        WooPosLockScreen(
+            state = WooPosLockScreenState(isLocked = true, status = WooPosPINEntryStatus.Wait(30)),
+            onUIEvent = {},
+        )
     }
 }
 
@@ -344,7 +353,7 @@ fun WooPosLockScreenWaitPreview() {
 fun WooPosLockScreenUnavailablePreview() {
     WooPosTheme {
         WooPosLockScreen(
-            state = WooPosLockScreenState(isLocked = true, status = Status.StorageUnavailable),
+            state = WooPosLockScreenState(isLocked = true, status = WooPosPINEntryStatus.StorageUnavailable),
             onUIEvent = {},
         )
     }
@@ -359,8 +368,6 @@ private val LOCK_ARTWORK_WIDTH = 60.456.dp
 private val LOCK_ARTWORK_HEIGHT = 80.dp
 private val LOCK_HINGE = TransformOrigin(pivotFractionX = 45.7003f / 60.456f, pivotFractionY = 27.785f / 80f)
 private val ILLUSTRATION_SIZE = 88.dp
-private val KEY_SIZE = 90.dp
-private val PHONE_KEY_SIZE = 72.dp
 private val CONTENT_MAX_WIDTH = 420.dp
 private val COMPACT_HEIGHT = 480.dp
 private val STATUS_ROW_HEIGHT = 24.dp

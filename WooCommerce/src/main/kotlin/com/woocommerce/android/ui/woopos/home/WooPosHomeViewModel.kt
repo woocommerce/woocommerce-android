@@ -109,7 +109,7 @@ class WooPosHomeViewModel @Inject constructor(
 
             WooPosHomeUIEvent.ExitPosClicked -> {
                 viewModelScope.launch {
-                    _navigationEvent.emit(NavigationEvent.ExitPos)
+                    _navigationEvent.emit(NavigationEvent.ExitConfirmed)
                 }
             }
 

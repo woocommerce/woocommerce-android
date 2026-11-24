@@ -39,34 +39,35 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
+import com.woocommerce.android.ui.woopos.common.pin.PIN_PAD_PHONE_KEY_SIZE
+import com.woocommerce.android.ui.woopos.common.pin.PIN_PAD_TABLET_KEY_SIZE
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINEntryFeedback
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPad
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPadStyle
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPhoneLayout
 import com.woocommerce.android.ui.woopos.common.pin.measureWooPosPINStatusHeight
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 
-internal val LocalWooPosRequestApproval = staticCompositionLocalOf<(WooPosApprovalAction, () -> Unit) -> Unit> {
-    error("POS manager approval requires a POS root")
-}
+internal val LocalWooPosRequestApproval =
+    staticCompositionLocalOf<(WooPosManagerApprovalAction, () -> Unit) -> Unit> {
+        error("POS manager approval requires a POS root")
+    }
 
 @Composable
 internal fun WooPosManagerApprovalDialog(
     state: WooPosManagerApprovalState,
-    onDigit: (Int) -> Unit,
-    onDelete: () -> Unit,
-    onDismiss: () -> Unit,
+    onUIEvent: (WooPosManagerApprovalUIEvent) -> Unit,
 ) {
     val fullScreen = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
     Dialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { onUIEvent(WooPosManagerApprovalUIEvent.DismissRequested) },
         properties = DialogProperties(
             dismissOnClickOutside = !fullScreen,
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = !fullScreen,
         ),
     ) {
-        ApprovalContent(state, fullScreen, onDigit, onDelete, onDismiss)
+        ApprovalContent(state, fullScreen, onUIEvent)
     }
 }
 
@@ -74,17 +75,16 @@ internal fun WooPosManagerApprovalDialog(
 private fun ApprovalContent(
     state: WooPosManagerApprovalState,
     fullScreen: Boolean,
-    onDigit: (Int) -> Unit,
-    onDelete: () -> Unit,
-    onDismiss: () -> Unit,
+    onUIEvent: (WooPosManagerApprovalUIEvent) -> Unit,
 ) {
+    val onDismiss = { onUIEvent(WooPosManagerApprovalUIEvent.DismissRequested) }
     Surface(
         modifier = if (fullScreen) {
             Modifier.fillMaxSize()
         } else {
             Modifier
                 .padding(WooPosSpacing.Large.value)
-                .widthIn(max = 448.dp.toAdaptiveComponentSize())
+                .widthIn(max = APPROVAL_CARD_MAX_WIDTH.toAdaptiveComponentSize())
                 .fillMaxWidth()
         },
         shape = if (fullScreen) RectangleShape else RoundedCornerShape(WooPosCornerRadius.Large.value),
@@ -93,16 +93,15 @@ private fun ApprovalContent(
         val bodyModifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
         if (fullScreen) {
             WooPosPINPhoneLayout(header = { ApprovalCloseHeader(onDismiss) }) {
-                ApprovalBody(state, onDigit, onDelete, keySize = 72.dp, modifier = bodyModifier)
+                ApprovalBody(state, onUIEvent, keySize = PIN_PAD_PHONE_KEY_SIZE, modifier = bodyModifier)
             }
         } else {
             Column(Modifier.padding(WooPosSpacing.Large.value)) {
                 ApprovalCloseHeader(onDismiss)
                 ApprovalBody(
                     state,
-                    onDigit,
-                    onDelete,
-                    keySize = 90.dp,
+                    onUIEvent,
+                    keySize = PIN_PAD_TABLET_KEY_SIZE,
                     modifier = Modifier.weight(1f, fill = false).then(bodyModifier),
                 )
             }
@@ -124,8 +123,7 @@ private fun ApprovalCloseHeader(onDismiss: () -> Unit) {
 @Composable
 private fun ApprovalBody(
     state: WooPosManagerApprovalState,
-    onDigit: (Int) -> Unit,
-    onDelete: () -> Unit,
+    onUIEvent: (WooPosManagerApprovalUIEvent) -> Unit,
     keySize: Dp,
     modifier: Modifier = Modifier,
 ) {
@@ -144,7 +142,7 @@ private fun ApprovalBody(
         val action = state.action
         WooPosText(
             text = when (action) {
-                is WooPosApprovalAction.IssueRefund -> stringResource(action.reason, action.orderNumber)
+                is WooPosManagerApprovalAction.IssueRefund -> stringResource(action.reason, action.orderNumber)
                 else -> stringResource(action.reason)
             },
             style = WooPosTypography.BodyMedium,
@@ -152,14 +150,18 @@ private fun ApprovalBody(
             textAlign = TextAlign.Center,
         )
         BoxWithConstraints(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            val statusHeight = measureWooPosPINStatusHeight(rememberTextMeasurer(), constraints.maxWidth, 44.dp)
+            val statusHeight = measureWooPosPINStatusHeight(
+                rememberTextMeasurer(),
+                constraints.maxWidth,
+                APPROVAL_STATUS_MIN_HEIGHT,
+            )
             WooPosPINEntryFeedback(state.status, state.enteredDigits, statusHeight)
         }
         WooPosPINPad(
             enteredDigits = state.enteredDigits,
             enabled = state.status.canEnterPIN,
-            onDigit = onDigit,
-            onDelete = onDelete,
+            onDigit = { onUIEvent(WooPosManagerApprovalUIEvent.DigitTapped(it)) },
+            onDelete = { onUIEvent(WooPosManagerApprovalUIEvent.DeleteTapped) },
             keySize = keySize,
             style = if (state.status.showsBlockedPINPad) WooPosPINPadStyle.BLOCKED else WooPosPINPadStyle.STANDARD,
         )
@@ -171,11 +173,9 @@ private fun ApprovalBody(
 private fun WooPosManagerApprovalPreview() {
     WooPosTheme {
         ApprovalContent(
-            WooPosManagerApprovalState(WooPosApprovalAction.CreateCoupon, Status.Idle),
+            WooPosManagerApprovalState(WooPosManagerApprovalAction.CreateCoupon, WooPosPINEntryStatus.Idle),
             fullScreen = false,
-            onDigit = {},
-            onDelete = {},
-            onDismiss = {},
+            onUIEvent = {},
         )
     }
 }
@@ -185,11 +185,12 @@ private fun WooPosManagerApprovalPreview() {
 private fun WooPosManagerApprovalWaitPreview() {
     WooPosTheme {
         ApprovalContent(
-            WooPosManagerApprovalState(WooPosApprovalAction.IssueRefund("#1043"), Status.Wait(30)),
+            WooPosManagerApprovalState(WooPosManagerApprovalAction.IssueRefund("#1043"), WooPosPINEntryStatus.Wait(30)),
             fullScreen = true,
-            onDigit = {},
-            onDelete = {},
-            onDismiss = {},
+            onUIEvent = {},
         )
     }
 }
+
+private val APPROVAL_CARD_MAX_WIDTH = 448.dp
+private val APPROVAL_STATUS_MIN_HEIGHT = 44.dp

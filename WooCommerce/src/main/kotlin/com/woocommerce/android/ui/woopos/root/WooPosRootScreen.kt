@@ -22,7 +22,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
 import com.woocommerce.android.ui.woopos.roles.approval.LocalWooPosRequestApproval
-import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalAction
 import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalDialog
 import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalViewModel
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenDialog
@@ -37,28 +37,31 @@ import com.woocommerce.android.ui.woopos.root.navigation.handleNavigationEvent
 fun WooPosRootScreen(
     modifier: Modifier = Modifier,
     lockViewModel: WooPosLockScreenViewModel = hiltViewModel(),
-    approval: WooPosManagerApprovalViewModel = hiltViewModel(),
+    approvalViewModel: WooPosManagerApprovalViewModel = hiltViewModel(),
 ) {
     val rootController = rememberNavController()
     val activity = LocalActivity.current as ComponentActivity
     val homeViewModel: WooPosHomeViewModel = hiltViewModel()
     val lockState by lockViewModel.state.collectAsState()
-    val approvalState by approval.state.collectAsState()
+    val approvalState by approvalViewModel.state.collectAsState()
 
-    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { approval.cancel() }
-    DisposableEffect(rootController, approval) {
-        val listener = NavController.OnDestinationChangedListener { _, _, _ -> approval.cancel() }
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { approvalViewModel.dismiss() }
+    DisposableEffect(rootController, approvalViewModel) {
+        val listener = NavController.OnDestinationChangedListener { _, _, _ -> approvalViewModel.dismiss() }
         rootController.addOnDestinationChangedListener(listener)
         onDispose {
             rootController.removeOnDestinationChangedListener(listener)
-            approval.cancel()
+            approvalViewModel.dismiss()
         }
     }
 
     WooPosRootScreen(state = lockState, onUIEvent = lockViewModel::onUIEvent, modifier = modifier) {
-        BackHandler { approval.run(WooPosApprovalAction.Exit, activity::finish) }
+        // Gate the default Activity finish when no destination handles Back.
+        BackHandler { approvalViewModel.requestApproval(WooPosManagerApprovalAction.Exit, activity::finish) }
         CompositionLocalProvider(
-            LocalWooPosRequestApproval provides { action, perform -> approval.run(action, perform) },
+            LocalWooPosRequestApproval provides { action, perform ->
+                approvalViewModel.requestApproval(action, perform)
+            },
         ) {
             WooPosRootHost(
                 modifier = Modifier.fillMaxSize(),
@@ -73,15 +76,15 @@ fun WooPosRootScreen(
                             }
                         }
                         when (exit) {
-                            WooPosNavigationEvent.RequestExitFromHome -> approval.run(
-                                WooPosApprovalAction.Exit,
+                            WooPosNavigationEvent.RequestExitFromHome -> approvalViewModel.requestApproval(
+                                WooPosManagerApprovalAction.Exit,
                                 onAllowed = homeViewModel::showExitConfirmation,
                                 onApproved = finishHome,
                             )
                             WooPosNavigationEvent.ConfirmExitFromHome ->
-                                approval.run(WooPosApprovalAction.Exit, finishHome)
+                                approvalViewModel.requestApproval(WooPosManagerApprovalAction.Exit, finishHome)
                             WooPosNavigationEvent.ExitPosClicked, WooPosNavigationEvent.BackFromSplashClicked ->
-                                approval.run(WooPosApprovalAction.Exit, activity::finish)
+                                approvalViewModel.requestApproval(WooPosManagerApprovalAction.Exit, activity::finish)
                         }
                     }
                 }
@@ -89,7 +92,7 @@ fun WooPosRootScreen(
         }
         val request = approvalState
         if (!lockState.isLocked && request != null) {
-            WooPosManagerApprovalDialog(request, approval::onDigit, approval::onDelete, approval::cancel)
+            WooPosManagerApprovalDialog(request, approvalViewModel::onUIEvent)
         }
     }
 }

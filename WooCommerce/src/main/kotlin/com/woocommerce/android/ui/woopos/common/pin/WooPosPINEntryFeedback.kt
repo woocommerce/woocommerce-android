@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.LayerOutsets
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -36,7 +37,7 @@ import androidx.compose.ui.unit.Dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -48,15 +49,15 @@ private class WooPosPINFeedback {
 }
 
 @Composable
-private fun rememberPINFeedback(status: Status, enteredDigits: Int): WooPosPINFeedback {
+private fun rememberPINFeedback(status: WooPosPINEntryStatus, enteredDigits: Int): WooPosPINFeedback {
     val feedback = remember { WooPosPINFeedback() }
     val currentState by rememberUpdatedState(status to enteredDigits)
     LaunchedEffect(feedback) {
         var previousDigits = currentState.second
         var shakeJob: Job? = null
         snapshotFlow { currentState }.collect { (currentStatus, digits) ->
-            val rejected = (currentStatus == Status.Incorrect || currentStatus is Status.Wait) &&
-                digits == 0 && previousDigits > 0
+            val rejected = digits == 0 && previousDigits > 0 &&
+                (currentStatus == WooPosPINEntryStatus.Incorrect || currentStatus is WooPosPINEntryStatus.Wait)
             if (rejected) {
                 shakeJob?.cancel()
                 shakeJob = launch {
@@ -88,16 +89,16 @@ internal fun measureWooPosPINStatusHeight(textMeasurer: TextMeasurer, maxWidth: 
 }
 
 @Composable
-internal fun WooPosPINEntryFeedback(status: Status, enteredDigits: Int, statusHeight: Dp) {
+internal fun WooPosPINEntryFeedback(status: WooPosPINEntryStatus, enteredDigits: Int, statusHeight: Dp) {
     val feedback = rememberPINFeedback(status, enteredDigits)
     val message = if (feedback.heldDigits > 0) {
         null
     } else {
         when (status) {
-            Status.Initializing, Status.Idle, Status.Checking -> null
-            Status.Incorrect -> if (enteredDigits == 0) WooPosPINMessage.INCORRECT else null
-            is Status.Wait -> WooPosPINMessage.WAIT
-            Status.StorageUnavailable -> WooPosPINMessage.UNAVAILABLE
+            WooPosPINEntryStatus.Initializing, WooPosPINEntryStatus.Idle, WooPosPINEntryStatus.Checking -> null
+            WooPosPINEntryStatus.Incorrect -> if (enteredDigits == 0) WooPosPINMessage.INCORRECT else null
+            is WooPosPINEntryStatus.Wait -> WooPosPINMessage.WAIT
+            WooPosPINEntryStatus.StorageUnavailable -> WooPosPINMessage.UNAVAILABLE
         }
     }
     val feedbackSpec = tween<Float>(FEEDBACK_MILLIS, easing = LinearOutSlowInEasing)
@@ -109,13 +110,14 @@ internal fun WooPosPINEntryFeedback(status: Status, enteredDigits: Int, statusHe
             isHidden = message != null,
             modifier = Modifier.graphicsLayer {
                 alpha = dotsAlpha
+                outsets = LayerOutsets(PIN_DOT_POP_OUTSET)
                 translationX = if (feedback.heldDigits > 0) feedback.shake.offset.toPx() else 0f
             },
         )
         Crossfade(targetState = message, animationSpec = feedbackSpec, label = "pinStatus") { shown ->
             if (shown != null) {
                 WooPosText(
-                    text = pinMessageText(shown, (status as? Status.Wait)?.remainingSeconds ?: 0L),
+                    text = pinMessageText(shown, (status as? WooPosPINEntryStatus.Wait)?.remainingSeconds ?: 0L),
                     style = WooPosTypography.BodySmall,
                     color = MaterialTheme.colorScheme.error,
                     textAlign = TextAlign.Center,

@@ -4,7 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLocalRateLimiterResult
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
+import com.woocommerce.android.ui.woopos.roles.pin.PIN_COUNTDOWN_INTERVAL_MILLIS
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -29,13 +30,13 @@ class WooPosManagerApprovalViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             accessSession.approvalScopeChanges.collect {
-                pending?.let { if (!it.isCurrent()) cancel() }
+                pending?.let { if (!it.isCurrent()) dismiss() }
             }
         }
     }
 
-    internal fun run(
-        action: WooPosApprovalAction,
+    internal fun requestApproval(
+        action: WooPosManagerApprovalAction,
         onAllowed: () -> Unit,
         onApproved: () -> Unit = onAllowed,
     ) {
@@ -47,27 +48,35 @@ class WooPosManagerApprovalViewModel @Inject constructor(
         val scope = accessSession.approvalScope() ?: return
         val request = PendingAction(scope, action, onApproved)
         pending = request
-        _state.value = WooPosManagerApprovalState(action, Status.Initializing)
+        _state.value = WooPosManagerApprovalState(action, WooPosPINEntryStatus.Initializing)
         job = viewModelScope.launch { refreshWait(request) }
     }
 
-    internal fun onDigit(digit: Int) {
+    internal fun onUIEvent(event: WooPosManagerApprovalUIEvent) {
+        when (event) {
+            is WooPosManagerApprovalUIEvent.DigitTapped -> onDigit(event.digit)
+            WooPosManagerApprovalUIEvent.DeleteTapped -> onDelete()
+            WooPosManagerApprovalUIEvent.DismissRequested -> dismiss()
+        }
+    }
+
+    private fun onDigit(digit: Int) {
         val current = state.value ?: return
         val request = pending ?: return
-        if (digit !in 0..MAX_DIGIT || !current.status.canEnterPIN) return
+        if (digit !in WooPosPINHash.PIN_DIGIT_RANGE || !current.status.canEnterPIN) return
         pin += digit
         if (pin.length < WooPosPINHash.PIN_LENGTH) {
-            _state.value = current.copy(status = Status.Idle, enteredDigits = pin.length)
+            _state.value = current.copy(status = WooPosPINEntryStatus.Idle, enteredDigits = pin.length)
             return
         }
         val submitted = pin
         pin = ""
-        _state.value = current.copy(status = Status.Checking, enteredDigits = submitted.length)
+        _state.value = current.copy(status = WooPosPINEntryStatus.Checking, enteredDigits = submitted.length)
         job = viewModelScope.launch {
             val result = accessSession.approve(request.scope, submitted, request.action.capability)
             ensureActive()
             if (!request.isCurrent()) {
-                cancel()
+                dismiss()
                 return@launch
             }
             when (result) {
@@ -79,23 +88,23 @@ class WooPosManagerApprovalViewModel @Inject constructor(
                     if (result.remainingSeconds > 0) {
                         waitAndRefresh(request, result.remainingSeconds)
                     } else {
-                        show(request, Status.Incorrect)
+                        show(request, WooPosPINEntryStatus.Incorrect)
                     }
                 is WooPosLocalRateLimiterResult.Waiting -> waitAndRefresh(request, result.remainingSeconds)
                 WooPosLocalRateLimiterResult.ProtectionOff,
-                WooPosLocalRateLimiterResult.Unavailable -> show(request, Status.StorageUnavailable)
+                WooPosLocalRateLimiterResult.Unavailable -> show(request, WooPosPINEntryStatus.StorageUnavailable)
             }
         }
     }
 
-    internal fun onDelete() {
+    private fun onDelete() {
         val current = state.value ?: return
         if (!current.status.canEnterPIN || pin.isEmpty()) return
         pin = pin.dropLast(1)
         _state.value = current.copy(enteredDigits = pin.length)
     }
 
-    internal fun cancel() {
+    internal fun dismiss() {
         job?.cancel()
         clear()
     }
@@ -114,24 +123,24 @@ class WooPosManagerApprovalViewModel @Inject constructor(
             if (!request.isCurrent()) break
             val seconds = remaining.getOrNull()
             val status = when {
-                seconds == null -> Status.StorageUnavailable
-                seconds == 0L -> Status.Idle
-                else -> Status.Wait(seconds)
+                seconds == null -> WooPosPINEntryStatus.StorageUnavailable
+                seconds == 0L -> WooPosPINEntryStatus.Idle
+                else -> WooPosPINEntryStatus.Wait(seconds)
             }
             show(request, status)
-            if (status !is Status.Wait) return
-            delay(COUNTDOWN_INTERVAL_MILLIS)
+            if (status !is WooPosPINEntryStatus.Wait) return
+            delay(PIN_COUNTDOWN_INTERVAL_MILLIS)
         }
-        if (pending === request) cancel()
+        if (pending === request) dismiss()
     }
 
     private suspend fun waitAndRefresh(request: PendingAction, seconds: Long) {
-        show(request, Status.Wait(seconds))
-        delay(COUNTDOWN_INTERVAL_MILLIS)
+        show(request, WooPosPINEntryStatus.Wait(seconds))
+        delay(PIN_COUNTDOWN_INTERVAL_MILLIS)
         refreshWait(request)
     }
 
-    private fun show(request: PendingAction, status: Status) {
+    private fun show(request: PendingAction, status: WooPosPINEntryStatus) {
         _state.value = WooPosManagerApprovalState(request.action, status)
     }
 
@@ -140,12 +149,13 @@ class WooPosManagerApprovalViewModel @Inject constructor(
 
     private class PendingAction(
         val scope: WooPosAccessSession.ApprovalScope,
-        val action: WooPosApprovalAction,
+        val action: WooPosManagerApprovalAction,
         val perform: () -> Unit,
     )
+}
 
-    private companion object {
-        const val MAX_DIGIT = 9
-        const val COUNTDOWN_INTERVAL_MILLIS = 1000L
-    }
+internal sealed interface WooPosManagerApprovalUIEvent {
+    data class DigitTapped(val digit: Int) : WooPosManagerApprovalUIEvent
+    data object DeleteTapped : WooPosManagerApprovalUIEvent
+    data object DismissRequested : WooPosManagerApprovalUIEvent
 }

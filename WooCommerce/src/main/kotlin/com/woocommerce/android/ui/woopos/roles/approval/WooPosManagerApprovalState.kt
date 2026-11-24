@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.woopos.roles.approval
 
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 
 internal data class WooPosManagerApprovalState(
-    val action: WooPosApprovalAction,
-    val status: Status,
+    val action: WooPosManagerApprovalAction,
+    val status: WooPosPINEntryStatus,
     val enteredDigits: Int = 0,
 )

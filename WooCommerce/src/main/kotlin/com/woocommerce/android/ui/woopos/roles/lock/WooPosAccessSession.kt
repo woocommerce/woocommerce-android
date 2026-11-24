@@ -4,7 +4,7 @@ import androidx.annotation.MainThread
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosCapability
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.WooLog
@@ -27,7 +27,11 @@ class WooPosAccessSession @Inject constructor(
 ) {
     private val flagEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ROLES)
     private val _state = MutableStateFlow<WooPosAccessSessionState>(
-        if (flagEnabled) WooPosAccessSessionState.Locked(Status.Initializing) else WooPosAccessSessionState.Unprotected
+        if (flagEnabled) {
+            WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Initializing)
+        } else {
+            WooPosAccessSessionState.Unprotected
+        }
     )
     val state = _state.asStateFlow()
     private var localSiteId: Int? = null
@@ -72,20 +76,20 @@ class WooPosAccessSession @Inject constructor(
         val id = selectedSite.getOrNull()?.id
         if (id != localSiteId) {
             localSiteId = id
-            _state.value = WooPosAccessSessionState.Locked(Status.Initializing)
+            _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Initializing)
         }
         val request = ++generation.value
         if (id == null) {
-            _state.value = WooPosAccessSessionState.Locked(Status.StorageUnavailable)
+            _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
             return
         }
         val protection = rateLimiter.isProtectionEnabled(id)
         if (!isCurrent(request, id)) return
         _state.value = when {
-            protection.isFailure -> WooPosAccessSessionState.Locked(Status.StorageUnavailable)
+            protection.isFailure -> WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
             !protection.getOrThrow() -> WooPosAccessSessionState.Unprotected
             _state.value is WooPosAccessSessionState.Unlocked -> _state.value
-            else -> WooPosAccessSessionState.Locked(Status.Checking)
+            else -> WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Checking)
         }
         if (_state.value.isLocked) refreshWait()
     }
@@ -93,23 +97,25 @@ class WooPosAccessSession @Inject constructor(
     suspend fun lock() {
         if (!isEnabled) return
         generation.value++
-        _state.value = WooPosAccessSessionState.Locked(Status.Checking)
+        _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Checking)
         refreshWait()
     }
 
     suspend fun unlock(pin: String) {
         if (!flagEnabled || _state.value is WooPosAccessSessionState.Unlocked) return
         val status = _state.value.status
-        if (status is Status.Wait || status == Status.StorageUnavailable) return
+        if (status is WooPosPINEntryStatus.Wait || status == WooPosPINEntryStatus.StorageUnavailable) return
         authenticate { id -> rateLimiter.authenticate(id, pin) }
     }
 
     suspend fun recover() {
         val previous = _state.value as? WooPosAccessSessionState.Locked ?: return
-        if (previous.status == Status.Initializing || previous.status == Status.Checking) return
+        if (previous.status == WooPosPINEntryStatus.Initializing || previous.status == WooPosPINEntryStatus.Checking) {
+            return
+        }
         val id = localSiteId ?: return
         val request = ++generation.value
-        _state.value = WooPosAccessSessionState.Locked(Status.Checking)
+        _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Checking)
         try {
             val role = recoveryRole(id)
             currentCoroutineContext().ensureActive()
@@ -149,7 +155,7 @@ class WooPosAccessSession @Inject constructor(
         val current = _state.value as? WooPosAccessSessionState.Locked ?: return
         val id = localSiteId
         if (id == null) {
-            _state.value = WooPosAccessSessionState.Locked(Status.StorageUnavailable)
+            _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
             return
         }
         val request = generation.value
@@ -157,11 +163,11 @@ class WooPosAccessSession @Inject constructor(
         if (!isCurrent(request, id) || _state.value != current) return
         _state.value = WooPosAccessSessionState.Locked(
             when {
-                wait.isFailure -> Status.StorageUnavailable
-                wait.getOrThrow() > 0 -> Status.Wait(wait.getOrThrow())
-                current.status == Status.Incorrect -> Status.Incorrect
-                current.status == Status.StorageUnavailable -> Status.StorageUnavailable
-                else -> Status.Idle
+                wait.isFailure -> WooPosPINEntryStatus.StorageUnavailable
+                wait.getOrThrow() > 0 -> WooPosPINEntryStatus.Wait(wait.getOrThrow())
+                current.status == WooPosPINEntryStatus.Incorrect -> WooPosPINEntryStatus.Incorrect
+                current.status == WooPosPINEntryStatus.StorageUnavailable -> WooPosPINEntryStatus.StorageUnavailable
+                else -> WooPosPINEntryStatus.Idle
             },
         )
     }
@@ -171,11 +177,11 @@ class WooPosAccessSession @Inject constructor(
         val request = ++generation.value
         val id = localSiteId ?: selectedSite.getOrNull()?.id
         if (id == null || !isCurrent(request, id)) {
-            _state.value = WooPosAccessSessionState.Locked(Status.StorageUnavailable)
+            _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
             return
         }
         localSiteId = id
-        if (previous.isLocked) _state.value = WooPosAccessSessionState.Locked(Status.Checking)
+        if (previous.isLocked) _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Checking)
         val result = try {
             action(id)
         } catch (e: CancellationException) {
@@ -187,12 +193,17 @@ class WooPosAccessSession @Inject constructor(
         _state.value = when (result) {
             is WooPosLocalRateLimiterResult.Authenticated -> WooPosAccessSessionState.Unlocked(result.role)
             is WooPosLocalRateLimiterResult.Incorrect -> WooPosAccessSessionState.Locked(
-                if (result.remainingSeconds > 0) Status.Wait(result.remainingSeconds) else Status.Incorrect,
+                if (result.remainingSeconds > 0) {
+                    WooPosPINEntryStatus.Wait(result.remainingSeconds)
+                } else {
+                    WooPosPINEntryStatus.Incorrect
+                },
             )
             is WooPosLocalRateLimiterResult.Waiting ->
-                WooPosAccessSessionState.Locked(Status.Wait(result.remainingSeconds))
+                WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Wait(result.remainingSeconds))
             WooPosLocalRateLimiterResult.ProtectionOff -> WooPosAccessSessionState.Unprotected
-            WooPosLocalRateLimiterResult.Unavailable -> WooPosAccessSessionState.Locked(Status.StorageUnavailable)
+            WooPosLocalRateLimiterResult.Unavailable ->
+                WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
         }
     }
 
