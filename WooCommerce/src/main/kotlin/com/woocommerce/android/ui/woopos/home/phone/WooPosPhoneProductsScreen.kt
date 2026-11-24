@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreen
 import com.woocommerce.android.ui.woopos.home.items.coupons.search.WooPosCouponsSearchScreen
+import com.woocommerce.android.ui.woopos.home.items.onUIEventWithApproval
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreen
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsScreen
@@ -54,7 +55,6 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarU
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarViewModel
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarPopUpMenu
 import com.woocommerce.android.ui.woopos.roles.approval.LocalWooPosRequestApproval
-import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
 
 @Composable
 fun WooPosPhoneProductsScreen(
@@ -79,15 +79,7 @@ fun WooPosPhoneProductsScreen(
         onMenuItemClicked = { menuItem ->
             toolbarViewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
         },
-        onItemsUIEvent = { event ->
-            if (event == WooPosItemsUIEvent.AddCouponIconClicked) {
-                requestApproval(WooPosApprovalAction.CreateCoupon) {
-                    if (itemsState is WooPosItemsToolbarViewState.CouponList) itemsViewModel.onUIEvent(event)
-                }
-            } else {
-                itemsViewModel.onUIEvent(event)
-            }
-        },
+        onItemsUIEvent = { event -> itemsViewModel.onUIEventWithApproval(event, requestApproval) },
     )
 }
 

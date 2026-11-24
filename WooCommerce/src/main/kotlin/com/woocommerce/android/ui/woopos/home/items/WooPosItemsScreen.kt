@@ -54,16 +54,21 @@ fun WooPosItemsScreen(
         bannerStateFlow = viewModel.bannerState,
         productsViewState = productsViewState,
         couponsListState = couponsListState,
-        onUIEvent = { event ->
-            if (event == WooPosItemsUIEvent.AddCouponIconClicked) {
-                requestApproval(WooPosApprovalAction.CreateCoupon) {
-                    if (viewModel.viewState.value is WooPosItemsToolbarViewState.CouponList) viewModel.onUIEvent(event)
-                }
-            } else {
-                viewModel.onUIEvent(event)
-            }
-        },
+        onUIEvent = { event -> viewModel.onUIEventWithApproval(event, requestApproval) },
     )
+}
+
+internal fun WooPosItemsViewModel.onUIEventWithApproval(
+    event: WooPosItemsUIEvent,
+    requestApproval: (WooPosApprovalAction, () -> Unit) -> Unit,
+) {
+    if (event == WooPosItemsUIEvent.AddCouponIconClicked) {
+        requestApproval(WooPosApprovalAction.CreateCoupon) {
+            if (viewState.value is WooPosItemsToolbarViewState.CouponList) onUIEvent(event)
+        }
+    } else {
+        onUIEvent(event)
+    }
 }
 
 @ExperimentalMaterialApi
