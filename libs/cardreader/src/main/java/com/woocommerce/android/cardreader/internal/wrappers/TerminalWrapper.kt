@@ -5,6 +5,8 @@ import androidx.annotation.RequiresPermission
 import com.stripe.stripeterminal.Terminal
 import com.stripe.stripeterminal.external.callable.ConnectionTokenProvider
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
+import com.stripe.stripeterminal.external.callable.Cancelable
+import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.TerminalListener
 import com.stripe.stripeterminal.external.models.CollectPaymentIntentConfiguration
 import com.stripe.stripeterminal.external.models.CollectRefundConfiguration
@@ -25,19 +27,19 @@ import com.stripe.stripeterminal.external.models.SimulatorConfiguration
 import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration
 import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration.Color
 import com.stripe.stripeterminal.external.models.TerminalException
+import com.stripe.stripeterminal.external.models.TerminalErrorCode
+import java.util.concurrent.atomic.AtomicReference
 import com.stripe.stripeterminal.ktx.cancelPaymentIntent
-import com.stripe.stripeterminal.ktx.collectPaymentMethod
-import com.stripe.stripeterminal.ktx.confirmPaymentIntent
 import com.stripe.stripeterminal.ktx.connectReader
 import com.stripe.stripeterminal.ktx.createPaymentIntent
 import com.stripe.stripeterminal.ktx.disconnectReader
 import com.stripe.stripeterminal.ktx.discoverReaders
-import com.stripe.stripeterminal.ktx.processPaymentIntent
 import com.stripe.stripeterminal.ktx.processRefund
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
@@ -107,26 +109,80 @@ internal class TerminalWrapper {
             )
         }
 
-    suspend fun processPaymentIntent(paymentIntent: PaymentIntent): PaymentIntent =
+    private val activePaymentCommand = AtomicReference<PaymentCommand?>(null)
+
+    suspend fun processPaymentIntent(paymentIntent: PaymentIntent): PaymentIntent = paymentCommand { callback ->
         Terminal.getInstance().processPaymentIntent(
             paymentIntent,
             CollectPaymentIntentConfiguration.Builder().build(),
-            ConfirmPaymentIntentConfiguration.Builder().build()
+            ConfirmPaymentIntentConfiguration.Builder().build(),
+            callback,
         )
+    }
 
-    suspend fun collectPaymentMethod(paymentIntent: PaymentIntent): PaymentIntent =
+    suspend fun collectPaymentMethod(paymentIntent: PaymentIntent): PaymentIntent = paymentCommand { callback ->
         Terminal.getInstance().collectPaymentMethod(
             paymentIntent,
-            CollectPaymentIntentConfiguration.Builder()
-                .updatePaymentIntent(true)
-                .build()
+            callback,
+            CollectPaymentIntentConfiguration.Builder().updatePaymentIntent(true).build(),
         )
+    }
 
-    suspend fun confirmPaymentIntent(paymentIntent: PaymentIntent): PaymentIntent =
+    suspend fun confirmPaymentIntent(paymentIntent: PaymentIntent): PaymentIntent = paymentCommand { callback ->
         Terminal.getInstance().confirmPaymentIntent(
             paymentIntent,
-            ConfirmPaymentIntentConfiguration.Builder().build()
+            callback,
+            ConfirmPaymentIntentConfiguration.Builder().build(),
         )
+    }
+
+    suspend fun cancelPaymentCommandAndAwait(): Boolean {
+        val command = activePaymentCommand.get() ?: return true
+        val handle = command.handle ?: return false
+        val cancelled = suspendCancellableCoroutine { continuation ->
+            handle.cancel(object : Callback {
+                override fun onSuccess() { if (continuation.isActive) continuation.resume(true) }
+                override fun onFailure(e: TerminalException) { if (continuation.isActive) continuation.resume(false) }
+            })
+        }
+        if (cancelled) command.finished.await()
+        return cancelled
+    }
+
+    private suspend fun paymentCommand(start: (PaymentIntentCallback) -> Cancelable): PaymentIntent =
+        suspendCancellableCoroutine { continuation ->
+            val command = PaymentCommand()
+            if (!activePaymentCommand.compareAndSet(null, command)) {
+                continuation.resumeWithException(TerminalException(TerminalErrorCode.READER_BUSY, "Payment command pending"))
+                return@suspendCancellableCoroutine
+            }
+            command.handle = start(object : PaymentIntentCallback {
+                override fun onSuccess(paymentIntent: PaymentIntent) {
+                    completePaymentCommand(command)
+                    if (continuation.isActive) continuation.resume(paymentIntent)
+                }
+                override fun onFailure(e: TerminalException) {
+                    completePaymentCommand(command)
+                    if (continuation.isActive) continuation.resumeWithException(e)
+                }
+            })
+            continuation.invokeOnCancellation {
+                command.handle?.cancel(object : Callback {
+                    override fun onSuccess() = Unit
+                    override fun onFailure(e: TerminalException) = Unit
+                })
+            }
+        }
+
+    private fun completePaymentCommand(command: PaymentCommand) {
+        activePaymentCommand.compareAndSet(command, null)
+        command.finished.complete(Unit)
+    }
+
+    private class PaymentCommand {
+        var handle: Cancelable? = null
+        val finished = CompletableDeferred<Unit>()
+    }
 
     suspend fun cancelPayment(paymentIntent: PaymentIntent): PaymentIntent =
         Terminal.getInstance().cancelPaymentIntent(paymentIntent)

@@ -140,6 +140,8 @@ class CardReaderPaymentController(
         MutableStateFlow(CardReaderPaymentState.LoadingData(::onCancelPaymentFlow))
     val paymentState: StateFlow<CardReaderPaymentOrRefundState> = _paymentState
 
+    private var lockCancellationRequested = false
+    private var collectionStarted = false
     private var paymentFlowJob: Job? = null
     private var refundFlowJob: Job? = null
     private var paymentDataForRetry: PaymentData? = null
@@ -161,6 +163,7 @@ class CardReaderPaymentController(
     private fun createScope() = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate + scopeExceptionHandler)
 
     fun start() {
+        if (lockCancellationRequested) return
         // The view can be recreated mid-payment (rotation), and the cancel below would kill the flow for good.
         if (paymentFlowJob?.isActive == true || refundFlowJob?.isActive == true) return
 
@@ -226,6 +229,7 @@ class CardReaderPaymentController(
     }
 
     private fun initPaymentFlow(isRetry: Boolean) {
+        if (lockCancellationRequested) return
         paymentFlowJob = scope.launch {
             _paymentState.value = CardReaderPaymentState.LoadingData(::onCancelPaymentFlow)
             if (isRetry) {
@@ -296,10 +300,12 @@ class CardReaderPaymentController(
         amountLabel: String,
         onPaymentSucceeded: suspend () -> Unit = { tracker.trackPaymentSucceeded() },
     ) {
+        if (lockCancellationRequested) return
         paymentFlowJob = scope.launch {
             _paymentState.value = CardReaderPaymentState.LoadingData(::onCancelPaymentFlow)
             delay(ARTIFICIAL_RETRY_DELAY)
             val previousStatusKey = orderRepository.getOrderById(orderId)?.status?.value
+            if (lockCancellationRequested) return@launch
             cardReaderManager.retryCollectPayment(orderId, paymentData).collect { paymentStatus ->
                 onPaymentStatusChanged(
                     orderId, previousStatusKey, billingEmail, paymentStatus, amountLabel, onPaymentSucceeded
@@ -313,6 +319,7 @@ class CardReaderPaymentController(
     }
 
     private suspend fun collectPaymentFlow(cardReaderManager: CardReaderManager, order: Order) {
+        if (lockCancellationRequested) return
         val customerEmail = order.billingAddress.email
         val site = selectedSite.get()
         val countryCode = getStoreCountryCode()
@@ -321,34 +328,35 @@ class CardReaderPaymentController(
             remoteSiteId = site.siteId,
             selfHostedSiteId = site.selfHostedSiteId
         )
-        cardReaderManager.collectPayment(
-            PaymentInfo(
-                paymentDescription = cardReaderPaymentOrderHelper.getPaymentDescription(order),
-                statementDescriptor = StatementDescriptor(rawStatementDescriptor),
-                orderId = order.id,
-                amount = order.total,
-                currency = order.currency,
-                orderKey = order.orderKey,
-                customerEmail = customerEmail.ifEmpty { null },
-                isPluginCanSendReceipt = paymentReceiptHelper.isPluginCanSendReceipt(site),
-                customerName = "${order.billingAddress.firstName} ${order.billingAddress.lastName}".ifBlank { null },
-                storeName = selectedSite.get().name.ifEmpty { null },
-                siteUrl = selectedSite.get().url.ifEmpty { null },
+        val paymentInfo = PaymentInfo(
+            paymentDescription = cardReaderPaymentOrderHelper.getPaymentDescription(order),
+            statementDescriptor = StatementDescriptor(rawStatementDescriptor),
+            orderId = order.id,
+            amount = order.total,
+            currency = order.currency,
+            orderKey = order.orderKey,
+            customerEmail = customerEmail.ifEmpty { null },
+            isPluginCanSendReceipt = paymentReceiptHelper.isPluginCanSendReceipt(site),
+            customerName = "${order.billingAddress.firstName} ${order.billingAddress.lastName}".ifBlank { null },
+            storeName = selectedSite.get().name.ifEmpty { null },
+            siteUrl = selectedSite.get().url.ifEmpty { null },
+            countryCode = countryCode,
+            feeAmount = TerminalPaymentIntentConfig.calculateApplicationFeeInCents(
                 countryCode = countryCode,
-                feeAmount = TerminalPaymentIntentConfig.calculateApplicationFeeInCents(
-                    countryCode = countryCode,
-                    orderTotal = order.total,
-                    currencyCode = order.currency,
-                ),
-                channel = determinePaymentChannel(paymentOrRefund),
-                cardPresentCaptureMethod = TerminalPaymentIntentConfig.cardPresentCaptureMethod(countryCode),
-                terminalPaymentPreparation = terminalPaymentPreparationResolver.resolve(
-                    countryCode = countryCode,
-                    site = site,
-                    onRouteCheckFailed = ::logTerminalPaymentPreparationRouteCheckFailed,
-                ),
-            )
-        ).collect { paymentStatus ->
+                orderTotal = order.total,
+                currencyCode = order.currency,
+            ),
+            channel = determinePaymentChannel(paymentOrRefund),
+            cardPresentCaptureMethod = TerminalPaymentIntentConfig.cardPresentCaptureMethod(countryCode),
+            terminalPaymentPreparation = terminalPaymentPreparationResolver.resolve(
+                countryCode = countryCode,
+                site = site,
+                onRouteCheckFailed = ::logTerminalPaymentPreparationRouteCheckFailed,
+            ),
+        )
+        if (lockCancellationRequested) return
+        collectionStarted = true
+        cardReaderManager.collectPayment(paymentInfo).collect { paymentStatus ->
             onPaymentStatusChanged(
                 order.id,
                 order.status.value,
@@ -850,6 +858,16 @@ class CardReaderPaymentController(
                 STARTED -> tracker.trackPrintReceiptSucceeded()
             }
         }
+    }
+
+    suspend fun cancelForLock(): Boolean {
+        lockCancellationRequested = true
+        val confirmed = !collectionStarted || cardReaderManager.cancelActivePaymentAndAwait()
+        if (confirmed) {
+            scope.cancel()
+            _paymentState.value = buildFailedPaymentState(PaymentFlowError.Canceled, "", {})
+        }
+        return confirmed
     }
 
     fun stop() {

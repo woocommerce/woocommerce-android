@@ -1,6 +1,16 @@
 package com.woocommerce.android.ui.woopos.root
 
 import android.os.Bundle
+import android.app.Activity
+import android.app.Application
+import android.content.Intent
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.launch
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenViewModel
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.Modifier
@@ -28,18 +38,34 @@ class WooPosActivity : AppCompatActivity() {
     @Inject
     lateinit var analyticsEntryPointKeeper: WooPosAnalyticsEntryPointKeeper
 
+    @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var productsDataSource: WooPosProductsDataSource
+    private var saleSiteURL: String? = null
+
+    private val lockViewModel: WooPosLockScreenViewModel by viewModels()
+    private val visibleActivities = mutableSetOf<Activity>()
+    private val appVisibility = object : Application.ActivityLifecycleCallbacks {
+        override fun onActivityStarted(activity: Activity) {
+            if (visibleActivities.isEmpty()) lockViewModel.onForeground()
+            visibleActivities.add(activity)
+        }
+        override fun onActivityStopped(activity: Activity) {
+            visibleActivities.remove(activity)
+            if (visibleActivities.isEmpty() && !activity.isChangingConfigurations) lockViewModel.onBackground()
+        }
+        override fun onActivityCreated(activity: Activity, state: Bundle?) = Unit
+        override fun onActivityResumed(activity: Activity) = Unit
+        override fun onActivityPaused(activity: Activity) = Unit
+        override fun onActivitySaveInstanceState(activity: Activity, state: Bundle) = Unit
+        override fun onActivityDestroyed(activity: Activity) = Unit
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        // POS is session-based: cart, product cache, order cache, and data source selection
-        // all live in in-memory singletons set up by the splash flow. On a config change
-        // (theme, rotation, font scale) the process stays alive and the singletons survive,
-        // so we preserve savedInstanceState and let Compose Navigation restore the back
-        // stack to the screen the user was on. On process death the OS spawns a fresh
-        // process with empty singletons; restoring the back stack to a non-splash route
-        // would skip initialization and crash in WooPosProductsDataSource — so we discard
-        // savedInstanceState to force a fresh splash. hasInitializedSession is process-
-        // scoped: it's reset to false in a new process, true after the first onCreate.
-        super.onCreate(if (hasInitializedSession) savedInstanceState else null)
-        hasInitializedSession = true
+        saleSiteURL = selectedSite.getOrNull()?.url
+        val savedSale = savedInstanceState?.takeIf { it.getString(SALE_SITE_URL) == saleSiteURL && saleSiteURL != null }
+        val prepareSavedSale = savedSale != null && productsDataSource.getCurrentSyncStrategyOrNull() == null
+        super.onCreate(savedSale)
+        application.registerActivityLifecycleCallbacks(appVisibility)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         lockWooPosOrientation()
 
@@ -47,11 +73,40 @@ class WooPosActivity : AppCompatActivity() {
         lifecycle.addObserver(wooPosCouponCreationFacade)
         lifecycle.addObserver(wooPosPeriodicSyncFacade)
 
-        setContent {
-            WooPosTheme {
-                WooPosRootScreen(modifier = Modifier.gesturesOrButtonsNavigationPadding())
+        lifecycleScope.launch {
+            selectedSite.observe().distinctUntilChangedBy { it?.url }.collect { site ->
+                if (site?.url != saleSiteURL) {
+                    startActivity(Intent(this@WooPosActivity, WooPosActivity::class.java))
+                    finish()
+                }
             }
         }
+
+        setContent {
+            WooPosTheme {
+                WooPosRootScreen(
+                    modifier = Modifier.gesturesOrButtonsNavigationPadding(),
+                    lockViewModel = lockViewModel,
+                    prepareSavedSale = prepareSavedSale,
+                )
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(SALE_SITE_URL, saleSiteURL)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent.action == Intent.ACTION_MAIN) lockViewModel.onLauncherEntry()
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        lockViewModel.onUserInteraction()
     }
 
     override fun onPause() {
@@ -61,6 +116,7 @@ class WooPosActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         endPosSessionIfFinishing()
+        application.unregisterActivityLifecycleCallbacks(appVisibility)
         super.onDestroy()
     }
 
@@ -69,6 +125,6 @@ class WooPosActivity : AppCompatActivity() {
     }
 
     companion object {
-        private var hasInitializedSession = false
+        private const val SALE_SITE_URL = "pos_sale_site_url"
     }
 }

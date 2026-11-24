@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.woopos.home.totals
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
+import com.woocommerce.android.ui.woopos.roles.WooPosCapability
 import com.woocommerce.android.di.PointOfSaleMode
 import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
@@ -33,6 +36,8 @@ import kotlin.reflect.KMutableProperty0
 
 class WooPosCardReaderPaymentControllerFactory @Inject constructor(
     private val cardReaderManager: CardReaderManager,
+    private val cardReaderFacade: WooPosCardReaderFacade,
+    private val accessSession: WooPosAccessSession,
     private val orderRepository: OrderDetailRepository,
     private val selectedSite: SelectedSite,
     private val appPrefs: AppPrefs = AppPrefs,
@@ -60,7 +65,7 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
         paymentType: PaymentType,
         isTTPPaymentInProgress: KMutableProperty0<Boolean>,
         cardReaderType: CardReaderType = CardReaderType.EXTERNAL,
-    ): CardReaderPaymentController = CardReaderPaymentController(
+    ): CardReaderPaymentController? = CardReaderPaymentController(
         cardReaderManager = cardReaderManager,
         orderRepository = orderRepository,
         selectedSite = selectedSite,
@@ -89,7 +94,7 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
         isTTPPaymentInProgress = isTTPPaymentInProgress,
         refreshProductsSignal = refreshProductsSignal,
         crashLogging = crashLogging,
-    )
+    ).takeIf { accessSession.allows(WooPosCapability.PROCESS_SALES) && cardReaderFacade.trackPayment(it) }
 
     fun createRefund(
         orderId: Long,

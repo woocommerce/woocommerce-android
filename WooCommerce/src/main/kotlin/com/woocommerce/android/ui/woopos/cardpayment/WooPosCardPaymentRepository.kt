@@ -21,6 +21,13 @@ class WooPosCardPaymentRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchOrder(orderId: Long): Order? = withContext(Dispatchers.IO) {
+        val site = selectedSite.get()
+        val result = orderStore.fetchSingleOrder(site, orderId)
+        if (result.isError || site.id != selectedSite.getOrNull()?.id) return@withContext null
+        orderStore.getOrderByIdAndSite(orderId, site)?.let { orderMapper.toAppModel(it) }
+    }
+
     private suspend fun getOrderById(orderId: Long): Order? {
         return orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.let {
             orderMapper.toAppModel(it)

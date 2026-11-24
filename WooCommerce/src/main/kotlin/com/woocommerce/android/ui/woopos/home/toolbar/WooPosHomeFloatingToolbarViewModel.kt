@@ -60,6 +60,12 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
     init {
         viewModelScope.launch { accessSession.state.collect { hideMenu() } }
         viewModelScope.launch {
+            accessSession.paymentState.collect {
+                val menu = _state.value.menu as? WooPosHomeFloatingToolbarState.Menu.Visible
+                if (menu != null) _state.value = _state.value.copy(menu = menu.copy(items = toolbarMenuItems))
+            }
+        }
+        viewModelScope.launch {
             effectiveReaderStatusProvider.flow
                 .flatMapLatest { effective ->
                     when (effective) {
@@ -209,6 +215,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_lock_pos,
                         icon = R.drawable.ic_lock,
+                        enabled = accessSession.canLock,
                     )
                 )
             }

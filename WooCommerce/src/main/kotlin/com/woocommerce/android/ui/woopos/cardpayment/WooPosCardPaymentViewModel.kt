@@ -32,6 +32,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
+import com.woocommerce.android.ui.woopos.roles.WooPosCapability
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -48,8 +51,17 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val priceFormat: WooPosFormatPrice,
     private val remoteReaderPaymentFlow: WooPosRemoteReaderPaymentFlow,
     private val effectiveReaderStatusProvider: WooPosEffectiveReaderStatusProvider,
+    private val accessSession: WooPosAccessSession,
+    private val selectedSite: SelectedSite,
 ) : ViewModel() {
 
+    private val saleSiteId = selectedSite.getOrNull()?.id
+    private fun isCurrentSale() = saleSiteId != null && saleSiteId == selectedSite.getOrNull()?.id &&
+        accessSession.allows(WooPosCapability.PROCESS_SALES)
+
+    private val restoredPayment = savedState.get<String>(WooPosCardReaderFacade.PAYMENT_PROCESS_ID_KEY)?.let {
+        it != cardReaderFacade.processId
+    } == true
     private val orderId: Long = requireNotNull(savedState[CARD_PAYMENT_ROUTE_ORDER_ID_KEY])
 
     private val _state = MutableStateFlow<WooPosCardPaymentState>(WooPosCardPaymentState.Initiating)
@@ -72,6 +84,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private var activePaymentMode: PaymentMode? = null
 
     init {
+        savedState[WooPosCardReaderFacade.PAYMENT_PROCESS_ID_KEY] = cardReaderFacade.processId
         viewModelScope.launch {
             val loaded = cardPaymentRepository.fetchOrGetOrder(orderId)
             if (loaded == null) {
@@ -92,7 +105,17 @@ class WooPosCardPaymentViewModel @Inject constructor(
                     taxes = priceFormat(loaded.totalTax),
                     total = priceFormat(loaded.total),
                 )
-                observeReaderStatus()
+                if (restoredPayment) {
+                    activePaymentMode = PaymentMode.RESTORED
+                    _state.value = WooPosCardPaymentState.PaymentFailed(
+                        title = resourceProvider.getString(R.string.woopos_payment_restore_title),
+                        subtitle = resourceProvider.getString(R.string.woopos_payment_restore_message),
+                        actionButtonLabel = resourceProvider.getString(R.string.woopos_payment_restore_check),
+                        isDismissButtonVisible = false,
+                    )
+                } else {
+                    observeReaderStatus()
+                }
             }
         }
     }
@@ -128,6 +151,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     private fun collectPaymentRemote() {
+        if (!isCurrentSale()) return
         activePaymentMode = PaymentMode.REMOTE
         if (!networkStatus.isConnected()) {
             _state.value = WooPosCardPaymentState.PaymentFailed(
@@ -161,6 +185,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     private fun collectPayment() {
+        if (!isCurrentSale()) return
         activePaymentMode = PaymentMode.BLUETOOTH
         if (!networkStatus.isConnected()) {
             _state.value = WooPosCardPaymentState.PaymentFailed(
@@ -337,6 +362,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     fun onScreenPaused() {
+        if (cardReaderFacade.isPaymentPending) return
         if (_state.value is WooPosCardPaymentState.Collecting) {
             cancelPayment()
         }
@@ -346,6 +372,10 @@ class WooPosCardPaymentViewModel @Inject constructor(
         when (activePaymentMode) {
             PaymentMode.REMOTE -> collectPaymentRemote()
             PaymentMode.BLUETOOTH -> retryBluetoothPayment()
+            PaymentMode.RESTORED -> viewModelScope.launch {
+                val paid = cardPaymentRepository.fetchOrder(orderId)?.isOrderPaid == true
+                if (paid && isCurrentSale()) handlePaymentSuccessful()
+            }
             null -> error("Retry clicked but no active payment mode")
         }
     }
@@ -368,15 +398,15 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     fun onBackClicked() {
         if (isPaymentInFlight()) return
-        cancelPayment()
-        navigateBack()
+        viewModelScope.launch {
+            if (cardReaderFacade.isPaymentPending) cardReaderFacade.cancelPayment()
+            if (cardReaderFacade.isPaymentPending || !isCurrentSale()) return@launch
+            cancelPayment()
+            navigateBack()
+        }
     }
 
-    fun onDismissClicked() {
-        if (isPaymentInFlight()) return
-        cancelPayment()
-        navigateBack()
-    }
+    fun onDismissClicked() = onBackClicked()
 
     private fun isPaymentInFlight(): Boolean {
         return when (activePaymentMode) {
@@ -386,7 +416,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
                     paymentState is CardReaderPaymentState.PaymentCapturing
             }
             PaymentMode.REMOTE -> _state.value is WooPosCardPaymentState.PaymentInProgress
-            null -> false
+            PaymentMode.RESTORED, null -> false
         }
     }
 
@@ -396,15 +426,14 @@ class WooPosCardPaymentViewModel @Inject constructor(
         }
     }
 
-    fun onConnectReaderClicked() {
-        viewModelScope.launch {
-            _navigationEvent.emit(WooPosNavigationEvent.GoBack)
-        }
-    }
+    fun onConnectReaderClicked() = onBackClicked()
 
     fun onCashPaymentClicked() {
-        cancelPayment()
+        if (activePaymentMode == PaymentMode.RESTORED) return
         viewModelScope.launch {
+            if (cardReaderFacade.isPaymentPending) cardReaderFacade.cancelPayment()
+            if (cardReaderFacade.isPaymentPending || !isCurrentSale()) return@launch
+            cancelPayment()
             _navigationEvent.emit(WooPosNavigationEvent.NavigateToCashPayment(orderId))
         }
     }
@@ -428,6 +457,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     private enum class PaymentMode {
+        RESTORED,
         BLUETOOTH,
         REMOTE,
     }

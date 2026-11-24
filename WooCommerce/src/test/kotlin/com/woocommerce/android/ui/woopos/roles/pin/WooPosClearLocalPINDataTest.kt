@@ -22,7 +22,7 @@ class WooPosClearLocalPINDataTest {
     val coroutineRule = WooPosCoroutineTestRule()
     private val store: WooPosLocalPINStore = mock()
     private val rateLimiter: WooPosLocalRateLimiter = mock()
-    private val clearLocalPINData = WooPosClearLocalPINData(store, rateLimiter)
+    private val clearLocalPINData = WooPosClearLocalPINData(store, rateLimiter, mock())
 
     @Test
     fun `given PIN cleanup fails, when clearing local data, then attempt cleanup still runs`() = runTest {

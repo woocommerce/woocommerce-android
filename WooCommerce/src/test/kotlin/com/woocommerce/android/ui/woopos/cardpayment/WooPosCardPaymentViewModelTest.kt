@@ -115,6 +115,10 @@ class WooPosCardPaymentViewModelTest {
         )
         return WooPosCardPaymentViewModel(
             savedState = savedStateHandle,
+            accessSession = mock { on { allows(any()) }.thenReturn(true) },
+            selectedSite = mock {
+                on { getOrNull() }.thenReturn(org.wordpress.android.fluxc.model.SiteModel().apply { id = 1 })
+            },
             cardReaderPaymentControllerFactory = cardReaderPaymentControllerFactory,
             cardReaderFacade = cardReaderFacade,
             networkStatus = networkStatus,
@@ -365,6 +369,10 @@ class WooPosCardPaymentViewModelTest {
         )
         viewModel = WooPosCardPaymentViewModel(
             savedState = savedStateHandle,
+            accessSession = mock { on { allows(any()) }.thenReturn(true) },
+            selectedSite = mock {
+                on { getOrNull() }.thenReturn(org.wordpress.android.fluxc.model.SiteModel().apply { id = 1 })
+            },
             cardReaderPaymentControllerFactory = cardReaderPaymentControllerFactory,
             cardReaderFacade = cardReaderFacade,
             networkStatus = networkStatus,

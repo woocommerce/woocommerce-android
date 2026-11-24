@@ -11,6 +11,12 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import android.content.Intent
+import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.woopos.splash.WooPosSplashScreen
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -38,8 +44,12 @@ fun WooPosRootScreen(
     modifier: Modifier = Modifier,
     lockViewModel: WooPosLockScreenViewModel = hiltViewModel(),
     approvalViewModel: WooPosManagerApprovalViewModel = hiltViewModel(),
+    prepareSavedSale: Boolean = false,
 ) {
-    val rootController = rememberNavController()
+    val savedController = rememberNavController()
+    var preparationPending by remember { mutableStateOf(prepareSavedSale) }
+    var restoreNavigation by remember { mutableStateOf(true) }
+    val rootController = if (restoreNavigation) savedController else rememberNavController()
     val activity = LocalActivity.current as ComponentActivity
     val homeViewModel: WooPosHomeViewModel = hiltViewModel()
     val lockState by lockViewModel.state.collectAsState()
@@ -57,38 +67,64 @@ fun WooPosRootScreen(
 
     WooPosRootScreen(state = lockState, onUIEvent = lockViewModel::onUIEvent, modifier = modifier) {
         // Gate the default Activity finish when no destination handles Back.
-        BackHandler { approvalViewModel.requestApproval(WooPosManagerApprovalAction.Exit, activity::finish) }
+        val exitPOS: () -> Unit = {
+            lockViewModel.onAuthorizedExit {
+                if (!activity.isFinishing) {
+                    activity.startActivity(
+                        Intent(activity, MainActivity::class.java).addFlags(
+                            Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        )
+                    )
+                    activity.finish()
+                }
+            }
+        }
+        BackHandler { approvalViewModel.requestApproval(WooPosManagerApprovalAction.Exit, exitPOS) }
         CompositionLocalProvider(
             LocalWooPosRequestApproval provides { action, perform ->
                 approvalViewModel.requestApproval(action, perform)
             },
         ) {
-            WooPosRootHost(
-                modifier = Modifier.fillMaxSize(),
-                rootController = rootController,
-                homeViewModel = homeViewModel,
-                onNavigationEvent = { event ->
-                    rootController.handleNavigationEvent(event) { exit ->
-                        val finishHome: () -> Unit = {
-                            if (!activity.isFinishing) {
-                                homeViewModel.onExitConfirmed()
-                                activity.finish()
-                            }
-                        }
-                        when (exit) {
-                            WooPosNavigationEvent.RequestExitFromHome -> approvalViewModel.requestApproval(
-                                WooPosManagerApprovalAction.Exit,
-                                onAllowed = homeViewModel::showExitConfirmation,
-                                onApproved = finishHome,
-                            )
-                            WooPosNavigationEvent.ConfirmExitFromHome ->
-                                approvalViewModel.requestApproval(WooPosManagerApprovalAction.Exit, finishHome)
-                            WooPosNavigationEvent.ExitPosClicked, WooPosNavigationEvent.BackFromSplashClicked ->
-                                approvalViewModel.requestApproval(WooPosManagerApprovalAction.Exit, activity::finish)
+            val navigate: (WooPosNavigationEvent) -> Unit = { event ->
+                rootController.handleNavigationEvent(event) { exit ->
+                    val finishHome: () -> Unit = {
+                        if (!activity.isFinishing) {
+                            homeViewModel.onExitConfirmed()
+                            exitPOS()
                         }
                     }
+                    when (exit) {
+                        WooPosNavigationEvent.RequestExitFromHome -> approvalViewModel.requestApproval(
+                            WooPosManagerApprovalAction.Exit,
+                            onAllowed = homeViewModel::showExitConfirmation,
+                            onApproved = finishHome,
+                        )
+                        WooPosNavigationEvent.ConfirmExitFromHome ->
+                            approvalViewModel.requestApproval(WooPosManagerApprovalAction.Exit, finishHome)
+                        WooPosNavigationEvent.ExitPosClicked, WooPosNavigationEvent.BackFromSplashClicked ->
+                            approvalViewModel.requestApproval(WooPosManagerApprovalAction.Exit, exitPOS)
+                    }
                 }
-            )
+            }
+            if (preparationPending) {
+                WooPosSplashScreen { event ->
+                    when (event) {
+                        WooPosNavigationEvent.OpenHomeFromSplash -> preparationPending = false
+                        is WooPosNavigationEvent.OpenEligibilityScreenFromSplash -> {
+                            restoreNavigation = false
+                            preparationPending = false
+                        }
+                        else -> navigate(event)
+                    }
+                }
+            } else {
+                WooPosRootHost(
+                    modifier = Modifier.fillMaxSize(),
+                    rootController = rootController,
+                    homeViewModel = homeViewModel,
+                    onNavigationEvent = navigate,
+                )
+            }
         }
         val request = approvalState
         if (!lockState.isLocked && request != null) {

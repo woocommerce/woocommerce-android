@@ -84,11 +84,11 @@ private fun WooPosToolbarPopUpMenuItem(
     menuItem: Menu.MenuItem,
     onClick: (Menu.MenuItem) -> Unit,
 ) {
-    TextButton(onClick = { onClick(menuItem) }) {
+    TextButton(onClick = { onClick(menuItem) }, enabled = menuItem.enabled) {
         MenuIconAndLabel(
             icon = menuItem.icon,
             title = stringResource(menuItem.title),
-            color = MaterialTheme.colorScheme.onSurface,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (menuItem.enabled) 1f else 0.38f),
             labelModifier = Modifier.weight(1f),
         )
     }

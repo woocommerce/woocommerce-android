@@ -95,7 +95,7 @@ class AccountRepositoryTest : BaseUnitTest() {
         registerDevice = registerDevice,
         posDataStore = posDataStore,
         analyticsTracker = analyticsTracker,
-        clearLocalPINData = WooPosClearLocalPINData(localPINStore, rateLimiter),
+        clearLocalPINData = WooPosClearLocalPINData(localPINStore, rateLimiter, mock()),
     )
 
     @Test

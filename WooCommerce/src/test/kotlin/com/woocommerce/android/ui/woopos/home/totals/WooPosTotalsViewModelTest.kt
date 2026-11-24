@@ -135,7 +135,9 @@ class WooPosTotalsViewModelTest {
     }
     private val cardReaderManager: CardReaderManager = mock()
     private val orderRepository: OrderDetailRepository = mock()
-    private val selectedSite: SelectedSite = mock()
+    private val selectedSite: SelectedSite = mock {
+        on { getOrNull() }.thenReturn(org.wordpress.android.fluxc.model.SiteModel().apply { id = 1 })
+    }
     private val appPrefs: AppPrefs = mock()
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val interacRefundableChecker: CardReaderInteracRefundableChecker = mock()
@@ -157,6 +159,8 @@ class WooPosTotalsViewModelTest {
     private val crashLogging: CrashLogging = mock()
     private val paymentControllerFactory = WooPosCardReaderPaymentControllerFactory(
         cardReaderManager = cardReaderManager,
+        cardReaderFacade = mock { on { trackPayment(any()) }.thenReturn(true) },
+        accessSession = mock { on { allows(any()) }.thenReturn(true) },
         orderRepository = orderRepository,
         selectedSite = selectedSite,
         appPrefs = appPrefs,
@@ -485,7 +489,9 @@ class WooPosTotalsViewModelTest {
             val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
                 on { events }.thenReturn(mock())
             }
-            val savedState = createMockSavedStateHandle()
+            val savedState = createMockSavedStateHandle().apply {
+                set("woo_pos_totals_view_state", WooPosTotalsViewState.PaymentSuccess(""))
+            }
             val viewModel = createViewModel(
                 savedState = savedState,
                 parentToChildrenEventReceiver = parentToChildrenEventReceiver,
@@ -3735,6 +3741,9 @@ class WooPosTotalsViewModelTest {
         savedState: SavedStateHandle = SavedStateHandle(),
         cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory = paymentControllerFactory,
     ) = WooPosTotalsViewModel(
+        accessSession = mock { on { allows(any()) }.thenReturn(true) },
+        lockPreferences = mock(),
+        selectedSite = selectedSite,
         resourceProvider = resourceProvider,
         parentToChildrenEventReceiver = parentToChildrenEventReceiver,
         childrenToParentEventSender = childrenToParentEventSender,

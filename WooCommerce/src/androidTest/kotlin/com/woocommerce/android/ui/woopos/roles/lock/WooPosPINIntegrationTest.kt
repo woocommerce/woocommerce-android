@@ -47,6 +47,9 @@ class WooPosPINIntegrationTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
+    @Inject lateinit var lockPreferences: WooPosLockPreferences
+    @Inject lateinit var cardReaderFacade: com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+
     @Inject
     lateinit var siteStore: SiteStore
 
@@ -264,7 +267,7 @@ class WooPosPINIntegrationTest {
     }
 
     private fun createSession(limiter: WooPosLocalRateLimiter) =
-        WooPosAccessSession(flags, selectedSite, limiter, WooPosPendingPINRecovery())
+        WooPosAccessSession(flags, selectedSite, limiter, WooPosPendingPINRecovery(), lockPreferences, cardReaderFacade)
 
     @Suppress("DEPRECATION")
     private fun reportKeySecurity() {

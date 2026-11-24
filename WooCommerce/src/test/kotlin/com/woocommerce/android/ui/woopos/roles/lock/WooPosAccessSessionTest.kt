@@ -488,5 +488,7 @@ class WooPosAccessSessionTest {
         selectedSite,
         rateLimiter,
         fixture.recovery,
+        fixture.lockPreferences,
+        fixture.cardReaderFacade,
     )
 }

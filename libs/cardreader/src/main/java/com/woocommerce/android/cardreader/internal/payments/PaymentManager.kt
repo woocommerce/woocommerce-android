@@ -30,6 +30,7 @@ import com.woocommerce.android.cardreader.payments.CreatePaymentIntentResult
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RetrieveAndCollectResult
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -48,18 +49,53 @@ internal class PaymentManager(
     private val errorMapper: PaymentErrorMapper,
     private val cardReaderConfigFactory: CardReaderConfigFactory,
 ) {
-    fun acceptPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> = flow {
-        if (isInvalidState(paymentInfo)) return@flow
+    private var activePayment: ActivePayment? = null
 
-        val paymentIntent = createPaymentIntent(paymentInfo)
+    @Suppress("TooGenericExceptionCaught")
+    fun acceptPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> = flow {
+        val attempt = ActivePayment().also { activePayment = it }
+        val paymentIntent = try {
+            if (isInvalidState(paymentInfo)) null else createPaymentIntent(paymentInfo)
+        } catch (error: Exception) {
+            attempt.intent.complete(Result.failure(error))
+            throw error
+        }
+        attempt.intent.complete(Result.success(paymentIntent))
+        if (attempt.cancelRequested) return@flow
         if (paymentIntent?.status != PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
             return@flow
         }
         processPaymentIntent(paymentInfo, paymentIntent).collect { emit(it) }
     }
 
-    fun retryPayment(orderId: Long, paymentData: PaymentData) =
-        processPaymentIntent(orderId, (paymentData as PaymentDataImpl).paymentIntent)
+    fun retryPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus> {
+        val intent = (paymentData as PaymentDataImpl).paymentIntent
+        activePayment = ActivePayment().apply { this.intent.complete(Result.success(intent)) }
+        return processPaymentIntent(orderId, intent)
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    suspend fun cancelActivePaymentAndAwait(): Boolean {
+        val attempt = activePayment ?: return false
+        attempt.cancelRequested = true
+        return try {
+            val intent = attempt.intent.await().getOrThrow() ?: return true
+            if (attempt.capturing || activePayment !== attempt) return false
+            if (!terminalWrapper.cancelPaymentCommandAndAwait()) return false
+            if (attempt.capturing || activePayment !== attempt) return false
+            terminalWrapper.cancelPayment(intent).status == CANCELED
+        } catch (error: CancellationException) {
+            throw error
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private class ActivePayment {
+        val intent = CompletableDeferred<Result<PaymentIntent?>>()
+        var cancelRequested = false
+        var capturing = false
+    }
 
     @Suppress("TooGenericExceptionCaught")
     suspend fun createPaymentIntentOnly(paymentInfo: PaymentInfo): CreatePaymentIntentResult {
@@ -156,6 +192,7 @@ internal class PaymentManager(
             Other card-present payments are expected to reach REQUIRES_CAPTURE and are captured by the backend.
          */
 
+        if (activePayment?.cancelRequested == true) return@flow
         if (
             paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE ||
             isSingleStepTerminalPaymentSuccessful(paymentIntent)
@@ -179,6 +216,7 @@ internal class PaymentManager(
             paymentIntent = processPayment(paymentInfo, paymentIntent)
         }
 
+        if (activePayment?.cancelRequested == true) return@flow
         if (
             paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE ||
             isSingleStepTerminalPaymentSuccessful(paymentIntent)
@@ -273,14 +311,17 @@ internal class PaymentManager(
         cardReaderStore: CardReaderStore,
         paymentIntent: PaymentIntent
     ) {
+        activePayment?.capturing = true
         emit(CapturingPayment)
         when (val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id!!)) {
             is CapturePaymentResponse.Successful -> emit(PaymentCompleted(receiptUrl))
             is CapturePaymentResponse.Error -> {
                 when (checkCaptureOutcome(paymentIntent, captureResponse)) {
                     CaptureOutcome.CAPTURED -> emit(PaymentCompleted(receiptUrl))
-                    CaptureOutcome.NOT_CAPTURED ->
+                    CaptureOutcome.NOT_CAPTURED -> {
+                        activePayment?.capturing = false
                         emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
+                    }
                     CaptureOutcome.UNKNOWN ->
                         emit(errorMapper.mapUnknownCaptureOutcomeError(paymentIntent, captureResponse))
                 }

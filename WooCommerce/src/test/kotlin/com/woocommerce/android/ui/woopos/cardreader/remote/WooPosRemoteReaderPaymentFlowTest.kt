@@ -69,6 +69,8 @@ class WooPosRemoteReaderPaymentFlowTest {
         trackingInfoKeeper = trackingInfo,
         paymentsFlowTracker = tracker,
         appPrefs = appPrefs,
+        cardReaderFacade = mock(),
+        featureFlags = mock(),
     )
     private val order = Order.getEmptyOrder(Date(), Date()).copy(
         id = 123L,

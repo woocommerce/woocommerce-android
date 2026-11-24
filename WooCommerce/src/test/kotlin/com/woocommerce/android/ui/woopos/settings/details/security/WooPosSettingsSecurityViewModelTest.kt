@@ -5,6 +5,9 @@ import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.ADMIN
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.CASHIER
 import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalAction
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockPreferences
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLockSettings
+import kotlinx.coroutines.flow.flowOf
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
@@ -41,6 +44,9 @@ class WooPosSettingsSecurityViewModelTest {
         on { getOrNull() }.thenReturn(SiteModel().apply { id = 1 })
     }
     private val store: WooPosLocalPINStore = mock()
+    private val lockPreferences: WooPosLockPreferences = mock {
+        on { settings(any()) }.thenReturn(flowOf(Result.success(WooPosAutoLockSettings())))
+    }
     private val sessionState = MutableStateFlow<WooPosAccessSessionState>(WooPosAccessSessionState.Unprotected)
     private val session: WooPosAccessSession = mock {
         on { state }.thenReturn(sessionState)
@@ -419,7 +425,7 @@ class WooPosSettingsSecurityViewModelTest {
         verify(store, never()).removePIN(eq(1), eq(ADMIN), any())
     }
 
-    private fun createViewModel() = WooPosSettingsSecurityViewModel(selectedSite, store, session)
+    private fun createViewModel() = WooPosSettingsSecurityViewModel(selectedSite, store, session, lockPreferences)
 
     private suspend fun givenAdminSession(vararg pins: WooPosLocalRole) {
         givenPINs(*pins)

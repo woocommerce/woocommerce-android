@@ -25,6 +25,12 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.CardReaderTransport
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.TAP_TO_PAY_READER_MODEL
 import com.woocommerce.android.viewmodel.ResourceProvider
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -42,10 +48,35 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     private val trackingInfoKeeper: CardReaderTrackingInfoKeeper,
     @PointOfSaleMode private val paymentsFlowTracker: PaymentsFlowTracker,
     private val appPrefs: AppPrefs = AppPrefs,
+    private val cardReaderFacade: WooPosCardReaderFacade,
+    private val featureFlags: FeatureFlagRepository,
 ) {
     private val terminalPaymentPreparationResolver = TerminalPaymentPreparationResolver(wooStore, appPrefs)
 
     suspend fun collect(order: Order, onCaptureStarting: suspend () -> Unit = {}): Result {
+        val collection = currentCoroutineContext()[Job]
+        val owner = if (featureFlags.isEnabled(FeatureFlag.WOO_POS_ROLES) || cardReaderFacade.isPaymentPending) {
+            cardReaderFacade.beginPayment {
+                collection?.cancel()
+                false
+            } ?: return Result.Failed(genericFailureMessage(), "payment_unresolved")
+        } else {
+            null
+        }
+        return try {
+            collectPayment(order, onCaptureStarting).also { result ->
+                if (owner != null) {
+                    if (result == Result.Completed) cardReaderFacade.finishPayment(owner)
+                    else cardReaderFacade.markUnresolved(owner)
+                }
+            }
+        } catch (error: CancellationException) {
+            if (owner != null) cardReaderFacade.markUnresolved(owner)
+            throw error
+        }
+    }
+
+    private suspend fun collectPayment(order: Order, onCaptureStarting: suspend () -> Unit): Result {
         trackingInfoKeeper.setCurrency(order.currency)
         trackingInfoKeeper.setPaymentMethodType(PaymentMethodType.UNKNOWN.stringRepresentation)
         trackingInfoKeeper.setCardReaderModel(TAP_TO_PAY_READER_MODEL)
