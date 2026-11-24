@@ -2,6 +2,8 @@
 
 # Dependabot
 /gradle/libs.versions.toml @woocommerce/android-developers
+/gradle/wrapper/           @woocommerce/android-developers
+/gradlew*                  @woocommerce/android-developers
 Gemfile*       @woocommerce/apps-infra-tooling
 .ruby-version  @woocommerce/apps-infra-tooling
 .bundle/       @woocommerce/apps-infra-tooling
@@ -18,8 +20,6 @@ Dangerfile*            @woocommerce/apps-infra-tooling
 
 # Toolchain and environment pins
 .java-version          @woocommerce/apps-infra-tooling
-/gradle/wrapper/       @woocommerce/apps-infra-tooling
-/gradlew*              @woocommerce/apps-infra-tooling
 
 # Secrets
 .a8c-secrets/         @woocommerce/apps-infra-tooling
