@@ -428,7 +428,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
             controller.start()
 
-            verify(tracker).trackPaymentFailed(anyOrNull(), anyOrNull())
+            verify(tracker).trackPaymentFailed(anyOrNull(), anyOrNull(), anyOrNull())
         }
 
     @Test
@@ -1036,7 +1036,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
             controller.start()
 
-            verify(tracker).trackPaymentFailed(anyOrNull(), anyOrNull())
+            verify(tracker).trackPaymentFailed(anyOrNull(), anyOrNull(), anyOrNull())
         }
 
     @Test
