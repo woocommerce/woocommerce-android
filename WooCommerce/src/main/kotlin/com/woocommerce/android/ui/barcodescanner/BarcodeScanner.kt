@@ -175,7 +175,7 @@ internal fun DefaultScannerOverlay(onHardwareScannerInfoClicked: () -> Unit) {
 }
 
 @Composable
-private fun ScannerOptionsDivider() {
+internal fun ScannerOptionsDivider() {
     val lineColor = LocalContentColor.current.copy(alpha = SCANNER_OPTIONS_DIVIDER_ALPHA)
     Row(
         modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100)),
@@ -192,7 +192,7 @@ private fun ScannerOptionsDivider() {
 }
 
 @Composable
-private fun HardwareBarcodeScannerButton(onClick: () -> Unit) {
+internal fun HardwareBarcodeScannerButton(onClick: () -> Unit) {
     WCColoredButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,

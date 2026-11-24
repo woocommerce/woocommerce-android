@@ -25,7 +25,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStar
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayViewState
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
-import com.woocommerce.android.util.siteIdHash
+import com.woocommerce.android.util.pairingIdentity
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -137,7 +137,7 @@ class CardReaderModeViewModel @Inject constructor(
 
     private fun startSessionIfNeeded() {
         if (sessionStarted) return
-        val siteHash = selectedSite.getOrNull()?.remoteId()?.value?.let(::siteIdHash) ?: return
+        val identity = selectedSite.getOrNull()?.pairingIdentity() ?: return
         sessionStarted = true
 
         if (!cardReaderManager.initialized) {
@@ -160,7 +160,8 @@ class CardReaderModeViewModel @Inject constructor(
         }
         session.start(
             parentScope = viewModelScope,
-            siteHash = siteHash,
+            siteHash = identity.siteHash,
+            siteUrlHash = identity.siteUrlHash,
             deviceId = getOrCreateDeviceId(),
             isSimulated = isSimulated,
         )
@@ -194,10 +195,11 @@ class CardReaderModeViewModel @Inject constructor(
     private fun trackPaymentRejection(rejection: CardReaderRemoteSession.PaymentRejection) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.REMOTE_TTP_PHONE_PAYMENT_FAILED,
-            mapOf(
-                "error_code" to rejection.error.code,
-                "error_description" to rejection.description,
-            ),
+            buildMap {
+                put("error_code", rejection.error.code)
+                put("error_description", rejection.description)
+                rejection.stripeErrorCode?.let { put("stripe_error_code", it) }
+            },
         )
     }
 
@@ -279,6 +281,8 @@ class CardReaderModeViewModel @Inject constructor(
         CardReaderRemoteError.ConnectFailed,
         CardReaderRemoteError.CollectFailed,
         CardReaderRemoteError.CreateIntentFailed,
+        CardReaderRemoteError.Canceled,
+        CardReaderRemoteError.CardReadTimedOut,
         CardReaderRemoteError.UnexpectedReply,
         is CardReaderRemoteError.Unknown -> null
     }

@@ -74,6 +74,20 @@ class WPAPIResponseExtTests {
     }
 
     @Test
+    fun `given invalid product id error, when converting, then map the error type`() {
+        val error = WPAPINetworkError(
+            BaseNetworkError(BaseRequest.GenericErrorType.UNKNOWN),
+            "woocommerce_rest_invalid_product_id"
+        )
+        val response = WPAPIResponse.Error<String>(error)
+
+        val result = response.toWooPayload { it.hashCode() }
+
+        assertThat(result.isError).isTrue
+        assertThat(result.error.type).isEqualTo(WooErrorType.INVALID_PRODUCT_ID)
+    }
+
+    @Test
     fun `given invalid signature error, when converting, then map the error type`() {
         val error = WPAPINetworkError(
             BaseNetworkError(BaseRequest.GenericErrorType.UNKNOWN),

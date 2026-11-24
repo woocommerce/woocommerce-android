@@ -60,6 +60,23 @@ class WooPosSettingsViewModelTest {
     }
 
     @Test
+    fun `when ShowReceiptPrinterSetupDialog event collected, then receipt printer setup dialog state is set`() =
+        runTest {
+            // GIVEN
+            whenever(childToParentEventReceiver.events).thenReturn(
+                flowOf(ChildToParentEvent.SettingsEvent.ShowReceiptPrinterSetupDialog)
+            )
+
+            // WHEN
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(viewModel.state.value.dialogState)
+                .isEqualTo(WooPosSettingsDialogState.ReceiptPrinterSetupDialog)
+        }
+
+    @Test
     fun `given sync error dialog shown, when hideDialog called, then dialog is hidden`() = runTest {
         // GIVEN
         val errorMessage = "Network error"

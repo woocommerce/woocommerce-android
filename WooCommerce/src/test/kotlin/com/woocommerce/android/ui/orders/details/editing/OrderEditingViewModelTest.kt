@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.details.editing
 
 import androidx.lifecycle.SavedStateHandle
-import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.NetworkStatus
@@ -35,7 +34,6 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock {
         on { isConnected() } doReturn true
     }
-    private val crashLogging: CrashLogging = mock()
 
     @Before
     fun setUp() {
@@ -49,8 +47,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatchers,
         orderDetailRepository,
         orderEditingRepository,
-        networkStatus,
-        crashLogging
+        networkStatus
     )
 
     @Test
@@ -85,7 +82,6 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
             assertThat(orderLoadFailedEmitted).isTrue
             assertThat(sut.isOrderLoaded).isFalse
-            verify(crashLogging).sendReport(any(), any(), any())
         }
 
     @Test

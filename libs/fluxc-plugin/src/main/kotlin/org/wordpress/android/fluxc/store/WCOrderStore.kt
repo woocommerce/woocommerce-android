@@ -1132,9 +1132,7 @@ class WCOrderStore @Inject internal constructor(
                     dateModified = order.dateModified
                 }
             }.let { orderSummaries: List<WCOrderSummaryModel> ->
-                coroutineEngine.launch(API, this, "fetchOrdersListFirstPage") {
-                    orderSummaryDao.upsertOrderSummaries(orderSummaries)
-                }
+                orderSummaryDao.upsertOrderSummaries(orderSummaries)
             }
 
             if (deleteOldData) {

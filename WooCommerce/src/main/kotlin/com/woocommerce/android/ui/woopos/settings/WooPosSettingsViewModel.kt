@@ -56,6 +56,9 @@ class WooPosSettingsViewModel @Inject constructor(
                     is ChildToParentEvent.SettingsEvent.ShowCardReaderUpdateDialog -> {
                         showCardReaderUpdateDialog()
                     }
+                    is ChildToParentEvent.SettingsEvent.ShowReceiptPrinterSetupDialog -> {
+                        showReceiptPrinterSetupDialog()
+                    }
                     else -> Unit
                 }
             }
@@ -88,6 +91,8 @@ class WooPosSettingsViewModel @Inject constructor(
 
     private fun trackCategorySelection(category: WooPosSettingsCategory) {
         val event = when (category) {
+            // TODO WOOMOB-4602: Add Security tracking with PIN setup integration.
+            WooPosSettingsCategory.SECURITY -> return
             WooPosSettingsCategory.STORE -> StoreDetailsTapped
             WooPosSettingsCategory.PAYMENTS -> PaymentsTapped
             WooPosSettingsCategory.LOCAL_CATALOG -> LocalCatalogTapped
@@ -114,6 +119,10 @@ class WooPosSettingsViewModel @Inject constructor(
                 currentState
             }
         }
+    }
+
+    fun showPinSetupDialog() {
+        _state.update { it.copy(dialogState = WooPosSettingsDialogState.PinSetupDialog) }
     }
 
     fun showProductInfoDialog() {
@@ -148,6 +157,12 @@ class WooPosSettingsViewModel @Inject constructor(
     fun showCardReaderUpdateDialog() {
         _state.update { currentState ->
             currentState.copy(dialogState = WooPosSettingsDialogState.CardReaderUpdateDialog)
+        }
+    }
+
+    fun showReceiptPrinterSetupDialog() {
+        _state.update { currentState ->
+            currentState.copy(dialogState = WooPosSettingsDialogState.ReceiptPrinterSetupDialog)
         }
     }
 

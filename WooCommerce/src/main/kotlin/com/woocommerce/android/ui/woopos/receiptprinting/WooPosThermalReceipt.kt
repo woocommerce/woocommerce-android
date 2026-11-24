@@ -5,12 +5,12 @@ data class WooPosThermalReceipt(
     val storeAddress: String?,
     val storePhone: String?,
     val storeEmail: String?,
-    val datePaid: String,
+    val datePaid: LabeledText,
     val orderNumber: String,
-    val paymentMethod: String?,
+    val paymentMethod: LabeledText?,
     val lineItems: List<Row>,
     val totals: List<Row>,
-    val orderNote: String?,
+    val orderNote: LabeledText?,
     val refundPolicy: String?,
 ) {
     data class Row(
@@ -18,9 +18,8 @@ data class WooPosThermalReceipt(
         val amount: String,
     )
 
-    data class Labels(
-        val datePaid: String,
-        val paymentMethod: String,
-        val notes: String,
+    data class LabeledText(
+        val label: String,
+        val text: String,
     )
 }

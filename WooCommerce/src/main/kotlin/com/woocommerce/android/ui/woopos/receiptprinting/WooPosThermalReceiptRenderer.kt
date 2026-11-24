@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.receiptprinting
 
-import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.Labels
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.LabeledText
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.Row
 import javax.inject.Inject
 
@@ -8,13 +8,13 @@ import javax.inject.Inject
  * Text is measured with [String.length], which matches printed columns for monospaced Latin text only.
  */
 class WooPosThermalReceiptRenderer @Inject constructor() {
-    fun render(receipt: WooPosThermalReceipt, labels: Labels): String =
+    fun render(receipt: WooPosThermalReceipt): String =
         listOf(
             header(receipt),
-            payment(receipt, labels),
+            payment(receipt),
             receipt.lineItems.flatMap(::twoColumns),
             receipt.totals.flatMap(::twoColumns),
-            labeled(labels.notes, receipt.orderNote),
+            labeled(receipt.orderNote),
             wrap(receipt.refundPolicy),
         )
             .filter { it.isNotEmpty() }
@@ -25,13 +25,11 @@ class WooPosThermalReceiptRenderer @Inject constructor() {
             .flatMap(::wrap)
             .map { it.padStart((LINE_WIDTH + it.length) / 2) }
 
-    private fun payment(receipt: WooPosThermalReceipt, labels: Labels): List<String> =
-        labeled(labels.datePaid, receipt.datePaid) +
-            wrap(receipt.orderNumber) +
-            labeled(labels.paymentMethod, receipt.paymentMethod)
+    private fun payment(receipt: WooPosThermalReceipt): List<String> =
+        labeled(receipt.datePaid) + wrap(receipt.orderNumber) + labeled(receipt.paymentMethod)
 
-    private fun labeled(label: String, text: String?): List<String> =
-        wrap(text).let { if (it.isEmpty()) it else wrap(label) + it }
+    private fun labeled(labeledText: LabeledText?): List<String> =
+        wrap(labeledText?.text).let { if (it.isEmpty()) it else wrap(labeledText?.label) + it }
 
     private fun twoColumns(row: Row): List<String> {
         val labelLines = wrap(row.label)
