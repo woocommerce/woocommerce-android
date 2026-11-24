@@ -2,23 +2,79 @@ package com.woocommerce.android.ui.woopos.settings.details.security
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.roles.WooPosCapability
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityState.Protected
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-/** The session reports Unprotected only after it reads storage without PINs, so unreadable storage never offers setup. */
+/** Shows the saved PINs, so the toggle only turns off after storage confirms that they are gone. */
 @HiltViewModel
 class WooPosSettingsSecurityViewModel @Inject constructor(
-    accessSession: WooPosAccessSession,
+    private val selectedSite: SelectedSite,
+    private val store: WooPosLocalPINStore,
+    private val accessSession: WooPosAccessSession,
 ) : ViewModel() {
-    val isProtectionEnabled: StateFlow<Boolean> = accessSession.state
-        .map(::isProtected)
-        .stateIn(viewModelScope, SharingStarted.Eagerly, isProtected(accessSession.state.value))
+    private val _state = MutableStateFlow<WooPosSettingsSecurityState>(WooPosSettingsSecurityState.Loading)
+    val state: StateFlow<WooPosSettingsSecurityState> = _state.asStateFlow()
+    private var readJob: Job? = null
+    private var removalJob: Job? = null
 
-    private fun isProtected(state: WooPosAccessSessionState) = state != WooPosAccessSessionState.Unprotected
+    init {
+        viewModelScope.launch { accessSession.state.collect { refresh() } }
+    }
+
+    fun refresh() {
+        readJob?.cancel()
+        readJob = viewModelScope.launch { read()?.let { _state.value = it } }
+    }
+
+    fun onProtectionTurnedOff() {
+        if (removalJob?.isActive == true || _state.value !is Protected || !canManagePINs()) return
+        val id = selectedSite.getOrNull()?.id ?: return
+        readJob?.cancel()
+        removalJob = viewModelScope.launch {
+            val removed = withContext(NonCancellable) {
+                store.removePIN(id, WooPosLocalRole.ADMIN).also { if (isSelected(id)) accessSession.initialize() }
+            }.isSuccess
+            currentCoroutineContext().ensureActive()
+            val current = read() ?: return@launch
+            _state.value = if (!removed && isSelected(id) && current is Protected) {
+                current.copy(removalFailed = true)
+            } else {
+                current
+            }
+        }
+    }
+
+    private suspend fun read(): WooPosSettingsSecurityState? {
+        if (!canManagePINs()) return WooPosSettingsSecurityState.Restricted
+        val id = selectedSite.getOrNull()?.id ?: return WooPosSettingsSecurityState.Unavailable
+        val pins = store.getPINs(id)
+        currentCoroutineContext().ensureActive()
+        if (!isSelected(id)) return null
+        val saved = pins.getOrNull()
+        return when {
+            !canManagePINs() -> WooPosSettingsSecurityState.Restricted
+            saved == null -> WooPosSettingsSecurityState.Unavailable
+            saved.isEmpty() -> WooPosSettingsSecurityState.Off
+            else -> Protected(hasCashierPIN = WooPosLocalRole.CASHIER in saved, removalFailed = false)
+        }
+    }
+
+    private fun canManagePINs() = accessSession.state.value.allows(WooPosCapability.MANAGE_STORE_SETTINGS)
+
+    private fun isSelected(localSiteId: Int) = localSiteId == selectedSite.getOrNull()?.id
 }

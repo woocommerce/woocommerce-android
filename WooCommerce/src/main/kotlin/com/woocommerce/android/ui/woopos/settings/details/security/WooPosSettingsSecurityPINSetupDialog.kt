@@ -80,6 +80,7 @@ import com.woocommerce.android.ui.woopos.common.pin.PIN_DOT_SIZE
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDotShake
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDots
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPad
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.AccessUnavailable
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Choose
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Confirm
@@ -98,8 +99,8 @@ fun WooPosSettingsSecurityPINSetupDialog(
     onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
     onClose: () -> Unit,
     isFullScreen: Boolean = currentWooPosBreakpoint() == WooPosBreakpoint.Phone,
-    chooseTitle: String = stringResource(R.string.woopos_security_choose_pin),
-    confirmTitle: String = stringResource(R.string.woopos_security_confirm_pin),
+    chooseTitle: String? = null,
+    confirmTitle: String? = null,
 ) {
     val shouldDismiss = isVisible && state == AccessUnavailable
     LaunchedEffect(shouldDismiss) {
@@ -107,6 +108,8 @@ fun WooPosSettingsSecurityPINSetupDialog(
     }
     // The flow resets when the dialog hides, so the closing animation keeps showing the last visible step.
     val shown = remember(isVisible, state.takeIf { isVisible }) { state }
+    val resolvedChooseTitle = chooseTitle ?: stringResource(shown.role.pinSetupChooseTitleRes)
+    val resolvedConfirmTitle = confirmTitle ?: stringResource(shown.role.pinSetupConfirmTitleRes)
     val sendEvent = { event: WooPosSettingsSecurityPINSetupUIEvent -> if (isVisible) onUIEvent(event) }
     val close = { if (isVisible && shown.canClose) onClose() }
     val goBack = { sendEvent(WooPosSettingsSecurityPINSetupUIEvent.BackTapped) }
@@ -116,7 +119,7 @@ fun WooPosSettingsSecurityPINSetupDialog(
         }
         AnimatedVisibility(visible = isVisible, enter = fadeIn(), exit = fadeOut()) {
             Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceBright) {
-                PINSetupPhoneContent(shown, chooseTitle, confirmTitle, sendEvent, close)
+                PINSetupPhoneContent(shown, resolvedChooseTitle, resolvedConfirmTitle, sendEvent, close)
             }
         }
     } else {
@@ -128,7 +131,7 @@ fun WooPosSettingsSecurityPINSetupDialog(
             onDismissRequest = close,
         ) {
             BackHandler(enabled = isVisible && shown.canGoBack, onBack = goBack)
-            PINSetupDialogContent(shown, chooseTitle, confirmTitle, sendEvent, close)
+            PINSetupDialogContent(shown, resolvedChooseTitle, resolvedConfirmTitle, sendEvent, close)
         }
     }
 }
@@ -160,9 +163,9 @@ private fun PINSetupPhoneContent(
                 val bodyHeight = maxHeight
                 when (state) {
                     is Entry -> PINSetupPhoneEntry(state, chooseTitle, confirmTitle, onUIEvent)
-                    Saving, AccessUnavailable -> PINSetupProgress()
-                    Saved -> Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-                        PINSetupSaved(onContinue = onClose, minHeight = bodyHeight)
+                    is Saving, AccessUnavailable -> PINSetupProgress()
+                    is Saved -> Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+                        PINSetupSaved(state.role, onContinue = onClose, minHeight = bodyHeight)
                     }
                 }
             }
@@ -235,11 +238,11 @@ private fun PINSetupDialogContent(
                     spacing = WooPosSpacing.Large.value,
                     modifier = Modifier.onSizeChanged { entryHeight = with(density) { it.height.toDp().value } },
                 )
-                Saving, AccessUnavailable -> Spacer(Modifier.height(entryHeight.dp))
-                Saved -> PINSetupSaved(onContinue = onClose, minHeight = entryHeight.dp)
+                is Saving, AccessUnavailable -> Spacer(Modifier.height(entryHeight.dp))
+                is Saved -> PINSetupSaved(state.role, onContinue = onClose, minHeight = entryHeight.dp)
             }
         }
-        if (state == Saving || state == AccessUnavailable) PINSetupProgress()
+        if (state is Saving || state == AccessUnavailable) PINSetupProgress()
     }
 }
 
@@ -444,7 +447,7 @@ private val Error.messageRes: Int
     }
 
 @Composable
-private fun PINSetupSaved(onContinue: () -> Unit, minHeight: Dp) {
+private fun PINSetupSaved(role: WooPosLocalRole, onContinue: () -> Unit, minHeight: Dp) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -454,7 +457,8 @@ private fun PINSetupSaved(onContinue: () -> Unit, minHeight: Dp) {
     ) {
         Spacer(Modifier)
         WooPosSettingsSecurityProtectedMessage(
-            Modifier
+            role = role,
+            modifier = Modifier
                 .padding(vertical = WooPosSpacing.Large.value)
                 .semantics { liveRegion = LiveRegionMode.Polite }
         )
@@ -469,51 +473,80 @@ private fun PINSetupSaved(onContinue: () -> Unit, minHeight: Dp) {
 @WooPosPreview
 @Composable
 fun WooPosSettingsSecurityPINSetupChoosePreview() {
-    PINSetupDialogPreview(Choose())
+    PINSetupDialogPreview(Choose(WooPosLocalRole.ADMIN))
 }
 
 @WooPosPreview
 @Composable
 fun WooPosSettingsSecurityPINSetupPartialPreview() {
-    PINSetupDialogPreview(Choose(enteredDigits = 2))
+    PINSetupDialogPreview(Choose(WooPosLocalRole.ADMIN, enteredDigits = 2))
 }
 
 @WooPosPreview
 @Composable
 fun WooPosSettingsSecurityPINSetupConfirmPreview() {
-    PINSetupDialogPreview(Confirm())
+    PINSetupDialogPreview(Confirm(WooPosLocalRole.CASHIER))
 }
 
 @WooPosPreview
 @Composable
 fun WooPosSettingsSecurityPINSetupMismatchPreview() {
-    PINSetupDialogPreview(Choose(error = Error.MISMATCH))
+    PINSetupDialogPreview(Choose(WooPosLocalRole.ADMIN, error = Error.MISMATCH))
 }
 
 @WooPosPreview
 @Composable
 fun WooPosSettingsSecurityPINSetupFailurePreview() {
-    PINSetupDialogPreview(Choose(error = Error.SAVE_FAILED))
+    PINSetupDialogPreview(Choose(WooPosLocalRole.ADMIN, error = Error.SAVE_FAILED))
+}
+
+@WooPosPreview
+@Composable
+fun WooPosSettingsSecurityPINSetupTakenPreview() {
+    PINSetupDialogPreview(Choose(WooPosLocalRole.CASHIER, error = Error.PIN_TAKEN))
+}
+
+@WooPosPreview
+@Composable
+fun WooPosSettingsSecurityPINSetupCashierSavedPreview() {
+    PINSetupDialogPreview(Saved(WooPosLocalRole.CASHIER))
 }
 
 @WooPosPreview
 @Composable
 fun WooPosSettingsSecurityPINSetupSavingPreview() {
-    PINSetupDialogPreview(Saving)
+    PINSetupDialogPreview(Saving(WooPosLocalRole.ADMIN))
 }
 
 @WooPosPreview
 @Composable
 fun WooPosSettingsSecurityPINSetupSavedPreview() {
-    PINSetupDialogPreview(Saved)
+    PINSetupDialogPreview(Saved(WooPosLocalRole.ADMIN))
 }
 
 @Composable
 private fun PINSetupDialogPreview(state: WooPosSettingsSecurityPINSetupState) {
     WooPosTheme {
-        WooPosSettingsSecurityPINSetupDialog(state = state, isVisible = true, onUIEvent = {}, onClose = {})
+        WooPosSettingsSecurityPINSetupDialog(
+            state = state,
+            isVisible = true,
+            onUIEvent = {},
+            onClose = {},
+        )
     }
 }
+
+private val WooPosLocalRole.pinSetupChooseTitleRes: Int
+    get() = when (this) {
+        WooPosLocalRole.ADMIN -> R.string.woopos_security_choose_pin
+        WooPosLocalRole.CASHIER -> R.string.woopos_security_choose_cashier_pin
+    }
+
+private val WooPosLocalRole.pinSetupConfirmTitleRes: Int
+    get() = when (this) {
+        WooPosLocalRole.ADMIN -> R.string.woopos_security_confirm_pin
+        WooPosLocalRole.CASHIER -> R.string.woopos_security_confirm_cashier_pin
+    }
 
 private const val PAGE_MILLIS = 300
 private const val PAGE_TRAVEL = 1.27f

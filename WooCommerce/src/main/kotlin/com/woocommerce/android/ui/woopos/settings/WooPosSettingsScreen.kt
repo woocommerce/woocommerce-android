@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolba
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupDialog
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategoriesPaneScreen
@@ -104,7 +105,7 @@ private fun WooPosSettingsPhoneContent(
     onBack: () -> Unit,
     onDismissDetail: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
-    onShowPinSetupDialog: () -> Unit,
+    onShowPinSetupDialog: (WooPosLocalRole) -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit,
@@ -178,7 +179,7 @@ private fun WooPosSettingsTabletContent(
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
-    onShowPinSetupDialog: () -> Unit,
+    onShowPinSetupDialog: (WooPosLocalRole) -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit,
@@ -247,8 +248,9 @@ private fun SettingsDialogs(
 
     val pinSetup: WooPosSettingsSecurityPINSetupViewModel = hiltViewModel()
     val pinSetupState by pinSetup.state.collectAsState()
-    val isPinSetupVisible = dialogState is WooPosSettingsDialogState.PinSetupDialog
-    LaunchedEffect(isPinSetupVisible) { if (!isPinSetupVisible) pinSetup.reset() }
+    val pinSetupRole = (dialogState as? WooPosSettingsDialogState.PinSetupDialog)?.role
+    LaunchedEffect(pinSetupRole) { pinSetupRole?.let(pinSetup::start) ?: pinSetup.reset() }
+    val isPinSetupVisible = pinSetupRole != null && pinSetupState.role == pinSetupRole
     WooPosSettingsSecurityPINSetupDialog(
         state = pinSetupState,
         isVisible = isPinSetupVisible,

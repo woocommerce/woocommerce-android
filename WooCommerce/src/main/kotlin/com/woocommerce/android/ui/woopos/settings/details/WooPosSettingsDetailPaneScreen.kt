@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -18,12 +19,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDetailDestination
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDialogState
@@ -36,6 +41,8 @@ import com.woocommerce.android.ui.woopos.settings.details.help.WooPosHelpDetailS
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSettingsLocalCatalogScreen
 import com.woocommerce.android.ui.woopos.settings.details.payments.WooPosSettingsPaymentsScreen
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityScreen
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityState
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityViewModel
 import com.woocommerce.android.ui.woopos.settings.details.store.WooPosSettingsStoreScreen
 
 @Suppress("CyclomaticComplexMethod")
@@ -45,7 +52,7 @@ fun WooPosSettingsDetailPaneScreen(
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
-    onShowPinSetupDialog: () -> Unit,
+    onShowPinSetupDialog: (WooPosLocalRole) -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -54,6 +61,27 @@ fun WooPosSettingsDetailPaneScreen(
 ) {
     val currentDestination = state.currentDestination
     val showBack = state.canGoBack || showBackOnRoot
+    val pinSetupRole = (state.dialogState as? WooPosSettingsDialogState.PinSetupDialog)?.role
+    val transition = updateTransition(currentDestination, label = "settings_detail_animation")
+    val securityViewModel = if (currentDestination is WooPosSettingsDetailDestination.Security ||
+        transition.currentState is WooPosSettingsDetailDestination.Security
+    ) {
+        hiltViewModel<WooPosSettingsSecurityViewModel>()
+    } else {
+        null
+    }
+    val securityState = securityViewModel?.state?.collectAsState()?.value
+    val visibleSecurityState = when {
+        securityState == null -> WooPosSettingsSecurityState.Loading
+        pinSetupRole == WooPosLocalRole.ADMIN && securityState is WooPosSettingsSecurityState.Protected ->
+            WooPosSettingsSecurityState.Off
+        else -> securityState
+    }
+    LaunchedEffect(currentDestination, pinSetupRole) {
+        if (currentDestination is WooPosSettingsDetailDestination.Security && pinSetupRole == null) {
+            securityViewModel?.refresh()
+        }
+    }
 
     BackHandler(enabled = registerBackHandler && showBack) {
         onBack()
@@ -62,18 +90,21 @@ fun WooPosSettingsDetailPaneScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        DetailPaneHeader(destination = currentDestination, onBack = if (showBack) onBack else null)
+        DetailPaneHeader(
+            destination = currentDestination,
+            onBack = if (showBack) onBack else null,
+            showHeading = currentDestination.showsHeading ||
+                currentDestination is WooPosSettingsDetailDestination.Security &&
+                visibleSecurityState is WooPosSettingsSecurityState.Protected,
+        )
 
-        AnimatedContent(
-            targetState = currentDestination,
-            transitionSpec = { settingsDetailTransition() },
-            label = "settings_detail_animation"
-        ) { destination ->
+        transition.AnimatedContent(transitionSpec = { settingsDetailTransition() }) { destination ->
             when (destination) {
                 is WooPosSettingsDetailDestination.Security.Overview -> {
                     WooPosSettingsSecurityScreen(
-                        isPINSetupVisible = state.dialogState is WooPosSettingsDialogState.PinSetupDialog,
-                        onGetStartedClicked = onShowPinSetupDialog,
+                        state = visibleSecurityState,
+                        onSetUpPIN = onShowPinSetupDialog,
+                        onProtectionTurnedOff = { securityViewModel?.onProtectionTurnedOff() },
                     )
                 }
 
@@ -116,9 +147,12 @@ fun WooPosSettingsDetailPaneScreen(
 }
 
 @Composable
-private fun DetailPaneHeader(destination: WooPosSettingsDetailDestination, onBack: (() -> Unit)?) {
-    val hasHeading = destination.showsHeading
-    if (!hasHeading && onBack == null) {
+private fun DetailPaneHeader(
+    destination: WooPosSettingsDetailDestination,
+    onBack: (() -> Unit)?,
+    showHeading: Boolean,
+) {
+    if (!showHeading && onBack == null) {
         Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
         return
     }
@@ -129,7 +163,7 @@ private fun DetailPaneHeader(destination: WooPosSettingsDetailDestination, onBac
                 start = WooPosSpacing.Medium.value,
                 end = WooPosSpacing.Medium.value,
             ),
-        titleText = if (hasHeading) stringResource(destination.titleRes) else "",
+        titleText = if (showHeading) stringResource(destination.titleRes) else "",
         onBackClicked = onBack,
         titleStyle = WooPosTypography.Heading,
         titleFontWeight = FontWeight.Bold
