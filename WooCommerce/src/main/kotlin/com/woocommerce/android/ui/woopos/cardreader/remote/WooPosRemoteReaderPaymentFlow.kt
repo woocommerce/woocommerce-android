@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.cardreader.remote
 
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.ui.woopos.cardpayment.WooPosCardPaymentRepository
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
@@ -50,15 +51,28 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     private val appPrefs: AppPrefs = AppPrefs,
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val featureFlags: FeatureFlagRepository,
+    private val orderRepository: WooPosCardPaymentRepository,
 ) {
     private val terminalPaymentPreparationResolver = TerminalPaymentPreparationResolver(wooStore, appPrefs)
 
-    suspend fun collect(order: Order, onCaptureStarting: suspend () -> Unit = {}): Result {
+    suspend fun collect(
+        order: Order,
+        onCaptureStarting: suspend () -> Unit = {},
+        onResolved: suspend () -> Unit = {},
+    ): Result {
+        val siteId = selectedSite.get().id
         val collection = currentCoroutineContext()[Job]
         val owner = if (featureFlags.isEnabled(FeatureFlag.WOO_POS_ROLES) || cardReaderFacade.isPaymentPending) {
             cardReaderFacade.beginPayment {
                 collection?.cancel()
-                false
+                val paid = selectedSite.getOrNull()?.id == siteId &&
+                    orderRepository.fetchOrder(order.id)?.isOrderPaid == true
+                if (paid && selectedSite.getOrNull()?.id == siteId) {
+                    onResolved()
+                    true
+                } else {
+                    false
+                }
             } ?: return Result.Failed(genericFailureMessage(), "payment_unresolved")
         } else {
             null
@@ -66,8 +80,8 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
         return try {
             collectPayment(order, onCaptureStarting).also { result ->
                 if (owner != null) {
-                    if (result == Result.Completed) cardReaderFacade.finishPayment(owner)
-                    else cardReaderFacade.markUnresolved(owner)
+                    if (result is Result.Failed && result.isUnresolved) cardReaderFacade.markUnresolved(owner)
+                    else cardReaderFacade.finishPayment(owner)
                 }
             }
         } catch (error: CancellationException) {
@@ -171,6 +185,11 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
                     errorDescription = "remote_rejected: ${outcome.error.code} - ${outcome.description}",
                     errorType = outcome.error.toPaymentErrorType(),
                     stripeErrorCode = outcome.stripeErrorCode,
+                    isUnresolved = outcome.error == CardReaderRemoteError.UnexpectedReply ||
+                        outcome.error is CardReaderRemoteError.Unknown ||
+                        (outcome.error == CardReaderRemoteError.CollectFailed && outcome.stripeErrorCode !in setOf(
+                            "DECLINED_BY_STRIPE_API", "DECLINED_BY_READER",
+                        )),
                 )
             }
             CollectPaymentOutcome.TimedOut -> {
@@ -178,6 +197,7 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
                 Result.Failed(
                     message = genericFailureMessage(),
                     errorDescription = "remote_timed_out: phone reader did not reply in time",
+                    isUnresolved = true,
                 )
             }
             is CollectPaymentOutcome.Failed -> {
@@ -185,6 +205,7 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
                 Result.Failed(
                     message = mapFailureToUserMessage(outcome.cause),
                     errorDescription = "remote_failed: ${outcome.cause.describeWithCauses()}",
+                    isUnresolved = true,
                 )
             }
         }
@@ -227,6 +248,10 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
             is CapturePaymentResponse.Error -> Result.Failed(
                 message = response.message,
                 errorDescription = "capture_failed: ${response::class.java.simpleName} - ${response.message}",
+                isUnresolved = response is CapturePaymentResponse.Error.GenericError ||
+                    response is CapturePaymentResponse.Error.ServerError ||
+                    response is CapturePaymentResponse.Error.NetworkError ||
+                    response is CapturePaymentResponse.Error.GatewayError,
             )
         }
 
@@ -245,6 +270,7 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
             val errorDescription: String = message,
             val errorType: CardPaymentStatusErrorType = CardPaymentStatusErrorType.Generic,
             val stripeErrorCode: String? = null,
+            val isUnresolved: Boolean = false,
         ) : Result()
     }
 

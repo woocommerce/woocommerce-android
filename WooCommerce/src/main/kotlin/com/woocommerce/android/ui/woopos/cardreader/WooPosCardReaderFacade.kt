@@ -16,6 +16,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.flow.dropWhile
+import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,17 +44,41 @@ class WooPosCardReaderFacade @Inject constructor(
         if (isPaymentPending) return false
         if (!featureFlags.isEnabled(FeatureFlag.WOO_POS_ROLES)) return true
         val owner = beginPayment(controller::cancelForLock) ?: return false
+        observePayment(controller, owner)
+        return true
+    }
+
+    fun retryPayment(controller: CardReaderPaymentController, retry: () -> Unit): Boolean {
+        if (!featureFlags.isEnabled(FeatureFlag.WOO_POS_ROLES)) {
+            retry()
+            return true
+        }
+        if (isPaymentPending) return false
+        val previous = controller.paymentState.value
+        val owner = beginPayment(controller::cancelForLock) ?: return false
+        retry()
+        observePayment(controller, owner, previous)
+        return true
+    }
+
+    private fun observePayment(
+        controller: CardReaderPaymentController,
+        owner: PaymentOwner,
+        previous: com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState? = null,
+    ) {
         owner.observer = scope.launch {
-            controller.paymentState.takeWhile { payment ->
+            controller.paymentState.dropWhile { it === previous }.takeWhile { payment ->
                 when (payment) {
                     is CardReaderPaymentState.PaymentSuccessful -> finishPayment(owner)
-                    is CardReaderPaymentState.PaymentFailed -> markUnresolved(owner)
+                    is CardReaderPaymentState.PaymentFailed -> {
+                        if (payment.errorType == PaymentFlowError.CaptureOutcomeUnknown) markUnresolved(owner)
+                        else finishPayment(owner)
+                    }
                     else -> Unit
                 }
                 (_paymentState.value as? PaymentState.Pending)?.owner === owner
             }.collect {}
         }
-        return true
     }
 
     internal fun beginPayment(cancel: suspend () -> Boolean): PaymentOwner? {

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -54,6 +55,13 @@ fun WooPosRootScreen(
     val homeViewModel: WooPosHomeViewModel = hiltViewModel()
     val lockState by lockViewModel.state.collectAsState()
     val approvalState by approvalViewModel.state.collectAsState()
+    val exitRequested by lockViewModel.exitRequested.collectAsState()
+    LaunchedEffect(exitRequested, activity) {
+        if (exitRequested && !activity.isFinishing) {
+            if (activity.isTaskRoot) activity.startActivity(Intent(activity, MainActivity::class.java))
+            activity.finish()
+        }
+    }
 
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { approvalViewModel.dismiss() }
     DisposableEffect(rootController, approvalViewModel) {
@@ -67,18 +75,7 @@ fun WooPosRootScreen(
 
     WooPosRootScreen(state = lockState, onUIEvent = lockViewModel::onUIEvent, modifier = modifier) {
         // Gate the default Activity finish when no destination handles Back.
-        val exitPOS: () -> Unit = {
-            lockViewModel.onAuthorizedExit {
-                if (!activity.isFinishing) {
-                    activity.startActivity(
-                        Intent(activity, MainActivity::class.java).addFlags(
-                            Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                        )
-                    )
-                    activity.finish()
-                }
-            }
-        }
+        val exitPOS = lockViewModel::onAuthorizedExit
         BackHandler { approvalViewModel.requestApproval(WooPosManagerApprovalAction.Exit, exitPOS) }
         CompositionLocalProvider(
             LocalWooPosRequestApproval provides { action, perform ->

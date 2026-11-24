@@ -158,9 +158,10 @@ class WooPosAccessSession @Inject constructor(
     }
 
     suspend fun unlock(pin: String) {
-        if (!flagEnabled || isPaymentPending || _state.value is WooPosAccessSessionState.Unlocked) return
-        val status = _state.value.status
-        if (status is WooPosPINEntryStatus.Wait || status == WooPosPINEntryStatus.StorageUnavailable) return
+        if (!flagEnabled || isPaymentPending || _state.value == WooPosAccessSessionState.Exiting) return
+        if (_state.value == WooPosAccessSessionState.Unprotected) initialize()
+        val locked = _state.value as? WooPosAccessSessionState.Locked ?: return
+        if (!locked.status.canEnterPIN) return
         authenticate { id -> rateLimiter.authenticate(id, pin) }
     }
 
@@ -192,9 +193,17 @@ class WooPosAccessSession @Inject constructor(
         role: WooPosLocalRole,
     ) {
         val preferences = lockPreferences.settings(id).first()
-        if (preferences.isFailure || !isCurrent(request, id)) return
+        if (!isCurrent(request, id)) return
+        if (preferences.isFailure) {
+            _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
+            return
+        }
         val retained = lockPreferences.retainPOS(id) { isCurrent(request, id) }
-        if (retained.isFailure || !isCurrent(request, id)) return
+        if (!isCurrent(request, id)) return
+        if (retained.isFailure) {
+            _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
+            return
+        }
         val reset = rateLimiter.resetAfterRecovery(id)
         currentCoroutineContext().ensureActive()
         if (isCurrent(request, id) && !isPaymentPending) {
@@ -269,8 +278,13 @@ class WooPosAccessSession @Inject constructor(
     }
 
     suspend fun exitPOS(onExit: () -> Unit) {
+        if (!flagEnabled) {
+            onExit()
+            return
+        }
         if (isPaymentPending || _state.value.isLocked) return
         val id = selectedSite.getOrNull()?.id
+        val protectionEnabled = isEnabled
         val request = ++generation.value
         _state.value = WooPosAccessSessionState.Exiting
         val cleared = lockPreferences.clearRestoreState(id) {
@@ -278,8 +292,10 @@ class WooPosAccessSession @Inject constructor(
                 initialLogoutVersion == logoutVersion.value
         }
         currentCoroutineContext().ensureActive()
-        if (request != generation.value || id != selectedSite.getOrNull()?.id) return
-        if (cleared.isFailure) {
+        if (request != generation.value || id != selectedSite.getOrNull()?.id ||
+            initialLogoutVersion != logoutVersion.value
+        ) return
+        if (cleared.isFailure && protectionEnabled) {
             _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
         } else {
             onExit()

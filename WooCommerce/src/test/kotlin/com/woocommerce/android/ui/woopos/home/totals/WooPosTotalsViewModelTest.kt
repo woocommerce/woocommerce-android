@@ -3445,7 +3445,7 @@ class WooPosTotalsViewModelTest {
                 )
             )
             whenever(remoteReaderSession.state).thenReturn(remoteState)
-            whenever(remoteReaderPaymentFlow.collect(any(), any()))
+            whenever(remoteReaderPaymentFlow.collect(any(), any(), any()))
                 .thenReturn(WooPosRemoteReaderPaymentFlow.Result.Failed("error"))
 
             val vm = createViewModelAndSetupForSuccessfulOrderCreation()
@@ -3490,7 +3490,7 @@ class WooPosTotalsViewModelTest {
                 WooPosRemoteReaderSession.State.Connected(simulatedRemoteReader(), "SIM-1")
             )
             whenever(remoteReaderSession.state).thenReturn(remoteState)
-            whenever(remoteReaderPaymentFlow.collect(any(), any())).doSuspendableAnswer { invocation ->
+            whenever(remoteReaderPaymentFlow.collect(any(), any(), any())).doSuspendableAnswer { invocation ->
                 invocation.getArgument<suspend () -> Unit>(1).invoke()
                 WooPosRemoteReaderPaymentFlow.Result.Completed
             }
@@ -3517,7 +3517,7 @@ class WooPosTotalsViewModelTest {
         val events = WooPosPaymentsFlowTrackerEventProvider(timingData, mock())
         var collections = 0
         var outcome: WooPosAnalyticsEvent? = null
-        whenever(remoteReaderPaymentFlow.collect(any(), any())).doSuspendableAnswer { invocation ->
+        whenever(remoteReaderPaymentFlow.collect(any(), any(), any())).doSuspendableAnswer { invocation ->
             collections++
             val onCaptureStarting = invocation.getArgument<suspend () -> Unit>(1)
             if (collections == 1) {

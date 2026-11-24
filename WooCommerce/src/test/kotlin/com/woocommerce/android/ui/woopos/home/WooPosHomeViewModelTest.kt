@@ -536,7 +536,9 @@ class WooPosHomeViewModelTest {
             analyticsTracker,
             soundHelper,
             preferencesRepository,
-            SavedStateHandle()
+            SavedStateHandle(),
+            mock(),
+            mock(),
         ).also { viewModel = it }
     }
 }

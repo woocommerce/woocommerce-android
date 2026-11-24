@@ -170,7 +170,9 @@ class WooPosCardPaymentViewModel @Inject constructor(
                 title = resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title),
                 subtitle = resourceProvider.getString(R.string.woopos_success_totals_payment_processing_subtitle),
             )
-            when (val result = remoteReaderPaymentFlow.collect(order)) {
+            when (val result = remoteReaderPaymentFlow.collect(order, onResolved = {
+                if (saleSiteId == selectedSite.getOrNull()?.id) handlePaymentSuccessful()
+            })) {
                 WooPosRemoteReaderPaymentFlow.Result.Completed -> handlePaymentSuccessful()
                 is WooPosRemoteReaderPaymentFlow.Result.Failed -> {
                     _state.value = WooPosCardPaymentState.PaymentFailed(
@@ -185,7 +187,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     private fun collectPayment() {
-        if (!isCurrentSale()) return
+        if (!isCurrentSale() || cardReaderFacade.isPaymentPending) return
         activePaymentMode = PaymentMode.BLUETOOTH
         if (!networkStatus.isConnected()) {
             _state.value = WooPosCardPaymentState.PaymentFailed(
@@ -350,6 +352,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     )
 
     fun onScreenResumed() {
+        if (cardReaderFacade.isPaymentPending) return
         if (_state.value is WooPosCardPaymentState.Collecting) {
             when (effectiveReaderStatusProvider.current()) {
                 WooPosEffectiveReaderStatus.RemoteConnected -> collectPaymentRemote()
@@ -390,7 +393,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
         }
         val onRetry = paymentState.onRetry
         if (onRetry != null) {
-            onRetry()
+            val controller = cardReaderPaymentController ?: return
+            cardReaderFacade.retryPayment(controller, onRetry)
         } else {
             collectPayment()
         }

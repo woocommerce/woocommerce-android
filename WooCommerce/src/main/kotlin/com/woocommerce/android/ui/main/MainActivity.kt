@@ -63,6 +63,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.databinding.ActivityMainBinding
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosRestorePOS
+import com.woocommerce.android.ui.woopos.root.WooPosActivity
+import kotlinx.coroutines.Job
 import com.woocommerce.android.extensions.EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.collapse
@@ -370,8 +373,12 @@ class MainActivity :
         return super.onCreateOptionsMenu(menu)
     }
 
+    @Inject lateinit var restorePOS: WooPosRestorePOS
+    private var resolvingPOSLaunch = true
+    private var posLaunchJob: Job? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        installSplashScreen().setKeepOnScreenCondition { resolvingPOSLaunch }
         // Drop stale main-flow state when no site is selected so login can take over cleanly.
         val bundle = if (SelectedSite.hasSelectedSiteId(this)) savedInstanceState else null
         super.onCreate(bundle)
@@ -379,10 +386,44 @@ class MainActivity :
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
+            resolvingPOSLaunch = false
             showLoginScreen()
             return
         }
 
+        resolveLauncherEntry(savedInstanceState)
+    }
+
+    private fun resolveLauncherEntry(savedInstanceState: Bundle?) {
+        posLaunchJob?.cancel()
+        val launcherEntry = intent.action == Intent.ACTION_MAIN && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
+        if (!launcherEntry) {
+            resolvingPOSLaunch = false
+            if (!::binding.isInitialized) initializeMainContent(savedInstanceState)
+            else handleMainIntent()
+            return
+        }
+        resolvingPOSLaunch = true
+        if (::binding.isInitialized) binding.root.isVisible = false
+        posLaunchJob = lifecycleScope.launch {
+            if (restorePOS()) {
+                startActivity(Intent(this@MainActivity, WooPosActivity::class.java).apply {
+                    action = Intent.ACTION_MAIN
+                    addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                })
+                finish()
+            } else {
+                resolvingPOSLaunch = false
+                if (!::binding.isInitialized) initializeMainContent(savedInstanceState)
+                else {
+                    binding.root.isVisible = true
+                    handleMainIntent()
+                }
+            }
+        }
+    }
+
+    private fun initializeMainContent(savedInstanceState: Bundle?) {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         // AppBarLayout installs a default elevation animator from its Material style.
@@ -454,6 +495,7 @@ class MainActivity :
         }
 
         viewModel.showFeatureAnnouncementIfNeeded()
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) onMainContentResumed()
     }
 
     private fun handleIncomingImages() {
@@ -480,6 +522,10 @@ class MainActivity :
 
     override fun onResume() {
         super.onResume()
+        if (::binding.isInitialized && !resolvingPOSLaunch) onMainContentResumed()
+    }
+
+    private fun onMainContentResumed() {
         AnalyticsTracker.trackViewShown(this)
 
         // Track if App was opened from a widget
@@ -504,7 +550,7 @@ class MainActivity :
     }
 
     override fun onPause() {
-        binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
+        if (::binding.isInitialized) binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
         super.onPause()
     }
 
@@ -518,8 +564,11 @@ class MainActivity :
         }
 
         setIntent(intent)
-        initFragment(null)
+        resolveLauncherEntry(null)
+    }
 
+    private fun handleMainIntent() {
+        initFragment(null)
         viewModel.handleIncomingAppLink(intent.data)
         handleIncomingImages()
     }
@@ -532,8 +581,10 @@ class MainActivity :
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt(KEY_BOTTOM_NAV_POSITION, binding.bottomNav.currentPosition.id)
-        outState.putInt(KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
+        if (::binding.isInitialized) {
+            outState.putInt(KEY_BOTTOM_NAV_POSITION, binding.bottomNav.currentPosition.id)
+            outState.putInt(KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
+        }
         super.onSaveInstanceState(outState)
     }
 

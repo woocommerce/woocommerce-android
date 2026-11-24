@@ -16,7 +16,7 @@ sealed interface WooPosAccessSessionState {
     }
 
     data object Exiting : WooPosAccessSessionState {
-        override val status = WooPosPINEntryStatus.Checking
+        override val status = WooPosPINEntryStatus.Initializing
     }
     data object Unprotected : WooPosAccessSessionState
     data class Unlocked(override val activeRole: WooPosLocalRole) : WooPosAccessSessionState

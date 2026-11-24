@@ -8,10 +8,17 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
+import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
+import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
+import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosCardReaderPaymentProtectionTest {
@@ -20,7 +27,7 @@ class WooPosCardReaderPaymentProtectionTest {
         on { readerStatus }.thenReturn(MutableStateFlow(com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected()))
     }
     private val flags: FeatureFlagRepository = mock()
-    private val facade = WooPosCardReaderFacade(manager, flags)
+    private val facade by lazy { WooPosCardReaderFacade(manager, flags) }
 
     @Test
     fun `given an active payment, when a second collection starts, then it cannot acquire the reader`() {
@@ -59,6 +66,7 @@ class WooPosCardReaderPaymentProtectionTest {
         val gate = CompletableDeferred<Boolean>()
         val owner = requireNotNull(facade.beginPayment { gate.await() })
         val cancellation = async { facade.cancelPayment() }
+        runCurrent()
 
         // WHEN
         facade.finishPayment(owner)
@@ -82,6 +90,7 @@ class WooPosCardReaderPaymentProtectionTest {
         var cancellations = 0
         facade.beginPayment { cancellations++; gate.await() }
         val pending = async { facade.cancelPayment() }
+        runCurrent()
 
         // WHEN
         facade.cancelPayment()
@@ -106,4 +115,54 @@ class WooPosCardReaderPaymentProtectionTest {
         // THEN
         assertThat((facade.paymentState.value as WooPosCardReaderFacade.PaymentState.Pending).owner).isSameAs(current)
     }
+    @Test
+    fun `given a tracked controller, when a definite failure arrives, then a new collection is allowed`() = runTest {
+        // GIVEN
+        whenever(flags.isEnabled(FeatureFlag.WOO_POS_ROLES)).thenReturn(true)
+        val states = MutableStateFlow<CardReaderPaymentOrRefundState>(CardReaderPaymentState.LoadingData {})
+        val controller: CardReaderPaymentController = mock { on { paymentState }.thenReturn(states) }
+        assertThat(facade.trackPayment(controller)).isTrue()
+        runCurrent()
+
+        // WHEN
+        states.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.Cancelable(
+            PaymentFlowError.Canceled, "", {},
+        )
+        runCurrent()
+
+        // THEN
+        assertThat(facade.isPaymentPending).isFalse()
+        assertThat(facade.trackPayment(mock { on { paymentState }.thenReturn(
+            MutableStateFlow(CardReaderPaymentState.LoadingData {})
+        ) })).isTrue()
+    }
+
+    @Test
+    fun `given a failed controller, when retry has not emitted a new state, then its owner stays active`() = runTest {
+        // GIVEN
+        whenever(flags.isEnabled(FeatureFlag.WOO_POS_ROLES)).thenReturn(true)
+        val failed = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.Cancelable(
+            PaymentFlowError.Canceled, "", {},
+        )
+        val states = MutableStateFlow<CardReaderPaymentOrRefundState>(failed)
+        val controller: CardReaderPaymentController = mock { on { paymentState }.thenReturn(states) }
+
+        // WHEN
+        assertThat(facade.retryPayment(controller) {}).isTrue()
+        runCurrent()
+
+        // THEN
+        assertThat(facade.isPaymentPending).isTrue()
+        assertThat(facade.beginPayment { true }).isNull()
+
+        // WHEN
+        states.value = CardReaderPaymentState.LoadingData {}
+        runCurrent()
+        states.value = failed.copy(amountWithCurrencyLabel = "new attempt")
+        runCurrent()
+
+        // THEN
+        assertThat(facade.isPaymentPending).isFalse()
+    }
+
 }

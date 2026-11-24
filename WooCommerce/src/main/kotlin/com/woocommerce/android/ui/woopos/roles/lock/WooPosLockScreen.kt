@@ -60,6 +60,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLoadingScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
@@ -194,6 +195,12 @@ private fun BoxWithConstraintsScope.LockContent(
                 verticalArrangement = Arrangement.spacedBy(metrics.sectionSpacing),
             ) {
                 WooPosPINEntryFeedback(state.status, state.enteredDigits, layout.statusHeight)
+                if (state.status == WooPosPINEntryStatus.PaymentPending) {
+                    WooPosButtonSmall(
+                        text = stringResource(R.string.woopos_payment_restore_check),
+                        onClick = { onUIEvent(WooPosLockScreenUIEvent.CheckPaymentStatus) },
+                    )
+                }
                 // TODO WOOMOB-4606: Show Forgot PIN once PIN recovery is available.
                 WooPosPINPad(
                     enteredDigits = state.enteredDigits,

@@ -5,6 +5,8 @@ import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.CANCELED
 import com.stripe.stripeterminal.external.models.PaymentMethod
+import com.stripe.stripeterminal.external.models.TerminalException
+import com.stripe.stripeterminal.external.models.TerminalErrorCode
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.CardReaderStore.PreparePaymentResponse
@@ -80,21 +82,30 @@ internal class PaymentManager(
         attempt.cancelRequested = true
         return try {
             val intent = attempt.intent.await().getOrThrow() ?: return true
-            if (attempt.capturing || activePayment !== attempt) return false
+            if (attempt.captureOutcome == CaptureOutcome.IN_PROGRESS ||
+                attempt.captureOutcome == CaptureOutcome.CAPTURED || activePayment !== attempt) return false
             if (!terminalWrapper.cancelPaymentCommandAndAwait()) return false
-            if (attempt.capturing || activePayment !== attempt) return false
-            terminalWrapper.cancelPayment(intent).status == CANCELED
+            if (attempt.captureOutcome == CaptureOutcome.IN_PROGRESS ||
+                attempt.captureOutcome == CaptureOutcome.CAPTURED || activePayment !== attempt) return false
+            if (intent.status == CANCELED) true else terminalWrapper.cancelPayment(intent).status == CANCELED
         } catch (error: CancellationException) {
             throw error
         } catch (_: Exception) {
-            false
+            val secret = attempt.intent.await().getOrNull()?.clientSecret ?: return false
+            try {
+                terminalWrapper.retrievePaymentIntent(secret).status == CANCELED && activePayment === attempt
+            } catch (error: CancellationException) {
+                throw error
+            } catch (_: Exception) {
+                false
+            }
         }
     }
 
     private class ActivePayment {
         val intent = CompletableDeferred<Result<PaymentIntent?>>()
         var cancelRequested = false
-        var capturing = false
+        var captureOutcome: CaptureOutcome? = null
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -192,7 +203,6 @@ internal class PaymentManager(
             Other card-present payments are expected to reach REQUIRES_CAPTURE and are captured by the backend.
          */
 
-        if (activePayment?.cancelRequested == true) return@flow
         if (
             paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE ||
             isSingleStepTerminalPaymentSuccessful(paymentIntent)
@@ -216,7 +226,6 @@ internal class PaymentManager(
             paymentIntent = processPayment(paymentInfo, paymentIntent)
         }
 
-        if (activePayment?.cancelRequested == true) return@flow
         if (
             paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE ||
             isSingleStepTerminalPaymentSuccessful(paymentIntent)
@@ -231,7 +240,11 @@ internal class PaymentManager(
         paymentIntent: PaymentIntent
     ): String? {
         return paymentIntent.latestCharge?.receiptUrl ?: run {
-            emit(PaymentFailed(Generic, null, "ReceiptUrl not available"))
+            emit(PaymentFailed(
+                CardPaymentStatus.CardPaymentStatusErrorType.CaptureOutcomeUnknown,
+                PaymentDataImpl(paymentIntent),
+                "ReceiptUrl not available",
+            ))
             null
         }
     }
@@ -276,8 +289,7 @@ internal class PaymentManager(
 
         return when (val result = processPaymentIntentAction.confirmPaymentIntent(collectedPaymentIntent)) {
             is ProcessPaymentIntentStatus.Failure -> {
-                emit(errorMapper.mapTerminalError(collectedPaymentIntent, result.exception))
-                collectedPaymentIntent
+                onProcessingFailure(collectedPaymentIntent, result.exception)
             }
             is ProcessPaymentIntentStatus.Success -> {
                 val paymentMethodType = determinePaymentMethodType(result.paymentIntent)
@@ -292,8 +304,7 @@ internal class PaymentManager(
     ): PaymentIntent {
         return when (val result = processPaymentIntentAction.processPaymentIntent(paymentIntent)) {
             is ProcessPaymentIntentStatus.Failure -> {
-                emit(errorMapper.mapTerminalError(paymentIntent, result.exception))
-                paymentIntent
+                onProcessingFailure(paymentIntent, result.exception)
             }
             is ProcessPaymentIntentStatus.Success -> {
                 val paymentMethodType = determinePaymentMethodType(result.paymentIntent)
@@ -301,6 +312,31 @@ internal class PaymentManager(
                 result.paymentIntent
             }
         }
+    }
+
+    private suspend fun FlowCollector<CardPaymentStatus>.onProcessingFailure(
+        original: PaymentIntent,
+        error: TerminalException,
+    ): PaymentIntent {
+        val updated = error.paymentIntent
+        if (updated?.status == PaymentIntentStatus.REQUIRES_CAPTURE ||
+            updated?.status == PaymentIntentStatus.SUCCEEDED
+        ) return updated
+        val unknown = updated == null && error.errorCode in setOf(
+            TerminalErrorCode.REQUEST_TIMED_OUT,
+            TerminalErrorCode.STRIPE_API_CONNECTION_ERROR,
+            TerminalErrorCode.STRIPE_API_ERROR,
+            TerminalErrorCode.STRIPE_API_RESPONSE_DECODING_ERROR,
+            TerminalErrorCode.BLUETOOTH_DISCONNECTED,
+            TerminalErrorCode.USB_DISCONNECTED,
+        )
+        emit(if (unknown) {
+            PaymentFailed(CardPaymentStatus.CardPaymentStatusErrorType.CaptureOutcomeUnknown,
+                PaymentDataImpl(original), error.errorMessage)
+        } else {
+            errorMapper.mapTerminalError(original, error)
+        })
+        return original
     }
 
     // Stripe new SDk now has paymentIntent.id as nullable to support offline payment. But we don't support offline yet
@@ -311,19 +347,25 @@ internal class PaymentManager(
         cardReaderStore: CardReaderStore,
         paymentIntent: PaymentIntent
     ) {
-        activePayment?.capturing = true
+        val attempt = activePayment
+        attempt?.captureOutcome = CaptureOutcome.IN_PROGRESS
         emit(CapturingPayment)
         when (val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id!!)) {
-            is CapturePaymentResponse.Successful -> emit(PaymentCompleted(receiptUrl))
+            is CapturePaymentResponse.Successful -> {
+                attempt?.captureOutcome = CaptureOutcome.CAPTURED
+                emit(PaymentCompleted(receiptUrl))
+            }
             is CapturePaymentResponse.Error -> {
-                when (checkCaptureOutcome(paymentIntent, captureResponse)) {
+                val outcome = checkCaptureOutcome(paymentIntent, captureResponse)
+                attempt?.captureOutcome = outcome
+                when (outcome) {
                     CaptureOutcome.CAPTURED -> emit(PaymentCompleted(receiptUrl))
                     CaptureOutcome.NOT_CAPTURED -> {
-                        activePayment?.capturing = false
                         emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
                     }
                     CaptureOutcome.UNKNOWN ->
                         emit(errorMapper.mapUnknownCaptureOutcomeError(paymentIntent, captureResponse))
+                    CaptureOutcome.IN_PROGRESS -> error("Capture response must have a terminal outcome")
                 }
             }
         }
@@ -375,6 +417,7 @@ internal class PaymentManager(
             this is CapturePaymentResponse.Error.ServerError
 
     private enum class CaptureOutcome {
+        IN_PROGRESS,
         CAPTURED,
         NOT_CAPTURED,
         UNKNOWN,

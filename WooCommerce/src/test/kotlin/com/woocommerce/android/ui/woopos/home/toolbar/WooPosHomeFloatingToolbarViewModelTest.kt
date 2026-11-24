@@ -51,7 +51,10 @@ class WooPosHomeFloatingToolbarViewModelTest {
     private val resourceProvider: ResourceProvider = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val accessState = MutableStateFlow<WooPosAccessSessionState>(WooPosAccessSessionState.Unprotected)
-    private val accessSession: WooPosAccessSession = mock { on { state }.thenReturn(accessState) }
+    private val accessSession: WooPosAccessSession = mock {
+        on { state }.thenReturn(accessState)
+        on { paymentState }.thenReturn(MutableStateFlow(com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade.PaymentState.Idle))
+    }
     private val controller: WooPosCardReaderConnectionController = mock()
     private val controllerFactory: WooPosCardReaderConnectionControllerFactory = mock {
         on { create(any()) }.thenReturn(controller)

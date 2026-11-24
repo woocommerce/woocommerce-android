@@ -1,6 +1,9 @@
 package com.woocommerce.android
 
 import android.app.Application
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.android.volley.VolleyLog
@@ -35,7 +38,10 @@ open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provid
         //  > Caused by: java.lang.IllegalStateException: Default FirebaseApp is not initialized in this process
         //  > com.woocommerce.android:stripetaptopay Make sure to call FirebaseApp.initializeApp(Context) first.
         // In this case we don't want to initialize any Firebase (or any at all) features of the app in their process.
-        if (getCurrentProcessName() == "${BuildConfig.APPLICATION_ID}:$TAP_TO_PAY_STRIPE_PROCESS_NAME_SUFFIX") return
+        if (getCurrentProcessName() == "${BuildConfig.APPLICATION_ID}:$TAP_TO_PAY_STRIPE_PROCESS_NAME_SUFFIX") {
+            observePaymentActivityVisibility()
+            return
+        }
 
         // Disables Volley debug logging on release build and prevents the "Marker added to finished log" crash
         // https://github.com/woocommerce/woocommerce-android/issues/817
@@ -51,9 +57,34 @@ open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provid
         appInitializer.get().init(this)
     }
 
+    private fun observePaymentActivityVisibility() {
+        val visible = mutableSetOf<Activity>()
+        registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
+            override fun onActivityStarted(activity: Activity) {
+                visible.add(activity)
+                reportVisibility(true)
+            }
+            override fun onActivityStopped(activity: Activity) {
+                visible.remove(activity)
+                if (visible.isEmpty() && !activity.isChangingConfigurations) reportVisibility(false)
+            }
+            private fun reportVisibility(isVisible: Boolean) {
+                sendBroadcast(Intent(POS_PAYMENT_VISIBILITY_ACTION).setPackage(packageName)
+                    .putExtra(POS_PAYMENT_VISIBLE, isVisible))
+            }
+            override fun onActivityCreated(activity: Activity, state: Bundle?) = Unit
+            override fun onActivityResumed(activity: Activity) = Unit
+            override fun onActivityPaused(activity: Activity) = Unit
+            override fun onActivitySaveInstanceState(activity: Activity, state: Bundle) = Unit
+            override fun onActivityDestroyed(activity: Activity) = Unit
+        })
+    }
+
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     companion object {
+        internal const val POS_PAYMENT_VISIBILITY_ACTION = "com.woocommerce.android.POS_PAYMENT_VISIBILITY"
+        internal const val POS_PAYMENT_VISIBLE = "visible"
         private const val TAP_TO_PAY_STRIPE_PROCESS_NAME_SUFFIX = "stripetaptopay"
     }
 }

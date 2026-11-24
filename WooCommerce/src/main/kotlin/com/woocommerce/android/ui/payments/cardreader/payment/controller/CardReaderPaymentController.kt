@@ -141,6 +141,7 @@ class CardReaderPaymentController(
     val paymentState: StateFlow<CardReaderPaymentOrRefundState> = _paymentState
 
     private var lockCancellationRequested = false
+    private val paymentSiteId = selectedSite.getOrNull()?.id
     private var collectionStarted = false
     private var paymentFlowJob: Job? = null
     private var refundFlowJob: Job? = null
@@ -627,7 +628,7 @@ class CardReaderPaymentController(
     private fun buildFailedPaymentState(
         errorType: PaymentFlowError,
         amountLabel: String,
-        onRetryClicked: () -> Unit
+        onRetryClicked: (() -> Unit)?
     ): CardReaderPaymentState.PaymentFailed = when (errorType) {
         is PaymentFlowError.ContactSupportError -> paymentStateProvider.provideCancellableFailedPaymentState(
             cardReaderType = cardReaderType,
@@ -679,35 +680,37 @@ class CardReaderPaymentController(
     }
 
     private fun showPaymentSuccessfulState() {
-        scope.launch {
-            val order =
-                requireNotNull(orderRepository.getOrderById(paymentOrRefund.orderId)) { "Order URL not available." }
-            val amountLabel = cardReaderPaymentOrderHelper.getAmountLabel(order)
-            val onPrintReceiptClicked = {
-                onPrintReceiptClicked(amountLabel)
-            }
-            val onSaveUserClicked = {
-                onSaveForLaterClicked()
-            }
-            val onSendReceiptClicked = { onSendReceiptClicked() }
+        scope.launch { updateSuccessfulPaymentState() }
+    }
 
-            if (order.billingAddress.email.isBlank()) {
-                _paymentState.value = paymentStateProvider.providePaymentSuccessState(
-                    cardReaderType = cardReaderType,
-                    amountLabel = amountLabel,
-                    onPrintReceiptClicked = onPrintReceiptClicked,
-                    onSendReceiptClicked = onSendReceiptClicked,
-                    onSaveUserClicked = onSaveUserClicked
-                )
-            } else {
-                _paymentState.value = paymentStateProvider.providePaymentSuccessfulReceiptSentAutomaticallyState(
-                    cardReaderType = cardReaderType,
-                    amountLabel = amountLabel,
-                    recipientEmail = order.billingAddress.email,
-                    onPrintReceiptClicked = onPrintReceiptClicked,
-                    onSaveUserClicked = onSaveUserClicked
-                )
-            }
+    private suspend fun updateSuccessfulPaymentState() {
+        val order =
+            requireNotNull(orderRepository.getOrderById(paymentOrRefund.orderId)) { "Order URL not available." }
+        val amountLabel = cardReaderPaymentOrderHelper.getAmountLabel(order)
+        val onPrintReceiptClicked = {
+            onPrintReceiptClicked(amountLabel)
+        }
+        val onSaveUserClicked = {
+            onSaveForLaterClicked()
+        }
+        val onSendReceiptClicked = { onSendReceiptClicked() }
+
+        if (order.billingAddress.email.isBlank()) {
+            _paymentState.value = paymentStateProvider.providePaymentSuccessState(
+                cardReaderType = cardReaderType,
+                amountLabel = amountLabel,
+                onPrintReceiptClicked = onPrintReceiptClicked,
+                onSendReceiptClicked = onSendReceiptClicked,
+                onSaveUserClicked = onSaveUserClicked
+            )
+        } else {
+            _paymentState.value = paymentStateProvider.providePaymentSuccessfulReceiptSentAutomaticallyState(
+                cardReaderType = cardReaderType,
+                amountLabel = amountLabel,
+                recipientEmail = order.billingAddress.email,
+                onPrintReceiptClicked = onPrintReceiptClicked,
+                onSaveUserClicked = onSaveUserClicked
+            )
         }
     }
 
@@ -861,11 +864,19 @@ class CardReaderPaymentController(
     }
 
     suspend fun cancelForLock(): Boolean {
+        val failure = paymentState.value as? CardReaderPaymentState.PaymentFailed
+        if (failure?.errorType == PaymentFlowError.CaptureOutcomeUnknown &&
+            paymentSiteId != null && paymentSiteId == selectedSite.getOrNull()?.id &&
+            fetchOrder()?.isOrderPaid == true && paymentSiteId == selectedSite.getOrNull()?.id
+        ) {
+            updateSuccessfulPaymentState()
+            return true
+        }
         lockCancellationRequested = true
         val confirmed = !collectionStarted || cardReaderManager.cancelActivePaymentAndAwait()
         if (confirmed) {
             scope.cancel()
-            _paymentState.value = buildFailedPaymentState(PaymentFlowError.Canceled, "", {})
+            _paymentState.value = buildFailedPaymentState(PaymentFlowError.Canceled, "", null)
         }
         return confirmed
     }

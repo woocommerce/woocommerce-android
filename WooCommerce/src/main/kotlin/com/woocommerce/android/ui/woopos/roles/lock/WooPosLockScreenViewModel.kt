@@ -32,6 +32,8 @@ class WooPosLockScreenViewModel @Inject constructor(
         accessSession.state.value.let { WooPosLockScreenState(isLocked = it.isLocked, status = it.status) }
     )
     val state = _state.asStateFlow()
+    private val _exitRequested = MutableStateFlow(false)
+    val exitRequested = _exitRequested.asStateFlow()
     private var pin = ""
     private var settings: WooPosAutoLockSettings? = null
     private var foreground = false
@@ -121,8 +123,8 @@ class WooPosLockScreenViewModel @Inject constructor(
         restartInactivity()
     }
 
-    fun onAuthorizedExit(onExit: () -> Unit) {
-        viewModelScope.launch { accessSession.exitPOS(onExit) }
+    fun onAuthorizedExit() {
+        viewModelScope.launch { accessSession.exitPOS { _exitRequested.value = true } }
     }
 
     private fun restartInactivity() {
@@ -143,6 +145,7 @@ class WooPosLockScreenViewModel @Inject constructor(
             when (event) {
                 is WooPosLockScreenUIEvent.DigitTapped -> enterDigit(event.digit)
                 WooPosLockScreenUIEvent.DeleteTapped -> deleteDigit()
+                WooPosLockScreenUIEvent.CheckPaymentStatus -> accessSession.lockOnBackground()
             }
         }
     }
@@ -172,5 +175,6 @@ class WooPosLockScreenViewModel @Inject constructor(
 
 sealed interface WooPosLockScreenUIEvent {
     data class DigitTapped(val digit: Int) : WooPosLockScreenUIEvent
+    data object CheckPaymentStatus : WooPosLockScreenUIEvent
     data object DeleteTapped : WooPosLockScreenUIEvent
 }

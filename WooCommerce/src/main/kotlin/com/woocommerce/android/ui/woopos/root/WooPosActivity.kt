@@ -1,6 +1,15 @@
 package com.woocommerce.android.ui.woopos.root
 
 import android.os.Bundle
+import android.os.Build
+import android.app.ActivityManager
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.IntentFilter
+import androidx.core.content.ContextCompat
+import com.woocommerce.android.WooCommerce
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import android.app.Activity
 import android.app.Application
 import android.content.Intent
@@ -39,8 +48,17 @@ class WooPosActivity : AppCompatActivity() {
     lateinit var analyticsEntryPointKeeper: WooPosAnalyticsEntryPointKeeper
 
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var featureFlags: FeatureFlagRepository
     @Inject lateinit var productsDataSource: WooPosProductsDataSource
-    private var saleSiteURL: String? = null
+    private var saleSiteId: Int? = null
+    private var paymentActivityVisible = false
+    private val paymentVisibility = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            paymentActivityVisible = intent.getBooleanExtra(WooCommerce.POS_PAYMENT_VISIBLE, false)
+            if (paymentActivityVisible) lockViewModel.onForeground()
+            else if (visibleActivities.isEmpty()) lockViewModel.onBackground()
+        }
+    }
 
     private val lockViewModel: WooPosLockScreenViewModel by viewModels()
     private val visibleActivities = mutableSetOf<Activity>()
@@ -51,7 +69,10 @@ class WooPosActivity : AppCompatActivity() {
         }
         override fun onActivityStopped(activity: Activity) {
             visibleActivities.remove(activity)
-            if (visibleActivities.isEmpty() && !activity.isChangingConfigurations) lockViewModel.onBackground()
+            if (visibleActivities.isEmpty() && !paymentActivityVisible && !hasVisiblePaymentTask() &&
+                !activity.isChangingConfigurations) {
+                lockViewModel.onBackground()
+            }
         }
         override fun onActivityCreated(activity: Activity, state: Bundle?) = Unit
         override fun onActivityResumed(activity: Activity) = Unit
@@ -60,12 +81,24 @@ class WooPosActivity : AppCompatActivity() {
         override fun onActivityDestroyed(activity: Activity) = Unit
     }
 
+    private fun hasVisiblePaymentTask(): Boolean =
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2 &&
+            getSystemService(ActivityManager::class.java).appTasks.any {
+                it.taskInfo?.let { info -> info.taskId == taskId && info.isVisible } == true
+            }
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        saleSiteURL = selectedSite.getOrNull()?.url
-        val savedSale = savedInstanceState?.takeIf { it.getString(SALE_SITE_URL) == saleSiteURL && saleSiteURL != null }
+        saleSiteId = selectedSite.getOrNull()?.id
+        val rolesEnabled = featureFlags.isEnabled(FeatureFlag.WOO_POS_ROLES)
+        val savedSale = savedInstanceState?.takeIf {
+            (rolesEnabled || initializedProcess) && it.getInt(SALE_SITE_ID) == saleSiteId && saleSiteId != null
+        }
+        initializedProcess = true
         val prepareSavedSale = savedSale != null && productsDataSource.getCurrentSyncStrategyOrNull() == null
         super.onCreate(savedSale)
         application.registerActivityLifecycleCallbacks(appVisibility)
+        ContextCompat.registerReceiver(this, paymentVisibility, IntentFilter(WooCommerce.POS_PAYMENT_VISIBILITY_ACTION),
+            ContextCompat.RECEIVER_NOT_EXPORTED)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         lockWooPosOrientation()
 
@@ -74,11 +107,8 @@ class WooPosActivity : AppCompatActivity() {
         lifecycle.addObserver(wooPosPeriodicSyncFacade)
 
         lifecycleScope.launch {
-            selectedSite.observe().distinctUntilChangedBy { it?.url }.collect { site ->
-                if (site?.url != saleSiteURL) {
-                    startActivity(Intent(this@WooPosActivity, WooPosActivity::class.java))
-                    finish()
-                }
+            selectedSite.observe().distinctUntilChangedBy { it?.id }.collect { site ->
+                if (site?.id != saleSiteId) finish()
             }
         }
 
@@ -94,7 +124,7 @@ class WooPosActivity : AppCompatActivity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(SALE_SITE_URL, saleSiteURL)
+        saleSiteId?.let { outState.putInt(SALE_SITE_ID, it) }
         super.onSaveInstanceState(outState)
     }
 
@@ -117,6 +147,7 @@ class WooPosActivity : AppCompatActivity() {
     override fun onDestroy() {
         endPosSessionIfFinishing()
         application.unregisterActivityLifecycleCallbacks(appVisibility)
+        unregisterReceiver(paymentVisibility)
         super.onDestroy()
     }
 
@@ -125,6 +156,7 @@ class WooPosActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val SALE_SITE_URL = "pos_sale_site_url"
+        private var initializedProcess = false
+        private const val SALE_SITE_ID = "pos_sale_site_id"
     }
 }
