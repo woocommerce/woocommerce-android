@@ -4162,6 +4162,13 @@
     <string name="woopos_security_approve_disable">Enter the Admin PIN to turn off PIN protection. Both Admin and Cashier PINs will be removed. POS will no longer ask for a PIN.</string>
     <string name="woopos_security_change">Change</string>
     <string name="woopos_security_delete">Delete</string>
+    <string name="woopos_security_change_admin_pin">Change Admin PIN</string>
+    <string name="woopos_security_change_cashier_pin">Change Cashier PIN</string>
+    <string name="woopos_security_delete_cashier_pin">Delete Cashier PIN</string>
+    <string name="woopos_security_set_up_cashier_pin">Set up Cashier PIN</string>
+    <string name="woopos_security_cashier_pin_actions">Cashier PIN actions</string>
+    <string name="woopos_security_set_up_app_pinning">Set up App Pinning</string>
+    <string name="woopos_security_lock_after_selection">Lock POS after: %1$s</string>
     <string name="woopos_security_learn_more">Learn more about roles</string>
     <string name="woopos_security_lock_settings">Lock settings</string>
     <string name="woopos_security_lock_on_launch">Require PIN to launch POS</string>
@@ -4169,8 +4176,10 @@
     <string name="woopos_security_lock_after_sale">Lock POS after each sale</string>
     <string name="woopos_security_lock_after">Lock POS after</string>
     <string name="woopos_security_never">Never</string>
-    <string name="woopos_security_one_minute">1 minute</string>
-    <string name="woopos_security_minutes">%1$d minutes</string>
+    <plurals name="woopos_security_minutes">
+        <item quantity="one">%1$d minute</item>
+        <item quantity="other">%1$d minutes</item>
+    </plurals>
     <string name="woopos_security_device_security">Device security</string>
     <string name="woopos_security_app_pinning">App Pinning</string>
     <string name="woopos_security_app_pinning_detail">Keep POS on screen and prevent switching to other apps.</string>

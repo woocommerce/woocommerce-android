@@ -62,6 +62,39 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
     private val viewModel = WooPosSettingsSecurityPINSetupViewModel(selectedSite, store, session)
 
     @Test
+    fun `given a Cashier change, when confirmed, then the replacement is written once`() = runTest {
+        // GIVEN
+        givenAdminPIN()
+        whenever(store.validatePINUniqueness(eq(1), eq(CASHIER), any())).thenReturn(Result.success(Unit))
+        whenever(store.setPIN(eq(1), eq(CASHIER), any(), any())).thenReturn(Result.success(Unit))
+        viewModel.start(CASHIER, changingPIN = true)
+
+        // WHEN
+        chooseAndConfirm("9012")
+
+        // THEN
+        verify(store).setPIN(eq(1), eq(CASHIER), any(), any())
+        verify(store, never()).createPIN(any(), any(), any(), any())
+        assertThat(viewModel.state.value).isEqualTo(Saved(CASHIER))
+    }
+
+    @Test
+    fun `given an Admin change without an approval scope, when confirmed, then storage is unchanged`() = runTest {
+        // GIVEN
+        givenAdminPIN()
+        whenever(session.approvalScope()).thenReturn(null)
+        whenever(store.validatePINUniqueness(eq(1), eq(ADMIN), any())).thenReturn(Result.success(Unit))
+        viewModel.start(ADMIN, changingPIN = true)
+
+        // WHEN
+        chooseAndConfirm("9012")
+
+        // THEN
+        verify(store, never()).setPIN(any(), any(), any(), any())
+        assertThat(viewModel.state.value).isEqualTo(Choose(ADMIN, error = Error.SAVE_FAILED))
+    }
+
+    @Test
     fun `when four digits are chosen, then the dots hold once before confirmation opens`() = runTest {
         // WHEN
         enter("12345")
@@ -819,6 +852,24 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         assertThat(viewModel.state.value).isEqualTo(Saved(ADMIN))
         verify(store).setPIN(eq(1), eq(ADMIN), eq("3456"), any())
     }
+
+    @Test
+    fun `given an approved editor scope, when composition starts after the scope changes, then it cannot gain new authority`() =
+        runTest {
+            // GIVEN
+            givenAdminPIN()
+            whenever(store.validatePINUniqueness(eq(1), eq(ADMIN), any())).thenReturn(Result.success(Unit))
+            viewModel.start(ADMIN, changingPIN = true)
+            whenever(session.approvalScope()).thenReturn(WooPosAccessSession.ApprovalScope(1, 2))
+
+            // WHEN
+            viewModel.start(ADMIN, changingPIN = true)
+            chooseAndConfirm("9012")
+
+            // THEN
+            verify(store, never()).setPIN(any(), any(), any(), any())
+            assertThat(viewModel.state.value).isEqualTo(Choose(ADMIN, error = Error.SAVE_FAILED))
+        }
 
     private suspend fun givenAdminPIN() {
         whenever(store.validatePINUniqueness(eq(1), eq(CASHIER), any())).thenReturn(Result.success(Unit))

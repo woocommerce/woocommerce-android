@@ -18,21 +18,27 @@ internal fun WooPosSettingsSecurityRoute(
     onShowPINEditor: (WooPosLocalRole, Boolean) -> Unit,
     viewModel: WooPosSettingsSecurityViewModel = hiltViewModel(),
     approval: WooPosManagerApprovalViewModel = hiltViewModel(key = "security_approval"),
+    pinEditor: WooPosSettingsSecurityPINSetupViewModel = hiltViewModel(),
 ) {
     val request by approval.state.collectAsState()
+    val openEditor: (WooPosLocalRole, Boolean) -> Unit = { role, changingPIN ->
+        pinEditor.start(role, changingPIN)
+        onShowPINEditor(role, changingPIN)
+    }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { approval.dismiss() }
     DisposableEffect(approval) { onDispose { approval.dismiss() } }
     WooPosSettingsSecurityScreen(
         state = state,
-        onSetUpPIN = { onShowPINEditor(it, false) },
+        onSetUpPIN = { openEditor(it, false) },
         onChangePIN = { role ->
-            if (role == WooPosLocalRole.ADMIN) {
-                approval.requestFreshApproval(WooPosManagerApprovalAction.ChangeAdminPIN) {
-                    onShowPINEditor(role, true)
+            val action = viewModel.approvalForPINChange(role)
+            if (action != null) {
+                approval.requestFreshApproval(action) {
+                    openEditor(role, true)
                     true
                 }
             } else {
-                onShowPINEditor(role, true)
+                openEditor(role, true)
             }
         },
         onDeleteCashierPIN = viewModel::deleteCashierPIN,
