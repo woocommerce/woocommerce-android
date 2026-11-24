@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSetting
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Entry
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Error
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Page
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Rejected
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
@@ -29,7 +30,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-/** Sets a new PIN for one role. Presentation pauses run alongside the single save and never delay protection. */
 @HiltViewModel
 class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
@@ -100,24 +100,13 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
             if (siteId == null || !isSelected(siteId)) return reset()
             val currentError = if (canManagePINs()) error else Error.SAVE_FAILED
             if (currentError != null) {
-                rejectCashierPIN(siteId, currentError)
+                presentRejection(role, siteId, Page.CHOOSE, currentError)
                 return
             }
         }
         chosenPIN = pin
         chosenSiteId = siteId
         _state.value = Confirm(role)
-    }
-
-    private suspend fun rejectCashierPIN(siteId: Int, error: Error) {
-        val role = WooPosLocalRole.CASHIER
-        presentPINSetupRejection(role, Page.CHOOSE, error) {
-            _state.value = when {
-                !isSelected(siteId) -> Choose(role)
-                it is Choose && !canManagePINs() -> Choose(role, error = Error.SAVE_FAILED)
-                else -> it
-            }
-        }
     }
 
     private suspend fun validateCashierPIN(siteId: Int, pin: String): Error? {
@@ -135,9 +124,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
         chosenPIN = ""
         chosenSiteId = null
         if (pin != chosen) {
-            presentPINSetupRejection(role, Page.CONFIRM, Error.MISMATCH) {
-                _state.value = if (isSelected(siteId)) it else Choose(role)
-            }
+            presentRejection(role, siteId, Page.CONFIRM, Error.MISMATCH)
             return
         }
         val result = coroutineScope {
@@ -156,6 +143,18 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
             SaveResult.FAILED -> Choose(role, error = Error.SAVE_FAILED)
             SaveResult.STALE -> Choose(role)
         }
+    }
+
+    private suspend fun presentRejection(role: WooPosLocalRole, siteId: Int, page: Page, error: Error) {
+        if (!isSelected(siteId)) return reset()
+        _state.value = Rejected(role, page)
+        delay(PIN_SETUP_REJECTION_PAUSE_MILLIS)
+        val visibleError = when {
+            !isSelected(siteId) -> null
+            page == Page.CHOOSE && !canManagePINs() -> Error.SAVE_FAILED
+            else -> error
+        }
+        _state.value = Choose(role, error = visibleError)
     }
 
     private suspend fun save(role: WooPosLocalRole, id: Int, pin: String): SaveResult {
@@ -193,6 +192,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
     companion object {
         private const val MIN_DIGIT = 0
         private const val MAX_DIGIT = 9
+        internal const val PIN_SETUP_REJECTION_PAUSE_MILLIS = 550L
         const val FILLED_DOTS_HOLD_MILLIS = 500L
         const val MINIMUM_SAVING_MILLIS = 1_000L
     }

@@ -38,11 +38,13 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
@@ -53,27 +55,34 @@ fun WooPosPINPad(
     enabled: Boolean,
     onDigit: (Int) -> Unit,
     onDelete: () -> Unit,
-    style: WooPosPINPadStyle,
+    keySize: Dp,
+    style: WooPosPINPadStyle = WooPosPINPadStyle.STANDARD,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(style.keySpacing)) {
+    val keySpacing = WooPosSpacing.Small.value
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(keySpacing)) {
         for (row in 0..2) {
             Row(
                 modifier = Modifier.height(IntrinsicSize.Min),
-                horizontalArrangement = Arrangement.spacedBy(style.keySpacing),
+                horizontalArrangement = Arrangement.spacedBy(keySpacing),
             ) {
                 for (column in 1..3) {
-                    DigitKey(row * 3 + column, enabled, style, onDigit)
+                    DigitKey(row * 3 + column, enabled, keySize, style, onDigit)
                 }
             }
         }
         Row(
             modifier = Modifier.height(IntrinsicSize.Min),
-            horizontalArrangement = Arrangement.spacedBy(style.keySpacing),
+            horizontalArrangement = Arrangement.spacedBy(keySpacing),
         ) {
-            Spacer(Modifier.size(style.keySize))
-            DigitKey(0, enabled, style, onDigit)
-            PINKey(onClick = onDelete, enabled = enabled && enteredDigits > 0, style = style) {
+            Spacer(Modifier.size(keySize))
+            DigitKey(0, enabled, keySize, style, onDigit)
+            PINKey(
+                onClick = onDelete,
+                enabled = enabled && enteredDigits > 0,
+                keySize = keySize,
+                style = style,
+            ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_woopos_backspace),
                     contentDescription = stringResource(R.string.woopos_lock_delete_digit),
@@ -117,8 +126,8 @@ private fun PINDot(filled: Boolean) {
 }
 
 @Composable
-private fun DigitKey(digit: Int, enabled: Boolean, style: WooPosPINPadStyle, onDigit: (Int) -> Unit) {
-    PINKey(enabled = enabled, style = style, onClick = { onDigit(digit) }) {
+private fun DigitKey(digit: Int, enabled: Boolean, keySize: Dp, style: WooPosPINPadStyle, onDigit: (Int) -> Unit) {
+    PINKey(enabled = enabled, keySize = keySize, style = style, onClick = { onDigit(digit) }) {
         WooPosText(text = digit.toString(), style = WooPosTypography.Heading, fontWeight = FontWeight.Bold)
     }
 }
@@ -126,15 +135,17 @@ private fun DigitKey(digit: Int, enabled: Boolean, style: WooPosPINPadStyle, onD
 @Composable
 private fun PINKey(
     enabled: Boolean,
+    keySize: Dp,
     style: WooPosPINPadStyle,
     onClick: () -> Unit,
     content: @Composable () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+    val showsBlockedStyle = style == WooPosPINPadStyle.BLOCKED
     val container = when {
-        style.showsDisabledKeys && isSystemInDarkTheme() -> MaterialTheme.colorScheme.surfaceDim
-        style.showsDisabledKeys -> WooPosTheme.colors.disabledContainer
+        showsBlockedStyle && isSystemInDarkTheme() -> MaterialTheme.colorScheme.surfaceDim
+        showsBlockedStyle -> WooPosTheme.colors.disabledContainer
         isPressed -> MaterialTheme.colorScheme.surfaceContainerLowest
         else -> MaterialTheme.colorScheme.surfaceDim
     }
@@ -143,15 +154,15 @@ private fun PINKey(
         enabled = enabled,
         shape = RoundedCornerShape(WooPosCornerRadius.Large.value),
         color = container,
-        contentColor = if (style.showsDisabledKeys) {
+        contentColor = if (showsBlockedStyle) {
             WooPosTheme.colors.onDisabledContainer
         } else {
             MaterialTheme.colorScheme.onSurface
         },
         interactionSource = interactionSource,
         modifier = Modifier
-            .width(style.keySize)
-            .heightIn(min = style.keySize)
+            .width(keySize)
+            .heightIn(min = keySize)
             .fillMaxHeight(),
     ) {
         Box(contentAlignment = Alignment.Center) { content() }

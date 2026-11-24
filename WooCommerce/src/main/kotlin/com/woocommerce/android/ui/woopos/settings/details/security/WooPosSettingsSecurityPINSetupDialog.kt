@@ -7,8 +7,6 @@ import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -44,6 +42,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.MotionDurationScale
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -77,9 +77,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.pin.PIN_DOT_CLEAR_MILLIS
 import com.woocommerce.android.ui.woopos.common.pin.PIN_DOT_SIZE
+import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDotShake
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDots
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPad
-import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPadStyle
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.AccessUnavailable
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Choose
@@ -91,8 +91,6 @@ import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSetting
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Saved
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Saving
 import kotlinx.coroutines.delay
-import kotlin.math.PI
-import kotlin.math.sin
 
 @Composable
 fun WooPosSettingsSecurityPINSetupDialog(
@@ -274,6 +272,7 @@ private fun PINSetupHeader(
             WooPosBackButton(
                 modifier = Modifier.align(Alignment.CenterStart),
                 contentDescription = stringResource(R.string.back),
+                enabled = state.canGoBack,
                 onClick = { onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.BackTapped) },
             )
         }
@@ -285,11 +284,12 @@ private fun PINSetupHeader(
                     .padding(horizontal = WooPosIconSize.XLarge.value),
             )
         }
-        if (state is Entry || state is Saved) {
+        if (state is Entry) {
             WooPosBackButton(
                 modifier = Modifier.align(Alignment.CenterEnd),
                 iconRes = R.drawable.ic_close_24dp,
                 contentDescription = stringResource(R.string.close),
+                enabled = state.canClose,
                 onClick = onClose,
             )
         }
@@ -331,10 +331,7 @@ private fun PINEntry(
             enabled = entry.canEnterDigits,
             onDigit = { onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DigitTapped(it)) },
             onDelete = { onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DeleteTapped) },
-            style = WooPosPINPadStyle(
-                keySize = keySize,
-                keySpacing = WooPosSpacing.Small.value,
-            ),
+            keySize = keySize,
         )
     }
 }
@@ -362,6 +359,13 @@ private fun PINSetupStatus(entry: Entry, layout: PINSetupStatusLayout) {
         ) {
             AnimatedContent(
                 targetState = entry,
+                modifier = Modifier.drawWithContent {
+                    // The slide stays in a narrow track, with room for the stationary dots to pop and shake.
+                    val padding = DOT_TRACK_PADDING.toPx()
+                    clipRect(-padding, -padding, size.width + padding, size.height + padding) {
+                        this@drawWithContent.drawContent()
+                    }
+                },
                 contentKey = { it.page },
                 transitionSpec = { pageTransition() },
                 label = "pinSetupPage",
@@ -401,21 +405,12 @@ private fun AnimatedContentTransitionScope<Entry>.pageTransition(): ContentTrans
 @Composable
 private fun PINSetupDots(entry: Entry, isOutgoing: Boolean) {
     val rejecting = entry is Rejected
-    val shake = remember { Animatable(0f) }
-    LaunchedEffect(rejecting) {
-        shake.snapTo(0f)
-        if (rejecting) {
-            shake.animateTo(1f, tween(REJECTION_SHAKE_MILLIS, easing = LinearEasing))
-        }
-    }
+    val shake = remember { WooPosPINDotShake() }
+    LaunchedEffect(rejecting) { if (rejecting) shake.play() }
     WooPosPINDots(
         enteredDigits = entry.enteredDigits,
         isHidden = isOutgoing,
-        modifier = Modifier.graphicsLayer {
-            if (rejecting) {
-                translationX = sin(shake.value * PI.toFloat() * SHAKE_COUNT) * SHAKE_TRAVEL.toPx()
-            }
-        }
+        modifier = if (rejecting) Modifier.graphicsLayer { translationX = shake.offset.toPx() } else Modifier,
     )
 }
 
@@ -557,8 +552,6 @@ private const val PAGE_MILLIS = 300
 private const val PAGE_TRAVEL = 1.27f
 private const val MESSAGE_FADE_MILLIS = 120
 private const val MISMATCH_MESSAGE_DELAY_MILLIS = 500L
-private const val REJECTION_SHAKE_MILLIS = 400
-private const val SHAKE_COUNT = 3
 private const val KEYPAD_ROWS = 4
 private val DIALOG_MAX_WIDTH = 520.dp
 private val STATUS_MIN_HEIGHT = 84.dp
@@ -568,4 +561,4 @@ private val PHONE_MIN_KEY_SIZE = 48.dp
 private val PHONE_COMPACT_BODY_HEIGHT = 380.dp
 private val PHONE_COMPACT_STATUS_HEIGHT = 28.dp
 private val PHONE_STATUS_HEIGHT = 48.dp
-private val SHAKE_TRAVEL = 8.dp
+private val DOT_TRACK_PADDING = 10.dp
