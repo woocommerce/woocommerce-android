@@ -395,7 +395,7 @@ private fun LockSettingsCard(
                             modifier = Modifier.semantics { selected = minutes == settings.inactivityMinutes },
                             text = { WooPosText(inactivityLabel(minutes), style = WooPosTypography.BodyMedium) },
                             onClick = {
-                                onChanged { it.copy(settings.inactivityMinutes = minutes) }
+                                onChanged { it.copy(inactivityMinutes = minutes) }
                                 pickerOpen = false
                             },
                             trailingIcon = if (minutes == settings.inactivityMinutes) {
