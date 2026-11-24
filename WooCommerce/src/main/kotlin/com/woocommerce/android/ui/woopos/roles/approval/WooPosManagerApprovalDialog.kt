@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.roles.approval
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +27,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -43,6 +45,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINEntryFeedback
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPad
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPadStyle
+import com.woocommerce.android.ui.woopos.common.pin.measureWooPosPINStatusHeight
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
 
 internal val LocalWooPosRequestApproval = staticCompositionLocalOf<(WooPosApprovalAction, () -> Unit) -> Unit> {
@@ -122,15 +125,17 @@ private fun ApprovalContent(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
             )
-            WooPosPINEntryFeedback(state.status, state.enteredDigits, statusHeight = 44.dp)
-            val showsBlockedPINPad = state.status is Status.Wait || state.status == Status.StorageUnavailable
+            BoxWithConstraints(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                val statusHeight = measureWooPosPINStatusHeight(rememberTextMeasurer(), constraints.maxWidth, 44.dp)
+                WooPosPINEntryFeedback(state.status, state.enteredDigits, statusHeight)
+            }
             WooPosPINPad(
                 enteredDigits = state.enteredDigits,
-                enabled = state.canEnterPIN,
+                enabled = state.status.canEnterPIN,
                 onDigit = onDigit,
                 onDelete = onDelete,
                 keySize = if (fullScreen) 72.dp else 90.dp,
-                style = if (showsBlockedPINPad) WooPosPINPadStyle.BLOCKED else WooPosPINPadStyle.STANDARD,
+                style = if (state.status.showsBlockedPINPad) WooPosPINPadStyle.BLOCKED else WooPosPINPadStyle.STANDARD,
             )
         }
     }

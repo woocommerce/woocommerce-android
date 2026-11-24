@@ -20,15 +20,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -76,6 +79,15 @@ private fun rememberPINFeedback(status: Status, enteredDigits: Int): WooPosPINFe
 private enum class WooPosPINMessage { INCORRECT, WAIT, UNAVAILABLE }
 
 @Composable
+internal fun measureWooPosPINStatusHeight(textMeasurer: TextMeasurer, maxWidth: Int, minimum: Dp): Dp {
+    val messages = WooPosPINMessage.entries.map { pinMessageText(it, LONGEST_WAIT_SECONDS) }
+    val constraints = Constraints(maxWidth = maxWidth)
+    val style = WooPosTypography.BodySmall.style
+    val height = messages.maxOf { textMeasurer.measure(it, style, constraints = constraints).size.height }
+    return with(LocalDensity.current) { height.toDp() }.coerceAtLeast(minimum)
+}
+
+@Composable
 internal fun WooPosPINEntryFeedback(status: Status, enteredDigits: Int, statusHeight: Dp) {
     val feedback = rememberPINFeedback(status, enteredDigits)
     val message = if (feedback.heldDigits > 0) {
@@ -101,18 +113,26 @@ internal fun WooPosPINEntryFeedback(status: Status, enteredDigits: Int, statusHe
             },
         )
         Crossfade(targetState = message, animationSpec = feedbackSpec, label = "pinStatus") { shown ->
-            if (shown != null) PINMessageText(shown, (status as? Status.Wait)?.remainingSeconds ?: 0L)
+            if (shown != null) {
+                WooPosText(
+                    text = pinMessageText(shown, (status as? Status.Wait)?.remainingSeconds ?: 0L),
+                    style = WooPosTypography.BodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun PINMessageText(message: WooPosPINMessage, remainingSeconds: Long) {
-    val locale = LocalConfiguration.current.locales[0]
-    val text = when (message) {
+private fun pinMessageText(message: WooPosPINMessage, remainingSeconds: Long): AnnotatedString =
+    when (message) {
         WooPosPINMessage.INCORRECT -> AnnotatedString(stringResource(R.string.woopos_lock_incorrect))
         WooPosPINMessage.UNAVAILABLE -> AnnotatedString(stringResource(R.string.woopos_lock_unavailable))
         WooPosPINMessage.WAIT -> {
+            val locale = LocalConfiguration.current.locales[0]
             val minutes = remainingSeconds / SECONDS_PER_MINUTE
             val seconds = remainingSeconds % SECONDS_PER_MINUTE
             val duration = String.format(locale, "%d:%02d", minutes, seconds)
@@ -124,15 +144,7 @@ private fun PINMessageText(message: WooPosPINMessage, remainingSeconds: Long) {
             }
         }
     }
-    WooPosText(
-        text = text,
-        style = WooPosTypography.BodySmall,
-        color = MaterialTheme.colorScheme.error,
-        textAlign = TextAlign.Center,
-        modifier = Modifier
-            .semantics { liveRegion = LiveRegionMode.Polite },
-    )
-}
 
 private const val FEEDBACK_MILLIS = 120
 private const val SECONDS_PER_MINUTE = 60
+private const val LONGEST_WAIT_SECONDS = 3599L

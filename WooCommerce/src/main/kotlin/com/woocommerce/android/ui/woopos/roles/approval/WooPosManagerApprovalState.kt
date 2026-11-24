@@ -6,6 +6,4 @@ internal data class WooPosManagerApprovalState(
     val action: WooPosApprovalAction,
     val status: Status,
     val enteredDigits: Int = 0,
-) {
-    val canEnterPIN: Boolean get() = status == Status.Idle || status == Status.Incorrect
-}
+)

@@ -40,7 +40,6 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalView
@@ -49,7 +48,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
@@ -72,6 +70,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWo
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINEntryFeedback
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPad
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPadStyle
+import com.woocommerce.android.ui.woopos.common.pin.measureWooPosPINStatusHeight
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
 
 @Composable
@@ -133,8 +132,7 @@ private fun BoxWithConstraintsScope.LockContent(
     val metrics = lockMetrics(isCompactHeight)
     val layout = calculateLockLayout(metrics, isCompactHeight)
     val intro = rememberLockIntro(animates = layout.showsIllustration)
-    val showsBlockedPINPad = state.isLocked &&
-        (state.status is Status.Wait || state.status == Status.StorageUnavailable)
+    val showsBlockedPINPad = state.isLocked && state.status.showsBlockedPINPad
     val contentModifier = Modifier.graphicsLayer {
         alpha = intro.contentAlpha
         translationY = intro.travel().y
@@ -226,24 +224,15 @@ private fun BoxWithConstraintsScope.calculateLockLayout(
     val density = LocalDensity.current
     val title = stringResource(R.string.woopos_lock_enter_pin)
     val titleStyle = WooPosTypography.BodyXLarge.style.copy(fontWeight = FontWeight.Bold)
-    val statusStyle = WooPosTypography.BodySmall.style
-    val statusMessages = listOf(
-        stringResource(
-            R.string.woopos_lock_wait,
-            String.format(LocalConfiguration.current.locales[0], "%d:%02d", LONGEST_WAIT_MINUTES, LONGEST_WAIT_SECONDS),
-        ),
-        stringResource(R.string.woopos_lock_incorrect),
-        stringResource(R.string.woopos_lock_unavailable),
-    )
     val textMeasurer = rememberTextMeasurer()
     val contentWidth = maxWidth - metrics.horizontalPadding * 2
     val textWidth = min(CONTENT_MAX_WIDTH, contentWidth)
     val textConstraints = Constraints(maxWidth = with(density) { textWidth.roundToPx() }.coerceAtLeast(0))
-    fun measure(text: String, style: TextStyle) =
-        with(density) { textMeasurer.measure(text, style, constraints = textConstraints).size.height.toDp() }
-    val titleHeight = measure(title, titleStyle)
+    val titleHeight = with(density) {
+        textMeasurer.measure(title, titleStyle, constraints = textConstraints).size.height.toDp()
+    }
     // Reserves the longest status message so the keys keep their size when it replaces the dots.
-    val statusHeight = statusMessages.maxOf { measure(it, statusStyle) }.coerceAtLeast(STATUS_ROW_HEIGHT)
+    val statusHeight = measureWooPosPINStatusHeight(textMeasurer, textConstraints.maxWidth, STATUS_ROW_HEIGHT)
     val preferredKeySize = if (currentWooPosBreakpoint() == WooPosBreakpoint.Phone) PHONE_KEY_SIZE else KEY_SIZE
     return WooPosLockScreenLayout.calculate(
         viewport = DpSize(maxWidth, maxHeight),
@@ -365,8 +354,6 @@ private const val INTRO_HOLD_MILLIS = 400
 private const val INTRO_CLOSE_MILLIS = 200
 private const val INTRO_REVEAL_MILLIS = 280
 private const val LOCK_OPEN_ANGLE = 30f
-private const val LONGEST_WAIT_MINUTES = 59L
-private const val LONGEST_WAIT_SECONDS = 59L
 
 private val LOCK_ARTWORK_WIDTH = 60.456.dp
 private val LOCK_ARTWORK_HEIGHT = 80.dp

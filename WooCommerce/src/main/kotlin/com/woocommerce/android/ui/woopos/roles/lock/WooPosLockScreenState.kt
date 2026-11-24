@@ -6,9 +6,12 @@ data class WooPosLockScreenState(
     val status: Status = Status.Idle,
 ) {
     val canEnterPIN: Boolean
-        get() = isLocked && (status == Status.Idle || status == Status.Incorrect)
+        get() = isLocked && status.canEnterPIN
 
     sealed interface Status {
+        val canEnterPIN: Boolean get() = this == Idle || this == Incorrect
+        val showsBlockedPINPad: Boolean get() = this is Wait || this == StorageUnavailable
+
         data object Initializing : Status
         data object Idle : Status
         data object Checking : Status

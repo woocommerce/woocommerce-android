@@ -54,7 +54,7 @@ class WooPosManagerApprovalViewModel @Inject constructor(
     internal fun onDigit(digit: Int) {
         val current = state.value ?: return
         val request = pending ?: return
-        if (digit !in 0..MAX_DIGIT || !current.canEnterPIN) return
+        if (digit !in 0..MAX_DIGIT || !current.status.canEnterPIN) return
         pin += digit
         if (pin.length < WooPosPINHash.PIN_LENGTH) {
             _state.value = current.copy(status = Status.Idle, enteredDigits = pin.length)
@@ -90,7 +90,7 @@ class WooPosManagerApprovalViewModel @Inject constructor(
 
     internal fun onDelete() {
         val current = state.value ?: return
-        if (!current.canEnterPIN || pin.isEmpty()) return
+        if (!current.status.canEnterPIN || pin.isEmpty()) return
         pin = pin.dropLast(1)
         _state.value = current.copy(enteredDigits = pin.length)
     }
