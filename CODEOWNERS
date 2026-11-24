@@ -18,6 +18,8 @@ Dangerfile*            @woocommerce/apps-infra-tooling
 
 # Toolchain and environment pins
 .java-version          @woocommerce/apps-infra-tooling
+/gradle/wrapper/       @woocommerce/apps-infra-tooling
+/gradlew*              @woocommerce/apps-infra-tooling
 
 # Secrets
 .a8c-secrets/         @woocommerce/apps-infra-tooling
