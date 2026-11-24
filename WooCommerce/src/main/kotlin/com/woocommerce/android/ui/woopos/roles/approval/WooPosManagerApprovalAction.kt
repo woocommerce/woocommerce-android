@@ -18,5 +18,15 @@ internal sealed class WooPosManagerApprovalAction(
         R.string.woopos_approval_issue_refund,
     )
 
+    data object ChangeAdminPIN : WooPosManagerApprovalAction(
+        WooPosCapability.MANAGE_STORE_SETTINGS,
+        R.string.woopos_security_approve_admin_change,
+    )
+
+    data object DisablePINProtection : WooPosManagerApprovalAction(
+        WooPosCapability.MANAGE_STORE_SETTINGS,
+        R.string.woopos_security_approve_disable,
+    )
+
     data object Exit : WooPosManagerApprovalAction(WooPosCapability.EXIT_POS, R.string.woopos_approval_exit)
 }

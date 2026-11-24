@@ -122,8 +122,8 @@ class WooPosSettingsViewModel @Inject constructor(
         }
     }
 
-    fun showPinSetupDialog(role: WooPosLocalRole) {
-        _state.update { it.copy(dialogState = WooPosSettingsDialogState.PinSetupDialog(role)) }
+    fun showPinSetupDialog(role: WooPosLocalRole, changingPIN: Boolean = false) {
+        _state.update { it.copy(dialogState = WooPosSettingsDialogState.PinSetupDialog(role, changingPIN)) }
     }
 
     fun showProductInfoDialog() {

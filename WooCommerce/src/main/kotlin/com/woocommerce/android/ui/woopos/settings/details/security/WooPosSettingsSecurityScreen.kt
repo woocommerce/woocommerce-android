@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,20 +14,31 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -36,7 +48,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenu
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenuItem
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -48,6 +63,8 @@ fun WooPosSettingsSecurityScreen(
     state: WooPosSettingsSecurityState,
     onSetUpPIN: (WooPosLocalRole) -> Unit,
     onProtectionTurnedOff: () -> Unit,
+    onChangePIN: (WooPosLocalRole) -> Unit,
+    onDeleteCashierPIN: () -> Unit,
 ) {
     when (state) {
         WooPosSettingsSecurityState.Loading, WooPosSettingsSecurityState.Restricted -> Unit
@@ -62,7 +79,13 @@ fun WooPosSettingsSecurityScreen(
                 textAlign = TextAlign.Center,
             )
         }
-        is WooPosSettingsSecurityState.Protected -> PINProtection(state, onSetUpPIN, onProtectionTurnedOff)
+        is WooPosSettingsSecurityState.Protected -> SecurityCards(
+            state,
+            onSetUpPIN,
+            onProtectionTurnedOff,
+            onChangePIN,
+            onDeleteCashierPIN,
+        )
     }
 }
 
@@ -84,75 +107,119 @@ private fun CenteredContent(content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun PINProtection(
+private fun SecurityCards(
     state: WooPosSettingsSecurityState.Protected,
     onSetUpPIN: (WooPosLocalRole) -> Unit,
     onProtectionTurnedOff: () -> Unit,
+    onChangePIN: (WooPosLocalRole) -> Unit,
+    onDeleteCashierPIN: () -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = WooPosSpacing.Medium.value),
+            .padding(horizontal = WooPosSpacing.Medium.value)
+            .padding(bottom = WooPosSpacing.Medium.value),
+        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
     ) {
-        WooPosCard(modifier = Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier.padding(WooPosSpacing.Medium.value)) {
+        SecurityCard(stringResource(R.string.woopos_security_pin_protection)) {
+            SecurityToggle(
+                title = stringResource(R.string.woopos_security_enable_pin_protection),
+                subtitle = stringResource(R.string.woopos_security_enable_pin_protection_detail),
+                checked = true,
+                onCheckedChange = { onProtectionTurnedOff() },
+            )
+            if (state.removalFailed) {
                 WooPosText(
-                    text = stringResource(R.string.woopos_security_pin_protection),
-                    style = WooPosTypography.BodyLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.semantics { heading() },
+                    text = stringResource(R.string.woopos_security_save_failed),
+                    style = WooPosTypography.BodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
                 )
-                PINProtectionToggle(onProtectionTurnedOff)
-                if (state.removalFailed) {
-                    WooPosText(
-                        text = stringResource(R.string.woopos_security_save_failed),
-                        style = WooPosTypography.BodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+            }
+            SecurityDivider()
+            SecurityRow(
+                title = stringResource(R.string.woopos_security_admin_pin),
+                subtitle = stringResource(R.string.woopos_security_admin_pin_detail),
+            ) {
+                WooPosButtonSmall(
+                    text = stringResource(R.string.woopos_security_change),
+                    onClick = { onChangePIN(WooPosLocalRole.ADMIN) },
+                )
+            }
+            SecurityDivider()
+            SecurityRow(
+                title = stringResource(R.string.woopos_security_cashier_pin),
+                subtitle = stringResource(R.string.woopos_security_cashier_pin_detail),
+            ) { stacked ->
+                if (!state.hasCashierPIN) {
+                    WooPosButtonSmall(
+                        text = stringResource(R.string.woopos_security_set_up),
+                        onClick = { onSetUpPIN(WooPosLocalRole.CASHIER) },
                     )
+                } else {
+                    CashierActions(stacked, { onChangePIN(WooPosLocalRole.CASHIER) }, onDeleteCashierPIN)
                 }
-                HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
-                PINRow(
-                    title = stringResource(R.string.woopos_security_admin_pin),
-                    subtitle = stringResource(R.string.woopos_security_admin_pin_detail),
+            }
+            TextButton(onClick = {}) {
+                WooPosText(
+                    text = stringResource(R.string.woopos_security_learn_more),
+                    style = WooPosTypography.BodyMedium,
+                    color = MaterialTheme.colorScheme.primary,
                 )
-                HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
-                PINRow(
-                    title = stringResource(R.string.woopos_security_cashier_pin),
-                    subtitle = stringResource(R.string.woopos_security_cashier_pin_detail),
-                ) {
-                    if (!state.hasCashierPIN) {
-                        WooPosButtonSmall(
-                            text = stringResource(R.string.woopos_security_set_up),
-                            onClick = { onSetUpPIN(WooPosLocalRole.CASHIER) },
-                        )
-                    }
-                }
+            }
+        }
+        LockSettingsCard()
+        SecurityCard(stringResource(R.string.woopos_security_device_security)) {
+            SecurityRow(
+                title = stringResource(R.string.woopos_security_app_pinning),
+                subtitle = stringResource(R.string.woopos_security_app_pinning_detail),
+            ) {
+                WooPosButtonSmall(text = stringResource(R.string.woopos_security_set_up), onClick = {})
             }
         }
     }
 }
 
 @Composable
-private fun PINProtectionToggle(onProtectionTurnedOff: () -> Unit) {
+private fun SecurityCard(title: String, content: @Composable () -> Unit) {
+    WooPosCard(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(WooPosSpacing.Medium.value)) {
+            WooPosText(
+                text = title,
+                style = WooPosTypography.BodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(bottom = WooPosSpacing.Small.value).semantics { heading() },
+            )
+            content()
+        }
+    }
+}
+
+@Composable
+private fun SecurityDivider() {
+    HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Small.value))
+}
+
+@Composable
+private fun SecurityToggle(
+    title: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    subtitle: String? = null,
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .toggleable(value = true, role = Role.Switch, onValueChange = { onProtectionTurnedOff() })
+            .toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange)
             .padding(vertical = WooPosSpacing.Small.value),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
     ) {
-        WooPosText(
-            text = stringResource(R.string.woopos_security_enable_pin_protection),
-            style = WooPosTypography.BodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f),
-        )
+        SecurityRowText(title, subtitle, Modifier.weight(1f))
         Switch(
-            checked = true,
+            checked = checked,
             onCheckedChange = null,
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color.White,
@@ -163,15 +230,106 @@ private fun PINProtectionToggle(onProtectionTurnedOff: () -> Unit) {
 }
 
 @Composable
-private fun PINRow(title: String, subtitle: String, action: @Composable () -> Unit = {}) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
-    ) {
-        WooPosSettingsDetailsMenuItemInfo(title = title, subtitle = subtitle, modifier = Modifier.weight(1f))
-        action()
+private fun SecurityRow(
+    title: String,
+    subtitle: String? = null,
+    action: @Composable (stacked: Boolean) -> Unit,
+) {
+    val fontScale = LocalDensity.current.fontScale
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val stacked = maxWidth < ROW_MIN_WIDTH * fontScale
+        if (stacked) {
+            Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) {
+                SecurityRowText(title, subtitle)
+                action(true)
+            }
+        } else {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
+            ) {
+                SecurityRowText(title, subtitle, Modifier.weight(1f))
+                action(false)
+            }
+        }
     }
+}
+
+@Composable
+private fun SecurityRowText(title: String, subtitle: String?, modifier: Modifier = Modifier) {
+    if (subtitle != null) {
+        WooPosSettingsDetailsMenuItemInfo(modifier = modifier, title = title, subtitle = subtitle)
+    } else {
+        WooPosText(title, style = WooPosTypography.BodyMedium, modifier = modifier)
+    }
+}
+
+@Composable
+private fun CashierActions(stacked: Boolean, onChange: () -> Unit, onDelete: () -> Unit) {
+    val change = stringResource(R.string.woopos_security_change)
+    val delete = stringResource(R.string.woopos_security_delete)
+    if (stacked) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) {
+            WooPosButtonSmall(text = change, onClick = onChange)
+            WooPosButtonSmall(text = delete, onClick = onDelete)
+        }
+    } else {
+        WooPosOverflowMenu(
+            items = listOf(
+                WooPosOverflowMenuItem(label = change, onClick = onChange),
+                WooPosOverflowMenuItem(label = delete, color = MaterialTheme.colorScheme.error, onClick = onDelete),
+            )
+        )
+    }
+}
+
+@Composable
+private fun LockSettingsCard() {
+    // WOOMOB-4603 will persist these choices and apply the lock triggers.
+    var onLaunch by rememberSaveable { mutableStateOf(true) }
+    var onBackground by rememberSaveable { mutableStateOf(true) }
+    var afterSale by rememberSaveable { mutableStateOf(false) }
+    var inactivityMinutes by rememberSaveable { mutableIntStateOf(5) }
+    var pickerOpen by rememberSaveable { mutableStateOf(false) }
+    SecurityCard(stringResource(R.string.woopos_security_lock_settings)) {
+        SecurityToggle(stringResource(R.string.woopos_security_lock_on_launch), onLaunch, { onLaunch = it })
+        SecurityDivider()
+        SecurityToggle(stringResource(R.string.woopos_security_lock_on_background), onBackground, { onBackground = it })
+        SecurityDivider()
+        SecurityToggle(stringResource(R.string.woopos_security_lock_after_sale), afterSale, { afterSale = it })
+        SecurityDivider()
+        SecurityRow(stringResource(R.string.woopos_security_lock_after)) {
+            Column {
+                TextButton(onClick = { pickerOpen = true }) {
+                    WooPosText(inactivityLabel(inactivityMinutes), style = WooPosTypography.BodyMedium)
+                }
+                DropdownMenu(expanded = pickerOpen, onDismissRequest = { pickerOpen = false }) {
+                    INACTIVITY_OPTIONS.forEach { minutes ->
+                        DropdownMenuItem(
+                            modifier = Modifier.semantics { selected = minutes == inactivityMinutes },
+                            text = { WooPosText(inactivityLabel(minutes), style = WooPosTypography.BodyMedium) },
+                            onClick = {
+                                inactivityMinutes = minutes
+                                pickerOpen = false
+                            },
+                            trailingIcon = if (minutes == inactivityMinutes) {
+                                { Icon(imageVector = WooPosIcons.Check, contentDescription = null) }
+                            } else {
+                                null
+                            },
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun inactivityLabel(minutes: Int): String = when (minutes) {
+    0 -> stringResource(R.string.woopos_security_never)
+    1 -> stringResource(R.string.woopos_security_one_minute)
+    else -> stringResource(R.string.woopos_security_minutes, minutes)
 }
 
 @Composable
@@ -231,8 +389,17 @@ fun WooPosSettingsSecurityScreenCashierSetPreview() {
 @Composable
 private fun SecurityScreenPreview(state: WooPosSettingsSecurityState) {
     WooPosTheme {
-        WooPosSettingsSecurityScreen(state = state, onSetUpPIN = {}, onProtectionTurnedOff = {})
+        WooPosSettingsSecurityScreen(
+            state,
+            onSetUpPIN = {},
+            onProtectionTurnedOff = {},
+            onChangePIN = {},
+            onDeleteCashierPIN = {},
+        )
     }
 }
 
 private val BUTTON_MAX_WIDTH = 612.dp
+
+private val ROW_MIN_WIDTH = 300.dp
+private val INACTIVITY_OPTIONS = listOf(0, 1, 2, 5, 10, 15)

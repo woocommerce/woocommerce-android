@@ -60,9 +60,10 @@ internal fun WooPosManagerApprovalDialog(
 ) {
     val fullScreen = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
     Dialog(
-        onDismissRequest = { onUIEvent(WooPosManagerApprovalUIEvent.DismissRequested) },
+        onDismissRequest = { if (state.canDismiss) onUIEvent(WooPosManagerApprovalUIEvent.DismissRequested) },
         properties = DialogProperties(
-            dismissOnClickOutside = !fullScreen,
+            dismissOnClickOutside = !fullScreen && state.canDismiss,
+            dismissOnBackPress = state.canDismiss,
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = !fullScreen,
         ),
@@ -92,12 +93,12 @@ private fun ApprovalContent(
     ) {
         val bodyModifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
         if (fullScreen) {
-            WooPosPINPhoneLayout(header = { ApprovalCloseHeader(onDismiss) }) {
+            WooPosPINPhoneLayout(header = { ApprovalCloseHeader(onDismiss, state.canDismiss) }) {
                 ApprovalBody(state, onUIEvent, keySize = PIN_PAD_PHONE_KEY_SIZE, modifier = bodyModifier)
             }
         } else {
             Column(Modifier.padding(WooPosSpacing.Large.value)) {
-                ApprovalCloseHeader(onDismiss)
+                ApprovalCloseHeader(onDismiss, state.canDismiss)
                 ApprovalBody(
                     state,
                     onUIEvent,
@@ -110,12 +111,13 @@ private fun ApprovalContent(
 }
 
 @Composable
-private fun ApprovalCloseHeader(onDismiss: () -> Unit) {
+private fun ApprovalCloseHeader(onDismiss: () -> Unit, enabled: Boolean) {
     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
         WooPosBackButton(
             iconRes = R.drawable.ic_close_24dp,
             contentDescription = stringResource(R.string.close),
             onClick = onDismiss,
+            enabled = enabled,
         )
     }
 }

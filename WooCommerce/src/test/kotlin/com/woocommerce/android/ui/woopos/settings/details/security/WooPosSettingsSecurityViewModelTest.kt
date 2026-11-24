@@ -14,9 +14,11 @@ import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityState.Protected
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -24,6 +26,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
@@ -40,7 +43,11 @@ class WooPosSettingsSecurityViewModelTest {
     }
     private val store: WooPosLocalPINStore = mock()
     private val sessionState = MutableStateFlow<WooPosAccessSessionState>(WooPosAccessSessionState.Unprotected)
-    private val session: WooPosAccessSession = mock { on { state }.thenReturn(sessionState) }
+    private val session: WooPosAccessSession = mock {
+        on { state }.thenReturn(sessionState)
+        on { allows(any()) }.thenAnswer { sessionState.value.allows(it.getArgument(0)) }
+        on { approvalScope() }.thenReturn(WooPosAccessSession.ApprovalScope(1, 1))
+    }
 
     @Test
     fun `given no PINs, when Security opens, then it offers access control setup`() = runTest {
@@ -143,7 +150,7 @@ class WooPosSettingsSecurityViewModelTest {
     fun `when protection is turned off, then both PINs are removed and setup is offered again`() = runTest {
         // GIVEN
         givenAdminSession(ADMIN, CASHIER)
-        whenever(store.removePIN(1, ADMIN)).doSuspendableAnswer {
+        whenever(store.removePIN(eq(1), eq(ADMIN), any())).doSuspendableAnswer {
             givenPINs()
             Result.success(Unit)
         }
@@ -151,11 +158,11 @@ class WooPosSettingsSecurityViewModelTest {
         advanceUntilIdle()
 
         // WHEN
-        viewModel.onProtectionTurnedOff()
+        launch(start = CoroutineStart.UNDISPATCHED) { viewModel.removeProtection() }
         advanceUntilIdle()
 
         // THEN
-        verify(store).removePIN(1, ADMIN)
+        verify(store).removePIN(eq(1), eq(ADMIN), any())
         verify(session).initialize()
         assertThat(viewModel.state.value).isEqualTo(WooPosSettingsSecurityState.Off)
     }
@@ -164,12 +171,12 @@ class WooPosSettingsSecurityViewModelTest {
     fun `given removal failure, when protection is turned off, then protection stays on with an error`() = runTest {
         // GIVEN
         givenAdminSession(ADMIN, CASHIER)
-        whenever(store.removePIN(1, ADMIN)).thenReturn(Result.failure(WooPosPINError.StorageFailure))
+        whenever(store.removePIN(eq(1), eq(ADMIN), any())).thenReturn(Result.failure(WooPosPINError.StorageFailure))
         val viewModel = createViewModel()
         advanceUntilIdle()
 
         // WHEN
-        viewModel.onProtectionTurnedOff()
+        launch(start = CoroutineStart.UNDISPATCHED) { viewModel.removeProtection() }
         advanceUntilIdle()
 
         // THEN
@@ -181,7 +188,7 @@ class WooPosSettingsSecurityViewModelTest {
         // GIVEN
         givenAdminSession(ADMIN)
         val gate = CompletableDeferred<Unit>()
-        whenever(store.removePIN(1, ADMIN)).doSuspendableAnswer {
+        whenever(store.removePIN(eq(1), eq(ADMIN), any())).doSuspendableAnswer {
             gate.await()
             Result.success(Unit)
         }
@@ -189,13 +196,13 @@ class WooPosSettingsSecurityViewModelTest {
         advanceUntilIdle()
 
         // WHEN
-        viewModel.onProtectionTurnedOff()
-        viewModel.onProtectionTurnedOff()
+        launch(start = CoroutineStart.UNDISPATCHED) { viewModel.removeProtection() }
+        launch(start = CoroutineStart.UNDISPATCHED) { viewModel.removeProtection() }
         gate.complete(Unit)
         advanceUntilIdle()
 
         // THEN
-        verify(store, times(1)).removePIN(any(), any())
+        verify(store, times(1)).removePIN(any(), any(), any())
     }
 
     @Test
@@ -204,13 +211,13 @@ class WooPosSettingsSecurityViewModelTest {
         givenAdminSession(ADMIN)
         whenever(store.getPINs(2)).thenReturn(Result.success(emptyMap()))
         val gate = CompletableDeferred<Unit>()
-        whenever(store.removePIN(1, ADMIN)).doSuspendableAnswer {
+        whenever(store.removePIN(eq(1), eq(ADMIN), any())).doSuspendableAnswer {
             gate.await()
             Result.failure(WooPosPINError.StorageFailure)
         }
         val viewModel = createViewModel()
         advanceUntilIdle()
-        viewModel.onProtectionTurnedOff()
+        launch(start = CoroutineStart.UNDISPATCHED) { viewModel.removeProtection() }
 
         // WHEN
         whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { id = 2 })
@@ -231,11 +238,11 @@ class WooPosSettingsSecurityViewModelTest {
         advanceUntilIdle()
 
         // WHEN
-        viewModel.onProtectionTurnedOff()
+        launch(start = CoroutineStart.UNDISPATCHED) { viewModel.removeProtection() }
         advanceUntilIdle()
 
         // THEN
-        verify(store, never()).removePIN(any(), any())
+        verify(store, never()).removePIN(any(), any(), any())
     }
 
     @Test
@@ -248,12 +255,12 @@ class WooPosSettingsSecurityViewModelTest {
         // WHEN
         sessionState.value = WooPosAccessSessionState.Unlocked(CASHIER)
         advanceUntilIdle()
-        viewModel.onProtectionTurnedOff()
+        launch(start = CoroutineStart.UNDISPATCHED) { viewModel.removeProtection() }
         advanceUntilIdle()
 
         // THEN
         assertThat(viewModel.state.value).isEqualTo(WooPosSettingsSecurityState.Restricted)
-        verify(store, never()).removePIN(any(), any())
+        verify(store, never()).removePIN(any(), any(), any())
     }
 
     @Test
@@ -261,13 +268,13 @@ class WooPosSettingsSecurityViewModelTest {
         // GIVEN
         givenAdminSession(ADMIN)
         val gate = CompletableDeferred<Unit>()
-        whenever(store.removePIN(1, ADMIN)).doSuspendableAnswer {
+        whenever(store.removePIN(eq(1), eq(ADMIN), any())).doSuspendableAnswer {
             gate.await()
             Result.success(Unit)
         }
         val viewModel = createViewModel()
         advanceUntilIdle()
-        viewModel.onProtectionTurnedOff()
+        launch(start = CoroutineStart.UNDISPATCHED) { viewModel.removeProtection() }
 
         // WHEN
         viewModel.viewModelScope.cancel()
@@ -326,6 +333,26 @@ class WooPosSettingsSecurityViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value).isEqualTo(WooPosSettingsSecurityState.Restricted)
+    }
+
+    @Test
+    fun `given both PINs, when Cashier PIN is deleted, then Admin protection remains`() = runTest {
+        // GIVEN
+        givenAdminSession(ADMIN, CASHIER)
+        whenever(store.removePIN(eq(1), eq(CASHIER), any())).doSuspendableAnswer {
+            givenPINs(ADMIN)
+            Result.success(Unit)
+        }
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.deleteCashierPIN()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(viewModel.state.value).isEqualTo(Protected(hasCashierPIN = false, removalFailed = false))
+        verify(store, never()).removePIN(eq(1), eq(ADMIN), any())
     }
 
     private fun createViewModel() = WooPosSettingsSecurityViewModel(selectedSite, store, session)
