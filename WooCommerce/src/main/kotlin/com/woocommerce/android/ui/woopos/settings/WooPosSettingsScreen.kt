@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolba
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterSetupDialog
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupDialog
@@ -283,6 +284,13 @@ private fun SettingsDialogs(
         WooPosCardReaderUpdateDialog(
             onDismiss = onDismissDialog,
             onUpdateComplete = onDismissDialog
+        )
+    }
+
+    if (dialogState is WooPosSettingsDialogState.ReceiptPrinterSetupDialog) {
+        WooPosReceiptPrinterSetupDialog(
+            onDismiss = onDismissDialog,
+            onConnectionSuccess = onDismissDialog
         )
     }
 }
