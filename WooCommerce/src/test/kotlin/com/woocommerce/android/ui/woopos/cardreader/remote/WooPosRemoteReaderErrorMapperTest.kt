@@ -75,4 +75,36 @@ class WooPosRemoteReaderErrorMapperTest {
         // THEN
         assertThat(message).isEqualTo("something went wrong")
     }
+
+    @Test
+    fun `given a canceled card read, when mapping, then the tap to pay canceled copy is used`() {
+        // GIVEN
+        whenever(resourceProvider.getString(R.string.card_reader_payment_failed_canceled))
+            .thenReturn("Transaction was canceled")
+
+        // WHEN
+        val message = mapper.toUserMessage(
+            error = CardReaderRemoteError.Canceled,
+            fallback = R.string.woopos_remote_payment_failed_generic,
+        )
+
+        // THEN
+        assertThat(message).isEqualTo("Transaction was canceled")
+    }
+
+    @Test
+    fun `given a timed out card read, when mapping, then the tap to pay failed copy is used`() {
+        // GIVEN
+        whenever(resourceProvider.getString(R.string.card_reader_payment_failed_unexpected_error_state))
+            .thenReturn("Sorry, this payment couldn't be processed")
+
+        // WHEN
+        val message = mapper.toUserMessage(
+            error = CardReaderRemoteError.CardReadTimedOut,
+            fallback = R.string.woopos_remote_payment_failed_generic,
+        )
+
+        // THEN
+        assertThat(message).isEqualTo("Sorry, this payment couldn't be processed")
+    }
 }

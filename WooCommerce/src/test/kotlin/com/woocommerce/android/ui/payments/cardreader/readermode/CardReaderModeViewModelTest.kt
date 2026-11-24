@@ -430,6 +430,36 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given session started, when the phone rejects a canceled card read, then the stripe code is tracked`() =
+        testBlocking {
+            // GIVEN
+            viewModel.onPermissionsGranted()
+            advanceUntilIdle()
+
+            // WHEN
+            paymentRejections.emit(
+                CardReaderRemoteSession.PaymentRejection(
+                    error = CardReaderRemoteError.Canceled,
+                    description = "TerminalException: canceled",
+                    stripeErrorCode = "CANCELED",
+                )
+            )
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.REMOTE_TTP_PHONE_PAYMENT_FAILED),
+                eq(
+                    mapOf(
+                        "error_code" to "canceled",
+                        "error_description" to "TerminalException: canceled",
+                        "stripe_error_code" to "CANCELED",
+                    )
+                ),
+            )
+        }
+
+    @Test
     fun `given the session errors, when tracked, then the error description carries the cause chain`() =
         testBlocking {
             // GIVEN

@@ -34,4 +34,11 @@ object WooErrorTestUtils {
             }
         }
     )
+
+    fun createInvalidProductIdError(): WooError = WooError(
+        type = WooErrorType.INVALID_PRODUCT_ID,
+        original = BaseRequest.GenericErrorType.UNKNOWN,
+        message = "Invalid product ID.",
+        apiErrorCode = "woocommerce_rest_invalid_product_id",
+    )
 }

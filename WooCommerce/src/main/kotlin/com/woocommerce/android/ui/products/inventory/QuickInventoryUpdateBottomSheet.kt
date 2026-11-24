@@ -22,9 +22,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -51,6 +53,27 @@ import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewMo
 
 @Composable
 fun QuickInventoryUpdateBottomSheet(
+    state: ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible,
+    onIncrementQuantityClicked: () -> Unit,
+    onManualQuantityEntered: (String) -> Unit,
+    onUpdateQuantityClicked: () -> Unit,
+    onViewProductDetailsClicked: () -> Unit,
+    onManageStockClicked: () -> Unit,
+) {
+    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onSurface) {
+        QuickInventoryUpdateBottomSheetContent(
+            state = state,
+            onIncrementQuantityClicked = onIncrementQuantityClicked,
+            onManualQuantityEntered = onManualQuantityEntered,
+            onUpdateQuantityClicked = onUpdateQuantityClicked,
+            onViewProductDetailsClicked = onViewProductDetailsClicked,
+            onManageStockClicked = onManageStockClicked,
+        )
+    }
+}
+
+@Composable
+private fun QuickInventoryUpdateBottomSheetContent(
     state: ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible,
     onIncrementQuantityClicked: () -> Unit,
     onManualQuantityEntered: (String) -> Unit,
