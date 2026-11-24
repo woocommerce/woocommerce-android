@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.toolbar
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 
 data class WooPosHomeFloatingToolbarState(
     val cardReaderStatus: WooPosCardReaderStatus,
@@ -24,7 +25,7 @@ data class WooPosHomeFloatingToolbarState(
 
     sealed class Menu {
         data object Hidden : Menu()
-        data class Visible(val items: List<MenuItem>, @StringRes val activeRoleTitle: Int?) : Menu()
+        data class Visible(val items: List<MenuItem>, val activeRole: WooPosLocalRole?) : Menu()
         data class MenuItem(
             @StringRes val title: Int,
             @DrawableRes val icon: Int,

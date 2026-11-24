@@ -18,9 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,7 +31,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -49,33 +45,6 @@ import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsM
 
 @Composable
 fun WooPosSettingsSecurityScreen(
-    pinSetupRole: WooPosLocalRole?,
-    onSetUpPIN: (WooPosLocalRole) -> Unit,
-) {
-    val viewModel: WooPosSettingsSecurityViewModel = hiltViewModel()
-    val state by viewModel.state.collectAsState()
-    LaunchedEffect(pinSetupRole) { if (pinSetupRole == null) viewModel.refresh() }
-    val visibleState = if (pinSetupRole == WooPosLocalRole.ADMIN && state is WooPosSettingsSecurityState.Protected) {
-        WooPosSettingsSecurityState.Off
-    } else {
-        state
-    }
-    WooPosSettingsSecurityScreen(
-        state = visibleState,
-        onSetUpPIN = onSetUpPIN,
-        onProtectionTurnedOff = viewModel::onProtectionTurnedOff,
-    )
-}
-
-/** The setup empty state is centered without the pane heading; PIN management shows it. */
-@Composable
-fun wooPosSettingsSecurityShowsHeading(): Boolean {
-    val viewModel: WooPosSettingsSecurityViewModel = hiltViewModel()
-    return viewModel.state.collectAsState().value is WooPosSettingsSecurityState.Protected
-}
-
-@Composable
-fun WooPosSettingsSecurityScreen(
     state: WooPosSettingsSecurityState,
     onSetUpPIN: (WooPosLocalRole) -> Unit,
     onProtectionTurnedOff: () -> Unit,
@@ -86,7 +55,13 @@ fun WooPosSettingsSecurityScreen(
             AccessControlSetup(onGetStartedClicked = { onSetUpPIN(WooPosLocalRole.ADMIN) })
         }
         WooPosSettingsSecurityState.Restricted -> CenteredContent {
-            WooPosSettingsSecurityProtectedMessage(WooPosLocalRole.ADMIN)
+            WooPosText(
+                text = stringResource(R.string.woopos_security_admin_only),
+                style = WooPosTypography.BodyXLarge,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.semantics { heading() },
+            )
         }
         WooPosSettingsSecurityState.Unavailable -> CenteredContent {
             WooPosText(

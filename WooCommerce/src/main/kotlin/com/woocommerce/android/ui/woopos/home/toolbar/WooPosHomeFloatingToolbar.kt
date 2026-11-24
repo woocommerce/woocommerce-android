@@ -55,6 +55,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarState.Menu
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarState.WooPosCardReaderStatus
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 
 private val TOOLBAR_ELEVATION = WooPosElevation.Medium
 
@@ -136,7 +137,7 @@ private fun WooPosFloatingToolbar(
                                 contentDescription = labels.floatingToolbarPopUpMenuOpenContentDescription
                             },
                         menuItems = menu.items,
-                        activeRoleTitle = menu.activeRoleTitle,
+                        activeRole = menu.activeRole,
                         onClick = { menuItem ->
                             onUIEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
                         }
@@ -445,7 +446,7 @@ fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
                             icon = R.drawable.ic_exit_to_app_24dp,
                         ),
                     ),
-                    activeRoleTitle = R.string.woopos_role_cashier,
+                    activeRole = WooPosLocalRole.CASHIER,
                 ),
             )
         )

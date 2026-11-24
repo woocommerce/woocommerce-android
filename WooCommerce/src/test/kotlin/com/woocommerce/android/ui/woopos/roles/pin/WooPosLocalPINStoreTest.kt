@@ -67,6 +67,25 @@ class WooPosLocalPINStoreTest {
     }
 
     @Test
+    fun `given a saved PIN, when the same role is created again, then its PIN is preserved`() = runTest {
+        // GIVEN
+        store.createPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+        store.createPIN(1, WooPosLocalRole.CASHIER, "5678").getOrThrow()
+
+        // WHEN
+        val admin = store.createPIN(1, WooPosLocalRole.ADMIN, "9012")
+        val cashier = store.createPIN(1, WooPosLocalRole.CASHIER, "3456")
+
+        // THEN
+        assertThat(admin.exceptionOrNull()).isEqualTo(WooPosPINError.AlreadyExists)
+        assertThat(cashier.exceptionOrNull()).isEqualTo(WooPosPINError.AlreadyExists)
+        assertThat(storage.writtenSiteIds).containsExactly(1, 1)
+        val pins = store.getPINs(1).getOrThrow()
+        assertThat(pins.getValue(WooPosLocalRole.ADMIN).matches("1234")).isTrue()
+        assertThat(pins.getValue(WooPosLocalRole.CASHIER).matches("5678")).isTrue()
+    }
+
+    @Test
     fun `given an Admin PIN, when checking Cashier PIN uniqueness, then a match fails without writing`() = runTest {
         // GIVEN
         store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()

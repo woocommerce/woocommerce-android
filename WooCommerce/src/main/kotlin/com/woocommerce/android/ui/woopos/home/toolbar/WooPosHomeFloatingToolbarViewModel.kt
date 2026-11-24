@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarU
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.OnOutsideOfToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked
-import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
@@ -103,7 +102,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                 _state.value = currentState.copy(
                     menu = WooPosHomeFloatingToolbarState.Menu.Visible(
                         items = toolbarMenuItems,
-                        activeRoleTitle = accessSession.state.value.activeRole?.let(::roleTitle),
+                        activeRole = accessSession.state.value.activeRole,
                     )
                 )
             }
@@ -143,11 +142,6 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                     analyticsTracker.track(ExitTapped)
                 }
         }
-    }
-
-    private fun roleTitle(role: WooPosLocalRole): Int = when (role) {
-        WooPosLocalRole.ADMIN -> R.string.woopos_role_admin
-        WooPosLocalRole.CASHIER -> R.string.woopos_role_cashier
     }
 
     private fun hideMenu() {

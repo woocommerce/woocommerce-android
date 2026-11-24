@@ -101,8 +101,8 @@ fun WooPosSettingsSecurityPINSetupDialog(
     onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
     onClose: () -> Unit,
     isFullScreen: Boolean = currentWooPosBreakpoint() == WooPosBreakpoint.Phone,
-    chooseTitle: String = stringResource(R.string.woopos_security_choose_pin),
-    confirmTitle: String = stringResource(R.string.woopos_security_confirm_pin),
+    chooseTitle: String? = null,
+    confirmTitle: String? = null,
 ) {
     val shouldDismiss = isVisible && state == AccessUnavailable
     LaunchedEffect(shouldDismiss) {
@@ -110,6 +110,8 @@ fun WooPosSettingsSecurityPINSetupDialog(
     }
     // The flow resets when the dialog hides, so the closing animation keeps showing the last visible step.
     val shown = remember(isVisible, state.takeIf { isVisible }) { state }
+    val resolvedChooseTitle = chooseTitle ?: stringResource(shown.role.pinSetupChooseTitleRes)
+    val resolvedConfirmTitle = confirmTitle ?: stringResource(shown.role.pinSetupConfirmTitleRes)
     val sendEvent = { event: WooPosSettingsSecurityPINSetupUIEvent -> if (isVisible) onUIEvent(event) }
     val close = { if (isVisible && shown.canClose) onClose() }
     val goBack = { sendEvent(WooPosSettingsSecurityPINSetupUIEvent.BackTapped) }
@@ -119,7 +121,7 @@ fun WooPosSettingsSecurityPINSetupDialog(
         }
         AnimatedVisibility(visible = isVisible, enter = fadeIn(), exit = fadeOut()) {
             Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceBright) {
-                PINSetupPhoneContent(shown, chooseTitle, confirmTitle, sendEvent, close)
+                PINSetupPhoneContent(shown, resolvedChooseTitle, resolvedConfirmTitle, sendEvent, close)
             }
         }
     } else {
@@ -131,7 +133,7 @@ fun WooPosSettingsSecurityPINSetupDialog(
             onDismissRequest = close,
         ) {
             BackHandler(enabled = isVisible && shown.canGoBack, onBack = goBack)
-            PINSetupDialogContent(shown, chooseTitle, confirmTitle, sendEvent, close)
+            PINSetupDialogContent(shown, resolvedChooseTitle, resolvedConfirmTitle, sendEvent, close)
         }
     }
 }
@@ -535,19 +537,17 @@ private fun PINSetupDialogPreview(state: WooPosSettingsSecurityPINSetupState) {
             isVisible = true,
             onUIEvent = {},
             onClose = {},
-            chooseTitle = stringResource(state.role.pinSetupChooseTitleRes),
-            confirmTitle = stringResource(state.role.pinSetupConfirmTitleRes),
         )
     }
 }
 
-internal val WooPosLocalRole.pinSetupChooseTitleRes: Int
+private val WooPosLocalRole.pinSetupChooseTitleRes: Int
     get() = when (this) {
         WooPosLocalRole.ADMIN -> R.string.woopos_security_choose_pin
         WooPosLocalRole.CASHIER -> R.string.woopos_security_choose_cashier_pin
     }
 
-internal val WooPosLocalRole.pinSetupConfirmTitleRes: Int
+private val WooPosLocalRole.pinSetupConfirmTitleRes: Int
     get() = when (this) {
         WooPosLocalRole.ADMIN -> R.string.woopos_security_confirm_pin
         WooPosLocalRole.CASHIER -> R.string.woopos_security_confirm_cashier_pin

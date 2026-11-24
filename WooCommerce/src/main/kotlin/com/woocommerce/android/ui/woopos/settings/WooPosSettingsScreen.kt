@@ -42,8 +42,6 @@ import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPa
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSyncErrorDialog
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupDialog
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupViewModel
-import com.woocommerce.android.ui.woopos.settings.details.security.pinSetupChooseTitleRes
-import com.woocommerce.android.ui.woopos.settings.details.security.pinSetupConfirmTitleRes
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialog
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialogState
 import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
@@ -257,8 +255,6 @@ private fun SettingsDialogs(
         state = pinSetupState,
         isVisible = isPinSetupVisible,
         isFullScreen = isPhoneLayout,
-        chooseTitle = stringResource(pinSetupState.role.pinSetupChooseTitleRes),
-        confirmTitle = stringResource(pinSetupState.role.pinSetupConfirmTitleRes),
         onUIEvent = pinSetup::onUIEvent,
         onClose = onDismissDialog,
     )

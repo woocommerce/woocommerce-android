@@ -145,7 +145,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         runTest {
             // GIVEN
             givenNoPINs()
-            whenever(store.setPIN(1, ADMIN, "1234")).thenReturn(Result.success(Unit))
+            whenever(store.createPIN(1, ADMIN, "1234")).thenReturn(Result.success(Unit))
             choose("1234")
 
             // WHEN
@@ -155,7 +155,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
             assertThat(viewModel.state.value).isEqualTo(Confirm(ADMIN, enteredDigits = 4))
             inOrder(store, session) {
                 verify(store).getPINs(1)
-                verify(store).setPIN(1, ADMIN, "1234")
+                verify(store).createPIN(1, ADMIN, "1234")
                 verify(session).unlock("1234")
             }
 
@@ -178,7 +178,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
 
             // THEN
             assertThat(viewModel.state.value).isEqualTo(Saved(ADMIN))
-            verify(store).setPIN(any(), any(), any())
+            verify(store).createPIN(any(), any(), any())
         }
 
     @Test
@@ -186,7 +186,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         // GIVEN
         val gate = CompletableDeferred<Unit>()
         givenNoPINs()
-        whenever(store.setPIN(1, ADMIN, "1234")).doSuspendableAnswer {
+        whenever(store.createPIN(1, ADMIN, "1234")).doSuspendableAnswer {
             gate.await()
             Result.success(Unit)
         }
@@ -214,7 +214,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         runTest {
             // GIVEN
             givenNoPINs()
-            whenever(store.setPIN(1, ADMIN, "1234")).thenReturn(Result.failure(IllegalStateException()))
+            whenever(store.createPIN(1, ADMIN, "1234")).thenReturn(Result.failure(IllegalStateException()))
             choose("1234")
 
             // WHEN
@@ -227,7 +227,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
             verify(session, never()).unlock(any())
 
             // WHEN
-            whenever(store.setPIN(1, ADMIN, "1234")).thenReturn(Result.success(Unit))
+            whenever(store.createPIN(1, ADMIN, "1234")).thenReturn(Result.success(Unit))
             choose("1234")
             enter("1234")
             advanceUntilIdle()
@@ -248,7 +248,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         chooseAndConfirm("1234")
 
         // THEN
-        verify(store, never()).setPIN(any(), any(), any())
+        verify(store, never()).createPIN(any(), any(), any())
         verify(session, never()).unlock(any())
         assertThat(viewModel.state.value).isEqualTo(Choose(ADMIN, error = Error.SAVE_FAILED))
     }
@@ -263,7 +263,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
             chooseAndConfirm("1234")
 
             // THEN
-            verify(store, never()).setPIN(any(), any(), any())
+            verify(store, never()).createPIN(any(), any(), any())
             verify(session, never()).unlock(any())
             assertThat(viewModel.state.value).isEqualTo(Choose(ADMIN, error = Error.SAVE_FAILED))
         }
@@ -286,7 +286,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         runTest {
             // GIVEN
             givenNoPINs()
-            whenever(store.setPIN(1, ADMIN, "1234")).thenReturn(Result.success(Unit))
+            whenever(store.createPIN(1, ADMIN, "1234")).thenReturn(Result.success(Unit))
             choose("1234")
             enter("19")
 
@@ -296,7 +296,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            verify(store).setPIN(1, ADMIN, "1234")
+            verify(store).createPIN(1, ADMIN, "1234")
             assertThat(viewModel.state.value).isEqualTo(Saved(ADMIN))
         }
 
@@ -355,7 +355,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
             runCurrent()
 
             // THEN
-            verify(store, never()).setPIN(any(), any(), any())
+            verify(store, never()).createPIN(any(), any(), any())
             verify(session, never()).unlock(any())
             assertThat(viewModel.state.value).isEqualTo(Choose(ADMIN))
         }
@@ -377,7 +377,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        verify(store, never()).setPIN(any(), any(), any())
+        verify(store, never()).createPIN(any(), any(), any())
         verify(session, never()).unlock(any())
         assertThat(viewModel.state.value).isEqualTo(Choose(ADMIN))
     }
@@ -420,7 +420,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
     fun `given a fast save, when the selected store changes during loading, then success is not shown`() = runTest {
         // GIVEN
         givenNoPINs()
-        whenever(store.setPIN(1, ADMIN, "1234")).thenReturn(Result.success(Unit))
+        whenever(store.createPIN(1, ADMIN, "1234")).thenReturn(Result.success(Unit))
         choose("1234")
         enter("1234")
 
@@ -431,7 +431,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        verify(store).setPIN(1, ADMIN, "1234")
+        verify(store).createPIN(1, ADMIN, "1234")
         assertThat(viewModel.state.value).isEqualTo(Choose(ADMIN))
     }
 
@@ -488,7 +488,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            verify(store).setPIN(any(), any(), any())
+            verify(store).createPIN(any(), any(), any())
             assertThat(viewModel.state.value).isEqualTo(Saved(ADMIN))
         }
 
@@ -496,7 +496,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
     fun `when the PIN is saved but Admin access is unavailable, then setup does not show success`() = runTest {
         // GIVEN
         givenNoPINs(WooPosAccessSessionState.Locked(Status.StorageUnavailable))
-        whenever(store.setPIN(1, ADMIN, "1234")).thenReturn(Result.success(Unit))
+        whenever(store.createPIN(1, ADMIN, "1234")).thenReturn(Result.success(Unit))
 
         // WHEN
         chooseAndConfirm("1234")
@@ -512,14 +512,15 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         runTest {
             // GIVEN
             givenAdminPIN()
-            whenever(store.setPIN(1, CASHIER, "5678")).thenReturn(Result.success(Unit))
+            whenever(store.createPIN(1, CASHIER, "5678")).thenReturn(Result.success(Unit))
             viewModel.start(CASHIER)
 
             // WHEN
             chooseAndConfirm("5678")
 
             // THEN
-            verify(store).setPIN(1, CASHIER, "5678")
+            verify(store).createPIN(1, CASHIER, "5678")
+            verify(store, never()).getPINs(1)
             verify(session, never()).unlock(any())
             assertThat(viewModel.state.value).isEqualTo(Saved(CASHIER))
         }
@@ -530,7 +531,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
             // GIVEN
             givenAdminPIN()
             val gate = CompletableDeferred<Unit>()
-            whenever(store.setPIN(1, CASHIER, "5678")).doSuspendableAnswer {
+            whenever(store.createPIN(1, CASHIER, "5678")).doSuspendableAnswer {
                 gate.await()
                 Result.success(Unit)
             }
@@ -566,14 +567,14 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         assertThat(viewModel.state.value).isEqualTo(Rejected(CASHIER, Page.CHOOSE))
         advanceUntilIdle()
         assertThat(viewModel.state.value).isEqualTo(Choose(CASHIER, error = Error.PIN_TAKEN))
-        verify(store, never()).setPIN(any(), any(), any())
+        verify(store, never()).createPIN(any(), any(), any())
     }
 
     @Test
     fun `given a PIN becomes a duplicate after Choose, when confirmed, then Choose reports the new conflict`() = runTest {
         // GIVEN
         givenAdminPIN()
-        whenever(store.setPIN(1, CASHIER, "1234")).thenReturn(Result.failure(WooPosPINError.MatchesOtherRole))
+        whenever(store.createPIN(1, CASHIER, "1234")).thenReturn(Result.failure(WooPosPINError.MatchesOtherRole))
         viewModel.start(CASHIER)
 
         // WHEN
@@ -588,18 +589,15 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         runTest {
             // GIVEN
             givenAdminPIN()
-            whenever(store.getPINs(1)).thenReturn(
-                Result.success(
-                    mapOf(ADMIN to WooPosPINHash.create("1234"), CASHIER to WooPosPINHash.create("5678"))
-                )
-            )
+            whenever(store.createPIN(1, CASHIER, "9012")).thenReturn(Result.failure(WooPosPINError.AlreadyExists))
             viewModel.start(CASHIER)
 
             // WHEN
             chooseAndConfirm("9012")
 
             // THEN
-            verify(store, never()).setPIN(any(), any(), any())
+            verify(store).createPIN(1, CASHIER, "9012")
+            verify(session, never()).unlock(any())
             assertThat(viewModel.state.value).isEqualTo(Choose(CASHIER, error = Error.SAVE_FAILED))
         }
 
@@ -616,7 +614,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
 
         // THEN
         verify(store, never()).validatePINUniqueness(any(), any(), any())
-        verify(store, never()).setPIN(any(), any(), any())
+        verify(store, never()).createPIN(any(), any(), any())
         assertThat(viewModel.state.value).isEqualTo(Choose(CASHIER, error = Error.SAVE_FAILED))
     }
 
@@ -634,7 +632,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        verify(store, never()).setPIN(any(), any(), any())
+        verify(store, never()).createPIN(any(), any(), any())
         assertThat(viewModel.state.value).isEqualTo(Choose(CASHIER, error = Error.SAVE_FAILED))
     }
 
@@ -669,7 +667,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         // GIVEN
         givenNoPINs()
         whenever(store.validatePINUniqueness(1, CASHIER, "5678")).thenReturn(Result.success(Unit))
-        whenever(store.setPIN(1, CASHIER, "5678")).thenReturn(Result.failure(WooPosPINError.AdminRequired))
+        whenever(store.createPIN(1, CASHIER, "5678")).thenReturn(Result.failure(WooPosPINError.AdminRequired))
         viewModel.start(CASHIER)
 
         // WHEN
@@ -684,7 +682,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
     fun `when saving leaves the session unprotected, then setup does not show success`() = runTest {
         // GIVEN
         givenNoPINs(WooPosAccessSessionState.Unprotected)
-        whenever(store.setPIN(1, ADMIN, "1234")).thenReturn(Result.success(Unit))
+        whenever(store.createPIN(1, ADMIN, "1234")).thenReturn(Result.success(Unit))
 
         // WHEN
         chooseAndConfirm("1234")
@@ -694,7 +692,6 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
     }
 
     private suspend fun givenAdminPIN() {
-        whenever(store.getPINs(1)).thenReturn(Result.success(mapOf(ADMIN to WooPosPINHash.create("1234"))))
         whenever(store.validatePINUniqueness(eq(1), eq(CASHIER), any())).thenReturn(Result.success(Unit))
         sessionState.value = WooPosAccessSessionState.Unlocked(ADMIN)
     }
@@ -709,7 +706,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
     private suspend fun givenPendingSave(): CompletableDeferred<Unit> {
         val gate = CompletableDeferred<Unit>()
         givenNoPINs()
-        whenever(store.setPIN(1, ADMIN, "1234")).doSuspendableAnswer {
+        whenever(store.createPIN(1, ADMIN, "1234")).doSuspendableAnswer {
             gate.await()
             Result.success(Unit)
         }

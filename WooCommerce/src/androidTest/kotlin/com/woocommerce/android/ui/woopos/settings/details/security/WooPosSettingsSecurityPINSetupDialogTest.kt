@@ -4,7 +4,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.MotionDurationScale
 import androidx.compose.ui.graphics.toPixelMap
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.DeviceConfigurationOverride
 import androidx.compose.ui.test.FontScale
@@ -371,8 +370,6 @@ class WooPosSettingsSecurityPINSetupDialogTest {
             mutableStateOf(state),
             size,
             fontScale,
-            context.getString(state.role.pinSetupChooseTitleRes),
-            context.getString(state.role.pinSetupConfirmTitleRes),
         )
     }
 
@@ -380,8 +377,8 @@ class WooPosSettingsSecurityPINSetupDialogTest {
         state: State<WooPosSettingsSecurityPINSetupState>,
         size: DpSize,
         fontScale: Float,
-        chooseTitle: String,
-        confirmTitle: String,
+        chooseTitle: String? = null,
+        confirmTitle: String? = null,
     ) {
         composeTestRule.setContent {
             val configuration = DeviceConfigurationOverride.ForcedSize(size) then
@@ -413,8 +410,6 @@ class WooPosSettingsSecurityPINSetupDialogTest {
                 WooPosSettingsSecurityPINSetupDialog(
                     state = state.value,
                     isVisible = isVisible.value,
-                    chooseTitle = stringResource(state.value.role.pinSetupChooseTitleRes),
-                    confirmTitle = stringResource(state.value.role.pinSetupConfirmTitleRes),
                     onUIEvent = { events += it },
                     onClose = { closeCount++ },
                 )

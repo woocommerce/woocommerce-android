@@ -160,11 +160,11 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
 
     private suspend fun save(role: WooPosLocalRole, id: Int, pin: String): SaveResult {
         if (!isSelected(id)) return SaveResult.STALE
-        val pins = store.getPINs(id).getOrNull()
+        val activatesAdmin = role == WooPosLocalRole.ADMIN
+        val canCreate = !activatesAdmin || store.getPINs(id).getOrNull()?.isEmpty() == true
         currentCoroutineContext().ensureActive()
         if (!isSelected(id)) return SaveResult.STALE
-        if (pins == null || role in pins || !canManagePINs()) return SaveResult.FAILED
-        val activatesAdmin = role == WooPosLocalRole.ADMIN && pins.isEmpty()
+        if (!canCreate || !canManagePINs()) return SaveResult.FAILED
         val saved = persistPIN(id, role, pin, activatesAdmin)
         currentCoroutineContext().ensureActive()
         return when {
@@ -179,7 +179,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
 
     private suspend fun persistPIN(id: Int, role: WooPosLocalRole, pin: String, activatesAdmin: Boolean): Result<Unit> =
         withContext(NonCancellable) {
-            store.setPIN(id, role, pin).also {
+            store.createPIN(id, role, pin).also {
                 if (it.isSuccess && activatesAdmin && isSelected(id)) accessSession.unlock(pin)
             }
         }

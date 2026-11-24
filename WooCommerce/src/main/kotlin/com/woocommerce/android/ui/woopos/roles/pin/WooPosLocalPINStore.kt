@@ -27,9 +27,21 @@ class WooPosLocalPINStore @Inject constructor(
         load(localSiteId).requireUniquePIN(role, pin)
     }
 
-    suspend fun setPIN(localSiteId: Int, role: WooPosLocalRole, pin: String): Result<Unit> = operation {
+    suspend fun createPIN(localSiteId: Int, role: WooPosLocalRole, pin: String): Result<Unit> =
+        savePIN(localSiteId, role, pin, createOnly = true)
+
+    suspend fun setPIN(localSiteId: Int, role: WooPosLocalRole, pin: String): Result<Unit> =
+        savePIN(localSiteId, role, pin, createOnly = false)
+
+    private suspend fun savePIN(
+        localSiteId: Int,
+        role: WooPosLocalRole,
+        pin: String,
+        createOnly: Boolean,
+    ): Result<Unit> = operation {
         if (!WooPosPINHash.isValidPIN(pin)) throw WooPosPINError.InvalidFormat
         val pins = load(localSiteId).toMutableMap()
+        if (createOnly && role in pins) throw WooPosPINError.AlreadyExists
         if (role != WooPosLocalRole.ADMIN && WooPosLocalRole.ADMIN !in pins) throw WooPosPINError.AdminRequired
         pins.requireUniquePIN(role, pin)
         pins[role] = WooPosPINHash.create(pin)

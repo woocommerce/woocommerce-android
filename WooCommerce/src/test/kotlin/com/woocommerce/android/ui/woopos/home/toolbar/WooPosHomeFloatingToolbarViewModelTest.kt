@@ -120,7 +120,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
                             icon = R.drawable.ic_exit_to_app_24dp,
                         ),
                     ),
-                    activeRoleTitle = null,
+                    activeRole = null,
                 )
             )
     }
@@ -449,7 +449,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
 
         // THEN
         val menu = viewModel.state.value.menu as WooPosHomeFloatingToolbarState.Menu.Visible
-        assertThat(menu.activeRoleTitle).isEqualTo(R.string.woopos_role_cashier)
+        assertThat(menu.activeRole).isEqualTo(WooPosLocalRole.CASHIER)
     }
 
     @Test
@@ -477,7 +477,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
 
         // THEN
         val menu = viewModel.state.value.menu as WooPosHomeFloatingToolbarState.Menu.Visible
-        assertThat(menu.activeRoleTitle).isEqualTo(R.string.woopos_role_admin)
+        assertThat(menu.activeRole).isEqualTo(WooPosLocalRole.ADMIN)
     }
 
     @Test

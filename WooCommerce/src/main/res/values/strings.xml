@@ -4148,7 +4148,8 @@
     <string name="woopos_security_choose_cashier_pin">Choose a cashier PIN</string>
     <string name="woopos_security_confirm_cashier_pin">Confirm the cashier PIN</string>
     <string name="woopos_security_cashier_success">Your cashier PIN is set</string>
-    <string name="woopos_security_cashier_success_message">Your team can use this PIN to sell. Creating coupons, issuing refunds and exiting POS require admin approval.</string>
+    <string name="woopos_security_cashier_success_message">Your team can use this PIN to sell.</string>
+    <string name="woopos_security_admin_only">Only an admin can manage PINs.</string>
     <string name="woopos_security_pin_protection">PIN protection</string>
     <string name="woopos_security_enable_pin_protection">Enable PIN protection</string>
     <string name="woopos_security_admin_pin">Admin PIN</string>
