@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
@@ -31,6 +32,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolba
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupDialog
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategoriesPaneScreen
@@ -103,7 +105,7 @@ private fun WooPosSettingsPhoneContent(
     onBack: () -> Unit,
     onDismissDetail: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
-    onShowPinSetupDialog: () -> Unit,
+    onShowPinSetupDialog: (WooPosLocalRole) -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit,
@@ -121,6 +123,7 @@ private fun WooPosSettingsPhoneContent(
         targetState = state.showingDetail,
         transitionSpec = { fadeIn() togetherWith fadeOut() },
         label = "settings_phone_transition",
+        modifier = Modifier.hiddenBehindPinSetup(state.dialogState),
     ) { showingDetail ->
         if (!showingDetail) {
             Column(
@@ -162,6 +165,7 @@ private fun WooPosSettingsPhoneContent(
 
     SettingsDialogs(
         dialogState = state.dialogState,
+        isPhoneLayout = true,
         onRetrySync = onRetrySync,
         onDismissDialog = onDismissDialog,
     )
@@ -175,14 +179,16 @@ private fun WooPosSettingsTabletContent(
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
-    onShowPinSetupDialog: () -> Unit,
+    onShowPinSetupDialog: (WooPosLocalRole) -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .hiddenBehindPinSetup(state.dialogState)
     ) {
         Column(
             modifier = Modifier
@@ -217,14 +223,20 @@ private fun WooPosSettingsTabletContent(
 
     SettingsDialogs(
         dialogState = state.dialogState,
+        isPhoneLayout = false,
         onRetrySync = onRetrySync,
         onDismissDialog = onDismissDialog,
     )
 }
 
+/** PIN setup draws over Settings in the same window, so accessibility services must not reach Settings behind it. */
+private fun Modifier.hiddenBehindPinSetup(dialogState: WooPosSettingsDialogState): Modifier =
+    if (dialogState is WooPosSettingsDialogState.PinSetupDialog) clearAndSetSemantics {} else this
+
 @Composable
 private fun SettingsDialogs(
     dialogState: WooPosSettingsDialogState,
+    isPhoneLayout: Boolean,
     onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit,
 ) {
@@ -236,11 +248,13 @@ private fun SettingsDialogs(
 
     val pinSetup: WooPosSettingsSecurityPINSetupViewModel = hiltViewModel()
     val pinSetupState by pinSetup.state.collectAsState()
-    val isPinSetupVisible = dialogState is WooPosSettingsDialogState.PinSetupDialog
-    LaunchedEffect(isPinSetupVisible) { if (!isPinSetupVisible) pinSetup.reset() }
+    val pinSetupRole = (dialogState as? WooPosSettingsDialogState.PinSetupDialog)?.role
+    LaunchedEffect(pinSetupRole) { pinSetupRole?.let(pinSetup::start) ?: pinSetup.reset() }
+    val isPinSetupVisible = pinSetupRole != null && pinSetupState.role == pinSetupRole
     WooPosSettingsSecurityPINSetupDialog(
         state = pinSetupState,
         isVisible = isPinSetupVisible,
+        isFullScreen = isPhoneLayout,
         onUIEvent = pinSetup::onUIEvent,
         onClose = onDismissDialog,
     )
