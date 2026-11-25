@@ -14,7 +14,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -244,7 +243,7 @@ private fun PINSetupDialogContent(
     val density = LocalDensity.current
     // Loading and success keep the height the entry had, so the dialog does not resize between steps.
     var entryHeight by rememberSaveable { mutableFloatStateOf(0f) }
-    BoxWithConstraints(contentAlignment = Alignment.Center) {
+    Box(contentAlignment = Alignment.Center) {
         Column(
             modifier = Modifier.fillMaxWidth().then(
                 if (state is Entry) Modifier else Modifier.verticalScroll(rememberScrollState()),
