@@ -37,7 +37,6 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalView
@@ -144,7 +143,6 @@ private fun BoxWithConstraintsScope.LockContent(
     val title = stringResource(R.string.woopos_lock_enter_pin)
     val titleStyle = WooPosTypography.BodyXLarge.style.copy(fontWeight = FontWeight.Bold)
     val measurer = rememberTextMeasurer()
-    var paymentActionHeight by remember { mutableStateOf(0.dp) }
     Box(
         Modifier
             .fillMaxSize()
@@ -162,12 +160,7 @@ private fun BoxWithConstraintsScope.LockContent(
                 val titleHeight = with(density) {
                     measurer.measure(title, titleStyle, constraints = textConstraints).size.height.toDp()
                 }
-                val paymentHeight = if (state.status == WooPosPINEntryStatus.PaymentPending) {
-                    paymentActionHeight
-                } else {
-                    0.dp
-                }
-                paymentHeight + titleHeight + spacing +
+                titleHeight + spacing +
                     measureWooPosPINStatusHeight(measurer, textConstraints.maxWidth, STATUS_ROW_HEIGHT) +
                     if (layout.showsIllustration) metrics.illustrationSize + spacing else 0.dp
             },
@@ -229,9 +222,7 @@ private fun BoxWithConstraintsScope.LockContent(
                         WooPosPINEntryFeedback(state.status, state.enteredDigits, statusHeight)
                         if (state.status == WooPosPINEntryStatus.PaymentPending) {
                             WooPosButtonSmall(
-                                modifier = Modifier.onSizeChanged {
-                                    paymentActionHeight = with(density) { it.height.toDp() }
-                                }.padding(top = spacing),
+                                modifier = Modifier.padding(top = spacing),
                                 text = stringResource(R.string.woopos_payment_restore_check),
                                 onClick = { onUIEvent(WooPosLockScreenUIEvent.CheckPaymentStatus) },
                             )
