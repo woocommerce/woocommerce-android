@@ -31,9 +31,6 @@ internal fun WooPosAllPaymentMethodsBottomSheet(
 ) {
     WooPosBottomSheet(
         isVisible = isVisible,
-        scrimContentDescription = stringResource(
-            R.string.woopos_payment_method_picker_bottom_sheet_scrim_content_description
-        ),
         onDismissRequest = onDismissRequest,
     ) {
         PaymentMethodsBottomSheetContent(

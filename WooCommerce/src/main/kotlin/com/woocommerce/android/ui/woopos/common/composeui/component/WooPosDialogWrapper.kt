@@ -73,7 +73,6 @@ fun WooPosDialogWrapper(
         WooPosPhoneModalStyle.BottomSheet -> WooPosBottomSheet(
             modifier = modifier,
             isVisible = isVisible,
-            scrimContentDescription = dialogBackgroundContentDescription,
             onDismissRequest = onDismissRequest,
         ) {
             Column(modifier = Modifier.padding(WooPosSpacing.XLarge.value)) {

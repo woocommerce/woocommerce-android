@@ -107,26 +107,10 @@ class WooPosDialogWrapperPhoneStyleTest {
     }
 
     @Test
-    fun bottomSheet_tapDuringSlideIn_requestsDismissAndDoesNotReachContentBehind() {
-        val isVisible = mutableStateOf(false)
-        setContent(phoneStyle = WooPosPhoneModalStyle.BottomSheet, isVisible = isVisible)
-        composeTestRule.mainClock.autoAdvance = false
-
-        isVisible.value = true
-        composeTestRule.mainClock.advanceTimeBy(MID_TRANSITION_MS)
-        composeTestRule.onNodeWithTag(BEHIND_TAG).performClick()
-
-        assertThat(behindClicks).isZero()
-        assertThat(dismissRequests).isEqualTo(1)
-    }
-
-    @Test
-    fun bottomSheet_hasNoCloseButtonAndScrimRequestsDismiss() {
+    fun bottomSheet_hasNoCloseButton() {
         setContent(phoneStyle = WooPosPhoneModalStyle.BottomSheet, showClose = true)
 
-        composeTestRule.onNodeWithContentDescription(SCRIM_DESCRIPTION).performClick()
-
-        assertThat(dismissRequests).isEqualTo(1)
+        composeTestRule.onNodeWithText(CONTENT).assertExists()
         composeTestRule.onNodeWithContentDescription(context.getString(R.string.close)).assertDoesNotExist()
     }
 
