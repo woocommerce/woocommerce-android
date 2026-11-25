@@ -34,6 +34,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterSetupDialog
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalDialog
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalViewModel
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupDialog
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategoriesPaneScreen
@@ -41,6 +43,7 @@ import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCateg
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPaneScreen
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSyncErrorDialog
+import com.woocommerce.android.ui.woopos.settings.details.security.SECURITY_APPROVAL_VIEW_MODEL_KEY
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupDialog
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupViewModel
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialog
@@ -51,6 +54,8 @@ import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
     val containerViewModel: WooPosSettingsViewModel = hiltViewModel()
     val state by containerViewModel.state.collectAsState()
+    val approval: WooPosApprovalViewModel = hiltViewModel(key = SECURITY_APPROVAL_VIEW_MODEL_KEY)
+    val approvalState by approval.state.collectAsState()
 
     LaunchedEffect(Unit) {
         containerViewModel.onSettingsOpened()
@@ -63,37 +68,46 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
 
     val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
 
-    if (isPhoneLayout) {
-        WooPosSettingsPhoneContent(
-            state = state,
-            onBackClicked = backHandler,
-            onCategorySelected = containerViewModel::onCategorySelected,
-            onNavigate = containerViewModel::navigateToDetail,
-            onBack = containerViewModel::navigateBack,
-            onDismissDetail = containerViewModel::dismissDetail,
-            onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
-            onShowPinSetupDialog = containerViewModel::showPinSetupDialog,
-            onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
-            onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
-            onDismissDialog = containerViewModel::hideDialog,
-            onNavigationEvent = onNavigationEvent
-        )
-    } else {
-        BackHandler { backHandler() }
+    Box(Modifier.fillMaxSize()) {
+        Box(
+            Modifier.fillMaxSize().then(
+                if (approvalState != null) Modifier.clearAndSetSemantics {} else Modifier,
+            ),
+        ) {
+            if (isPhoneLayout) {
+                WooPosSettingsPhoneContent(
+                    state = state,
+                    onBackClicked = backHandler,
+                    onCategorySelected = containerViewModel::onCategorySelected,
+                    onNavigate = containerViewModel::navigateToDetail,
+                    onBack = containerViewModel::navigateBack,
+                    onDismissDetail = containerViewModel::dismissDetail,
+                    onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
+                    onShowPinSetupDialog = containerViewModel::showPinSetupDialog,
+                    onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
+                    onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
+                    onDismissDialog = containerViewModel::hideDialog,
+                    onNavigationEvent = onNavigationEvent
+                )
+            } else {
+                BackHandler { backHandler() }
 
-        WooPosSettingsTabletContent(
-            state = state,
-            onBackClicked = backHandler,
-            onCategorySelected = containerViewModel::onCategorySelected,
-            onNavigate = containerViewModel::navigateToDetail,
-            onBack = containerViewModel::navigateBack,
-            onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
-            onShowPinSetupDialog = containerViewModel::showPinSetupDialog,
-            onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
-            onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
-            onDismissDialog = containerViewModel::hideDialog,
-            onNavigationEvent = onNavigationEvent
-        )
+                WooPosSettingsTabletContent(
+                    state = state,
+                    onBackClicked = backHandler,
+                    onCategorySelected = containerViewModel::onCategorySelected,
+                    onNavigate = containerViewModel::navigateToDetail,
+                    onBack = containerViewModel::navigateBack,
+                    onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
+                    onShowPinSetupDialog = containerViewModel::showPinSetupDialog,
+                    onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
+                    onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
+                    onDismissDialog = containerViewModel::hideDialog,
+                    onNavigationEvent = onNavigationEvent
+                )
+            }
+        }
+        WooPosApprovalDialog(approvalState, approval::onUIEvent)
     }
 }
 
