@@ -622,6 +622,26 @@ class WooPosHomeViewModelTest {
         }
 
     @Test
+    fun `given another dialog is open on the success screen, when a print failure is reported, then that dialog stays`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(
+                    ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.CASH),
+                    ChildToParentEvent.ExitPosClicked,
+                    ChildToParentEvent.ShowPrintReceiptFailureDialog(WooPosPrintReceiptFailure.PaperEmpty),
+                )
+            )
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            assertThat(viewModel.state.value.dialogState)
+                .isEqualTo(WooPosHomeState.DialogState.ExitConfirmationDialog)
+        }
+
+    @Test
     fun `given the print failure dialog is shown, when it is dismissed, then it is hidden and children are not told`() =
         runTest {
             // GIVEN

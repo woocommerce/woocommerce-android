@@ -56,7 +56,7 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
         cardPayment = cardDetails?.let { CardPayment(orderId, it) }
     }
 
-    fun onEmailReceiptOpened() {
+    fun ignorePendingFailure() {
         isPrintFailureIgnored = true
     }
 

@@ -308,7 +308,9 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.ShowPrintReceiptFailureDialog -> {
-                        if (_state.value.screenPositionState is ScreenPositionState.Checkout.FullScreenTotals) {
+                        if (_state.value.screenPositionState is ScreenPositionState.Checkout.FullScreenTotals &&
+                            _state.value.dialogState == DialogState.Hidden
+                        ) {
                             _state.value = _state.value.copy(
                                 dialogState = DialogState.PrintReceiptFailureDialog(event.failure)
                             )

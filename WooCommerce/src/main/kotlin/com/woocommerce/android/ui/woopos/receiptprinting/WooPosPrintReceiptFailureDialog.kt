@@ -1,27 +1,15 @@
 package com.woocommerce.android.ui.woopos.receiptprinting
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosConnectionDialogContent
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
 fun WooPosPrintReceiptFailureDialog(
@@ -38,39 +26,20 @@ fun WooPosPrintReceiptFailureDialog(
         onCloseClick = onDismiss,
         onDismissRequest = onDismiss,
     ) {
-        WooPosConnectionDialogContent(
+        MessageContent(
             title = stringResource(failure.title),
-            visual = {
-                Image(
-                    imageVector = WooPosIcons.ErrorX,
-                    contentDescription = null,
-                    modifier = Modifier.size(WooPosComponentSize.XLarge.value),
-                )
-            },
-        ) {
-            WooPosText(
-                text = stringResource(failure.message),
-                style = WooPosTypography.BodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-            )
-
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-
-            WooPosButton(
-                modifier = Modifier.fillMaxWidth(),
+            message = stringResource(failure.message),
+            icon = WooPosIcons.ErrorX,
+            primaryButton = SetupButton(
                 text = stringResource(R.string.woopos_print_receipt_failure_retry_button),
                 onClick = { onActionSelected(WooPosPrintReceiptFailureAction.Retry) },
-            )
-
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
-            WooPosOutlinedButton(
-                modifier = Modifier.fillMaxWidth(),
+            ),
+            modifier = Modifier.verticalScroll(rememberScrollState()),
+            secondaryButton = SetupButton(
                 text = stringResource(R.string.woopos_receipt_button),
                 onClick = { onActionSelected(WooPosPrintReceiptFailureAction.EmailReceipt) },
-            )
-        }
+            ),
+        )
     }
 }
 
