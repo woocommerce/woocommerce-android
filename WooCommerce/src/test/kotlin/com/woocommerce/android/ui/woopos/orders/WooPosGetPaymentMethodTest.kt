@@ -325,6 +325,6 @@ class WooPosGetPaymentMethodTest {
 
         // THEN
         assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrThrow()).isEqualTo("Credit Card ( **** )")
+        assertThat(result.getOrThrow()).isEqualTo("Credit Card (**** )")
     }
 }

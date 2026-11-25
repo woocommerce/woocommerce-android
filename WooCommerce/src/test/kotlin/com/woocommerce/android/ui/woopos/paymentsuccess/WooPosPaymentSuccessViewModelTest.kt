@@ -173,7 +173,7 @@ class WooPosPaymentSuccessViewModelTest {
     }
 
     @Test
-    fun `when onEmailReceiptClicked, then the coordinator is told email receipt was opened`() = runTest {
+    fun `when onEmailReceiptClicked, then the coordinator ignores the pending print failure`() = runTest {
         // GIVEN
         whenever(resourceProvider.getString(any())).thenReturn("test")
         val viewModel = createViewModel()
@@ -182,7 +182,7 @@ class WooPosPaymentSuccessViewModelTest {
         viewModel.onEmailReceiptClicked()
 
         // THEN
-        verify(printReceiptCoordinator).onEmailReceiptOpened()
+        verify(printReceiptCoordinator).ignorePendingFailure()
     }
 
     @Test

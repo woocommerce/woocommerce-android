@@ -1748,7 +1748,7 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `when OnStartReceiptFlowClicked is triggered, then the coordinator is told email receipt was opened`() =
+    fun `when OnStartReceiptFlowClicked is triggered, then the coordinator ignores the pending print failure`() =
         runTest {
             // GIVEN
             val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
@@ -1760,7 +1760,7 @@ class WooPosTotalsViewModelTest {
             viewModel.onUIEvent(WooPosTotalsUIEvent.OnStartReceiptFlowClicked)
 
             // THEN
-            verify(printReceiptCoordinator).onEmailReceiptOpened()
+            verify(printReceiptCoordinator).ignorePendingFailure()
         }
 
     @Test
@@ -3600,6 +3600,28 @@ class WooPosTotalsViewModelTest {
         verify(builtInReaderConnector, never()).disconnectIfConnected()
         assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.PaymentFailed::class.java)
     }
+
+    @Test
+    fun `given a Tap to Pay payment, when it succeeds, then the coordinator gets the order id and card details`() =
+        runTest {
+            // GIVEN
+            val (_, paymentState) = givenTtpInFlight()
+            advanceUntilIdle()
+            val cardDetails = CardDetails(brand = "visa", last4 = "4242")
+
+            // WHEN
+            paymentState.value = CardReaderPaymentState.PaymentSuccessful.BuiltInReaderPaymentSuccessful(
+                amountWithCurrencyLabel = "",
+                onPrintReceiptClicked = {},
+                onSendReceiptClicked = {},
+                onSaveUserClicked = {},
+                cardDetails = cardDetails,
+            )
+            advanceUntilIdle()
+
+            // THEN
+            verify(printReceiptCoordinator, atLeastOnce()).onOrderPaidByCard(CREATED_ORDER_ID, cardDetails)
+        }
 
     private suspend fun givenTtpInFlight(
         mockController: CardReaderPaymentController = mock(),

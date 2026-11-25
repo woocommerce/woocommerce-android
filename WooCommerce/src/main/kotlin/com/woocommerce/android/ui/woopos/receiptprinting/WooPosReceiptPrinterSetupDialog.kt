@@ -264,7 +264,7 @@ private fun WooPosReceiptPrinterConnectionState.showsCloseButton(): Boolean = wh
     is MissingBluetoothPermission, BluetoothOff, NoPrintersFound, DiscoveryFailed, is ConnectionFailed -> false
 }
 
-private data class SetupButton(
+internal data class SetupButton(
     val text: String,
     val onClick: () -> Unit,
 )
@@ -292,17 +292,19 @@ private fun IllustratedContent(title: String, message: String) {
 }
 
 @Composable
-private fun MessageContent(
+internal fun MessageContent(
     title: String,
     message: String,
     icon: ImageVector,
     primaryButton: SetupButton,
+    modifier: Modifier = Modifier,
     secondaryButton: SetupButton? = null,
     link: SetupButton? = null,
     onCancelClicked: (() -> Unit)? = null,
 ) {
     WooPosConnectionDialogContent(
         title = title,
+        modifier = modifier,
         visual = {
             Image(
                 imageVector = icon,
@@ -353,7 +355,7 @@ private fun MessageContent(
         }
 
         if (onCancelClicked != null) {
-            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
             WooPosOutlinedButton(
                 modifier = Modifier.fillMaxWidth(),

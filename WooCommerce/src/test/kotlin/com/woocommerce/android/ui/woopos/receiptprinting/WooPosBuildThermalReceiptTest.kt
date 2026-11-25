@@ -154,6 +154,16 @@ class WooPosBuildThermalReceiptTest {
         }
 
     @Test
+    fun `given card details of an unknown brand, when building the receipt, then the payment method is the last 4`() =
+        runTest {
+            // WHEN
+            val receipt = sut(ORDER_ID, CardDetails(brand = "unknown", last4 = "4242"))
+
+            // THEN
+            assertThat(receipt?.paymentMethod).isEqualTo(LabeledText(label = "Payment Method", text = "4242"))
+        }
+
+    @Test
     fun `given card details without a brand, when building the receipt, then the payment method is the last 4`() =
         runTest {
             // WHEN
