@@ -121,7 +121,12 @@ fun WooPosEmptyScreen(
                 .verticalScroll(rememberScrollState()),
             contentAlignment = Alignment.Center,
         ) {
-            WooPosEmptyContent(title = title, message = message, image = image)
+            WooPosEmptyContent(
+                title = title,
+                message = message,
+                image = image,
+                isTitleHeading = true,
+            )
         }
         WooPosButton(
             text = bottomActionLabel,
@@ -136,6 +141,7 @@ private fun WooPosEmptyContent(
     title: String,
     message: String,
     image: @Composable () -> Unit,
+    isTitleHeading: Boolean = false,
     action: @Composable () -> Unit = {},
 ) {
     Column(
@@ -148,7 +154,7 @@ private fun WooPosEmptyContent(
 
         WooPosText(
             text = title,
-            modifier = Modifier.semantics { heading() },
+            modifier = if (isTitleHeading) Modifier.semantics { heading() } else Modifier,
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
