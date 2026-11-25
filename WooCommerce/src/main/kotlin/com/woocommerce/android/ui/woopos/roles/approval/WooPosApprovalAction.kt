@@ -10,7 +10,7 @@ internal sealed class WooPosApprovalAction(
 ) {
     open val requiresDurableCompletion: Boolean get() = false
 
-    data object CreateCoupon : WooPosManagerApprovalAction(
+    data object CreateCoupon : WooPosApprovalAction(
         WooPosCapability.CREATE_COUPONS,
         R.string.woopos_approval_create_coupon,
     )
@@ -20,17 +20,17 @@ internal sealed class WooPosApprovalAction(
         R.string.woopos_approval_issue_refund,
     )
 
-    data object ChangeAdminPIN : WooPosManagerApprovalAction(
+    data object ChangeAdminPIN : WooPosApprovalAction(
         WooPosCapability.MANAGE_STORE_SETTINGS,
         R.string.woopos_security_approve_admin_change,
     )
 
-    data object DisablePINProtection : WooPosManagerApprovalAction(
+    data object DisablePINProtection : WooPosApprovalAction(
         WooPosCapability.MANAGE_STORE_SETTINGS,
         R.string.woopos_security_approve_disable,
     ) {
         override val requiresDurableCompletion: Boolean get() = true
     }
 
-    data object Exit : WooPosManagerApprovalAction(WooPosCapability.EXIT_POS, R.string.woopos_approval_exit)
+    data object Exit : WooPosApprovalAction(WooPosCapability.EXIT_POS, R.string.woopos_approval_exit)
 }

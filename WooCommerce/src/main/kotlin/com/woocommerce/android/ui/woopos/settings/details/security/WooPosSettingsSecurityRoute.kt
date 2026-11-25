@@ -8,16 +8,16 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
-import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalAction
-import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalDialog
-import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalViewModel
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalDialog
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalViewModel
 
 @Composable
 internal fun WooPosSettingsSecurityRoute(
     state: WooPosSettingsSecurityState,
     onShowPINEditor: (WooPosLocalRole, Boolean) -> Unit,
     viewModel: WooPosSettingsSecurityViewModel = hiltViewModel(),
-    approval: WooPosManagerApprovalViewModel = hiltViewModel(key = "security_approval"),
+    approval: WooPosApprovalViewModel = hiltViewModel(key = "security_approval"),
     pinEditor: WooPosSettingsSecurityPINSetupViewModel = hiltViewModel(),
 ) {
     val request by approval.state.collectAsState()
@@ -43,8 +43,8 @@ internal fun WooPosSettingsSecurityRoute(
         },
         onDeleteCashierPIN = viewModel::deleteCashierPIN,
         onProtectionTurnedOff = {
-            approval.requestFreshApproval(WooPosManagerApprovalAction.DisablePINProtection, viewModel::removeProtection)
+            approval.requestFreshApproval(WooPosApprovalAction.DisablePINProtection, viewModel::removeProtection)
         },
     )
-    request?.let { WooPosManagerApprovalDialog(it, approval::onUIEvent) }
+    WooPosApprovalDialog(request, approval::onUIEvent)
 }

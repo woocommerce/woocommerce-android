@@ -59,17 +59,17 @@ class WooPosApprovalViewModel @Inject constructor(
             return
         }
         beginApproval(action) {
-            onApproved()
+            onAllowed()
             true
         }
     }
 
-    internal fun requestFreshApproval(action: WooPosManagerApprovalAction, onApproved: suspend () -> Boolean) {
+    internal fun requestFreshApproval(action: WooPosApprovalAction, onApproved: suspend () -> Boolean) {
         if (pending != null || !accessSession.allows(action.capability)) return
         beginApproval(action, onApproved)
     }
 
-    private fun beginApproval(action: WooPosManagerApprovalAction, perform: suspend () -> Boolean) {
+    private fun beginApproval(action: WooPosApprovalAction, perform: suspend () -> Boolean) {
         val scope = accessSession.approvalScope() ?: return
         val request = PendingAction(scope, action, perform)
         pending = request
@@ -186,7 +186,7 @@ class WooPosApprovalViewModel @Inject constructor(
 
     private class PendingAction(
         val scope: WooPosAccessSession.ApprovalScope,
-        val action: WooPosManagerApprovalAction,
+        val action: WooPosApprovalAction,
         val perform: suspend () -> Boolean,
     )
 }

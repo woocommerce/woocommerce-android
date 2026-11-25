@@ -341,7 +341,7 @@ class WooPosApprovalViewModelTest {
         var performed = false
 
         // WHEN
-        viewModel.requestFreshApproval(WooPosManagerApprovalAction.DisablePINProtection) {
+        viewModel.requestFreshApproval(WooPosApprovalAction.DisablePINProtection) {
             performed = true
             true
         }
@@ -363,7 +363,7 @@ class WooPosApprovalViewModelTest {
         // GIVEN
         val viewModel = signIn(ADMIN_PIN)
         val removal = CompletableDeferred<Boolean>()
-        viewModel.requestFreshApproval(WooPosManagerApprovalAction.DisablePINProtection) { removal.await() }
+        viewModel.requestFreshApproval(WooPosApprovalAction.DisablePINProtection) { removal.await() }
         runCurrent()
 
         // WHEN
@@ -380,7 +380,7 @@ class WooPosApprovalViewModelTest {
     fun `given durable removal fails, when Admin approves, then the prompt stays open with an error`() = runTest {
         // GIVEN
         val viewModel = signIn(ADMIN_PIN)
-        viewModel.requestFreshApproval(WooPosManagerApprovalAction.DisablePINProtection) { false }
+        viewModel.requestFreshApproval(WooPosApprovalAction.DisablePINProtection) { false }
         runCurrent()
 
         // WHEN
@@ -395,7 +395,7 @@ class WooPosApprovalViewModelTest {
         // GIVEN
         val viewModel = signIn(ADMIN_PIN)
         var opened = false
-        viewModel.requestFreshApproval(WooPosManagerApprovalAction.ChangeAdminPIN) {
+        viewModel.requestFreshApproval(WooPosApprovalAction.ChangeAdminPIN) {
             opened = true
             true
         }
@@ -413,7 +413,7 @@ class WooPosApprovalViewModelTest {
         assertThat(viewModel.state.value).isNull()
     }
 
-    private suspend fun signIn(pin: String): WooPosManagerApprovalViewModel {
+    private suspend fun signIn(pin: String): WooPosApprovalViewModel {
         access.initialize()
         access.unlock(pin)
         return WooPosApprovalViewModel(access)

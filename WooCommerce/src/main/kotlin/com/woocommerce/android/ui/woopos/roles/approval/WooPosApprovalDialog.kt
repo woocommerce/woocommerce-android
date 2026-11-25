@@ -57,17 +57,24 @@ internal fun WooPosApprovalDialog(
     state: WooPosApprovalState?,
     onUIEvent: (WooPosApprovalUIEvent) -> Unit,
 ) {
-    val fullScreen = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
-    Dialog(
-        onDismissRequest = { if (state.canDismiss) onUIEvent(WooPosManagerApprovalUIEvent.DismissRequested) },
-        properties = DialogProperties(
-            dismissOnClickOutside = !fullScreen && state.canDismiss,
-            dismissOnBackPress = state.canDismiss,
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = !fullScreen,
-        ),
-    ) {
-        ApprovalContent(state, fullScreen, onUIEvent)
+    val onDismiss = {
+        if (state?.canDismiss == true) onUIEvent(WooPosApprovalUIEvent.DismissRequested)
+    }
+    if (currentWooPosBreakpoint() == WooPosBreakpoint.Phone) {
+        if (state == null) return
+        Dialog(
+            onDismissRequest = onDismiss,
+            properties = DialogProperties(
+                dismissOnClickOutside = false,
+                dismissOnBackPress = state.canDismiss,
+                usePlatformDefaultWidth = false,
+                decorFitsSystemWindows = false,
+            ),
+        ) {
+            ApprovalPhoneContent(state, onUIEvent, onDismiss)
+        }
+    } else {
+        ApprovalTabletContent(state, onUIEvent, onDismiss)
     }
 }
 
@@ -78,7 +85,7 @@ private fun ApprovalPhoneContent(
     onDismiss: () -> Unit,
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceBright) {
-        WooPosPINPhoneLayout(header = { ApprovalCloseHeader(onDismiss) }) {
+        WooPosPINPhoneLayout(header = { ApprovalCloseHeader(onDismiss, state.canDismiss) }) {
             ApprovalBody(
                 state,
                 onUIEvent,
@@ -106,21 +113,18 @@ private fun ApprovalTabletContent(
         widthFraction = 1f,
         onDismissRequest = { if (isVisible) onDismiss() },
     ) {
-        val bodyModifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
-        if (fullScreen) {
-            WooPosPINPhoneLayout(header = { ApprovalCloseHeader(onDismiss, state.canDismiss) }) {
-                ApprovalBody(state, onUIEvent, keySize = PIN_PAD_PHONE_KEY_SIZE, modifier = bodyModifier)
-            }
-        } else {
-            Column(Modifier.padding(WooPosSpacing.Large.value)) {
-                ApprovalCloseHeader(onDismiss, state.canDismiss)
-                ApprovalBody(
-                    state,
-                    onUIEvent,
-                    keySize = PIN_PAD_TABLET_KEY_SIZE,
-                    modifier = Modifier.weight(1f, fill = false).then(bodyModifier),
-                )
-            }
+        if (shownState == null) return@WooPosDialogWrapper
+        Column {
+            ApprovalCloseHeader({ if (isVisible) onDismiss() }, isVisible && shownState.canDismiss)
+            ApprovalBody(
+                shownState,
+                onUIEvent = { if (isVisible) onUIEvent(it) },
+                keySize = PIN_PAD_TABLET_KEY_SIZE,
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+            )
         }
     }
 }
