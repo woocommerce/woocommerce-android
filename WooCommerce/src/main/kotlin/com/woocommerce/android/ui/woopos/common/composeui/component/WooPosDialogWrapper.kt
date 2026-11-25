@@ -52,12 +52,59 @@ fun WooPosDialogWrapper(
     isVisible: Boolean,
     dialogBackgroundContentDescription: String,
     widthFraction: Float = DEFAULT_WIDTH_FRACTION,
+    phoneStyle: WooPosPhoneModalStyle = WooPosPhoneModalStyle.Dialog,
     onCloseClick: (() -> Unit)? = null,
     onDismissRequest: () -> Unit,
     content: @Composable AnimatedVisibilityScope.() -> Unit
 ) {
-    val closeContentDescription = stringResource(R.string.close)
     val breakpoint = currentWooPosBreakpoint()
+    when (val style = phoneStyle.resolveFor(breakpoint)) {
+        WooPosPhoneModalStyle.Dialog -> WooPosCenterDialog(
+            modifier = modifier,
+            isVisible = isVisible,
+            breakpoint = breakpoint,
+            dialogBackgroundContentDescription = dialogBackgroundContentDescription,
+            widthFraction = widthFraction,
+            onCloseClick = onCloseClick,
+            onDismissRequest = onDismissRequest,
+            content = content,
+        )
+
+        WooPosPhoneModalStyle.BottomSheet -> WooPosBottomSheet(
+            modifier = modifier,
+            isVisible = isVisible,
+            scrimContentDescription = dialogBackgroundContentDescription,
+            onDismissRequest = onDismissRequest,
+        ) {
+            Column(modifier = Modifier.padding(WooPosSpacing.XLarge.value)) {
+                content()
+            }
+        }
+
+        is WooPosPhoneModalStyle.FullScreen -> WooPosFullScreenModal(
+            modifier = modifier,
+            isVisible = isVisible,
+            title = style.title,
+            onDismissRequest = onDismissRequest,
+            onBackClick = style.onBackClick,
+            onCloseClick = onCloseClick,
+            content = content,
+        )
+    }
+}
+
+@Composable
+private fun WooPosCenterDialog(
+    modifier: Modifier,
+    isVisible: Boolean,
+    breakpoint: WooPosBreakpoint,
+    dialogBackgroundContentDescription: String,
+    widthFraction: Float,
+    onCloseClick: (() -> Unit)?,
+    onDismissRequest: () -> Unit,
+    content: @Composable AnimatedVisibilityScope.() -> Unit
+) {
+    val closeContentDescription = stringResource(R.string.close)
     val adaptiveWidthFraction = when (breakpoint) {
         WooPosBreakpoint.Phone -> PHONE_WIDTH_FRACTION
         WooPosBreakpoint.SmallTablet,
