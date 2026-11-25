@@ -54,18 +54,4 @@ internal abstract class ProductVariationsDao {
         """
     )
     abstract suspend fun deleteVariationsForProduct(localSiteId: LocalId, remoteProductId: RemoteId)
-
-    @Query(
-        """
-        DELETE FROM ProductVariationEntity
-        WHERE localSiteId = :localSiteId
-        AND remoteProductId = :remoteProductId
-        AND remoteVariationId = :remoteVariationId
-        """
-    )
-    abstract suspend fun deleteVariation(
-        localSiteId: LocalId,
-        remoteProductId: RemoteId,
-        remoteVariationId: RemoteId
-    )
 }
