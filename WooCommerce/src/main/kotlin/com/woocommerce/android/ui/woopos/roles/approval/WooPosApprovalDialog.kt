@@ -160,9 +160,6 @@ private fun ApprovalBody(
         WooPosText(
             text = when (action) {
                 is WooPosApprovalAction.IssueRefund -> stringResource(action.reason, action.orderNumber)
-                WooPosApprovalAction.ExitFromHome ->
-                    stringResource(action.reason) + "\n\n" +
-                        stringResource(R.string.woopos_exit_dialog_confirmation_message)
                 else -> stringResource(action.reason)
             },
             style = WooPosTypography.BodyMedium,

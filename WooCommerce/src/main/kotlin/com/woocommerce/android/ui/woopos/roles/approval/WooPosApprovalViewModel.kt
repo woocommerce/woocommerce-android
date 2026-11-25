@@ -38,18 +38,12 @@ class WooPosApprovalViewModel @Inject constructor(
 
     internal fun requestExit(
         event: WooPosNavigationEvent.Exit,
-        onShowConfirmation: () -> Unit,
         onExitFromHome: () -> Unit,
         onExit: () -> Unit,
     ) {
         when (event) {
-            WooPosNavigationEvent.RequestExitFromHome -> requestApproval(
-                WooPosApprovalAction.ExitFromHome,
-                onAllowed = onShowConfirmation,
-                onApproved = onExitFromHome,
-            )
             WooPosNavigationEvent.ConfirmExitFromHome ->
-                requestApproval(WooPosApprovalAction.ExitFromHome, onExitFromHome)
+                requestApproval(WooPosApprovalAction.Exit, onExitFromHome)
             WooPosNavigationEvent.BackFromSplashClicked, WooPosNavigationEvent.ExitPosClicked ->
                 requestApproval(WooPosApprovalAction.Exit, onExit)
         }
@@ -58,7 +52,6 @@ class WooPosApprovalViewModel @Inject constructor(
     internal fun requestApproval(
         action: WooPosApprovalAction,
         onAllowed: () -> Unit,
-        onApproved: () -> Unit = onAllowed,
     ) {
         if (pending != null) return
         if (accessSession.allows(action.capability)) {
@@ -66,7 +59,7 @@ class WooPosApprovalViewModel @Inject constructor(
             return
         }
         val scope = accessSession.approvalScope() ?: return
-        val request = PendingAction(scope, action, onApproved)
+        val request = PendingAction(scope, action, onAllowed)
         pending = request
         _state.value = WooPosApprovalState(action, WooPosPINEntryStatus.Initializing)
         job = viewModelScope.launch { refreshWait(request) }

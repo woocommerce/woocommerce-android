@@ -70,7 +70,6 @@ fun WooPosRootScreen(
                     rootController.handleNavigationEvent(event) { exit ->
                         approvalViewModel.requestExit(
                             event = exit,
-                            onShowConfirmation = homeViewModel::showExitConfirmation,
                             onExitFromHome = {
                                 if (!activity.isFinishing) {
                                     homeViewModel.onExitConfirmed()

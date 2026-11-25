@@ -108,8 +108,9 @@ class WooPosHomeViewModel @Inject constructor(
             )
 
             WooPosHomeUIEvent.ExitPosClicked -> {
-                viewModelScope.launch {
-                    _navigationEvent.emit(NavigationEvent.ExitConfirmed)
+                if (_state.value.dialogState == DialogState.ExitConfirmationDialog) {
+                    _state.value = _state.value.copy(dialogState = DialogState.Hidden)
+                    viewModelScope.launch { _navigationEvent.emit(NavigationEvent.ExitConfirmed) }
                 }
             }
 
@@ -119,16 +120,12 @@ class WooPosHomeViewModel @Inject constructor(
         }
     }
 
-    fun showExitConfirmation() {
+    private fun showExitConfirmation() {
         _state.value = _state.value.copy(dialogState = DialogState.ExitConfirmationDialog)
     }
 
     fun onExitConfirmed() {
         viewModelScope.launch { analyticsTracker.track(WooPosAnalyticsEvent.Event.ExitConfirmed) }
-    }
-
-    private fun requestExit() {
-        viewModelScope.launch { _navigationEvent.emit(NavigationEvent.RequestExitPos) }
     }
 
     private fun handleSystemBackClicked() {
@@ -153,7 +150,7 @@ class WooPosHomeViewModel @Inject constructor(
             ScreenPositionState.Products,
             is ScreenPositionState.Cart -> {
                 when (_state.value.dialogState) {
-                    DialogState.Hidden -> requestExit()
+                    DialogState.Hidden -> showExitConfirmation()
                     else -> {
                         _state.value = _state.value.copy(
                             dialogState = DialogState.Hidden
@@ -222,7 +219,7 @@ class WooPosHomeViewModel @Inject constructor(
                         )
                     }
 
-                    ChildToParentEvent.ExitPosClicked -> requestExit()
+                    ChildToParentEvent.ExitPosClicked -> showExitConfirmation()
 
                     ChildToParentEvent.SetupBarcodeScannerClicked -> {
                         _state.value = _state.value.copy(

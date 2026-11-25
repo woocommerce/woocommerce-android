@@ -95,19 +95,17 @@ class WooPosHomeViewModelTest {
         }
 
     @Test
-    fun `given home can go back, when SystemBackClicked passed, then exit is requested`() = runTest {
+    fun `given home can go back, when SystemBackClicked passed, then exit confirmation is shown`() = runTest {
         // GIVEN
         val eventsFlow = MutableSharedFlow<ChildToParentEvent>()
         whenever(childrenToParentEventReceiver.events).thenReturn(eventsFlow)
         val viewModel = createViewModel()
 
-        viewModel.navigationEvent.test {
-            // WHEN
-            viewModel.onUIEvent(SystemBackClicked)
+        // WHEN
+        viewModel.onUIEvent(SystemBackClicked)
 
-            // THEN
-            assertThat(awaitItem()).isEqualTo(ChildToParentEvent.NavigationEvent.RequestExitPos)
-        }
+        // THEN
+        assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.ExitConfirmationDialog)
     }
 
     @Test
@@ -204,19 +202,37 @@ class WooPosHomeViewModelTest {
         }
 
     @Test
-    fun `when ExitPosClicked comes from the toolbar, then exit is requested`() =
+    fun `when ExitPosClicked comes from the toolbar, then exit confirmation is shown`() =
         runTest {
             // GIVEN
             val eventsFlow = MutableSharedFlow<ChildToParentEvent>()
             whenever(childrenToParentEventReceiver.events).thenReturn(eventsFlow)
             val viewModel = createViewModel()
 
+            // WHEN
+            eventsFlow.emit(ChildToParentEvent.ExitPosClicked)
+
+            // THEN
+            assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.ExitConfirmationDialog)
+        }
+
+    @Test
+    fun `given exit confirmation is visible, when Exit is pressed twice, then one exit confirmation is sent`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(MutableSharedFlow<ChildToParentEvent>())
+            val viewModel = createViewModel()
+            viewModel.onUIEvent(SystemBackClicked)
+
             viewModel.navigationEvent.test {
                 // WHEN
-                eventsFlow.emit(ChildToParentEvent.ExitPosClicked)
+                viewModel.onUIEvent(WooPosHomeUIEvent.ExitPosClicked)
+                viewModel.onUIEvent(WooPosHomeUIEvent.ExitPosClicked)
 
                 // THEN
-                assertThat(awaitItem()).isEqualTo(ChildToParentEvent.NavigationEvent.RequestExitPos)
+                assertThat(awaitItem()).isEqualTo(ChildToParentEvent.NavigationEvent.ExitConfirmed)
+                assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.Hidden)
+                expectNoEvents()
             }
         }
 
@@ -468,7 +484,7 @@ class WooPosHomeViewModelTest {
         val events = MutableSharedFlow<ChildToParentEvent>()
         whenever(childrenToParentEventReceiver.events).thenReturn(events)
         val viewModel = createViewModel()
-        viewModel.showExitConfirmation()
+        viewModel.onUIEvent(SystemBackClicked)
         assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.ExitConfirmationDialog)
 
         // WHEN

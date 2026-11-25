@@ -77,7 +77,6 @@ sealed class ChildToParentEvent {
         data class ToCustomAmount(val mode: WooPosCustomAmountFormState.Mode) : NavigationEvent()
         data object ReturnHomeFromCashWhenCardPaymentStarted : NavigationEvent()
         data object ExitConfirmed : NavigationEvent()
-        data object RequestExitPos : NavigationEvent()
         data object ToSettings : NavigationEvent()
         data object ToOrders : NavigationEvent()
     }

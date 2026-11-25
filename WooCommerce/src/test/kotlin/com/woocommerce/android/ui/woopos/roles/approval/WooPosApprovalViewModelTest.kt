@@ -48,7 +48,6 @@ class WooPosApprovalViewModelTest {
         viewModel.requestApproval(
             WooPosApprovalAction.Exit,
             onAllowed = { directlyAllowed = true },
-            onApproved = {},
         )
 
         // THEN
@@ -57,32 +56,25 @@ class WooPosApprovalViewModelTest {
     }
 
     @Test
-    fun `given Admin is active, when Home Exit is requested and confirmed, then confirmation precedes exit`() = runTest {
+    fun `given Admin is active, when Home Exit is confirmed, then the home exit runs directly`() = runTest {
         // GIVEN
         val viewModel = signIn(ADMIN_PIN)
         val events = mutableListOf<String>()
 
         // WHEN
         viewModel.requestExit(
-            WooPosNavigationEvent.RequestExitFromHome,
-            onShowConfirmation = { events += "confirmation" },
-            onExitFromHome = { events += "home exit" },
-            onExit = { events += "exit" },
-        )
-        viewModel.requestExit(
             WooPosNavigationEvent.ConfirmExitFromHome,
-            onShowConfirmation = { events += "confirmation" },
             onExitFromHome = { events += "home exit" },
             onExit = { events += "exit" },
         )
 
         // THEN
-        assertThat(events).containsExactly("confirmation", "home exit")
+        assertThat(events).containsExactly("home exit")
         assertThat(viewModel.state.value).isNull()
     }
 
     @Test
-    fun `given Cashier is active, when Home Exit is approved, then the warning prompt is the only confirmation`() =
+    fun `given Cashier confirms Home Exit, when Admin approves it, then the home exit runs once`() =
         runTest {
             // GIVEN
             val viewModel = signIn(CASHIER_PIN)
@@ -90,13 +82,13 @@ class WooPosApprovalViewModelTest {
 
             // WHEN
             viewModel.requestExit(
-                WooPosNavigationEvent.RequestExitFromHome,
-                onShowConfirmation = { events += "confirmation" },
+                WooPosNavigationEvent.ConfirmExitFromHome,
                 onExitFromHome = { events += "home exit" },
                 onExit = { events += "exit" },
             )
             runCurrent()
-            assertThat(viewModel.state.value?.action).isEqualTo(WooPosApprovalAction.ExitFromHome)
+            assertThat(viewModel.state.value?.action).isEqualTo(WooPosApprovalAction.Exit)
+            assertThat(events).isEmpty()
             viewModel.enter(ADMIN_PIN)
             runCurrent()
 
