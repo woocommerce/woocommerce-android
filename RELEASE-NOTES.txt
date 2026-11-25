@@ -13,6 +13,7 @@
 - [*] [POS] The tablet now lists a phone as a card reader when the two devices are logged in to the same store in different ways [https://github.com/woocommerce/woocommerce-android/pull/16829]
 - [*] Orders created with some tax plugins (like AvaTax) now show their products again after the plugin is turned off [https://github.com/woocommerce/woocommerce-android/pull/16888]
 - [Internal] Support session debug builds no longer create application passwords on Jetpack stores [https://github.com/woocommerce/woocommerce-android/pull/16848]
+- [*] Order details now show state names instead of codes like CN24 for countries with numeric state codes, such as China and Thailand [https://github.com/woocommerce/woocommerce-android/pull/16924]
 
 26.1
 -----
