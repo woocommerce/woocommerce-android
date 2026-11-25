@@ -29,7 +29,6 @@ import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenDialog
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenUIEvent
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenViewModel
-import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosRootHost
 import com.woocommerce.android.ui.woopos.root.navigation.handleNavigationEvent
 
@@ -69,23 +68,17 @@ fun WooPosRootScreen(
                 homeViewModel = homeViewModel,
                 onNavigationEvent = { event ->
                     rootController.handleNavigationEvent(event) { exit ->
-                        val finishHome: () -> Unit = {
-                            if (!activity.isFinishing) {
-                                homeViewModel.onExitConfirmed()
-                                activity.finish()
-                            }
-                        }
-                        when (exit) {
-                            WooPosNavigationEvent.RequestExitFromHome -> approvalViewModel.requestApproval(
-                                WooPosManagerApprovalAction.Exit,
-                                onAllowed = homeViewModel::showExitConfirmation,
-                                onApproved = finishHome,
-                            )
-                            WooPosNavigationEvent.ConfirmExitFromHome ->
-                                approvalViewModel.requestApproval(WooPosManagerApprovalAction.Exit, finishHome)
-                            WooPosNavigationEvent.ExitPosClicked, WooPosNavigationEvent.BackFromSplashClicked ->
-                                approvalViewModel.requestApproval(WooPosManagerApprovalAction.Exit, activity::finish)
-                        }
+                        approvalViewModel.requestExit(
+                            event = exit,
+                            onShowConfirmation = homeViewModel::showExitConfirmation,
+                            onExitFromHome = {
+                                if (!activity.isFinishing) {
+                                    homeViewModel.onExitConfirmed()
+                                    activity.finish()
+                                }
+                            },
+                            onExit = activity::finish,
+                        )
                     }
                 }
             )

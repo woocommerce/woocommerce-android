@@ -19,4 +19,6 @@ internal sealed class WooPosManagerApprovalAction(
     )
 
     data object Exit : WooPosManagerApprovalAction(WooPosCapability.EXIT_POS, R.string.woopos_approval_exit)
+
+    data object ExitFromHome : WooPosManagerApprovalAction(WooPosCapability.EXIT_POS, R.string.woopos_approval_exit)
 }

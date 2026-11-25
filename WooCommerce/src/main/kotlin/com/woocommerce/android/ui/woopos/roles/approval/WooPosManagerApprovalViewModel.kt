@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.woopos.roles.lock.WooPosLocalRateLimiterResult
 import com.woocommerce.android.ui.woopos.roles.pin.PIN_COUNTDOWN_INTERVAL_MILLIS
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
@@ -32,6 +33,25 @@ class WooPosManagerApprovalViewModel @Inject constructor(
             accessSession.approvalScopeChanges.collect {
                 pending?.let { if (!it.isCurrent()) dismiss() }
             }
+        }
+    }
+
+    internal fun requestExit(
+        event: WooPosNavigationEvent.Exit,
+        onShowConfirmation: () -> Unit,
+        onExitFromHome: () -> Unit,
+        onExit: () -> Unit,
+    ) {
+        when (event) {
+            WooPosNavigationEvent.RequestExitFromHome -> requestApproval(
+                WooPosManagerApprovalAction.ExitFromHome,
+                onAllowed = onShowConfirmation,
+                onApproved = onExitFromHome,
+            )
+            WooPosNavigationEvent.ConfirmExitFromHome ->
+                requestApproval(WooPosManagerApprovalAction.ExitFromHome, onExitFromHome)
+            WooPosNavigationEvent.BackFromSplashClicked, WooPosNavigationEvent.ExitPosClicked ->
+                requestApproval(WooPosManagerApprovalAction.Exit, onExit)
         }
     }
 

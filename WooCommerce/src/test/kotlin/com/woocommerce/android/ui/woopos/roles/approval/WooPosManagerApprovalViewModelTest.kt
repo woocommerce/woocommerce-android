@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLocalRateLimiterTestFixture
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosClearLocalPINData
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -54,6 +55,54 @@ class WooPosManagerApprovalViewModelTest {
         assertThat(directlyAllowed).isTrue()
         assertThat(viewModel.state.value).isNull()
     }
+
+    @Test
+    fun `given Admin is active, when Home Exit is requested and confirmed, then confirmation precedes exit`() = runTest {
+        // GIVEN
+        val viewModel = signIn(ADMIN_PIN)
+        val events = mutableListOf<String>()
+
+        // WHEN
+        viewModel.requestExit(
+            WooPosNavigationEvent.RequestExitFromHome,
+            onShowConfirmation = { events += "confirmation" },
+            onExitFromHome = { events += "home exit" },
+            onExit = { events += "exit" },
+        )
+        viewModel.requestExit(
+            WooPosNavigationEvent.ConfirmExitFromHome,
+            onShowConfirmation = { events += "confirmation" },
+            onExitFromHome = { events += "home exit" },
+            onExit = { events += "exit" },
+        )
+
+        // THEN
+        assertThat(events).containsExactly("confirmation", "home exit")
+        assertThat(viewModel.state.value).isNull()
+    }
+
+    @Test
+    fun `given Cashier is active, when Home Exit is approved, then the warning prompt is the only confirmation`() =
+        runTest {
+            // GIVEN
+            val viewModel = signIn(CASHIER_PIN)
+            val events = mutableListOf<String>()
+
+            // WHEN
+            viewModel.requestExit(
+                WooPosNavigationEvent.RequestExitFromHome,
+                onShowConfirmation = { events += "confirmation" },
+                onExitFromHome = { events += "home exit" },
+                onExit = { events += "exit" },
+            )
+            runCurrent()
+            assertThat(viewModel.state.value?.action).isEqualTo(WooPosManagerApprovalAction.ExitFromHome)
+            viewModel.enter(ADMIN_PIN)
+            runCurrent()
+
+            // THEN
+            assertThat(events).containsExactly("home exit")
+        }
 
     @Test
     fun `given attempt storage is unavailable, when approval is requested, then the action stays blocked`() = runTest {
