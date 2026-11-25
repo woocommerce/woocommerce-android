@@ -49,18 +49,18 @@ import com.woocommerce.android.ui.woopos.common.pin.measureWooPosPINStatusHeight
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 
 internal val LocalWooPosRequestApproval =
-    staticCompositionLocalOf<(WooPosManagerApprovalAction, () -> Unit) -> Unit> {
-        error("POS manager approval requires a POS root")
+    staticCompositionLocalOf<(WooPosApprovalAction, () -> Unit) -> Unit> {
+        error("POS approval requires a POS root")
     }
 
 @Composable
-internal fun WooPosManagerApprovalDialog(
-    state: WooPosManagerApprovalState,
-    onUIEvent: (WooPosManagerApprovalUIEvent) -> Unit,
+internal fun WooPosApprovalDialog(
+    state: WooPosApprovalState,
+    onUIEvent: (WooPosApprovalUIEvent) -> Unit,
 ) {
     val fullScreen = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
     Dialog(
-        onDismissRequest = { onUIEvent(WooPosManagerApprovalUIEvent.DismissRequested) },
+        onDismissRequest = { onUIEvent(WooPosApprovalUIEvent.DismissRequested) },
         properties = DialogProperties(
             dismissOnClickOutside = !fullScreen,
             usePlatformDefaultWidth = false,
@@ -73,11 +73,11 @@ internal fun WooPosManagerApprovalDialog(
 
 @Composable
 private fun ApprovalContent(
-    state: WooPosManagerApprovalState,
+    state: WooPosApprovalState,
     fullScreen: Boolean,
-    onUIEvent: (WooPosManagerApprovalUIEvent) -> Unit,
+    onUIEvent: (WooPosApprovalUIEvent) -> Unit,
 ) {
-    val onDismiss = { onUIEvent(WooPosManagerApprovalUIEvent.DismissRequested) }
+    val onDismiss = { onUIEvent(WooPosApprovalUIEvent.DismissRequested) }
     Surface(
         modifier = if (fullScreen) {
             Modifier.fillMaxSize()
@@ -122,8 +122,8 @@ private fun ApprovalCloseHeader(onDismiss: () -> Unit) {
 
 @Composable
 private fun ApprovalBody(
-    state: WooPosManagerApprovalState,
-    onUIEvent: (WooPosManagerApprovalUIEvent) -> Unit,
+    state: WooPosApprovalState,
+    onUIEvent: (WooPosApprovalUIEvent) -> Unit,
     keySize: Dp,
     modifier: Modifier = Modifier,
 ) {
@@ -142,8 +142,8 @@ private fun ApprovalBody(
         val action = state.action
         WooPosText(
             text = when (action) {
-                is WooPosManagerApprovalAction.IssueRefund -> stringResource(action.reason, action.orderNumber)
-                WooPosManagerApprovalAction.ExitFromHome ->
+                is WooPosApprovalAction.IssueRefund -> stringResource(action.reason, action.orderNumber)
+                WooPosApprovalAction.ExitFromHome ->
                     stringResource(action.reason) + "\n\n" +
                         stringResource(R.string.woopos_exit_dialog_confirmation_message)
                 else -> stringResource(action.reason)
@@ -163,8 +163,8 @@ private fun ApprovalBody(
         WooPosPINPad(
             enteredDigits = state.enteredDigits,
             enabled = state.status.canEnterPIN,
-            onDigit = { onUIEvent(WooPosManagerApprovalUIEvent.DigitTapped(it)) },
-            onDelete = { onUIEvent(WooPosManagerApprovalUIEvent.DeleteTapped) },
+            onDigit = { onUIEvent(WooPosApprovalUIEvent.DigitTapped(it)) },
+            onDelete = { onUIEvent(WooPosApprovalUIEvent.DeleteTapped) },
             keySize = keySize,
             style = if (state.status.showsBlockedPINPad) WooPosPINPadStyle.BLOCKED else WooPosPINPadStyle.STANDARD,
         )
@@ -173,10 +173,10 @@ private fun ApprovalBody(
 
 @WooPosPreview
 @Composable
-private fun WooPosManagerApprovalPreview() {
+private fun WooPosApprovalPreview() {
     WooPosTheme {
         ApprovalContent(
-            WooPosManagerApprovalState(WooPosManagerApprovalAction.CreateCoupon, WooPosPINEntryStatus.Idle),
+            WooPosApprovalState(WooPosApprovalAction.CreateCoupon, WooPosPINEntryStatus.Idle),
             fullScreen = false,
             onUIEvent = {},
         )
@@ -185,10 +185,10 @@ private fun WooPosManagerApprovalPreview() {
 
 @WooPosPreview
 @Composable
-private fun WooPosManagerApprovalWaitPreview() {
+private fun WooPosApprovalWaitPreview() {
     WooPosTheme {
         ApprovalContent(
-            WooPosManagerApprovalState(WooPosManagerApprovalAction.IssueRefund("#1043"), WooPosPINEntryStatus.Wait(30)),
+            WooPosApprovalState(WooPosApprovalAction.IssueRefund("#1043"), WooPosPINEntryStatus.Wait(30)),
             fullScreen = true,
             onUIEvent = {},
         )

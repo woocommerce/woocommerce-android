@@ -89,7 +89,7 @@ import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListState
 import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListViewModel
 import com.woocommerce.android.ui.woopos.orders.list.WooPosScreenType
 import com.woocommerce.android.ui.woopos.roles.approval.LocalWooPosRequestApproval
-import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalAction
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import kotlinx.coroutines.delay
@@ -164,7 +164,7 @@ fun WooPosOrdersScreen(
             ?.action as? WooPosOrdersState.OrderAction.IssueRefund
         val orderNumber = (detailViewModel.state.value as? WooPosOrderDetailsState.Loaded)?.details?.number
         if (issueRefundAction != null && orderNumber != null) {
-            requestApproval(WooPosManagerApprovalAction.IssueRefund(orderNumber)) {
+            requestApproval(WooPosApprovalAction.IssueRefund(orderNumber)) {
                 val details = (detailViewModel.state.value as? WooPosOrderDetailsState.Loaded)?.details
                 if (details?.actions?.contains(issueRefundAction) == true) {
                     detailViewModel.bindRefundToSession(issueRefundAction.orderId)

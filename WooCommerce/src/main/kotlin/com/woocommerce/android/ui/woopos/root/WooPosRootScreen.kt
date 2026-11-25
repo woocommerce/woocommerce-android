@@ -22,9 +22,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
 import com.woocommerce.android.ui.woopos.roles.approval.LocalWooPosRequestApproval
-import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalAction
-import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalDialog
-import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalViewModel
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalDialog
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalViewModel
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenDialog
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenUIEvent
@@ -36,7 +36,7 @@ import com.woocommerce.android.ui.woopos.root.navigation.handleNavigationEvent
 fun WooPosRootScreen(
     modifier: Modifier = Modifier,
     lockViewModel: WooPosLockScreenViewModel = hiltViewModel(),
-    approvalViewModel: WooPosManagerApprovalViewModel = hiltViewModel(),
+    approvalViewModel: WooPosApprovalViewModel = hiltViewModel(),
 ) {
     val rootController = rememberNavController()
     val activity = LocalActivity.current as ComponentActivity
@@ -56,7 +56,7 @@ fun WooPosRootScreen(
 
     WooPosRootScreen(state = lockState, onUIEvent = lockViewModel::onUIEvent, modifier = modifier) {
         // Gate the default Activity finish when no destination handles Back.
-        BackHandler { approvalViewModel.requestApproval(WooPosManagerApprovalAction.Exit, activity::finish) }
+        BackHandler { approvalViewModel.requestApproval(WooPosApprovalAction.Exit, activity::finish) }
         CompositionLocalProvider(
             LocalWooPosRequestApproval provides { action, perform ->
                 approvalViewModel.requestApproval(action, perform)
@@ -85,7 +85,7 @@ fun WooPosRootScreen(
         }
         val request = approvalState
         if (!lockState.isLocked && request != null) {
-            WooPosManagerApprovalDialog(request, approvalViewModel::onUIEvent)
+            WooPosApprovalDialog(request, approvalViewModel::onUIEvent)
         }
     }
 }

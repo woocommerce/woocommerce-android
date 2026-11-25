@@ -19,10 +19,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class WooPosManagerApprovalViewModel @Inject constructor(
+class WooPosApprovalViewModel @Inject constructor(
     private val accessSession: WooPosAccessSession,
 ) : ViewModel() {
-    private val _state = MutableStateFlow<WooPosManagerApprovalState?>(null)
+    private val _state = MutableStateFlow<WooPosApprovalState?>(null)
     internal val state = _state.asStateFlow()
     private var pending: PendingAction? = null
     private var pin = ""
@@ -44,19 +44,19 @@ class WooPosManagerApprovalViewModel @Inject constructor(
     ) {
         when (event) {
             WooPosNavigationEvent.RequestExitFromHome -> requestApproval(
-                WooPosManagerApprovalAction.ExitFromHome,
+                WooPosApprovalAction.ExitFromHome,
                 onAllowed = onShowConfirmation,
                 onApproved = onExitFromHome,
             )
             WooPosNavigationEvent.ConfirmExitFromHome ->
-                requestApproval(WooPosManagerApprovalAction.ExitFromHome, onExitFromHome)
+                requestApproval(WooPosApprovalAction.ExitFromHome, onExitFromHome)
             WooPosNavigationEvent.BackFromSplashClicked, WooPosNavigationEvent.ExitPosClicked ->
-                requestApproval(WooPosManagerApprovalAction.Exit, onExit)
+                requestApproval(WooPosApprovalAction.Exit, onExit)
         }
     }
 
     internal fun requestApproval(
-        action: WooPosManagerApprovalAction,
+        action: WooPosApprovalAction,
         onAllowed: () -> Unit,
         onApproved: () -> Unit = onAllowed,
     ) {
@@ -68,15 +68,15 @@ class WooPosManagerApprovalViewModel @Inject constructor(
         val scope = accessSession.approvalScope() ?: return
         val request = PendingAction(scope, action, onApproved)
         pending = request
-        _state.value = WooPosManagerApprovalState(action, WooPosPINEntryStatus.Initializing)
+        _state.value = WooPosApprovalState(action, WooPosPINEntryStatus.Initializing)
         job = viewModelScope.launch { refreshWait(request) }
     }
 
-    internal fun onUIEvent(event: WooPosManagerApprovalUIEvent) {
+    internal fun onUIEvent(event: WooPosApprovalUIEvent) {
         when (event) {
-            is WooPosManagerApprovalUIEvent.DigitTapped -> onDigit(event.digit)
-            WooPosManagerApprovalUIEvent.DeleteTapped -> onDelete()
-            WooPosManagerApprovalUIEvent.DismissRequested -> dismiss()
+            is WooPosApprovalUIEvent.DigitTapped -> onDigit(event.digit)
+            WooPosApprovalUIEvent.DeleteTapped -> onDelete()
+            WooPosApprovalUIEvent.DismissRequested -> dismiss()
         }
     }
 
@@ -161,7 +161,7 @@ class WooPosManagerApprovalViewModel @Inject constructor(
     }
 
     private fun show(request: PendingAction, status: WooPosPINEntryStatus) {
-        _state.value = WooPosManagerApprovalState(request.action, status)
+        _state.value = WooPosApprovalState(request.action, status)
     }
 
     private fun PendingAction.isCurrent(): Boolean =
@@ -169,13 +169,13 @@ class WooPosManagerApprovalViewModel @Inject constructor(
 
     private class PendingAction(
         val scope: WooPosAccessSession.ApprovalScope,
-        val action: WooPosManagerApprovalAction,
+        val action: WooPosApprovalAction,
         val perform: () -> Unit,
     )
 }
 
-internal sealed interface WooPosManagerApprovalUIEvent {
-    data class DigitTapped(val digit: Int) : WooPosManagerApprovalUIEvent
-    data object DeleteTapped : WooPosManagerApprovalUIEvent
-    data object DismissRequested : WooPosManagerApprovalUIEvent
+internal sealed interface WooPosApprovalUIEvent {
+    data class DigitTapped(val digit: Int) : WooPosApprovalUIEvent
+    data object DeleteTapped : WooPosApprovalUIEvent
+    data object DismissRequested : WooPosApprovalUIEvent
 }
