@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsN
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalAction
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -93,6 +94,19 @@ class WooPosItemsViewModel @Inject constructor(
         analyticsTracker.track(
             WooPosAnalyticsEvent.Event.LocalCatalogStaleWarningShown(hoursSinceLastSync)
         )
+    }
+
+    internal fun onUIEventWithApproval(
+        event: WooPosItemsUIEvent,
+        requestApproval: (WooPosManagerApprovalAction, () -> Unit) -> Unit,
+    ) {
+        if (event == WooPosItemsUIEvent.AddCouponIconClicked) {
+            requestApproval(WooPosManagerApprovalAction.CreateCoupon) {
+                if (viewState.value is WooPosItemsToolbarViewState.CouponList) onUIEvent(event)
+            }
+        } else {
+            onUIEvent(event)
+        }
     }
 
     fun onUIEvent(event: WooPosItemsUIEvent) {
