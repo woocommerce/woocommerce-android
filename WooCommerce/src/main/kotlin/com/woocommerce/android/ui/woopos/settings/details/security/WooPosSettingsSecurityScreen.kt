@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -192,7 +193,11 @@ private fun SecurityCards(
                 }
             }
             // WOOMOB-4623 intentionally leaves the roles link inactive.
-            TextButton(onClick = {}, colors = securityTextButtonColors()) {
+            TextButton(
+                onClick = {},
+                colors = securityTextButtonColors(),
+                contentPadding = PaddingValues(vertical = WooPosSpacing.Small.value),
+            ) {
                 WooPosText(
                     text = stringResource(R.string.woopos_security_learn_more),
                     style = WooPosTypography.BodyMedium,
@@ -305,7 +310,6 @@ private fun SecurityRowText(title: String, subtitle: String?, modifier: Modifier
             modifier = modifier,
             title = title,
             subtitle = subtitle,
-            subtitleColor = MaterialTheme.colorScheme.onSurface,
         )
     } else {
         WooPosText(title, style = WooPosTypography.BodyMedium, modifier = modifier)

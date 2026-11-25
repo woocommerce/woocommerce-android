@@ -2,25 +2,21 @@ package com.woocommerce.android.ui.woopos.settings.details.security
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
-import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalAction
-import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalDialog
-import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalViewModel
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalViewModel
 
 @Composable
 internal fun WooPosSettingsSecurityRoute(
     state: WooPosSettingsSecurityState,
     onShowPINEditor: (WooPosLocalRole, Boolean) -> Unit,
     viewModel: WooPosSettingsSecurityViewModel = hiltViewModel(),
-    approval: WooPosManagerApprovalViewModel = hiltViewModel(key = "security_approval"),
+    approval: WooPosApprovalViewModel = hiltViewModel(key = SECURITY_APPROVAL_VIEW_MODEL_KEY),
     pinEditor: WooPosSettingsSecurityPINSetupViewModel = hiltViewModel(),
 ) {
-    val request by approval.state.collectAsState()
     val openEditor: (WooPosLocalRole, Boolean) -> Unit = { role, changingPIN ->
         pinEditor.start(role, changingPIN)
         onShowPINEditor(role, changingPIN)
@@ -44,8 +40,9 @@ internal fun WooPosSettingsSecurityRoute(
         onDeleteCashierPIN = viewModel::deleteCashierPIN,
         onLockSettingsChanged = viewModel::updateLockSettings,
         onProtectionTurnedOff = {
-            approval.requestFreshApproval(WooPosManagerApprovalAction.DisablePINProtection, viewModel::removeProtection)
+            approval.requestFreshApproval(WooPosApprovalAction.DisablePINProtection, viewModel::removeProtection)
         },
     )
-    request?.let { WooPosManagerApprovalDialog(it, approval::onUIEvent) }
 }
+
+internal const val SECURITY_APPROVAL_VIEW_MODEL_KEY = "security_approval"

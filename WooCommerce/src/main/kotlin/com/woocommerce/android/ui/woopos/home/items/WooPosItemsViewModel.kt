@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsN
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -95,6 +96,19 @@ class WooPosItemsViewModel @Inject constructor(
         )
     }
 
+    internal fun onUIEventWithApproval(
+        event: WooPosItemsUIEvent,
+        requestApproval: (WooPosApprovalAction, () -> Unit) -> Unit,
+    ) {
+        if (event == WooPosItemsUIEvent.AddCouponIconClicked) {
+            requestApproval(WooPosApprovalAction.CreateCoupon) {
+                if (viewState.value is WooPosItemsToolbarViewState.CouponList) onUIEvent(event)
+            }
+        } else {
+            onUIEvent(event)
+        }
+    }
+
     fun onUIEvent(event: WooPosItemsUIEvent) {
         when (event) {
             WooPosItemsUIEvent.BackFromVariationsClicked -> {
@@ -144,6 +158,8 @@ class WooPosItemsViewModel @Inject constructor(
                     is ParentToChildrenEvent.MissingVariationEvent,
                     is ParentToChildrenEvent.RemoveProductsClicked,
                     is ParentToChildrenEvent.ProductsRemoved,
+                    ParentToChildrenEvent.ReceiptPrinterConnected,
+                    is ParentToChildrenEvent.PrintReceiptFailureActionSelected,
                     is ParentToChildrenEvent.CustomAmountSubmitted -> Unit
 
                     ParentToChildrenEvent.RefreshProductList,

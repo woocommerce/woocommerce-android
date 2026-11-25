@@ -1,0 +1,109 @@
+package com.woocommerce.android.ui.woopos.receiptprinting
+
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardDetails
+import com.woocommerce.android.receiptprinter.ReceiptPrinterConnectionStatus
+import com.woocommerce.android.receiptprinter.ReceiptPrinterResult
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosReceiptPrintingEnabled
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.seconds
+
+class WooPosPrintReceiptCoordinator @AssistedInject constructor(
+    private val receiptPrinterFacade: WooPosReceiptPrinterFacade,
+    private val logger: WooPosLogWrapper,
+    isReceiptPrintingEnabled: WooPosReceiptPrintingEnabled,
+    @Assisted private val scope: CoroutineScope,
+) {
+    private val _buttonState = MutableStateFlow(
+        if (isReceiptPrintingEnabled()) WooPosPrintReceiptButtonState.Idle else WooPosPrintReceiptButtonState.Hidden
+    )
+    val buttonState: StateFlow<WooPosPrintReceiptButtonState> = _buttonState.asStateFlow()
+
+    private val _events = MutableSharedFlow<WooPosPrintReceiptEvent>(extraBufferCapacity = 1)
+    val events: SharedFlow<WooPosPrintReceiptEvent> = _events.asSharedFlow()
+
+    private var isPrintFailureIgnored = false
+    private var cardPayment: CardPayment? = null
+
+    fun onPrintReceiptClicked(orderId: Long) {
+        if (_buttonState.value != WooPosPrintReceiptButtonState.Idle) return
+        if (isPrinterConnected()) {
+            print(orderId)
+        } else {
+            _events.tryEmit(WooPosPrintReceiptEvent.ShowPrinterSetup)
+        }
+    }
+
+    fun onPrinterConnected(orderId: Long) {
+        if (_buttonState.value != WooPosPrintReceiptButtonState.Idle) return
+        print(orderId)
+    }
+
+    fun onOrderPaidByCard(orderId: Long, cardDetails: CardDetails?) {
+        cardPayment = cardDetails?.let { CardPayment(orderId, it) }
+    }
+
+    fun ignorePendingFailure() {
+        isPrintFailureIgnored = true
+    }
+
+    private fun print(orderId: Long) {
+        _buttonState.value = WooPosPrintReceiptButtonState.Loading
+        isPrintFailureIgnored = false
+        val cardDetails = cardPayment?.takeIf { it.orderId == orderId }?.cardDetails
+        scope.launch {
+            // A receipt that was asked for is printed even if the screen that asked for it is left meanwhile.
+            val result = withContext(NonCancellable) { receiptPrinterFacade.printReceipt(orderId, cardDetails) }
+            when (result) {
+                ReceiptPrinterResult.Success -> {
+                    _buttonState.value = WooPosPrintReceiptButtonState.Success
+                    delay(SUCCESS_DURATION)
+                }
+
+                is ReceiptPrinterResult.Failure -> {
+                    logger.e("Printing the receipt failed: ${result.error}")
+                    if (!isPrintFailureIgnored) {
+                        _events.tryEmit(
+                            WooPosPrintReceiptEvent.PrintFailed(orderId, WooPosPrintReceiptFailure.from(result.error))
+                        )
+                    }
+                }
+            }
+            _buttonState.value = WooPosPrintReceiptButtonState.Idle
+        }
+    }
+
+    private fun isPrinterConnected() =
+        receiptPrinterFacade.connectionStatus.value is ReceiptPrinterConnectionStatus.Connected
+
+    private data class CardPayment(val orderId: Long, val cardDetails: CardDetails)
+
+    @AssistedFactory
+    interface Factory {
+        fun create(scope: CoroutineScope): WooPosPrintReceiptCoordinator
+    }
+
+    private companion object {
+        val SUCCESS_DURATION = 2.seconds
+    }
+}
+
+enum class WooPosPrintReceiptButtonState { Hidden, Idle, Loading, Success }
+
+sealed interface WooPosPrintReceiptEvent {
+    data object ShowPrinterSetup : WooPosPrintReceiptEvent
+    data class PrintFailed(val orderId: Long, val failure: WooPosPrintReceiptFailure) : WooPosPrintReceiptEvent
+}

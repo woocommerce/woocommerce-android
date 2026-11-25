@@ -14,6 +14,7 @@ import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardDetails
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.CouponLine
@@ -59,6 +60,11 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsUIEvent.OnBackClicked
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButtonState
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptCoordinator
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptEvent
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailure
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailureAction
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -81,6 +87,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
@@ -155,6 +162,14 @@ class WooPosTotalsViewModelTest {
     private val paymentReceiptShare: PaymentReceiptShare = mock()
     private val uiStringParser: UiStringParser = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
+    private val printReceiptEvents = MutableSharedFlow<WooPosPrintReceiptEvent>()
+    private val printReceiptCoordinator: WooPosPrintReceiptCoordinator = mock {
+        on { events } doReturn printReceiptEvents
+        on { buttonState } doReturn MutableStateFlow(WooPosPrintReceiptButtonState.Idle)
+    }
+    private val printReceiptCoordinatorFactory: WooPosPrintReceiptCoordinator.Factory = mock {
+        on { create(any()) } doReturn printReceiptCoordinator
+    }
     private val refreshProductsSignal: RefreshProductsSignal = mock()
     private val crashLogging: CrashLogging = mock()
     private val paymentControllerFactory = WooPosCardReaderPaymentControllerFactory(
@@ -227,6 +242,8 @@ class WooPosTotalsViewModelTest {
 
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
+        private const val CREATED_ORDER_ID = 23L
+        private const val PREVIOUS_ORDER_ID = 22L
         private const val COUPON_ID = 10L
     }
 
@@ -1274,6 +1291,37 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
+    fun `given a card payment, when it succeeds, then the coordinator gets the order id and card details`() =
+        runTest {
+            // GIVEN
+            whenever(networkStatus.isConnected()).thenReturn(true)
+            whenever(cardReaderFacade.readerStatus)
+                .thenReturn(MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock())))
+            val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+            val factory: WooPosCardReaderPaymentControllerFactory = mock()
+            whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+            val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
+                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
+            )
+            whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
+            createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+            val cardDetails = CardDetails(brand = "visa", last4 = "4242")
+
+            // WHEN
+            paymentState.value = CardReaderPaymentState.PaymentSuccessful.ExternalReaderPaymentSuccessful(
+                amountWithCurrencyLabel = "",
+                onPrintReceiptClicked = {},
+                onSendReceiptClicked = {},
+                onSaveUserClicked = {},
+                cardDetails = cardDetails,
+            )
+            advanceUntilIdle()
+
+            // THEN
+            verify(printReceiptCoordinator, atLeastOnce()).onOrderPaidByCard(CREATED_ORDER_ID, cardDetails)
+        }
+
+    @Test
     fun `given order draft created and reader connected, when card tapped, should show payment processing screen`() =
         runTest {
             // GIVEN
@@ -1725,6 +1773,156 @@ class WooPosTotalsViewModelTest {
 
             // THEN
             verify(analyticsTracker).track(EmailReceiptTapped)
+        }
+
+    @Test
+    fun `when OnStartReceiptFlowClicked is triggered, then the coordinator ignores the pending print failure`() =
+        runTest {
+            // GIVEN
+            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+                on { events }.thenReturn(mock())
+            }
+            val viewModel = createViewModel(parentToChildrenEventReceiver = parentToChildrenEventReceiver)
+
+            // WHEN
+            viewModel.onUIEvent(WooPosTotalsUIEvent.OnStartReceiptFlowClicked)
+
+            // THEN
+            verify(printReceiptCoordinator).ignorePendingFailure()
+        }
+
+    @Test
+    fun `given an order was created, when OnPrintReceiptClicked is triggered, then the coordinator gets the order id`() =
+        runTest {
+            // GIVEN
+            val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosTotalsUIEvent.OnPrintReceiptClicked)
+
+            // THEN
+            verify(printReceiptCoordinator).onPrintReceiptClicked(CREATED_ORDER_ID)
+        }
+
+    @Test
+    fun `when the coordinator asks for printer setup, then the parent is asked to show the setup dialog`() =
+        runTest {
+            // GIVEN
+            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+                on { events }.thenReturn(mock())
+            }
+            createViewModel(parentToChildrenEventReceiver = parentToChildrenEventReceiver)
+
+            // WHEN
+            printReceiptEvents.emit(WooPosPrintReceiptEvent.ShowPrinterSetup)
+
+            // THEN
+            verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ShowReceiptPrinterSetupDialog)
+        }
+
+    @Test
+    fun `given an order was created, when a receipt printer connects from setup, then the coordinator gets the order id`() =
+        runTest {
+            // GIVEN
+            val events = MutableStateFlow<ParentToChildrenEvent>(
+                ParentToChildrenEvent.CheckoutClicked(
+                    listOf(
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                    )
+                )
+            )
+            createViewModelAndSetupForSuccessfulOrderCreation(parentToChildrenEventFlow = events)
+
+            // WHEN
+            events.value = ParentToChildrenEvent.ReceiptPrinterConnected
+
+            // THEN
+            verify(printReceiptCoordinator).onPrinterConnected(CREATED_ORDER_ID)
+        }
+
+    @Test
+    fun `given an order was created, when its print fails, then the parent is asked to show the failure dialog`() =
+        runTest {
+            // GIVEN
+            createViewModelAndSetupForSuccessfulOrderCreation()
+
+            // WHEN
+            printReceiptEvents.emit(
+                WooPosPrintReceiptEvent.PrintFailed(CREATED_ORDER_ID, WooPosPrintReceiptFailure.PaperEmpty)
+            )
+
+            // THEN
+            verify(childrenToParentEventSender).sendToParent(
+                ChildToParentEvent.ShowPrintReceiptFailureDialog(WooPosPrintReceiptFailure.PaperEmpty)
+            )
+        }
+
+    @Test
+    fun `given an order was created, when the print of a previous order fails, then the parent is not asked to show the failure dialog`() =
+        runTest {
+            // GIVEN
+            createViewModelAndSetupForSuccessfulOrderCreation()
+
+            // WHEN
+            printReceiptEvents.emit(
+                WooPosPrintReceiptEvent.PrintFailed(PREVIOUS_ORDER_ID, WooPosPrintReceiptFailure.PaperEmpty)
+            )
+
+            // THEN
+            verify(childrenToParentEventSender, never())
+                .sendToParent(isA<ChildToParentEvent.ShowPrintReceiptFailureDialog>())
+        }
+
+    @Test
+    fun `given an order was created, when retry is selected after a failed print, then the coordinator gets the order id`() =
+        runTest {
+            // GIVEN
+            val events = MutableStateFlow<ParentToChildrenEvent>(
+                ParentToChildrenEvent.CheckoutClicked(
+                    listOf(
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                    )
+                )
+            )
+            createViewModelAndSetupForSuccessfulOrderCreation(parentToChildrenEventFlow = events)
+
+            // WHEN
+            events.value = ParentToChildrenEvent.PrintReceiptFailureActionSelected(
+                WooPosPrintReceiptFailureAction.Retry
+            )
+
+            // THEN
+            verify(printReceiptCoordinator).onPrintReceiptClicked(CREATED_ORDER_ID)
+        }
+
+    @Test
+    fun `given an order was created, when email receipt is selected after a failed print, then email receipt opens for the order`() =
+        runTest {
+            // GIVEN
+            val events = MutableStateFlow<ParentToChildrenEvent>(
+                ParentToChildrenEvent.CheckoutClicked(
+                    listOf(
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                    )
+                )
+            )
+            createViewModelAndSetupForSuccessfulOrderCreation(parentToChildrenEventFlow = events)
+
+            // WHEN
+            events.value = ParentToChildrenEvent.PrintReceiptFailureActionSelected(
+                WooPosPrintReceiptFailureAction.EmailReceipt
+            )
+
+            // THEN
+            verify(childrenToParentEventSender)
+                .sendToParent(ChildToParentEvent.NavigationEvent.ToEmailReceipt(CREATED_ORDER_ID))
+            verify(printReceiptCoordinator, never()).onPrintReceiptClicked(any())
         }
 
     @Test
@@ -3431,6 +3629,28 @@ class WooPosTotalsViewModelTest {
         assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.PaymentFailed::class.java)
     }
 
+    @Test
+    fun `given a Tap to Pay payment, when it succeeds, then the coordinator gets the order id and card details`() =
+        runTest {
+            // GIVEN
+            val (_, paymentState) = givenTtpInFlight()
+            advanceUntilIdle()
+            val cardDetails = CardDetails(brand = "visa", last4 = "4242")
+
+            // WHEN
+            paymentState.value = CardReaderPaymentState.PaymentSuccessful.BuiltInReaderPaymentSuccessful(
+                amountWithCurrencyLabel = "",
+                onPrintReceiptClicked = {},
+                onSendReceiptClicked = {},
+                onSaveUserClicked = {},
+                cardDetails = cardDetails,
+            )
+            advanceUntilIdle()
+
+            // THEN
+            verify(printReceiptCoordinator, atLeastOnce()).onOrderPaidByCard(CREATED_ORDER_ID, cardDetails)
+        }
+
     private suspend fun givenTtpInFlight(
         mockController: CardReaderPaymentController = mock(),
     ): Pair<
@@ -3682,7 +3902,7 @@ class WooPosTotalsViewModelTest {
             .thenReturn("Payment failed")
         whenever(uiStringParser.asString(any())).thenReturn("Unfortunately, this payment has been declined.")
 
-        val orderId = 23L
+        val orderId = CREATED_ORDER_ID
         val order = Order.getEmptyOrder(
             dateCreated = Date(),
             dateModified = Date()
@@ -3847,5 +4067,6 @@ class WooPosTotalsViewModelTest {
         builtInReaderConnector = builtInReaderConnector,
         remoteReaderPaymentFlow = remoteReaderPaymentFlow,
         effectiveReaderStatusProvider = WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
+        printReceiptCoordinatorFactory = printReceiptCoordinatorFactory,
     )
 }

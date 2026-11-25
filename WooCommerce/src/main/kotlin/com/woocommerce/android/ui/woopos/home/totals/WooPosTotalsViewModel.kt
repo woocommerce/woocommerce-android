@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.ReaderType
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardDetails
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
@@ -49,6 +50,10 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Payme
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Totals
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButtonState
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptCoordinator
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptEvent
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailureAction
 import com.woocommerce.android.ui.woopos.roles.WooPosCapability
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockPreferences
@@ -101,6 +106,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val accessSession: WooPosAccessSession,
     private val lockPreferences: WooPosLockPreferences,
     private val selectedSite: SelectedSite,
+    printReceiptCoordinatorFactory: WooPosPrintReceiptCoordinator.Factory,
     private val savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -132,6 +138,9 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private val _screenEvents = MutableSharedFlow<WooPosTotalsScreenEvent>(extraBufferCapacity = 1)
     val screenEvents: SharedFlow<WooPosTotalsScreenEvent> = _screenEvents.asSharedFlow()
+
+    private val printReceiptCoordinator = printReceiptCoordinatorFactory.create(viewModelScope)
+    val printReceiptButtonState: StateFlow<WooPosPrintReceiptButtonState> = printReceiptCoordinator.buttonState
 
     private var createDraftOrderJob: Job? = null
     private var leaveFailedPaymentJob: Job? = null
@@ -200,6 +209,7 @@ class WooPosTotalsViewModel @Inject constructor(
             )
         }
         listenUpEvents()
+        listenPrintReceiptEvents()
         observeCardReaderStatus()
         trackTapToPayUnavailableReasonIfNeeded()
     }
@@ -314,6 +324,9 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.OnStartReceiptFlowClicked -> handleEmailReceiptClicked()
 
+            WooPosTotalsUIEvent.OnPrintReceiptClicked ->
+                printReceiptCoordinator.onPrintReceiptClicked(dataState.value.orderId)
+
             WooPosTotalsUIEvent.OnCashPaymentClicked -> handleOtherPaymentMethodClicked(OtherPaymentMethod.CASH)
 
             WooPosTotalsUIEvent.OnTapToPayClicked -> startTapToPayPayment()
@@ -372,11 +385,30 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun handleEmailReceiptClicked() {
+        printReceiptCoordinator.ignorePendingFailure()
         viewModelScope.launch {
             totalsAnalyticsTracker.trackEmailReceiptTapped()
             childrenToParentEventSender.sendToParent(
                 ToEmailReceipt(dataState.value.orderId)
             )
+        }
+    }
+
+    private fun listenPrintReceiptEvents() {
+        viewModelScope.launch {
+            printReceiptCoordinator.events.collect { event ->
+                when (event) {
+                    WooPosPrintReceiptEvent.ShowPrinterSetup ->
+                        childrenToParentEventSender.sendToParent(ChildToParentEvent.ShowReceiptPrinterSetupDialog)
+
+                    is WooPosPrintReceiptEvent.PrintFailed -> {
+                        if (event.orderId != dataState.value.orderId) return@collect
+                        childrenToParentEventSender.sendToParent(
+                            ChildToParentEvent.ShowPrintReceiptFailureDialog(event.failure)
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -465,7 +497,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 }
                 savedState[WooPosCardReaderFacade.PAYMENT_PROCESS_ID_KEY] = cardReaderFacade.processId
                 cardReaderPaymentController?.start()
-                listenToPaymentState()
+                listenToPaymentState(orderId)
             },
             onFailure = { error ->
                 wooPosLogWrapper.e("Tap to Pay connection failed", error)
@@ -557,7 +589,7 @@ class WooPosTotalsViewModel @Inject constructor(
             if (cardReaderPaymentController?.paymentState?.value !== paymentStateWhenLeaving) return@launch
             when (unconfirmedPaymentStatus) {
                 UnconfirmedPaymentStatus.PAID -> if (activePaymentMode == PaymentMode.RESTORED) {
-                    notifyOrderPaidByCard()
+                    notifyOrderPaidByCard(dataState.value.orderId, cardDetails = null)
                 } else {
                     retryBluetoothFailedTransaction()
                 }
@@ -641,7 +673,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 PaymentMode.BLUETOOTH -> retryBluetoothFailedTransaction()
                 PaymentMode.RESTORED -> {
                     if (fetchUnconfirmedPaymentStatus() == UnconfirmedPaymentStatus.PAID) {
-                        notifyOrderPaidByCard()
+                        notifyOrderPaidByCard(dataState.value.orderId, cardDetails = null)
                     } else {
                         showPaymentStatusCheckFailedToast()
                     }
@@ -807,13 +839,13 @@ class WooPosTotalsViewModel @Inject constructor(
                 check(state is WooPosTotalsViewState.Checkout)
                 check(uiState.value is WooPosTotalsViewState.Checkout)
                 activePaymentMode = PaymentMode.BLUETOOTH
-                if (!createCardReaderPaymentController(dataState.value.orderId)) {
+                if (!createCardReaderPaymentController(orderId)) {
                     viewModelScope.launch { showPaymentStatusCheckFailedToast() }
                     return
                 }
                 savedState[WooPosCardReaderFacade.PAYMENT_PROCESS_ID_KEY] = cardReaderFacade.processId
                 cardReaderPaymentController?.start()
-                listenToPaymentState()
+                listenToPaymentState(orderId)
             }
         }
     }
@@ -851,7 +883,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 onCaptureStarting = { handleCapturingPaymentState() },
                 onPaymentReconciled = { reconcileRemotePayment(orderId) },
             )
-            handleRemotePaymentResult(result)
+            handleRemotePaymentResult(orderId, result)
         }
     }
 
@@ -874,13 +906,13 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private suspend fun reconcileRemotePayment(orderId: Long) {
         if (dataState.value.orderId == orderId && selectedSite.getOrNull()?.id == saleSiteId) {
-            notifyOrderPaidByCard()
+            notifyOrderPaidByCard(orderId, cardDetails = null)
         }
     }
 
-    private suspend fun handleRemotePaymentResult(result: WooPosRemoteReaderPaymentFlow.Result) {
+    private suspend fun handleRemotePaymentResult(orderId: Long, result: WooPosRemoteReaderPaymentFlow.Result) {
         when (result) {
-            WooPosRemoteReaderPaymentFlow.Result.Completed -> notifyOrderPaidByCard()
+            WooPosRemoteReaderPaymentFlow.Result.Completed -> notifyOrderPaidByCard(orderId, cardDetails = null)
             is WooPosRemoteReaderPaymentFlow.Result.Failed -> {
                 if (!result.isUnresolved) savedState.remove<String>(WooPosCardReaderFacade.PAYMENT_PROCESS_ID_KEY)
                 uiState.value = PaymentFailed(
@@ -945,6 +977,16 @@ class WooPosTotalsViewModel @Inject constructor(
                         }
                     }
 
+                    ParentToChildrenEvent.ReceiptPrinterConnected ->
+                        printReceiptCoordinator.onPrinterConnected(dataState.value.orderId)
+
+                    is ParentToChildrenEvent.PrintReceiptFailureActionSelected -> when (event.action) {
+                        WooPosPrintReceiptFailureAction.Retry ->
+                            printReceiptCoordinator.onPrintReceiptClicked(dataState.value.orderId)
+
+                        WooPosPrintReceiptFailureAction.EmailReceipt -> handleEmailReceiptClicked()
+                    }
+
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     is ParentToChildrenEvent.ItemClickedInItemsList,
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
@@ -970,7 +1012,7 @@ class WooPosTotalsViewModel @Inject constructor(
         createOrderDraft(dataState.value.itemClickedDataList)
     }
 
-    private fun listenToPaymentState() {
+    private fun listenToPaymentState(orderId: Long) {
         viewModelScope.launch {
             cardReaderPaymentController?.paymentState?.collect { paymentState ->
                 if (paymentState is CardReaderPaymentState.PaymentFailed &&
@@ -980,9 +1022,9 @@ class WooPosTotalsViewModel @Inject constructor(
                     savedState.remove<String>(WooPosCardReaderFacade.PAYMENT_PROCESS_ID_KEY)
                 }
                 if (isTapToPayPayment) {
-                    handleTapToPayPaymentState(paymentState)
+                    handleTapToPayPaymentState(paymentState, orderId)
                 } else {
-                    handleExternalReaderPaymentState(paymentState)
+                    handleExternalReaderPaymentState(paymentState, orderId)
                 }
             }
         }
@@ -993,11 +1035,12 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun notifyOrderPaidByCard() {
+    private suspend fun notifyOrderPaidByCard(orderId: Long, cardDetails: CardDetails?) {
+        printReceiptCoordinator.onOrderPaidByCard(orderId, cardDetails)
         childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.CARD))
     }
 
-    private suspend fun handleTapToPayPaymentState(paymentState: CardReaderPaymentOrRefundState) {
+    private suspend fun handleTapToPayPaymentState(paymentState: CardReaderPaymentOrRefundState, orderId: Long) {
         when (paymentState) {
             is CardReaderPaymentState.LoadingData ->
                 setTapToPayProgress(WooPosTotalsViewState.TapToPayProgress.SdkActive)
@@ -1008,7 +1051,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 isTTPPaymentInProgress = false
                 resetTapToPayProgress()
                 viewModelScope.launch { builtInReaderConnector.disconnectIfConnected() }
-                notifyOrderPaidByCard()
+                notifyOrderPaidByCard(orderId, paymentState.cardDetails)
             }
 
             is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment -> {
@@ -1036,7 +1079,10 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun handleExternalReaderPaymentState(paymentState: CardReaderPaymentOrRefundState) {
+    private suspend fun handleExternalReaderPaymentState(
+        paymentState: CardReaderPaymentOrRefundState,
+        orderId: Long,
+    ) {
         when (paymentState) {
             is CardReaderPaymentState.ProcessingPayment -> handleProcessingPaymentState(paymentState)
 
@@ -1045,7 +1091,7 @@ class WooPosTotalsViewModel @Inject constructor(
             is CardReaderPaymentState.PaymentCapturing -> handleCapturingPaymentState()
 
             is CardReaderPaymentState.PaymentSuccessful ->
-                notifyOrderPaidByCard()
+                notifyOrderPaidByCard(orderId, paymentState.cardDetails)
 
             is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment -> {
                 uiState.value = buildPaymentFailedState(paymentState)

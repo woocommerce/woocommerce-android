@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.woopos.orders
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.payments.maskedCardDescription
 import com.woocommerce.android.ui.payments.refunds.PaymentChargeRepository
-import com.woocommerce.android.ui.payments.toCardBrandDisplayName
 import com.woocommerce.android.viewmodel.ResourceProvider
 import javax.inject.Inject
 
@@ -50,11 +50,10 @@ class WooPosGetPaymentMethod @Inject constructor(
     private suspend fun loadCardDetails(chargeId: String, refundMethod: String): String {
         return when (val result = paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)) {
             is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> {
-                val brand = result.cardBrand.toCardBrandDisplayName()
-                val last4 = result.cardLast4.orEmpty()
+                val card = maskedCardDescription(result.cardBrand, result.cardLast4)
                 val creditCardRefundDefaultText =
                     resourceProvider.getString(R.string.order_refunds_credit_card_refund)
-                "${refundMethod.ifBlank { creditCardRefundDefaultText }} ($brand **** $last4)"
+                "${refundMethod.ifBlank { creditCardRefundDefaultText }} ($card)"
             }
             PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error -> {
                 refundMethod

@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLocalRateLimiterTestFixture
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosClearLocalPINData
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -23,7 +24,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WooPosManagerApprovalViewModelTest {
+class WooPosApprovalViewModelTest {
     @get:Rule
     val coroutineRule = WooPosCoroutineTestRule()
 
@@ -53,15 +54,55 @@ class WooPosManagerApprovalViewModelTest {
 
         // WHEN
         viewModel.requestApproval(
-            WooPosManagerApprovalAction.Exit,
+            WooPosApprovalAction.Exit,
             onAllowed = { directlyAllowed = true },
-            onApproved = {},
         )
 
         // THEN
         assertThat(directlyAllowed).isTrue()
         assertThat(viewModel.state.value).isNull()
     }
+
+    @Test
+    fun `given Admin is active, when Home Exit is confirmed, then the home exit runs directly`() = runTest {
+        // GIVEN
+        val viewModel = signIn(ADMIN_PIN)
+        val events = mutableListOf<String>()
+
+        // WHEN
+        viewModel.requestExit(
+            WooPosNavigationEvent.ConfirmExitFromHome,
+            onExitFromHome = { events += "home exit" },
+            onExit = { events += "exit" },
+        )
+
+        // THEN
+        assertThat(events).containsExactly("home exit")
+        assertThat(viewModel.state.value).isNull()
+    }
+
+    @Test
+    fun `given Cashier confirms Home Exit, when Admin approves it, then the home exit runs once`() =
+        runTest {
+            // GIVEN
+            val viewModel = signIn(CASHIER_PIN)
+            val events = mutableListOf<String>()
+
+            // WHEN
+            viewModel.requestExit(
+                WooPosNavigationEvent.ConfirmExitFromHome,
+                onExitFromHome = { events += "home exit" },
+                onExit = { events += "exit" },
+            )
+            runCurrent()
+            assertThat(viewModel.state.value?.action).isEqualTo(WooPosApprovalAction.Exit)
+            assertThat(events).isEmpty()
+            viewModel.enter(ADMIN_PIN)
+            runCurrent()
+
+            // THEN
+            assertThat(events).containsExactly("home exit")
+        }
 
     @Test
     fun `given attempt storage is unavailable, when approval is requested, then the action stays blocked`() = runTest {
@@ -71,7 +112,7 @@ class WooPosManagerApprovalViewModelTest {
         var performed = false
 
         // WHEN
-        viewModel.requestApproval(WooPosManagerApprovalAction.Exit, onAllowed = { performed = true })
+        viewModel.requestApproval(WooPosApprovalAction.Exit, onAllowed = { performed = true })
         runCurrent()
         viewModel.enter(ADMIN_PIN)
 
@@ -86,14 +127,14 @@ class WooPosManagerApprovalViewModelTest {
         val viewModel = signIn(CASHIER_PIN)
         var created = 0
         var exited = 0
-        viewModel.requestApproval(WooPosManagerApprovalAction.CreateCoupon, onAllowed = { created++ })
+        viewModel.requestApproval(WooPosApprovalAction.CreateCoupon, onAllowed = { created++ })
         runCurrent()
         fixture.pinReadGate = CompletableDeferred()
 
         // WHEN
         viewModel.enter(ADMIN_PIN)
         viewModel.enter(ADMIN_PIN)
-        viewModel.requestApproval(WooPosManagerApprovalAction.Exit, onAllowed = { exited++ })
+        viewModel.requestApproval(WooPosApprovalAction.Exit, onAllowed = { exited++ })
         assertThat(viewModel.state.value?.status).isEqualTo(WooPosPINEntryStatus.Checking)
         assertThat(viewModel.state.value?.enteredDigits).isEqualTo(4)
         fixture.pinReadGate?.complete(Unit)
@@ -104,10 +145,10 @@ class WooPosManagerApprovalViewModelTest {
         assertThat(exited).isZero()
         assertThat(viewModel.state.value).isNull()
         assertThat(access.state.value.activeRole).isEqualTo(WooPosLocalRole.CASHIER)
-        viewModel.requestApproval(WooPosManagerApprovalAction.Exit, onAllowed = { exited++ })
-        assertThat(viewModel.state.value?.action).isEqualTo(WooPosManagerApprovalAction.Exit)
+        viewModel.requestApproval(WooPosApprovalAction.Exit, onAllowed = { exited++ })
+        assertThat(viewModel.state.value?.action).isEqualTo(WooPosApprovalAction.Exit)
         assertThat(exited).isZero()
-        viewModel.onUIEvent(WooPosManagerApprovalUIEvent.DismissRequested)
+        viewModel.onUIEvent(WooPosApprovalUIEvent.DismissRequested)
     }
 
     @Test
@@ -118,7 +159,7 @@ class WooPosManagerApprovalViewModelTest {
             repeat(4) { access.unlock(WRONG_PIN) }
             val viewModel = signIn(CASHIER_PIN)
             var performed = false
-            viewModel.requestApproval(WooPosManagerApprovalAction.Exit, onAllowed = { performed = true })
+            viewModel.requestApproval(WooPosApprovalAction.Exit, onAllowed = { performed = true })
             runCurrent()
 
             // WHEN
@@ -126,7 +167,7 @@ class WooPosManagerApprovalViewModelTest {
             runCurrent()
             assertThat(viewModel.state.value?.status).isEqualTo(WooPosPINEntryStatus.Wait(30))
             viewModel.enter(ADMIN_PIN)
-            viewModel.onUIEvent(WooPosManagerApprovalUIEvent.DismissRequested)
+            viewModel.onUIEvent(WooPosApprovalUIEvent.DismissRequested)
             access.lock()
             access.unlock(ADMIN_PIN)
 
@@ -141,7 +182,7 @@ class WooPosManagerApprovalViewModelTest {
         // GIVEN
         val viewModel = signIn(CASHIER_PIN)
         var performed = false
-        viewModel.requestApproval(WooPosManagerApprovalAction.Exit, onAllowed = { performed = true })
+        viewModel.requestApproval(WooPosApprovalAction.Exit, onAllowed = { performed = true })
         runCurrent()
 
         // WHEN
@@ -160,15 +201,15 @@ class WooPosManagerApprovalViewModelTest {
     fun `given an existing cooldown, when the clock reaches its end, then Admin can approve`() = runTest {
         // GIVEN
         val viewModel = signIn(CASHIER_PIN)
-        viewModel.requestApproval(WooPosManagerApprovalAction.Exit, onAllowed = {})
+        viewModel.requestApproval(WooPosApprovalAction.Exit, onAllowed = {})
         runCurrent()
         repeat(5) {
             viewModel.enter(WRONG_PIN)
             runCurrent()
         }
-        viewModel.onUIEvent(WooPosManagerApprovalUIEvent.DismissRequested)
+        viewModel.onUIEvent(WooPosApprovalUIEvent.DismissRequested)
         var performed = false
-        viewModel.requestApproval(WooPosManagerApprovalAction.Exit, onAllowed = { performed = true })
+        viewModel.requestApproval(WooPosApprovalAction.Exit, onAllowed = { performed = true })
         runCurrent()
         assertThat(viewModel.state.value?.status).isEqualTo(WooPosPINEntryStatus.Wait(30))
 
@@ -190,7 +231,7 @@ class WooPosManagerApprovalViewModelTest {
         val viewModel = signIn(CASHIER_PIN)
         var created = false
         var exited = false
-        viewModel.requestApproval(WooPosManagerApprovalAction.CreateCoupon, onAllowed = { created = true })
+        viewModel.requestApproval(WooPosApprovalAction.CreateCoupon, onAllowed = { created = true })
         runCurrent()
         val pendingRead = CompletableDeferred<Unit>()
         fixture.pinReadGate = pendingRead
@@ -198,16 +239,16 @@ class WooPosManagerApprovalViewModelTest {
         runCurrent()
 
         // WHEN
-        viewModel.onUIEvent(WooPosManagerApprovalUIEvent.DismissRequested)
-        viewModel.requestApproval(WooPosManagerApprovalAction.Exit, onAllowed = { exited = true })
+        viewModel.onUIEvent(WooPosApprovalUIEvent.DismissRequested)
+        viewModel.requestApproval(WooPosApprovalAction.Exit, onAllowed = { exited = true })
         pendingRead.complete(Unit)
         runCurrent()
 
         // THEN
         assertThat(created).isFalse()
         assertThat(exited).isFalse()
-        assertThat(viewModel.state.value?.action).isEqualTo(WooPosManagerApprovalAction.Exit)
-        viewModel.onUIEvent(WooPosManagerApprovalUIEvent.DismissRequested)
+        assertThat(viewModel.state.value?.action).isEqualTo(WooPosApprovalAction.Exit)
+        viewModel.onUIEvent(WooPosApprovalUIEvent.DismissRequested)
     }
 
     @Test
@@ -216,10 +257,10 @@ class WooPosManagerApprovalViewModelTest {
             // GIVEN
             val viewModel = signIn(CASHIER_PIN)
             var performed = false
-            viewModel.requestApproval(WooPosManagerApprovalAction.Exit, onAllowed = { performed = true })
+            viewModel.requestApproval(WooPosApprovalAction.Exit, onAllowed = { performed = true })
             runCurrent()
             assertThat(viewModel.state.value?.status).isEqualTo(WooPosPINEntryStatus.Idle)
-            viewModel.onUIEvent(WooPosManagerApprovalUIEvent.DigitTapped(ADMIN_PIN.first().digitToInt()))
+            viewModel.onUIEvent(WooPosApprovalUIEvent.DigitTapped(ADMIN_PIN.first().digitToInt()))
 
             // WHEN
             access.initialize()
@@ -237,7 +278,7 @@ class WooPosManagerApprovalViewModelTest {
         val viewModel = signIn(CASHIER_PIN)
         val pendingRead = CompletableDeferred<Unit>()
         var performed = false
-        viewModel.requestApproval(WooPosManagerApprovalAction.Exit, onAllowed = { performed = true })
+        viewModel.requestApproval(WooPosApprovalAction.Exit, onAllowed = { performed = true })
         runCurrent()
         fixture.pinReadGate = pendingRead
         viewModel.enter(ADMIN_PIN)
@@ -261,7 +302,7 @@ class WooPosManagerApprovalViewModelTest {
         val viewModel = signIn(CASHIER_PIN)
         val pendingRead = CompletableDeferred<Unit>()
         var performed = false
-        viewModel.requestApproval(WooPosManagerApprovalAction.Exit, onAllowed = { performed = true })
+        viewModel.requestApproval(WooPosApprovalAction.Exit, onAllowed = { performed = true })
         runCurrent()
         fixture.pinReadGate = pendingRead
         viewModel.enter(ADMIN_PIN)
@@ -285,7 +326,7 @@ class WooPosManagerApprovalViewModelTest {
         val viewModel = signIn(CASHIER_PIN)
         val pendingRead = CompletableDeferred<Unit>()
         var performed = false
-        viewModel.requestApproval(WooPosManagerApprovalAction.IssueRefund("1043"), onAllowed = { performed = true })
+        viewModel.requestApproval(WooPosApprovalAction.IssueRefund("1043"), onAllowed = { performed = true })
         runCurrent()
         fixture.pinReadGate = pendingRead
         viewModel.enter(ADMIN_PIN)
@@ -308,7 +349,7 @@ class WooPosManagerApprovalViewModelTest {
         var performed = false
 
         // WHEN
-        viewModel.requestFreshApproval(WooPosManagerApprovalAction.DisablePINProtection) {
+        viewModel.requestFreshApproval(WooPosApprovalAction.DisablePINProtection) {
             performed = true
             true
         }
@@ -330,7 +371,7 @@ class WooPosManagerApprovalViewModelTest {
         // GIVEN
         val viewModel = signIn(ADMIN_PIN)
         val removal = CompletableDeferred<Boolean>()
-        viewModel.requestFreshApproval(WooPosManagerApprovalAction.DisablePINProtection) { removal.await() }
+        viewModel.requestFreshApproval(WooPosApprovalAction.DisablePINProtection) { removal.await() }
         runCurrent()
 
         // WHEN
@@ -347,7 +388,7 @@ class WooPosManagerApprovalViewModelTest {
     fun `given durable removal fails, when Admin approves, then the prompt stays open with an error`() = runTest {
         // GIVEN
         val viewModel = signIn(ADMIN_PIN)
-        viewModel.requestFreshApproval(WooPosManagerApprovalAction.DisablePINProtection) { false }
+        viewModel.requestFreshApproval(WooPosApprovalAction.DisablePINProtection) { false }
         runCurrent()
 
         // WHEN
@@ -362,7 +403,7 @@ class WooPosManagerApprovalViewModelTest {
         // GIVEN
         val viewModel = signIn(ADMIN_PIN)
         var opened = false
-        viewModel.requestFreshApproval(WooPosManagerApprovalAction.ChangeAdminPIN) {
+        viewModel.requestFreshApproval(WooPosApprovalAction.ChangeAdminPIN) {
             opened = true
             true
         }
@@ -380,14 +421,14 @@ class WooPosManagerApprovalViewModelTest {
         assertThat(viewModel.state.value).isNull()
     }
 
-    private suspend fun signIn(pin: String): WooPosManagerApprovalViewModel {
+    private suspend fun signIn(pin: String): WooPosApprovalViewModel {
         access.initialize()
         access.unlock(pin)
-        return WooPosManagerApprovalViewModel(access)
+        return WooPosApprovalViewModel(access)
     }
 
-    private fun WooPosManagerApprovalViewModel.enter(pin: String) {
-        pin.forEach { onUIEvent(WooPosManagerApprovalUIEvent.DigitTapped(it.digitToInt())) }
+    private fun WooPosApprovalViewModel.enter(pin: String) {
+        pin.forEach { onUIEvent(WooPosApprovalUIEvent.DigitTapped(it.digitToInt())) }
     }
 
     private companion object {

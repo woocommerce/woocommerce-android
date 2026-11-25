@@ -28,9 +28,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
 import com.woocommerce.android.ui.woopos.roles.approval.LocalWooPosRequestApproval
-import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalAction
-import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalDialog
-import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalViewModel
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalDialog
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalViewModel
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenDialog
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenUIEvent
@@ -44,7 +44,7 @@ import com.woocommerce.android.ui.woopos.splash.WooPosSplashScreen
 fun WooPosRootScreen(
     modifier: Modifier = Modifier,
     lockViewModel: WooPosLockScreenViewModel = hiltViewModel(),
-    approvalViewModel: WooPosManagerApprovalViewModel = hiltViewModel(),
+    approvalViewModel: WooPosApprovalViewModel = hiltViewModel(),
     prepareSavedSale: Boolean = false,
 ) {
     val savedController = rememberNavController()
@@ -71,7 +71,7 @@ fun WooPosRootScreen(
     WooPosRootScreen(state = lockState, onUIEvent = lockViewModel::onUIEvent, modifier = modifier) {
         // Gate the default Activity finish when no destination handles Back.
         val exitPOS = lockViewModel::onAuthorizedExit
-        BackHandler { approvalViewModel.requestApproval(WooPosManagerApprovalAction.Exit, exitPOS) }
+        BackHandler { approvalViewModel.requestApproval(WooPosApprovalAction.Exit, exitPOS) }
         CompositionLocalProvider(
             LocalWooPosRequestApproval provides { action, perform ->
                 approvalViewModel.requestApproval(action, perform)
@@ -79,23 +79,16 @@ fun WooPosRootScreen(
         ) {
             val navigate: (WooPosNavigationEvent) -> Unit = { event ->
                 rootController.handleNavigationEvent(event) { exit ->
-                    val finishHome: () -> Unit = {
-                        if (!activity.isFinishing) {
-                            homeViewModel.onExitConfirmed()
-                            exitPOS()
-                        }
-                    }
-                    when (exit) {
-                        WooPosNavigationEvent.RequestExitFromHome -> approvalViewModel.requestApproval(
-                            WooPosManagerApprovalAction.Exit,
-                            onAllowed = homeViewModel::showExitConfirmation,
-                            onApproved = finishHome,
-                        )
-                        WooPosNavigationEvent.ConfirmExitFromHome ->
-                            approvalViewModel.requestApproval(WooPosManagerApprovalAction.Exit, finishHome)
-                        WooPosNavigationEvent.ExitPosClicked, WooPosNavigationEvent.BackFromSplashClicked ->
-                            approvalViewModel.requestApproval(WooPosManagerApprovalAction.Exit, exitPOS)
-                    }
+                    approvalViewModel.requestExit(
+                        event = exit,
+                        onExitFromHome = {
+                            if (!activity.isFinishing) {
+                                homeViewModel.onExitConfirmed()
+                                exitPOS()
+                            }
+                        },
+                        onExit = exitPOS,
+                    )
                 }
             }
             if (preparationPending) {
@@ -118,9 +111,8 @@ fun WooPosRootScreen(
                 )
             }
         }
-        val request = approvalState
-        if (!lockState.isLocked && request != null) {
-            WooPosManagerApprovalDialog(request, approvalViewModel::onUIEvent)
+        if (!lockState.isLocked) {
+            WooPosApprovalDialog(approvalState, approvalViewModel::onUIEvent)
         }
     }
 }

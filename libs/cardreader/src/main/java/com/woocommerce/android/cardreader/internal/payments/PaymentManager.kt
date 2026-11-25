@@ -424,16 +424,17 @@ internal class PaymentManager(
         val attempt = activePayment
         attempt?.captureOutcome = CaptureOutcome.IN_PROGRESS
         emit(CapturingPayment)
+        val paymentCompleted = PaymentCompleted(receiptUrl, cardDetails(paymentIntent))
         when (val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id!!)) {
             is CapturePaymentResponse.Successful -> {
                 attempt?.captureOutcome = CaptureOutcome.CAPTURED
-                emit(PaymentCompleted(receiptUrl))
+                emit(paymentCompleted)
             }
             is CapturePaymentResponse.Error -> {
                 val outcome = checkCaptureOutcome(paymentIntent, captureResponse)
                 attempt?.captureOutcome = outcome
                 when (outcome) {
-                    CaptureOutcome.CAPTURED -> emit(PaymentCompleted(receiptUrl))
+                    CaptureOutcome.CAPTURED -> emit(paymentCompleted)
                     CaptureOutcome.NOT_CAPTURED -> {
                         emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
                     }
@@ -585,6 +586,13 @@ internal class PaymentManager(
     private fun isSingleStepTerminalPaymentSuccessful(paymentIntent: PaymentIntent): Boolean {
         return paymentIntent.status == PaymentIntentStatus.SUCCEEDED &&
             (isInteracPayment(paymentIntent) || isEftposAuPayment(paymentIntent))
+    }
+
+    private fun cardDetails(paymentIntent: PaymentIntent): CardPaymentStatus.CardDetails? {
+        val paymentMethodDetails = paymentIntent.latestCharge?.paymentMethodDetails
+        val card = paymentMethodDetails?.cardPresentDetails ?: paymentMethodDetails?.interacPresentDetails
+        val last4 = card?.last4 ?: return null
+        return CardPaymentStatus.CardDetails(brand = card.brand, last4 = last4)
     }
 
     private fun determinePaymentMethodType(paymentIntent: PaymentIntent): PaymentMethodType {

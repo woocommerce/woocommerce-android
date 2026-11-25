@@ -15,7 +15,6 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.O
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.OpenOrders
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.OpenScanToPay
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.OpenSettings
-import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.RequestExitFromHome
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.ReturnHomeFromCashPayment
 
 @Composable
@@ -34,7 +33,6 @@ fun WooPosRootHost(
                 is NavigationEvent.ToEmailReceipt -> onNavigationEvent(OpenEmailReceipt(it.orderId))
                 is NavigationEvent.ToCustomAmount -> onNavigationEvent(OpenCustomAmount(it.mode))
                 NavigationEvent.ExitConfirmed -> onNavigationEvent(ConfirmExitFromHome)
-                NavigationEvent.RequestExitPos -> onNavigationEvent(RequestExitFromHome)
                 NavigationEvent.ReturnHomeFromCashWhenCardPaymentStarted -> onNavigationEvent(ReturnHomeFromCashPayment)
                 NavigationEvent.ToSettings -> onNavigationEvent(OpenSettings)
                 NavigationEvent.ToOrders -> onNavigationEvent(OpenOrders)

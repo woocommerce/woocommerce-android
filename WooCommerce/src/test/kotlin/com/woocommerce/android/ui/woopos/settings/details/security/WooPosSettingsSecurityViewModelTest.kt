@@ -4,7 +4,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.ADMIN
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.CASHIER
-import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalAction
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLockSettings
@@ -58,7 +58,7 @@ class WooPosSettingsSecurityViewModelTest {
     fun `given an Admin change, when approval is requested, then a fresh Admin challenge is required`() = runTest {
         givenAdminSession(ADMIN)
         assertThat(createViewModel().approvalForPINChange(ADMIN))
-            .isEqualTo(WooPosManagerApprovalAction.ChangeAdminPIN)
+            .isEqualTo(WooPosApprovalAction.ChangeAdminPIN)
     }
 
     @Test

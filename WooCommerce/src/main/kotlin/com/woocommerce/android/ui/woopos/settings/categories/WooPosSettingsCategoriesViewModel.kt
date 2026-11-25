@@ -33,11 +33,10 @@ class WooPosSettingsCategoriesViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            accessSession.state.collect { session ->
+            accessSession.approvalScopeChanges.collect {
+                val canManageStore = accessSession.allows(WooPosCapability.MANAGE_STORE_SETTINGS)
                 _state.value = WooPosSettingsCategoriesState(
-                    categories.filter {
-                        it != WooPosSettingsCategory.SECURITY || session.allows(WooPosCapability.MANAGE_STORE_SETTINGS)
-                    }
+                    categories.filter { it != WooPosSettingsCategory.SECURITY || canManageStore }
                 )
             }
         }

@@ -2,11 +2,13 @@ package com.woocommerce.android.ui.woopos.receiptprinting
 
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardDetails
 import com.woocommerce.android.extensions.formatToLocalizedMediumWithTime
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.stripHtml
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.toCardBrandDisplayName
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.LabeledText
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosThermalReceipt.Row
@@ -26,7 +28,7 @@ class WooPosBuildThermalReceipt @Inject constructor(
     private val formatPrice: WooPosFormatPrice,
     private val resourceProvider: ResourceProvider,
 ) {
-    suspend operator fun invoke(orderId: Long): WooPosThermalReceipt? {
+    suspend operator fun invoke(orderId: Long, cardDetails: CardDetails?): WooPosThermalReceipt? {
         val site = selectedSite.get()
         val order = totalsRepository.getOrderById(orderId, site) ?: return null
         val receiptInfo = receiptRepository.getCachedReceiptInfo(site)
@@ -42,13 +44,25 @@ class WooPosBuildThermalReceipt @Inject constructor(
                 text = (order.datePaid ?: order.dateCreated).formatToLocalizedMediumWithTime(),
             ),
             orderNumber = resourceProvider.getString(R.string.woopos_receipt_order_number, order.number),
-            paymentMethod = null,
+            paymentMethod = cardDetails?.let(::paymentMethod),
             lineItems = order.items.map { lineItem(it, order.currency) },
             totals = totals(order),
             orderNote = order.customerNote.stripHtml().trim().ifEmpty { null }?.let {
                 LabeledText(label = resourceProvider.getString(R.string.woopos_receipt_notes), text = it)
             },
             refundPolicy = receiptInfo?.refundPolicy.nullIfBlank(),
+        )
+    }
+
+    private fun paymentMethod(cardDetails: CardDetails): LabeledText {
+        val brand = cardDetails.brand.toCardBrandDisplayName()
+        return LabeledText(
+            label = resourceProvider.getString(R.string.woopos_receipt_payment_method),
+            text = if (brand.isEmpty()) {
+                cardDetails.last4
+            } else {
+                resourceProvider.getString(R.string.woopos_receipt_card_brand_and_last4, brand, cardDetails.last4)
+            },
         )
     }
 
