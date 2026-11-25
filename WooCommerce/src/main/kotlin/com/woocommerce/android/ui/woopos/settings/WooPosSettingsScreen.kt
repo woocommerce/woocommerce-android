@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPa
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSyncErrorDialog
 import com.woocommerce.android.ui.woopos.settings.details.security.SECURITY_APPROVAL_VIEW_MODEL_KEY
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupDialog
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupViewModel
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialog
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialogState
@@ -180,7 +181,6 @@ private fun WooPosSettingsPhoneContent(
 
     SettingsDialogs(
         dialogState = state.dialogState,
-        isPhoneLayout = true,
         onRetrySync = onRetrySync,
         onDismissDialog = onDismissDialog,
     )
@@ -238,7 +238,6 @@ private fun WooPosSettingsTabletContent(
 
     SettingsDialogs(
         dialogState = state.dialogState,
-        isPhoneLayout = false,
         onRetrySync = onRetrySync,
         onDismissDialog = onDismissDialog,
     )
@@ -251,7 +250,6 @@ private fun Modifier.hiddenBehindPinSetup(dialogState: WooPosSettingsDialogState
 @Composable
 private fun SettingsDialogs(
     dialogState: WooPosSettingsDialogState,
-    isPhoneLayout: Boolean,
     onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit,
 ) {
@@ -268,11 +266,11 @@ private fun SettingsDialogs(
     LaunchedEffect(editor) {
         if (editor == null) pinSetup.reset()
     }
-    val isPinSetupVisible = pinSetupRole != null && pinSetupState.role == pinSetupRole
+    val isPinSetupVisible = pinSetupRole != null &&
+        (pinSetupState.role == pinSetupRole || pinSetupState == WooPosSettingsSecurityPINSetupState.AccessUnavailable)
     WooPosSettingsSecurityPINSetupDialog(
         state = pinSetupState,
         isVisible = isPinSetupVisible,
-        isFullScreen = isPhoneLayout,
         onUIEvent = pinSetup::onUIEvent,
         onClose = onDismissDialog,
         savedActionLabel = stringResource(

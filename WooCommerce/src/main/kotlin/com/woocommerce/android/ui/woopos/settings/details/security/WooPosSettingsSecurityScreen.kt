@@ -188,7 +188,6 @@ private fun SecurityCards(
                     CashierActions(stacked, { onChangePIN(WooPosLocalRole.CASHIER) }, onDeleteCashierPIN)
                 }
             }
-            // WOOMOB-4623 intentionally leaves the roles link inactive.
             TextButton(
                 onClick = {},
                 colors = securityTextButtonColors(),
@@ -298,6 +297,11 @@ private fun SecurityRowText(title: String, subtitle: String?, modifier: Modifier
             modifier = modifier,
             title = title,
             subtitle = subtitle,
+            subtitleColor = if (isSystemInDarkTheme()) {
+                WooPosTheme.colors.onSurfaceVariantHighest
+            } else {
+                WooPosTheme.colors.onSurfaceVariantLowest
+            },
         )
     } else {
         WooPosText(title, style = WooPosTypography.BodyMedium, modifier = modifier)
@@ -342,7 +346,7 @@ private fun CashierActions(stacked: Boolean, onChange: () -> Unit, onDelete: () 
 
 @Composable
 private fun LockSettingsCard() {
-    // WOOMOB-4603 will persist these choices and apply the lock triggers.
+    // TODO WOOMOB-4603: Persist these choices and apply the lock triggers.
     var onLaunch by rememberSaveable { mutableStateOf(true) }
     var onBackground by rememberSaveable { mutableStateOf(true) }
     var afterSale by rememberSaveable { mutableStateOf(false) }
