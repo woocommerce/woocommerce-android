@@ -116,6 +116,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var wooPosSurveysNotificationScheduler: WooPosSurveysNotificationScheduler
     protected lateinit var isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported
     protected lateinit var isStoreCurrencyMatch: IsStoreCurrencyMatch
+    protected lateinit var getDeletedOrderItems: GetDeletedOrderItems
 
     protected val defaultOrderValue = Order.getEmptyOrder(Date(), Date()).copy(id = 123)
 
@@ -243,6 +244,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         wooPosSurveysNotificationScheduler = mock()
         isCurrencyQueryParamSupported = mock()
         isStoreCurrencyMatch = mock()
+        getDeletedOrderItems = mock()
         // Only consulted when the screen was opened with an order currency, so stubbing it otherwise
         // would trip the strict stubbing check.
         if (orderCurrency != null) {
@@ -2390,6 +2392,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             wooPosSurveysNotificationScheduler = wooPosSurveysNotificationScheduler,
             isCurrencyQueryParamSupported = isCurrencyQueryParamSupported,
             isStoreCurrencyMatch = isStoreCurrencyMatch,
+            getDeletedOrderItems = getDeletedOrderItems,
         )
     }
 
