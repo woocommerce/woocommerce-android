@@ -85,4 +85,21 @@ class WooPosLockPreferencesTest {
         val file = temporaryFolder.newFolder().resolve("locks.preferences_pb")
         return PreferenceDataStoreFactory.create(scope = scope) { file }
     }
+
+    @Test
+    fun `given an old account has lock settings, when logout clears them, then no marker or choices carry over`() = runTest {
+        // GIVEN
+        val dataStore = dataStore(backgroundScope)
+        val preferences = WooPosLockPreferences(dataStore)
+        preferences.updateSettings(1, { true }) { it.copy(onLaunch = false, inactivityMinutes = 0) }.getOrThrow()
+        preferences.retainPOS(1) { true }.getOrThrow()
+
+        // WHEN
+        preferences.clearAll().getOrThrow()
+
+        // THEN
+        val reopened = WooPosLockPreferences(dataStore)
+        assertThat(reopened.restoreSiteId().getOrThrow()).isNull()
+        assertThat(reopened.settings(1).first().getOrThrow()).isEqualTo(WooPosAutoLockSettings())
+    }
 }

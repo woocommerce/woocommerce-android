@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class WooPosLockPreferences @Inject constructor(
-    @DataStoreQualifier(DataStoreType.WOO_POS) private val dataStore: DataStore<Preferences>,
+    @DataStoreQualifier(DataStoreType.WOO_POS_LOCK_SETTINGS) private val dataStore: DataStore<Preferences>,
 ) {
     fun settings(localSiteId: Int): Flow<Result<WooPosAutoLockSettings>> = dataStore.data.map { preferences ->
         result { preferences.settings(localSiteId) }
@@ -52,6 +52,10 @@ class WooPosLockPreferences @Inject constructor(
     }
 
     suspend fun clearRestoreState(): Result<Unit> = clearRestoreState(null) { true }
+
+    suspend fun clearAll(): Result<Unit> = result {
+        dataStore.edit { it.clear() }
+    }
 
     suspend fun clearRestoreState(localSiteId: Int?, canCommit: () -> Boolean): Result<Unit> = result {
         dataStore.edit {

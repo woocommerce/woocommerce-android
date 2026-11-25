@@ -14,7 +14,7 @@ class WooPosClearLocalPINData @Inject constructor(
 ) {
     suspend operator fun invoke() = withContext(NonCancellable) {
         rateLimiter.onLogout()
-        lockPreferences.clearRestoreState().onFailure {
+        lockPreferences.clearAll().onFailure {
             WooLog.e(WooLog.T.POS, "Unable to clear POS restoration state")
         }
         localPINStore.clearAll().onFailure {
