@@ -149,6 +149,7 @@ internal class TerminalWrapper(private val terminal: () -> Terminal = { Terminal
         return cancelled
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private suspend fun paymentCommand(start: (PaymentIntentCallback) -> Cancelable): PaymentIntent =
         suspendCancellableCoroutine { continuation ->
             if (!continuation.isActive) return@suspendCancellableCoroutine
@@ -159,16 +160,21 @@ internal class TerminalWrapper(private val terminal: () -> Terminal = { Terminal
                 )
                 return@suspendCancellableCoroutine
             }
-            command.handle = start(object : PaymentIntentCallback {
-                override fun onSuccess(paymentIntent: PaymentIntent) {
-                    completePaymentCommand(command)
-                    if (continuation.isActive) continuation.resume(paymentIntent)
-                }
-                override fun onFailure(e: TerminalException) {
-                    completePaymentCommand(command)
-                    if (continuation.isActive) continuation.resumeWithException(e)
-                }
-            })
+            try {
+                command.handle = start(object : PaymentIntentCallback {
+                    override fun onSuccess(paymentIntent: PaymentIntent) {
+                        completePaymentCommand(command)
+                        if (continuation.isActive) continuation.resume(paymentIntent)
+                    }
+                    override fun onFailure(e: TerminalException) {
+                        completePaymentCommand(command)
+                        if (continuation.isActive) continuation.resumeWithException(e)
+                    }
+                })
+            } catch (error: Exception) {
+                completePaymentCommand(command)
+                if (continuation.isActive) continuation.resumeWithException(error)
+            }
             continuation.invokeOnCancellation {
                 command.handle?.cancel(object : Callback {
                     override fun onSuccess() = Unit

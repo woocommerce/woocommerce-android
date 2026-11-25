@@ -95,7 +95,7 @@ internal class PaymentManager(
     @Suppress("TooGenericExceptionCaught")
     private suspend fun cancelAttempt(attempt: ActivePayment): Boolean {
         return try {
-            val intent = attempt.intent.await().getOrThrow() ?: return true
+            val intent = attempt.intent.await().getOrNull() ?: return true
             if (!canCancelAttempt(attempt)) return false
             val commandCancelled = terminalWrapper.cancelPaymentCommandAndAwait()
             if (!commandCancelled || !canCancelAttempt(attempt)) return false
@@ -372,13 +372,7 @@ internal class PaymentManager(
         original: PaymentIntent,
         error: TerminalException,
     ): PaymentIntent {
-        val updated = error.paymentIntent
-        if (updated?.status == PaymentIntentStatus.REQUIRES_CAPTURE ||
-            updated?.status == PaymentIntentStatus.SUCCEEDED
-        ) {
-            return updated
-        }
-        val unknown = updated?.status == PaymentIntentStatus.PROCESSING || updated == null && error.errorCode in setOf(
+        val uncertainError = error.errorCode in setOf(
             TerminalErrorCode.REQUEST_TIMED_OUT,
             TerminalErrorCode.STRIPE_API_CONNECTION_ERROR,
             TerminalErrorCode.STRIPE_API_ERROR,
@@ -386,6 +380,13 @@ internal class PaymentManager(
             TerminalErrorCode.BLUETOOTH_DISCONNECTED,
             TerminalErrorCode.USB_DISCONNECTED,
         )
+        val updated = error.paymentIntent ?: if (uncertainError) retrieveProcessingIntent(original) else null
+        if (updated?.status == PaymentIntentStatus.REQUIRES_CAPTURE ||
+            updated?.status == PaymentIntentStatus.SUCCEEDED
+        ) {
+            return updated
+        }
+        val unknown = updated?.status == PaymentIntentStatus.PROCESSING || updated == null && uncertainError
         emit(
             if (unknown) {
                 PaymentFailed(
@@ -394,10 +395,22 @@ internal class PaymentManager(
                     error.errorMessage
                 )
             } else {
-                errorMapper.mapTerminalError(original, error)
+                errorMapper.mapTerminalError(updated ?: original, error)
             }
         )
         return updated ?: original
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    private suspend fun retrieveProcessingIntent(original: PaymentIntent): PaymentIntent? {
+        val secret = original.clientSecret ?: return null
+        return try {
+            terminalWrapper.retrievePaymentIntent(secret)
+        } catch (error: CancellationException) {
+            throw error
+        } catch (_: Exception) {
+            null
+        }
     }
 
     // Stripe new SDk now has paymentIntent.id as nullable to support offline payment. But we don't support offline yet

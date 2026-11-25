@@ -71,6 +71,7 @@ open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provid
             private fun reportVisibility(isVisible: Boolean) {
                 sendBroadcast(
                     Intent(POS_PAYMENT_VISIBILITY_ACTION).setPackage(packageName)
+                        .addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
                         .putExtra(POS_PAYMENT_VISIBLE, isVisible)
                 )
             }

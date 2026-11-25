@@ -64,7 +64,8 @@ class WooPosActivity : AppCompatActivity() {
     private var observingVisibility = false
     private val paymentVisibility = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            paymentActivityVisible = intent.getBooleanExtra(WooCommerce.POS_PAYMENT_VISIBLE, false)
+            paymentActivityVisible = intent.getBooleanExtra(WooCommerce.POS_PAYMENT_VISIBLE, false) &&
+                hasVisiblePaymentActivity()
             if (paymentActivityVisible) {
                 lockViewModel.onForeground()
             } else if (visibleActivities.isEmpty()) lockViewModel.onBackground()
@@ -86,7 +87,7 @@ class WooPosActivity : AppCompatActivity() {
         override fun onActivityStopped(activity: Activity) {
             restoreWindowCallback(activity)
             visibleActivities.remove(activity)
-            val background = visibleActivities.isEmpty() && !paymentActivityVisible && !hasVisiblePaymentTask()
+            val background = visibleActivities.isEmpty() && !hasVisiblePaymentActivity()
             if (background && !activity.isChangingConfigurations) {
                 lockViewModel.onBackground()
             }
@@ -95,19 +96,29 @@ class WooPosActivity : AppCompatActivity() {
         override fun onActivityResumed(activity: Activity) = Unit
         override fun onActivityPaused(activity: Activity) = Unit
         override fun onActivitySaveInstanceState(activity: Activity, state: Bundle) = Unit
-        override fun onActivityDestroyed(activity: Activity) = Unit
+        override fun onActivityDestroyed(activity: Activity) {
+            restoreWindowCallback(activity)
+            visibleActivities.remove(activity)
+        }
     }
 
-    private fun hasVisiblePaymentTask(): Boolean =
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2 &&
-            getSystemService(ActivityManager::class.java).appTasks.any {
-                it.taskInfo?.let { info ->
-                    val top = info.topActivity
-                    info.taskId == taskId && info.isVisible && top?.packageName == packageName &&
-                        packageManager.getActivityInfo(top, 0).processName ==
-                        "$packageName:${WooCommerce.TAP_TO_PAY_STRIPE_PROCESS_NAME_SUFFIX}"
-                } == true
-            }
+    private fun hasVisiblePaymentActivity(): Boolean {
+        val manager = getSystemService(ActivityManager::class.java)
+        val paymentProcess = "$packageName:${WooCommerce.TAP_TO_PAY_STRIPE_PROCESS_NAME_SUFFIX}"
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S_V2) {
+            return manager.runningAppProcesses?.any {
+                it.processName == paymentProcess &&
+                    it.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+            } == true
+        }
+        return manager.appTasks.any {
+            it.taskInfo?.let { info ->
+                val top = info.topActivity
+                info.taskId == taskId && info.isVisible && top?.packageName == packageName &&
+                    packageManager.getActivityInfo(top, 0).processName == paymentProcess
+            } == true
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val discardSavedSale = intent.getBooleanExtra(DISCARD_SAVED_SALE, false)
@@ -192,6 +203,15 @@ class WooPosActivity : AppCompatActivity() {
                 featureFlags.awaitRemoteFlagsLoaded()
                 lockViewModel.onLauncherEntry()
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (observingVisibility && paymentActivityVisible && !hasVisiblePaymentActivity()) {
+            paymentActivityVisible = false
+            lockViewModel.onBackground()
+            lockViewModel.onForeground()
         }
     }
 

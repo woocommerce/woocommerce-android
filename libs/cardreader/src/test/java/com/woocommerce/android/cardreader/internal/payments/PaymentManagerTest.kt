@@ -872,6 +872,45 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     }
 
     @Test
+    fun `given creation was cancelled before collection, when the owner cancels, then it resolves without SDK collection`() = testBlocking {
+        // GIVEN
+        val created = CompletableDeferred<CreatePaymentStatus>()
+        whenever(createPaymentAction.createPaymentIntent(any())).doSuspendableAnswer { created.await() }
+        val collection = async { manager.acceptPayment(createPaymentInfo()).toList() }
+
+        // WHEN
+        collection.cancel()
+        collection.join()
+
+        // THEN
+        assertThat(manager.cancelActivePaymentAndAwait()).isTrue()
+        verify(processPaymentIntentAction, never()).processPaymentIntent(any())
+        verify(terminalWrapper, never()).cancelPaymentCommandAndAwait()
+    }
+
+    @Test
+    fun `given disconnect before card presentation, when intent retrieval confirms no payment method, then normal failure is retained`() = testBlocking {
+        // GIVEN
+        val original = createPaymentIntent(REQUIRES_PAYMENT_METHOD)
+        whenever(original.clientSecret).thenReturn("secret")
+        whenever(createPaymentAction.createPaymentIntent(any())).thenReturn(CreatePaymentStatus.Success(original))
+        val error = TerminalException(TerminalErrorCode.BLUETOOTH_DISCONNECTED, "Disconnected")
+        whenever(
+            processPaymentIntentAction.processPaymentIntent(any())
+        ).thenReturn(ProcessPaymentIntentStatus.Failure(error))
+        val refreshed = createPaymentIntent(REQUIRES_PAYMENT_METHOD)
+        whenever(terminalWrapper.retrievePaymentIntent("secret")).thenReturn(refreshed)
+
+        // WHEN
+        val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+        // THEN
+        assertThat((result.last() as PaymentFailed).type).isEqualTo(CardPaymentStatusErrorType.Generic)
+        verify(paymentErrorMapper).mapTerminalError(refreshed, error)
+        verify(cardReaderStore, never()).capturePaymentIntent(any(), any())
+    }
+
+    @Test
     fun `given intent creation is pending, when cancellation starts, then it waits for a confirmed canceled intent`() =
         testBlocking {
             // GIVEN

@@ -20,6 +20,30 @@ import org.mockito.kotlin.whenever
 @OptIn(ExperimentalCoroutinesApi::class)
 class TerminalWrapperPaymentCancellationTest : CardReaderBaseUnitTest() {
     @Test
+    fun `given SDK start throws synchronously, when the next command starts, then the reader gate is available`() = testBlocking {
+        // GIVEN
+        val terminal: Terminal = mock()
+        val handle: Cancelable = mock()
+        val intent: PaymentIntent = mock()
+        whenever(terminal.processPaymentIntent(any(), any(), any(), any()))
+            .thenThrow(IllegalStateException("Start failed"))
+            .thenAnswer {
+                it.getArgument<PaymentIntentCallback>(3).onSuccess(intent)
+                handle
+            }
+        val wrapper = TerminalWrapper { terminal }
+
+        // WHEN
+        val failed = runCatching { wrapper.processPaymentIntent(intent) }
+        val next = wrapper.processPaymentIntent(intent)
+
+        // THEN
+        assertThat(failed.exceptionOrNull()).isInstanceOf(IllegalStateException::class.java)
+        assertThat(next).isSameAs(intent)
+        assertThat(wrapper.cancelPaymentCommandAndAwait()).isTrue()
+    }
+
+    @Test
     fun `given SDK cancellation succeeds, when the payment callback is pending, then cancellation still waits`() =
         testBlocking {
             // GIVEN

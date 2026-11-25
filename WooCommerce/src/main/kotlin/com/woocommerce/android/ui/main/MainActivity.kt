@@ -391,13 +391,15 @@ class MainActivity :
             return
         }
 
+        if (bundle != null && isLauncherEntry()) initializeMainContent(bundle)
         resolveLauncherEntry(savedInstanceState)
     }
 
+    private fun isLauncherEntry() = intent.action == Intent.ACTION_MAIN && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
+
     private fun resolveLauncherEntry(savedInstanceState: Bundle?) {
         posLaunchJob?.cancel()
-        val launcherEntry = intent.action == Intent.ACTION_MAIN && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
-        if (!launcherEntry) {
+        if (!isLauncherEntry()) {
             resolvingPOSLaunch = false
             if (!::binding.isInitialized) {
                 initializeMainContent(savedInstanceState)
@@ -423,7 +425,7 @@ class MainActivity :
                     initializeMainContent(savedInstanceState)
                 } else {
                     binding.root.isVisible = true
-                    handleMainIntent()
+                    if (savedInstanceState == null) handleMainIntent()
                 }
             }
         }
