@@ -75,7 +75,13 @@ fun WooPosDialogWrapper(
             isVisible = isVisible,
             onDismissRequest = onDismissRequest,
         ) {
-            Column(modifier = Modifier.padding(WooPosSpacing.XLarge.value)) {
+            Column(
+                modifier = Modifier.padding(
+                    start = WooPosSpacing.XLarge.value,
+                    end = WooPosSpacing.XLarge.value,
+                    bottom = WooPosSpacing.XLarge.value,
+                )
+            ) {
                 content()
             }
         }

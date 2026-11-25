@@ -48,11 +48,7 @@ private fun PaymentMethodsBottomSheetContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                start = WooPosSpacing.XLarge.value,
-                end = WooPosSpacing.XLarge.value,
-                top = WooPosSpacing.XLarge.value,
-            ),
+            .padding(horizontal = WooPosSpacing.XLarge.value),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         WooPosText(
