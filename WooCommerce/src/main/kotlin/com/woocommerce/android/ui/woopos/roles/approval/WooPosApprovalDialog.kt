@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -17,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -31,9 +29,9 @@ import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -58,53 +56,67 @@ internal fun WooPosApprovalDialog(
     state: WooPosApprovalState,
     onUIEvent: (WooPosApprovalUIEvent) -> Unit,
 ) {
-    val fullScreen = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
-    Dialog(
-        onDismissRequest = { onUIEvent(WooPosApprovalUIEvent.DismissRequested) },
-        properties = DialogProperties(
-            dismissOnClickOutside = !fullScreen,
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = !fullScreen,
-        ),
-    ) {
-        ApprovalContent(state, fullScreen, onUIEvent)
+    val onDismiss = { onUIEvent(WooPosApprovalUIEvent.DismissRequested) }
+    if (currentWooPosBreakpoint() == WooPosBreakpoint.Phone) {
+        Dialog(
+            onDismissRequest = onDismiss,
+            properties = DialogProperties(
+                dismissOnClickOutside = false,
+                usePlatformDefaultWidth = false,
+                decorFitsSystemWindows = false,
+            ),
+        ) {
+            ApprovalPhoneContent(state, onUIEvent, onDismiss)
+        }
+    } else {
+        ApprovalTabletContent(state, onUIEvent, onDismiss)
     }
 }
 
 @Composable
-private fun ApprovalContent(
+private fun ApprovalPhoneContent(
     state: WooPosApprovalState,
-    fullScreen: Boolean,
     onUIEvent: (WooPosApprovalUIEvent) -> Unit,
+    onDismiss: () -> Unit,
 ) {
-    val onDismiss = { onUIEvent(WooPosApprovalUIEvent.DismissRequested) }
-    Surface(
-        modifier = if (fullScreen) {
-            Modifier.fillMaxSize()
-        } else {
-            Modifier
-                .padding(WooPosSpacing.Large.value)
-                .widthIn(max = APPROVAL_CARD_MAX_WIDTH.toAdaptiveComponentSize())
-                .fillMaxWidth()
-        },
-        shape = if (fullScreen) RectangleShape else RoundedCornerShape(WooPosCornerRadius.Large.value),
-        color = MaterialTheme.colorScheme.surfaceBright,
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceBright) {
+        WooPosPINPhoneLayout(header = { ApprovalCloseHeader(onDismiss) }) {
+            ApprovalBody(
+                state,
+                onUIEvent,
+                keySize = PIN_PAD_PHONE_KEY_SIZE,
+                modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+            )
+        }
+    }
+}
+
+@Composable
+private fun ApprovalTabletContent(
+    state: WooPosApprovalState,
+    onUIEvent: (WooPosApprovalUIEvent) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    WooPosDialogWrapper(
+        modifier = Modifier
+            .padding(WooPosSpacing.Large.value)
+            .widthIn(max = APPROVAL_CARD_MAX_WIDTH.toAdaptiveComponentSize()),
+        isVisible = true,
+        dialogBackgroundContentDescription = stringResource(R.string.dismiss),
+        widthFraction = 1f,
+        onDismissRequest = onDismiss,
     ) {
-        val bodyModifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
-        if (fullScreen) {
-            WooPosPINPhoneLayout(header = { ApprovalCloseHeader(onDismiss) }) {
-                ApprovalBody(state, onUIEvent, keySize = PIN_PAD_PHONE_KEY_SIZE, modifier = bodyModifier)
-            }
-        } else {
-            Column(Modifier.padding(WooPosSpacing.Large.value)) {
-                ApprovalCloseHeader(onDismiss)
-                ApprovalBody(
-                    state,
-                    onUIEvent,
-                    keySize = PIN_PAD_TABLET_KEY_SIZE,
-                    modifier = Modifier.weight(1f, fill = false).then(bodyModifier),
-                )
-            }
+        Column {
+            ApprovalCloseHeader(onDismiss)
+            ApprovalBody(
+                state,
+                onUIEvent,
+                keySize = PIN_PAD_TABLET_KEY_SIZE,
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+            )
         }
     }
 }
@@ -175,10 +187,10 @@ private fun ApprovalBody(
 @Composable
 private fun WooPosApprovalPreview() {
     WooPosTheme {
-        ApprovalContent(
+        ApprovalTabletContent(
             WooPosApprovalState(WooPosApprovalAction.CreateCoupon, WooPosPINEntryStatus.Idle),
-            fullScreen = false,
             onUIEvent = {},
+            onDismiss = {},
         )
     }
 }
@@ -187,10 +199,10 @@ private fun WooPosApprovalPreview() {
 @Composable
 private fun WooPosApprovalWaitPreview() {
     WooPosTheme {
-        ApprovalContent(
+        ApprovalPhoneContent(
             WooPosApprovalState(WooPosApprovalAction.IssueRefund("#1043"), WooPosPINEntryStatus.Wait(30)),
-            fullScreen = true,
             onUIEvent = {},
+            onDismiss = {},
         )
     }
 }
