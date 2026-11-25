@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.adaptiveContentWidth
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButtonState
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailureDialog
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptButtons
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterSetupDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -67,6 +68,14 @@ fun WooPosPaymentSuccessScreen(
         WooPosReceiptPrinterSetupDialog(
             onDismiss = viewModel::onReceiptPrinterSetupDialogDismissed,
             onConnectionSuccess = viewModel::onReceiptPrinterConnected,
+        )
+    }
+
+    state.printReceiptFailure?.let { failure ->
+        WooPosPrintReceiptFailureDialog(
+            failure = failure,
+            onActionSelected = viewModel::onPrintReceiptFailureActionSelected,
+            onDismiss = viewModel::onPrintReceiptFailureDialogDismissed,
         )
     }
 }
