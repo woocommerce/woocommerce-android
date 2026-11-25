@@ -68,9 +68,11 @@ import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterCon
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.MissingBluetoothPermission
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.NoPrintersFound
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterConnectionState.Searching
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ReceiptPrinterSetupSource
 
 @Composable
 fun WooPosReceiptPrinterSetupDialog(
+    source: ReceiptPrinterSetupSource,
     viewModel: WooPosReceiptPrinterSetupViewModel = hiltViewModel(),
     onDismiss: () -> Unit,
     onConnectionSuccess: () -> Unit,
@@ -90,7 +92,7 @@ fun WooPosReceiptPrinterSetupDialog(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.startSetup()
+        viewModel.startSetup(source)
     }
 
     // The host can replace this dialog without dismissing it, so the setup is cancelled whenever the dialog leaves
@@ -102,7 +104,10 @@ fun WooPosReceiptPrinterSetupDialog(
     }
 
     LaunchedEffect(state) {
-        if (state is Connected) currentOnConnectionSuccess()
+        if (state is Connected) {
+            viewModel.onConnected(source)
+            currentOnConnectionSuccess()
+        }
     }
 
     LaunchedEffect(lifecycleOwner) {
