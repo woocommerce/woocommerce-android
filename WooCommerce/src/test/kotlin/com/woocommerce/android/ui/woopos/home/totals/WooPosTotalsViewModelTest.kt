@@ -3601,6 +3601,28 @@ class WooPosTotalsViewModelTest {
         assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.PaymentFailed::class.java)
     }
 
+    @Test
+    fun `given a Tap to Pay payment, when it succeeds, then the coordinator gets the order id and card details`() =
+        runTest {
+            // GIVEN
+            val (_, paymentState) = givenTtpInFlight()
+            advanceUntilIdle()
+            val cardDetails = CardDetails(brand = "visa", last4 = "4242")
+
+            // WHEN
+            paymentState.value = CardReaderPaymentState.PaymentSuccessful.BuiltInReaderPaymentSuccessful(
+                amountWithCurrencyLabel = "",
+                onPrintReceiptClicked = {},
+                onSendReceiptClicked = {},
+                onSaveUserClicked = {},
+                cardDetails = cardDetails,
+            )
+            advanceUntilIdle()
+
+            // THEN
+            verify(printReceiptCoordinator, atLeastOnce()).onOrderPaidByCard(CREATED_ORDER_ID, cardDetails)
+        }
+
     private suspend fun givenTtpInFlight(
         mockController: CardReaderPaymentController = mock(),
     ): Pair<
