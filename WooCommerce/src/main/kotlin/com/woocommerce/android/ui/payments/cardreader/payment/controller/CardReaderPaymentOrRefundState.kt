@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.cardreader.payment.controller
 
 import androidx.annotation.StringRes
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardDetails
 import com.woocommerce.android.ui.payments.cardreader.payment.InteracRefundFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 
@@ -39,34 +40,39 @@ sealed class CardReaderPaymentOrRefundState {
 
         sealed class PaymentSuccessful(
             open val amountWithCurrencyLabel: String,
+            open val cardDetails: CardDetails?,
         ) : CardReaderPaymentState() {
             data class BuiltInReaderPaymentSuccessful(
                 override val amountWithCurrencyLabel: String,
                 val onPrintReceiptClicked: () -> Unit,
                 val onSendReceiptClicked: () -> Unit,
-                val onSaveUserClicked: () -> Unit
-            ) : PaymentSuccessful(amountWithCurrencyLabel)
+                val onSaveUserClicked: () -> Unit,
+                override val cardDetails: CardDetails? = null,
+            ) : PaymentSuccessful(amountWithCurrencyLabel, cardDetails)
 
             data class ExternalReaderPaymentSuccessful(
                 override val amountWithCurrencyLabel: String,
                 val onPrintReceiptClicked: () -> Unit,
                 val onSendReceiptClicked: () -> Unit,
-                val onSaveUserClicked: () -> Unit
-            ) : PaymentSuccessful(amountWithCurrencyLabel)
+                val onSaveUserClicked: () -> Unit,
+                override val cardDetails: CardDetails? = null,
+            ) : PaymentSuccessful(amountWithCurrencyLabel, cardDetails)
 
             data class BuiltInReaderPaymentSuccessfulReceiptSentAutomatically(
                 override val amountWithCurrencyLabel: String,
                 val recipientEmail: String,
                 val onPrintReceiptClicked: () -> Unit,
-                val onSaveUserClicked: () -> Unit
-            ) : PaymentSuccessful(amountWithCurrencyLabel)
+                val onSaveUserClicked: () -> Unit,
+                override val cardDetails: CardDetails? = null,
+            ) : PaymentSuccessful(amountWithCurrencyLabel, cardDetails)
 
             data class ExternalReaderPaymentSuccessfulReceiptSentAutomatically(
                 override val amountWithCurrencyLabel: String,
                 val recipientEmail: String,
                 val onPrintReceiptClicked: () -> Unit,
-                val onSaveUserClicked: () -> Unit
-            ) : PaymentSuccessful(amountWithCurrencyLabel)
+                val onSaveUserClicked: () -> Unit,
+                override val cardDetails: CardDetails? = null,
+            ) : PaymentSuccessful(amountWithCurrencyLabel, cardDetails)
         }
 
         sealed class PaymentFailed(

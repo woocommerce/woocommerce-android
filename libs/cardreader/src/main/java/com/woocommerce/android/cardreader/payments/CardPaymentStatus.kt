@@ -6,7 +6,10 @@ sealed class CardPaymentStatus {
     object ProcessingPayment : CardPaymentStatus()
     data class ProcessingPaymentCompleted(val paymentMethodType: PaymentMethodType) : CardPaymentStatus()
     object CapturingPayment : CardPaymentStatus()
-    data class PaymentCompleted(val receiptUrl: String) : CardPaymentStatus()
+    data class PaymentCompleted(
+        val receiptUrl: String,
+        val cardDetails: CardDetails? = null,
+    ) : CardPaymentStatus()
 
     data class PaymentFailed(
         val type: CardPaymentStatusErrorType,
@@ -179,6 +182,11 @@ sealed class CardPaymentStatus {
         CHECK_MOBILE_DEVICE,
         CARD_REMOVED_TOO_EARLY,
     }
+
+    data class CardDetails(
+        val brand: String?,
+        val last4: String,
+    )
 
     enum class PaymentMethodType(val stringRepresentation: String) {
         INTERAC_PRESENT("card_interac"),

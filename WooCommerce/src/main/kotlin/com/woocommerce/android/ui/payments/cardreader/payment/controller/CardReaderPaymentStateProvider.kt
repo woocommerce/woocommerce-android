@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.cardreader.payment.controller
 
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardDetails
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
@@ -76,45 +77,53 @@ class CardReaderPaymentStateProvider @Inject constructor() {
         EXTERNAL -> PaymentCapturing.ExternalReaderPaymentCapturing(amountLabel)
     }
 
+    @Suppress("LongParameterList")
     fun providePaymentSuccessfulReceiptSentAutomaticallyState(
         cardReaderType: CardReaderType,
         amountLabel: String,
         recipientEmail: String,
         onPrintReceiptClicked: () -> Unit,
-        onSaveUserClicked: () -> Unit
+        onSaveUserClicked: () -> Unit,
+        cardDetails: CardDetails?,
     ): CardReaderPaymentOrRefundState = when (cardReaderType) {
         BUILT_IN -> PaymentSuccessful.BuiltInReaderPaymentSuccessfulReceiptSentAutomatically(
             amountWithCurrencyLabel = amountLabel,
             recipientEmail = recipientEmail,
             onPrintReceiptClicked = onPrintReceiptClicked,
-            onSaveUserClicked = onSaveUserClicked
+            onSaveUserClicked = onSaveUserClicked,
+            cardDetails = cardDetails,
         )
         EXTERNAL -> PaymentSuccessful.ExternalReaderPaymentSuccessfulReceiptSentAutomatically(
             amountWithCurrencyLabel = amountLabel,
             recipientEmail = recipientEmail,
             onPrintReceiptClicked = onPrintReceiptClicked,
-            onSaveUserClicked = onSaveUserClicked
+            onSaveUserClicked = onSaveUserClicked,
+            cardDetails = cardDetails,
         )
     }
 
+    @Suppress("LongParameterList")
     fun providePaymentSuccessState(
         cardReaderType: CardReaderType,
         amountLabel: String,
         onPrintReceiptClicked: () -> Unit,
         onSendReceiptClicked: () -> Unit,
-        onSaveUserClicked: () -> Unit
+        onSaveUserClicked: () -> Unit,
+        cardDetails: CardDetails?,
     ): PaymentSuccessful = when (cardReaderType) {
         BUILT_IN -> PaymentSuccessful.BuiltInReaderPaymentSuccessful(
             amountWithCurrencyLabel = amountLabel,
             onSendReceiptClicked = onSendReceiptClicked,
             onPrintReceiptClicked = onPrintReceiptClicked,
-            onSaveUserClicked = onSaveUserClicked
+            onSaveUserClicked = onSaveUserClicked,
+            cardDetails = cardDetails,
         )
         EXTERNAL -> PaymentSuccessful.ExternalReaderPaymentSuccessful(
             amountWithCurrencyLabel = amountLabel,
             onSendReceiptClicked = onSendReceiptClicked,
             onPrintReceiptClicked = onPrintReceiptClicked,
-            onSaveUserClicked = onSaveUserClicked
+            onSaveUserClicked = onSaveUserClicked,
+            cardDetails = cardDetails,
         )
     }
 }

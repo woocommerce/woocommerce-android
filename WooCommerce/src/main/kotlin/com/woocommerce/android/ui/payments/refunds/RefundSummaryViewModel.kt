@@ -23,10 +23,10 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.payments.maskedCardDescription
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.PaymentMethodType
-import com.woocommerce.android.ui.payments.toCardBrandDisplayName
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -243,11 +243,10 @@ class RefundSummaryViewModel @Inject constructor(
                 is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> {
                     cardType = PaymentMethodType.fromValue(result.paymentMethodType ?: "card_present")
                     val refundMethodWithCard = result.run {
-                        val brand = result.cardBrand.toCardBrandDisplayName()
-                        val last4 = result.cardLast4.orEmpty()
+                        val card = maskedCardDescription(result.cardBrand, result.cardLast4)
                         val creditCardRefundDefaultText =
                             resourceProvider.getString(R.string.order_refunds_credit_card_refund)
-                        "${refundMethod.ifBlank { creditCardRefundDefaultText }} ($brand **** $last4)"
+                        "${refundMethod.ifBlank { creditCardRefundDefaultText }} ($card)"
                     }
                     updateRefundSummaryState(refundMethodWithCard, isMethodDescriptionVisible = false)
                 }

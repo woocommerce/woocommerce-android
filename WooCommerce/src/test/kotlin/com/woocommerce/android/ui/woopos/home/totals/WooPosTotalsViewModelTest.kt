@@ -14,6 +14,7 @@ import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardDetails
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.CouponLine
@@ -1259,6 +1260,37 @@ class WooPosTotalsViewModelTest {
             // THEN
             verify(mockCardReaderPaymentController, never()).stop()
             verify(mockCardReaderPaymentController, never()).onBackPressed()
+        }
+
+    @Test
+    fun `given a card payment, when it succeeds, then the coordinator gets the order id and card details`() =
+        runTest {
+            // GIVEN
+            whenever(networkStatus.isConnected()).thenReturn(true)
+            whenever(cardReaderFacade.readerStatus)
+                .thenReturn(MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock())))
+            val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+            val factory: WooPosCardReaderPaymentControllerFactory = mock()
+            whenever(factory.create(any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+            val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
+                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
+            )
+            whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
+            createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+            val cardDetails = CardDetails(brand = "visa", last4 = "4242")
+
+            // WHEN
+            paymentState.value = CardReaderPaymentState.PaymentSuccessful.ExternalReaderPaymentSuccessful(
+                amountWithCurrencyLabel = "",
+                onPrintReceiptClicked = {},
+                onSendReceiptClicked = {},
+                onSaveUserClicked = {},
+                cardDetails = cardDetails,
+            )
+            advanceUntilIdle()
+
+            // THEN
+            verify(printReceiptCoordinator, atLeastOnce()).onOrderPaidByCard(CREATED_ORDER_ID, cardDetails)
         }
 
     @Test
@@ -3568,6 +3600,28 @@ class WooPosTotalsViewModelTest {
         verify(builtInReaderConnector, never()).disconnectIfConnected()
         assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.PaymentFailed::class.java)
     }
+
+    @Test
+    fun `given a Tap to Pay payment, when it succeeds, then the coordinator gets the order id and card details`() =
+        runTest {
+            // GIVEN
+            val (_, paymentState) = givenTtpInFlight()
+            advanceUntilIdle()
+            val cardDetails = CardDetails(brand = "visa", last4 = "4242")
+
+            // WHEN
+            paymentState.value = CardReaderPaymentState.PaymentSuccessful.BuiltInReaderPaymentSuccessful(
+                amountWithCurrencyLabel = "",
+                onPrintReceiptClicked = {},
+                onSendReceiptClicked = {},
+                onSaveUserClicked = {},
+                cardDetails = cardDetails,
+            )
+            advanceUntilIdle()
+
+            // THEN
+            verify(printReceiptCoordinator, atLeastOnce()).onOrderPaidByCard(CREATED_ORDER_ID, cardDetails)
+        }
 
     private suspend fun givenTtpInFlight(
         mockController: CardReaderPaymentController = mock(),
