@@ -155,7 +155,7 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
     }
 
     fun onPrintReceiptFailureActionSelected(action: WooPosPrintReceiptFailureAction) {
-        onPrintReceiptFailureDialogDismissed()
+        setPrintReceiptFailure(null)
         when (action) {
             WooPosPrintReceiptFailureAction.Retry -> onPrintReceiptClicked()
             WooPosPrintReceiptFailureAction.EmailReceipt -> onEmailReceiptClicked()
