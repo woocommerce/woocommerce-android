@@ -36,7 +36,7 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
     val events: SharedFlow<WooPosPrintReceiptEvent> = _events.asSharedFlow()
 
     private var isPrintFailureIgnored = false
-    private var cardPayment: Pair<Long, CardDetails>? = null
+    private var cardPayment: CardPayment? = null
 
     fun onPrintReceiptClicked(orderId: Long) {
         if (_buttonState.value != WooPosPrintReceiptButtonState.Idle) return
@@ -53,7 +53,7 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
     }
 
     fun onOrderPaidByCard(orderId: Long, cardDetails: CardDetails?) {
-        cardPayment = cardDetails?.let { orderId to it }
+        cardPayment = cardDetails?.let { CardPayment(orderId, it) }
     }
 
     fun onEmailReceiptOpened() {
@@ -63,7 +63,7 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
     private fun print(orderId: Long) {
         _buttonState.value = WooPosPrintReceiptButtonState.Loading
         isPrintFailureIgnored = false
-        val cardDetails = cardPayment?.takeIf { it.first == orderId }?.second
+        val cardDetails = cardPayment?.takeIf { it.orderId == orderId }?.cardDetails
         scope.launch {
             // A receipt that was asked for is printed even if the screen that asked for it is left meanwhile.
             val result = withContext(NonCancellable) { receiptPrinterFacade.printReceipt(orderId, cardDetails) }
@@ -88,6 +88,8 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
 
     private fun isPrinterConnected() =
         receiptPrinterFacade.connectionStatus.value is ReceiptPrinterConnectionStatus.Connected
+
+    private data class CardPayment(val orderId: Long, val cardDetails: CardDetails)
 
     @AssistedFactory
     interface Factory {
