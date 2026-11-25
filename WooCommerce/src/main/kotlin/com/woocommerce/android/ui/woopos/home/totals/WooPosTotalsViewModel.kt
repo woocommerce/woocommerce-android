@@ -101,7 +101,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val accessSession: WooPosAccessSession,
     private val lockPreferences: WooPosLockPreferences,
     private val selectedSite: SelectedSite,
-    savedState: SavedStateHandle,
+    private val savedState: SavedStateHandle,
 ) : ViewModel() {
 
     private companion object {
@@ -172,17 +172,18 @@ class WooPosTotalsViewModel @Inject constructor(
     private fun createCardReaderPaymentController(
         orderId: Long,
         cardReaderType: CardReaderType = CardReaderType.EXTERNAL,
-    ) {
-        cardReaderPaymentController = cardReaderPaymentControllerFactory.create(
+    ): Boolean {
+        val controller = cardReaderPaymentControllerFactory.create(
             orderId = orderId,
             paymentType = PaymentOrRefund.Payment.PaymentType.WOO_POS,
             isTTPPaymentInProgress = ::isTTPPaymentInProgress,
             cardReaderType = cardReaderType,
-        )
+        ) ?: return false
+        cardReaderPaymentController = controller
+        return true
     }
 
     init {
-        savedState[WooPosCardReaderFacade.PAYMENT_PROCESS_ID_KEY] = cardReaderFacade.processId
         if (restoredPayment && dataState.value.orderId != EMPTY_ORDER_ID &&
             uiState.value !is WooPosTotalsViewState.PaymentSuccess
         ) {
@@ -268,7 +269,11 @@ class WooPosTotalsViewModel @Inject constructor(
     )
 
     private suspend fun cancelPaymentAction(): Boolean {
-        if (cardReaderFacade.isPaymentPending) cardReaderFacade.cancelPayment()
+        if (cardReaderFacade.isPaymentPending &&
+            cardReaderFacade.cancelPayment() == WooPosCardReaderFacade.CancellationResult.COMPLETED
+        ) {
+            return false
+        }
         if (cardReaderFacade.isPaymentPending) {
             showPaymentStatusCheckFailedToast()
             return false
@@ -279,6 +284,9 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun stopPaymentCollection() {
+        if (!cardReaderFacade.isPaymentPending) {
+            savedState.remove<String>(WooPosCardReaderFacade.PAYMENT_PROCESS_ID_KEY)
+        }
         cardReaderPaymentController?.stop()
         if (isTapToPayPayment) {
             isTTPPaymentInProgress = false
@@ -347,6 +355,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private suspend fun startNewOrder() {
         if (uiState.value !is WooPosTotalsViewState.PaymentSuccess || accessSession.isPaymentPending) return
+        savedState.remove<String>(WooPosCardReaderFacade.PAYMENT_PROCESS_ID_KEY)
         val scope = accessSession.approvalScope()
         if (scope == null) {
             childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
@@ -380,7 +389,7 @@ class WooPosTotalsViewModel @Inject constructor(
         }
         val scope = accessSession.approvalScope()
         if (cardReaderFacade.isPaymentPending) {
-            cardReaderFacade.cancelPayment()
+            if (cardReaderFacade.cancelPayment() == WooPosCardReaderFacade.CancellationResult.COMPLETED) return@launch
             if (cardReaderFacade.isPaymentPending) {
                 showPaymentStatusCheckFailedToast()
                 return@launch
@@ -449,12 +458,12 @@ class WooPosTotalsViewModel @Inject constructor(
                     return
                 }
                 activePaymentMode = PaymentMode.BLUETOOTH
-                createCardReaderPaymentController(orderId, CardReaderType.BUILT_IN)
-                if (cardReaderPaymentController == null) {
+                if (!createCardReaderPaymentController(orderId, CardReaderType.BUILT_IN)) {
                     resetTapToPayProgress()
                     viewModelScope.launch { showPaymentStatusCheckFailedToast() }
                     return
                 }
+                savedState[WooPosCardReaderFacade.PAYMENT_PROCESS_ID_KEY] = cardReaderFacade.processId
                 cardReaderPaymentController?.start()
                 listenToPaymentState()
             },
@@ -553,7 +562,11 @@ class WooPosTotalsViewModel @Inject constructor(
                     retryBluetoothFailedTransaction()
                 }
                 UnconfirmedPaymentStatus.NOT_PAID -> {
-                    if (cardReaderFacade.isPaymentPending) cardReaderFacade.cancelPayment()
+                    if (cardReaderFacade.isPaymentPending &&
+                        cardReaderFacade.cancelPayment() == WooPosCardReaderFacade.CancellationResult.COMPLETED
+                    ) {
+                        return@launch
+                    }
                     if (cardReaderFacade.isPaymentPending) {
                         showPaymentStatusCheckFailedToast()
                     } else if (isCurrentSale()) leave()
@@ -771,7 +784,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun collectPayment() {
-        if (!isCurrentSale()) return
+        if (!isCurrentSale() || cardReaderFacade.isPaymentPending) return
         if (cardPaymentEnabledForCountry == false) return
         if (!networkStatus.isConnected()) {
             viewModelScope.launch {
@@ -794,11 +807,11 @@ class WooPosTotalsViewModel @Inject constructor(
                 check(state is WooPosTotalsViewState.Checkout)
                 check(uiState.value is WooPosTotalsViewState.Checkout)
                 activePaymentMode = PaymentMode.BLUETOOTH
-                createCardReaderPaymentController(dataState.value.orderId)
-                if (cardReaderPaymentController == null) {
+                if (!createCardReaderPaymentController(dataState.value.orderId)) {
                     viewModelScope.launch { showPaymentStatusCheckFailedToast() }
                     return
                 }
+                savedState[WooPosCardReaderFacade.PAYMENT_PROCESS_ID_KEY] = cardReaderFacade.processId
                 cardReaderPaymentController?.start()
                 listenToPaymentState()
             }
@@ -821,40 +834,55 @@ class WooPosTotalsViewModel @Inject constructor(
         val orderId = dataState.value.orderId
         if (orderId == EMPTY_ORDER_ID || dataState.value.orderTotal?.compareTo(BigDecimal.ZERO) != 1) return
 
+        val approvalScope = accessSession.approvalScope()
+        fun canCollect() = isCurrentSale() && accessSession.approvalScope() == approvalScope
         activePaymentMode = PaymentMode.REMOTE
         remotePaymentJob = viewModelScope.launch {
             val order = orderOverride ?: totalsRepository.getOrderById(orderId) ?: run {
                 wooPosLogWrapper.e("Remote payment: order $orderId not found")
                 return@launch
             }
-            val state = uiState.value
-            if (state is WooPosTotalsViewState.Checkout) {
-                uiState.value = state.copy(
-                    readerStatus = WooPosTotalsViewState.ReaderStatus.ReadyForPayment(
-                        title = resourceProvider.getString(
-                            R.string.woopos_totals_reader_ready_for_payment_title
-                        ),
-                        subtitle = resourceProvider.getString(
-                            R.string.woopos_totals_reader_ready_for_payment_subtitle
-                        ),
-                    )
-                )
-                childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentCollecting)
-            }
+            if (!canCollect()) return@launch
+            showRemoteReaderReadyForPayment()
+            if (!canCollect()) return@launch
+            savedState[WooPosCardReaderFacade.PAYMENT_PROCESS_ID_KEY] = cardReaderFacade.processId
             val result = remoteReaderPaymentFlow.collect(
                 order = order,
                 onCaptureStarting = { handleCapturingPaymentState() },
+                onPaymentReconciled = { reconcileRemotePayment(orderId) },
             )
             handleRemotePaymentResult(result)
         }
     }
 
+    private suspend fun showRemoteReaderReadyForPayment() {
+        val state = uiState.value
+        if (state is WooPosTotalsViewState.Checkout) {
+            uiState.value = state.copy(
+                readerStatus = WooPosTotalsViewState.ReaderStatus.ReadyForPayment(
+                    title = resourceProvider.getString(
+                        R.string.woopos_totals_reader_ready_for_payment_title
+                    ),
+                    subtitle = resourceProvider.getString(
+                        R.string.woopos_totals_reader_ready_for_payment_subtitle
+                    ),
+                )
+            )
+            childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentCollecting)
+        }
+    }
+
+    private suspend fun reconcileRemotePayment(orderId: Long) {
+        if (dataState.value.orderId == orderId && selectedSite.getOrNull()?.id == saleSiteId) {
+            notifyOrderPaidByCard()
+        }
+    }
+
     private suspend fun handleRemotePaymentResult(result: WooPosRemoteReaderPaymentFlow.Result) {
         when (result) {
-            WooPosRemoteReaderPaymentFlow.Result.Completed -> {
-                notifyOrderPaidByCard()
-            }
+            WooPosRemoteReaderPaymentFlow.Result.Completed -> notifyOrderPaidByCard()
             is WooPosRemoteReaderPaymentFlow.Result.Failed -> {
+                if (!result.isUnresolved) savedState.remove<String>(WooPosCardReaderFacade.PAYMENT_PROCESS_ID_KEY)
                 uiState.value = PaymentFailed(
                     title = resourceProvider.getString(
                         R.string.woopos_success_totals_payment_failed_title
@@ -945,6 +973,12 @@ class WooPosTotalsViewModel @Inject constructor(
     private fun listenToPaymentState() {
         viewModelScope.launch {
             cardReaderPaymentController?.paymentState?.collect { paymentState ->
+                if (paymentState is CardReaderPaymentState.PaymentFailed &&
+                    paymentState.errorType != PaymentFlowError.CaptureOutcomeUnknown &&
+                    !cardReaderFacade.isPaymentPending
+                ) {
+                    savedState.remove<String>(WooPosCardReaderFacade.PAYMENT_PROCESS_ID_KEY)
+                }
                 if (isTapToPayPayment) {
                     handleTapToPayPaymentState(paymentState)
                 } else {

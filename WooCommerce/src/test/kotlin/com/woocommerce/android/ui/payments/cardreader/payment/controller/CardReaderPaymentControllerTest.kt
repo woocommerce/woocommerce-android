@@ -242,6 +242,28 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given lock cancellation fails, when a definite failure arrives, then the actual retry can collect again`() = testBlocking {
+        // GIVEN
+        val states = MutableStateFlow<CardPaymentStatus>(InitializingPayment)
+        whenever(cardReaderManager.collectPayment(any())).thenReturn(states)
+        whenever(cardReaderManager.cancelActivePaymentAndAwait()).thenReturn(false)
+        whenever(errorMapper.mapPaymentErrorToUiError(Generic, false)).thenReturn(PaymentFlowError.Generic)
+        controller.start()
+        assertThat(controller.cancelForLock()).isFalse()
+
+        // WHEN
+        states.value = paymentFailedWithValidDataForRetry
+        val failure = controller.paymentState.value as ExternalReaderFailedPayment
+        requireNotNull(failure.onRetry).invoke()
+        advanceUntilIdle()
+
+        // THEN
+        verify(
+            cardReaderManager
+        ).retryCollectPayment(ORDER_ID, requireNotNull(paymentFailedWithValidDataForRetry.paymentDataForRetry))
+    }
+
+    @Test
     fun `given collect payment shown, when RETRY message received, then collect payment hint updated`() =
         testBlocking {
             val paymentStatus = MutableStateFlow<CardPaymentStatus>(InitializingPayment)

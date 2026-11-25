@@ -70,6 +70,7 @@ class WooPosRemoteReaderPaymentFlowTest {
     }
     private val trackingInfo = CardReaderTrackingInfoImpl()
     private val appPrefs: AppPrefs = mock()
+    private val orderRepository: com.woocommerce.android.ui.orders.details.OrderDetailRepository = mock()
     private val flow = paymentFlow()
     private fun paymentFlow(
         facade: WooPosCardReaderFacade = mock(),
@@ -88,6 +89,7 @@ class WooPosRemoteReaderPaymentFlowTest {
         paymentsFlowTracker = tracker,
         appPrefs = appPrefs,
         cardReaderFacade = facade,
+        orderRepository = orderRepository,
         featureFlags = flags,
     )
     private val order = Order.getEmptyOrder(Date(), Date()).copy(
@@ -375,6 +377,82 @@ class WooPosRemoteReaderPaymentFlowTest {
         assertThat((result as WooPosRemoteReaderPaymentFlow.Result.Failed).isUnresolved).isTrue()
         assertThat(facade.isPaymentPending).isTrue()
         verify(store, never()).capturePaymentIntent(any(), any())
+    }
+
+    @Test
+    fun `given preparation is suspended, when background cancels, then no remote request is sent`() = runTest {
+        // GIVEN
+        val gate = CompletableDeferred<Unit>()
+        whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
+        whenever(appPrefs.getCardReaderPreferredPlugin(any(), any(), any())).thenReturn(
+            com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
+        )
+        whenever(wooStore.fetchSiteRootApiRoutes(site)).doSuspendableAnswer {
+            gate.await()
+            mock { on { isError }.thenReturn(true) }
+        }
+        val (flow, facade) = protectedFlow()
+        val collection = async { flow.collect(order) }
+        runCurrent()
+
+        // WHEN
+        facade.cancelPayment()
+        gate.complete(Unit)
+        val result = collection.await()
+
+        // THEN
+        assertThat((result as WooPosRemoteReaderPaymentFlow.Result.Failed).isUnresolved).isFalse()
+        verify(session, never()).sendCollectPayment(any(), any())
+        verify(session, never()).cancelPayment()
+        assertThat(facade.isPaymentPending).isFalse()
+    }
+
+    @Test
+    fun `given an old phone has no cancellation acknowledgement, when the original payment succeeds, then it resolves paid`() = runTest {
+        // GIVEN
+        val (flow, facade) = protectedFlow()
+        val reply = CompletableDeferred<CollectPaymentOutcome>()
+        whenever(session.sendCollectPayment(any(), any())).doSuspendableAnswer { reply.await() }
+        whenever(session.cancelPayment()).thenReturn(RemotePaymentCancellation.UNSUPPORTED)
+        whenever(store.capturePaymentIntent(order.id, "pi_123")).thenReturn(CapturePaymentResponse.Successful.Success)
+        val collection = async { flow.collect(order) }
+        runCurrent()
+        val cancellation = async { facade.cancelPayment() }
+        runCurrent()
+
+        // WHEN
+        reply.complete(CollectPaymentOutcome.Success("pi_123", "requires_capture", PaymentMethodType.CARD_PRESENT))
+        collection.await()
+
+        // THEN
+        assertThat(cancellation.await()).isEqualTo(WooPosCardReaderFacade.CancellationResult.COMPLETED)
+        assertThat(facade.isPaymentPending).isFalse()
+    }
+
+    @Test
+    fun `given capture response was lost, when the drained reader and same order confirm payment, then receipt is restored once`() = runTest {
+        // GIVEN
+        val (flow, facade) = protectedFlow()
+        whenever(session.sendCollectPayment(any(), any())).thenReturn(
+            CollectPaymentOutcome.Success("pi_123", "requires_capture", PaymentMethodType.CARD_PRESENT)
+        )
+        whenever(
+            store.capturePaymentIntent(order.id, "pi_123")
+        ).thenReturn(CapturePaymentResponse.Error.NetworkError("offline"))
+        whenever(session.cancelPayment()).thenReturn(RemotePaymentCancellation.FAILED)
+        whenever(orderRepository.fetchOrderById(order.id)).thenReturn(order.copy(datePaid = Date()))
+        var completed = 0
+        flow.collect(order, onPaymentReconciled = { completed++ })
+
+        // WHEN
+        val result = facade.cancelPayment()
+        facade.cancelPayment()
+
+        // THEN
+        assertThat(result).isEqualTo(WooPosCardReaderFacade.CancellationResult.COMPLETED)
+        assertThat(completed).isEqualTo(1)
+        assertThat(facade.isPaymentPending).isFalse()
+        verify(store, times(1)).capturePaymentIntent(any(), any())
     }
 
     private fun protectedFlow(): Pair<WooPosRemoteReaderPaymentFlow, WooPosCardReaderFacade> {

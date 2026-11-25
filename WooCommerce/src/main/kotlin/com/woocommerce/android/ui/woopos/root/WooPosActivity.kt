@@ -101,7 +101,12 @@ class WooPosActivity : AppCompatActivity() {
     private fun hasVisiblePaymentTask(): Boolean =
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2 &&
             getSystemService(ActivityManager::class.java).appTasks.any {
-                it.taskInfo?.let { info -> info.taskId == taskId && info.isVisible } == true
+                it.taskInfo?.let { info ->
+                    val top = info.topActivity
+                    info.taskId == taskId && info.isVisible && top?.packageName == packageName &&
+                        packageManager.getActivityInfo(top, 0).processName ==
+                        "$packageName:${WooCommerce.TAP_TO_PAY_STRIPE_PROCESS_NAME_SUFFIX}"
+                } == true
             }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -192,7 +197,7 @@ class WooPosActivity : AppCompatActivity() {
 
     override fun onUserInteraction() {
         super.onUserInteraction()
-        lockViewModel.onUserInteraction()
+        if (observingVisibility) lockViewModel.onUserInteraction()
     }
 
     override fun onPause() {

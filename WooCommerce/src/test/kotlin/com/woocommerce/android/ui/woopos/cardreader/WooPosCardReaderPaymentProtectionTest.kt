@@ -72,7 +72,7 @@ class WooPosCardReaderPaymentProtectionTest {
         runCurrent()
 
         // WHEN
-        facade.finishPayment(owner)
+        facade.finishPayment(owner, successful = true)
 
         // THEN
         assertThat(facade.isPaymentPending).isTrue()
@@ -80,10 +80,11 @@ class WooPosCardReaderPaymentProtectionTest {
 
         // WHEN
         gate.complete(false)
-        cancellation.await()
+        val result = cancellation.await()
 
         // THEN
         assertThat(facade.isPaymentPending).isFalse()
+        assertThat(result).isEqualTo(WooPosCardReaderFacade.CancellationResult.COMPLETED)
     }
 
     @Test

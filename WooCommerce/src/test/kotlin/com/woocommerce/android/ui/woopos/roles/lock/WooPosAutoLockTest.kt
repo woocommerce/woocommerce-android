@@ -238,6 +238,40 @@ class WooPosAutoLockTest {
         viewModel.viewModelScope.cancel()
     }
 
+    @Test
+    fun `given activation is pending, when app backgrounds and returns, then the old PIN cannot restore Admin`() = runTest {
+        // GIVEN
+        val configured = fixture.pins
+        fixture.pins = Result.success(emptyMap())
+        val session = WooPosAccessSession(
+            flags,
+            selectedSite,
+            fixture.rateLimiter(),
+            fixture.recovery,
+            fixture.lockPreferences,
+            fixture.cardReaderFacade,
+        )
+        val viewModel = WooPosLockScreenViewModel(session, selectedSite, fixture.lockPreferences, fixture.elapsedTime)
+        runCurrent()
+        viewModel.onForeground()
+        fixture.pins = configured
+        fixture.pinReadGate = CompletableDeferred()
+        val activation = async { session.unlock("1234") }
+        runCurrent()
+
+        // WHEN
+        viewModel.onBackground()
+        viewModel.onForeground()
+        fixture.pinReadGate?.complete(Unit)
+        activation.await()
+        runCurrent()
+
+        // THEN
+        assertThat(session.state.value.activeRole).isNull()
+        assertThat(session.state.value.isLocked).isTrue()
+        viewModel.viewModelScope.cancel()
+    }
+
     private suspend fun create(): Pair<WooPosLockScreenViewModel, WooPosAccessSession> {
         whenever(fixture.lockPreferences.settings(1)).thenReturn(settings)
         val session = WooPosAccessSession(

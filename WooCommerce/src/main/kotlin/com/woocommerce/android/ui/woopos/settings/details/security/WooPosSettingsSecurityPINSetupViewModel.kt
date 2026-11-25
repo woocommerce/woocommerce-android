@@ -48,7 +48,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
     fun start(role: WooPosLocalRole, changingPIN: Boolean = false) {
         if (editor?.let { it.role == role && it.changingPIN == changingPIN } == true) return
         restart(role)
-        editor = Editor(role, changingPIN, accessSession.approvalScope())
+        editor = Editor(role, changingPIN, accessSession.pinSetupScope())
     }
 
     fun reset() {
@@ -186,15 +186,27 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
     private suspend fun persistPIN(id: Int, role: WooPosLocalRole, pin: String, activatesAdmin: Boolean): Result<Unit> =
         coroutineScope {
             val requestJob = currentCoroutineContext()[Job]
+            val activationScope = accessSession.pinSetupScope()
             val canCommit = { requestJob?.isActive == true && isSelected(id) && isEditorCurrent() && canManagePINs() }
             withContext(NonCancellable) {
+                if (activatesAdmin) {
+                    val retained = accessSession.preparePINActivation(id, canCommit)
+                    if (retained.isFailure) return@withContext retained
+                }
                 val saved = if (changingPIN) {
                     store.setPIN(id, role, pin, canCommit)
                 } else {
                     store.createPIN(id, role, pin, canCommit)
                 }
                 saved.also {
-                    if (it.isSuccess && activatesAdmin && isSelected(id)) accessSession.unlock(pin)
+                    if (it.isSuccess && activatesAdmin && isSelected(id)) {
+                        if (isEditorCurrent() && activationScope == accessSession.pinSetupScope()) {
+                            accessSession.unlock(pin)
+                        } else {
+                            accessSession.blockForStorageFailure()
+                            accessSession.initialize()
+                        }
+                    }
                 }
             }
         }
@@ -203,7 +215,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
 
     private fun isEditorCurrent(): Boolean {
         val scope = editor?.scope
-        return (scope != null || !changingPIN) && (scope == null || scope == accessSession.approvalScope())
+        return (scope != null || !changingPIN) && (scope == null || scope == accessSession.pinSetupScope())
     }
 
     private fun isSelected(localSiteId: Int) = localSiteId == selectedSite.getOrNull()?.id

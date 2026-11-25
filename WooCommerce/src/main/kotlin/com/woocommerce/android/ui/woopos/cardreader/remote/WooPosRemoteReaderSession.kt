@@ -195,16 +195,18 @@ class WooPosRemoteReaderSession @Inject constructor(
     ): CollectPaymentOutcome {
         val activeClient = mutex.withLock {
             if (_state.value !is State.Connected) return@withLock null
-            client
+            client.also { paymentClient = it }
         } ?: return CollectPaymentOutcome.Failed(IllegalStateException("Reader not connected"))
         return activeClient.collectPayment(paymentInfo, timeoutMillis)
     }
 
     suspend fun cancelPayment(): com.woocommerce.android.cardreader.remote.RemotePaymentCancellation {
-        val activeClient = mutex.withLock { client }
+        val activeClient = mutex.withLock { paymentClient }
             ?: return com.woocommerce.android.cardreader.remote.RemotePaymentCancellation.UNCONFIRMED
         return activeClient.cancelPayment()
     }
+
+    private var paymentClient: CardReaderRemoteTabletClient? = null
 
     private fun disconnectInternal() {
         monitorScope?.cancel()

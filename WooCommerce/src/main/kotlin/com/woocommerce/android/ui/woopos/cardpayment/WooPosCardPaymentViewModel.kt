@@ -170,7 +170,10 @@ class WooPosCardPaymentViewModel @Inject constructor(
                 title = resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title),
                 subtitle = resourceProvider.getString(R.string.woopos_success_totals_payment_processing_subtitle),
             )
-            when (val result = remoteReaderPaymentFlow.collect(order)) {
+            val result = remoteReaderPaymentFlow.collect(
+                order, onPaymentReconciled = { handlePaymentSuccessful() },
+            )
+            when (result) {
                 WooPosRemoteReaderPaymentFlow.Result.Completed -> handlePaymentSuccessful()
                 is WooPosRemoteReaderPaymentFlow.Result.Failed -> {
                     _state.value = WooPosCardPaymentState.PaymentFailed(
@@ -403,9 +406,13 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     fun onBackClicked() {
-        if (isPaymentInFlight()) return
+        if (activePaymentMode == PaymentMode.RESTORED || isPaymentInFlight()) return
         viewModelScope.launch {
-            if (cardReaderFacade.isPaymentPending) cardReaderFacade.cancelPayment()
+            if (cardReaderFacade.isPaymentPending &&
+                cardReaderFacade.cancelPayment() == WooPosCardReaderFacade.CancellationResult.COMPLETED
+            ) {
+                return@launch
+            }
             if (cardReaderFacade.isPaymentPending || !isCurrentSale()) return@launch
             cancelPayment()
             navigateBack()
@@ -437,7 +444,11 @@ class WooPosCardPaymentViewModel @Inject constructor(
     fun onCashPaymentClicked() {
         if (activePaymentMode == PaymentMode.RESTORED) return
         viewModelScope.launch {
-            if (cardReaderFacade.isPaymentPending) cardReaderFacade.cancelPayment()
+            if (cardReaderFacade.isPaymentPending &&
+                cardReaderFacade.cancelPayment() == WooPosCardReaderFacade.CancellationResult.COMPLETED
+            ) {
+                return@launch
+            }
             if (cardReaderFacade.isPaymentPending || !isCurrentSale()) return@launch
             cancelPayment()
             _navigationEvent.emit(WooPosNavigationEvent.NavigateToCashPayment(orderId))

@@ -46,7 +46,7 @@ class WooPosCardReaderFacade @Inject constructor(
     internal fun trackPayment(controller: CardReaderPaymentController): Boolean {
         if (isPaymentPending) return false
         if (!featureFlags.isEnabled(FeatureFlag.WOO_POS_ROLES)) return true
-        val owner = beginPayment(controller::cancelForLock) ?: return false
+        val owner = beginControllerPayment(controller) ?: return false
         observePayment(controller, owner)
         return true
     }
@@ -58,7 +58,7 @@ class WooPosCardReaderFacade @Inject constructor(
         }
         if (isPaymentPending) return false
         val previous = controller.paymentState.value
-        val owner = beginPayment(controller::cancelForLock) ?: return false
+        val owner = beginControllerPayment(controller) ?: return false
         retry()
         observePayment(controller, owner, previous)
         return true
@@ -72,7 +72,7 @@ class WooPosCardReaderFacade @Inject constructor(
         owner.observer = scope.launch {
             controller.paymentState.dropWhile { it === previous }.takeWhile { payment ->
                 when (payment) {
-                    is CardReaderPaymentState.PaymentSuccessful -> finishPayment(owner)
+                    is CardReaderPaymentState.PaymentSuccessful -> finishPayment(owner, successful = true)
                     is CardReaderPaymentState.PaymentFailed -> {
                         if (payment.errorType == PaymentFlowError.CaptureOutcomeUnknown) {
                             markUnresolved(owner)
@@ -97,7 +97,20 @@ class WooPosCardReaderFacade @Inject constructor(
         return PaymentOwner(cancel).also { _paymentState.value = PaymentState.Active(it) }
     }
 
-    internal fun finishPayment(owner: PaymentOwner) {
+    private fun beginControllerPayment(controller: CardReaderPaymentController): PaymentOwner? {
+        lateinit var owner: PaymentOwner
+        owner = beginPayment {
+            controller.cancelForLock().also {
+                if (controller.paymentState.value is CardReaderPaymentState.PaymentSuccessful) {
+                    finishPayment(owner, successful = true)
+                }
+            }
+        } ?: return null
+        return owner
+    }
+
+    internal fun finishPayment(owner: PaymentOwner, successful: Boolean = false) {
+        owner.successful = owner.successful || successful
         when (val current = _paymentState.value) {
             is PaymentState.Cancelling -> if (current.owner === owner) {
                 _paymentState.value = current.copy(finished = true)
@@ -124,15 +137,20 @@ class WooPosCardReaderFacade @Inject constructor(
         if (current.owner === owner) _paymentState.value = PaymentState.CancellationUnconfirmed(owner, current.finished)
     }
 
-    suspend fun cancelPayment() {
-        val current = _paymentState.value as? PaymentState.Pending ?: return
-        if (current is PaymentState.Cancelling) return
+    suspend fun cancelPayment(): CancellationResult {
+        val current = _paymentState.value as? PaymentState.Pending ?: return CancellationResult.CANCELLED
+        if (current is PaymentState.Cancelling) return CancellationResult.UNRESOLVED
         val owner = current.owner
         _paymentState.value = PaymentState.Cancelling(
             owner, finished = (current as? PaymentState.CancellationUnconfirmed)?.finished == true,
         )
         owner.cancellation = scope.async { cancelOwnedPayment(owner) }
         owner.cancellation?.await()
+        return when {
+            isPaymentPending -> CancellationResult.UNRESOLVED
+            owner.successful -> CancellationResult.COMPLETED
+            else -> CancellationResult.CANCELLED
+        }
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -167,7 +185,10 @@ class WooPosCardReaderFacade @Inject constructor(
     class PaymentOwner internal constructor(internal val cancel: suspend () -> Boolean) {
         internal var observer: Job? = null
         internal var cancellation: Deferred<Unit>? = null
+        internal var successful = false
     }
+
+    enum class CancellationResult { CANCELLED, COMPLETED, UNRESOLVED }
 
     sealed interface PaymentState {
         data object Idle : PaymentState

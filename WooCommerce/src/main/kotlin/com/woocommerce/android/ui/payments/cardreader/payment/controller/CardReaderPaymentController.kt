@@ -424,6 +424,11 @@ class CardReaderPaymentController(
             WaitingForInput -> Unit
 
             is PaymentFailed -> {
+                if (paymentStatus.type != CardPaymentStatus.CardPaymentStatusErrorType.CaptureOutcomeUnknown &&
+                    paymentStatus.type != CardPaymentStatus.CardPaymentStatusErrorType.Canceled
+                ) {
+                    lockCancellationRequested = false
+                }
                 paymentDataForRetry = paymentStatus.paymentDataForRetry
                 tracker.trackPaymentFailed(paymentStatus.errorMessage, paymentStatus.type)
                 emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel, onPaymentSucceeded)

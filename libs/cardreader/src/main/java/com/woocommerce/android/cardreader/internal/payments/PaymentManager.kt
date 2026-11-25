@@ -378,7 +378,7 @@ internal class PaymentManager(
         ) {
             return updated
         }
-        val unknown = updated == null && error.errorCode in setOf(
+        val unknown = updated?.status == PaymentIntentStatus.PROCESSING || updated == null && error.errorCode in setOf(
             TerminalErrorCode.REQUEST_TIMED_OUT,
             TerminalErrorCode.STRIPE_API_CONNECTION_ERROR,
             TerminalErrorCode.STRIPE_API_ERROR,
@@ -390,14 +390,14 @@ internal class PaymentManager(
             if (unknown) {
                 PaymentFailed(
                     CardPaymentStatus.CardPaymentStatusErrorType.CaptureOutcomeUnknown,
-                    PaymentDataImpl(original),
+                    PaymentDataImpl(updated ?: original),
                     error.errorMessage
                 )
             } else {
                 errorMapper.mapTerminalError(original, error)
             }
         )
-        return original
+        return updated ?: original
     }
 
     // Stripe new SDk now has paymentIntent.id as nullable to support offline payment. But we don't support offline yet

@@ -85,6 +85,17 @@ class WooPosAccessSession @Inject constructor(
 
     internal data class ApprovalScope(val siteId: Int, val generation: Long)
 
+    internal fun pinSetupScope(): ApprovalScope? = localSiteId?.takeIf { isSessionCurrent }?.let {
+        ApprovalScope(it, generation.value)
+    }
+
+    internal suspend fun preparePINActivation(siteId: Int, canCommit: () -> Boolean): Result<Unit> {
+        if (!flagEnabled) return Result.success(Unit)
+        return lockPreferences.retainPOS(siteId) {
+            canCommit() && selectedSite.getOrNull()?.id == siteId && initialLogoutVersion == logoutVersion.value
+        }
+    }
+
     suspend fun initialize() {
         when {
             !flagEnabled -> lockPreferences.clearRestoreState()
@@ -146,8 +157,21 @@ class WooPosAccessSession @Inject constructor(
     }
 
     suspend fun lockOnBackground() {
+        if (flagEnabled && _state.value == WooPosAccessSessionState.Unprotected) protectFirstActivationOnBackground()
         lockSession()
         if (_state.value.isLocked) cardReaderFacade.cancelPayment()
+    }
+
+    private suspend fun protectFirstActivationOnBackground() {
+        val request = ++generation.value
+        val id = localSiteId ?: return
+        val protection = rateLimiter.isProtectionEnabled(id)
+        if (!isCurrent(request, id)) return
+        _state.value = when {
+            protection.isFailure -> WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
+            protection.getOrThrow() -> WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Checking)
+            else -> WooPosAccessSessionState.Unprotected
+        }
     }
 
     private suspend fun lockSession() {

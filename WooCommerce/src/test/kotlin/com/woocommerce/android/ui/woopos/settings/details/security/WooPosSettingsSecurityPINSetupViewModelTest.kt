@@ -57,8 +57,14 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
     private val session: WooPosAccessSession = mock {
         on { state }.thenReturn(sessionState)
         on { allows(any()) }.thenAnswer { sessionState.value.allows(it.getArgument(0)) }
-        on { approvalScope() }.thenReturn(WooPosAccessSession.ApprovalScope(1, 1))
+        on { pinSetupScope() }.thenReturn(WooPosAccessSession.ApprovalScope(1, 1))
     }
+
+    @org.junit.Before
+    fun prepareActivation() = kotlinx.coroutines.test.runTest {
+        whenever(session.preparePINActivation(any(), any())).thenReturn(Result.success(Unit))
+    }
+
     private val viewModel = WooPosSettingsSecurityPINSetupViewModel(selectedSite, store, session)
 
     @Test
@@ -82,7 +88,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
     fun `given an Admin change without an approval scope, when confirmed, then storage is unchanged`() = runTest {
         // GIVEN
         givenAdminPIN()
-        whenever(session.approvalScope()).thenReturn(null)
+        whenever(session.pinSetupScope()).thenReturn(null)
         whenever(store.validatePINUniqueness(eq(1), eq(ADMIN), any())).thenReturn(Result.success(Unit))
         viewModel.start(ADMIN, changingPIN = true)
 
@@ -809,7 +815,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         whenever(store.validatePINUniqueness(eq(1), eq(ADMIN), any())).thenReturn(Result.success(Unit))
         viewModel.start(ADMIN, changingPIN = true)
         choose("9012")
-        whenever(session.approvalScope()).thenReturn(WooPosAccessSession.ApprovalScope(1, 2))
+        whenever(session.pinSetupScope()).thenReturn(WooPosAccessSession.ApprovalScope(1, 2))
 
         // WHEN
         enter("9012")
@@ -860,7 +866,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
             givenAdminPIN()
             whenever(store.validatePINUniqueness(eq(1), eq(ADMIN), any())).thenReturn(Result.success(Unit))
             viewModel.start(ADMIN, changingPIN = true)
-            whenever(session.approvalScope()).thenReturn(WooPosAccessSession.ApprovalScope(1, 2))
+            whenever(session.pinSetupScope()).thenReturn(WooPosAccessSession.ApprovalScope(1, 2))
 
             // WHEN
             viewModel.start(ADMIN, changingPIN = true)
@@ -874,6 +880,21 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
     private suspend fun givenAdminPIN() {
         whenever(store.validatePINUniqueness(eq(1), eq(CASHIER), any())).thenReturn(Result.success(Unit))
         sessionState.value = WooPosAccessSessionState.Unlocked(ADMIN)
+    }
+
+    @Test
+    fun `given first PIN restore write fails, when confirmed, then no Admin PIN is committed`() = runTest {
+        // GIVEN
+        givenNoPINs()
+        whenever(session.preparePINActivation(any(), any())).thenReturn(Result.failure(IllegalStateException()))
+        viewModel.start(ADMIN)
+
+        // WHEN
+        chooseAndConfirm("1234")
+
+        // THEN
+        verify(store, never()).createPIN(any(), any(), any(), any())
+        assertThat(viewModel.state.value).isEqualTo(Choose(ADMIN, error = Error.SAVE_FAILED))
     }
 
     private suspend fun givenNoPINs(

@@ -87,6 +87,6 @@ open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provid
     companion object {
         internal const val POS_PAYMENT_VISIBILITY_ACTION = "com.woocommerce.android.POS_PAYMENT_VISIBILITY"
         internal const val POS_PAYMENT_VISIBLE = "visible"
-        private const val TAP_TO_PAY_STRIPE_PROCESS_NAME_SUFFIX = "stripetaptopay"
+        internal const val TAP_TO_PAY_STRIPE_PROCESS_NAME_SUFFIX = "stripetaptopay"
     }
 }

@@ -81,7 +81,7 @@ sealed class CollectPaymentOutcome {
     data class Failed(val cause: Throwable) : CollectPaymentOutcome()
 }
 
-enum class RemotePaymentCancellation { CONFIRMED, FAILED, UNCONFIRMED }
+enum class RemotePaymentCancellation { CONFIRMED, FAILED, UNCONFIRMED, UNSUPPORTED }
 
 internal class DefaultCardReaderRemoteTabletClient(
     private val tlsClient: CardReaderRemoteTlsClient,
@@ -234,7 +234,7 @@ internal class DefaultCardReaderRemoteTabletClient(
             ?: return RemotePaymentCancellation.UNCONFIRMED
         if (!phoneSupportsConfirmedCancellation) {
             cancelOnPhone(active, requestId)
-            return RemotePaymentCancellation.UNCONFIRMED
+            return RemotePaymentCancellation.UNSUPPORTED
         }
         val cancellationId = UUID.randomUUID().toString()
         val response = CompletableDeferred<CancelPaymentResult>()

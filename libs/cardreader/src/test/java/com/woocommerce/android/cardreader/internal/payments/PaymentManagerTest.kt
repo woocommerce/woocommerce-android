@@ -946,6 +946,26 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         }
 
     @Test
+    fun `given timeout has an updated processing intent, when processing fails, then its outcome stays unknown`() = testBlocking {
+        // GIVEN
+        val updated = createPaymentIntent(com.stripe.stripeterminal.external.models.PaymentIntentStatus.PROCESSING)
+        val error: TerminalException = mock {
+            on { errorMessage }.thenReturn("Unknown")
+            on { paymentIntent }.thenReturn(updated)
+        }
+        whenever(
+            processPaymentIntentAction.processPaymentIntent(any())
+        ).thenReturn(ProcessPaymentIntentStatus.Failure(error))
+
+        // WHEN
+        val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+        // THEN
+        assertThat((result.last() as PaymentFailed).type).isEqualTo(CardPaymentStatusErrorType.CaptureOutcomeUnknown)
+        verify(cardReaderStore, never()).capturePaymentIntent(any(), any())
+    }
+
+    @Test
     fun `given an API timeout without an updated intent, when processing fails, then the outcome stays unknown`() = testBlocking {
         // GIVEN
         whenever(processPaymentIntentAction.processPaymentIntent(any())).thenReturn(

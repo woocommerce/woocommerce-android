@@ -344,7 +344,11 @@ class WooPosHomeViewModel @Inject constructor(
     }
 
     private suspend fun endPayment(): Boolean {
-        if (cardReaderFacade.isPaymentPending) cardReaderFacade.cancelPayment()
+        if (cardReaderFacade.isPaymentPending &&
+            cardReaderFacade.cancelPayment() == WooPosCardReaderFacade.CancellationResult.COMPLETED
+        ) {
+            return false
+        }
         if (!cardReaderFacade.isPaymentPending) return true
         _toastEvent.emit(resourceProvider.getString(R.string.woopos_payment_status_check_failed_message))
         return false
