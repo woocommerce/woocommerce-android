@@ -877,6 +877,22 @@ class WCProductStore @Inject internal constructor(
             remoteVariationId = RemoteId(remoteVariationId)
         )
 
+    /**
+     * Removes a product that no longer exists on the store from the database.
+     */
+    suspend fun deleteProductLocally(site: SiteModel, remoteProductId: Long) =
+        productStorageHelper.deleteProduct(site, remoteProductId)
+
+    /**
+     * Removes a variation that no longer exists on the store from the database.
+     */
+    suspend fun deleteVariationLocally(site: SiteModel, remoteProductId: Long, remoteVariationId: Long) =
+        productVariationsDao.deleteVariation(
+            localSiteId = site.localId(),
+            remoteProductId = RemoteId(remoteProductId),
+            remoteVariationId = RemoteId(remoteVariationId)
+        )
+
     suspend fun isProductExists(site: SiteModel, sku: String): Boolean {
         return productsDao.getProduct(site.id, sku = sku) != null
     }
