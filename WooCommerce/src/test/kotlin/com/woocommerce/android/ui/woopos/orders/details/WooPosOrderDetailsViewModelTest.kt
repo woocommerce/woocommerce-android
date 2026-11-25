@@ -16,13 +16,20 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
+import com.woocommerce.android.ui.woopos.roles.WooPosCapability
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -55,6 +62,10 @@ class WooPosOrderDetailsViewModelTest {
     private val getProductById: WooPosGetProductById = mock()
     private val coordinator = WooPosOrdersCoordinator()
     private val networkStatus: WooPosNetworkStatus = mock()
+    private val accessState = MutableStateFlow<WooPosAccessSessionState>(WooPosAccessSessionState.Unprotected)
+    private val accessSession: WooPosAccessSession = mock {
+        on { state }.thenReturn(accessState)
+    }
     private lateinit var orderDetailsMapper: WooPosOrderDetailsMapper
     private lateinit var refundInfoBuilder: WooPosRefundInfoBuilder
     private lateinit var orderActionsProvider: WooPosOrderActionsProvider
@@ -67,6 +78,60 @@ class WooPosOrderDetailsViewModelTest {
         setupMockBehaviors()
         setupMappers()
         setupDataSourceMocks()
+    }
+
+    @Test
+    fun `given a protected session, when a refund order ID is restored alone, then the refund stays closed`() {
+        // GIVEN
+        accessState.value = WooPosAccessSessionState.Unlocked(WooPosLocalRole.ADMIN)
+        whenever(accessSession.allows(WooPosCapability.ISSUE_REFUNDS)).thenReturn(true)
+        val scope = WooPosAccessSession.ApprovalScope(siteId = 1, generation = 1)
+        whenever(accessSession.approvalScope()).thenReturn(scope)
+        val approved = createViewModel()
+        approved.bindRefundToSession(1L)
+
+        // WHEN
+        val restored = createViewModel()
+
+        // THEN
+        assertThat(approved.activeRefundOrderId(1L)).isEqualTo(1L)
+        assertThat(restored.activeRefundOrderId(1L)).isNull()
+    }
+
+    @Test
+    fun `given an approved refund, when a new session starts, then that approval is retired`() = runTest {
+        // GIVEN
+        val scope = WooPosAccessSession.ApprovalScope(siteId = 1, generation = 1)
+        whenever(accessSession.approvalScope()).thenReturn(scope)
+        val changes = MutableSharedFlow<Unit>(replay = 1)
+        changes.emit(Unit)
+        whenever(accessSession.approvalScopeChanges).thenReturn(changes)
+        val approved = createViewModel()
+        approved.bindRefundToSession(1L)
+        val retirement = launch { approved.awaitRefundRetirement(1L) }
+        runCurrent()
+        assertThat(retirement.isCompleted).isFalse()
+
+        // WHEN
+        whenever(accessSession.approvalScope()).thenReturn(scope.copy(generation = 2))
+        changes.emit(Unit)
+        runCurrent()
+
+        // THEN
+        assertThat(retirement.isCompleted).isTrue()
+        assertThat(approved.activeRefundOrderId(1L)).isNull()
+    }
+
+    @Test
+    fun `given PIN protection is off, when a refund is restored, then it can continue`() {
+        // GIVEN
+        whenever(accessSession.allows(WooPosCapability.ISSUE_REFUNDS)).thenReturn(true)
+
+        // WHEN
+        val restored = createViewModel()
+
+        // THEN
+        assertThat(restored.activeRefundOrderId(1L)).isEqualTo(1L)
     }
 
     // region Loading via Coordinator
@@ -420,6 +485,7 @@ class WooPosOrderDetailsViewModelTest {
             formatPrice = formatPrice,
             coordinator = coordinator,
             networkStatus = networkStatus,
+            accessSession = accessSession,
         )
     }
 
