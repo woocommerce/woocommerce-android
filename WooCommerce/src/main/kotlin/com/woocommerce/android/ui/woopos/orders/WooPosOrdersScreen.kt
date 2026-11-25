@@ -39,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -87,6 +88,8 @@ import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundDetai
 import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListState
 import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListViewModel
 import com.woocommerce.android.ui.woopos.orders.list.WooPosScreenType
+import com.woocommerce.android.ui.woopos.roles.approval.LocalWooPosRequestApproval
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import kotlinx.coroutines.delay
@@ -105,6 +108,7 @@ fun WooPosOrdersScreen(
     val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
     val listViewModel: WooPosOrdersListViewModel = hiltViewModel()
     val detailViewModel: WooPosOrderDetailsViewModel = hiltViewModel()
+    val requestApproval = LocalWooPosRequestApproval.current
 
     val listState by listViewModel.state.collectAsState()
     val detailState by detailViewModel.state.collectAsState()
@@ -144,18 +148,35 @@ fun WooPosOrdersScreen(
     var detailPaneIssueRefundHasPendingChanges by rememberSaveable { mutableStateOf(false) }
     var pendingOrderSelectionAfterRefundDismiss by rememberSaveable { mutableStateOf<Long?>(null) }
     var pendingOrderSelectionConfirmation by rememberSaveable { mutableStateOf<Long?>(null) }
+    val activeRefundOrderId = detailViewModel.activeRefundOrderId(detailPaneIssueRefundOrderId)
+    RefundSessionEffect(detailPaneIssueRefundOrderId, detailViewModel) { orderId ->
+        if (detailPaneIssueRefundOrderId == orderId) {
+            detailPaneIssueRefundOrderId = null
+            detailPaneIssueRefundHasPendingChanges = false
+            pendingOrderSelectionAfterRefundDismiss = null
+            pendingOrderSelectionConfirmation = null
+            listViewModel.onRefundDismissed()
+        }
+    }
     val detailPaneIssueRefundHandler = remember { WooPosDetailPaneIssueRefundHandler() }
     val handleOrdersUIEvent: (WooPosOrdersUIEvent) -> Unit = { event ->
         val issueRefundAction = (event as? WooPosOrdersUIEvent.OrderActionClicked)
             ?.action as? WooPosOrdersState.OrderAction.IssueRefund
-        if (issueRefundAction != null) {
-            listViewModel.onRefundStarted()
-            detailPaneIssueRefundInstanceId += 1
-            detailPaneIssueRefundOrderId = issueRefundAction.orderId
-            detailPaneIssueRefundDismissRequestToken = 0
-            detailPaneIssueRefundHasPendingChanges = false
-            pendingOrderSelectionAfterRefundDismiss = null
-            pendingOrderSelectionConfirmation = null
+        val orderNumber = (detailViewModel.state.value as? WooPosOrderDetailsState.Loaded)?.details?.number
+        if (issueRefundAction != null && orderNumber != null) {
+            requestApproval(WooPosApprovalAction.IssueRefund(orderNumber)) {
+                val details = (detailViewModel.state.value as? WooPosOrderDetailsState.Loaded)?.details
+                if (details?.actions?.contains(issueRefundAction) == true) {
+                    detailViewModel.bindRefundToSession(issueRefundAction.orderId)
+                    listViewModel.onRefundStarted()
+                    detailPaneIssueRefundInstanceId += 1
+                    detailPaneIssueRefundOrderId = issueRefundAction.orderId
+                    detailPaneIssueRefundDismissRequestToken = 0
+                    detailPaneIssueRefundHasPendingChanges = false
+                    pendingOrderSelectionAfterRefundDismiss = null
+                    pendingOrderSelectionConfirmation = null
+                }
+            }
         } else {
             detailViewModel.onUIEvent(event)
         }
@@ -194,7 +215,7 @@ fun WooPosOrdersScreen(
         { orderId ->
             val action = detailPaneIssueRefundHandler.handleOrderSelected(
                 orderId = orderId,
-                currentRefundOrderId = detailPaneIssueRefundOrderId,
+                currentRefundOrderId = activeRefundOrderId,
                 hasPendingChanges = detailPaneIssueRefundHasPendingChanges,
             )
             when (action) {
@@ -228,14 +249,14 @@ fun WooPosOrdersScreen(
         onUIEvent = handleOrdersUIEvent,
         onRetryDetailLoad = detailViewModel::retryLoadOrder,
         onRefundDetailsDialogDismissed = detailViewModel::onRefundDetailsDialogDismissed,
-        detailPaneIssueRefundOrderId = detailPaneIssueRefundOrderId,
+        detailPaneIssueRefundOrderId = activeRefundOrderId,
         detailPaneIssueRefundInstanceId = detailPaneIssueRefundInstanceId,
         detailPaneIssueRefundDismissRequestToken = detailPaneIssueRefundDismissRequestToken,
         refundReasonUpdate = refundReasonResult.value,
         onIssueRefundDismissed = handleIssueRefundDismissed,
         onIssueRefundPendingChangesChanged = { detailPaneIssueRefundHasPendingChanges = it },
         onIssueRefundDismissRequestRejected = handleIssueRefundDismissRequestRejected,
-        pendingOrderSelectionConfirmation = pendingOrderSelectionConfirmation,
+        pendingOrderSelectionConfirmation = pendingOrderSelectionConfirmation.takeIf { activeRefundOrderId != null },
         onPendingOrderSelectionConfirmationDismissed = { pendingOrderSelectionConfirmation = null },
         onPendingOrderSelectionConfirmed = {
             pendingOrderSelectionConfirmation?.let { orderId ->
@@ -245,6 +266,20 @@ fun WooPosOrdersScreen(
         },
         onNavigationEvent = onNavigationEvent,
     )
+}
+
+@Composable
+private fun RefundSessionEffect(
+    orderId: Long?,
+    viewModel: WooPosOrderDetailsViewModel,
+    onRefundRetired: (Long) -> Unit,
+) {
+    val onRetired by rememberUpdatedState(onRefundRetired)
+    LaunchedEffect(orderId, viewModel) {
+        if (orderId == null) return@LaunchedEffect
+        viewModel.awaitRefundRetirement(orderId)
+        onRetired(orderId)
+    }
 }
 
 @Composable

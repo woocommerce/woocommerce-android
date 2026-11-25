@@ -6,8 +6,8 @@ import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.ADMIN
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.CASHIER
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINError
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.AccessUnavailable
@@ -496,7 +496,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
     @Test
     fun `when the PIN is saved but Admin access is unavailable, then setup does not show success`() = runTest {
         // GIVEN
-        givenNoPINs(WooPosAccessSessionState.Locked(Status.StorageUnavailable))
+        givenNoPINs(WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable))
         whenever(store.createPIN(1, ADMIN, "1234")).thenReturn(Result.success(Unit))
 
         // WHEN
@@ -541,13 +541,13 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
             enter("5678")
 
             // WHEN
-            sessionState.value = WooPosAccessSessionState.Locked(Status.Idle)
+            sessionState.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Idle)
             gate.complete(Unit)
             advanceUntilIdle()
 
             // THEN
             verify(session, never()).unlock(any())
-            assertThat(sessionState.value).isEqualTo(WooPosAccessSessionState.Locked(Status.Idle))
+            assertThat(sessionState.value).isEqualTo(WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Idle))
             assertThat(viewModel.state.value).isEqualTo(Saved(CASHIER))
         }
 
@@ -628,7 +628,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         choose("5678")
 
         // WHEN
-        sessionState.value = WooPosAccessSessionState.Locked(Status.Idle)
+        sessionState.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Idle)
         enter("5678")
         advanceUntilIdle()
 

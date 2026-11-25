@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.progressSemantics
@@ -77,9 +76,13 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.pin.PIN_DOT_CLEAR_MILLIS
 import com.woocommerce.android.ui.woopos.common.pin.PIN_DOT_SIZE
+import com.woocommerce.android.ui.woopos.common.pin.PIN_PAD_PHONE_KEY_SIZE
+import com.woocommerce.android.ui.woopos.common.pin.PIN_PAD_TABLET_KEY_SIZE
+import com.woocommerce.android.ui.woopos.common.pin.PIN_PHONE_COMPACT_BODY_HEIGHT
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDotShake
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDots
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPad
+import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPhoneLayout
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.AccessUnavailable
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.Choose
@@ -144,30 +147,13 @@ private fun PINSetupPhoneContent(
     onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
     onClose: () -> Unit,
 ) {
-    BoxWithConstraints(Modifier.fillMaxSize().safeDrawingPadding()) {
-        val verticalPadding = if (maxHeight < PHONE_COMPACT_BODY_HEIGHT) {
-            WooPosSpacing.None.value
-        } else {
-            WooPosSpacing.Medium.value
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = WooPosSpacing.XLarge.value, vertical = verticalPadding),
-        ) {
-            PINSetupHeader(state, onUIEvent, onClose)
-            BoxWithConstraints(
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                contentAlignment = Alignment.Center,
-            ) {
-                val bodyHeight = maxHeight
-                when (state) {
-                    is Entry -> PINSetupPhoneEntry(state, chooseTitle, confirmTitle, onUIEvent)
-                    is Saving, AccessUnavailable -> PINSetupProgress()
-                    is Saved -> Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-                        PINSetupSaved(state.role, onContinue = onClose, minHeight = bodyHeight)
-                    }
-                }
+    WooPosPINPhoneLayout(header = { PINSetupHeader(state, onUIEvent, onClose) }) {
+        val bodyHeight = maxHeight
+        when (state) {
+            is Entry -> PINSetupPhoneEntry(state, chooseTitle, confirmTitle, onUIEvent)
+            is Saving, AccessUnavailable -> PINSetupProgress()
+            is Saved -> Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+                PINSetupSaved(state.role, onContinue = onClose, minHeight = bodyHeight)
             }
         }
     }
@@ -181,14 +167,14 @@ private fun BoxWithConstraintsScope.PINSetupPhoneEntry(
     onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
 ) {
     val titleHeight = pinSetupTitleHeight(maxWidth, chooseTitle, confirmTitle)
-    val isShort = maxHeight < PHONE_COMPACT_BODY_HEIGHT
+    val isShort = maxHeight < PIN_PHONE_COMPACT_BODY_HEIGHT
     val spacing = if (isShort) WooPosSpacing.Small.value else WooPosSpacing.Large.value
     val minStatusHeight = if (isShort) PHONE_COMPACT_STATUS_HEIGHT else PHONE_STATUS_HEIGHT
     val statusLayout = pinSetupStatusLayout(maxWidth, minStatusHeight)
     val keySpacing = WooPosSpacing.Small.value
     val keypadHeight = maxHeight - titleHeight - statusLayout.height - spacing * 2
     val keySize = ((keypadHeight - keySpacing * (KEYPAD_ROWS - 1)) / KEYPAD_ROWS)
-        .coerceIn(PHONE_MIN_KEY_SIZE, PHONE_KEY_SIZE)
+        .coerceIn(PHONE_MIN_KEY_SIZE, PIN_PAD_PHONE_KEY_SIZE)
     Column(
         modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -233,7 +219,7 @@ private fun PINSetupDialogContent(
                 is Entry -> PINEntry(
                     entry = state,
                     onUIEvent = onUIEvent,
-                    keySize = KEY_SIZE,
+                    keySize = PIN_PAD_TABLET_KEY_SIZE,
                     statusLayout = statusLayout,
                     spacing = WooPosSpacing.Large.value,
                     modifier = Modifier.onSizeChanged { entryHeight = with(density) { it.height.toDp().value } },
@@ -555,10 +541,7 @@ private const val MISMATCH_MESSAGE_DELAY_MILLIS = 500L
 private const val KEYPAD_ROWS = 4
 private val DIALOG_MAX_WIDTH = 520.dp
 private val STATUS_MIN_HEIGHT = 84.dp
-private val KEY_SIZE = 90.dp
-private val PHONE_KEY_SIZE = 72.dp
 private val PHONE_MIN_KEY_SIZE = 48.dp
-private val PHONE_COMPACT_BODY_HEIGHT = 380.dp
 private val PHONE_COMPACT_STATUS_HEIGHT = 28.dp
 private val PHONE_STATUS_HEIGHT = 48.dp
 private val DOT_TRACK_PADDING = 10.dp

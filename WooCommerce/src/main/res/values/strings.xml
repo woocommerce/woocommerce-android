@@ -4169,6 +4169,10 @@
     <string name="woopos_lock_delete_digit">Delete</string>
     <string name="woopos_lock_pin_entry">PIN entry</string>
     <string name="woopos_lock_digits_entered">%1$d of %2$d digits entered</string>
+    <string name="woopos_approval_required">Approval required</string>
+    <string name="woopos_approval_create_coupon">Enter the Admin PIN to create a coupon.</string>
+    <string name="woopos_approval_issue_refund">Enter the Admin PIN to issue a refund for order %1$s.</string>
+    <string name="woopos_approval_exit">Enter the Admin PIN to exit Point of Sale.</string>
     <string name="woopos_orders_title">Orders</string>
     <string name="woopos_order_title">Order %s</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>

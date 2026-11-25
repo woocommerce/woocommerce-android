@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -31,7 +32,7 @@ class WooPosPendingPINRecoverySessionTest {
             val session = WooPosAccessSession(flags, site, access, pending)
             session.initialize()
             repeat(5) { session.unlock("0000") }
-            assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Wait(30))
+            assertThat(session.state.value.status).isEqualTo(WooPosPINEntryStatus.Wait(30))
             val records = fixture.records.toMap()
             val pins = fixture.pins.getOrThrow().toMap()
 
@@ -41,7 +42,7 @@ class WooPosPendingPINRecoverySessionTest {
 
             // THEN
             assertUnavailable(session)
-            assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Wait(30))
+            assertThat(session.state.value.status).isEqualTo(WooPosPINEntryStatus.Wait(30))
             assertThat(fixture.records).isEqualTo(records)
             assertThat(fixture.pins.getOrThrow()).isEqualTo(pins)
             fixture.elapsed += 30_000
@@ -57,6 +58,6 @@ class WooPosPendingPINRecoverySessionTest {
     private fun assertUnavailable(session: WooPosAccessSession) {
         assertThat(session.state.value.isLocked).isTrue()
         assertThat(session.state.value.activeRole).isNull()
-        assertThat(session.state.value.status).isNotEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
+        assertThat(session.state.value.status).isNotEqualTo(WooPosPINEntryStatus.StorageUnavailable)
     }
 }

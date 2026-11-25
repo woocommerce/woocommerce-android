@@ -7,8 +7,8 @@ import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.ADMIN
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.CASHIER
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINError
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityState.Protected
@@ -295,12 +295,12 @@ class WooPosSettingsSecurityViewModelTest {
     fun `given POS locked in a wait, when the countdown updates, then PINs are not read`() = runTest {
         // GIVEN
         givenPINs(ADMIN)
-        sessionState.value = WooPosAccessSessionState.Locked(Status.Wait(30))
+        sessionState.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Wait(30))
         val viewModel = createViewModel()
         advanceUntilIdle()
 
         // WHEN
-        sessionState.value = WooPosAccessSessionState.Locked(Status.Wait(29))
+        sessionState.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Wait(29))
         advanceUntilIdle()
 
         // THEN

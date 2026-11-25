@@ -68,7 +68,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
 
     private fun onDigit(digit: Int) {
         val current = _state.value as? Entry ?: return
-        if (!current.canEnterDigits || digit !in MIN_DIGIT..MAX_DIGIT) return
+        if (!current.canEnterDigits || digit !in WooPosPINHash.PIN_DIGIT_RANGE) return
         entry += digit
         _state.value = current.withDigits(entry.length)
         if (entry.length < WooPosPINHash.PIN_LENGTH) return
@@ -190,8 +190,6 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
     private enum class SaveResult { SAVED, ACCESS_UNAVAILABLE, PIN_TAKEN, FAILED, STALE }
 
     companion object {
-        private const val MIN_DIGIT = 0
-        private const val MAX_DIGIT = 9
         internal const val PIN_SETUP_REJECTION_PAUSE_MILLIS = 550L
         const val FILLED_DOTS_HOLD_MILLIS = 500L
         const val MINIMUM_SAVING_MILLIS = 1_000L

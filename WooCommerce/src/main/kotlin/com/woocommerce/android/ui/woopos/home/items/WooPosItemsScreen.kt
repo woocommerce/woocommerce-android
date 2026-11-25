@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScree
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreen
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreenPreview
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsScreen
+import com.woocommerce.android.ui.woopos.roles.approval.LocalWooPosRequestApproval
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -45,13 +46,14 @@ fun WooPosItemsScreen(
 ) {
     val productsViewState = rememberLazyListState()
     val couponsListState = rememberLazyListState()
+    val requestApproval = LocalWooPosRequestApproval.current
     WooPosItemsScreen(
         modifier = modifier,
         itemsStateFlow = viewModel.viewState,
         bannerStateFlow = viewModel.bannerState,
         productsViewState = productsViewState,
         couponsListState = couponsListState,
-        onUIEvent = { viewModel.onUIEvent(it) },
+        onUIEvent = { event -> viewModel.onUIEventWithApproval(event, requestApproval) },
     )
 }
 
