@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.pin
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -9,6 +10,8 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.MotionDurationScale
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.test.DarkMode
 import androidx.compose.ui.test.DeviceConfigurationOverride
 import androidx.compose.ui.test.FontScale
 import androidx.compose.ui.test.ForcedSize
@@ -16,6 +19,7 @@ import androidx.compose.ui.test.WindowInsets
 import androidx.compose.ui.test.WindowSize
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasScrollAction
@@ -23,6 +27,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.then
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -46,6 +51,7 @@ import org.assertj.core.data.Offset.offset
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class WooPosPINViewportTest {
@@ -68,6 +74,35 @@ class WooPosPINViewportTest {
         }
     }
 
+    @Test
+    fun representativeKeypadsFitInLightAndDark() {
+        val scenario = mutableStateOf(Scenario(SIZES.first(), 1f, Flow.LOCK))
+        setScenarioContent(scenario)
+        val directory = File(context.getExternalFilesDir(null), "pin-viewports").apply { mkdirs() }
+        val scenes = listOf(
+            Scenario(DpSize(412.dp, 915.dp), 1f, Flow.APPROVAL_OFF),
+            Scenario(DpSize(800.dp, 600.dp), 1.15f, Flow.APPROVAL_OFF),
+            Scenario(DpSize(320.dp, 568.dp), 2f, Flow.APPROVAL_ADMIN),
+            Scenario(DpSize(800.dp, 320.dp), 2f, Flow.SETUP),
+            Scenario(DpSize(800.dp, 600.dp), 2f, Flow.APPROVAL_OFF),
+            Scenario(DpSize(800.dp, 600.dp), 2f, Flow.LOCK),
+        )
+        for (dark in listOf(false, true)) {
+            for ((index, scene) in scenes.withIndex()) {
+                val current = scene.copy(dark = dark)
+                composeTestRule.runOnIdle { scenario.value = current }
+                assertCompleteKeypad(current)
+                File(directory, "scene-$index-${if (dark) "dark" else "light"}.png").outputStream().use {
+                    composeTestRule.onRoot().captureToImage().asAndroidBitmap().compress(
+                        Bitmap.CompressFormat.PNG,
+                        100,
+                        it,
+                    )
+                }
+            }
+        }
+    }
+
     private fun assertScenarioPhases(current: Scenario, scenario: MutableState<Scenario>) {
         composeTestRule.runOnIdle { scenario.value = current }
         assertCompleteKeypad(current)
@@ -84,10 +119,11 @@ class WooPosPINViewportTest {
     private fun setScenarioContent(scenario: State<Scenario>) {
         composeTestRule.setContent {
             val current = scenario.value
-            val configuration = DeviceConfigurationOverride.ForcedSize(current.size) then
+            var configuration = DeviceConfigurationOverride.ForcedSize(current.size) then
                 DeviceConfigurationOverride.WindowSize(current.size) then
                 DeviceConfigurationOverride.WindowInsets(WindowInsetsCompat.CONSUMED) then
                 DeviceConfigurationOverride.FontScale(current.fontScale)
+            current.dark?.let { configuration = configuration then DeviceConfigurationOverride.DarkMode(it) }
             DeviceConfigurationOverride(configuration) { ScenarioContent(current) }
         }
     }
@@ -160,7 +196,13 @@ class WooPosPINViewportTest {
         LOCK, SETUP, APPROVAL_OFF, APPROVAL_ADMIN, APPROVAL_COUPON, APPROVAL_REFUND, APPROVAL_EXIT
     }
 
-    private data class Scenario(val size: DpSize, val fontScale: Float, val flow: Flow, val phase: Int = 0) {
+    private data class Scenario(
+        val size: DpSize,
+        val fontScale: Float,
+        val flow: Flow,
+        val phase: Int = 0,
+        val dark: Boolean? = null,
+    ) {
         val approvalAction: WooPosApprovalAction
             get() = when (flow) {
                 Flow.APPROVAL_OFF -> WooPosApprovalAction.DisablePINProtection
