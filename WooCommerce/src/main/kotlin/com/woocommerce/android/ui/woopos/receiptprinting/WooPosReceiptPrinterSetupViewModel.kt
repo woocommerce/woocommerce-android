@@ -22,13 +22,10 @@ class WooPosReceiptPrinterSetupViewModel @Inject constructor(
 
     val state: StateFlow<WooPosReceiptPrinterConnectionState> = controller.state
 
-    private lateinit var source: ReceiptPrinterSetupSource
-
     // The dialog calls this again when the Activity is recreated (for example when a Bluetooth scanner connects),
     // so a setup that is already running is left alone instead of being restarted.
     fun startSetup(source: ReceiptPrinterSetupSource) {
         if (state.value !is WooPosReceiptPrinterConnectionState.Idle) return
-        this.source = source
         track(WooPosAnalyticsEvent.Event.ReceiptPrinterSetupStarted(source))
         controller.startSetup()
     }
@@ -37,9 +34,8 @@ class WooPosReceiptPrinterSetupViewModel @Inject constructor(
         controller.cancelSetup()
     }
 
-    fun onConnected() {
+    fun onConnected(source: ReceiptPrinterSetupSource) {
         track(WooPosAnalyticsEvent.Event.ReceiptPrinterConnected(source))
-        controller.cancelSetup()
     }
 
     fun onResume() {

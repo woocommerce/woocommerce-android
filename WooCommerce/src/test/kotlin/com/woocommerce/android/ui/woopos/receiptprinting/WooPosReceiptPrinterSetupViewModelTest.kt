@@ -229,22 +229,18 @@ class WooPosReceiptPrinterSetupViewModelTest {
     }
 
     @Test
-    fun `given setup started from settings, when a printer is connected, then connected is tracked with that source`() =
-        runTest {
-            // GIVEN
-            val viewModel = createViewModel()
-            viewModel.startSetup(ReceiptPrinterSetupSource.SETTINGS)
-            controllerState.value = WooPosReceiptPrinterConnectionState.Connected(PRINTER)
+    fun `when a printer is connected from print receipt, then connected is tracked with that source`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
 
-            // WHEN
-            viewModel.onConnected()
+        // WHEN
+        viewModel.onConnected(ReceiptPrinterSetupSource.PRINT_RECEIPT)
 
-            // THEN
-            verify(analyticsTracker).track(
-                WooPosAnalyticsEvent.Event.ReceiptPrinterConnected(ReceiptPrinterSetupSource.SETTINGS)
-            )
-            verify(controller).cancelSetup()
-        }
+        // THEN
+        verify(analyticsTracker).track(
+            WooPosAnalyticsEvent.Event.ReceiptPrinterConnected(ReceiptPrinterSetupSource.PRINT_RECEIPT)
+        )
+    }
 
     private fun createViewModel() = WooPosReceiptPrinterSetupViewModel(
         controllerFactory = controllerFactory,

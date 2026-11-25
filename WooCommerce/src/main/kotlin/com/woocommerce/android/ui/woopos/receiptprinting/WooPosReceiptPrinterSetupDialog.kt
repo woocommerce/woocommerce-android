@@ -105,7 +105,7 @@ fun WooPosReceiptPrinterSetupDialog(
 
     LaunchedEffect(state) {
         if (state is Connected) {
-            viewModel.onConnected()
+            viewModel.onConnected(source)
             currentOnConnectionSuccess()
         }
     }
