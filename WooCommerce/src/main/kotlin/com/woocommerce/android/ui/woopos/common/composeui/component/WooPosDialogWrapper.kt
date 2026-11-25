@@ -180,7 +180,7 @@ private fun WooPosCenterDialog(
                             }
                         }
 
-                        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value))
+                        Spacer(modifier = Modifier.size(WooPosSpacing.Large.value))
                     }
 
                     content()
