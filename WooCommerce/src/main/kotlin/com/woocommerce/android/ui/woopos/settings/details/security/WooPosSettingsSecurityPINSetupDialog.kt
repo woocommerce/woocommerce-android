@@ -218,10 +218,14 @@ private fun PINSetupEntryLayout(
             val titleHeight = pinSetupTitleHeight(maxWidth, chooseTitle, confirmTitle)
             val statusLayout = pinSetupStatusLayout(maxWidth, minimumStatusHeight)
             Column(
+                modifier = Modifier.heightIn(max = maxHeight),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(spacing),
             ) {
-                Box(Modifier.heightIn(min = titleHeight), contentAlignment = Alignment.BottomCenter) {
+                Box(
+                    Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()).heightIn(min = titleHeight),
+                    contentAlignment = Alignment.BottomCenter,
+                ) {
                     PINSetupTitle(if (entry.page == Page.CONFIRM) confirmTitle else chooseTitle)
                 }
                 PINSetupStatus(entry, statusLayout)

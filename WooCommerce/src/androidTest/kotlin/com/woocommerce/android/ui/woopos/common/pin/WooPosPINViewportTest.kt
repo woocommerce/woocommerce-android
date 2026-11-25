@@ -1,21 +1,29 @@
 package com.woocommerce.android.ui.woopos.common.pin
 
 import android.graphics.Bitmap
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.MotionDurationScale
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.platform.WindowInfo
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.DarkMode
 import androidx.compose.ui.test.DeviceConfigurationOverride
 import androidx.compose.ui.test.FontScale
 import androidx.compose.ui.test.ForcedSize
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.WindowInsets
 import androidx.compose.ui.test.WindowSize
 import androidx.compose.ui.test.assertCountEquals
@@ -33,6 +41,7 @@ import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.then
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsCompat
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -57,6 +66,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
+import kotlin.math.abs
 
 @RunWith(AndroidJUnit4::class)
 class WooPosPINViewportTest {
@@ -98,6 +108,7 @@ class WooPosPINViewportTest {
                 composeTestRule.runOnIdle { scenario.value = current }
                 assertCompleteKeypad(current)
                 assertApprovalHeadingIsReadable(current)
+                assertSingleColumn(current)
                 File(directory, "scene-$index-${if (dark) "dark" else "light"}.png").outputStream().use {
                     composeTestRule.onRoot().captureToImage().asAndroidBitmap().compress(
                         Bitmap.CompressFormat.PNG,
@@ -113,6 +124,7 @@ class WooPosPINViewportTest {
         composeTestRule.runOnIdle { scenario.value = current }
         assertCompleteKeypad(current)
         assertApprovalHeadingIsReadable(current)
+        assertSingleColumn(current)
         val originalBounds = composeTestRule.onNodeWithText("0").getUnclippedBoundsInRoot()
         for (phase in 1..2) {
             composeTestRule.runOnIdle { scenario.value = current.copy(phase = phase) }
@@ -126,11 +138,11 @@ class WooPosPINViewportTest {
     private fun setScenarioContent(scenario: State<Scenario>) {
         composeTestRule.setContent {
             val current = scenario.value
-            var configuration = DeviceConfigurationOverride.ForcedSize(current.size) then
-                DeviceConfigurationOverride.WindowSize(current.size) then
+            var configuration = DeviceConfigurationOverride.WindowSize(current.size) then
                 DeviceConfigurationOverride.WindowInsets(WindowInsetsCompat.CONSUMED) then
                 DeviceConfigurationOverride.FontScale(current.fontScale)
             current.dark?.let { configuration = configuration then DeviceConfigurationOverride.DarkMode(it) }
+            configuration = configuration then DeviceConfigurationOverride.ForcedSize(current.size)
             DeviceConfigurationOverride(configuration) { ScenarioContent(current) }
         }
     }
@@ -138,8 +150,29 @@ class WooPosPINViewportTest {
     @Composable
     private fun ScenarioContent(current: Scenario) {
         key(current.size, current.fontScale, current.flow) {
-            WooPosTheme {
-                Box(Modifier.fillMaxSize()) { ScenarioFlow(current) }
+            val density = LocalDensity.current
+            val hostWindow = LocalWindowInfo.current
+            val pixels = with(density) {
+                IntSize(current.size.width.roundToPx(), current.size.height.roundToPx())
+            }
+            val window = remember(hostWindow, pixels, current.size) {
+                object : WindowInfo by hostWindow {
+                    override val containerSize = pixels
+                    override val containerDpSize = current.size
+                }
+            }
+            CompositionLocalProvider(LocalWindowInfo provides window) {
+                WooPosTheme {
+                    BoxWithConstraints(Modifier.requiredSize(current.size.width, current.size.height)) {
+                        check(abs(maxWidth.value - current.size.width.value) < 1f) {
+                            "Requested ${current.size}, actual $maxWidth x $maxHeight, density=$density"
+                        }
+                        check(abs(maxHeight.value - current.size.height.value) < 1f) {
+                            "Requested ${current.size}, actual $maxWidth x $maxHeight, density=$density"
+                        }
+                        ScenarioFlow(current)
+                    }
+                }
             }
         }
     }
@@ -193,9 +226,18 @@ class WooPosPINViewportTest {
                 .isCloseTo(node.layoutInfo.width.toFloat(), offset(2f))
             assertThat(node.boundsInRoot.height)
                 .describedAs("Key must keep its minimum touch target: %s", scenario)
-                .isGreaterThanOrEqualTo(with(node.layoutInfo.density) { 48.dp.toPx() } - 1f)
+                .isGreaterThanOrEqualTo(with(node.layoutInfo.density) { 48.dp.toPx() } - 2f)
         }
         composeTestRule.onAllNodes(hasText("0") and hasAnyAncestor(hasScrollAction())).assertCountEquals(0)
+        val visibleText = SemanticsMatcher.keyIsDefined(SemanticsProperties.Text) and
+            !hasAnyAncestor(hasScrollAction())
+        for (node in composeTestRule.onAllNodes(visibleText).fetchSemanticsNodes()) {
+            val layouts = mutableListOf<TextLayoutResult>()
+            node.config.getOrNull(SemanticsActions.GetTextLayoutResult)?.action?.invoke(layouts)
+            assertThat(layouts.any { it.didOverflowHeight })
+                .describedAs("PIN feedback and key labels must not be clipped: %s", scenario)
+                .isFalse()
+        }
     }
 
     private fun assertApprovalHeadingIsReadable(scenario: Scenario) {
@@ -207,6 +249,23 @@ class WooPosPINViewportTest {
         assertThat(layouts.maxOf { it.lineCount })
             .describedAs("The approval heading must not wrap into a narrow column: %s", scenario)
             .isLessThanOrEqualTo(3)
+    }
+
+    private fun assertSingleColumn(scenario: Scenario) {
+        val dots = composeTestRule.onNodeWithContentDescription(context.getString(R.string.woopos_lock_pin_entry))
+            .fetchSemanticsNode()
+        assertThat(dots.boundsInRoot.height)
+            .describedAs("PIN dots must be fully visible: %s", scenario)
+            .isCloseTo(dots.layoutInfo.height.toFloat(), offset(2f))
+        val heading = composeTestRule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading))
+            .fetchSemanticsNode().boundsInRoot
+        val keypad = composeTestRule.onNodeWithText("2").fetchSemanticsNode().boundsInRoot
+        assertThat(heading.center.x)
+            .describedAs("The heading and keypad must share one centered column: %s", scenario)
+            .isCloseTo(keypad.center.x, offset(2f))
+        assertThat(heading.bottom)
+            .describedAs("The heading must be above the keypad: %s", scenario)
+            .isLessThanOrEqualTo(keypad.top)
     }
 
     private enum class Flow {

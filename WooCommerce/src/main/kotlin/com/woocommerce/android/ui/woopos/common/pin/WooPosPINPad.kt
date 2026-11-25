@@ -127,17 +127,17 @@ private fun PINDot(filled: Boolean) {
 private fun DigitKey(digit: Int, enabled: Boolean, keySize: Dp, style: WooPosPINPadStyle, onDigit: (Int) -> Unit) {
     PINKey(enabled = enabled, keySize = keySize, style = style, onClick = { onDigit(digit) }) {
         val density = LocalDensity.current
-        val style = WooPosTypography.Heading.style
+        val textStyle = WooPosTypography.Heading.style
         val maximumFontSize = with(density) { (keySize - WooPosSpacing.Small.value * 2).toSp() }
         val maximumLineHeight = with(density) { keySize.toSp() }
         WooPosText(
             text = digit.toString(),
             style = WooPosTypography.Heading,
-            fontSize = if (style.fontSize.value > maximumFontSize.value) maximumFontSize else style.fontSize,
-            lineHeight = if (style.lineHeight.value > maximumLineHeight.value) {
+            fontSize = if (textStyle.fontSize.value > maximumFontSize.value) maximumFontSize else textStyle.fontSize,
+            lineHeight = if (textStyle.lineHeight.value > maximumLineHeight.value) {
                 maximumLineHeight
             } else {
-                style.lineHeight
+                textStyle.lineHeight
             },
             fontWeight = FontWeight.Bold,
         )
