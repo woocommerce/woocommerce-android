@@ -16,26 +16,15 @@ class GetDeletedOrderItems @Inject constructor(
     private val selectedSite: SelectedSite,
 ) {
     /**
-     * Returns the items whose product or variation no longer exists in the store, and removes those from the
-     * local cache so they stop showing up in the product picker. Returns null when that can't be confirmed
-     * for every item, e.g. because a request failed.
+     * Returns the items whose product or variation no longer exists in the store,
+     * or null when that can't be confirmed for every item, e.g. because a request failed.
      */
     suspend operator fun invoke(items: List<Order.Item>): List<Order.Item>? = coroutineScope {
         val existence = items.map { item -> async { item to item.exists() } }.awaitAll()
-        existence.filter { (_, exists) -> exists == false }.forEach { (item, _) -> item.deleteLocally() }
         if (existence.any { (_, exists) -> exists == null }) {
             null
         } else {
             existence.filter { (_, exists) -> exists == false }.map { (item, _) -> item }
-        }
-    }
-
-    private suspend fun Order.Item.deleteLocally() {
-        val site = selectedSite.get()
-        if (isVariation) {
-            productStore.deleteVariationLocally(site, productId, variationId)
-        } else {
-            productStore.deleteProductLocally(site, productId)
         }
     }
 
