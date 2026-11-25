@@ -18,6 +18,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("DoNotMockDataClass")
 class TerminalWrapperPaymentCancellationTest : CardReaderBaseUnitTest() {
     @Test
     fun `given SDK start throws synchronously, when the next command starts, then the reader gate is available`() = testBlocking {

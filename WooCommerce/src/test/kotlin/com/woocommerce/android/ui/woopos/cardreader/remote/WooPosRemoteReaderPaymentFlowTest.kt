@@ -39,6 +39,10 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
@@ -389,7 +393,7 @@ class WooPosRemoteReaderPaymentFlowTest {
         )
         whenever(wooStore.fetchSiteRootApiRoutes(site)).doSuspendableAnswer {
             gate.await()
-            mock { on { isError }.thenReturn(true) }
+            WooResult<List<String>>(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.NETWORK_ERROR))
         }
         val (flow, facade) = protectedFlow()
         val collection = async { flow.collect(order) }
