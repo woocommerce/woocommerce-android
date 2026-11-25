@@ -370,8 +370,10 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         return refunds.getNonRefundedProducts(items)
             .filter {
                 val product = productDetailRepository.getProduct(it.productId)
+                val variationExists = !it.isVariation ||
+                    variationDetailRepository.getVariation(it.productId, it.variationId) != null
                 // Exclude deleted and virtual products
-                product != null && !product.isVirtual
+                product != null && variationExists && !product.isVirtual
             }
     }
 
