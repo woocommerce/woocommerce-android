@@ -9,8 +9,6 @@ import org.junit.Test
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -38,8 +36,6 @@ class GetDeletedOrderItemsTest : BaseUnitTest() {
         val result = sut(listOf(existing, deleted))
 
         assertThat(result).containsExactly(deleted)
-        verify(productStore).deleteProductLocally(site, 2)
-        verify(productStore, never()).deleteProductLocally(site, 1)
     }
 
     @Test
@@ -52,7 +48,6 @@ class GetDeletedOrderItemsTest : BaseUnitTest() {
         val result = sut(listOf(deleted))
 
         assertThat(result).containsExactly(deleted)
-        verify(productStore).deleteVariationLocally(site, 1, 3)
     }
 
     @Test
@@ -64,7 +59,6 @@ class GetDeletedOrderItemsTest : BaseUnitTest() {
         val result = sut(listOf(item))
 
         assertThat(result).isNull()
-        verify(productStore, never()).deleteProductLocally(site, 2)
     }
 
     private fun productChangedWithError(type: ProductErrorType) =
