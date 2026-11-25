@@ -543,7 +543,7 @@ class WooPosPrintReceiptCoordinatorTest {
             verify(analyticsTracker).track(
                 WooPosAnalyticsEvent.Error.ReceiptPrintFailed(
                     errorContext = WooPosPrintReceiptCoordinator::class,
-                    errorType = "paperEmpty",
+                    errorType = "paper_empty",
                     errorDescription = "paperEmpty",
                 )
             )
@@ -567,8 +567,32 @@ class WooPosPrintReceiptCoordinatorTest {
             verify(analyticsTracker).track(
                 WooPosAnalyticsEvent.Error.ReceiptPrintFailed(
                     errorContext = WooPosPrintReceiptCoordinator::class,
-                    errorType = "connectionLost",
-                    errorDescription = "Write failed",
+                    errorType = "connection_lost",
+                    errorDescription = "IllegalStateException: Write failed",
+                )
+            )
+        }
+
+    @Test
+    fun `given a printer is connected, when printing fails with a long message, then the description is cut to 100 characters`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).thenReturn(
+                ReceiptPrinterResult.Failure(ReceiptPrinterError.PrintFailed(IllegalStateException("x".repeat(200))))
+            )
+            val sut = createCoordinator()
+
+            // WHEN
+            sut.onPrintReceiptClicked(ORDER_ID)
+            runCurrent()
+
+            // THEN
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Error.ReceiptPrintFailed(
+                    errorContext = WooPosPrintReceiptCoordinator::class,
+                    errorType = "print_failed",
+                    errorDescription = "IllegalStateException: ${"x".repeat(77)}",
                 )
             )
         }
@@ -593,7 +617,7 @@ class WooPosPrintReceiptCoordinatorTest {
             verify(analyticsTracker).track(
                 WooPosAnalyticsEvent.Error.ReceiptPrintFailed(
                     errorContext = WooPosPrintReceiptCoordinator::class,
-                    errorType = "coverOpen",
+                    errorType = "cover_open",
                     errorDescription = "coverOpen",
                 )
             )

@@ -134,21 +134,31 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
 
 private val ReceiptPrinterError.analyticsType: String
     get() = when (this) {
+        ReceiptPrinterError.DiscoveryFailure -> "discovery_failure"
+        ReceiptPrinterError.PrinterNotFound -> "printer_not_found"
+        ReceiptPrinterError.PrinterNotConnected -> "printer_not_connected"
+        ReceiptPrinterError.PaperEmpty -> "paper_empty"
+        ReceiptPrinterError.CoverOpen -> "cover_open"
+        is ReceiptPrinterError.ConnectionLost -> "connection_lost"
+        is ReceiptPrinterError.PrintFailed -> "print_failed"
+    }
+
+// Matches the iOS PrinterError names, which iOS sends as the description of these errors.
+private val ReceiptPrinterError.analyticsDescription: String
+    get() = when (this) {
         ReceiptPrinterError.DiscoveryFailure -> "discoveryFailure"
         ReceiptPrinterError.PrinterNotFound -> "printerNotFound"
         ReceiptPrinterError.PrinterNotConnected -> "printerNotConnected"
         ReceiptPrinterError.PaperEmpty -> "paperEmpty"
         ReceiptPrinterError.CoverOpen -> "coverOpen"
-        is ReceiptPrinterError.ConnectionLost -> "connectionLost"
-        is ReceiptPrinterError.PrintFailed -> "printFailed"
+        is ReceiptPrinterError.ConnectionLost -> cause.analyticsDescription("connectionLost")
+        is ReceiptPrinterError.PrintFailed -> cause.analyticsDescription("printFailed")
     }
 
-private val ReceiptPrinterError.analyticsDescription: String
-    get() = when (this) {
-        is ReceiptPrinterError.ConnectionLost -> cause?.message
-        is ReceiptPrinterError.PrintFailed -> cause?.message
-        else -> null
-    } ?: analyticsType
+private fun Throwable?.analyticsDescription(fallback: String): String =
+    this?.let { "${it::class.simpleName}: ${it.message}".take(MAX_ERROR_DESCRIPTION_LENGTH) } ?: fallback
+
+private const val MAX_ERROR_DESCRIPTION_LENGTH = 100
 
 enum class WooPosPrintReceiptButtonState { Hidden, Idle, Loading, Success }
 
