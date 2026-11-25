@@ -380,7 +380,7 @@ class WooPosRemoteReaderPaymentFlowTest {
     }
 
     @Test
-    fun `given preparation is suspended, when background cancels, then no remote request is sent`() = runTest {
+    fun `given PaymentAttempt preparation is suspended, when background cancels, then no remote request is sent`() = runTest {
         // GIVEN
         val gate = CompletableDeferred<Unit>()
         whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
@@ -396,11 +396,12 @@ class WooPosRemoteReaderPaymentFlowTest {
         runCurrent()
 
         // WHEN
-        facade.cancelPayment()
+        val cancellation = facade.cancelPayment()
         gate.complete(Unit)
         val result = collection.await()
 
         // THEN
+        assertThat(cancellation).isEqualTo(WooPosCardReaderFacade.CancellationResult.CANCELLED)
         assertThat((result as WooPosRemoteReaderPaymentFlow.Result.Failed).isUnresolved).isFalse()
         verify(session, never()).sendCollectPayment(any(), any())
         verify(session, never()).cancelPayment()
