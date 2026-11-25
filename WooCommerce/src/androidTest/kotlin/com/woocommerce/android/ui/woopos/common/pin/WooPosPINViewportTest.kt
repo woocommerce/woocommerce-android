@@ -33,6 +33,7 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -79,15 +80,30 @@ class WooPosPINViewportTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
     @Test
-    fun allKeypadsStayFullyVisibleWithoutScrollingAcrossViewportsAndTextSizes() {
-        val scenario = mutableStateOf(Scenario(SIZES.first(), 1f, Flow.LOCK))
+    fun narrowPhoneKeypadsFitAcrossTextSizes() = assertViewport(SIZES[0])
+
+    @Test
+    fun phoneKeypadsFitAcrossTextSizes() = assertViewport(SIZES[1])
+
+    @Test
+    fun compactLandscapeKeypadsFitAcrossTextSizes() = assertViewport(SIZES[2])
+
+    @Test
+    fun smallTabletKeypadsFitAcrossTextSizes() = assertViewport(SIZES[3])
+
+    @Test
+    fun tabletLandscapeKeypadsFitAcrossTextSizes() = assertViewport(SIZES[4])
+
+    @Test
+    fun tabletPortraitKeypadsFitAcrossTextSizes() = assertViewport(SIZES[5])
+
+    private fun assertViewport(size: DpSize) {
+        val scenario = mutableStateOf(Scenario(size, 1f, Flow.LOCK))
         setScenarioContent(scenario)
-        for (size in SIZES) {
-            for (scale in FONT_SCALES) {
-                for (flow in Flow.entries) {
-                    val current = Scenario(size, scale, flow)
-                    assertScenarioPhases(current, scenario)
-                }
+        for (scale in FONT_SCALES) {
+            for (flow in Flow.entries) {
+                val current = Scenario(size, scale, flow)
+                assertScenarioPhases(current, scenario)
             }
         }
     }
@@ -239,10 +255,13 @@ class WooPosPINViewportTest {
 
     private fun assertCompleteKeypad(scenario: Scenario) {
         composeTestRule.waitForIdle()
-        val keys = (0..9).map { composeTestRule.onNodeWithText(it.toString()) } +
-            composeTestRule.onNodeWithContentDescription(context.getString(R.string.woopos_lock_delete_digit))
-        for (key in keys) {
-            val node = key.assertIsDisplayed().fetchSemanticsNode()
+        val keyMatchers = (0..9).map { hasText(it.toString()) } +
+            hasContentDescription(context.getString(R.string.woopos_lock_delete_digit))
+        val keys = composeTestRule.onAllNodes(keyMatchers.reduce { first, next -> first or next }).fetchSemanticsNodes()
+        for (matcher in keyMatchers) {
+            val matches = keys.filter { matcher.matches(it) }
+            assertThat(matches).describedAs("Every keypad key must be present once: %s", scenario).hasSize(1)
+            val node = matches.single()
             assertThat(node.boundsInRoot.height)
                 .describedAs("Key must not be clipped: %s", scenario)
                 .isCloseTo(node.layoutInfo.height.toFloat(), offset(2f))
