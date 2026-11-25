@@ -150,6 +150,7 @@ class WooPosLockScreenViewModel @Inject constructor(
         val remaining = (minutes * MILLIS_PER_MINUTE - (now - started)).coerceAtLeast(0)
         inactivityJob = viewModelScope.launch {
             delay(remaining)
+            inactivityJob = null
             accessSession.lock()
         }
     }

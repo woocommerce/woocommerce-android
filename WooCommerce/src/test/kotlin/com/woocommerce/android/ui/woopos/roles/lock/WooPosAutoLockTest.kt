@@ -18,7 +18,9 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
@@ -35,6 +37,29 @@ class WooPosAutoLockTest {
         on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
     }
     private val settings = MutableStateFlow(Result.success(WooPosAutoLockSettings(inactivityMinutes = 1)))
+
+    @Test
+    fun `given inactivity expires, when PIN status read suspends, then lock completes and PIN can unlock`() = runTest {
+        val limiter = spy(fixture.rateLimiter())
+        val (viewModel, session) = create(limiter)
+        val statusRead = CompletableDeferred<Result<Long>>()
+        whenever(limiter.remainingSeconds(1)).doSuspendableAnswer { statusRead.await() }
+        viewModel.onForeground()
+
+        advanceTimeBy(60_000)
+        runCurrent()
+        assertThat(session.state.value.status)
+            .isEqualTo(com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus.Checking)
+
+        statusRead.complete(Result.success(0L))
+        runCurrent()
+
+        assertThat(viewModel.state.value.canEnterPIN).isTrue()
+        "1234".forEach { viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(it.digitToInt())) }
+        runCurrent()
+        assertThat(session.state.value.activeRole).isEqualTo(WooPosLocalRole.ADMIN)
+        viewModel.viewModelScope.cancel()
+    }
 
     @Test
     fun `given a one minute interval, when interaction restarts it, then POS locks only after the new interval`() = runTest {
@@ -272,12 +297,14 @@ class WooPosAutoLockTest {
         viewModel.viewModelScope.cancel()
     }
 
-    private suspend fun create(): Pair<WooPosLockScreenViewModel, WooPosAccessSession> {
+    private suspend fun create(
+        limiter: WooPosLocalRateLimiter = fixture.rateLimiter(),
+    ): Pair<WooPosLockScreenViewModel, WooPosAccessSession> {
         whenever(fixture.lockPreferences.settings(1)).thenReturn(settings)
         val session = WooPosAccessSession(
             flags,
             selectedSite,
-            fixture.rateLimiter(),
+            limiter,
             fixture.recovery,
             fixture.lockPreferences,
             fixture.cardReaderFacade,
