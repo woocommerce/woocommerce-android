@@ -138,8 +138,7 @@ private fun FullScreenModalHeader(
                 .semantics { heading() },
         )
         if (onCloseClick != null) {
-            WooPosBackButton(
-                iconRes = R.drawable.ic_close_24dp,
+            WooPosCloseButton(
                 contentDescription = stringResource(R.string.close),
                 onClick = onCloseClick,
             )
