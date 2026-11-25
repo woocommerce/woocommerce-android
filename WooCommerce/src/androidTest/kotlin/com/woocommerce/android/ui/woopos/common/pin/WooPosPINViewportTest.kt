@@ -38,7 +38,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
 import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalPhoneContent
@@ -84,11 +86,11 @@ class WooPosPINViewportTest {
         val directory = File(context.getExternalFilesDir(null), "pin-viewports").apply { mkdirs() }
         val scenes = listOf(
             Scenario(DpSize(412.dp, 915.dp), 1f, Flow.APPROVAL_OFF),
-            Scenario(DpSize(800.dp, 600.dp), 1.15f, Flow.APPROVAL_OFF),
+            Scenario(DpSize(1024.dp, 674.dp), 1.15f, Flow.APPROVAL_OFF),
             Scenario(DpSize(320.dp, 568.dp), 2f, Flow.APPROVAL_ADMIN),
             Scenario(DpSize(800.dp, 320.dp), 2f, Flow.SETUP),
-            Scenario(DpSize(800.dp, 600.dp), 2f, Flow.APPROVAL_OFF),
-            Scenario(DpSize(800.dp, 600.dp), 2f, Flow.LOCK),
+            Scenario(DpSize(1024.dp, 674.dp), 2f, Flow.APPROVAL_OFF),
+            Scenario(DpSize(1024.dp, 674.dp), 2f, Flow.LOCK),
         )
         for (dark in listOf(false, true)) {
             for ((index, scene) in scenes.withIndex()) {
@@ -162,14 +164,13 @@ class WooPosPINViewportTest {
                 WooPosSettingsSecurityPINSetupDialog(
                     entry,
                     isVisible = true,
-                    isFullScreen = minOf(current.size.width, current.size.height) < 600.dp,
                     onUIEvent = {},
                     onClose = {},
                 )
             }
             else -> {
                 val state = WooPosApprovalState(current.approvalAction, current.status)
-                if (minOf(current.size.width, current.size.height) < 600.dp) {
+                if (currentWooPosBreakpoint() == WooPosBreakpoint.Phone) {
                     WooPosApprovalPhoneContent(state, onUIEvent = {}, onDismiss = {})
                 } else {
                     WooPosApprovalTabletContent(state, onUIEvent = {}, onDismiss = {})
@@ -246,7 +247,7 @@ class WooPosPINViewportTest {
             DpSize(320.dp, 568.dp),
             DpSize(412.dp, 915.dp),
             DpSize(800.dp, 320.dp),
-            DpSize(800.dp, 600.dp),
+            DpSize(1024.dp, 674.dp),
             DpSize(1280.dp, 800.dp),
             DpSize(800.dp, 1280.dp),
         )
