@@ -6,6 +6,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosCapability
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINError
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
@@ -38,17 +39,22 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosSettingsSecurityPINSetupState>(Choose(WooPosLocalRole.ADMIN))
     val state: StateFlow<WooPosSettingsSecurityPINSetupState> = _state.asStateFlow()
+
+    @Volatile
     private var editor: Editor? = null
-    private val changingPIN: Boolean get() = editor?.changingPIN == true
     private var entry = ""
     private var chosenPIN = ""
-    private var chosenSiteId: Int? = null
     private var job: Job? = null
 
     fun start(role: WooPosLocalRole, changingPIN: Boolean = false) {
-        if (editor?.let { it.role == role && it.changingPIN == changingPIN } == true) return
+        val siteId = selectedSite.getOrNull()?.id ?: return invalidate()
+        if (editor?.let { it.role == role && it.changingPIN == changingPIN && it.siteId == siteId } == true) return
         restart(role)
-        editor = Editor(role, changingPIN, accessSession.pinSetupScope())
+        val createsAdmin = role == WooPosLocalRole.ADMIN && !changingPIN
+        val scope = if (createsAdmin) accessSession.pinSetupScope() else accessSession.approvalScope()
+        val request = Editor(role, changingPIN, siteId, scope)
+        editor = request
+        if (!isEditorCurrent(request)) invalidate()
     }
 
     fun reset() {
@@ -57,23 +63,35 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
     }
 
     private fun restart(role: WooPosLocalRole) {
+        clearEntry()
+        _state.value = Choose(role)
+    }
+
+    private fun clearEntry() {
         job?.cancel()
         job = null
         entry = ""
         chosenPIN = ""
-        chosenSiteId = null
-        _state.value = Choose(role)
+    }
+
+    private fun invalidate() {
+        editor = null
+        clearEntry()
+        _state.value = AccessUnavailable
     }
 
     fun onUIEvent(event: WooPosSettingsSecurityPINSetupUIEvent) {
+        val request = editor ?: return
+        if (_state.value !is Entry) return
+        if (!isEditorCurrent(request)) return invalidate()
         when (event) {
-            is WooPosSettingsSecurityPINSetupUIEvent.DigitTapped -> onDigit(event.digit)
+            is WooPosSettingsSecurityPINSetupUIEvent.DigitTapped -> onDigit(request, event.digit)
             WooPosSettingsSecurityPINSetupUIEvent.DeleteTapped -> onDelete()
             WooPosSettingsSecurityPINSetupUIEvent.BackTapped -> if (_state.value.canGoBack) restart(_state.value.role)
         }
     }
 
-    private fun onDigit(digit: Int) {
+    private fun onDigit(request: Editor, digit: Int) {
         val current = _state.value as? Entry ?: return
         if (!current.canEnterDigits || digit !in WooPosPINHash.PIN_DIGIT_RANGE) return
         entry += digit
@@ -82,7 +100,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
         val pin = entry
         entry = ""
         job = viewModelScope.launch {
-            if (current is Confirm) confirm(current.role, pin) else choose(current.role, pin)
+            if (current is Confirm) confirm(request, pin) else choose(request, pin)
         }
     }
 
@@ -96,111 +114,95 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
     private fun Entry.withDigits(digits: Int): Entry =
         if (this is Confirm) Confirm(role, digits) else Choose(role, digits)
 
-    private suspend fun choose(role: WooPosLocalRole, pin: String) {
-        val siteId = selectedSite.getOrNull()?.id
-        val needsValidation = role == WooPosLocalRole.CASHIER || changingPIN
+    private suspend fun choose(request: Editor, pin: String) {
+        val needsValidation = !request.createsAdmin
         val error = coroutineScope {
             launch { delay(FILLED_DOTS_HOLD_MILLIS) }
-            if (needsValidation && siteId != null) validatePIN(siteId, role, pin) else null
+            if (needsValidation) validatePIN(request, pin) else null
         }
-        if (needsValidation) {
-            if (siteId == null || !isSelected(siteId)) return reset()
-            val currentError = if (canManagePINs()) error else Error.SAVE_FAILED
-            if (currentError != null) {
-                presentRejection(role, siteId, Page.CHOOSE, currentError)
-                return
-            }
+        if (!isEditorCurrent(request)) return invalidate()
+        if (error != null) {
+            presentRejection(request, Page.CHOOSE, error)
+            return
         }
         chosenPIN = pin
-        chosenSiteId = siteId
-        _state.value = Confirm(role)
+        _state.value = Confirm(request.role)
     }
 
-    private suspend fun validatePIN(siteId: Int, role: WooPosLocalRole, pin: String): Error? {
-        if (!canManagePINs()) return Error.SAVE_FAILED
-        return when (store.validatePINUniqueness(siteId, role, pin).exceptionOrNull()) {
+    private suspend fun validatePIN(request: Editor, pin: String): Error? {
+        if (!isEditorCurrent(request)) return Error.SAVE_FAILED
+        return when (store.validatePINUniqueness(request.siteId, request.role, pin).exceptionOrNull()) {
             null -> null
             WooPosPINError.MatchesOtherRole -> Error.PIN_TAKEN
             else -> Error.SAVE_FAILED
         }
     }
 
-    private suspend fun confirm(role: WooPosLocalRole, pin: String) {
+    private suspend fun confirm(request: Editor, pin: String) {
         val chosen = chosenPIN
-        val siteId = chosenSiteId ?: return reset()
         chosenPIN = ""
-        chosenSiteId = null
+        if (!isEditorCurrent(request) || chosen.length != WooPosPINHash.PIN_LENGTH) return invalidate()
         if (pin != chosen) {
-            presentRejection(role, siteId, Page.CONFIRM, Error.MISMATCH)
+            presentRejection(request, Page.CONFIRM, Error.MISMATCH)
             return
         }
         val result = coroutineScope {
             val presentation = launch {
                 delay(FILLED_DOTS_HOLD_MILLIS)
-                _state.value = WooPosSettingsSecurityPINSetupState.Saving(role)
+                _state.value = WooPosSettingsSecurityPINSetupState.Saving(request.role)
                 delay(MINIMUM_SAVING_MILLIS)
             }
-            save(role, siteId, pin).also { if (it != SaveResult.SAVED) presentation.cancel() }
+            save(request, pin).also { if (it != SaveResult.SAVED) presentation.cancel() }
         }
-        val outcome = if (isSelected(siteId)) result else SaveResult.STALE
-        _state.value = when (outcome) {
-            SaveResult.SAVED -> WooPosSettingsSecurityPINSetupState.Saved(role)
-            SaveResult.ACCESS_UNAVAILABLE -> AccessUnavailable
-            SaveResult.PIN_TAKEN -> Choose(role, error = Error.PIN_TAKEN)
-            SaveResult.FAILED -> Choose(role, error = Error.SAVE_FAILED)
-            SaveResult.STALE -> Choose(role)
+        val outcome = if (editor === request && isSelected(request.siteId)) result else SaveResult.STALE
+        when (outcome) {
+            SaveResult.SAVED -> _state.value = WooPosSettingsSecurityPINSetupState.Saved(request.role)
+            SaveResult.ACCESS_UNAVAILABLE, SaveResult.STALE -> invalidate()
+            SaveResult.PIN_TAKEN -> _state.value = Choose(request.role, error = Error.PIN_TAKEN)
+            SaveResult.FAILED -> _state.value = Choose(request.role, error = Error.SAVE_FAILED)
         }
     }
 
-    private suspend fun presentRejection(role: WooPosLocalRole, siteId: Int, page: Page, error: Error) {
-        if (!isSelected(siteId)) return reset()
-        _state.value = Rejected(role, page)
+    private suspend fun presentRejection(request: Editor, page: Page, error: Error) {
+        if (!isEditorCurrent(request)) return invalidate()
+        _state.value = Rejected(request.role, page)
         delay(PIN_SETUP_REJECTION_PAUSE_MILLIS)
-        val visibleError = when {
-            !isSelected(siteId) -> null
-            page == Page.CHOOSE && !canManagePINs() -> Error.SAVE_FAILED
-            else -> error
-        }
-        _state.value = Choose(role, error = visibleError)
+        if (!isEditorCurrent(request)) return invalidate()
+        _state.value = Choose(request.role, error = error)
     }
 
-    private suspend fun save(role: WooPosLocalRole, id: Int, pin: String): SaveResult {
-        if (!isSelected(id)) return SaveResult.STALE
-        val activatesAdmin = role == WooPosLocalRole.ADMIN && !changingPIN
-        val canCreate = !activatesAdmin || store.getPINs(id).getOrNull()?.isEmpty() == true
-        currentCoroutineContext().ensureActive()
-        if (!isSelected(id)) return SaveResult.STALE
-        if (!canCreate || !canManagePINs() || !isEditorCurrent()) return SaveResult.FAILED
-        val saved = persistPIN(id, role, pin, activatesAdmin)
+    private suspend fun save(request: Editor, pin: String): SaveResult {
+        if (!isEditorCurrent(request)) return SaveResult.STALE
+        val saved = persistPIN(request, pin)
         currentCoroutineContext().ensureActive()
         return when {
             saved.exceptionOrNull() == WooPosPINError.MatchesOtherRole -> SaveResult.PIN_TAKEN
+            saved.exceptionOrNull() == WooPosPINError.StaleRequest -> SaveResult.STALE
             saved.isFailure -> SaveResult.FAILED
-            !isSelected(id) -> SaveResult.STALE
-            activatesAdmin && accessSession.state.value.activeRole != WooPosLocalRole.ADMIN ->
+            !isSelected(request.siteId) -> SaveResult.STALE
+            request.createsAdmin && accessSession.state.value.activeRole != WooPosLocalRole.ADMIN ->
                 SaveResult.ACCESS_UNAVAILABLE
             else -> SaveResult.SAVED
         }
     }
 
-    private suspend fun persistPIN(id: Int, role: WooPosLocalRole, pin: String, activatesAdmin: Boolean): Result<Unit> =
+    private suspend fun persistPIN(request: Editor, pin: String): Result<Unit> =
         coroutineScope {
             val requestJob = currentCoroutineContext()[Job]
-            val activationScope = accessSession.pinSetupScope()
-            val canCommit = { requestJob?.isActive == true && isSelected(id) && isEditorCurrent() && canManagePINs() }
+            val canCommit = { requestJob?.isActive == true && isEditorCurrent(request) }
             withContext(NonCancellable) {
-                if (activatesAdmin) {
-                    val retained = accessSession.preparePINActivation(id, canCommit)
+                if (request.createsAdmin) {
+                    val retained = accessSession.preparePINActivation(request.siteId, canCommit)
                     if (retained.isFailure) return@withContext retained
                 }
-                val saved = if (changingPIN) {
-                    store.setPIN(id, role, pin, canCommit)
+                val saved = if (request.changingPIN) {
+                    store.replacePIN(request.siteId, request.role, pin, canCommit)
                 } else {
-                    store.createPIN(id, role, pin, canCommit)
+                    store.createPIN(request.siteId, request.role, pin, canCommit)
                 }
                 saved.also {
-                    if (it.isSuccess && activatesAdmin && isSelected(id)) {
-                        if (isEditorCurrent() && activationScope == accessSession.pinSetupScope()) {
+                    if (it.isSuccess && request.createsAdmin && isSelected(request.siteId)) {
+                        if (request.scope == accessSession.pinSetupScope() && canManagePINs()) {
                             accessSession.unlock(pin)
                         } else {
                             accessSession.blockForStorageFailure()
@@ -213,18 +215,25 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
 
     private fun canManagePINs() = accessSession.allows(WooPosCapability.MANAGE_STORE_SETTINGS)
 
-    private fun isEditorCurrent(): Boolean {
-        val scope = editor?.scope
-        return (scope != null || !changingPIN) && (scope == null || scope == accessSession.pinSetupScope())
-    }
+    private fun isEditorCurrent(request: Editor): Boolean =
+        editor === request && isSelected(request.siteId) && canManagePINs() &&
+            if (request.createsAdmin) {
+                accessSession.state.value == WooPosAccessSessionState.Unprotected &&
+                    request.scope != null && request.scope == accessSession.pinSetupScope()
+            } else {
+                request.scope != null && request.scope == accessSession.approvalScope()
+            }
 
     private fun isSelected(localSiteId: Int) = localSiteId == selectedSite.getOrNull()?.id
 
     private data class Editor(
         val role: WooPosLocalRole,
         val changingPIN: Boolean,
+        val siteId: Int,
         val scope: WooPosAccessSession.ApprovalScope?,
-    )
+    ) {
+        val createsAdmin: Boolean get() = role == WooPosLocalRole.ADMIN && !changingPIN
+    }
 
     private enum class SaveResult { SAVED, ACCESS_UNAVAILABLE, PIN_TAKEN, FAILED, STALE }
 

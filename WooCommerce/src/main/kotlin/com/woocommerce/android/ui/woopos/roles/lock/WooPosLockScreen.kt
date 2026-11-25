@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -169,6 +172,7 @@ private fun BoxWithConstraintsScope.LockContent(
                     if (layout.showsIllustration) metrics.illustrationSize + spacing else 0.dp
             },
             message = { spacing ->
+                val messageMaxHeight = maxHeight
                 val textWidth = min(CONTENT_MAX_WIDTH, maxWidth)
                 val statusHeight = measureWooPosPINStatusHeight(
                     measurer,
@@ -176,35 +180,52 @@ private fun BoxWithConstraintsScope.LockContent(
                     STATUS_ROW_HEIGHT,
                 )
                 Column(
-                    Modifier.widthIn(max = CONTENT_MAX_WIDTH),
+                    Modifier.widthIn(max = CONTENT_MAX_WIDTH).heightIn(max = maxHeight),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(spacing),
                 ) {
-                    if (layout.showsIllustration) {
-                        Box(
-                            Modifier.size(metrics.illustrationSize).onGloballyPositioned { intro.animation.slot = it },
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            LockIllustration(
-                                shackleAngle = { intro.shackleAngle },
-                                modifier = Modifier.graphicsLayer {
-                                    alpha = intro.illustrationAlpha
-                                    val travel = intro.travel()
-                                    translationX = travel.x
-                                    translationY = travel.y
-                                },
-                            )
+                    Column(
+                        modifier = Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(spacing),
+                    ) {
+                        if (layout.showsIllustration) {
+                            Box(
+                                Modifier
+                                    .size(metrics.illustrationSize)
+                                    .onGloballyPositioned { intro.animation.slot = it },
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                LockIllustration(
+                                    shackleAngle = { intro.shackleAngle },
+                                    modifier = Modifier.graphicsLayer {
+                                        alpha = intro.illustrationAlpha
+                                        val travel = intro.travel()
+                                        translationX = travel.x
+                                        translationY = travel.y
+                                    },
+                                )
+                            }
                         }
+                        WooPosText(
+                            text = title,
+                            style = WooPosTypography.BodyXLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.semantics { heading() }.then(contentModifier),
+                        )
                     }
-                    WooPosText(
-                        text = title,
-                        style = WooPosTypography.BodyXLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.semantics { heading() }.then(contentModifier),
-                    )
-                    Column(contentModifier, horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(
+                        modifier = contentModifier.then(
+                            if (state.status == WooPosPINEntryStatus.PaymentPending) {
+                                Modifier.heightIn(max = messageMaxHeight).verticalScroll(rememberScrollState())
+                            } else {
+                                Modifier
+                            },
+                        ),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
                         WooPosPINEntryFeedback(state.status, state.enteredDigits, statusHeight)
                         if (state.status == WooPosPINEntryStatus.PaymentPending) {
                             WooPosButtonSmall(

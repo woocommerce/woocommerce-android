@@ -192,7 +192,6 @@ private fun SecurityCards(
                     CashierActions(stacked, { onChangePIN(WooPosLocalRole.CASHIER) }, onDeleteCashierPIN)
                 }
             }
-            // WOOMOB-4623 intentionally leaves the roles link inactive.
             TextButton(
                 onClick = {},
                 colors = securityTextButtonColors(),
@@ -310,6 +309,11 @@ private fun SecurityRowText(title: String, subtitle: String?, modifier: Modifier
             modifier = modifier,
             title = title,
             subtitle = subtitle,
+            subtitleColor = if (isSystemInDarkTheme()) {
+                WooPosTheme.colors.onSurfaceVariantHighest
+            } else {
+                WooPosTheme.colors.onSurfaceVariantLowest
+            },
         )
     } else {
         WooPosText(title, style = WooPosTypography.BodyMedium, modifier = modifier)

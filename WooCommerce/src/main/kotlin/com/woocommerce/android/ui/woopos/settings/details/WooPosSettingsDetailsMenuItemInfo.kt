@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -18,6 +19,7 @@ fun WooPosSettingsDetailsMenuItemInfo(
     modifier: Modifier = Modifier,
     title: String,
     subtitle: String,
+    subtitleColor: Color = WooPosTheme.colors.onSurfaceVariantLowest,
 ) {
     Column(
         modifier = modifier,
@@ -33,7 +35,7 @@ fun WooPosSettingsDetailsMenuItemInfo(
         WooPosText(
             text = subtitle,
             style = WooPosTypography.BodyMedium,
-            color = WooPosTheme.colors.onSurfaceVariantLowest,
+            color = subtitleColor,
         )
     }
 }

@@ -5,8 +5,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -177,7 +180,7 @@ private fun ApprovalBody(
         },
         message = { spacing ->
             val statusHeight = measureWooPosPINStatusHeight(measurer, constraints.maxWidth, APPROVAL_STATUS_MIN_HEIGHT)
-            ApprovalMessage(title, reason, state, statusHeight, spacing)
+            ApprovalMessage(title, reason, state, statusHeight, spacing, Modifier.heightIn(max = maxHeight))
         },
         keypad = { ApprovalKeypad(state, it, onUIEvent) },
     )
@@ -197,19 +200,25 @@ private fun ApprovalMessage(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing),
     ) {
-        WooPosText(
-            text = title,
-            modifier = Modifier.semantics { heading() },
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-        )
-        WooPosText(
-            text = reason,
-            style = WooPosTypography.BodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
+        Column(
+            modifier = Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(spacing),
+        ) {
+            WooPosText(
+                text = title,
+                modifier = Modifier.semantics { heading() },
+                style = WooPosTypography.Heading,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+            )
+            WooPosText(
+                text = reason,
+                style = WooPosTypography.BodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+        }
         WooPosPINEntryFeedback(state.status, state.enteredDigits, statusHeight)
     }
 }
