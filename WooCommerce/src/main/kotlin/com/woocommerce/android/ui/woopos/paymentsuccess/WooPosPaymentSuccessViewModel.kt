@@ -118,7 +118,7 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
     }
 
     fun onEmailReceiptClicked() {
-        printReceiptCoordinator.onEmailReceiptOpened()
+        printReceiptCoordinator.ignorePendingFailure()
         viewModelScope.launch {
             analyticsTracker.trackEmailReceiptTapped()
             val receiptAlreadySent =

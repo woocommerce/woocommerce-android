@@ -50,7 +50,7 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
         print(orderId)
     }
 
-    fun onEmailReceiptOpened() {
+    fun ignorePendingFailure() {
         isPrintFailureIgnored = true
     }
 

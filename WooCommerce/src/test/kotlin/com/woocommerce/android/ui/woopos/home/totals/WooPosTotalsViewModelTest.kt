@@ -1716,7 +1716,7 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `when OnStartReceiptFlowClicked is triggered, then the coordinator is told email receipt was opened`() =
+    fun `when OnStartReceiptFlowClicked is triggered, then the coordinator ignores the pending print failure`() =
         runTest {
             // GIVEN
             val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
@@ -1728,7 +1728,7 @@ class WooPosTotalsViewModelTest {
             viewModel.onUIEvent(WooPosTotalsUIEvent.OnStartReceiptFlowClicked)
 
             // THEN
-            verify(printReceiptCoordinator).onEmailReceiptOpened()
+            verify(printReceiptCoordinator).ignorePendingFailure()
         }
 
     @Test

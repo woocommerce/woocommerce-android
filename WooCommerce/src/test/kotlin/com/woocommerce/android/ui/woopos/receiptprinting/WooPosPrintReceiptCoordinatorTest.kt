@@ -330,7 +330,7 @@ class WooPosPrintReceiptCoordinatorTest {
         }
 
     @Test
-    fun `given the receipt is printing, when email receipt is opened and printing fails, then the failure is not reported`() =
+    fun `given the receipt is printing, when the pending failure is ignored and printing fails, then the failure is not reported`() =
         runTest {
             // GIVEN
             connectPrinter()
@@ -343,7 +343,7 @@ class WooPosPrintReceiptCoordinatorTest {
                 runCurrent()
 
                 // WHEN
-                sut.onEmailReceiptOpened()
+                sut.ignorePendingFailure()
                 printResult.complete(ReceiptPrinterResult.Failure(ReceiptPrinterError.PaperEmpty))
                 runCurrent()
 
@@ -354,7 +354,7 @@ class WooPosPrintReceiptCoordinatorTest {
         }
 
     @Test
-    fun `given a failure was ignored after email receipt was opened, when the next print fails, then the failure is reported`() =
+    fun `given a pending failure was ignored, when the next print fails, then the failure is reported`() =
         runTest {
             // GIVEN
             connectPrinter()
@@ -365,7 +365,7 @@ class WooPosPrintReceiptCoordinatorTest {
             sut.events.test {
                 sut.onPrintReceiptClicked(ORDER_ID)
                 runCurrent()
-                sut.onEmailReceiptOpened()
+                sut.ignorePendingFailure()
                 printResult.complete(ReceiptPrinterResult.Failure(ReceiptPrinterError.PaperEmpty))
                 runCurrent()
                 expectNoEvents()
