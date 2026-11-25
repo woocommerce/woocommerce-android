@@ -83,9 +83,8 @@ fun WooPosRootScreen(
                 }
             )
         }
-        val request = approvalState
-        if (!lockState.isLocked && request != null) {
-            WooPosApprovalDialog(request, approvalViewModel::onUIEvent)
+        if (!lockState.isLocked) {
+            WooPosApprovalDialog(approvalState, approvalViewModel::onUIEvent)
         }
     }
 }

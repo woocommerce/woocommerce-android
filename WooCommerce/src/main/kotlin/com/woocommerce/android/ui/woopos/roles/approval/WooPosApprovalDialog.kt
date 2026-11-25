@@ -37,6 +37,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
+import com.woocommerce.android.ui.woopos.common.composeui.rememberRetained
 import com.woocommerce.android.ui.woopos.common.pin.PIN_PAD_PHONE_KEY_SIZE
 import com.woocommerce.android.ui.woopos.common.pin.PIN_PAD_TABLET_KEY_SIZE
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINEntryFeedback
@@ -53,11 +54,12 @@ internal val LocalWooPosRequestApproval =
 
 @Composable
 internal fun WooPosApprovalDialog(
-    state: WooPosApprovalState,
+    state: WooPosApprovalState?,
     onUIEvent: (WooPosApprovalUIEvent) -> Unit,
 ) {
     val onDismiss = { onUIEvent(WooPosApprovalUIEvent.DismissRequested) }
     if (currentWooPosBreakpoint() == WooPosBreakpoint.Phone) {
+        if (state == null) return
         Dialog(
             onDismissRequest = onDismiss,
             properties = DialogProperties(
@@ -93,24 +95,27 @@ private fun ApprovalPhoneContent(
 
 @Composable
 private fun ApprovalTabletContent(
-    state: WooPosApprovalState,
+    state: WooPosApprovalState?,
     onUIEvent: (WooPosApprovalUIEvent) -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val isVisible = state != null
+    val shownState = rememberRetained(state)
     WooPosDialogWrapper(
         modifier = Modifier
             .padding(WooPosSpacing.Large.value)
             .widthIn(max = APPROVAL_CARD_MAX_WIDTH.toAdaptiveComponentSize()),
-        isVisible = true,
+        isVisible = isVisible,
         dialogBackgroundContentDescription = stringResource(R.string.dismiss),
         widthFraction = 1f,
-        onDismissRequest = onDismiss,
+        onDismissRequest = { if (isVisible) onDismiss() },
     ) {
+        if (shownState == null) return@WooPosDialogWrapper
         Column {
-            ApprovalCloseHeader(onDismiss)
+            ApprovalCloseHeader { if (isVisible) onDismiss() }
             ApprovalBody(
-                state,
-                onUIEvent,
+                shownState,
+                onUIEvent = { if (isVisible) onUIEvent(it) },
                 keySize = PIN_PAD_TABLET_KEY_SIZE,
                 modifier = Modifier
                     .weight(1f, fill = false)
