@@ -80,6 +80,7 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Total
 import com.woocommerce.android.ui.woopos.home.totals.payment.failed.WooPosPaymentFailedScreen
 import com.woocommerce.android.ui.woopos.home.totals.payment.inprogress.WooPosPaymentInProgressScreen
 import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButtonState
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 import com.woocommerce.android.util.WooPermissionUtils
 
@@ -90,6 +91,7 @@ fun WooPosTotalsScreen(
     onPhoneBack: (() -> Unit)? = null,
 ) {
     val state = viewModel.state.collectAsState().value
+    val printReceiptButtonState by viewModel.printReceiptButtonState.collectAsState()
     val onUIEvent = rememberUpdatedState(viewModel::onUIEvent)
     val fineLocationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -113,6 +115,7 @@ fun WooPosTotalsScreen(
     WooPosTotalsScreen(
         modifier = modifier,
         state = state,
+        printReceiptButtonState = printReceiptButtonState,
         onUIEvent = viewModel::onUIEvent,
         onPhoneBack = onPhoneBack,
     )
@@ -122,6 +125,7 @@ fun WooPosTotalsScreen(
 private fun WooPosTotalsScreen(
     modifier: Modifier = Modifier,
     state: WooPosTotalsViewState,
+    printReceiptButtonState: WooPosPrintReceiptButtonState = WooPosPrintReceiptButtonState.Hidden,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
     onPhoneBack: (() -> Unit)? = null,
 ) {
@@ -140,7 +144,9 @@ private fun WooPosTotalsScreen(
             if (state is WooPosTotalsViewState.PaymentSuccess) {
                 WooPosPaymentSuccessScreen(
                     state,
+                    printReceiptButtonState = printReceiptButtonState,
                     onReceiptClicked = { onUIEvent(WooPosTotalsUIEvent.OnStartReceiptFlowClicked) },
+                    onPrintReceiptClicked = { onUIEvent(WooPosTotalsUIEvent.OnPrintReceiptClicked) },
                     onNewTransactionClicked = { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) },
                     onBackPressed = { onUIEvent(WooPosTotalsUIEvent.OnBackClicked) },
                 )

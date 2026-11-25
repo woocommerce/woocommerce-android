@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.receiptprinting
 
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardDetails
 import com.woocommerce.android.receiptprinter.ReceiptPrinterConnectionStatus
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDevice
 import com.woocommerce.android.receiptprinter.ReceiptPrinterDiscoveryEvent
@@ -27,8 +28,8 @@ class WooPosReceiptPrinterFacade @Inject constructor(
         receiptPrinterManager.disconnect()
     }
 
-    suspend fun printReceipt(orderId: Long): ReceiptPrinterResult {
-        val receipt = buildThermalReceipt(orderId)
+    suspend fun printReceipt(orderId: Long, cardDetails: CardDetails?): ReceiptPrinterResult {
+        val receipt = buildThermalReceipt(orderId, cardDetails)
             ?: return ReceiptPrinterResult.Failure(ReceiptPrinterError.PrintFailed())
         return receiptPrinterManager.printReceipt(thermalReceiptRenderer.render(receipt))
     }

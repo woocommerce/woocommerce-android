@@ -12,7 +12,7 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCoupo
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
-import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalAction
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
@@ -279,11 +279,11 @@ class WooPosItemsViewModelTest {
         whenever(tabsHelper.selectTab(any(), eq(productsTab))).thenReturn(tabs)
         whenever(tabsHelper.selectTab(any(), eq(couponsTab))).thenReturn(tabs)
         val viewModel = createViewModel()
-        val requestApproval: (WooPosManagerApprovalAction, () -> Unit) -> Unit = mock()
+        val requestApproval: (WooPosApprovalAction, () -> Unit) -> Unit = mock()
         val onApproved = argumentCaptor<() -> Unit>()
         viewModel.onUIEvent(WooPosItemsUIEvent.OnTabClicked(couponsTab))
         viewModel.onUIEventWithApproval(WooPosItemsUIEvent.AddCouponIconClicked, requestApproval)
-        verify(requestApproval).invoke(eq(WooPosManagerApprovalAction.CreateCoupon), onApproved.capture())
+        verify(requestApproval).invoke(eq(WooPosApprovalAction.CreateCoupon), onApproved.capture())
 
         // WHEN
         viewModel.onUIEvent(WooPosItemsUIEvent.OnTabClicked(productsTab))

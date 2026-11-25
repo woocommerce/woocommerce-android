@@ -26,8 +26,13 @@ internal fun WooPosPINPhoneLayout(
         } else {
             WooPosSpacing.Medium.value
         }
+        val horizontalPadding = if (maxHeight < PIN_PHONE_COMPACT_BODY_HEIGHT) {
+            WooPosSpacing.Small.value
+        } else {
+            WooPosSpacing.XLarge.value
+        }
         Column(
-            Modifier.fillMaxSize().padding(horizontal = WooPosSpacing.XLarge.value, vertical = verticalPadding),
+            Modifier.fillMaxSize().padding(horizontal = horizontalPadding, vertical = verticalPadding),
         ) {
             header()
             BoxWithConstraints(

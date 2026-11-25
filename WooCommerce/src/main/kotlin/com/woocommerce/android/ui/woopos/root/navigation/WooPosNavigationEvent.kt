@@ -9,7 +9,6 @@ sealed class WooPosNavigationEvent {
     sealed class Exit : WooPosNavigationEvent()
     data object ExitPosClicked : Exit()
     data object BackFromSplashClicked : Exit()
-    data object RequestExitFromHome : Exit()
     data object ConfirmExitFromHome : Exit()
     data object OpenHomeFromSplash : WooPosNavigationEvent()
     data class OpenCashPayment(val orderId: Long) : WooPosNavigationEvent()

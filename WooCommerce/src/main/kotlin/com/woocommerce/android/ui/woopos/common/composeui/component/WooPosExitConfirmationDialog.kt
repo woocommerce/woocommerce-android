@@ -54,10 +54,7 @@ fun WooPosExitConfirmationDialog(
             Spacer(modifier = Modifier.height(WooPosSpacing.XXXLarge.value))
             WooPosButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    onDismissRequest()
-                    onExit()
-                },
+                onClick = onExit,
                 text = dismissButtonText
             )
         }
