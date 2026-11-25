@@ -1,0 +1,6 @@
+# Used by start_code_freeze for a separate testing report, including internal changes.
+changelog:
+  categories:
+    - title: Release smoke testing
+      labels:
+        - 'testing: release smoke test'
