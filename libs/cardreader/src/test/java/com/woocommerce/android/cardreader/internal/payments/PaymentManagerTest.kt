@@ -257,7 +257,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given interac payment, when processing payment finishes successfully, then capture payment is emitted`() =
         testBlocking {
-            val succeededInteracIntent = createPaymentIntent(SUCCEEDED, interacPresentDetails = CardDetails())
+            val succeededInteracIntent = createPaymentIntent(SUCCEEDED, interacPresentDetails = StripeCard())
             whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(succeededInteracIntent))
 
@@ -272,7 +272,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         testBlocking {
             val succeededCardPresentIntent = createPaymentIntent(
                 SUCCEEDED,
-                cardPresentDetails = CardDetails(brand = "eftpos_au")
+                cardPresentDetails = StripeCard(brand = "eftpos_au")
             )
             whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(succeededCardPresentIntent))
@@ -288,7 +288,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         testBlocking {
             val succeededCardPresentIntent = createPaymentIntent(
                 SUCCEEDED,
-                cardPresentDetails = CardDetails(brand = "visa")
+                cardPresentDetails = StripeCard(brand = "visa")
             )
             whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(succeededCardPresentIntent))
@@ -306,7 +306,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given interac payment, when processing payment finishes with canceled status, then flow terminates`() =
         testBlocking {
-            val canceledInteracIntent = createPaymentIntent(CANCELED, interacPresentDetails = CardDetails())
+            val canceledInteracIntent = createPaymentIntent(CANCELED, interacPresentDetails = StripeCard())
             whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(canceledInteracIntent))
 
@@ -394,9 +394,9 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given AU terminal payment preparation, when payment method is collected, then payment is prepared before confirmation`() =
         testBlocking {
-            val eftposDetails = CardDetails(availableNetworks = listOf("eftpos_au"))
+            val eftposDetails = StripeCard(availableNetworks = listOf("eftpos_au"))
             val collectedIntent = createPaymentIntent(REQUIRES_CONFIRMATION, cardPresentDetails = eftposDetails)
-            val confirmedIntent = createPaymentIntent(REQUIRES_CAPTURE, cardPresentDetails = CardDetails())
+            val confirmedIntent = createPaymentIntent(REQUIRES_CAPTURE, cardPresentDetails = StripeCard())
             whenever(processPaymentIntentAction.collectPaymentMethod(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(collectedIntent))
             whenever(processPaymentIntentAction.confirmPaymentIntent(anyOrNull()))
@@ -417,7 +417,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given AU terminal payment preparation, when selected card network is eftpos, then payment is prepared`() =
         testBlocking {
-            val eftposDetails = CardDetails(brand = "visa", network = "eftpos_au")
+            val eftposDetails = StripeCard(brand = "visa", network = "eftpos_au")
             val collectedIntent = createPaymentIntent(REQUIRES_CONFIRMATION, cardPresentDetails = eftposDetails)
             val confirmedIntent = createPaymentIntent(REQUIRES_CAPTURE, cardPresentDetails = eftposDetails)
             whenever(processPaymentIntentAction.collectPaymentMethod(anyOrNull()))
@@ -438,7 +438,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given AU terminal payment preparation, when visa card present is collected, then prepare is skipped`() =
         testBlocking {
-            val visaDetails = CardDetails(
+            val visaDetails = StripeCard(
                 brand = "visa",
                 availableNetworks = listOf("visa")
             )
@@ -462,8 +462,8 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given CA interac preparation, when card present is collected, then prepare is skipped`() =
         testBlocking {
-            val collectedIntent = createPaymentIntent(REQUIRES_CONFIRMATION, cardPresentDetails = CardDetails())
-            val confirmedIntent = createPaymentIntent(REQUIRES_CAPTURE, cardPresentDetails = CardDetails())
+            val collectedIntent = createPaymentIntent(REQUIRES_CONFIRMATION, cardPresentDetails = StripeCard())
+            val confirmedIntent = createPaymentIntent(REQUIRES_CAPTURE, cardPresentDetails = StripeCard())
             whenever(processPaymentIntentAction.collectPaymentMethod(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(collectedIntent))
             whenever(processPaymentIntentAction.confirmPaymentIntent(anyOrNull()))
@@ -539,7 +539,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         testBlocking {
             val intent = createPaymentIntent(
                 REQUIRES_CAPTURE,
-                cardPresentDetails = CardDetails(brand = "visa", last4 = "4242"),
+                cardPresentDetails = StripeCard(brand = "visa", last4 = "4242"),
             )
             whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(intent))
@@ -555,7 +555,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         testBlocking {
             val intent = createPaymentIntent(
                 SUCCEEDED,
-                interacPresentDetails = CardDetails(brand = "interac", last4 = "1234"),
+                interacPresentDetails = StripeCard(brand = "interac", last4 = "1234"),
             )
             whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(intent))
@@ -569,7 +569,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given charge without last 4, when capturing payment succeeds, then PaymentCompleted has no card details`() =
         testBlocking {
-            val intent = createPaymentIntent(REQUIRES_CAPTURE, cardPresentDetails = CardDetails(brand = "visa"))
+            val intent = createPaymentIntent(REQUIRES_CAPTURE, cardPresentDetails = StripeCard(brand = "visa"))
             whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(intent))
 
@@ -728,7 +728,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given succeeded interac intent and capture error, when capturing payment, then outcome unknown emitted`() =
         testBlocking {
-            val intent = createPaymentIntent(SUCCEEDED, interacPresentDetails = CardDetails())
+            val intent = createPaymentIntent(SUCCEEDED, interacPresentDetails = StripeCard())
             whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
                 .thenReturn(ProcessPaymentIntentStatus.Success(intent))
             whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
@@ -882,7 +882,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given remote Interac payment, when collected, then result contains detected method`() = testBlocking {
         // GIVEN
-        val intent = createPaymentIntent(SUCCEEDED, interacPresentDetails = CardDetails())
+        val intent = createPaymentIntent(SUCCEEDED, interacPresentDetails = StripeCard())
         whenever(terminalWrapper.retrievePaymentIntent("secret")).thenReturn(intent)
         whenever(terminalWrapper.processPaymentIntent(intent)).thenReturn(intent)
 
@@ -913,8 +913,8 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     private fun createPaymentIntent(
         status: PaymentIntentStatus,
         receiptUrl: String? = "test url",
-        interacPresentDetails: CardDetails? = null,
-        cardPresentDetails: CardDetails? = null,
+        interacPresentDetails: StripeCard? = null,
+        cardPresentDetails: StripeCard? = null,
     ): PaymentIntent =
         mock<PaymentIntent>().also {
             whenever(it.status).thenReturn(status)
@@ -936,7 +936,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
             whenever(it.latestCharge).thenReturn(charge)
         }
 
-    private data class CardDetails(
+    private data class StripeCard(
         val brand: String? = null,
         val network: String? = null,
         val availableNetworks: List<String>? = null,
