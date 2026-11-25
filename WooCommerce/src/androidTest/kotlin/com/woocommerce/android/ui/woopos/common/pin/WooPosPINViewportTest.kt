@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.MotionDurationScale
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.DarkMode
 import androidx.compose.ui.test.DeviceConfigurationOverride
 import androidx.compose.ui.test.FontScale
@@ -28,7 +29,9 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.then
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsCompat
@@ -92,6 +95,7 @@ class WooPosPINViewportTest {
                 val current = scene.copy(dark = dark)
                 composeTestRule.runOnIdle { scenario.value = current }
                 assertCompleteKeypad(current)
+                assertApprovalHeadingIsReadable(current)
                 File(directory, "scene-$index-${if (dark) "dark" else "light"}.png").outputStream().use {
                     composeTestRule.onRoot().captureToImage().asAndroidBitmap().compress(
                         Bitmap.CompressFormat.PNG,
@@ -106,6 +110,7 @@ class WooPosPINViewportTest {
     private fun assertScenarioPhases(current: Scenario, scenario: MutableState<Scenario>) {
         composeTestRule.runOnIdle { scenario.value = current }
         assertCompleteKeypad(current)
+        assertApprovalHeadingIsReadable(current)
         val originalBounds = composeTestRule.onNodeWithText("0").getUnclippedBoundsInRoot()
         for (phase in 1..2) {
             composeTestRule.runOnIdle { scenario.value = current.copy(phase = phase) }
@@ -190,6 +195,17 @@ class WooPosPINViewportTest {
                 .isGreaterThanOrEqualTo(with(node.layoutInfo.density) { 48.dp.toPx() } - 1f)
         }
         composeTestRule.onAllNodes(hasText("0") and hasAnyAncestor(hasScrollAction())).assertCountEquals(0)
+    }
+
+    private fun assertApprovalHeadingIsReadable(scenario: Scenario) {
+        if (scenario.flow == Flow.LOCK || scenario.flow == Flow.SETUP) return
+        val layouts = mutableListOf<TextLayoutResult>()
+        composeTestRule.onNodeWithText(context.getString(R.string.woopos_approval_required))
+            .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+        assertThat(layouts).isNotEmpty
+        assertThat(layouts.maxOf { it.lineCount })
+            .describedAs("The approval heading must not wrap into a narrow column: %s", scenario)
+            .isLessThanOrEqualTo(3)
     }
 
     private enum class Flow {

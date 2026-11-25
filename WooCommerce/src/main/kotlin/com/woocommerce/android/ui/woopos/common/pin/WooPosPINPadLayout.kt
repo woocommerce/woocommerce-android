@@ -42,7 +42,8 @@ internal fun WooPosPINPadLayout(
             ).value,
         ).dp
         val minimumPadWidth = MINIMUM_KEY_SIZE * COLUMNS + keySpacing * (COLUMNS - 1)
-        val canUseColumns = maxWidth >= minimumPadWidth + MINIMUM_MESSAGE_WIDTH + spacing
+        val canUseColumns = maxWidth > maxHeight &&
+            maxWidth >= minimumPadWidth + MINIMUM_MESSAGE_WIDTH + spacing
         if (fittedKeySize < MINIMUM_KEY_SIZE && canUseColumns) {
             val columnKeySize = minOf(
                 preferredKeySize,
