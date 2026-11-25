@@ -6,9 +6,9 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosCapability
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalAction
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLockSettings
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockPreferences
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityState.Protected
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -105,6 +105,7 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
         }.also { if (it.isSuccess && isSelected(scope.siteId)) accessSession.initialize() }.isSuccess
     }
 
+    @Suppress("ReturnCount")
     private suspend fun read(): WooPosSettingsSecurityState? {
         if (!canManagePINs()) return WooPosSettingsSecurityState.Restricted
         val id = selectedSite.getOrNull()?.id ?: return WooPosSettingsSecurityState.Unavailable

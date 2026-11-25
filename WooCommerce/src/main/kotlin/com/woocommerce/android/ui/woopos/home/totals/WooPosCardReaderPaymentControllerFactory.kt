@@ -3,9 +3,6 @@ package com.woocommerce.android.ui.woopos.home.totals
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
-import com.woocommerce.android.ui.woopos.roles.WooPosCapability
 import com.woocommerce.android.di.PointOfSaleMode
 import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
@@ -27,6 +24,9 @@ import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.products.RefreshProductsSignal
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.roles.WooPosCapability
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import org.wordpress.android.fluxc.store.WooCommerceStore

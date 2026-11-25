@@ -63,9 +63,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.databinding.ActivityMainBinding
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosRestorePOS
-import com.woocommerce.android.ui.woopos.root.WooPosActivity
-import kotlinx.coroutines.Job
 import com.woocommerce.android.extensions.EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.collapse
@@ -136,6 +133,8 @@ import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.ui.products.list.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerFragmentArgs
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosRestorePOS
+import com.woocommerce.android.ui.woopos.root.WooPosActivity
 import com.woocommerce.android.ui.woopos.tab.WooPosTabController
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
@@ -146,6 +145,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -399,23 +399,29 @@ class MainActivity :
         val launcherEntry = intent.action == Intent.ACTION_MAIN && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
         if (!launcherEntry) {
             resolvingPOSLaunch = false
-            if (!::binding.isInitialized) initializeMainContent(savedInstanceState)
-            else handleMainIntent()
+            if (!::binding.isInitialized) {
+                initializeMainContent(savedInstanceState)
+            } else {
+                handleMainIntent()
+            }
             return
         }
         resolvingPOSLaunch = true
         if (::binding.isInitialized) binding.root.isVisible = false
         posLaunchJob = lifecycleScope.launch {
             if (restorePOS()) {
-                startActivity(Intent(this@MainActivity, WooPosActivity::class.java).apply {
-                    action = Intent.ACTION_MAIN
-                    addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                })
+                startActivity(
+                    Intent(this@MainActivity, WooPosActivity::class.java).apply {
+                        action = Intent.ACTION_MAIN
+                        addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    }
+                )
                 finish()
             } else {
                 resolvingPOSLaunch = false
-                if (!::binding.isInitialized) initializeMainContent(savedInstanceState)
-                else {
+                if (!::binding.isInitialized) {
+                    initializeMainContent(savedInstanceState)
+                } else {
                     binding.root.isVisible = true
                     handleMainIntent()
                 }

@@ -18,6 +18,7 @@ internal class CardReaderRemoteCollectQueue(
 ) {
     private val oneCollectAtATime = Mutex()
     private val jobs = ConcurrentHashMap<String, CollectJob>()
+
     @Volatile private var lastStartedRequestId: String? = null
 
     private val stripeCancellationFailureHandler = CoroutineExceptionHandler { _, throwable ->

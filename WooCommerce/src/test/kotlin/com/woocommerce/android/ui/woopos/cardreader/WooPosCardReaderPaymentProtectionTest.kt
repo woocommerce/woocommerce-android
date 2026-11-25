@@ -1,31 +1,33 @@
 package com.woocommerce.android.ui.woopos.cardreader
 
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
+import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
+import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
+import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
-import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
-import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
-import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosCardReaderPaymentProtectionTest {
     @get:Rule val coroutineRule = WooPosCoroutineTestRule()
     private val manager: CardReaderManager = mock {
-        on { readerStatus }.thenReturn(MutableStateFlow(com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected()))
+        on {
+            readerStatus
+        }.thenReturn(MutableStateFlow(com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected()))
     }
     private val flags: FeatureFlagRepository = mock()
     private val facade by lazy { WooPosCardReaderFacade(manager, flags) }
@@ -89,7 +91,10 @@ class WooPosCardReaderPaymentProtectionTest {
         // GIVEN
         val gate = CompletableDeferred<Boolean>()
         var cancellations = 0
-        facade.beginPayment { cancellations++; gate.await() }
+        facade.beginPayment {
+            cancellations++
+            gate.await()
+        }
         val pending = async { facade.cancelPayment() }
         runCurrent()
 
@@ -116,6 +121,7 @@ class WooPosCardReaderPaymentProtectionTest {
         // THEN
         assertThat((facade.paymentState.value as WooPosCardReaderFacade.PaymentState.Pending).owner).isSameAs(current)
     }
+
     @Test
     fun `given a tracked controller, when a definite failure arrives, then a new collection is allowed`() = runTest {
         // GIVEN
@@ -133,9 +139,15 @@ class WooPosCardReaderPaymentProtectionTest {
 
         // THEN
         assertThat(facade.isPaymentPending).isFalse()
-        assertThat(facade.trackPayment(mock { on { paymentState }.thenReturn(
-            MutableStateFlow(CardReaderPaymentState.LoadingData {})
-        ) })).isTrue()
+        assertThat(
+            facade.trackPayment(
+                mock {
+                    on { paymentState }.thenReturn(
+                        MutableStateFlow(CardReaderPaymentState.LoadingData {})
+                    )
+                }
+            )
+        ).isTrue()
     }
 
     @Test
@@ -143,7 +155,9 @@ class WooPosCardReaderPaymentProtectionTest {
         // GIVEN
         whenever(flags.isEnabled(FeatureFlag.WOO_POS_ROLES)).thenReturn(true)
         val failed = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.Cancelable(
-            PaymentFlowError.Canceled, "", {},
+            PaymentFlowError.Canceled,
+            "",
+            {},
         )
         val states = MutableStateFlow<CardReaderPaymentOrRefundState>(failed)
         val controller: CardReaderPaymentController = mock { on { paymentState }.thenReturn(states) }
@@ -189,4 +203,31 @@ class WooPosCardReaderPaymentProtectionTest {
         assertThat(facade.isPaymentPending).isFalse()
     }
 
+    @Test
+    fun `given a missing cancel reply, when payment succeeds, then a later drained failure releases only that owner`() = runTest {
+        // GIVEN
+        var replyReceived = false
+        lateinit var owner: WooPosCardReaderFacade.PaymentOwner
+        owner = requireNotNull(
+            facade.beginPayment {
+                if (!replyReceived) facade.markCancellationUnconfirmed(owner)
+                false
+            }
+        )
+        facade.cancelPayment()
+
+        // WHEN
+        facade.finishPayment(owner)
+
+        // THEN
+        assertThat(facade.isPaymentPending).isTrue()
+        assertThat(facade.beginPayment { true }).isNull()
+
+        // WHEN
+        replyReceived = true
+        facade.cancelPayment()
+
+        // THEN
+        assertThat(facade.isPaymentPending).isFalse()
+    }
 }

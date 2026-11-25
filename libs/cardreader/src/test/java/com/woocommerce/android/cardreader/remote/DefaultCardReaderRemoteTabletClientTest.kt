@@ -188,9 +188,13 @@ class DefaultCardReaderRemoteTabletClientTest : CardReaderBaseUnitTest() {
         assertThat(cancellation.isCompleted).isFalse()
 
         // WHEN
-        phone.send(CardReaderRemoteMessage.CancelPaymentResult(
-            request.requestId, requireNotNull(cancelRequest.cancellationId), false,
-        ))
+        phone.send(
+            CardReaderRemoteMessage.CancelPaymentResult(
+                request.requestId,
+                requireNotNull(cancelRequest.cancellationId),
+                false,
+            )
+        )
 
         // THEN
         assertThat(withTimeout(5_000) { cancellation.await() }).isEqualTo(RemotePaymentCancellation.FAILED)

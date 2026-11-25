@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.wooPosUserInteraction
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -40,6 +39,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.wooPosUserInteraction
 import com.woocommerce.android.ui.woopos.common.pin.PIN_PAD_PHONE_KEY_SIZE
 import com.woocommerce.android.ui.woopos.common.pin.PIN_PAD_TABLET_KEY_SIZE
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINEntryFeedback

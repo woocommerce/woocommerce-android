@@ -194,7 +194,10 @@ class WooPosTotalsViewModelTest {
     }
 
     private val cardReaderFacade: WooPosCardReaderFacade = mock {
-        on { retryPayment(any(), any()) }.thenAnswer { it.getArgument<() -> Unit>(1).invoke(); true }
+        on { retryPayment(any(), any()) }.thenAnswer {
+            it.getArgument<() -> Unit>(1).invoke()
+            true
+        }
     }
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync = mock()
@@ -3741,14 +3744,23 @@ class WooPosTotalsViewModelTest {
         val fixture = com.woocommerce.android.ui.woopos.roles.lock.WooPosLocalRateLimiterTestFixture(
             coroutinesTestRule.testDispatchers,
         )
-        whenever(fixture.lockPreferences.settings(1)).thenReturn(kotlinx.coroutines.flow.flowOf(Result.success(
-            com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLockSettings(afterSale = true)
-        )))
+        whenever(fixture.lockPreferences.settings(1)).thenReturn(
+            kotlinx.coroutines.flow.flowOf(
+                Result.success(
+                    com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLockSettings(afterSale = true)
+                )
+            )
+        )
         val flags: com.woocommerce.android.util.FeatureFlagRepository = mock {
             on { isEnabled(com.woocommerce.android.util.FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
         }
         val session = com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession(
-            flags, selectedSite, fixture.rateLimiter(), fixture.recovery, fixture.lockPreferences, fixture.cardReaderFacade,
+            flags,
+            selectedSite,
+            fixture.rateLimiter(),
+            fixture.recovery,
+            fixture.lockPreferences,
+            fixture.cardReaderFacade,
         )
         session.initialize()
         session.unlock("1234")
@@ -3758,8 +3770,12 @@ class WooPosTotalsViewModelTest {
         val receiver: WooPosParentToChildrenEventReceiver = mock {
             on { events }.thenReturn(kotlinx.coroutines.flow.MutableSharedFlow())
         }
-        val viewModel = createViewModel(savedState = savedState, parentToChildrenEventReceiver = receiver,
-            accessSession = session, lockPreferences = fixture.lockPreferences)
+        val viewModel = createViewModel(
+            savedState = savedState,
+            parentToChildrenEventReceiver = receiver,
+            accessSession = session,
+            lockPreferences = fixture.lockPreferences
+        )
 
         // WHEN
         viewModel.onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked)

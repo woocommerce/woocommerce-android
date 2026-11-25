@@ -6,6 +6,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.pin.PIN_COUNTDOWN_INTERVAL_MILLIS
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosElapsedTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
@@ -14,7 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosElapsedTime
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.map
@@ -34,9 +34,11 @@ class WooPosLockScreenViewModel @Inject constructor(
     val state = _state.asStateFlow()
     private val _exitRequested = MutableStateFlow(false)
     val exitRequested = _exitRequested.asStateFlow()
+    val isExitInProgress: Boolean
+        get() = _exitRequested.value || accessSession.state.value == WooPosAccessSessionState.Exiting
     private var pin = ""
     private var settings: WooPosAutoLockSettings? = null
-    private var foreground = false
+    private var foreground: Boolean? = null
     private var lastInteraction: Long? = null
     private var inactivityJob: Job? = null
 
@@ -46,6 +48,12 @@ class WooPosLockScreenViewModel @Inject constructor(
         }
         viewModelScope.launch {
             combine(accessSession.state, accessSession.paymentState) { session, _ -> session }.collect { session ->
+                if (foreground == false && session is WooPosAccessSessionState.Unlocked &&
+                    settings?.onBackground != false
+                ) {
+                    viewModelScope.launch(start = CoroutineStart.UNDISPATCHED) { accessSession.lockOnBackground() }
+                    return@collect
+                }
                 lastInteraction = if (session.isLocked || accessSession.isPaymentPending) null else clock.milliseconds()
                 restartInactivity()
                 pin = ""
@@ -76,7 +84,11 @@ class WooPosLockScreenViewModel @Inject constructor(
                             if (result.isFailure) accessSession.blockForStorageFailure()
                             lastInteraction = if (accessSession.state.value is WooPosAccessSessionState.Unlocked &&
                                 !accessSession.isPaymentPending
-                            ) clock.milliseconds() else null
+                            ) {
+                                clock.milliseconds()
+                            } else {
+                                null
+                            }
                             restartInactivity()
                         }
                     }
@@ -130,7 +142,9 @@ class WooPosLockScreenViewModel @Inject constructor(
     private fun restartInactivity() {
         inactivityJob?.cancel()
         val minutes = settings?.inactivityMinutes ?: return
-        if (minutes == 0 || !foreground || !accessSession.canLock || accessSession.state.value !is WooPosAccessSessionState.Unlocked) return
+        val canRun = foreground == true && accessSession.canLock &&
+            accessSession.state.value is WooPosAccessSessionState.Unlocked
+        if (minutes == 0 || !canRun) return
         val now = clock.milliseconds()
         val started = lastInteraction ?: now.also { lastInteraction = it }
         val remaining = (minutes * MILLIS_PER_MINUTE - (now - started)).coerceAtLeast(0)

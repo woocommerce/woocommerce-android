@@ -19,21 +19,32 @@ class WooPosRestorePOS @Inject constructor(
         }
         val siteId = selectedSite.getOrNull()?.id ?: return false
         val logoutVersion = rateLimiter.logoutVersion.value
-        val saved = preferences.restoreSiteId()
-        if (saved.isSuccess && saved.getOrThrow() == null) return false
         fun isCurrent() = siteId == selectedSite.getOrNull()?.id && logoutVersion == rateLimiter.logoutVersion.value
-        if (!isCurrent()) return false
-        if (saved.isSuccess && saved.getOrThrow() != siteId) {
-            preferences.clearRestoreState(saved.getOrThrow()) { isCurrent() }
-            return false
+        val saved = preferences.restoreSiteId()
+        return when {
+            saved.isSuccess && saved.getOrThrow() == null -> false
+            !isCurrent() -> false
+            saved.isSuccess && saved.getOrThrow() != siteId -> {
+                preferences.clearRestoreState(saved.getOrThrow()) { isCurrent() }
+                false
+            }
+            else -> shouldRestoreProtectedSite(siteId, ::isCurrent)
         }
+    }
+
+    private suspend fun shouldRestoreProtectedSite(siteId: Int, isCurrent: () -> Boolean): Boolean {
         val protection = rateLimiter.isProtectionEnabled(siteId)
-        if (siteId != selectedSite.getOrNull()?.id || logoutVersion != rateLimiter.logoutVersion.value) return false
-        if (!featureFlags.isEnabled(FeatureFlag.WOO_POS_ROLES)) return false
-        if (protection.getOrNull() == false) {
-            preferences.clearRestoreState(siteId) { isCurrent() }
-            return false
+        return when {
+            !isCurrent() -> false
+            !featureFlags.isEnabled(FeatureFlag.WOO_POS_ROLES) -> {
+                preferences.clearRestoreState(siteId, isCurrent)
+                false
+            }
+            protection.getOrNull() == false -> {
+                preferences.clearRestoreState(siteId, isCurrent)
+                false
+            }
+            else -> true
         }
-        return true
     }
 }

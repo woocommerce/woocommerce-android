@@ -20,8 +20,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -574,7 +574,9 @@ class WooPosAccessSessionTest {
         val fixture = fixture().apply { pins = Result.success(emptyMap()) }
         val session = session(fixture)
         session.initialize()
-        whenever(fixture.lockPreferences.clearRestoreState(eq(1), any())).thenReturn(Result.failure(IllegalStateException()))
+        whenever(
+            fixture.lockPreferences.clearRestoreState(eq(1), any())
+        ).thenReturn(Result.failure(IllegalStateException()))
         var exited = false
 
         // WHEN

@@ -49,7 +49,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.wooPosUserInteraction
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
@@ -63,8 +62,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLockSettings
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.wooPosUserInteraction
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLockSettings
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItemInfo
 
 @Composable
@@ -387,7 +387,9 @@ private fun LockSettingsCard(
                     WooPosText(inactivityLabel(settings.inactivityMinutes), style = WooPosTypography.BodyMedium)
                 }
                 DropdownMenu(
-                    modifier = Modifier.wooPosUserInteraction().background(MaterialTheme.colorScheme.surfaceContainerLowest),
+                    modifier = Modifier.wooPosUserInteraction().background(
+                        MaterialTheme.colorScheme.surfaceContainerLowest
+                    ),
                     expanded = pickerOpen,
                     onDismissRequest = { pickerOpen = false },
                 ) {

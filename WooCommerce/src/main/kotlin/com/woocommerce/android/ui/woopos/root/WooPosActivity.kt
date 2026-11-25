@@ -1,40 +1,41 @@
 package com.woocommerce.android.ui.woopos.root
 
-import android.os.Bundle
-import android.os.Build
+import android.app.Activity
 import android.app.ActivityManager
-import android.view.Window
-import android.view.MotionEvent
-import android.view.KeyEvent
+import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.IntentFilter
-import androidx.core.content.ContextCompat
-import com.woocommerce.android.WooCommerce
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
-import android.app.Activity
-import android.app.Application
 import android.content.Intent
-import androidx.activity.viewModels
+import android.content.IntentFilter
+import android.os.Build
+import android.os.Bundle
+import android.view.KeyEvent
+import android.view.MotionEvent
+import android.view.Window
 import androidx.activity.addCallback
-import androidx.lifecycle.lifecycleScope
-import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
-import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.launch
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenViewModel
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.Modifier
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.lifecycleScope
+import com.woocommerce.android.WooCommerce
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.gesturesOrButtonsNavigationPadding
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenViewModel
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosRestorePOS
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEntryPointKeeper
 import com.woocommerce.android.ui.woopos.util.ext.lockWooPosOrientation
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -52,7 +53,11 @@ class WooPosActivity : AppCompatActivity() {
     lateinit var analyticsEntryPointKeeper: WooPosAnalyticsEntryPointKeeper
 
     @Inject lateinit var selectedSite: SelectedSite
+
     @Inject lateinit var featureFlags: FeatureFlagRepository
+
+    @Inject lateinit var restorePOS: WooPosRestorePOS
+
     @Inject lateinit var productsDataSource: WooPosProductsDataSource
     private var saleSiteId: Int? = null
     private var paymentActivityVisible = false
@@ -60,8 +65,9 @@ class WooPosActivity : AppCompatActivity() {
     private val paymentVisibility = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             paymentActivityVisible = intent.getBooleanExtra(WooCommerce.POS_PAYMENT_VISIBLE, false)
-            if (paymentActivityVisible) lockViewModel.onForeground()
-            else if (visibleActivities.isEmpty()) lockViewModel.onBackground()
+            if (paymentActivityVisible) {
+                lockViewModel.onForeground()
+            } else if (visibleActivities.isEmpty()) lockViewModel.onBackground()
         }
     }
 
@@ -80,8 +86,8 @@ class WooPosActivity : AppCompatActivity() {
         override fun onActivityStopped(activity: Activity) {
             restoreWindowCallback(activity)
             visibleActivities.remove(activity)
-            if (visibleActivities.isEmpty() && !paymentActivityVisible && !hasVisiblePaymentTask() &&
-                !activity.isChangingConfigurations) {
+            val background = visibleActivities.isEmpty() && !paymentActivityVisible && !hasVisiblePaymentTask()
+            if (background && !activity.isChangingConfigurations) {
                 lockViewModel.onBackground()
             }
         }
@@ -111,8 +117,15 @@ class WooPosActivity : AppCompatActivity() {
         lifecycleScope.launch {
             featureFlags.awaitRemoteFlagsLoaded()
             val rolesEnabled = featureFlags.isEnabled(FeatureFlag.WOO_POS_ROLES)
-            if (savedSale != null && (savedSale.getInt(SALE_SITE_ID) != saleSiteId ||
-                (!rolesEnabled && !initializedProcess))) {
+            val staleSavedSite = savedInstanceState?.containsKey(SALE_SITE_ID) == true &&
+                savedInstanceState.getInt(SALE_SITE_ID) != saleSiteId
+            if (staleSavedSite || (savedSale?.getBoolean(EXIT_IN_PROGRESS) == true && !restorePOS())) {
+                finishRestoredExit()
+                return@launch
+            }
+            val legacyRestore = !rolesEnabled && !initializedProcess
+            val invalidSale = savedSale?.getInt(SALE_SITE_ID) != saleSiteId || legacyRestore
+            if (savedSale != null && invalidSale) {
                 intent.putExtra(DISCARD_SAVED_SALE, true)
                 recreate()
                 return@launch
@@ -125,8 +138,12 @@ class WooPosActivity : AppCompatActivity() {
                 visibleActivities.add(this@WooPosActivity)
                 lockViewModel.onForeground()
             }
-            ContextCompat.registerReceiver(this@WooPosActivity, paymentVisibility, IntentFilter(WooCommerce.POS_PAYMENT_VISIBILITY_ACTION),
-                ContextCompat.RECEIVER_NOT_EXPORTED)
+            ContextCompat.registerReceiver(
+                this@WooPosActivity,
+                paymentVisibility,
+                IntentFilter(WooCommerce.POS_PAYMENT_VISIBILITY_ACTION),
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
             WindowCompat.setDecorFitsSystemWindows(window, false)
             lockWooPosOrientation()
 
@@ -134,11 +151,7 @@ class WooPosActivity : AppCompatActivity() {
             lifecycle.addObserver(wooPosCouponCreationFacade)
             lifecycle.addObserver(wooPosPeriodicSyncFacade)
 
-            lifecycleScope.launch {
-                selectedSite.observe().distinctUntilChangedBy { it?.id }.collect { site ->
-                    if (site?.id != saleSiteId) finish()
-                }
-            }
+            observeSelectedSite()
 
             setContent {
                 WooPosTheme {
@@ -154,15 +167,26 @@ class WooPosActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         saleSiteId?.let { outState.putInt(SALE_SITE_ID, it) }
+        outState.putBoolean(EXIT_IN_PROGRESS, observingVisibility && lockViewModel.isExitInProgress)
         super.onSaveInstanceState(outState)
+    }
+
+    private fun observeSelectedSite() {
+        lifecycleScope.launch {
+            selectedSite.observe().distinctUntilChangedBy { it?.id }.collect { site ->
+                if (site?.id != saleSiteId) finish()
+            }
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        if (intent.action == Intent.ACTION_MAIN) lifecycleScope.launch {
-            featureFlags.awaitRemoteFlagsLoaded()
-            lockViewModel.onLauncherEntry()
+        if (intent.action == Intent.ACTION_MAIN) {
+            lifecycleScope.launch {
+                featureFlags.awaitRemoteFlagsLoaded()
+                lockViewModel.onLauncherEntry()
+            }
         }
     }
 
@@ -190,6 +214,11 @@ class WooPosActivity : AppCompatActivity() {
         if (isFinishing) analyticsEntryPointKeeper.onPosSessionEnded()
     }
 
+    private fun finishRestoredExit() {
+        if (isTaskRoot) startActivity(Intent(this, com.woocommerce.android.ui.main.MainActivity::class.java))
+        finish()
+    }
+
     private fun restoreWindowCallback(activity: Activity) {
         (activity.window.callback as? InteractionCallback)?.let { activity.window.callback = it.original }
     }
@@ -212,5 +241,6 @@ class WooPosActivity : AppCompatActivity() {
         private var initializedProcess = false
         private const val SALE_SITE_ID = "pos_sale_site_id"
         private const val DISCARD_SAVED_SALE = "discard_pos_saved_sale"
+        private const val EXIT_IN_PROGRESS = "pos_exit_in_progress"
     }
 }

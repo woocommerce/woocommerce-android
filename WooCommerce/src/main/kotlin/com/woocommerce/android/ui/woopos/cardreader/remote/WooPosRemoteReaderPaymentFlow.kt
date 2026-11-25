@@ -12,6 +12,7 @@ import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteConnectionLostException
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteError
 import com.woocommerce.android.cardreader.remote.CollectPaymentOutcome
+import com.woocommerce.android.cardreader.remote.RemotePaymentCancellation
 import com.woocommerce.android.di.PointOfSaleMode
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
@@ -21,16 +22,15 @@ import com.woocommerce.android.ui.payments.cardreader.payment.TerminalPaymentPre
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.CardReaderTransport
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.TAP_TO_PAY_READER_MODEL
-import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
-import com.woocommerce.android.cardreader.remote.RemotePaymentCancellation
 import kotlinx.coroutines.delay
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -84,8 +84,11 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
         return try {
             collectPayment(order, onCaptureStarting).also { result ->
                 if (owner != null) {
-                    if (result is Result.Failed && result.isUnresolved) cardReaderFacade.markUnresolved(owner)
-                    else cardReaderFacade.finishPayment(owner)
+                    if (result is Result.Failed && result.isUnresolved) {
+                        cardReaderFacade.markUnresolved(owner)
+                    } else {
+                        cardReaderFacade.finishPayment(owner)
+                    }
                 }
             }
         } catch (error: CancellationException) {
@@ -159,16 +162,20 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
             ),
         )
 
-        return collectRemotePayment(order.id, paymentInfo, onCaptureStarting)
+        return collectRemotePayment(site.id, order.id, paymentInfo, onCaptureStarting)
     }
 
     private suspend fun collectRemotePayment(
+        localSiteId: Int,
         orderId: Long,
         paymentInfo: PaymentInfo,
         onCaptureStarting: suspend () -> Unit,
     ): Result {
         return when (val outcome = remoteReaderSession.sendCollectPayment(paymentInfo)) {
             is CollectPaymentOutcome.Success -> {
+                if (selectedSite.getOrNull()?.id != localSiteId) {
+                    return Result.Failed(genericFailureMessage(), "payment_store_changed", isUnresolved = true)
+                }
                 if (outcome.status == "requires_capture" || outcome.status == "succeeded") {
                     paymentsFlowTracker.onPaymentCapturing()
                 }
@@ -176,7 +183,11 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
                     (outcome.paymentMethodType ?: PaymentMethodType.UNKNOWN).stringRepresentation
                 )
                 onCaptureStarting()
-                capture(orderId, outcome.paymentIntentId)
+                if (selectedSite.getOrNull()?.id != localSiteId) {
+                    Result.Failed(genericFailureMessage(), "payment_store_changed", isUnresolved = true)
+                } else {
+                    capture(orderId, outcome.paymentIntentId)
+                }
             }
             is CollectPaymentOutcome.Rejected -> {
                 logger.e(
@@ -193,9 +204,11 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
                     stripeErrorCode = outcome.stripeErrorCode,
                     isUnresolved = outcome.error == CardReaderRemoteError.UnexpectedReply ||
                         outcome.error is CardReaderRemoteError.Unknown ||
-                        (outcome.error == CardReaderRemoteError.CollectFailed && outcome.stripeErrorCode !in setOf(
-                            "DECLINED_BY_STRIPE_API", "DECLINED_BY_READER",
-                        )),
+                        (
+                            outcome.error == CardReaderRemoteError.CollectFailed && outcome.stripeErrorCode !in setOf(
+                                "DECLINED_BY_STRIPE_API", "DECLINED_BY_READER",
+                            )
+                            ),
                 )
             }
             CollectPaymentOutcome.TimedOut -> {

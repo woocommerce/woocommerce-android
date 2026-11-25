@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
@@ -18,6 +19,8 @@ import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPay
 import com.woocommerce.android.ui.woopos.home.totals.TTPPaymentProgressDelegate
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
+import com.woocommerce.android.ui.woopos.roles.WooPosCapability
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -32,9 +35,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
-import com.woocommerce.android.ui.woopos.roles.WooPosCapability
 import java.math.BigDecimal
 import javax.inject.Inject
 

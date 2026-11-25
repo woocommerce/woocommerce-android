@@ -1,7 +1,7 @@
 package com.woocommerce.android
 
-import android.app.Application
 import android.app.Activity
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import androidx.hilt.work.HiltWorkerFactory
@@ -69,8 +69,10 @@ open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provid
                 if (visible.isEmpty() && !activity.isChangingConfigurations) reportVisibility(false)
             }
             private fun reportVisibility(isVisible: Boolean) {
-                sendBroadcast(Intent(POS_PAYMENT_VISIBILITY_ACTION).setPackage(packageName)
-                    .putExtra(POS_PAYMENT_VISIBLE, isVisible))
+                sendBroadcast(
+                    Intent(POS_PAYMENT_VISIBILITY_ACTION).setPackage(packageName)
+                        .putExtra(POS_PAYMENT_VISIBLE, isVisible)
+                )
             }
             override fun onActivityCreated(activity: Activity, state: Bundle?) = Unit
             override fun onActivityResumed(activity: Activity) = Unit

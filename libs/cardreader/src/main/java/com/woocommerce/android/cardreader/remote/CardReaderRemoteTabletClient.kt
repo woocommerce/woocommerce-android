@@ -4,6 +4,7 @@ import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.CancelPayment
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.CancelPaymentResult
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.CollectPaymentRequest
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectAck
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ConnectRequest
@@ -11,8 +12,8 @@ import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.ErrorMe
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.PaymentIntentResult
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.Ping
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -25,7 +26,6 @@ import kotlinx.coroutines.withTimeout
 import java.io.IOException
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-import com.woocommerce.android.cardreader.remote.CardReaderRemoteMessage.CancelPaymentResult
 
 interface CardReaderRemoteTabletClient {
     val connectionClosed: StateFlow<Boolean>
@@ -159,7 +159,9 @@ internal class DefaultCardReaderRemoteTabletClient(
     private fun mapToConnectFailedIfIo(cause: Exception): Exception =
         if (cause is IOException || cause is CardReaderRemoteConnectionLostException) {
             IllegalStateException(CONNECT_FAILED_MESSAGE, cause)
-        } else cause
+        } else {
+            cause
+        }
 
     private fun bridgeClosedSignal(connection: CardReaderRemoteConnection) {
         closedBridgeJob?.cancel()
@@ -244,11 +246,11 @@ internal class DefaultCardReaderRemoteTabletClient(
             active.send(CancelPayment(requestId, cancellationId))
             val reply = withTimeout(timeoutMillis) { response.await() }
             if (reply.cancelled) RemotePaymentCancellation.CONFIRMED else RemotePaymentCancellation.FAILED
-        } catch (timeout: TimeoutCancellationException) {
+        } catch (@Suppress("SwallowedException") timeout: TimeoutCancellationException) {
             RemotePaymentCancellation.UNCONFIRMED
         } catch (cancel: CancellationException) {
             throw cancel
-        } catch (@Suppress("TooGenericExceptionCaught") error: Exception) {
+        } catch (@Suppress("TooGenericExceptionCaught", "SwallowedException") error: Exception) {
             RemotePaymentCancellation.UNCONFIRMED
         } finally {
             completion?.dispose()
@@ -262,12 +264,15 @@ internal class DefaultCardReaderRemoteTabletClient(
         channels.job = scope.launch {
             try {
                 active.receive().collect { reply ->
-                    if (reply is CancelPaymentResult) channels.cancellations[reply.cancellationId]?.complete(reply)
-                    else channels.payments[reply.requestId]?.complete(reply)
+                    if (reply is CancelPaymentResult) {
+                        channels.cancellations[reply.cancellationId]?.complete(reply)
+                    } else {
+                        channels.payments[reply.requestId]?.complete(reply)
+                    }
                 }
             } catch (cancel: CancellationException) {
                 throw cancel
-            } catch (@Suppress("TooGenericExceptionCaught") error: Exception) {
+            } catch (@Suppress("TooGenericExceptionCaught", "SwallowedException") error: Exception) {
                 logWrapper.w(TAG, "Remote reply stream failed: ${error::class.java.simpleName}")
             }
         }

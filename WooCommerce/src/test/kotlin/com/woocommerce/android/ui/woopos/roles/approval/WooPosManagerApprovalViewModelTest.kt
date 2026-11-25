@@ -35,7 +35,15 @@ class WooPosManagerApprovalViewModelTest {
     }
     private val fixture = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
     private val rateLimiter = fixture.rateLimiter()
-    private val access = WooPosAccessSession(flags, site, rateLimiter, fixture.recovery, fixture.lockPreferences, fixture.cardReaderFacade)
+    private val access =
+        WooPosAccessSession(
+            flags,
+            site,
+            rateLimiter,
+            fixture.recovery,
+            fixture.lockPreferences,
+            fixture.cardReaderFacade
+        )
 
     @Test
     fun `given Admin is active, when Exit is requested, then the direct action runs without a prompt`() = runTest {

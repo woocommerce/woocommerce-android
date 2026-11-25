@@ -53,4 +53,38 @@ class CardReaderRemoteCollectQueueTest : CardReaderBaseUnitTest() {
             // THEN
             verify(logWrapper).e(any(), any())
         }
+
+    @Test
+    fun `given a queued request, when cancellation claims it, then it cannot become the reader owner`() = testBlocking {
+        // GIVEN
+        val queue = CardReaderRemoteCollectQueue(this, logWrapper)
+        val started = mutableListOf<String>()
+        queue.enqueue("A") {
+            started += "A"
+            awaitCancellation()
+        }
+        queue.enqueue("B") { started += "B" }
+
+        // WHEN
+        assertThat(queue.cancelQueued("B")).isTrue()
+        queue.cancel("A")
+
+        // THEN
+        assertThat(started).containsExactly("A")
+        assertThat(queue.isCurrent("B")).isFalse()
+    }
+
+    @Test
+    fun `given a newer reader owner, when an old cancel arrives, then the old request is not current`() = testBlocking {
+        // GIVEN
+        val queue = CardReaderRemoteCollectQueue(this, logWrapper)
+        queue.enqueue("A") { }
+        assertThat(queue.isCurrent("A")).isTrue()
+        queue.enqueue("B") { }
+
+        // THEN
+        assertThat(queue.isCurrent("A")).isFalse()
+        assertThat(queue.cancelQueued("A")).isFalse()
+        assertThat(queue.isCurrent("B")).isTrue()
+    }
 }

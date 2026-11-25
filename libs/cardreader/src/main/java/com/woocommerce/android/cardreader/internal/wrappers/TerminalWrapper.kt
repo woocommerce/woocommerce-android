@@ -3,10 +3,10 @@ package com.woocommerce.android.cardreader.internal.wrappers
 import android.app.Application
 import androidx.annotation.RequiresPermission
 import com.stripe.stripeterminal.Terminal
+import com.stripe.stripeterminal.external.callable.Callback
+import com.stripe.stripeterminal.external.callable.Cancelable
 import com.stripe.stripeterminal.external.callable.ConnectionTokenProvider
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
-import com.stripe.stripeterminal.external.callable.Cancelable
-import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.TerminalListener
 import com.stripe.stripeterminal.external.models.CollectPaymentIntentConfiguration
 import com.stripe.stripeterminal.external.models.CollectRefundConfiguration
@@ -26,9 +26,8 @@ import com.stripe.stripeterminal.external.models.SimulatedCardType
 import com.stripe.stripeterminal.external.models.SimulatorConfiguration
 import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration
 import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration.Color
-import com.stripe.stripeterminal.external.models.TerminalException
 import com.stripe.stripeterminal.external.models.TerminalErrorCode
-import java.util.concurrent.atomic.AtomicReference
+import com.stripe.stripeterminal.external.models.TerminalException
 import com.stripe.stripeterminal.ktx.cancelPaymentIntent
 import com.stripe.stripeterminal.ktx.connectReader
 import com.stripe.stripeterminal.ktx.createPaymentIntent
@@ -42,6 +41,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderImpl
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -151,9 +151,12 @@ internal class TerminalWrapper(private val terminal: () -> Terminal = { Terminal
 
     private suspend fun paymentCommand(start: (PaymentIntentCallback) -> Cancelable): PaymentIntent =
         suspendCancellableCoroutine { continuation ->
+            if (!continuation.isActive) return@suspendCancellableCoroutine
             val command = PaymentCommand()
             if (!activePaymentCommand.compareAndSet(null, command)) {
-                continuation.resumeWithException(TerminalException(TerminalErrorCode.READER_BUSY, "Payment command pending"))
+                continuation.resumeWithException(
+                    TerminalException(TerminalErrorCode.READER_BUSY, "Payment command pending")
+                )
                 return@suspendCancellableCoroutine
             }
             command.handle = start(object : PaymentIntentCallback {

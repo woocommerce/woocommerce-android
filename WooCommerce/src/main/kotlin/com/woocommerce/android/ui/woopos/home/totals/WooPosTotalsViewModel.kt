@@ -10,6 +10,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
@@ -46,13 +47,11 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.PaymentFailed
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.PaymentInProgress
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Totals
-import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.roles.WooPosCapability
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockPreferences
-import kotlinx.coroutines.flow.first
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.FeatureFlag
@@ -69,6 +68,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -223,9 +223,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private suspend fun handleReaderStatus(effective: WooPosEffectiveReaderStatus, data: TotalsDataState) {
-        if (!isCurrentSale()) return
-        if (isTapToPayPayment) return
-        if (isCaptureStarting) return
+        if (!isCurrentSale() || isTapToPayPayment || isCaptureStarting) return
         val state = uiState.value as? WooPosTotalsViewState.Checkout ?: return
         if (!state.isCardPaymentEnabledForCountry) return
         when (effective) {
@@ -556,8 +554,9 @@ class WooPosTotalsViewModel @Inject constructor(
                 }
                 UnconfirmedPaymentStatus.NOT_PAID -> {
                     if (cardReaderFacade.isPaymentPending) cardReaderFacade.cancelPayment()
-                    if (cardReaderFacade.isPaymentPending) showPaymentStatusCheckFailedToast()
-                    else if (isCurrentSale()) leave()
+                    if (cardReaderFacade.isPaymentPending) {
+                        showPaymentStatusCheckFailedToast()
+                    } else if (isCurrentSale()) leave()
                 }
                 UnconfirmedPaymentStatus.UNKNOWN -> showPaymentStatusCheckFailedToast()
             }
@@ -628,8 +627,11 @@ class WooPosTotalsViewModel @Inject constructor(
                 }
                 PaymentMode.BLUETOOTH -> retryBluetoothFailedTransaction()
                 PaymentMode.RESTORED -> {
-                    if (fetchUnconfirmedPaymentStatus() == UnconfirmedPaymentStatus.PAID) notifyOrderPaidByCard()
-                    else showPaymentStatusCheckFailedToast()
+                    if (fetchUnconfirmedPaymentStatus() == UnconfirmedPaymentStatus.PAID) {
+                        notifyOrderPaidByCard()
+                    } else {
+                        showPaymentStatusCheckFailedToast()
+                    }
                 }
                 null -> error("Retry failed transaction clicked but no active payment mode")
             }
@@ -817,8 +819,7 @@ class WooPosTotalsViewModel @Inject constructor(
             return
         }
         val orderId = dataState.value.orderId
-        if (orderId == EMPTY_ORDER_ID) return
-        if (dataState.value.orderTotal?.compareTo(BigDecimal.ZERO) != 1) return
+        if (orderId == EMPTY_ORDER_ID || dataState.value.orderTotal?.compareTo(BigDecimal.ZERO) != 1) return
 
         activePaymentMode = PaymentMode.REMOTE
         remotePaymentJob = viewModelScope.launch {
@@ -844,23 +845,27 @@ class WooPosTotalsViewModel @Inject constructor(
                 order = order,
                 onCaptureStarting = { handleCapturingPaymentState() },
             )
-            when (result) {
-                WooPosRemoteReaderPaymentFlow.Result.Completed -> {
-                    notifyOrderPaidByCard()
-                }
-                is WooPosRemoteReaderPaymentFlow.Result.Failed -> {
-                    uiState.value = PaymentFailed(
-                        title = resourceProvider.getString(
-                            R.string.woopos_success_totals_payment_failed_title
-                        ),
-                        subtitle = result.message,
-                        retryPaymentButtonLabel = resourceProvider.getString(
-                            R.string.woo_pos_payment_failed_try_again
-                        ),
-                        isReturnToCheckoutButtonVisible = true,
-                    )
-                    childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentFailed)
-                }
+            handleRemotePaymentResult(result)
+        }
+    }
+
+    private suspend fun handleRemotePaymentResult(result: WooPosRemoteReaderPaymentFlow.Result) {
+        when (result) {
+            WooPosRemoteReaderPaymentFlow.Result.Completed -> {
+                notifyOrderPaidByCard()
+            }
+            is WooPosRemoteReaderPaymentFlow.Result.Failed -> {
+                uiState.value = PaymentFailed(
+                    title = resourceProvider.getString(
+                        R.string.woopos_success_totals_payment_failed_title
+                    ),
+                    subtitle = result.message,
+                    retryPaymentButtonLabel = resourceProvider.getString(
+                        R.string.woo_pos_payment_failed_try_again
+                    ),
+                    isReturnToCheckoutButtonVisible = true,
+                )
+                childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentFailed)
             }
         }
     }

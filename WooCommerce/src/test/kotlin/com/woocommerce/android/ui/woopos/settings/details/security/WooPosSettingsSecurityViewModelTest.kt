@@ -5,11 +5,10 @@ import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.ADMIN
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.CASHIER
 import com.woocommerce.android.ui.woopos.roles.approval.WooPosManagerApprovalAction
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockPreferences
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLockSettings
-import kotlinx.coroutines.flow.flowOf
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLockSettings
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockPreferences
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINError
@@ -20,6 +19,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest

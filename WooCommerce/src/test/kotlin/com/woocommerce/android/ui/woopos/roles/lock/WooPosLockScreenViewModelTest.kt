@@ -99,7 +99,14 @@ class WooPosLockScreenViewModelTest {
             on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
         }
         val viewModel = WooPosLockScreenViewModel(
-            WooPosAccessSession(flags, selectedSite, fixture.rateLimiter(), fixture.recovery, fixture.lockPreferences, fixture.cardReaderFacade),
+            WooPosAccessSession(
+                flags,
+                selectedSite,
+                fixture.rateLimiter(),
+                fixture.recovery,
+                fixture.lockPreferences,
+                fixture.cardReaderFacade
+            ),
             selectedSite,
             fixture.lockPreferences,
             fixture.elapsedTime,
@@ -147,8 +154,20 @@ class WooPosLockScreenViewModelTest {
                 on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
             }
             val access = fixture.rateLimiter()
-            val session = WooPosAccessSession(flags, selectedSite, access, fixture.recovery, fixture.lockPreferences, fixture.cardReaderFacade)
-            val viewModel = WooPosLockScreenViewModel(session, selectedSite, fixture.lockPreferences, fixture.elapsedTime)
+            val session = WooPosAccessSession(
+                flags,
+                selectedSite,
+                access,
+                fixture.recovery,
+                fixture.lockPreferences,
+                fixture.cardReaderFacade
+            )
+            val viewModel = WooPosLockScreenViewModel(
+                session,
+                selectedSite,
+                fixture.lockPreferences,
+                fixture.elapsedTime
+            )
             session.unlock("5678")
             assertThat(session.state.value.activeRole).isEqualTo(fixture.cashier)
             repeat(5) { access.authenticate(1, "0000", WooPosCapability.ISSUE_REFUNDS) }
@@ -354,7 +373,14 @@ class WooPosLockScreenViewModelTest {
         val flags: FeatureFlagRepository = mock {
             on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
         }
-        val session = WooPosAccessSession(flags, selectedSite, fixture.rateLimiter(), fixture.recovery, fixture.lockPreferences, fixture.cardReaderFacade)
+        val session = WooPosAccessSession(
+            flags,
+            selectedSite,
+            fixture.rateLimiter(),
+            fixture.recovery,
+            fixture.lockPreferences,
+            fixture.cardReaderFacade
+        )
         return WooPosLockScreenViewModel(session, selectedSite, fixture.lockPreferences, fixture.elapsedTime) to session
     }
 }

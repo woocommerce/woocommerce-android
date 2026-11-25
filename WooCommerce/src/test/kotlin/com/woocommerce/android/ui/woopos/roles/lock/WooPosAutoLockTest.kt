@@ -1,13 +1,15 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceTimeBy
@@ -132,7 +134,9 @@ class WooPosAutoLockTest {
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.state.value.status).isEqualTo(com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus.StorageUnavailable)
+        assertThat(
+            session.state.value.status
+        ).isEqualTo(com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus.StorageUnavailable)
         viewModel.viewModelScope.cancel()
     }
 
@@ -175,10 +179,74 @@ class WooPosAutoLockTest {
         viewModel.viewModelScope.cancel()
     }
 
+    @Test
+    fun `given no PIN at startup, when background arrives before the PIN read, then initialization still disables protection`() = runTest {
+        // GIVEN
+        fixture.pins = Result.success(emptyMap())
+        fixture.pinReadGate = CompletableDeferred()
+        val session = WooPosAccessSession(
+            flags,
+            selectedSite,
+            fixture.rateLimiter(),
+            fixture.recovery,
+            fixture.lockPreferences,
+            fixture.cardReaderFacade
+        )
+        val viewModel = WooPosLockScreenViewModel(session, selectedSite, fixture.lockPreferences, fixture.elapsedTime)
+        runCurrent()
+
+        // WHEN
+        viewModel.onBackground()
+        fixture.pinReadGate?.complete(Unit)
+        runCurrent()
+
+        // THEN
+        assertThat(session.state.value.isLocked).isFalse()
+        assertThat(session.state.value.activeRole).isNull()
+        viewModel.viewModelScope.cancel()
+    }
+
+    @Test
+    fun `given first PIN activation finishes in background, when background locking is on, then it cannot restore an operator`() = runTest {
+        // GIVEN
+        val configured = fixture.pins
+        fixture.pins = Result.success(emptyMap())
+        val session = WooPosAccessSession(
+            flags,
+            selectedSite,
+            fixture.rateLimiter(),
+            fixture.recovery,
+            fixture.lockPreferences,
+            fixture.cardReaderFacade
+        )
+        val viewModel = WooPosLockScreenViewModel(session, selectedSite, fixture.lockPreferences, fixture.elapsedTime)
+        runCurrent()
+        viewModel.onBackground()
+        fixture.pins = configured
+        fixture.pinReadGate = CompletableDeferred()
+        val activation = async { session.unlock("1234") }
+        runCurrent()
+
+        // WHEN
+        fixture.pinReadGate?.complete(Unit)
+        activation.await()
+        runCurrent()
+
+        // THEN
+        assertThat(session.state.value.isLocked).isTrue()
+        assertThat(session.state.value.activeRole).isNull()
+        viewModel.viewModelScope.cancel()
+    }
+
     private suspend fun create(): Pair<WooPosLockScreenViewModel, WooPosAccessSession> {
         whenever(fixture.lockPreferences.settings(1)).thenReturn(settings)
         val session = WooPosAccessSession(
-            flags, selectedSite, fixture.rateLimiter(), fixture.recovery, fixture.lockPreferences, fixture.cardReaderFacade,
+            flags,
+            selectedSite,
+            fixture.rateLimiter(),
+            fixture.recovery,
+            fixture.lockPreferences,
+            fixture.cardReaderFacade,
         )
         session.initialize()
         session.unlock("1234")

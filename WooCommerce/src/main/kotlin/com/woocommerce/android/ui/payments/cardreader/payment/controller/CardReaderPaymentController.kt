@@ -863,12 +863,15 @@ class CardReaderPaymentController(
         }
     }
 
+    private suspend fun isCompletedPayment(): Boolean {
+        if (paymentSiteId == null || paymentSiteId != selectedSite.getOrNull()?.id) return false
+        val paid = fetchOrder()?.isOrderPaid == true
+        return paid && paymentSiteId == selectedSite.getOrNull()?.id
+    }
+
     suspend fun cancelForLock(): Boolean {
         val failure = paymentState.value as? CardReaderPaymentState.PaymentFailed
-        if (failure?.errorType == PaymentFlowError.CaptureOutcomeUnknown &&
-            paymentSiteId != null && paymentSiteId == selectedSite.getOrNull()?.id &&
-            fetchOrder()?.isOrderPaid == true && paymentSiteId == selectedSite.getOrNull()?.id
-        ) {
+        if (failure?.errorType == PaymentFlowError.CaptureOutcomeUnknown && isCompletedPayment()) {
             updateSuccessfulPaymentState()
             return true
         }

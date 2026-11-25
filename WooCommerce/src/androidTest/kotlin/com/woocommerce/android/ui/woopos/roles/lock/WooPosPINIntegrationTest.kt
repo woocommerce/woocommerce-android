@@ -48,6 +48,7 @@ class WooPosPINIntegrationTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject lateinit var lockPreferences: WooPosLockPreferences
+
     @Inject lateinit var cardReaderFacade: com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 
     @Inject

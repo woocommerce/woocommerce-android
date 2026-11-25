@@ -4,25 +4,26 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
+import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
+import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.takeWhile
-import kotlinx.coroutines.flow.dropWhile
-import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.dropWhile
+import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -66,17 +67,23 @@ class WooPosCardReaderFacade @Inject constructor(
     private fun observePayment(
         controller: CardReaderPaymentController,
         owner: PaymentOwner,
-        previous: com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState? = null,
+        previous: CardReaderPaymentOrRefundState? = null,
     ) {
         owner.observer = scope.launch {
             controller.paymentState.dropWhile { it === previous }.takeWhile { payment ->
                 when (payment) {
                     is CardReaderPaymentState.PaymentSuccessful -> finishPayment(owner)
                     is CardReaderPaymentState.PaymentFailed -> {
-                        if (payment.errorType == PaymentFlowError.CaptureOutcomeUnknown) markUnresolved(owner)
-                        else if (_paymentState.value !is PaymentState.Cancelling ||
-                            payment.errorType != PaymentFlowError.Canceled
-                        ) finishPayment(owner)
+                        if (payment.errorType == PaymentFlowError.CaptureOutcomeUnknown) {
+                            markUnresolved(owner)
+                        } else if (payment.errorType != PaymentFlowError.Canceled ||
+                            (
+                                _paymentState.value !is PaymentState.Cancelling &&
+                                    _paymentState.value !is PaymentState.CancellationUnconfirmed
+                                )
+                        ) {
+                            finishPayment(owner)
+                        }
                     }
                     else -> Unit
                 }
@@ -104,9 +111,11 @@ class WooPosCardReaderFacade @Inject constructor(
     }
 
     internal fun markUnresolved(owner: PaymentOwner) {
-        val current = _paymentState.value
-        if (current is PaymentState.Pending && current.owner === owner && current !is PaymentState.Cancelling && current !is PaymentState.CancellationUnconfirmed) {
-            _paymentState.value = PaymentState.Unresolved(owner)
+        val current = _paymentState.value as? PaymentState.Pending ?: return
+        if (current.owner !== owner) return
+        when (current) {
+            is PaymentState.Cancelling, is PaymentState.CancellationUnconfirmed -> Unit
+            else -> _paymentState.value = PaymentState.Unresolved(owner)
         }
     }
 
@@ -139,7 +148,13 @@ class WooPosCardReaderFacade @Inject constructor(
         } finally {
             val pending = _paymentState.value as? PaymentState.Cancelling
             if (pending?.owner === owner) {
-                if (cancelled || pending.finished) release(owner) else _paymentState.value = PaymentState.Unresolved(owner)
+                if (cancelled || pending.finished) {
+                    release(
+                        owner
+                    )
+                } else {
+                    _paymentState.value = PaymentState.Unresolved(owner)
+                }
             }
         }
     }
@@ -170,5 +185,4 @@ class WooPosCardReaderFacade @Inject constructor(
     companion object {
         internal const val PAYMENT_PROCESS_ID_KEY = "woo_pos_payment_process_id"
     }
-
 }
