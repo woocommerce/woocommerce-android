@@ -57,14 +57,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         on { state }.thenReturn(sessionState)
         on { allows(any()) }.thenAnswer { sessionState.value.allows(it.getArgument(0)) }
         on { approvalScope() }.thenReturn(WooPosAccessSession.ApprovalScope(1, 1))
-        on { pinSetupScope() }.thenReturn(WooPosAccessSession.ApprovalScope(1, 1))
     }
-
-    @org.junit.Before
-    fun prepareActivation() = kotlinx.coroutines.test.runTest {
-        whenever(session.preparePINActivation(any(), any())).thenReturn(Result.success(Unit))
-    }
-
     private val viewModel = WooPosSettingsSecurityPINSetupViewModel(selectedSite, store, session).apply { start(ADMIN) }
 
     @Test
@@ -980,69 +973,6 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         whenever(store.validatePINUniqueness(eq(1), eq(CASHIER), any())).thenReturn(Result.success(Unit))
         sessionState.value = WooPosAccessSessionState.Unlocked(ADMIN)
     }
-
-    @Test
-    fun `given first PIN restore write fails, when confirmed, then no Admin PIN is committed`() = runTest {
-        // GIVEN
-        givenNoPINs()
-        whenever(session.preparePINActivation(any(), any())).thenReturn(Result.failure(IllegalStateException()))
-        viewModel.start(ADMIN)
-
-        // WHEN
-        chooseAndConfirm("1234")
-
-        // THEN
-        verify(store, never()).createPIN(any(), any(), any(), any())
-        assertThat(viewModel.state.value).isEqualTo(Choose(ADMIN, error = Error.SAVE_FAILED))
-    }
-
-    @Test
-    fun `given first PIN activation, when confirmed, then restore state is retained before the PIN`() = runTest {
-        givenNoPINs()
-        whenever(store.createPIN(eq(1), eq(ADMIN), any(), any())).thenReturn(Result.success(Unit))
-
-        chooseAndConfirm("1234")
-
-        inOrder(session, store) {
-            verify(session).preparePINActivation(eq(1), any())
-            verify(store).createPIN(eq(1), eq(ADMIN), any(), any())
-            verify(session).unlock(any())
-        }
-        assertThat(viewModel.state.value).isEqualTo(Saved(ADMIN))
-    }
-
-    @Test
-    fun `given first activation expires during restore write, when confirmed, then the PIN is not saved`() = runTest {
-        givenNoPINs()
-        whenever(session.preparePINActivation(any(), any())).doSuspendableAnswer {
-            whenever(session.pinSetupScope()).thenReturn(WooPosAccessSession.ApprovalScope(1, 2))
-            val canCommit = it.getArgument<() -> Boolean>(1)
-            if (canCommit()) Result.success(Unit) else Result.failure(WooPosPINError.StaleRequest)
-        }
-
-        chooseAndConfirm("1234")
-
-        verify(store, never()).createPIN(any(), any(), any(), any())
-        verify(session, never()).unlock(any())
-        assertThat(viewModel.state.value).isEqualTo(AccessUnavailable)
-    }
-
-    @Test
-    fun `given first PIN commits, when activation scope changes before completion, then fresh unlock is required`() =
-        runTest {
-            givenNoPINs()
-            whenever(store.createPIN(eq(1), eq(ADMIN), any(), any())).doSuspendableAnswer {
-                whenever(session.pinSetupScope()).thenReturn(WooPosAccessSession.ApprovalScope(1, 2))
-                Result.success(Unit)
-            }
-
-            chooseAndConfirm("1234")
-
-            verify(session, never()).unlock(any())
-            verify(session).blockForStorageFailure()
-            verify(session).initialize()
-            assertThat(viewModel.state.value).isEqualTo(AccessUnavailable)
-        }
 
     private suspend fun givenNoPINs(
         accessAfterUnlock: WooPosAccessSessionState = WooPosAccessSessionState.Unlocked(ADMIN),

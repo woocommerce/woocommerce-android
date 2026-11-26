@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.settings.details.security
 
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLockSettings
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockPreferences
 
 sealed interface WooPosSettingsSecurityState {
     data object Loading : WooPosSettingsSecurityState
@@ -10,7 +10,6 @@ sealed interface WooPosSettingsSecurityState {
     data class Protected(
         val hasCashierPIN: Boolean,
         val removalFailed: Boolean,
-        val lockSettings: WooPosAutoLockSettings = WooPosAutoLockSettings(),
-        val settingsSaveFailed: Boolean = false,
+        val lockPreferences: WooPosLockPreferences,
     ) : WooPosSettingsSecurityState
 }

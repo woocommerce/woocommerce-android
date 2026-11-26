@@ -36,15 +36,7 @@ class WooPosApprovalViewModelTest {
     }
     private val fixture = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
     private val rateLimiter = fixture.rateLimiter()
-    private val access =
-        WooPosAccessSession(
-            flags,
-            site,
-            rateLimiter,
-            fixture.recovery,
-            fixture.lockPreferences,
-            fixture.cardReaderFacade
-        )
+    private val access = WooPosAccessSession(flags, site, rateLimiter, fixture.recovery, mock())
 
     @Test
     fun `given Admin is active, when Exit is requested, then the direct action runs without a prompt`() = runTest {
@@ -310,7 +302,7 @@ class WooPosApprovalViewModelTest {
         whenever(fixture.store.clearAll()).thenReturn(Result.success(Unit))
 
         // WHEN
-        launch { WooPosClearLocalPINData(fixture.store, rateLimiter, fixture.lockPreferences)() }
+        launch { WooPosClearLocalPINData(fixture.store, rateLimiter)() }
         runCurrent()
         pendingRead.complete(Unit)
         runCurrent()

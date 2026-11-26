@@ -38,7 +38,7 @@ internal fun WooPosSettingsSecurityRoute(
             }
         },
         onDeleteCashierPIN = viewModel::deleteCashierPIN,
-        onLockSettingsChanged = viewModel::updateLockSettings,
+        onLockPreferencesChanged = viewModel::updateLockPreferences,
         onProtectionTurnedOff = {
             approval.requestFreshApproval(WooPosApprovalAction.DisablePINProtection, viewModel::removeProtection)
         },

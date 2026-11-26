@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.woopos.home
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.CheckoutClicked
@@ -22,7 +20,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -40,8 +37,6 @@ class WooPosHomeViewModel @Inject constructor(
     private val soundHelper: WooPosSoundHelper,
     private val preferencesRepository: WooPosPreferencesRepository,
     savedStateHandle: SavedStateHandle,
-    private val cardReaderFacade: WooPosCardReaderFacade,
-    private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
 
     private val _state = savedStateHandle.getStateFlow(
@@ -147,8 +142,7 @@ class WooPosHomeViewModel @Inject constructor(
         viewModelScope.launch { analyticsTracker.track(WooPosAnalyticsEvent.Event.ExitConfirmed) }
     }
 
-    private fun handleSystemBackClicked() = viewModelScope.launch {
-        if (_state.value.screenPositionState is ScreenPositionState.Checkout && !endPayment()) return@launch
+    private fun handleSystemBackClicked() {
         when (_state.value.screenPositionState) {
             ScreenPositionState.Checkout.CartWithTotals -> {
                 _state.value = _state.value.copy(
@@ -194,7 +188,6 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.BackFromCheckoutToCartClicked -> {
-                        if (!endPayment()) return@collect
                         _state.value = _state.value.copy(
                             screenPositionState = ScreenPositionState.Cart
                         )
@@ -354,31 +347,18 @@ class WooPosHomeViewModel @Inject constructor(
 
     private suspend fun handleNavigationEvent(event: NavigationEvent) {
         if (event == NavigationEvent.ToOrders) {
-            if (!cancelCheckoutBeforeOpeningOrders()) return
+            cancelCheckoutBeforeOpeningOrders()
         }
         _navigationEvent.emit(event)
     }
 
-    private suspend fun cancelCheckoutBeforeOpeningOrders(): Boolean {
-        if (_state.value.screenPositionState !is ScreenPositionState.Checkout) return true
-        if (!endPayment()) return false
+    private suspend fun cancelCheckoutBeforeOpeningOrders() {
+        if (_state.value.screenPositionState !is ScreenPositionState.Checkout) return
 
         _state.value = _state.value.copy(
             screenPositionState = ScreenPositionState.Cart
         )
         parentToChildrenEventSender.sendToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
-        return true
-    }
-
-    private suspend fun endPayment(): Boolean {
-        if (cardReaderFacade.isPaymentPending &&
-            cardReaderFacade.cancelPayment() == WooPosCardReaderFacade.CancellationResult.COMPLETED
-        ) {
-            return false
-        }
-        if (!cardReaderFacade.isPaymentPending) return true
-        _toastEvent.emit(resourceProvider.getString(R.string.woopos_payment_status_check_failed_message))
-        return false
     }
 
     private fun onOrderSuccessfullyPaid(paymentMethod: PaymentMethod) {

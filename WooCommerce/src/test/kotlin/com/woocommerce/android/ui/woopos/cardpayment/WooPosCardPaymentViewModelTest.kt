@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPay
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLock
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
@@ -52,11 +53,8 @@ class WooPosCardPaymentViewModelTest {
     val coroutineTestRule = WooPosCoroutineTestRule()
 
     private val readerStatusFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock<CardReader>()))
+    private val autoLock: WooPosAutoLock = mock()
     private val cardReaderFacade: WooPosCardReaderFacade = mock {
-        on { retryPayment(any(), any()) }.thenAnswer {
-            it.getArgument<() -> Unit>(1).invoke()
-            true
-        }
         on { readerStatus }.thenReturn(readerStatusFlow)
     }
     private val controllerPaymentState =
@@ -119,10 +117,6 @@ class WooPosCardPaymentViewModelTest {
         )
         return WooPosCardPaymentViewModel(
             savedState = savedStateHandle,
-            accessSession = mock { on { allows(any()) }.thenReturn(true) },
-            selectedSite = mock {
-                on { getOrNull() }.thenReturn(org.wordpress.android.fluxc.model.SiteModel().apply { id = 1 })
-            },
             cardReaderPaymentControllerFactory = cardReaderPaymentControllerFactory,
             cardReaderFacade = cardReaderFacade,
             networkStatus = networkStatus,
@@ -133,6 +127,7 @@ class WooPosCardPaymentViewModelTest {
             priceFormat = priceFormat,
             remoteReaderPaymentFlow = remoteReaderPaymentFlow,
             effectiveReaderStatusProvider = WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
+            autoLock = autoLock,
         )
     }
 
@@ -373,10 +368,6 @@ class WooPosCardPaymentViewModelTest {
         )
         viewModel = WooPosCardPaymentViewModel(
             savedState = savedStateHandle,
-            accessSession = mock { on { allows(any()) }.thenReturn(true) },
-            selectedSite = mock {
-                on { getOrNull() }.thenReturn(org.wordpress.android.fluxc.model.SiteModel().apply { id = 1 })
-            },
             cardReaderPaymentControllerFactory = cardReaderPaymentControllerFactory,
             cardReaderFacade = cardReaderFacade,
             networkStatus = networkStatus,
@@ -387,6 +378,7 @@ class WooPosCardPaymentViewModelTest {
             priceFormat = priceFormat,
             remoteReaderPaymentFlow = remoteReaderPaymentFlow,
             effectiveReaderStatusProvider = WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
+            autoLock = autoLock,
         )
         advanceUntilIdle()
 
@@ -521,7 +513,7 @@ class WooPosCardPaymentViewModelTest {
             reader = simulatedRemoteReader(),
             readerSerial = "SIM-1",
         )
-        whenever(remoteReaderPaymentFlow.collect(any(), any(), any()))
+        whenever(remoteReaderPaymentFlow.collect(any(), any()))
             .doSuspendableAnswer { awaitCancellation() }
 
         viewModel = createViewModel()
@@ -544,7 +536,7 @@ class WooPosCardPaymentViewModelTest {
             reader = simulatedRemoteReader(),
             readerSerial = "SIM-1",
         )
-        whenever(remoteReaderPaymentFlow.collect(any(), any(), any()))
+        whenever(remoteReaderPaymentFlow.collect(any(), any()))
             .doSuspendableAnswer { awaitCancellation() }
 
         viewModel = createViewModel()
@@ -567,7 +559,7 @@ class WooPosCardPaymentViewModelTest {
             reader = simulatedRemoteReader(),
             readerSerial = "SIM-1",
         )
-        whenever(remoteReaderPaymentFlow.collect(any(), any(), any()))
+        whenever(remoteReaderPaymentFlow.collect(any(), any()))
             .thenReturn(WooPosRemoteReaderPaymentFlow.Result.Failed("error"))
 
         viewModel = createViewModel()
@@ -579,7 +571,7 @@ class WooPosCardPaymentViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        verify(remoteReaderPaymentFlow, times(2)).collect(any(), any(), any())
+        verify(remoteReaderPaymentFlow, times(2)).collect(any(), any())
     }
 
     private fun simulatedRemoteReader() =

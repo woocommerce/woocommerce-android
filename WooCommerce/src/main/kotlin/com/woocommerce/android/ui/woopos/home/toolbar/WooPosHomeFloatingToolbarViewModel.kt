@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarU
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.OnOutsideOfToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLock
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.GoToOrdersTapped
@@ -43,6 +44,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
     private val effectiveReaderStatusProvider: WooPosEffectiveReaderStatusProvider,
     controllerFactory: WooPosCardReaderConnectionControllerFactory,
     private val accessSession: WooPosAccessSession,
+    private val autoLock: WooPosAutoLock,
 ) : ViewModel() {
 
     private val controller: WooPosCardReaderConnectionController by lazy {
@@ -59,12 +61,6 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
 
     init {
         viewModelScope.launch { accessSession.state.collect { hideMenu() } }
-        viewModelScope.launch {
-            accessSession.paymentState.collect {
-                val menu = _state.value.menu as? WooPosHomeFloatingToolbarState.Menu.Visible
-                if (menu != null) _state.value = _state.value.copy(menu = menu.copy(items = toolbarMenuItems))
-            }
-        }
         viewModelScope.launch {
             effectiveReaderStatusProvider.flow
                 .flatMapLatest { effective ->
@@ -127,7 +123,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
         hideMenu()
 
         when (event.menuItem.title) {
-            R.string.woopos_lock_pos -> viewModelScope.launch { accessSession.lock() }
+            R.string.woopos_lock_pos -> viewModelScope.launch { autoLock.lockManually() }
 
             R.string.woopos_orders_title -> {
                 viewModelScope.launch {
@@ -215,7 +211,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_lock_pos,
                         icon = R.drawable.ic_lock,
-                        enabled = accessSession.canLock,
+                        enabled = !autoLock.isPaymentInProgress.value,
                     )
                 )
             }

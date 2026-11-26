@@ -27,9 +27,6 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.WindowInsets
 import androidx.compose.ui.test.WindowSize
 import androidx.compose.ui.test.assertCountEquals
-import androidx.compose.ui.test.assertHasClickAction
-import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasAnyAncestor
@@ -40,7 +37,6 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.then
 import androidx.compose.ui.text.TextLayoutResult
@@ -135,28 +131,6 @@ class WooPosPINViewportTest {
                         it,
                     )
                 }
-            }
-        }
-    }
-
-    @Test
-    fun pendingPaymentKeepsKeysVisibleAndStatusCheckAccessible() {
-        val scenario = mutableStateOf(Scenario(SIZES.first(), 1f, Flow.LOCK, phase = 3))
-        setScenarioContent(scenario)
-        val label = context.getString(R.string.woopos_payment_restore_check)
-        for (size in SIZES) {
-            for (scale in FONT_SCALES) {
-                val current = Scenario(size, scale, Flow.LOCK, phase = 3)
-                composeTestRule.runOnIdle { scenario.value = current }
-                assertCompleteKeypad(current)
-                val check = composeTestRule.onNodeWithText(label)
-                if (composeTestRule.onAllNodes(hasText(label) and hasAnyAncestor(hasScrollAction()))
-                        .fetchSemanticsNodes().isNotEmpty()
-                ) {
-                    check.performScrollTo()
-                }
-                check.assertIsDisplayed().assertIsEnabled().assertHasClickAction()
-                assertCompleteKeypad(current)
             }
         }
     }
@@ -337,7 +311,6 @@ class WooPosPINViewportTest {
             get() = when (phase) {
                 1 -> WooPosPINEntryStatus.Incorrect
                 2 -> WooPosPINEntryStatus.Wait(90)
-                3 -> WooPosPINEntryStatus.PaymentPending
                 else -> WooPosPINEntryStatus.Idle
             }
     }

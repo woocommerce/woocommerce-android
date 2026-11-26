@@ -2,9 +2,8 @@ package com.woocommerce.android.ui.woopos.roles.pin
 
 sealed interface WooPosPINEntryStatus {
     val canEnterPIN: Boolean get() = this == Idle || this == Incorrect
-    val showsBlockedPINPad: Boolean get() = this is Wait || this == StorageUnavailable || this == PaymentPending
+    val showsBlockedPINPad: Boolean get() = this is Wait || this == StorageUnavailable
 
-    data object PaymentPending : WooPosPINEntryStatus
     data object Initializing : WooPosPINEntryStatus
     data object Idle : WooPosPINEntryStatus
     data object Checking : WooPosPINEntryStatus

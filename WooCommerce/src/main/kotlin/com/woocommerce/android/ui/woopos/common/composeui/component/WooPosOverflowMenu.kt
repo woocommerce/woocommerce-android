@@ -25,7 +25,6 @@ import androidx.compose.ui.semantics.semantics
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.wooPosUserInteraction
 
 @Composable
 fun WooPosOverflowMenu(
@@ -66,9 +65,7 @@ private fun OverflowDropdown(items: List<WooPosOverflowMenuItem>, contentDescrip
         }
 
         DropdownMenu(
-            modifier = Modifier.wooPosUserInteraction().background(
-                color = MaterialTheme.colorScheme.surfaceContainerLowest
-            ),
+            modifier = Modifier.background(color = MaterialTheme.colorScheme.surfaceContainerLowest),
             expanded = showMenu,
             onDismissRequest = { showMenu = false }
         ) {

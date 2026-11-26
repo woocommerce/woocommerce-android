@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.roles.pin
 
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLocalRateLimiter
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockPreferences
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,8 +22,7 @@ class WooPosClearLocalPINDataTest {
     val coroutineRule = WooPosCoroutineTestRule()
     private val store: WooPosLocalPINStore = mock()
     private val rateLimiter: WooPosLocalRateLimiter = mock()
-    private val preferences: WooPosLockPreferences = mock()
-    private val clearLocalPINData = WooPosClearLocalPINData(store, rateLimiter, preferences)
+    private val clearLocalPINData = WooPosClearLocalPINData(store, rateLimiter)
 
     @Test
     fun `given PIN cleanup fails, when clearing local data, then attempt cleanup still runs`() = runTest {
@@ -36,8 +34,7 @@ class WooPosClearLocalPINDataTest {
         clearLocalPINData()
 
         // THEN
-        inOrder(preferences, store, rateLimiter) {
-            verify(preferences).clearAll()
+        inOrder(store, rateLimiter) {
             verify(store).clearAll()
             verify(rateLimiter).clearAllAttempts()
         }

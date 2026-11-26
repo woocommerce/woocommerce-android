@@ -122,8 +122,6 @@ class MockCardReaderManagerModule {
 
         override fun cancelPayment(paymentData: PaymentData) {}
 
-        override suspend fun cancelActivePaymentAndAwait(): Boolean = true
-
         override fun cancelReconnection() {}
 
         override suspend fun startAsyncSoftwareUpdate() {}

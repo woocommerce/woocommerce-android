@@ -188,8 +188,6 @@ internal class CardReaderManagerImpl(
 
     override fun cancelPayment(paymentData: PaymentData) = paymentManager.cancelPayment(paymentData)
 
-    override suspend fun cancelActivePaymentAndAwait(): Boolean = paymentManager.cancelActivePaymentAndAwait()
-
     private fun initStripeTerminal(logLevel: LogLevel) {
         terminal.initTerminal(application, logLevel, tokenProvider, terminalListener)
     }

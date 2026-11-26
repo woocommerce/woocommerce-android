@@ -166,64 +166,7 @@ class DefaultCardReaderRemoteTabletClientTest : CardReaderBaseUnitTest() {
         }
     }
 
-    @Test
-    fun `given a stale cancel reply and payment success, when cancelling, then only the matching reply completes cancellation`() = runBlocking {
-        // GIVEN
-        val phone = connectToPhone(supportsCancelPayment = true, supportsConfirmedCancellation = true)
-        val collection = async { client.collectPayment(aPaymentInfo()) }
-        val request = withTimeout(5_000) {
-            phone.receive().first { it is CardReaderRemoteMessage.CollectPaymentRequest }
-        }
-        val cancellation = async { client.cancelPayment() }
-        val cancelRequest = withTimeout(5_000) {
-            phone.receive().first { it is CardReaderRemoteMessage.CancelPayment }
-        } as CardReaderRemoteMessage.CancelPayment
-
-        // WHEN
-        phone.send(CardReaderRemoteMessage.CancelPaymentResult(request.requestId, "stale-cancel", true))
-        phone.send(CardReaderRemoteMessage.PaymentIntentResult(request.requestId, "pi-1", "succeeded"))
-
-        // THEN
-        assertThat(withTimeout(5_000) { collection.await() }).isInstanceOf(CollectPaymentOutcome.Success::class.java)
-        assertThat(cancellation.isCompleted).isFalse()
-
-        // WHEN
-        phone.send(
-            CardReaderRemoteMessage.CancelPaymentResult(
-                request.requestId,
-                requireNotNull(cancelRequest.cancellationId),
-                false,
-            )
-        )
-
-        // THEN
-        assertThat(withTimeout(5_000) { cancellation.await() }).isEqualTo(RemotePaymentCancellation.FAILED)
-        client.disconnect()
-    }
-
-    @Test
-    fun `given the phone does not confirm cancellation, when the deadline expires, then cancellation is unconfirmed`() = runBlocking {
-        // GIVEN
-        val phone = connectToPhone(supportsCancelPayment = true, supportsConfirmedCancellation = true)
-        val collection = async { client.collectPayment(aPaymentInfo()) }
-        val request = withTimeout(5_000) {
-            phone.receive().first { it is CardReaderRemoteMessage.CollectPaymentRequest }
-        }
-        phone.send(CardReaderRemoteMessage.PaymentIntentResult(request.requestId, "pi-1", "succeeded"))
-        collection.await()
-
-        // WHEN
-        val result = client.cancelPayment(timeoutMillis = 100)
-
-        // THEN
-        assertThat(result).isEqualTo(RemotePaymentCancellation.UNCONFIRMED)
-        client.disconnect()
-    }
-
-    private suspend fun connectToPhone(
-        supportsCancelPayment: Boolean,
-        supportsConfirmedCancellation: Boolean = false,
-    ): CardReaderRemoteConnection = coroutineScope {
+    private suspend fun connectToPhone(supportsCancelPayment: Boolean): CardReaderRemoteConnection = coroutineScope {
         val (tablet, phone) = openConnectionPair()
         whenever(tlsClient.connect(any(), any(), any())).thenAnswer { tablet }
         launch(Dispatchers.IO) {
@@ -233,7 +176,6 @@ class DefaultCardReaderRemoteTabletClientTest : CardReaderBaseUnitTest() {
                     requestId = request.requestId,
                     readerSerial = "S1",
                     supportsCancelPayment = supportsCancelPayment,
-                    supportsConfirmedCancellation = supportsConfirmedCancellation,
                 )
             )
         }

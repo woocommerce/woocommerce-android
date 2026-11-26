@@ -51,8 +51,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
         if (editor?.let { it.role == role && it.changingPIN == changingPIN && it.siteId == siteId } == true) return
         restart(role)
         val createsAdmin = role == WooPosLocalRole.ADMIN && !changingPIN
-        val scope = if (createsAdmin) accessSession.pinSetupScope() else accessSession.approvalScope()
-        val request = Editor(role, changingPIN, siteId, scope)
+        val request = Editor(role, changingPIN, siteId, if (createsAdmin) null else accessSession.approvalScope())
         editor = request
         if (!isEditorCurrent(request)) invalidate()
     }
@@ -191,24 +190,13 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
             val requestJob = currentCoroutineContext()[Job]
             val canCommit = { requestJob?.isActive == true && isEditorCurrent(request) }
             withContext(NonCancellable) {
-                if (request.createsAdmin) {
-                    val retained = accessSession.preparePINActivation(request.siteId, canCommit)
-                    if (retained.isFailure) return@withContext retained
-                }
                 val saved = if (request.changingPIN) {
                     store.replacePIN(request.siteId, request.role, pin, canCommit)
                 } else {
                     store.createPIN(request.siteId, request.role, pin, canCommit)
                 }
                 saved.also {
-                    if (it.isSuccess && request.createsAdmin && isSelected(request.siteId)) {
-                        if (request.scope == accessSession.pinSetupScope() && canManagePINs()) {
-                            accessSession.unlock(pin)
-                        } else {
-                            accessSession.blockForStorageFailure()
-                            accessSession.initialize()
-                        }
-                    }
+                    if (it.isSuccess && request.createsAdmin && isSelected(request.siteId)) accessSession.unlock(pin)
                 }
             }
         }
@@ -218,8 +206,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
     private fun isEditorCurrent(request: Editor): Boolean =
         editor === request && isSelected(request.siteId) && canManagePINs() &&
             if (request.createsAdmin) {
-                accessSession.state.value == WooPosAccessSessionState.Unprotected &&
-                    request.scope != null && request.scope == accessSession.pinSetupScope()
+                accessSession.state.value == WooPosAccessSessionState.Unprotected
             } else {
                 request.scope != null && request.scope == accessSession.approvalScope()
             }

@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.roles.lock
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.roles.WooPosCapability
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
@@ -17,7 +16,6 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 @MainThread
@@ -27,8 +25,7 @@ class WooPosAccessSession @Inject constructor(
     private val selectedSite: SelectedSite,
     private val rateLimiter: WooPosLocalRateLimiter,
     private val recovery: WooPosPINRecovery,
-    private val lockPreferences: WooPosLockPreferences,
-    private val cardReaderFacade: WooPosCardReaderFacade,
+    private val keptStaff: WooPosKeptStaff,
 ) {
     private val flagEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ROLES)
     private val _state = MutableStateFlow<WooPosAccessSessionState>(
@@ -46,10 +43,6 @@ class WooPosAccessSession @Inject constructor(
     private val logoutVersion = rateLimiter.logoutVersion
     private val initialLogoutVersion = logoutVersion.value
     internal val approvalScopeChanges = combine(state, generation, logoutVersion) { _, _, _ -> Unit }
-
-    val paymentState get() = cardReaderFacade.paymentState
-    val isPaymentPending: Boolean get() = cardReaderFacade.isPaymentPending
-    val canLock: Boolean get() = isEnabled && !isPaymentPending
 
     val isEnabled: Boolean get() = flagEnabled && _state.value != WooPosAccessSessionState.Unprotected
 
@@ -85,25 +78,8 @@ class WooPosAccessSession @Inject constructor(
 
     internal data class ApprovalScope(val siteId: Int, val generation: Long)
 
-    internal fun pinSetupScope(): ApprovalScope? = localSiteId?.takeIf { isSessionCurrent }?.let {
-        ApprovalScope(it, generation.value)
-    }
-
-    internal suspend fun preparePINActivation(siteId: Int, canCommit: () -> Boolean): Result<Unit> {
-        if (!flagEnabled) return Result.success(Unit)
-        return lockPreferences.retainPOS(siteId) {
-            canCommit() && selectedSite.getOrNull()?.id == siteId && initialLogoutVersion == logoutVersion.value
-        }
-    }
-
     suspend fun initialize() {
-        when {
-            !flagEnabled -> lockPreferences.clearRestoreState()
-            _state.value != WooPosAccessSessionState.Exiting -> initializeProtectedSession()
-        }
-    }
-
-    private suspend fun initializeProtectedSession() {
+        if (!flagEnabled) return
         val id = selectedSite.getOrNull()?.id
         if (id != localSiteId) {
             localSiteId = id
@@ -114,104 +90,44 @@ class WooPosAccessSession @Inject constructor(
             _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
             return
         }
-        if (isPaymentPending && _state.value.isLocked) cardReaderFacade.cancelPayment()
         val protection = rateLimiter.isProtectionEnabled(id)
-        if (!isCurrent(request, id)) return
-        val retained = when (protection.getOrNull()) {
-            true -> retainProtectedPOS(id, request)
-            false -> lockPreferences.clearRestoreState(id) { isCurrent(request, id) }
-            null -> Result.success(Unit)
+        val resumedRole = if (protection.getOrNull() == true && _state.value is WooPosAccessSessionState.Locked) {
+            keptStaff.resume(id, initialLogoutVersion)
+        } else {
+            null
         }
-        if (!isCurrent(request, id)) return
-        _state.value = initializationState(protection, retained)
-        if (_state.value.isLocked) refreshWait()
-    }
-
-    private fun initializationState(
-        protection: Result<Boolean>,
-        retained: Result<Unit>,
-    ): WooPosAccessSessionState = when {
-        protection.getOrNull() == false -> WooPosAccessSessionState.Unprotected
-        retained.isFailure || protection.isFailure ->
-            WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
-        _state.value is WooPosAccessSessionState.Unlocked -> _state.value
-        else -> WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Checking)
-    }
-
-    internal fun retireIfContextChanged() {
-        if (!isSessionCurrent && _state.value is WooPosAccessSessionState.Unlocked) {
-            generation.value++
-            _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Initializing)
-        }
-    }
-
-    internal fun blockForStorageFailure() {
-        if (!flagEnabled) return
-        generation.value++
-        _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
-    }
-
-    suspend fun lock() {
-        if (!canLock) return
-        lockSession()
-    }
-
-    suspend fun lockOnBackground() {
-        if (flagEnabled && _state.value == WooPosAccessSessionState.Unprotected) protectFirstActivationOnBackground()
-        lockSession()
-        if (_state.value.isLocked) cardReaderFacade.cancelPayment()
-    }
-
-    private suspend fun protectFirstActivationOnBackground() {
-        val request = ++generation.value
-        val id = localSiteId ?: return
-        val protection = rateLimiter.isProtectionEnabled(id)
         if (!isCurrent(request, id)) return
         _state.value = when {
             protection.isFailure -> WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
-            protection.getOrThrow() -> WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Checking)
-            else -> WooPosAccessSessionState.Unprotected
+            !protection.getOrThrow() -> WooPosAccessSessionState.Unprotected
+            _state.value is WooPosAccessSessionState.Unlocked -> _state.value
+            resumedRole != null -> WooPosAccessSessionState.Unlocked(resumedRole)
+            else -> WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Checking)
         }
+        if (_state.value.isLocked) refreshWait()
     }
 
-    private suspend fun lockSession() {
+    fun end() {
+        val role = _state.value.activeRole ?: return
+        val id = localSiteId ?: return
+        if (isSessionCurrent) keptStaff.keep(id, role, initialLogoutVersion)
+    }
+
+    suspend fun lock() {
         if (!isEnabled) return
-        when (val current = _state.value) {
-            WooPosAccessSessionState.Exiting -> return
-            is WooPosAccessSessionState.Locked -> if (current.status in setOf(
-                    WooPosPINEntryStatus.StorageUnavailable, WooPosPINEntryStatus.Initializing,
-                )
-            ) {
-                return
-            }
-            else -> Unit
-        }
         generation.value++
         _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Checking)
         refreshWait()
     }
 
     suspend fun unlock(pin: String) {
-        if (!flagEnabled || _state.value == WooPosAccessSessionState.Exiting) return
-        if (isPaymentPending) {
-            if (_state.value == WooPosAccessSessionState.Unprotected) {
-                initialize()
-                if (isEnabled) lockOnBackground()
-            }
-            return
-        }
-        val previous = _state.value
-        if (previous is WooPosAccessSessionState.Unlocked) return
-        if (previous.isLocked && !previous.status.canEnterPIN &&
-            previous.status != WooPosPINEntryStatus.Initializing
-        ) {
-            return
-        }
+        if (!flagEnabled || _state.value is WooPosAccessSessionState.Unlocked) return
+        val status = _state.value.status
+        if (status is WooPosPINEntryStatus.Wait || status == WooPosPINEntryStatus.StorageUnavailable) return
         authenticate { id -> rateLimiter.authenticate(id, pin) }
     }
 
     suspend fun recover() {
-        if (isPaymentPending) return
         val previous = _state.value as? WooPosAccessSessionState.Locked ?: return
         if (previous.status == WooPosPINEntryStatus.Initializing || previous.status == WooPosPINEntryStatus.Checking) {
             return
@@ -237,21 +153,9 @@ class WooPosAccessSession @Inject constructor(
         previous: WooPosAccessSessionState.Locked,
         role: WooPosLocalRole,
     ) {
-        val preferences = lockPreferences.settings(id).first()
-        if (!isCurrent(request, id)) return
-        if (preferences.isFailure) {
-            _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
-            return
-        }
-        val retained = lockPreferences.retainPOS(id) { isCurrent(request, id) }
-        if (!isCurrent(request, id)) return
-        if (retained.isFailure) {
-            _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
-            return
-        }
         val reset = rateLimiter.resetAfterRecovery(id)
         currentCoroutineContext().ensureActive()
-        if (isCurrent(request, id) && !isPaymentPending) {
+        if (isCurrent(request, id)) {
             _state.value = if (reset.isSuccess) WooPosAccessSessionState.Unlocked(role) else previous
         }
     }
@@ -304,78 +208,24 @@ class WooPosAccessSession @Inject constructor(
             throw e
         }
         currentCoroutineContext().ensureActive()
-        if (!isCurrent(request, id) || isPaymentPending) return
-        if (result is WooPosLocalRateLimiterResult.Authenticated &&
-            !retainFirstActivation(previous, id, request)
-        ) {
-            return
-        }
-        _state.value = authenticationState(result)
-    }
-
-    private suspend fun retainFirstActivation(previous: WooPosAccessSessionState, id: Int, request: Long): Boolean {
-        val firstActivation = previous == WooPosAccessSessionState.Unprotected ||
-            previous.status == WooPosPINEntryStatus.Initializing
-        if (!firstActivation) return true
-        val retained = retainProtectedPOS(id, request)
-        if (!isCurrent(request, id) || isPaymentPending) return false
-        if (retained.isFailure) {
-            _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
-            return false
-        }
-        return true
-    }
-
-    private suspend fun retainProtectedPOS(id: Int, request: Long): Result<Unit> =
-        lockPreferences.settings(id).first().fold(
-            onSuccess = { lockPreferences.retainPOS(id) { isCurrent(request, id) } },
-            onFailure = { Result.failure(it) },
-        )
-
-    private fun authenticationState(result: WooPosLocalRateLimiterResult): WooPosAccessSessionState = when (result) {
-        is WooPosLocalRateLimiterResult.Authenticated -> WooPosAccessSessionState.Unlocked(result.role)
-        is WooPosLocalRateLimiterResult.Incorrect -> WooPosAccessSessionState.Locked(
-            if (result.remainingSeconds > 0) {
-                WooPosPINEntryStatus.Wait(result.remainingSeconds)
-            } else {
-                WooPosPINEntryStatus.Incorrect
-            },
-        )
-        is WooPosLocalRateLimiterResult.Waiting ->
-            WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Wait(result.remainingSeconds))
-        WooPosLocalRateLimiterResult.ProtectionOff -> WooPosAccessSessionState.Unprotected
-        WooPosLocalRateLimiterResult.Unavailable ->
-            WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
-    }
-
-    suspend fun exitPOS(onExit: () -> Unit) {
-        if (!flagEnabled) {
-            onExit()
-            return
-        }
-        if (isPaymentPending || _state.value.isLocked) return
-        val id = selectedSite.getOrNull()?.id
-        val protectionEnabled = isEnabled
-        val request = ++generation.value
-        _state.value = WooPosAccessSessionState.Exiting
-        val cleared = lockPreferences.clearRestoreState(id) {
-            request == generation.value && id == selectedSite.getOrNull()?.id &&
-                initialLogoutVersion == logoutVersion.value
-        }
-        currentCoroutineContext().ensureActive()
-        if (request != generation.value || id != selectedSite.getOrNull()?.id ||
-            initialLogoutVersion != logoutVersion.value
-        ) {
-            return
-        }
-        if (cleared.isFailure && protectionEnabled) {
-            _state.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
-        } else {
-            onExit()
+        if (!isCurrent(request, id)) return
+        _state.value = when (result) {
+            is WooPosLocalRateLimiterResult.Authenticated -> WooPosAccessSessionState.Unlocked(result.role)
+            is WooPosLocalRateLimiterResult.Incorrect -> WooPosAccessSessionState.Locked(
+                if (result.remainingSeconds > 0) {
+                    WooPosPINEntryStatus.Wait(result.remainingSeconds)
+                } else {
+                    WooPosPINEntryStatus.Incorrect
+                },
+            )
+            is WooPosLocalRateLimiterResult.Waiting ->
+                WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Wait(result.remainingSeconds))
+            WooPosLocalRateLimiterResult.ProtectionOff -> WooPosAccessSessionState.Unprotected
+            WooPosLocalRateLimiterResult.Unavailable ->
+                WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
         }
     }
 
     private fun isCurrent(request: Long, id: Int): Boolean =
-        request == generation.value && id == selectedSite.getOrNull()?.id &&
-            initialLogoutVersion == logoutVersion.value
+        request == generation.value && id == selectedSite.getOrNull()?.id
 }

@@ -20,9 +20,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doSuspendableAnswer
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
@@ -30,6 +30,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 class WooPosAccessSessionTest {
     @get:Rule
     val coroutineRule = WooPosCoroutineTestRule()
+    private val keptStaff: WooPosKeptStaff = mock()
     private val flags: FeatureFlagRepository = mock {
         on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
     }
@@ -73,6 +74,46 @@ class WooPosAccessSessionTest {
     }
 
     @Test
+    fun `given staff kept from the last POS visit, when initializing, then POS opens unlocked for them`() = runTest {
+        // GIVEN
+        whenever(keptStaff.resume(1, 0)).thenReturn(WooPosLocalRole.CASHIER)
+        val session = session(fixture())
+
+        // WHEN
+        session.initialize()
+
+        // THEN
+        assertThat(session.state.value).isEqualTo(WooPosAccessSessionState.Unlocked(WooPosLocalRole.CASHIER))
+    }
+
+    @Test
+    fun `given an unlocked session, when it ends, then its staff is kept for the next POS visit`() = runTest {
+        // GIVEN
+        val session = session(fixture())
+        session.initialize()
+        session.unlock("5678")
+
+        // WHEN
+        session.end()
+
+        // THEN
+        verify(keptStaff).keep(1, WooPosLocalRole.CASHIER, 0)
+    }
+
+    @Test
+    fun `given a locked session, when it ends, then no staff is kept`() = runTest {
+        // GIVEN
+        val session = session(fixture())
+        session.initialize()
+
+        // WHEN
+        session.end()
+
+        // THEN
+        verify(keptStaff, never()).keep(any(), any(), any())
+    }
+
+    @Test
     fun `given no credentials, when initializing, then protection and manual lock are off`() = runTest {
         // GIVEN
         val fixture = fixture().apply { pins = Result.success(emptyMap()) }
@@ -85,24 +126,6 @@ class WooPosAccessSessionTest {
         // THEN
         assertThat(session.state.value.isLocked).isFalse()
         assertThat(session.isEnabled).isFalse()
-    }
-
-    @Test
-    fun `given first PIN setup, when the new Admin unlocks, then launcher restoration is retained`() = runTest {
-        // GIVEN
-        val fixture = fixture()
-        val configured = fixture.pins
-        fixture.pins = Result.success(emptyMap())
-        val session = session(fixture)
-        session.initialize()
-        fixture.pins = configured
-
-        // WHEN
-        session.unlock("1234")
-
-        // THEN
-        org.mockito.kotlin.verify(fixture.lockPreferences).retainPOS(eq(1), any())
-        assertThat(session.state.value.activeRole).isEqualTo(WooPosLocalRole.ADMIN)
     }
 
     @Test
@@ -500,94 +523,6 @@ class WooPosAccessSessionTest {
         assertThat(fixture.records).isEqualTo(previous)
     }
 
-    @Test
-    fun `given exit is committing, when background locking runs, then the approved exit completes once`() = runTest {
-        // GIVEN
-        val fixture = fixture()
-        val session = session(fixture)
-        session.initialize()
-        session.unlock("1234")
-        val clear = CompletableDeferred<Result<Unit>>()
-        whenever(fixture.lockPreferences.clearRestoreState(eq(1), any())).doSuspendableAnswer { clear.await() }
-        var exits = 0
-        val exiting = async { session.exitPOS { exits++ } }
-        runCurrent()
-
-        // WHEN
-        session.lockOnBackground()
-        session.exitPOS { exits++ }
-        clear.complete(Result.success(Unit))
-        exiting.await()
-
-        // THEN
-        assertThat(exits).isEqualTo(1)
-        assertThat(session.state.value.activeRole).isNull()
-    }
-
-    @Test
-    fun `given exit is committing, when a saved PIN editor submits, then it cannot reactivate an operator`() = runTest {
-        // GIVEN
-        val fixture = fixture()
-        val session = session(fixture)
-        session.initialize()
-        session.unlock("1234")
-        val clear = CompletableDeferred<Result<Unit>>()
-        whenever(fixture.lockPreferences.clearRestoreState(eq(1), any())).doSuspendableAnswer { clear.await() }
-        val exiting = async { session.exitPOS {} }
-        runCurrent()
-
-        // WHEN
-        session.unlock("1234")
-
-        // THEN
-        assertThat(session.state.value).isEqualTo(WooPosAccessSessionState.Exiting)
-        assertThat(session.state.value.activeRole).isNull()
-        clear.complete(Result.success(Unit))
-        exiting.await()
-    }
-
-    @Test
-    fun `given logout occurs during exit storage, when cleanup returns, then stale navigation is rejected`() = runTest {
-        // GIVEN
-        val fixture = fixture()
-        val limiter = fixture.rateLimiter()
-        val session = session(fixture, limiter)
-        session.initialize()
-        session.unlock("1234")
-        whenever(fixture.lockPreferences.clearRestoreState(eq(1), any())).doSuspendableAnswer {
-            limiter.onLogout()
-            Result.success(Unit)
-        }
-        var exited = false
-
-        // WHEN
-        session.exitPOS { exited = true }
-
-        // THEN
-        assertThat(exited).isFalse()
-        assertThat(session.state.value.activeRole).isNull()
-    }
-
-    @Test
-    fun `given no PIN protection, when stale marker cleanup fails during exit, then it cannot introduce a PIN lock`() = runTest {
-        // GIVEN
-        val fixture = fixture().apply { pins = Result.success(emptyMap()) }
-        val session = session(fixture)
-        session.initialize()
-        whenever(
-            fixture.lockPreferences.clearRestoreState(eq(1), any())
-        ).thenReturn(Result.failure(IllegalStateException()))
-        var exited = false
-
-        // WHEN
-        session.exitPOS { exited = true }
-
-        // THEN
-        assertThat(exited).isTrue()
-        assertThat(session.state.value.activeRole).isNull()
-        assertThat(session.state.value.status.canEnterPIN).isFalse()
-    }
-
     private fun fixture() = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
     private fun session(
         fixture: WooPosLocalRateLimiterTestFixture,
@@ -597,7 +532,6 @@ class WooPosAccessSessionTest {
         selectedSite,
         rateLimiter,
         fixture.recovery,
-        fixture.lockPreferences,
-        fixture.cardReaderFacade,
+        keptStaff,
     )
 }

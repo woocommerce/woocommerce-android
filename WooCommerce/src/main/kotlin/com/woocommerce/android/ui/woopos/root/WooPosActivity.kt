@@ -1,41 +1,18 @@
 package com.woocommerce.android.ui.woopos.root
 
-import android.app.Activity
-import android.app.ActivityManager
-import android.app.Application
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.os.Build
 import android.os.Bundle
-import android.view.KeyEvent
-import android.view.MotionEvent
-import android.view.Window
-import androidx.activity.addCallback
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.Modifier
-import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.lifecycleScope
-import com.woocommerce.android.WooCommerce
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.gesturesOrButtonsNavigationPadding
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
-import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenViewModel
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosRestorePOS
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLock
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEntryPointKeeper
 import com.woocommerce.android.ui.woopos.util.ext.lockWooPosOrientation
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -52,172 +29,38 @@ class WooPosActivity : AppCompatActivity() {
     @Inject
     lateinit var analyticsEntryPointKeeper: WooPosAnalyticsEntryPointKeeper
 
-    @Inject lateinit var selectedSite: SelectedSite
-
-    @Inject lateinit var featureFlags: FeatureFlagRepository
-
-    @Inject lateinit var restorePOS: WooPosRestorePOS
-
-    @Inject lateinit var productsDataSource: WooPosProductsDataSource
-    private var saleSiteId: Int? = null
-    private var paymentActivityVisible = false
-    private var observingVisibility = false
-    private val paymentVisibility = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            paymentActivityVisible = intent.getBooleanExtra(WooCommerce.POS_PAYMENT_VISIBLE, false) &&
-                hasVisiblePaymentActivity()
-            if (paymentActivityVisible) {
-                lockViewModel.onForeground()
-            } else if (visibleActivities.isEmpty()) lockViewModel.onBackground()
-        }
-    }
-
-    private val lockViewModel: WooPosLockScreenViewModel by viewModels()
-    private val visibleActivities = mutableSetOf<Activity>()
-    private val appVisibility = object : Application.ActivityLifecycleCallbacks {
-        override fun onActivityStarted(activity: Activity) {
-            if (visibleActivities.isEmpty()) lockViewModel.onForeground()
-            visibleActivities.add(activity)
-            if (activity !== this@WooPosActivity) {
-                activity.window.callback?.let { original ->
-                    activity.window.callback = InteractionCallback(original, lockViewModel::onUserInteraction)
-                }
-            }
-        }
-        override fun onActivityStopped(activity: Activity) {
-            restoreWindowCallback(activity)
-            visibleActivities.remove(activity)
-            val background = visibleActivities.isEmpty() && !hasVisiblePaymentActivity()
-            if (background && !activity.isChangingConfigurations) {
-                lockViewModel.onBackground()
-            }
-        }
-        override fun onActivityCreated(activity: Activity, state: Bundle?) = Unit
-        override fun onActivityResumed(activity: Activity) = Unit
-        override fun onActivityPaused(activity: Activity) = Unit
-        override fun onActivitySaveInstanceState(activity: Activity, state: Bundle) = Unit
-        override fun onActivityDestroyed(activity: Activity) {
-            restoreWindowCallback(activity)
-            visibleActivities.remove(activity)
-        }
-    }
-
-    private fun hasVisiblePaymentActivity(): Boolean {
-        val manager = getSystemService(ActivityManager::class.java)
-        val paymentProcess = "$packageName:${WooCommerce.TAP_TO_PAY_STRIPE_PROCESS_NAME_SUFFIX}"
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S_V2) {
-            return manager.runningAppProcesses?.any {
-                it.processName == paymentProcess &&
-                    it.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
-            } == true
-        }
-        return manager.appTasks.any {
-            it.taskInfo?.let { info ->
-                val top = info.topActivity
-                info.taskId == taskId && info.isVisible && top?.packageName == packageName &&
-                    packageManager.getActivityInfo(top, 0).processName == paymentProcess
-            } == true
-        }
-    }
+    @Inject
+    lateinit var autoLock: WooPosAutoLock
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val discardSavedSale = intent.getBooleanExtra(DISCARD_SAVED_SALE, false)
-        intent.removeExtra(DISCARD_SAVED_SALE)
-        val savedSale = savedInstanceState?.takeIf {
-            !discardSavedSale && it.getInt(SALE_SITE_ID) == SelectedSite.getSelectedSiteId(this) &&
-                SelectedSite.hasSelectedSiteId(this)
-        }
-        super.onCreate(savedSale)
-        saleSiteId = selectedSite.getOrNull()?.id
-        onBackPressedDispatcher.addCallback(this) { }
-        lifecycleScope.launch {
-            featureFlags.awaitRemoteFlagsLoaded()
-            val rolesEnabled = featureFlags.isEnabled(FeatureFlag.WOO_POS_ROLES)
-            val staleSavedSite = savedInstanceState?.containsKey(SALE_SITE_ID) == true &&
-                savedInstanceState.getInt(SALE_SITE_ID) != saleSiteId
-            if (staleSavedSite || (savedSale?.getBoolean(EXIT_IN_PROGRESS) == true && !restorePOS())) {
-                finishRestoredExit()
-                return@launch
+        // POS is session-based: cart, product cache, order cache, and data source selection
+        // all live in in-memory singletons set up by the splash flow. On a config change
+        // (theme, rotation, font scale) the process stays alive and the singletons survive,
+        // so we preserve savedInstanceState and let Compose Navigation restore the back
+        // stack to the screen the user was on. On process death the OS spawns a fresh
+        // process with empty singletons; restoring the back stack to a non-splash route
+        // would skip initialization and crash in WooPosProductsDataSource — so we discard
+        // savedInstanceState to force a fresh splash. hasInitializedSession is process-
+        // scoped: it's reset to false in a new process, true after the first onCreate.
+        super.onCreate(if (hasInitializedSession) savedInstanceState else null)
+        hasInitializedSession = true
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        lockWooPosOrientation()
+
+        lifecycle.addObserver(wooPosGetSupportFacade)
+        lifecycle.addObserver(wooPosCouponCreationFacade)
+        lifecycle.addObserver(wooPosPeriodicSyncFacade)
+
+        setContent {
+            WooPosTheme {
+                WooPosRootScreen(modifier = Modifier.gesturesOrButtonsNavigationPadding())
             }
-            val legacyRestore = !rolesEnabled && !initializedProcess
-            val invalidSale = savedSale?.getInt(SALE_SITE_ID) != saleSiteId || legacyRestore
-            if (savedSale != null && invalidSale) {
-                intent.putExtra(DISCARD_SAVED_SALE, true)
-                recreate()
-                return@launch
-            }
-            initializedProcess = true
-            val prepareSavedSale = savedSale != null && productsDataSource.getCurrentSyncStrategyOrNull() == null
-            application.registerActivityLifecycleCallbacks(appVisibility)
-            observingVisibility = true
-            if (lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.STARTED)) {
-                visibleActivities.add(this@WooPosActivity)
-                lockViewModel.onForeground()
-            }
-            ContextCompat.registerReceiver(
-                this@WooPosActivity,
-                paymentVisibility,
-                IntentFilter(WooCommerce.POS_PAYMENT_VISIBILITY_ACTION),
-                ContextCompat.RECEIVER_NOT_EXPORTED
-            )
-            WindowCompat.setDecorFitsSystemWindows(window, false)
-            lockWooPosOrientation()
-
-            lifecycle.addObserver(wooPosGetSupportFacade)
-            lifecycle.addObserver(wooPosCouponCreationFacade)
-            lifecycle.addObserver(wooPosPeriodicSyncFacade)
-
-            observeSelectedSite()
-
-            setContent {
-                WooPosTheme {
-                    WooPosRootScreen(
-                        modifier = Modifier.gesturesOrButtonsNavigationPadding(),
-                        lockViewModel = lockViewModel,
-                        prepareSavedSale = prepareSavedSale,
-                    )
-                }
-            }
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        saleSiteId?.let { outState.putInt(SALE_SITE_ID, it) }
-        outState.putBoolean(EXIT_IN_PROGRESS, observingVisibility && lockViewModel.isExitInProgress)
-        super.onSaveInstanceState(outState)
-    }
-
-    private fun observeSelectedSite() {
-        lifecycleScope.launch {
-            selectedSite.observe().distinctUntilChangedBy { it?.id }.collect { site ->
-                if (site?.id != saleSiteId) finish()
-            }
-        }
-    }
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        setIntent(intent)
-        if (intent.action == Intent.ACTION_MAIN) {
-            lifecycleScope.launch {
-                featureFlags.awaitRemoteFlagsLoaded()
-                lockViewModel.onLauncherEntry()
-            }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (observingVisibility && paymentActivityVisible && !hasVisiblePaymentActivity()) {
-            paymentActivityVisible = false
-            lockViewModel.onBackground()
-            lockViewModel.onForeground()
         }
     }
 
     override fun onUserInteraction() {
         super.onUserInteraction()
-        if (observingVisibility) lockViewModel.onUserInteraction()
+        autoLock.onUserActivity()
     }
 
     override fun onPause() {
@@ -227,11 +70,6 @@ class WooPosActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         endPosSessionIfFinishing()
-        if (observingVisibility) {
-            visibleActivities.forEach(::restoreWindowCallback)
-            application.unregisterActivityLifecycleCallbacks(appVisibility)
-            unregisterReceiver(paymentVisibility)
-        }
         super.onDestroy()
     }
 
@@ -239,33 +77,7 @@ class WooPosActivity : AppCompatActivity() {
         if (isFinishing) analyticsEntryPointKeeper.onPosSessionEnded()
     }
 
-    private fun finishRestoredExit() {
-        if (isTaskRoot) startActivity(Intent(this, com.woocommerce.android.ui.main.MainActivity::class.java))
-        finish()
-    }
-
-    private fun restoreWindowCallback(activity: Activity) {
-        (activity.window.callback as? InteractionCallback)?.let { activity.window.callback = it.original }
-    }
-
-    private class InteractionCallback(
-        val original: Window.Callback,
-        private val onInteraction: () -> Unit,
-    ) : Window.Callback by original {
-        override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-            onInteraction()
-            return original.dispatchTouchEvent(event)
-        }
-        override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-            onInteraction()
-            return original.dispatchKeyEvent(event)
-        }
-    }
-
     companion object {
-        private var initializedProcess = false
-        private const val SALE_SITE_ID = "pos_sale_site_id"
-        private const val DISCARD_SAVED_SALE = "discard_pos_saved_sale"
-        private const val EXIT_IN_PROGRESS = "pos_exit_in_progress"
+        private var hasInitializedSession = false
     }
 }

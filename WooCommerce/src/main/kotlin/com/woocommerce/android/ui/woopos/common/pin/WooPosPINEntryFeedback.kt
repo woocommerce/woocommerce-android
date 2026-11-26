@@ -77,7 +77,7 @@ private fun rememberPINFeedback(status: WooPosPINEntryStatus, enteredDigits: Int
     return feedback
 }
 
-private enum class WooPosPINMessage { INCORRECT, WAIT, UNAVAILABLE, PAYMENT_PENDING }
+private enum class WooPosPINMessage { INCORRECT, WAIT, UNAVAILABLE }
 
 @Composable
 internal fun measureWooPosPINStatusHeight(textMeasurer: TextMeasurer, maxWidth: Int, minimum: Dp): Dp {
@@ -99,7 +99,6 @@ internal fun WooPosPINEntryFeedback(status: WooPosPINEntryStatus, enteredDigits:
             WooPosPINEntryStatus.Incorrect -> if (enteredDigits == 0) WooPosPINMessage.INCORRECT else null
             is WooPosPINEntryStatus.Wait -> WooPosPINMessage.WAIT
             WooPosPINEntryStatus.StorageUnavailable -> WooPosPINMessage.UNAVAILABLE
-            WooPosPINEntryStatus.PaymentPending -> WooPosPINMessage.PAYMENT_PENDING
         }
     }
     val feedbackSpec = tween<Float>(FEEDBACK_MILLIS, easing = LinearOutSlowInEasing)
@@ -133,7 +132,6 @@ internal fun WooPosPINEntryFeedback(status: WooPosPINEntryStatus, enteredDigits:
 private fun pinMessageText(message: WooPosPINMessage, remainingSeconds: Long): AnnotatedString =
     when (message) {
         WooPosPINMessage.INCORRECT -> AnnotatedString(stringResource(R.string.woopos_lock_incorrect))
-        WooPosPINMessage.PAYMENT_PENDING -> AnnotatedString(stringResource(R.string.woopos_lock_payment_pending))
         WooPosPINMessage.UNAVAILABLE -> AnnotatedString(stringResource(R.string.woopos_lock_unavailable))
         WooPosPINMessage.WAIT -> {
             val locale = LocalConfiguration.current.locales[0]

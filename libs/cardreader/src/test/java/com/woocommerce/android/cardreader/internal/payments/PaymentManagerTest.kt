@@ -12,8 +12,6 @@ import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_PA
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.SUCCEEDED
 import com.stripe.stripeterminal.external.models.PaymentMethod
 import com.stripe.stripeterminal.external.models.PaymentMethodDetails
-import com.stripe.stripeterminal.external.models.TerminalErrorCode
-import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.CardReaderStore.PreparePaymentResponse
@@ -40,9 +38,7 @@ import com.woocommerce.android.cardreader.payments.CreatePaymentIntentResult
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RetrieveAndCollectResult
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -58,7 +54,6 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -499,7 +494,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     }
 
     @Test
-    fun `when receiptUrl is empty, then the original intent is retained with an unknown outcome`() = testBlocking {
+    fun `when receiptUrl is empty, then PaymentData for retry are empty`() = testBlocking {
         val noReceiptIntent = createPaymentIntent(REQUIRES_CAPTURE, receiptUrl = null)
         whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
             .thenReturn(ProcessPaymentIntentStatus.Success(noReceiptIntent))
@@ -507,8 +502,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         val result = manager
             .acceptPayment(createPaymentInfo()).toList()
 
-        assertThat((result.last() as PaymentFailed).type).isEqualTo(CardPaymentStatusErrorType.CaptureOutcomeUnknown)
-        assertThat((result.last() as PaymentFailed).paymentDataForRetry).isNotNull()
+        assertThat((result.last() as PaymentFailed).paymentDataForRetry).isNull()
     }
 
     @Test
@@ -914,238 +908,6 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         whenever(terminalWrapper.retrievePaymentIntent("secret")).thenReturn(refreshedIntent)
 
         return (manager.acceptPayment(createPaymentInfo()).toList().last() as PaymentFailed).type
-    }
-
-    @Test
-    fun `given creation was cancelled before collection, when the owner cancels, then it resolves without SDK collection`() = testBlocking {
-        // GIVEN
-        val created = CompletableDeferred<CreatePaymentStatus>()
-        whenever(createPaymentAction.createPaymentIntent(any())).doSuspendableAnswer { created.await() }
-        val collection = async { manager.acceptPayment(createPaymentInfo()).toList() }
-
-        // WHEN
-        collection.cancel()
-        collection.join()
-
-        // THEN
-        assertThat(manager.cancelActivePaymentAndAwait()).isTrue()
-        verify(processPaymentIntentAction, never()).processPaymentIntent(any())
-        verify(terminalWrapper, never()).cancelPaymentCommandAndAwait()
-    }
-
-    @Test
-    fun `given disconnect before card presentation, when intent retrieval confirms no payment method, then normal failure is retained`() = testBlocking {
-        // GIVEN
-        val original = createPaymentIntent(REQUIRES_PAYMENT_METHOD)
-        whenever(original.clientSecret).thenReturn("secret")
-        whenever(createPaymentAction.createPaymentIntent(any())).thenReturn(CreatePaymentStatus.Success(original))
-        val error = TerminalException(TerminalErrorCode.BLUETOOTH_DISCONNECTED, "Disconnected")
-        whenever(
-            processPaymentIntentAction.processPaymentIntent(any())
-        ).thenReturn(ProcessPaymentIntentStatus.Failure(error))
-        val refreshed = createPaymentIntent(REQUIRES_PAYMENT_METHOD)
-        whenever(terminalWrapper.retrievePaymentIntent("secret")).thenReturn(refreshed)
-
-        // WHEN
-        val result = manager.acceptPayment(createPaymentInfo()).toList()
-
-        // THEN
-        assertThat((result.last() as PaymentFailed).type).isEqualTo(CardPaymentStatusErrorType.Generic)
-        verify(paymentErrorMapper).mapTerminalError(refreshed, error)
-        verify(cardReaderStore, never()).capturePaymentIntent(any(), any())
-    }
-
-    @Test
-    fun `given intent creation is pending, when cancellation starts, then it waits for a confirmed canceled intent`() =
-        testBlocking {
-            // GIVEN
-            val created = CompletableDeferred<CreatePaymentStatus>()
-            val intent = createPaymentIntent(REQUIRES_PAYMENT_METHOD)
-            whenever(createPaymentAction.createPaymentIntent(any())).doSuspendableAnswer { created.await() }
-            whenever(terminalWrapper.cancelPaymentCommandAndAwait()).thenReturn(true)
-            val cancelledIntent = createPaymentIntent(CANCELED)
-            whenever(terminalWrapper.cancelPayment(intent)).thenReturn(cancelledIntent)
-            val collection = async { manager.acceptPayment(createPaymentInfo()).toList() }
-
-            // WHEN
-            val cancellation = async { manager.cancelActivePaymentAndAwait() }
-
-            // THEN
-            assertThat(cancellation.isCompleted).isFalse()
-            created.complete(CreatePaymentStatus.Success(intent))
-            assertThat(cancellation.await()).isTrue()
-            collection.await()
-            verify(processPaymentIntentAction, never()).processPaymentIntent(any())
-        }
-
-    @Test
-    fun `given SDK cancellation fails, when protection asks to cancel, then it does not report confirmation`() =
-        testBlocking {
-            // GIVEN
-            val processing = CompletableDeferred<ProcessPaymentIntentStatus>()
-            whenever(processPaymentIntentAction.processPaymentIntent(any())).doSuspendableAnswer { processing.await() }
-            whenever(terminalWrapper.cancelPaymentCommandAndAwait()).thenReturn(false)
-            val collection = async { manager.acceptPayment(createPaymentInfo()).toList() }
-
-            // THEN
-            assertThat(manager.cancelActivePaymentAndAwait()).isFalse()
-            verify(terminalWrapper, never()).cancelPayment(any())
-            collection.cancel()
-        }
-
-    @Test
-    fun `given SDK command ends but intent remains pending, when cancelling, then it does not confirm cancellation`() =
-        testBlocking {
-            // GIVEN
-            val processing = CompletableDeferred<ProcessPaymentIntentStatus>()
-            whenever(processPaymentIntentAction.processPaymentIntent(any())).doSuspendableAnswer { processing.await() }
-            whenever(terminalWrapper.cancelPaymentCommandAndAwait()).thenReturn(true)
-            val pendingIntent = createPaymentIntent(REQUIRES_CONFIRMATION)
-            whenever(terminalWrapper.cancelPayment(any())).thenReturn(pendingIntent)
-            val collection = async { manager.acceptPayment(createPaymentInfo()).toList() }
-
-            // THEN
-            assertThat(manager.cancelActivePaymentAndAwait()).isFalse()
-            collection.cancel()
-        }
-
-    @Test
-    fun `given capture is pending, when background cancellation is requested, then capture continues without a second charge`() =
-        testBlocking {
-            // GIVEN
-            val capture = CompletableDeferred<CapturePaymentResponse>()
-            whenever(cardReaderStore.capturePaymentIntent(any(), anyString())).doSuspendableAnswer { capture.await() }
-            val collection = async { manager.acceptPayment(createPaymentInfo()).toList() }
-
-            // THEN
-            assertThat(manager.cancelActivePaymentAndAwait()).isFalse()
-            verify(terminalWrapper, never()).cancelPaymentCommandAndAwait()
-            assertThat(collection.isCompleted).isFalse()
-
-            // WHEN
-            capture.complete(CapturePaymentResponse.Successful.Success)
-
-            // THEN
-            assertThat(collection.await().last()).isInstanceOf(PaymentCompleted::class.java)
-        }
-
-    @Test
-    fun `given timeout has an updated processing intent, when processing fails, then its outcome stays unknown`() = testBlocking {
-        // GIVEN
-        val updated = createPaymentIntent(com.stripe.stripeterminal.external.models.PaymentIntentStatus.PROCESSING)
-        val error: TerminalException = mock {
-            on { errorMessage }.thenReturn("Unknown")
-            on { paymentIntent }.thenReturn(updated)
-        }
-        whenever(
-            processPaymentIntentAction.processPaymentIntent(any())
-        ).thenReturn(ProcessPaymentIntentStatus.Failure(error))
-
-        // WHEN
-        val result = manager.acceptPayment(createPaymentInfo()).toList()
-
-        // THEN
-        assertThat((result.last() as PaymentFailed).type).isEqualTo(CardPaymentStatusErrorType.CaptureOutcomeUnknown)
-        verify(cardReaderStore, never()).capturePaymentIntent(any(), any())
-    }
-
-    @Test
-    fun `given an API timeout without an updated intent, when processing fails, then the outcome stays unknown`() = testBlocking {
-        // GIVEN
-        whenever(processPaymentIntentAction.processPaymentIntent(any())).thenReturn(
-            ProcessPaymentIntentStatus.Failure(TerminalException(TerminalErrorCode.REQUEST_TIMED_OUT, "Unknown"))
-        )
-
-        // WHEN
-        val result = manager.acceptPayment(createPaymentInfo()).toList()
-
-        // THEN
-        assertThat((result.last() as PaymentFailed).type).isEqualTo(CardPaymentStatusErrorType.CaptureOutcomeUnknown)
-        verify(cardReaderStore, never()).capturePaymentIntent(any(), any())
-    }
-
-    @Test
-    fun `given SDK success races cancellation, when cancellation fails, then the same sale still completes`() = testBlocking {
-        // GIVEN
-        val processing = CompletableDeferred<ProcessPaymentIntentStatus>()
-        whenever(processPaymentIntentAction.processPaymentIntent(any())).doSuspendableAnswer { processing.await() }
-        val completed = createPaymentIntent(REQUIRES_CAPTURE)
-        whenever(terminalWrapper.cancelPaymentCommandAndAwait()).doSuspendableAnswer {
-            processing.complete(ProcessPaymentIntentStatus.Success(completed))
-            false
-        }
-        val collection = async { manager.acceptPayment(createPaymentInfo()).toList() }
-
-        // WHEN
-        assertThat(manager.cancelActivePaymentAndAwait()).isFalse()
-
-        // THEN
-        assertThat(collection.await().last()).isInstanceOf(PaymentCompleted::class.java)
-        verify(createPaymentAction).createPaymentIntent(any())
-        verify(cardReaderStore).capturePaymentIntent(any(), any())
-    }
-
-    @Test
-    fun `given remote SDK cancellation arrives first, when intent cancellation is pending, then no canceled result is returned early`() = testBlocking {
-        // GIVEN
-        val intent = createPaymentIntent(REQUIRES_PAYMENT_METHOD)
-        whenever(intent.clientSecret).thenReturn("secret")
-        whenever(createPaymentAction.createPaymentIntent(any())).thenReturn(CreatePaymentStatus.Success(intent))
-        whenever(terminalWrapper.retrievePaymentIntent("secret")).thenReturn(intent)
-        val commandStopped = CompletableDeferred<Unit>()
-        val callbackConfirmed = CompletableDeferred<Boolean>()
-        whenever(terminalWrapper.processPaymentIntent(intent)).doSuspendableAnswer {
-            commandStopped.await()
-            throw TerminalException(TerminalErrorCode.CANCELED, "Command stopped")
-        }
-        whenever(terminalWrapper.cancelPaymentCommandAndAwait()).doSuspendableAnswer {
-            commandStopped.complete(Unit)
-            callbackConfirmed.await()
-        }
-        val cancelled = createPaymentIntent(CANCELED)
-        whenever(terminalWrapper.cancelPayment(intent)).thenReturn(cancelled)
-        manager.createPaymentIntentOnly(createPaymentInfo())
-        val collection = async { manager.retrieveAndCollectPayment("secret", createPaymentInfo()) }
-        val cancellation = async { manager.cancelActivePaymentAndAwait() }
-
-        // THEN
-        assertThat(collection.isCompleted).isFalse()
-        assertThat(cancellation.isCompleted).isFalse()
-
-        // WHEN
-        callbackConfirmed.complete(true)
-
-        // THEN
-        assertThat(cancellation.await()).isTrue()
-        val failure = collection.await() as RetrieveAndCollectResult.Failed
-        assertThat((failure.cause as TerminalException).errorCode).isEqualTo(TerminalErrorCode.CANCELED)
-    }
-
-    @Test
-    fun `given remote preparation is pending, when intent cancellation is confirmed, then preparation cannot start confirmation`() = testBlocking {
-        // GIVEN
-        val intent = createPaymentIntent(REQUIRES_PAYMENT_METHOD)
-        whenever(intent.clientSecret).thenReturn("secret")
-        val collected = createPaymentIntent(REQUIRES_CONFIRMATION, interacPresentDetails = StripeCard())
-        val cancelled = createPaymentIntent(CANCELED)
-        whenever(createPaymentAction.createPaymentIntent(any())).thenReturn(CreatePaymentStatus.Success(intent))
-        whenever(terminalWrapper.retrievePaymentIntent("secret")).thenReturn(intent)
-        whenever(terminalWrapper.collectPaymentMethod(intent)).thenReturn(collected)
-        whenever(terminalWrapper.cancelPaymentCommandAndAwait()).thenReturn(true)
-        whenever(terminalWrapper.cancelPayment(intent)).thenReturn(cancelled)
-        val preparation = CompletableDeferred<PreparePaymentResponse>()
-        whenever(cardReaderStore.preparePaymentIntent(any(), any())).doSuspendableAnswer { preparation.await() }
-        val info = createPaymentInfo(terminalPaymentPreparation = PaymentInfo.TerminalPaymentPreparation.CANADA_INTERAC)
-        manager.createPaymentIntentOnly(info)
-        val collection = async { manager.retrieveAndCollectPayment("secret", info) }
-
-        // WHEN
-        assertThat(manager.cancelActivePaymentAndAwait()).isTrue()
-        preparation.complete(PreparePaymentResponse.Success)
-
-        // THEN
-        assertThat(collection.await()).isInstanceOf(RetrieveAndCollectResult.Failed::class.java)
-        verify(terminalWrapper, never()).confirmPaymentIntent(any())
     }
 
     private fun createPaymentIntent(

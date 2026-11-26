@@ -39,7 +39,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.wooPosUserInteraction
 import com.woocommerce.android.ui.woopos.common.composeui.rememberRetained
 import com.woocommerce.android.ui.woopos.common.pin.PIN_PAD_PHONE_KEY_SIZE
 import com.woocommerce.android.ui.woopos.common.pin.PIN_PAD_TABLET_KEY_SIZE
@@ -88,10 +87,7 @@ internal fun WooPosApprovalPhoneContent(
     onUIEvent: (WooPosApprovalUIEvent) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    Surface(
-        modifier = Modifier.wooPosUserInteraction().fillMaxSize(),
-        color = MaterialTheme.colorScheme.surfaceBright,
-    ) {
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceBright) {
         WooPosPINPhoneLayout(header = { ApprovalCloseHeader(onDismiss, state.canDismiss) }) {
             ApprovalBody(
                 state,
@@ -113,7 +109,7 @@ internal fun WooPosApprovalTabletContent(
     val shownState = rememberRetained(state)
     val fontScale = LocalDensity.current.fontScale.coerceAtLeast(1f)
     WooPosDialogWrapper(
-        modifier = Modifier.wooPosUserInteraction()
+        modifier = Modifier
             .padding(WooPosSpacing.Large.value)
             .widthIn(
                 max = APPROVAL_CARD_MAX_WIDTH.toAdaptiveComponentSize() * fontScale,

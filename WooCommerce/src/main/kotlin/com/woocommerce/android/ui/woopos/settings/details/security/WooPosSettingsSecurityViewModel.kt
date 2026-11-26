@@ -7,8 +7,8 @@ import com.woocommerce.android.ui.woopos.roles.WooPosCapability
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLockSettings
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockPreferences
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockSettings
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityState.Protected
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -30,7 +31,7 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val store: WooPosLocalPINStore,
     private val accessSession: WooPosAccessSession,
-    private val lockPreferences: WooPosLockPreferences,
+    private val lockSettings: WooPosLockSettings,
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosSettingsSecurityState>(WooPosSettingsSecurityState.Loading)
     val state: StateFlow<WooPosSettingsSecurityState> = _state.asStateFlow()
@@ -46,16 +47,12 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
         readJob = viewModelScope.launch { read()?.let { _state.value = it } }
     }
 
-    fun updateLockSettings(update: (WooPosAutoLockSettings) -> WooPosAutoLockSettings) {
+    fun updateLockPreferences(preferences: WooPosLockPreferences) {
+        val id = selectedSite.getOrNull()?.id ?: return
+        if (_state.value !is Protected || !canManagePINs()) return
         viewModelScope.launch {
-            val scope = accessSession.approvalScope() ?: return@launch
-            val saved = lockPreferences.updateSettings(scope.siteId, {
-                accessSession.approvalScope() == scope && canManagePINs()
-            }, update)
-            currentCoroutineContext().ensureActive()
-            if (accessSession.approvalScope() != scope) return@launch
-            read()?.let { current ->
-                _state.value = if (current is Protected) current.copy(settingsSaveFailed = saved.isFailure) else current
+            if (lockSettings.update(id, preferences) && isSelected(id)) {
+                _state.update { (it as? Protected)?.copy(lockPreferences = preferences) ?: it }
             }
         }
     }
@@ -105,24 +102,22 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
         }.also { if (it.isSuccess && isSelected(scope.siteId)) accessSession.initialize() }.isSuccess
     }
 
-    @Suppress("ReturnCount")
     private suspend fun read(): WooPosSettingsSecurityState? {
         if (!canManagePINs()) return WooPosSettingsSecurityState.Restricted
         val id = selectedSite.getOrNull()?.id ?: return WooPosSettingsSecurityState.Unavailable
         val pins = store.getPINs(id)
+        val lockPreferences = lockSettings.preferences(id).first()
         currentCoroutineContext().ensureActive()
-        if (!isSelected(id)) return null
-        val settings = lockPreferences.settings(id).first().getOrNull()
         if (!isSelected(id)) return null
         val saved = pins.getOrNull()
         return when {
             !canManagePINs() -> WooPosSettingsSecurityState.Restricted
-            saved == null || settings == null -> WooPosSettingsSecurityState.Unavailable
+            saved == null -> WooPosSettingsSecurityState.Unavailable
             saved.isEmpty() -> WooPosSettingsSecurityState.Off
             else -> Protected(
                 hasCashierPIN = WooPosLocalRole.CASHIER in saved,
                 removalFailed = false,
-                lockSettings = settings,
+                lockPreferences = lockPreferences,
             )
         }
     }

@@ -3,8 +3,6 @@ package com.woocommerce.android.cardreader.internal.wrappers
 import android.app.Application
 import androidx.annotation.RequiresPermission
 import com.stripe.stripeterminal.Terminal
-import com.stripe.stripeterminal.external.callable.Callback
-import com.stripe.stripeterminal.external.callable.Cancelable
 import com.stripe.stripeterminal.external.callable.ConnectionTokenProvider
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.callable.TerminalListener
@@ -26,29 +24,29 @@ import com.stripe.stripeterminal.external.models.SimulatedCardType
 import com.stripe.stripeterminal.external.models.SimulatorConfiguration
 import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration
 import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration.Color
-import com.stripe.stripeterminal.external.models.TerminalErrorCode
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.stripe.stripeterminal.ktx.cancelPaymentIntent
+import com.stripe.stripeterminal.ktx.collectPaymentMethod
+import com.stripe.stripeterminal.ktx.confirmPaymentIntent
 import com.stripe.stripeterminal.ktx.connectReader
 import com.stripe.stripeterminal.ktx.createPaymentIntent
 import com.stripe.stripeterminal.ktx.disconnectReader
 import com.stripe.stripeterminal.ktx.discoverReaders
+import com.stripe.stripeterminal.ktx.processPaymentIntent
 import com.stripe.stripeterminal.ktx.processRefund
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.suspendCancellableCoroutine
-import java.util.concurrent.atomic.AtomicReference
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 /**
  * Injectable wrapper for Stripe's Terminal object.
  */
-internal class TerminalWrapper(private val terminal: () -> Terminal = { Terminal.getInstance() }) {
+internal class TerminalWrapper {
     fun isInitialized() = Terminal.isInitialized()
     fun getLifecycleObserver() = TerminalApplicationDelegateWrapper()
     fun initTerminal(
@@ -72,144 +70,81 @@ internal class TerminalWrapper(private val terminal: () -> Terminal = { Terminal
         ],
     )
     fun discoverReaders(config: DiscoveryConfiguration): Flow<List<Reader>> =
-        terminal().discoverReaders(config)
+        Terminal.getInstance().discoverReaders(config)
 
     suspend fun connectToReader(
         reader: Reader,
         configuration: ConnectionConfiguration
-    ): Reader = terminal().connectReader(reader, configuration)
+    ): Reader = Terminal.getInstance().connectReader(reader, configuration)
 
     suspend fun connectToMobile(
         reader: Reader,
         configuration: ConnectionConfiguration.TapToPayConnectionConfiguration
-    ): Reader = terminal().connectReader(reader, configuration)
+    ): Reader = Terminal.getInstance().connectReader(reader, configuration)
 
-    suspend fun disconnectReader() = terminal().disconnectReader()
+    suspend fun disconnectReader() = Terminal.getInstance().disconnectReader()
 
     fun clearCachedCredentials() {
-        terminal().clearCachedCredentials()
+        Terminal.getInstance().clearCachedCredentials()
     }
 
     suspend fun createPaymentIntent(params: PaymentIntentParameters): PaymentIntent =
-        terminal().createPaymentIntent(params, null)
+        Terminal.getInstance().createPaymentIntent(params, null)
 
     suspend fun retrievePaymentIntent(clientSecret: String): PaymentIntent =
         suspendCancellableCoroutine { cont ->
-            terminal().retrievePaymentIntent(
+            Terminal.getInstance().retrievePaymentIntent(
                 clientSecret,
                 object : PaymentIntentCallback {
                     override fun onSuccess(paymentIntent: PaymentIntent) {
-                        if (cont.isActive) cont.resume(paymentIntent)
+                        cont.resume(paymentIntent)
                     }
 
                     override fun onFailure(e: TerminalException) {
-                        if (cont.isActive) cont.resumeWithException(e)
+                        cont.resumeWithException(e)
                     }
                 }
             )
         }
 
-    private val activePaymentCommand = AtomicReference<PaymentCommand?>(null)
-
-    suspend fun processPaymentIntent(paymentIntent: PaymentIntent): PaymentIntent = paymentCommand { callback ->
-        terminal().processPaymentIntent(
+    suspend fun processPaymentIntent(paymentIntent: PaymentIntent): PaymentIntent =
+        Terminal.getInstance().processPaymentIntent(
             paymentIntent,
             CollectPaymentIntentConfiguration.Builder().build(),
-            ConfirmPaymentIntentConfiguration.Builder().build(),
-            callback,
+            ConfirmPaymentIntentConfiguration.Builder().build()
         )
-    }
 
-    suspend fun collectPaymentMethod(paymentIntent: PaymentIntent): PaymentIntent = paymentCommand { callback ->
-        terminal().collectPaymentMethod(
+    suspend fun collectPaymentMethod(paymentIntent: PaymentIntent): PaymentIntent =
+        Terminal.getInstance().collectPaymentMethod(
             paymentIntent,
-            callback,
-            CollectPaymentIntentConfiguration.Builder().updatePaymentIntent(true).build(),
+            CollectPaymentIntentConfiguration.Builder()
+                .updatePaymentIntent(true)
+                .build()
         )
-    }
 
-    suspend fun confirmPaymentIntent(paymentIntent: PaymentIntent): PaymentIntent = paymentCommand { callback ->
-        terminal().confirmPaymentIntent(
+    suspend fun confirmPaymentIntent(paymentIntent: PaymentIntent): PaymentIntent =
+        Terminal.getInstance().confirmPaymentIntent(
             paymentIntent,
-            callback,
-            ConfirmPaymentIntentConfiguration.Builder().build(),
+            ConfirmPaymentIntentConfiguration.Builder().build()
         )
-    }
-
-    suspend fun cancelPaymentCommandAndAwait(): Boolean {
-        val command = activePaymentCommand.get() ?: return true
-        val handle = command.handle ?: return false
-        val cancelled = suspendCancellableCoroutine { continuation ->
-            handle.cancel(object : Callback {
-                override fun onSuccess() { if (continuation.isActive) continuation.resume(true) }
-                override fun onFailure(e: TerminalException) { if (continuation.isActive) continuation.resume(false) }
-            })
-        }
-        if (cancelled) command.finished.await()
-        return cancelled
-    }
-
-    @Suppress("TooGenericExceptionCaught")
-    private suspend fun paymentCommand(start: (PaymentIntentCallback) -> Cancelable): PaymentIntent =
-        suspendCancellableCoroutine { continuation ->
-            if (!continuation.isActive) return@suspendCancellableCoroutine
-            val command = PaymentCommand()
-            if (!activePaymentCommand.compareAndSet(null, command)) {
-                continuation.resumeWithException(
-                    TerminalException(TerminalErrorCode.READER_BUSY, "Payment command pending")
-                )
-                return@suspendCancellableCoroutine
-            }
-            try {
-                command.handle = start(object : PaymentIntentCallback {
-                    override fun onSuccess(paymentIntent: PaymentIntent) {
-                        completePaymentCommand(command)
-                        if (continuation.isActive) continuation.resume(paymentIntent)
-                    }
-                    override fun onFailure(e: TerminalException) {
-                        completePaymentCommand(command)
-                        if (continuation.isActive) continuation.resumeWithException(e)
-                    }
-                })
-            } catch (error: Exception) {
-                completePaymentCommand(command)
-                if (continuation.isActive) continuation.resumeWithException(error)
-            }
-            continuation.invokeOnCancellation {
-                command.handle?.cancel(object : Callback {
-                    override fun onSuccess() = Unit
-                    override fun onFailure(e: TerminalException) = Unit
-                })
-            }
-        }
-
-    private fun completePaymentCommand(command: PaymentCommand) {
-        activePaymentCommand.compareAndSet(command, null)
-        command.finished.complete(Unit)
-    }
-
-    private class PaymentCommand {
-        @Volatile var handle: Cancelable? = null
-        val finished = CompletableDeferred<Unit>()
-    }
 
     suspend fun cancelPayment(paymentIntent: PaymentIntent): PaymentIntent =
-        terminal().cancelPaymentIntent(paymentIntent)
+        Terminal.getInstance().cancelPaymentIntent(paymentIntent)
 
     suspend fun processRefund(
         refundParameters: ProcessRefundParameters,
         refundConfiguration: CollectRefundConfiguration
-    ): Refund = terminal().processRefund(refundParameters, refundConfiguration)
+    ): Refund = Terminal.getInstance().processRefund(refundParameters, refundConfiguration)
 
-    fun installSoftwareUpdate() = terminal().installAvailableUpdate()
+    fun installSoftwareUpdate() = Terminal.getInstance().installAvailableUpdate()
 
-    fun getConnectedReader(): CardReader? = terminal().connectedReader?.let { CardReaderImpl(it) }
+    fun getConnectedReader(): CardReader? = Terminal.getInstance().connectedReader?.let { CardReaderImpl(it) }
 
     fun setupSimulator(
         useInterac: Boolean,
         useEftpos: Boolean,
     ) {
-        terminal().simulatorConfiguration = SimulatorConfiguration(
+        Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(
             simulatedCard = SimulatedCard(
                 when {
                     useEftpos -> SimulatedCardType.EFTPOS_AU_DEBIT
@@ -223,7 +158,7 @@ internal class TerminalWrapper(private val terminal: () -> Terminal = { Terminal
     fun supportsReadersOfType(
         deviceType: DeviceType,
         discoveryConfiguration: DiscoveryConfiguration,
-    ): ReaderSupportResult = terminal().supportsReadersOfType(deviceType, discoveryConfiguration)
+    ): ReaderSupportResult = Terminal.getInstance().supportsReadersOfType(deviceType, discoveryConfiguration)
 
     fun setupTapToPayUx(config: CardReaderManager.TapToPayUxConfig) {
         val uxConfig = TapToPayUxConfiguration.Builder()
@@ -244,6 +179,6 @@ internal class TerminalWrapper(private val terminal: () -> Terminal = { Terminal
             )
             .build()
 
-        terminal().setTapToPayUxConfiguration(uxConfig)
+        Terminal.getInstance().setTapToPayUxConfiguration(uxConfig)
     }
 }

@@ -22,13 +22,11 @@ import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.argThat
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
@@ -77,28 +75,18 @@ class CardReaderRemoteSessionTest : CardReaderBaseUnitTest() {
         }
 
     @Test
-    fun `given a collect waits for a card, when the tablet cancels it, then the reply waits for reader confirmation`() = testBlocking {
+    fun `given a collect waits for a card, when the tablet cancels it, then the collect is cancelled`() = testBlocking {
         // GIVEN
         val messages = Channel<CardReaderRemoteMessage>(Channel.UNLIMITED)
         val collectWasCancelled = stubCollectThatWaitsForCard()
-        val confirmed = CompletableDeferred<Boolean>()
-        whenever(cardReaderManager.cancelActivePaymentAndAwait()).doSuspendableAnswer { confirmed.await() }
-        val connection = aConnection(messages)
-        val loop = launch { aSession().runProtocolLoop(connection, mock()) }
+        val loop = launch { aSession().runProtocolLoop(aConnection(messages), mock()) }
         messages.send(aCollectRequest("collect-1"))
 
         // WHEN
-        messages.send(CardReaderRemoteMessage.CancelPayment("collect-1", "cancel-1"))
+        messages.send(CardReaderRemoteMessage.CancelPayment("collect-1"))
 
         // THEN
-        assertThat(collectWasCancelled.isCompleted).isFalse()
-        verify(connection, never()).send(argThat { this is CardReaderRemoteMessage.CancelPaymentResult })
-
-        // WHEN
-        confirmed.complete(true)
-
-        // THEN
-        verify(connection).send(CardReaderRemoteMessage.CancelPaymentResult("collect-1", "cancel-1", true))
+        assertThat(collectWasCancelled.isCompleted).isTrue()
         messages.close()
         loop.join()
     }

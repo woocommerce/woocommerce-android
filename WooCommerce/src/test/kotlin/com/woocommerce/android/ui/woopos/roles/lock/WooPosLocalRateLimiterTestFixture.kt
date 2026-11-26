@@ -1,15 +1,11 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
-import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINAuthenticator
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosElapsedTime
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doSuspendableAnswer
@@ -38,16 +34,8 @@ internal class WooPosLocalRateLimiterTestFixture(private val dispatchers: Corout
             }
         }
     }
-    val lockPreferences: WooPosLockPreferences = mock {
-        on { settings(any()) }.thenReturn(flowOf(Result.success(WooPosAutoLockSettings())))
-    }
-    val cardReaderFacade: WooPosCardReaderFacade = mock {
-        on { paymentState }.thenReturn(MutableStateFlow(WooPosCardReaderFacade.PaymentState.Idle))
-    }
-
     var boot = 1
     var elapsed = 1000L
-    val elapsedTime: WooPosElapsedTime = mock { on { milliseconds() }.thenAnswer { elapsed } }
     val clock = object : WooPosPINClock {
         override fun now() = WooPosPINTime(boot, elapsed)
     }
@@ -74,14 +62,6 @@ internal class WooPosLocalRateLimiterTestFixture(private val dispatchers: Corout
     val recovery = object : WooPosPINRecovery {
         override suspend fun authenticate(localSiteId: Int) = recoveryAction()
     }
-    init {
-        runBlocking {
-            whenever(lockPreferences.retainPOS(any(), any())).thenReturn(Result.success(Unit))
-            whenever(lockPreferences.clearRestoreState()).thenReturn(Result.success(Unit))
-            whenever(lockPreferences.clearRestoreState(any(), any())).thenReturn(Result.success(Unit))
-        }
-    }
-
     fun rateLimiter() = WooPosLocalRateLimiter(
         store,
         WooPosPINAuthenticator(dispatchers),

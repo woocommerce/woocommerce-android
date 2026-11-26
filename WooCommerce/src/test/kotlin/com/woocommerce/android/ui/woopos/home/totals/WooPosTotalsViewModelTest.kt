@@ -65,6 +65,7 @@ import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptCoord
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptEvent
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailure
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailureAction
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLock
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -142,9 +143,7 @@ class WooPosTotalsViewModelTest {
     }
     private val cardReaderManager: CardReaderManager = mock()
     private val orderRepository: OrderDetailRepository = mock()
-    private val selectedSite: SelectedSite = mock {
-        on { getOrNull() }.thenReturn(org.wordpress.android.fluxc.model.SiteModel().apply { id = 1 })
-    }
+    private val selectedSite: SelectedSite = mock()
     private val appPrefs: AppPrefs = mock()
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val interacRefundableChecker: CardReaderInteracRefundableChecker = mock()
@@ -174,8 +173,6 @@ class WooPosTotalsViewModelTest {
     private val crashLogging: CrashLogging = mock()
     private val paymentControllerFactory = WooPosCardReaderPaymentControllerFactory(
         cardReaderManager = cardReaderManager,
-        cardReaderFacade = mock { on { trackPayment(any()) }.thenReturn(true) },
-        accessSession = mock { on { allows(any()) }.thenReturn(true) },
         orderRepository = orderRepository,
         selectedSite = selectedSite,
         appPrefs = appPrefs,
@@ -208,12 +205,8 @@ class WooPosTotalsViewModelTest {
         )
     }
 
-    private val cardReaderFacade: WooPosCardReaderFacade = mock {
-        on { retryPayment(any(), any()) }.thenAnswer {
-            it.getArgument<() -> Unit>(1).invoke()
-            true
-        }
-    }
+    private val cardReaderFacade: WooPosCardReaderFacade = mock()
+    private val autoLock: WooPosAutoLock = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
@@ -511,9 +504,7 @@ class WooPosTotalsViewModelTest {
             val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
                 on { events }.thenReturn(mock())
             }
-            val savedState = createMockSavedStateHandle().apply {
-                set("woo_pos_totals_view_state", WooPosTotalsViewState.PaymentSuccess(""))
-            }
+            val savedState = createMockSavedStateHandle()
             val viewModel = createViewModel(
                 savedState = savedState,
                 parentToChildrenEventReceiver = parentToChildrenEventReceiver,
@@ -524,6 +515,25 @@ class WooPosTotalsViewModelTest {
 
             // THEN
             verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OnNewTransactionStarted)
+        }
+
+    @Test
+    fun `when OnNewTransactionClicked, then auto-lock is told that a new order started`() =
+        runTest {
+            // GIVEN
+            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+                on { events }.thenReturn(mock())
+            }
+            val viewModel = createViewModel(
+                savedState = createMockSavedStateHandle(),
+                parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            )
+
+            // WHEN
+            viewModel.onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked)
+
+            // THEN
+            verify(autoLock).onNewOrderStarted()
         }
 
     @Test
@@ -1125,23 +1135,6 @@ class WooPosTotalsViewModelTest {
         // THEN
         verify(mockCardReaderPaymentController).stop()
         verify(mockCardReaderPaymentController).onBackPressed()
-    }
-
-    @Test
-    fun `given card succeeds during cancellation, when Cash is tapped, then alternate tender stays closed`() = runTest {
-        // GIVEN
-        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
-        whenever(cardReaderFacade.isPaymentPending).thenReturn(true, false)
-        whenever(cardReaderFacade.cancelPayment()).thenReturn(WooPosCardReaderFacade.CancellationResult.COMPLETED)
-
-        // WHEN
-        viewModel.onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked)
-
-        // THEN
-        verify(
-            childrenToParentEventSender,
-            never()
-        ).sendToParent(any<ChildToParentEvent.NavigationEvent.ToCashPayment>())
     }
 
     @Test
@@ -3687,7 +3680,7 @@ class WooPosTotalsViewModelTest {
                 )
             )
             whenever(remoteReaderSession.state).thenReturn(remoteState)
-            whenever(remoteReaderPaymentFlow.collect(any(), any(), any()))
+            whenever(remoteReaderPaymentFlow.collect(any(), any()))
                 .thenReturn(WooPosRemoteReaderPaymentFlow.Result.Failed("error"))
 
             val vm = createViewModelAndSetupForSuccessfulOrderCreation()
@@ -3699,7 +3692,7 @@ class WooPosTotalsViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            verify(remoteReaderPaymentFlow, org.mockito.kotlin.times(2)).collect(any(), any(), any())
+            verify(remoteReaderPaymentFlow, org.mockito.kotlin.times(2)).collect(any(), any())
         }
 
     @Test
@@ -3732,7 +3725,7 @@ class WooPosTotalsViewModelTest {
                 WooPosRemoteReaderSession.State.Connected(simulatedRemoteReader(), "SIM-1")
             )
             whenever(remoteReaderSession.state).thenReturn(remoteState)
-            whenever(remoteReaderPaymentFlow.collect(any(), any(), any())).doSuspendableAnswer { invocation ->
+            whenever(remoteReaderPaymentFlow.collect(any(), any())).doSuspendableAnswer { invocation ->
                 invocation.getArgument<suspend () -> Unit>(1).invoke()
                 WooPosRemoteReaderPaymentFlow.Result.Completed
             }
@@ -3744,7 +3737,7 @@ class WooPosTotalsViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            verify(remoteReaderPaymentFlow).collect(any(), any(), any())
+            verify(remoteReaderPaymentFlow).collect(any(), any())
             verify(childrenToParentEventSender).sendToParent(
                 ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.CARD)
             )
@@ -3759,7 +3752,7 @@ class WooPosTotalsViewModelTest {
         val events = WooPosPaymentsFlowTrackerEventProvider(timingData, mock())
         var collections = 0
         var outcome: WooPosAnalyticsEvent? = null
-        whenever(remoteReaderPaymentFlow.collect(any(), any(), any())).doSuspendableAnswer { invocation ->
+        whenever(remoteReaderPaymentFlow.collect(any(), any())).doSuspendableAnswer { invocation ->
             collections++
             val onCaptureStarting = invocation.getArgument<suspend () -> Unit>(1)
             if (collections == 1) {
@@ -3975,54 +3968,6 @@ class WooPosTotalsViewModelTest {
         return vm
     }
 
-    @Test
-    fun `given after sale locking, when New Order follows payment success, then the operator is cleared`() = runTest {
-        // GIVEN
-        val fixture = com.woocommerce.android.ui.woopos.roles.lock.WooPosLocalRateLimiterTestFixture(
-            coroutinesTestRule.testDispatchers,
-        )
-        whenever(fixture.lockPreferences.settings(1)).thenReturn(
-            kotlinx.coroutines.flow.flowOf(
-                Result.success(
-                    com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLockSettings(afterSale = true)
-                )
-            )
-        )
-        val flags: com.woocommerce.android.util.FeatureFlagRepository = mock {
-            on { isEnabled(com.woocommerce.android.util.FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
-        }
-        val session = com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession(
-            flags,
-            selectedSite,
-            fixture.rateLimiter(),
-            fixture.recovery,
-            fixture.lockPreferences,
-            fixture.cardReaderFacade,
-        )
-        session.initialize()
-        session.unlock("1234")
-        val savedState = createMockSavedStateHandle().apply {
-            set("woo_pos_totals_view_state", WooPosTotalsViewState.PaymentSuccess(""))
-        }
-        val receiver: WooPosParentToChildrenEventReceiver = mock {
-            on { events }.thenReturn(kotlinx.coroutines.flow.MutableSharedFlow())
-        }
-        val viewModel = createViewModel(
-            savedState = savedState,
-            parentToChildrenEventReceiver = receiver,
-            accessSession = session,
-            lockPreferences = fixture.lockPreferences
-        )
-
-        // WHEN
-        viewModel.onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked)
-
-        // THEN
-        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OnNewTransactionStarted)
-        assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.state.value.activeRole).isNull()
-    }
-
     private fun createViewModel(
         resourceProvider: ResourceProvider = this.resourceProvider,
         parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock(),
@@ -4030,14 +3975,7 @@ class WooPosTotalsViewModelTest {
         priceFormat: WooPosFormatPrice = mock(),
         savedState: SavedStateHandle = SavedStateHandle(),
         cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory = paymentControllerFactory,
-        accessSession: com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession = mock {
-            on { allows(any()) }.thenReturn(true)
-        },
-        lockPreferences: com.woocommerce.android.ui.woopos.roles.lock.WooPosLockPreferences = mock(),
     ) = WooPosTotalsViewModel(
-        accessSession = accessSession,
-        lockPreferences = lockPreferences,
-        selectedSite = selectedSite,
         resourceProvider = resourceProvider,
         parentToChildrenEventReceiver = parentToChildrenEventReceiver,
         childrenToParentEventSender = childrenToParentEventSender,
@@ -4067,6 +4005,7 @@ class WooPosTotalsViewModelTest {
         builtInReaderConnector = builtInReaderConnector,
         remoteReaderPaymentFlow = remoteReaderPaymentFlow,
         effectiveReaderStatusProvider = WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
+        autoLock = autoLock,
         printReceiptCoordinatorFactory = printReceiptCoordinatorFactory,
     )
 }

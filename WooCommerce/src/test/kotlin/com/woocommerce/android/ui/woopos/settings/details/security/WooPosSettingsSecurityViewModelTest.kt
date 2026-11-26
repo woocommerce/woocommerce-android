@@ -7,8 +7,8 @@ import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole.CASHIER
 import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLockSettings
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockPreferences
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockSettings
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINError
@@ -44,8 +44,8 @@ class WooPosSettingsSecurityViewModelTest {
         on { getOrNull() }.thenReturn(SiteModel().apply { id = 1 })
     }
     private val store: WooPosLocalPINStore = mock()
-    private val lockPreferences: WooPosLockPreferences = mock {
-        on { settings(any()) }.thenReturn(flowOf(Result.success(WooPosAutoLockSettings())))
+    private val lockSettings: WooPosLockSettings = mock {
+        on { preferences(any()) }.thenReturn(flowOf(WooPosLockPreferences()))
     }
     private val sessionState = MutableStateFlow<WooPosAccessSessionState>(WooPosAccessSessionState.Unprotected)
     private val session: WooPosAccessSession = mock {
@@ -81,7 +81,7 @@ class WooPosSettingsSecurityViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        assertThat(viewModel.state.value).isEqualTo(Protected(hasCashierPIN = true, removalFailed = true))
+        assertThat(viewModel.state.value).isEqualTo(protected(hasCashierPIN = true, removalFailed = true))
         verify(session, never()).initialize()
     }
 
@@ -108,7 +108,57 @@ class WooPosSettingsSecurityViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        assertThat(viewModel.state.value).isEqualTo(Protected(hasCashierPIN = false, removalFailed = false))
+        assertThat(viewModel.state.value).isEqualTo(protected(hasCashierPIN = false, removalFailed = false))
+    }
+
+    @Test
+    fun `given Admin on Security, when a lock choice changes, then it is saved and shown`() = runTest {
+        // GIVEN
+        givenAdminSession(ADMIN)
+        val changed = WooPosLockPreferences(locksAfterSale = true)
+        whenever(lockSettings.update(1, changed)).thenReturn(true)
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.updateLockPreferences(changed)
+        advanceUntilIdle()
+
+        // THEN
+        verify(lockSettings).update(1, changed)
+        assertThat((viewModel.state.value as Protected).lockPreferences).isEqualTo(changed)
+    }
+
+    @Test
+    fun `given saving fails, when a lock choice changes, then the saved choice stays shown`() = runTest {
+        // GIVEN
+        givenAdminSession(ADMIN)
+        whenever(lockSettings.update(any(), any())).thenReturn(false)
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.updateLockPreferences(WooPosLockPreferences(locksAfterSale = true))
+        advanceUntilIdle()
+
+        // THEN
+        assertThat((viewModel.state.value as Protected).lockPreferences).isEqualTo(WooPosLockPreferences())
+    }
+
+    @Test
+    fun `given Cashier on Security, when a lock choice changes, then nothing is saved`() = runTest {
+        // GIVEN
+        givenPINs(ADMIN, CASHIER)
+        sessionState.value = WooPosAccessSessionState.Unlocked(CASHIER)
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.updateLockPreferences(WooPosLockPreferences(locksAfterSale = true))
+        advanceUntilIdle()
+
+        // THEN
+        verify(lockSettings, never()).update(any(), any())
     }
 
     @Test
@@ -121,7 +171,7 @@ class WooPosSettingsSecurityViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        assertThat(viewModel.state.value).isEqualTo(Protected(hasCashierPIN = true, removalFailed = false))
+        assertThat(viewModel.state.value).isEqualTo(protected(hasCashierPIN = true, removalFailed = false))
     }
 
     @Test
@@ -163,7 +213,7 @@ class WooPosSettingsSecurityViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        assertThat(viewModel.state.value).isEqualTo(Protected(hasCashierPIN = false, removalFailed = false))
+        assertThat(viewModel.state.value).isEqualTo(protected(hasCashierPIN = false, removalFailed = false))
     }
 
     @Test
@@ -179,7 +229,7 @@ class WooPosSettingsSecurityViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        assertThat(viewModel.state.value).isEqualTo(Protected(hasCashierPIN = true, removalFailed = false))
+        assertThat(viewModel.state.value).isEqualTo(protected(hasCashierPIN = true, removalFailed = false))
     }
 
     @Test
@@ -216,7 +266,7 @@ class WooPosSettingsSecurityViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        assertThat(viewModel.state.value).isEqualTo(Protected(hasCashierPIN = true, removalFailed = true))
+        assertThat(viewModel.state.value).isEqualTo(protected(hasCashierPIN = true, removalFailed = true))
     }
 
     @Test
@@ -351,7 +401,7 @@ class WooPosSettingsSecurityViewModelTest {
 
         // THEN
         assertThat(committed).isFalse()
-        assertThat(viewModel.state.value).isEqualTo(Protected(hasCashierPIN = true, removalFailed = false))
+        assertThat(viewModel.state.value).isEqualTo(protected(hasCashierPIN = true, removalFailed = false))
         verify(session, never()).initialize()
     }
 
@@ -421,11 +471,11 @@ class WooPosSettingsSecurityViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        assertThat(viewModel.state.value).isEqualTo(Protected(hasCashierPIN = false, removalFailed = false))
+        assertThat(viewModel.state.value).isEqualTo(protected(hasCashierPIN = false, removalFailed = false))
         verify(store, never()).removePIN(eq(1), eq(ADMIN), any())
     }
 
-    private fun createViewModel() = WooPosSettingsSecurityViewModel(selectedSite, store, session, lockPreferences)
+    private fun createViewModel() = WooPosSettingsSecurityViewModel(selectedSite, store, session, lockSettings)
 
     private suspend fun givenAdminSession(vararg pins: WooPosLocalRole) {
         givenPINs(*pins)
@@ -435,6 +485,9 @@ class WooPosSettingsSecurityViewModelTest {
     private suspend fun givenPINs(vararg roles: WooPosLocalRole) {
         whenever(store.getPINs(1)).thenReturn(Result.success(roles.associateWith { HASH }))
     }
+
+    private fun protected(hasCashierPIN: Boolean, removalFailed: Boolean) =
+        Protected(hasCashierPIN, removalFailed, WooPosLockPreferences())
 
     private companion object {
         val HASH: WooPosPINHash = WooPosPINHash.create("1234")

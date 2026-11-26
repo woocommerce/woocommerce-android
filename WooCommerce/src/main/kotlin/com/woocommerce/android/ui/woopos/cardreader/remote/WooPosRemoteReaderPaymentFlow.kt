@@ -12,26 +12,19 @@ import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteConnectionLostException
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteError
 import com.woocommerce.android.cardreader.remote.CollectPaymentOutcome
-import com.woocommerce.android.cardreader.remote.RemotePaymentCancellation
 import com.woocommerce.android.di.PointOfSaleMode
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentOrderHelper
 import com.woocommerce.android.ui.payments.cardreader.payment.TerminalPaymentIntentConfig
 import com.woocommerce.android.ui.payments.cardreader.payment.TerminalPaymentPreparationResolver
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
-import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.CardReaderTransport
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.TAP_TO_PAY_READER_MODEL
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.ResourceProvider
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -49,118 +42,15 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     private val trackingInfoKeeper: CardReaderTrackingInfoKeeper,
     @PointOfSaleMode private val paymentsFlowTracker: PaymentsFlowTracker,
     private val appPrefs: AppPrefs = AppPrefs,
-    private val cardReaderFacade: WooPosCardReaderFacade,
-    private val featureFlags: FeatureFlagRepository,
-    private val orderRepository: OrderDetailRepository,
 ) {
     private val terminalPaymentPreparationResolver = TerminalPaymentPreparationResolver(wooStore, appPrefs)
 
-    suspend fun collect(
-        order: Order,
-        onCaptureStarting: suspend () -> Unit = {},
-        onPaymentReconciled: suspend () -> Unit = {},
-    ): Result {
-        val attempt = PaymentAttempt(order, onPaymentReconciled)
-        val trackPayment = featureFlags.isEnabled(FeatureFlag.WOO_POS_ROLES) || cardReaderFacade.isPaymentPending
-        if (trackPayment && !attempt.acquire()) return Result.Failed(genericFailureMessage(), "payment_unresolved")
-        return try {
-            collectPayment(order, {
-                attempt.readerCompleted = true
-                onCaptureStarting()
-            }, attempt::beginSend).also { attempt.finish(it) }
-        } catch (error: CancellationException) {
-            attempt.owner?.let(cardReaderFacade::markUnresolved)
-            throw error
-        } finally {
-            attempt.finished.complete(Unit)
-        }
-    }
-
-    private inner class PaymentAttempt(
-        private val order: Order,
-        private val onPaymentReconciled: suspend () -> Unit,
-    ) {
-        val finished = CompletableDeferred<Unit>()
-        private val siteId = selectedSite.getOrNull()?.id
-        private var cancellationRequested = false
-        private var requestSent = false
-        var readerCompleted = false
-        private var paymentReported = false
-        var owner: WooPosCardReaderFacade.PaymentOwner? = null
-            private set
-
-        fun acquire(): Boolean {
-            owner = cardReaderFacade.beginPayment(::cancel)
-            return owner != null
-        }
-
-        fun beginSend(): Boolean {
-            if (cancellationRequested || selectedSite.getOrNull()?.id != siteId) return false
-            requestSent = true
-            return true
-        }
-
-        suspend fun finish(result: Result) {
-            owner?.let {
-                if (result is Result.Failed && result.isUnresolved) {
-                    cardReaderFacade.markUnresolved(it)
-                } else {
-                    cardReaderFacade.finishPayment(it, successful = result == Result.Completed)
-                }
-            }
-            if (result == Result.Completed) paymentReported = true
-        }
-
-        private suspend fun reportPayment() {
-            if (paymentReported || selectedSite.getOrNull()?.id != siteId) return
-            paymentReported = true
-            onPaymentReconciled()
-        }
-
-        private suspend fun reconcilePaidOrder(): Boolean {
-            if (!readerCompleted || !finished.isCompleted || selectedSite.getOrNull()?.id != siteId) return false
-            val paid = orderRepository.fetchOrderById(order.id)?.isOrderPaid == true
-            if (!paid || selectedSite.getOrNull()?.id != siteId) return false
-            owner?.let { cardReaderFacade.finishPayment(it, successful = true) }
-            reportPayment()
-            return true
-        }
-
-        private suspend fun cancel(): Boolean {
-            cancellationRequested = true
-            if (!requestSent) return true
-            if (isSimulatedReaderConnected()) {
-                finished.await()
-                return true
-            }
-            return when (remoteReaderSession.cancelPayment()) {
-                RemotePaymentCancellation.CONFIRMED -> {
-                    finished.await()
-                    true
-                }
-                RemotePaymentCancellation.FAILED -> reconcilePaidOrder()
-                RemotePaymentCancellation.UNSUPPORTED -> {
-                    finished.await()
-                    reconcilePaidOrder()
-                }
-                RemotePaymentCancellation.UNCONFIRMED -> {
-                    owner?.let(cardReaderFacade::markCancellationUnconfirmed)
-                    false
-                }
-            }
-        }
-    }
-
-    private suspend fun collectPayment(
-        order: Order,
-        onCaptureStarting: suspend () -> Unit,
-        canSend: () -> Boolean,
-    ): Result {
+    suspend fun collect(order: Order, onCaptureStarting: suspend () -> Unit = {}): Result {
         trackingInfoKeeper.setCurrency(order.currency)
         trackingInfoKeeper.setPaymentMethodType(PaymentMethodType.UNKNOWN.stringRepresentation)
         trackingInfoKeeper.setCardReaderModel(TAP_TO_PAY_READER_MODEL)
         trackingInfoKeeper.setTransport(CardReaderTransport.WIFI_LAN.value)
-        val result = collectInternal(order, onCaptureStarting, canSend)
+        val result = collectInternal(order, onCaptureStarting)
         when (result) {
             Result.Completed -> paymentsFlowTracker.trackPaymentSucceeded(order)
             is Result.Failed -> paymentsFlowTracker.trackPaymentFailed(
@@ -172,13 +62,9 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
         return result
     }
 
-    private suspend fun collectInternal(
-        order: Order,
-        onCaptureStarting: suspend () -> Unit,
-        canSend: () -> Boolean,
-    ): Result {
+    private suspend fun collectInternal(order: Order, onCaptureStarting: suspend () -> Unit): Result {
         if (isSimulatedReaderConnected()) {
-            return if (canSend()) simulatePayment(onCaptureStarting) else canceledBeforeSend()
+            return simulatePayment(onCaptureStarting)
         }
 
         val site = selectedSite.get()
@@ -222,24 +108,16 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
             ),
         )
 
-        return if (canSend()) {
-            collectRemotePayment(site.id, order.id, paymentInfo, onCaptureStarting)
-        } else {
-            canceledBeforeSend()
-        }
+        return collectRemotePayment(order.id, paymentInfo, onCaptureStarting)
     }
 
     private suspend fun collectRemotePayment(
-        localSiteId: Int,
         orderId: Long,
         paymentInfo: PaymentInfo,
         onCaptureStarting: suspend () -> Unit,
     ): Result {
         return when (val outcome = remoteReaderSession.sendCollectPayment(paymentInfo)) {
             is CollectPaymentOutcome.Success -> {
-                if (selectedSite.getOrNull()?.id != localSiteId) {
-                    return Result.Failed(genericFailureMessage(), "payment_store_changed", isUnresolved = true)
-                }
                 if (outcome.status == "requires_capture" || outcome.status == "succeeded") {
                     paymentsFlowTracker.onPaymentCapturing()
                 }
@@ -247,11 +125,7 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
                     (outcome.paymentMethodType ?: PaymentMethodType.UNKNOWN).stringRepresentation
                 )
                 onCaptureStarting()
-                if (selectedSite.getOrNull()?.id != localSiteId) {
-                    Result.Failed(genericFailureMessage(), "payment_store_changed", isUnresolved = true)
-                } else {
-                    capture(orderId, outcome.paymentIntentId)
-                }
+                capture(orderId, outcome.paymentIntentId)
             }
             is CollectPaymentOutcome.Rejected -> {
                 logger.e(
@@ -266,13 +140,6 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
                     errorDescription = "remote_rejected: ${outcome.error.code} - ${outcome.description}",
                     errorType = outcome.error.toPaymentErrorType(),
                     stripeErrorCode = outcome.stripeErrorCode,
-                    isUnresolved = outcome.error == CardReaderRemoteError.UnexpectedReply ||
-                        outcome.error is CardReaderRemoteError.Unknown ||
-                        (
-                            outcome.error == CardReaderRemoteError.CollectFailed && outcome.stripeErrorCode !in setOf(
-                                "DECLINED_BY_STRIPE_API", "DECLINED_BY_READER",
-                            )
-                            ),
                 )
             }
             CollectPaymentOutcome.TimedOut -> {
@@ -280,7 +147,6 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
                 Result.Failed(
                     message = genericFailureMessage(),
                     errorDescription = "remote_timed_out: phone reader did not reply in time",
-                    isUnresolved = true,
                 )
             }
             is CollectPaymentOutcome.Failed -> {
@@ -288,17 +154,10 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
                 Result.Failed(
                     message = mapFailureToUserMessage(outcome.cause),
                     errorDescription = "remote_failed: ${outcome.cause.describeWithCauses()}",
-                    isUnresolved = true,
                 )
             }
         }
     }
-
-    private fun canceledBeforeSend() = Result.Failed(
-        genericFailureMessage(),
-        "payment_canceled_before_send",
-        CardPaymentStatusErrorType.Canceled,
-    )
 
     private fun CardReaderRemoteError.toPaymentErrorType(): CardPaymentStatusErrorType = when (this) {
         CardReaderRemoteError.Canceled -> CardPaymentStatusErrorType.Canceled
@@ -337,10 +196,6 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
             is CapturePaymentResponse.Error -> Result.Failed(
                 message = response.message,
                 errorDescription = "capture_failed: ${response::class.java.simpleName} - ${response.message}",
-                isUnresolved = response is CapturePaymentResponse.Error.GenericError ||
-                    response is CapturePaymentResponse.Error.ServerError ||
-                    response is CapturePaymentResponse.Error.NetworkError ||
-                    response is CapturePaymentResponse.Error.GatewayError,
             )
         }
 
@@ -359,7 +214,6 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
             val errorDescription: String = message,
             val errorType: CardPaymentStatusErrorType = CardPaymentStatusErrorType.Generic,
             val stripeErrorCode: String? = null,
-            val isUnresolved: Boolean = false,
         ) : Result()
     }
 
