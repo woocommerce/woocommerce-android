@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.roles.lock
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -63,7 +64,7 @@ class WooPosAccessSessionTest {
         session.initialize()
 
         // THEN
-        assertThat((session.state.value.status == WooPosLockScreenState.Status.Idle)).isTrue()
+        assertThat((session.state.value.status == WooPosPINEntryStatus.Idle)).isTrue()
         assertThat(session.state.value.activeRole).isNull()
         assertThat(session.isEnabled).isTrue()
     }
@@ -95,7 +96,7 @@ class WooPosAccessSessionTest {
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
+        assertThat(session.state.value.status).isEqualTo(WooPosPINEntryStatus.StorageUnavailable)
         assertThat(fixture.records).isEmpty()
     }
 
@@ -111,7 +112,7 @@ class WooPosAccessSessionTest {
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Incorrect)
+        assertThat(session.state.value.status).isEqualTo(WooPosPINEntryStatus.Incorrect)
 
         // WHEN
         session.unlock("5678")
@@ -158,11 +159,11 @@ class WooPosAccessSessionTest {
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
 
-        assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Wait(30))
-        assertThat(session.state.value.status).isNotEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
+        assertThat(session.state.value.status).isEqualTo(WooPosPINEntryStatus.Wait(30))
+        assertThat(session.state.value.status).isNotEqualTo(WooPosPINEntryStatus.StorageUnavailable)
         fixture.elapsed += 1001
         session.refreshWait()
-        assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Wait(29))
+        assertThat(session.state.value.status).isEqualTo(WooPosPINEntryStatus.Wait(29))
     }
 
     @Test
@@ -218,15 +219,15 @@ class WooPosAccessSessionTest {
         fixture.pinReadGate = gate
         val unlock = async { session.unlock("1234") }
         runCurrent()
-        assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Checking)
+        assertThat(session.state.value.status).isEqualTo(WooPosPINEntryStatus.Checking)
 
         // WHEN
         val lock = async { session.lock() }
         runCurrent()
         assertThat(session.state.value.activeRole).isNull()
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.Checking)
-        assertThat((session.state.value.status == WooPosLockScreenState.Status.Idle)).isFalse()
+        assertThat(session.state.value.status).isEqualTo(WooPosPINEntryStatus.Checking)
+        assertThat((session.state.value.status == WooPosPINEntryStatus.Idle)).isFalse()
         gate.complete(Unit)
         unlock.await()
         lock.await()
@@ -293,7 +294,7 @@ class WooPosAccessSessionTest {
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
 
-        assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
+        assertThat(session.state.value.status).isEqualTo(WooPosPINEntryStatus.StorageUnavailable)
     }
 
     @Test
@@ -331,7 +332,7 @@ class WooPosAccessSessionTest {
 
         // THEN
         assertThat(session.state.value.isLocked).isTrue()
-        assertThat(session.state.value.status).isEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
+        assertThat(session.state.value.status).isEqualTo(WooPosPINEntryStatus.StorageUnavailable)
         assertThat(session.state.value.activeRole).isNull()
     }
 

@@ -872,6 +872,8 @@
     <string name="barcode_scanning_alert_dialog_rationale_cta_label">Grant</string>
     <string name="barcode_scanning_alert_dialog_dismiss_label">Cancel</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Go to settings</string>
+    <string name="barcode_scanning_camera_permission_denied_message">To scan with the camera, allow camera access.</string>
+    <string name="barcode_scanning_camera_permission_permanently_denied_message">To scan with the camera, allow camera access in your device settings.</string>
     <string name="barcode_scanning_scan_product_barcode_label">Scan Product Barcode</string>
     <string name="barcode_scanning_hardware_scanner_info_link">Use an external scanner</string>
     <string name="barcode_scanning_or">or</string>
@@ -1451,6 +1453,7 @@
     <string name="order_refunds_amount_refund_confirmation_message">Waiting for refund confirmation…</string>
     <string name="order_refunds_amount_refund_successful">The refund was successfully submitted.</string>
     <string name="order_refunds_amount_refund_error">Something went wrong with the refund. Please try again.</string>
+    <string name="order_refunds_calculating">Calculating refund</string>
     <string name="order_refunds_refund_manual_refund_note">The payment method does not support automatic refunds. Complete the refund by transferring the money to the customer manually.</string>
     <string name="order_refunds_items_select_all">Select all</string>
     <string name="order_refunds_items_select_none">Select none</string>
@@ -4140,7 +4143,24 @@
     <string name="woopos_security_choose_pin">Choose your admin PIN</string>
     <string name="woopos_security_confirm_pin">Confirm your admin PIN</string>
     <string name="woopos_security_mismatch">The PINs didn’t match. Try again.</string>
+    <string name="woopos_security_pin_taken">This PIN is already taken. Please choose a different PIN.</string>
     <string name="woopos_security_success">Your admin PIN is set</string>
+    <string name="woopos_security_success_message">Use your admin PIN to unlock Point of Sale with full access.</string>
+    <string name="woopos_security_save_failed">Couldn’t update PINs. Try again.</string>
+    <string name="woopos_security_choose_cashier_pin">Choose a cashier PIN</string>
+    <string name="woopos_security_confirm_cashier_pin">Confirm the cashier PIN</string>
+    <string name="woopos_security_cashier_success">Your cashier PIN is set</string>
+    <string name="woopos_security_cashier_success_message">Your team can use this PIN to sell. Creating coupons, issuing refunds and exiting POS require admin approval.</string>
+    <string name="woopos_security_pin_protection">PIN protection</string>
+    <string name="woopos_security_enable_pin_protection">Enable PIN protection</string>
+    <string name="woopos_security_admin_pin">Admin PIN</string>
+    <string name="woopos_security_admin_pin_detail">Full access to POS and its settings.</string>
+    <string name="woopos_security_cashier_pin">Cashier PIN</string>
+    <string name="woopos_security_cashier_pin_detail">Unlock POS without access to protected settings.</string>
+    <string name="woopos_security_set_up">Set up</string>
+    <string name="woopos_role_admin">Admin</string>
+    <string name="woopos_role_cashier">Cashier</string>
+    <string name="woopos_role_active">Current role: %1$s</string>
     <string name="woopos_lock_forgot_pin">Forgot PIN?</string>
     <string name="woopos_lock_incorrect">Incorrect PIN. Try again.</string>
     <string name="woopos_lock_unavailable">Something went wrong. Try again later.</string>
@@ -4149,6 +4169,10 @@
     <string name="woopos_lock_delete_digit">Delete</string>
     <string name="woopos_lock_pin_entry">PIN entry</string>
     <string name="woopos_lock_digits_entered">%1$d of %2$d digits entered</string>
+    <string name="woopos_approval_required">Approval required</string>
+    <string name="woopos_approval_create_coupon">Enter the Admin PIN to create a coupon.</string>
+    <string name="woopos_approval_issue_refund">Enter the Admin PIN to issue a refund for order %1$s.</string>
+    <string name="woopos_approval_exit">Enter the Admin PIN to exit Point of Sale.</string>
     <string name="woopos_orders_title">Orders</string>
     <string name="woopos_order_title">Order %s</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
@@ -4167,6 +4191,7 @@
     <string name="woopos_payment_successful_label">Payment successful</string>
     <string name="woopos_new_order_button">New order</string>
     <string name="woopos_receipt_button">Email receipt</string>
+    <string name="woopos_print_receipt_button">Print receipt</string>
     <string name="woopos_receipt_sent_to_customer">A receipt has been sent to %1$s.</string>
     <string name="woopos_payment_discount_label">Discount total</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
@@ -4562,6 +4587,47 @@
     <string name="woopos_card_reader_update_battery_low_message" formatted="false">The reader battery is too low to install this update. Please charge your reader to at least 50% and try again.</string>
     <string name="woopos_card_reader_update_battery_low_message_with_level">The reader battery is at %d%%, which is too low to install this update. Please charge your reader to at least 50%% and try again.</string>
 
+    <string name="woopos_receipt_printer_setup_dialog_background_content_description">Receipt printer setup dialog</string>
+    <string name="woopos_receipt_printer_setup_searching_title">Searching for printers</string>
+    <string name="woopos_receipt_printer_setup_searching_message">Make sure your printer is turned on</string>
+    <string name="woopos_receipt_printer_setup_found_title">Found %1$s</string>
+    <string name="woopos_receipt_printer_setup_found_message">Do you want to connect to this printer?</string>
+    <string name="woopos_receipt_printer_setup_connect_to_printer_button">Connect to printer</string>
+    <string name="woopos_receipt_printer_setup_keep_searching_button">Keep searching</string>
+    <string name="woopos_receipt_printer_setup_multiple_found_title">Several printers found</string>
+    <string name="woopos_receipt_printer_setup_multiple_found_description">Choose a printer</string>
+    <string name="woopos_receipt_printer_setup_printer_icon_content_description">Bluetooth printer</string>
+    <string name="woopos_receipt_printer_setup_connecting_title">Connecting</string>
+    <string name="woopos_receipt_printer_setup_connecting_message">Please wait while we connect to your printer</string>
+    <string name="woopos_receipt_printer_setup_no_printers_title">No printers found</string>
+    <string name="woopos_receipt_printer_setup_no_printers_message">Make sure your printer is on and paired in Android Bluetooth settings, then search again.</string>
+    <string name="woopos_receipt_printer_setup_search_again_button">Search again</string>
+    <string name="woopos_receipt_printer_setup_open_bluetooth_settings_button">Open Bluetooth settings</string>
+    <string name="woopos_receipt_printer_setup_discovery_failed_title">Couldn\'t search for printers</string>
+    <string name="woopos_receipt_printer_setup_discovery_failed_message">Make sure Bluetooth is on, then search again.</string>
+    <string name="woopos_receipt_printer_setup_connection_failed_title">Something went wrong</string>
+    <string name="woopos_receipt_printer_setup_connection_failed_message">We couldn\'t connect to your printer. Please try again.</string>
+    <string name="woopos_receipt_printer_setup_bluetooth_off_title">Bluetooth is off</string>
+    <string name="woopos_receipt_printer_setup_bluetooth_off_message">Turn on Bluetooth to find and connect to your receipt printer.</string>
+    <string name="woopos_receipt_printer_setup_turn_on_bluetooth_button">Turn on Bluetooth</string>
+    <string name="woopos_receipt_printer_setup_bluetooth_permission_title">Bluetooth permission required</string>
+    <string name="woopos_receipt_printer_setup_bluetooth_permission_message">Bluetooth permission is required to find and connect to a receipt printer.</string>
+    <string name="woopos_receipt_printer_setup_grant_permission_button">Grant permission</string>
+    <string name="woopos_receipt_printer_setup_bluetooth_permission_denied_message">Bluetooth access is turned off. Tap Open Settings and allow Nearby devices, then come back to search for your printer.</string>
+    <string name="woopos_receipt_printer_setup_open_settings_button">Open Settings</string>
+    <string name="woopos_receipt_printer_setup_cancel_button">Cancel</string>
+
+    <string name="woopos_print_receipt_failure_dialog_background_content_description">Receipt printing failed dialog</string>
+    <string name="woopos_print_receipt_failure_paper_empty_title">Check the printer paper</string>
+    <string name="woopos_print_receipt_failure_paper_empty_message">Make sure a paper roll is loaded and seated correctly, then try again.</string>
+    <string name="woopos_print_receipt_failure_cover_open_title">Printer cover is open</string>
+    <string name="woopos_print_receipt_failure_cover_open_message">Close the printer cover, then try again.</string>
+    <string name="woopos_print_receipt_failure_printer_offline_title">Can\'t reach your printer</string>
+    <string name="woopos_print_receipt_failure_printer_offline_message">Make sure your printer is on and nearby with Bluetooth turned on, then try again.</string>
+    <string name="woopos_print_receipt_failure_generic_title">Couldn\'t print the receipt</string>
+    <string name="woopos_print_receipt_failure_generic_message">Something went wrong while printing. Please try again.</string>
+    <string name="woopos_print_receipt_failure_retry_button">Retry</string>
+
     <string name="woopos_remote_ttp_hint_strip_text">Use an Android phone as a card reader</string>
     <string name="woopos_remote_ttp_explainer_title">No card reader? No problem</string>
     <string name="woopos_remote_ttp_explainer_intro">Use the Woo app on your phone to take card payments.</string>
@@ -4576,6 +4642,8 @@
 
     <string name="woopos_receipt_date_paid">Date Paid</string>
     <string name="woopos_receipt_order_number">Order #%1$s</string>
+    <string name="woopos_receipt_payment_method">Payment Method</string>
+    <string name="woopos_receipt_card_brand_and_last4">%1$s - %2$s</string>
     <string name="woopos_receipt_item_with_attributes">%1$s. %2$s</string>
     <string name="woopos_receipt_item_and_quantity">%1$s x%2$s</string>
     <string name="woopos_receipt_subtotal">Subtotal</string>

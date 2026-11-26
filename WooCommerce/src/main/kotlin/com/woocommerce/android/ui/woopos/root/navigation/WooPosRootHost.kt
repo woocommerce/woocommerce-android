@@ -3,12 +3,11 @@ package com.woocommerce.android.ui.woopos.root.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
-import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.ExitPosClicked
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.ConfirmExitFromHome
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.OpenCashPayment
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.OpenCustomAmount
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.OpenEmailReceipt
@@ -22,9 +21,9 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.R
 fun WooPosRootHost(
     modifier: Modifier = Modifier,
     rootController: NavHostController,
+    homeViewModel: WooPosHomeViewModel,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {
-    val homeViewModel = hiltViewModel<WooPosHomeViewModel>()
     LaunchedEffect(Unit) {
         homeViewModel.navigationEvent.collect {
             when (it) {
@@ -33,7 +32,7 @@ fun WooPosRootHost(
                 is NavigationEvent.ToScanToPay -> onNavigationEvent(OpenScanToPay(it.orderId))
                 is NavigationEvent.ToEmailReceipt -> onNavigationEvent(OpenEmailReceipt(it.orderId))
                 is NavigationEvent.ToCustomAmount -> onNavigationEvent(OpenCustomAmount(it.mode))
-                NavigationEvent.ExitPos -> onNavigationEvent(ExitPosClicked)
+                NavigationEvent.ExitConfirmed -> onNavigationEvent(ConfirmExitFromHome)
                 NavigationEvent.ReturnHomeFromCashWhenCardPaymentStarted -> onNavigationEvent(ReturnHomeFromCashPayment)
                 NavigationEvent.ToSettings -> onNavigationEvent(OpenSettings)
                 NavigationEvent.ToOrders -> onNavigationEvent(OpenOrders)

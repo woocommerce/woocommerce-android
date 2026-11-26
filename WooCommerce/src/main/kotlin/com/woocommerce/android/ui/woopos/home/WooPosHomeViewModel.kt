@@ -97,10 +97,24 @@ class WooPosHomeViewModel @Inject constructor(
                 )
             }
 
-            WooPosHomeUIEvent.DismissCardReaderConnectionDialog -> {
+            WooPosHomeUIEvent.DismissCardReaderConnectionDialog,
+            WooPosHomeUIEvent.DismissReceiptPrinterSetupDialog,
+            WooPosHomeUIEvent.DismissPrintReceiptFailureDialog -> {
                 _state.value = _state.value.copy(
                     dialogState = DialogState.Hidden
                 )
+            }
+
+            WooPosHomeUIEvent.ReceiptPrinterConnected -> {
+                _state.value = _state.value.copy(
+                    dialogState = DialogState.Hidden
+                )
+                sendEventToChildren(ParentToChildrenEvent.ReceiptPrinterConnected)
+            }
+
+            is WooPosHomeUIEvent.PrintReceiptFailureActionSelected -> {
+                _state.value = _state.value.copy(dialogState = DialogState.Hidden)
+                sendEventToChildren(ParentToChildrenEvent.PrintReceiptFailureActionSelected(event.action))
             }
 
             WooPosHomeUIEvent.OnPaymentCompletedViaCash -> onOrderSuccessfullyPaid(
@@ -108,9 +122,9 @@ class WooPosHomeViewModel @Inject constructor(
             )
 
             WooPosHomeUIEvent.ExitPosClicked -> {
-                viewModelScope.launch {
-                    _navigationEvent.emit(NavigationEvent.ExitPos)
-                    analyticsTracker.track(WooPosAnalyticsEvent.Event.ExitConfirmed)
+                if (_state.value.dialogState == DialogState.ExitConfirmationDialog) {
+                    _state.value = _state.value.copy(dialogState = DialogState.Hidden)
+                    viewModelScope.launch { _navigationEvent.emit(NavigationEvent.ExitConfirmed) }
                 }
             }
 
@@ -118,6 +132,14 @@ class WooPosHomeViewModel @Inject constructor(
                 sendEventToChildren(ParentToChildrenEvent.BarcodeEvent(event.result))
             }
         }
+    }
+
+    private fun showExitConfirmation() {
+        _state.value = _state.value.copy(dialogState = DialogState.ExitConfirmationDialog)
+    }
+
+    fun onExitConfirmed() {
+        viewModelScope.launch { analyticsTracker.track(WooPosAnalyticsEvent.Event.ExitConfirmed) }
     }
 
     private fun handleSystemBackClicked() {
@@ -142,11 +164,7 @@ class WooPosHomeViewModel @Inject constructor(
             ScreenPositionState.Products,
             is ScreenPositionState.Cart -> {
                 when (_state.value.dialogState) {
-                    DialogState.Hidden -> {
-                        _state.value = _state.value.copy(
-                            dialogState = DialogState.ExitConfirmationDialog
-                        )
-                    }
+                    DialogState.Hidden -> showExitConfirmation()
                     else -> {
                         _state.value = _state.value.copy(
                             dialogState = DialogState.Hidden
@@ -215,11 +233,7 @@ class WooPosHomeViewModel @Inject constructor(
                         )
                     }
 
-                    ChildToParentEvent.ExitPosClicked -> {
-                        _state.value = _state.value.copy(
-                            dialogState = DialogState.ExitConfirmationDialog
-                        )
-                    }
+                    ChildToParentEvent.ExitPosClicked -> showExitConfirmation()
 
                     ChildToParentEvent.SetupBarcodeScannerClicked -> {
                         _state.value = _state.value.copy(
@@ -285,6 +299,22 @@ class WooPosHomeViewModel @Inject constructor(
                         _state.value = _state.value.copy(
                             dialogState = DialogState.CardReaderConnectionDialog
                         )
+                    }
+
+                    ChildToParentEvent.ShowReceiptPrinterSetupDialog -> {
+                        _state.value = _state.value.copy(
+                            dialogState = DialogState.ReceiptPrinterSetupDialog
+                        )
+                    }
+
+                    is ChildToParentEvent.ShowPrintReceiptFailureDialog -> {
+                        if (_state.value.screenPositionState is ScreenPositionState.Checkout.FullScreenTotals &&
+                            _state.value.dialogState == DialogState.Hidden
+                        ) {
+                            _state.value = _state.value.copy(
+                                dialogState = DialogState.PrintReceiptFailureDialog(event.failure)
+                            )
+                        }
                     }
 
                     is ChildToParentEvent.CustomAmountFormRequested -> {

@@ -11,6 +11,7 @@ class WooPosClearLocalPINData @Inject constructor(
     private val rateLimiter: WooPosLocalRateLimiter,
 ) {
     suspend operator fun invoke() = withContext(NonCancellable) {
+        rateLimiter.onLogout()
         localPINStore.clearAll().onFailure {
             WooLog.e(WooLog.T.POS, "Unable to clear local POS PINs")
         }

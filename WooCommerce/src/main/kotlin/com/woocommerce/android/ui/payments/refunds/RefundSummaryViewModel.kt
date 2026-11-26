@@ -23,10 +23,10 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.payments.maskedCardDescription
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.PaymentMethodType
-import com.woocommerce.android.ui.payments.toCardBrandDisplayName
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -68,10 +68,11 @@ class RefundSummaryViewModel @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
     private val refreshProductsSignal: RefreshProductsSignal,
     private val parameterRepository: ParameterRepository,
+    private val resolveRefundFlow: ResolveRefundFlow,
+    private val serverRefundAvailabilityCache: ServerRefundAvailabilityCache,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val REFUND_METHOD_MANUAL = "manual"
-        private const val STORE_REFUND_ERROR_PREFIX = "woocommerce_rest_"
     }
 
     private val navArgs: RefundSummaryFragmentArgs by savedStateHandle.navArgs()
@@ -96,6 +97,20 @@ class RefundSummaryViewModel @Inject constructor(
             loadPaymentGateway(order.await())
         }
     }
+
+    private val isServerComputedRefund: Boolean by lazy {
+        val flow = resolveRefundFlow()
+        navArgs.isServerComputed &&
+            flow is RefundCalculationFlow.ServerComputed &&
+            serverRefundAvailabilityCache.isAvailable(selectedSite.get().localId().value, flow.wooVersion) == true
+    }
+
+    private val refundFlowAnalyticsValue: String
+        get() = if (isServerComputedRefund) {
+            AnalyticsTracker.VALUE_REFUND_FLOW_SERVER_COMPUTED
+        } else {
+            AnalyticsTracker.VALUE_REFUND_FLOW_LOCAL
+        }
 
     private var cardType = PaymentMethodType.CARD_PRESENT
     private var refundJob: Job? = null
@@ -165,7 +180,8 @@ class RefundSummaryViewModel @Inject constructor(
                             AnalyticsTracker.KEY_REFUND_IS_FULL to
                                 (refundSummaryState.refundAmount isEqualTo order.maxRefund).toString(),
                             AnalyticsTracker.KEY_REFUND_METHOD to gateway.await().methodTitle,
-                            AnalyticsTracker.KEY_AMOUNT to refundSummaryState.refundAmount.toString()
+                            AnalyticsTracker.KEY_AMOUNT to refundSummaryState.refundAmount.toString(),
+                            AnalyticsTracker.KEY_REFUND_FLOW to refundFlowAnalyticsValue
                         )
                     )
                     refundSummaryState = refundSummaryState.copy(isFormEnabled = true)
@@ -227,11 +243,10 @@ class RefundSummaryViewModel @Inject constructor(
                 is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> {
                     cardType = PaymentMethodType.fromValue(result.paymentMethodType ?: "card_present")
                     val refundMethodWithCard = result.run {
-                        val brand = result.cardBrand.toCardBrandDisplayName()
-                        val last4 = result.cardLast4.orEmpty()
+                        val card = maskedCardDescription(result.cardBrand, result.cardLast4)
                         val creditCardRefundDefaultText =
                             resourceProvider.getString(R.string.order_refunds_credit_card_refund)
-                        "${refundMethod.ifBlank { creditCardRefundDefaultText }} ($brand **** $last4)"
+                        "${refundMethod.ifBlank { creditCardRefundDefaultText }} ($card)"
                     }
                     updateRefundSummaryState(refundMethodWithCard, isMethodDescriptionVisible = false)
                 }
@@ -305,6 +320,17 @@ class RefundSummaryViewModel @Inject constructor(
 
     private suspend fun initiateRefund(order: Order): WooResult<WCRefundModel> {
         val amount = refundSummaryState.refundAmount
+        if (isServerComputedRefund) {
+            return refundStore.createComputedItemsRefund(
+                site = selectedSite.get(),
+                orderId = order.id,
+                reason = refundSummaryState.refundReason ?: "",
+                autoRefund = gateway.await().supportsRefunds,
+                restockItems = true,
+                amount = amount.takeIf { isInteracRefund() },
+                items = navArgs.refundItems.toList().toComputedRefundLineItems()
+            )
+        }
         val items = navArgs.refundItems.toList()
         val requestItems = amount?.let { items.toRefundLines(it, parameterRepository.getCurrencyDecimals()) }
             ?.map { it.requestItem }
@@ -327,14 +353,14 @@ class RefundSummaryViewModel @Inject constructor(
                 AnalyticsTracker.KEY_ORDER_ID to order.id,
                 AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                 AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.toString(),
-                AnalyticsTracker.KEY_ERROR_DESC to result.error.message
+                AnalyticsTracker.KEY_ERROR_DESC to result.error.message,
+                AnalyticsTracker.KEY_REFUND_FLOW to refundFlowAnalyticsValue
             )
         )
     }
 
     private fun triggerUIMessage(result: WooResult<WCRefundModel>) {
-        val storeRejectionMessage = result.error.message
-            ?.takeIf { it.isNotBlank() && result.error.apiErrorCode?.startsWith(STORE_REFUND_ERROR_PREFIX) == true }
+        val storeRejectionMessage = result.error.message.storeMessageFor(result.error.apiErrorCode)
         when {
             isInteracRefund() -> triggerEvent(
                 ShowSnackbar(
@@ -351,7 +377,8 @@ class RefundSummaryViewModel @Inject constructor(
             REFUND_CREATE_SUCCESS,
             mapOf(
                 AnalyticsTracker.KEY_ORDER_ID to order.id,
-                AnalyticsTracker.KEY_ID to result.model?.id
+                AnalyticsTracker.KEY_ID to result.model?.id,
+                AnalyticsTracker.KEY_REFUND_FLOW to refundFlowAnalyticsValue
             )
         )
     }

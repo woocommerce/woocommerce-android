@@ -152,6 +152,34 @@ class CardReaderRemoteProtocolTest {
     }
 
     @Test
+    fun `given an ErrorMessage with a stripe code, when written and read back, then fields match`() {
+        // GIVEN
+        val original = CardReaderRemoteMessage.ErrorMessage(
+            requestId = "req-6",
+            code = "canceled",
+            description = "TerminalException: canceled",
+            stripeErrorCode = "CANCELED",
+        )
+
+        // WHEN
+        val decoded = roundTrip(original)
+
+        // THEN
+        assertThat(decoded).isEqualTo(original)
+    }
+
+    @Test
+    fun `given an ErrorMessage from an older phone, when read, then the stripe code is null`() {
+        // WHEN
+        val decoded = readRaw(
+            """{"type":"error","requestId":"req-7","code":"collect_failed","description":"boom"}"""
+        ) as CardReaderRemoteMessage.ErrorMessage
+
+        // THEN
+        assertThat(decoded.stripeErrorCode).isNull()
+    }
+
+    @Test
     fun `given a CancelPayment, when written and read back, then fields match`() {
         // GIVEN
         val original = CardReaderRemoteMessage.CancelPayment(requestId = "req-9")

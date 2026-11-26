@@ -1,19 +1,24 @@
 package com.woocommerce.android.ui.woopos.settings.categories
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
+import com.woocommerce.android.ui.woopos.roles.WooPosCapability
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class WooPosSettingsCategoriesViewModel @Inject constructor(
     productsDataSource: WooPosProductsDataSource,
     featureFlagRepository: FeatureFlagRepository,
+    accessSession: WooPosAccessSession,
 ) : ViewModel() {
     private val _state = MutableStateFlow(WooPosSettingsCategoriesState(emptyList()))
     val state: StateFlow<WooPosSettingsCategoriesState> = _state.asStateFlow()
@@ -27,6 +32,13 @@ class WooPosSettingsCategoriesViewModel @Inject constructor(
                 else -> true
             }
         }
-        _state.value = WooPosSettingsCategoriesState(categories)
+        viewModelScope.launch {
+            accessSession.approvalScopeChanges.collect {
+                val canManageStore = accessSession.allows(WooPosCapability.MANAGE_STORE_SETTINGS)
+                _state.value = WooPosSettingsCategoriesState(
+                    categories.filter { it != WooPosSettingsCategory.SECURITY || canManageStore }
+                )
+            }
+        }
     }
 }

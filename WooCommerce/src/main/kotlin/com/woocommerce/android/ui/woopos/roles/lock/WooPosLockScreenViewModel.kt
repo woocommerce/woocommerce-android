@@ -3,7 +3,8 @@ package com.woocommerce.android.ui.woopos.roles.lock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
+import com.woocommerce.android.ui.woopos.roles.pin.PIN_COUNTDOWN_INTERVAL_MILLIS
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -31,11 +32,9 @@ class WooPosLockScreenViewModel @Inject constructor(
         viewModelScope.launch {
             accessSession.state.collect { session ->
                 pin = ""
-                val enteredDigits = if (_state.value.status == Status.Checking && session.status == Status.Checking) {
-                    _state.value.enteredDigits
-                } else {
-                    0
-                }
+                val isStillChecking = _state.value.status == WooPosPINEntryStatus.Checking &&
+                    session.status == WooPosPINEntryStatus.Checking
+                val enteredDigits = if (isStillChecking) _state.value.enteredDigits else 0
                 _state.value = WooPosLockScreenState(
                     isLocked = session.isLocked,
                     enteredDigits = enteredDigits,
@@ -49,12 +48,12 @@ class WooPosLockScreenViewModel @Inject constructor(
                 .collectLatest { accessSession.initialize() }
         }
         viewModelScope.launch {
-            state.map { it.isLocked && it.status is Status.Wait }
+            state.map { it.isLocked && it.status is WooPosPINEntryStatus.Wait }
                 .distinctUntilChanged()
                 .collectLatest { waiting ->
                     if (waiting) {
-                        while (state.value.status is Status.Wait) {
-                            delay(COUNTDOWN_INTERVAL_MILLIS)
+                        while (state.value.status is WooPosPINEntryStatus.Wait) {
+                            delay(PIN_COUNTDOWN_INTERVAL_MILLIS)
                             accessSession.refreshWait()
                         }
                     }
@@ -72,13 +71,13 @@ class WooPosLockScreenViewModel @Inject constructor(
     }
 
     private suspend fun enterDigit(digit: Int) {
-        if (digit !in MIN_DIGIT..MAX_DIGIT || !_state.value.canEnterPIN) return
+        if (digit !in WooPosPINHash.PIN_DIGIT_RANGE || !_state.value.canEnterPIN) return
         pin += digit
-        _state.value = _state.value.copy(enteredDigits = pin.length, status = Status.Idle)
+        _state.value = _state.value.copy(enteredDigits = pin.length, status = WooPosPINEntryStatus.Idle)
         if (pin.length == WooPosPINHash.PIN_LENGTH) {
             val submitted = pin
             pin = ""
-            _state.value = _state.value.copy(status = Status.Checking)
+            _state.value = _state.value.copy(status = WooPosPINEntryStatus.Checking)
             accessSession.unlock(submitted)
         }
     }
@@ -86,13 +85,7 @@ class WooPosLockScreenViewModel @Inject constructor(
     private fun deleteDigit() {
         if (!_state.value.canEnterPIN) return
         pin = pin.dropLast(1)
-        _state.value = _state.value.copy(enteredDigits = pin.length, status = Status.Idle)
-    }
-
-    companion object {
-        private const val COUNTDOWN_INTERVAL_MILLIS = 1000L
-        private const val MIN_DIGIT = 0
-        private const val MAX_DIGIT = 9
+        _state.value = _state.value.copy(enteredDigits = pin.length, status = WooPosPINEntryStatus.Idle)
     }
 }
 

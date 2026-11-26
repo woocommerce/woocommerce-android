@@ -23,6 +23,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalI
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_CARD
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_READ_METHOD
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardDetails
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.NoNetwork
@@ -427,7 +428,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
             controller.start()
 
-            verify(tracker).trackPaymentFailed(anyOrNull(), anyOrNull())
+            verify(tracker).trackPaymentFailed(anyOrNull(), anyOrNull(), anyOrNull())
         }
 
     @Test
@@ -792,6 +793,33 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given card details, when payment completed, then payment successful state carries them`() =
+        testBlocking {
+            val cardDetails = CardDetails(brand = "visa", last4 = "4242")
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("", cardDetails)) }
+            }
+
+            controller.start()
+
+            assertThat((controller.paymentState.value as PaymentSuccessful).cardDetails).isEqualTo(cardDetails)
+        }
+
+    @Test
+    fun `given billing not empty and card details, when payment completed, then receipt sent state carries them`() =
+        testBlocking {
+            val cardDetails = CardDetails(brand = "visa", last4 = "4242")
+            whenever(mockedAddress.email).thenReturn("nonemptyemail")
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("", cardDetails)) }
+            }
+
+            controller.start()
+
+            assertThat((controller.paymentState.value as PaymentSuccessful).cardDetails).isEqualTo(cardDetails)
+        }
+
+    @Test
     fun `when payment completed, then products refresh is signalled with the re-fetched order's product ids`() =
         testBlocking {
             whenever(mockedOrder.getProductIds()).thenReturn(listOf(101L, 102L))
@@ -1008,7 +1036,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
             controller.start()
 
-            verify(tracker).trackPaymentFailed(anyOrNull(), anyOrNull())
+            verify(tracker).trackPaymentFailed(anyOrNull(), anyOrNull(), anyOrNull())
         }
 
     @Test

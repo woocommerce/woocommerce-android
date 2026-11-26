@@ -336,13 +336,23 @@ class CardReaderRemoteSession internal constructor(
                     )
                     is RetrieveAndCollectResult.Failed -> {
                         logWrapper.e(LOG_TAG, "Collect payment failed: ${collectResult.cause.describeWithCauses()}")
-                        rejectPayment(request, collectResult.cause, CardReaderRemoteError.CollectFailed, accepted)
+                        rejectPayment(
+                            request = request,
+                            cause = collectResult.cause,
+                            error = collectResult.cause.toCollectRemoteError(),
+                            accepted = accepted,
+                        )
                     }
                 }
             }
             is CreatePaymentIntentResult.Failed -> {
                 logWrapper.e(LOG_TAG, "Create payment intent failed: ${createResult.cause.describeWithCauses()}")
-                rejectPayment(request, createResult.cause, CardReaderRemoteError.CreateIntentFailed, accepted)
+                rejectPayment(
+                    request = request,
+                    cause = createResult.cause,
+                    error = createResult.cause.toCardReaderRemoteError(CardReaderRemoteError.CreateIntentFailed),
+                    accepted = accepted,
+                )
             }
         }
         _state.value = CardReaderRemoteSessionState.WaitingForPayment(tabletName = null)
@@ -351,18 +361,20 @@ class CardReaderRemoteSession internal constructor(
     private suspend fun rejectPayment(
         request: CollectPaymentRequest,
         cause: Throwable,
-        fallback: CardReaderRemoteError,
+        error: CardReaderRemoteError,
         accepted: CardReaderRemoteConnection,
     ) {
         val rejection = PaymentRejection(
-            error = cause.toCardReaderRemoteError(fallback),
+            error = error,
             description = cause.describeWithCauses(),
+            stripeErrorCode = cause.stripeErrorCode(),
         )
         accepted.send(
             ErrorMessage(
                 requestId = request.requestId,
                 code = rejection.error.code,
                 description = rejection.description,
+                stripeErrorCode = rejection.stripeErrorCode,
             )
         )
         _paymentRejections.tryEmit(rejection)
@@ -447,6 +459,7 @@ class CardReaderRemoteSession internal constructor(
     data class PaymentRejection(
         val error: CardReaderRemoteError,
         val description: String,
+        val stripeErrorCode: String? = null,
     )
 
     companion object {

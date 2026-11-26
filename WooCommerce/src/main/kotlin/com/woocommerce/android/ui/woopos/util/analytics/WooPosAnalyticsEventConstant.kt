@@ -122,6 +122,19 @@ object WooPosAnalyticsEventConstant {
         }
     }
 
+    enum class ReceiptPrinterSetupSource(val value: String) {
+        SETTINGS("settings"),
+        PRINT_RECEIPT("print_receipt");
+
+        override fun toString(): String {
+            return value
+        }
+
+        companion object {
+            const val SOURCE = "source"
+        }
+    }
+
     enum class ItemsListSourceType(val value: String) {
         LIST("list"),
         SEARCH_RESULT("search"),

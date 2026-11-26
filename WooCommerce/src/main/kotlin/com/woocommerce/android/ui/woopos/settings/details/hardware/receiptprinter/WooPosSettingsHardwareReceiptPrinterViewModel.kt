@@ -6,6 +6,8 @@ import com.woocommerce.android.receiptprinter.ReceiptPrinterConnectionStatus
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterFacade
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +20,7 @@ import javax.inject.Inject
 class WooPosSettingsHardwareReceiptPrinterViewModel @Inject constructor(
     private val receiptPrinterFacade: WooPosReceiptPrinterFacade,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
 
     val uiState: StateFlow<WooPosSettingsHardwareReceiptPrinterUiState> = receiptPrinterFacade.connectionStatus
@@ -36,6 +39,7 @@ class WooPosSettingsHardwareReceiptPrinterViewModel @Inject constructor(
 
     fun onDisconnectClicked() {
         viewModelScope.launch {
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.ReceiptPrinterDisconnectTapped)
             receiptPrinterFacade.disconnect()
         }
     }

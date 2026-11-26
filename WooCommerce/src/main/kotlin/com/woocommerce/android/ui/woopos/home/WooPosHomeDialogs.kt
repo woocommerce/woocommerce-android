@@ -4,7 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionDialog
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailureDialog
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterSetupDialog
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupDialog
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ReceiptPrinterSetupSource
 
 @Composable
 fun WooPosHomeDialogs(
@@ -31,6 +34,22 @@ fun WooPosHomeDialogs(
         WooPosCardReaderConnectionDialog(
             onDismiss = { onHomeUIEvent(WooPosHomeUIEvent.DismissCardReaderConnectionDialog) },
             onConnectionSuccess = { onHomeUIEvent(WooPosHomeUIEvent.DismissCardReaderConnectionDialog) }
+        )
+    }
+
+    if (dialogState is WooPosHomeState.DialogState.ReceiptPrinterSetupDialog) {
+        WooPosReceiptPrinterSetupDialog(
+            source = ReceiptPrinterSetupSource.PRINT_RECEIPT,
+            onDismiss = { onHomeUIEvent(WooPosHomeUIEvent.DismissReceiptPrinterSetupDialog) },
+            onConnectionSuccess = { onHomeUIEvent(WooPosHomeUIEvent.ReceiptPrinterConnected) }
+        )
+    }
+
+    if (dialogState is WooPosHomeState.DialogState.PrintReceiptFailureDialog) {
+        WooPosPrintReceiptFailureDialog(
+            failure = dialogState.failure,
+            onActionSelected = { onHomeUIEvent(WooPosHomeUIEvent.PrintReceiptFailureActionSelected(it)) },
+            onDismiss = { onHomeUIEvent(WooPosHomeUIEvent.DismissPrintReceiptFailureDialog) },
         )
     }
 }

@@ -6,11 +6,12 @@ import androidx.lifecycle.viewModelScope
 import app.cash.turbine.test
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
-import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.ExitPosClicked
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.customamount.WooPosCustomAmountFormState
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailure
+import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailureAction
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitConfirmed
@@ -96,7 +97,7 @@ class WooPosHomeViewModelTest {
         }
 
     @Test
-    fun `given state is Cart, when SystemBackClicked passed, then should show exit confirmation dialog`() = runTest {
+    fun `given home can go back, when SystemBackClicked passed, then exit confirmation is shown`() = runTest {
         // GIVEN
         val eventsFlow = MutableSharedFlow<ChildToParentEvent>()
         whenever(childrenToParentEventReceiver.events).thenReturn(eventsFlow)
@@ -106,9 +107,7 @@ class WooPosHomeViewModelTest {
         viewModel.onUIEvent(SystemBackClicked)
 
         // THEN
-        assertThat(viewModel.state.value.dialogState).isEqualTo(
-            WooPosHomeState.DialogState.ExitConfirmationDialog
-        )
+        assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.ExitConfirmationDialog)
     }
 
     @Test
@@ -198,14 +197,14 @@ class WooPosHomeViewModelTest {
             val viewModel = createViewModel()
 
             // WHEN
-            viewModel.onUIEvent(ExitPosClicked)
+            viewModel.onExitConfirmed()
 
             // THEN
             verify(analyticsTracker).track(ExitConfirmed)
         }
 
     @Test
-    fun `given state is Cart NotEmpty, when ExitPosClicked passed, then exit confirmation dialog should be shown`() =
+    fun `when ExitPosClicked comes from the toolbar, then exit confirmation is shown`() =
         runTest {
             // GIVEN
             val eventsFlow = MutableSharedFlow<ChildToParentEvent>()
@@ -216,9 +215,27 @@ class WooPosHomeViewModelTest {
             eventsFlow.emit(ChildToParentEvent.ExitPosClicked)
 
             // THEN
-            assertThat(viewModel.state.value.dialogState).isEqualTo(
-                WooPosHomeState.DialogState.ExitConfirmationDialog
-            )
+            assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.ExitConfirmationDialog)
+        }
+
+    @Test
+    fun `given exit confirmation is visible, when Exit is pressed twice, then one exit confirmation is sent`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(MutableSharedFlow<ChildToParentEvent>())
+            val viewModel = createViewModel()
+            viewModel.onUIEvent(SystemBackClicked)
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(WooPosHomeUIEvent.ExitPosClicked)
+                viewModel.onUIEvent(WooPosHomeUIEvent.ExitPosClicked)
+
+                // THEN
+                assertThat(awaitItem()).isEqualTo(ChildToParentEvent.NavigationEvent.ExitConfirmed)
+                assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.Hidden)
+                expectNoEvents()
+            }
         }
 
     @Test
@@ -469,7 +486,7 @@ class WooPosHomeViewModelTest {
         val events = MutableSharedFlow<ChildToParentEvent>()
         whenever(childrenToParentEventReceiver.events).thenReturn(events)
         val viewModel = createViewModel()
-        events.emit(ChildToParentEvent.ExitPosClicked)
+        viewModel.onUIEvent(SystemBackClicked)
         assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.ExitConfirmationDialog)
 
         // WHEN
@@ -528,6 +545,176 @@ class WooPosHomeViewModelTest {
                 )
             )
         }
+    }
+
+    @Test
+    fun `when receipt printer setup is requested, then the setup dialog is shown`() = runTest {
+        // GIVEN
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(ChildToParentEvent.ShowReceiptPrinterSetupDialog)
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        assertThat(viewModel.state.value.dialogState)
+            .isEqualTo(WooPosHomeState.DialogState.ReceiptPrinterSetupDialog)
+    }
+
+    @Test
+    fun `given the receipt printer setup dialog is shown, when it is dismissed, then it is hidden and children are not told`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(ChildToParentEvent.ShowReceiptPrinterSetupDialog)
+            )
+            val viewModel = createViewModel()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosHomeUIEvent.DismissReceiptPrinterSetupDialog)
+
+            // THEN
+            assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.Hidden)
+            verify(parentToChildrenEventSender, never())
+                .sendToChildren(ParentToChildrenEvent.ReceiptPrinterConnected)
+        }
+
+    @Test
+    fun `given the receipt printer setup dialog is shown, when a printer connects, then it is hidden and children are told`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(ChildToParentEvent.ShowReceiptPrinterSetupDialog)
+            )
+            val viewModel = createViewModel()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosHomeUIEvent.ReceiptPrinterConnected)
+
+            // THEN
+            assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.Hidden)
+            verify(parentToChildrenEventSender)
+                .sendToChildren(ParentToChildrenEvent.ReceiptPrinterConnected)
+        }
+
+    @Test
+    fun `given the success screen is shown, when a print failure is reported, then the failure dialog is shown`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(
+                    ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.CASH),
+                    ChildToParentEvent.ShowPrintReceiptFailureDialog(WooPosPrintReceiptFailure.PaperEmpty),
+                )
+            )
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            assertThat(viewModel.state.value.dialogState)
+                .isEqualTo(WooPosHomeState.DialogState.PrintReceiptFailureDialog(WooPosPrintReceiptFailure.PaperEmpty))
+        }
+
+    @Test
+    fun `given a new order was started, when a print failure is reported, then the failure dialog is not shown`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(
+                    ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.CASH),
+                    ChildToParentEvent.OnNewTransactionStarted,
+                    ChildToParentEvent.ShowPrintReceiptFailureDialog(WooPosPrintReceiptFailure.PaperEmpty),
+                )
+            )
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.Hidden)
+        }
+
+    @Test
+    fun `given another dialog is open on the success screen, when a print failure is reported, then that dialog stays`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(
+                    ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.CASH),
+                    ChildToParentEvent.ExitPosClicked,
+                    ChildToParentEvent.ShowPrintReceiptFailureDialog(WooPosPrintReceiptFailure.PaperEmpty),
+                )
+            )
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            assertThat(viewModel.state.value.dialogState)
+                .isEqualTo(WooPosHomeState.DialogState.ExitConfirmationDialog)
+        }
+
+    @Test
+    fun `given the print failure dialog is shown, when it is dismissed, then it is hidden and children are not told`() =
+        runTest {
+            // GIVEN
+            val viewModel = createViewModelWithPrintFailureDialog()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosHomeUIEvent.DismissPrintReceiptFailureDialog)
+
+            // THEN
+            assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.Hidden)
+            verify(parentToChildrenEventSender, never())
+                .sendToChildren(argThat { this is ParentToChildrenEvent.PrintReceiptFailureActionSelected })
+        }
+
+    @Test
+    fun `given the print failure dialog is shown, when retry is selected, then it is hidden and children are told`() =
+        runTest {
+            // GIVEN
+            val viewModel = createViewModelWithPrintFailureDialog()
+
+            // WHEN
+            viewModel.onUIEvent(
+                WooPosHomeUIEvent.PrintReceiptFailureActionSelected(WooPosPrintReceiptFailureAction.Retry)
+            )
+
+            // THEN
+            assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.Hidden)
+            verify(parentToChildrenEventSender).sendToChildren(
+                ParentToChildrenEvent.PrintReceiptFailureActionSelected(WooPosPrintReceiptFailureAction.Retry)
+            )
+        }
+
+    @Test
+    fun `given the print failure dialog is shown, when email receipt is selected, then it is hidden and children are told`() =
+        runTest {
+            // GIVEN
+            val viewModel = createViewModelWithPrintFailureDialog()
+
+            // WHEN
+            viewModel.onUIEvent(
+                WooPosHomeUIEvent.PrintReceiptFailureActionSelected(WooPosPrintReceiptFailureAction.EmailReceipt)
+            )
+
+            // THEN
+            assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.Hidden)
+            verify(parentToChildrenEventSender).sendToChildren(
+                ParentToChildrenEvent.PrintReceiptFailureActionSelected(WooPosPrintReceiptFailureAction.EmailReceipt)
+            )
+        }
+
+    private fun createViewModelWithPrintFailureDialog(): WooPosHomeViewModel {
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(
+                ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.CASH),
+                ChildToParentEvent.ShowPrintReceiptFailureDialog(WooPosPrintReceiptFailure.PaperEmpty),
+            )
+        )
+        return createViewModel()
     }
 
     private fun createViewModel(): WooPosHomeViewModel {

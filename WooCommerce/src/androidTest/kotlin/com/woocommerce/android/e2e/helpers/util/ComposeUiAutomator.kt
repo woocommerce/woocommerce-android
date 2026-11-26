@@ -60,24 +60,6 @@ internal class ComposeUiAutomator(
         return results
     }
 
-    fun waitForCount(
-        selector: BySelector,
-        expectedCount: Int,
-        description: String,
-    ): List<UiObject2> {
-        var results = emptyList<UiObject2>()
-        waitUntil(
-            condition = {
-                results = device.findObjects(selector)
-                results.size == expectedCount
-            },
-            failureMessage = {
-                "Expected $expectedCount $description, found ${results.size}"
-            },
-        )
-        return results
-    }
-
     fun waitUntil(
         timeoutMillis: Long = DEFAULT_TIMEOUT_MS,
         condition: () -> Boolean,

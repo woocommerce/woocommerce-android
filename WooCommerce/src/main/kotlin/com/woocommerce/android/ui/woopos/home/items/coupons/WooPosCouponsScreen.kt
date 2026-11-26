@@ -30,6 +30,8 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsLoadingIndicator
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.roles.approval.LocalWooPosRequestApproval
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -40,11 +42,20 @@ fun WooPosCouponsScreen(
     listState: LazyListState,
 ) {
     val vm: WooPosCouponsViewModel = hiltViewModel()
+    val requestApproval = LocalWooPosRequestApproval.current
     WooPosCouponsScreen(
         modifier = modifier,
         listState = listState,
         viewStateFlow = vm.viewState,
-        onUIEvent = { vm.onUIEvent(it) },
+        onUIEvent = { event ->
+            if (event == WooPosCouponsUIEvent.CreateCouponClicked) {
+                requestApproval(WooPosApprovalAction.CreateCoupon) {
+                    if (vm.viewState.value is WooPosCouponsViewState.Empty) vm.onUIEvent(event)
+                }
+            } else {
+                vm.onUIEvent(event)
+            }
+        },
     )
 }
 

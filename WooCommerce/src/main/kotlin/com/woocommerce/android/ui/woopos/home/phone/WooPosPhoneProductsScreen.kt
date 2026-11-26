@@ -53,6 +53,7 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarS
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarViewModel
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarPopUpMenu
+import com.woocommerce.android.ui.woopos.roles.approval.LocalWooPosRequestApproval
 
 @Composable
 fun WooPosPhoneProductsScreen(
@@ -62,6 +63,7 @@ fun WooPosPhoneProductsScreen(
 ) {
     val itemsState by itemsViewModel.viewState.collectAsState()
     val toolbarState by toolbarViewModel.state.collectAsState()
+    val requestApproval = LocalWooPosRequestApproval.current
 
     WooPosPhoneProductsContent(
         modifier = modifier,
@@ -76,7 +78,7 @@ fun WooPosPhoneProductsScreen(
         onMenuItemClicked = { menuItem ->
             toolbarViewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
         },
-        onItemsUIEvent = { itemsViewModel.onUIEvent(it) },
+        onItemsUIEvent = { event -> itemsViewModel.onUIEventWithApproval(event, requestApproval) },
     )
 }
 
@@ -177,6 +179,7 @@ private fun WooPosPhoneProductsContent(
         if (menu is Menu.Visible) {
             WooPosToolbarPopUpMenu(
                 menuItems = menu.items,
+                activeRole = menu.activeRole,
                 onClick = onMenuItemClicked,
                 modifier = Modifier
                     .statusBarsPadding()

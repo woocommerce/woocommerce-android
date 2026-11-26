@@ -195,10 +195,11 @@ class CardReaderModeViewModel @Inject constructor(
     private fun trackPaymentRejection(rejection: CardReaderRemoteSession.PaymentRejection) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.REMOTE_TTP_PHONE_PAYMENT_FAILED,
-            mapOf(
-                "error_code" to rejection.error.code,
-                "error_description" to rejection.description,
-            ),
+            buildMap {
+                put("error_code", rejection.error.code)
+                put("error_description", rejection.description)
+                rejection.stripeErrorCode?.let { put("stripe_error_code", it) }
+            },
         )
     }
 
@@ -280,6 +281,8 @@ class CardReaderModeViewModel @Inject constructor(
         CardReaderRemoteError.ConnectFailed,
         CardReaderRemoteError.CollectFailed,
         CardReaderRemoteError.CreateIntentFailed,
+        CardReaderRemoteError.Canceled,
+        CardReaderRemoteError.CardReadTimedOut,
         CardReaderRemoteError.UnexpectedReply,
         is CardReaderRemoteError.Unknown -> null
     }

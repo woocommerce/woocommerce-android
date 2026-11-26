@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.receiptprinting
 
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardDetails
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
@@ -94,7 +95,7 @@ class WooPosBuildThermalReceiptTest {
     @Test
     fun `given an order with every line, when building the receipt, then every field is mapped in order`() = runTest {
         // WHEN
-        val receipt = requireNotNull(sut(ORDER_ID))
+        val receipt = requireNotNull(sut(ORDER_ID, null))
 
         // THEN
         assertThat(receipt.copy(datePaid = receipt.datePaid.copy(text = ""))).isEqualTo(
@@ -125,7 +126,7 @@ class WooPosBuildThermalReceiptTest {
     }
 
     @Test
-    fun `given a card or a cash order, when building the receipt, then there is no payment method`() = runTest {
+    fun `given no card details, when building the receipt of a card or a cash order, then there is no payment method`() = runTest {
         // GIVEN
         val orders = listOf(
             ORDER.copy(paymentMethod = "woocommerce_payments", isCashPayment = false),
@@ -135,7 +136,7 @@ class WooPosBuildThermalReceiptTest {
         // WHEN
         val receipts = orders.map { order ->
             whenever(totalsRepository.getOrderById(ORDER_ID, SITE)).thenReturn(order)
-            sut(ORDER_ID)
+            sut(ORDER_ID, null)
         }
 
         // THEN
@@ -143,10 +144,40 @@ class WooPosBuildThermalReceiptTest {
     }
 
     @Test
+    fun `given card details, when building the receipt, then the payment method is the brand name and last 4`() =
+        runTest {
+            // WHEN
+            val receipt = sut(ORDER_ID, CardDetails(brand = "visa", last4 = "4242"))
+
+            // THEN
+            assertThat(receipt?.paymentMethod).isEqualTo(LabeledText(label = "Payment Method", text = "Visa - 4242"))
+        }
+
+    @Test
+    fun `given card details of an unknown brand, when building the receipt, then the payment method is the last 4`() =
+        runTest {
+            // WHEN
+            val receipt = sut(ORDER_ID, CardDetails(brand = "unknown", last4 = "4242"))
+
+            // THEN
+            assertThat(receipt?.paymentMethod).isEqualTo(LabeledText(label = "Payment Method", text = "4242"))
+        }
+
+    @Test
+    fun `given card details without a brand, when building the receipt, then the payment method is the last 4`() =
+        runTest {
+            // WHEN
+            val receipt = sut(ORDER_ID, CardDetails(brand = null, last4 = "4242"))
+
+            // THEN
+            assertThat(receipt?.paymentMethod).isEqualTo(LabeledText(label = "Payment Method", text = "4242"))
+        }
+
+    @Test
     fun `given a paid order, when building the receipt, then the date is the paid date in medium and short style`() =
         runTest {
             // WHEN
-            val receipt = sut(ORDER_ID)
+            val receipt = sut(ORDER_ID, null)
 
             // THEN
             assertThat(receipt?.datePaid?.text).matches("Nov 12, 2026,? 2:30\\hPM")
@@ -159,7 +190,7 @@ class WooPosBuildThermalReceiptTest {
             whenever(totalsRepository.getOrderById(ORDER_ID, SITE)).thenReturn(ORDER.copy(datePaid = null))
 
             // WHEN
-            val receipt = sut(ORDER_ID)
+            val receipt = sut(ORDER_ID, null)
 
             // THEN
             assertThat(receipt?.datePaid?.text).matches("Nov 10, 2026,? 9:05\\hAM")
@@ -172,7 +203,7 @@ class WooPosBuildThermalReceiptTest {
             whenever(totalsRepository.getOrderById(ORDER_ID, SITE)).thenReturn(ORDER.copy(discountCodes = ""))
 
             // WHEN
-            val receipt = sut(ORDER_ID)
+            val receipt = sut(ORDER_ID, null)
 
             // THEN
             assertThat(receipt?.totals).contains(Row(label = "Discount", amount = "-$6.20"))
@@ -187,7 +218,7 @@ class WooPosBuildThermalReceiptTest {
             )
 
             // WHEN
-            val receipt = sut(ORDER_ID)
+            val receipt = sut(ORDER_ID, null)
 
             // THEN
             assertThat(receipt?.totals).contains(Row(label = "Discount (FREESHIP)", amount = "$0.00"))
@@ -209,7 +240,7 @@ class WooPosBuildThermalReceiptTest {
             )
 
             // WHEN
-            val receipt = sut(ORDER_ID)
+            val receipt = sut(ORDER_ID, null)
 
             // THEN
             assertThat(receipt?.totals).containsExactly(
@@ -234,7 +265,7 @@ class WooPosBuildThermalReceiptTest {
             whenever(totalsRepository.getOrderById(ORDER_ID, SITE)).thenReturn(ORDER.copy(items = listOf(item)))
 
             // WHEN
-            val receipt = sut(ORDER_ID)
+            val receipt = sut(ORDER_ID, null)
 
             // THEN
             assertThat(receipt?.lineItems).containsExactly(Row(label = "Hoodie. Color Blue x1.5", amount = "$50.00"))
@@ -248,7 +279,7 @@ class WooPosBuildThermalReceiptTest {
         )
 
         // WHEN
-        val receipt = sut(ORDER_ID)
+        val receipt = sut(ORDER_ID, null)
 
         // THEN
         assertThat(receipt?.orderNote?.text).isEqualTo("Leave at the front desk & call")
@@ -260,7 +291,7 @@ class WooPosBuildThermalReceiptTest {
         whenever(totalsRepository.getOrderById(ORDER_ID, SITE)).thenReturn(ORDER.copy(customerNote = "<p> </p>"))
 
         // WHEN
-        val receipt = sut(ORDER_ID)
+        val receipt = sut(ORDER_ID, null)
 
         // THEN
         assertThat(receipt?.orderNote).isNull()
@@ -273,7 +304,7 @@ class WooPosBuildThermalReceiptTest {
             .thenReturn(ORDER.copy(customerNote = "<p></p><img src=\"a.png\" />"))
 
         // WHEN
-        val receipt = sut(ORDER_ID)
+        val receipt = sut(ORDER_ID, null)
 
         // THEN
         assertThat(receipt?.orderNote).isNull()
@@ -287,7 +318,7 @@ class WooPosBuildThermalReceiptTest {
                 .thenReturn(ORDER.copy(customerNote = "<p>Gift wrap</p><p>Ring the bell</p>\n"))
 
             // WHEN
-            val receipt = sut(ORDER_ID)
+            val receipt = sut(ORDER_ID, null)
 
             // THEN
             assertThat(receipt?.orderNote?.text).isEqualTo("Gift wrap\nRing the bell")
@@ -299,7 +330,7 @@ class WooPosBuildThermalReceiptTest {
         whenever(receiptRepository.getCachedReceiptInfo(SITE)).thenReturn(RECEIPT_INFO.copy(storeName = "Cached Pay"))
 
         // WHEN
-        val receipt = sut(ORDER_ID)
+        val receipt = sut(ORDER_ID, null)
 
         // THEN
         assertThat(receipt?.storeName).isEqualTo("Cached Pay")
@@ -311,7 +342,7 @@ class WooPosBuildThermalReceiptTest {
     @Test
     fun `given nothing is cached, when building the receipt, then the settings are fetched`() = runTest {
         // WHEN
-        val receipt = sut(ORDER_ID)
+        val receipt = sut(ORDER_ID, null)
 
         // THEN
         assertThat(receipt?.storeName).isEqualTo("Everyday Pay")
@@ -325,7 +356,7 @@ class WooPosBuildThermalReceiptTest {
             whenever(receiptRepository.getReceiptInfo(SITE)).thenReturn(WooPosReceiptDataResult.Error)
 
             // WHEN
-            val receipt = sut(ORDER_ID)
+            val receipt = sut(ORDER_ID, null)
 
             // THEN
             assertThat(receipt?.storeName).isEqualTo("Site Title")
@@ -342,7 +373,7 @@ class WooPosBuildThermalReceiptTest {
             whenever(receiptRepository.getReceiptInfo(SITE)).thenReturn(WooPosReceiptDataResult.NotAvailable)
 
             // WHEN
-            val receipt = sut(ORDER_ID)
+            val receipt = sut(ORDER_ID, null)
 
             // THEN
             assertThat(receipt?.storeName).isEqualTo("Site Title")
@@ -360,7 +391,7 @@ class WooPosBuildThermalReceiptTest {
             )
 
             // WHEN
-            val receipt = sut(ORDER_ID)
+            val receipt = sut(ORDER_ID, null)
 
             // THEN
             assertThat(receipt?.storeName).isEqualTo("Site Title")
@@ -377,7 +408,7 @@ class WooPosBuildThermalReceiptTest {
         whenever(storeRepository.getStoreInfo(SITE)).thenReturn(StoreInfo(storeName = "Site Title", address = ""))
 
         // WHEN
-        val receipt = sut(ORDER_ID)
+        val receipt = sut(ORDER_ID, null)
 
         // THEN
         assertThat(receipt?.storeAddress).isNull()
@@ -389,7 +420,7 @@ class WooPosBuildThermalReceiptTest {
         whenever(totalsRepository.getOrderById(ORDER_ID, SITE)).thenReturn(null)
 
         // WHEN
-        val receipt = sut(ORDER_ID)
+        val receipt = sut(ORDER_ID, null)
 
         // THEN
         assertThat(receipt).isNull()
@@ -404,6 +435,8 @@ class WooPosBuildThermalReceiptTest {
         val STRINGS = mapOf(
             R.string.woopos_receipt_date_paid to "Date Paid",
             R.string.woopos_receipt_order_number to "Order #%1\$s",
+            R.string.woopos_receipt_payment_method to "Payment Method",
+            R.string.woopos_receipt_card_brand_and_last4 to "%1\$s - %2\$s",
             R.string.woopos_receipt_item_with_attributes to "%1\$s. %2\$s",
             R.string.woopos_receipt_item_and_quantity to "%1\$s x%2\$s",
             R.string.woopos_receipt_subtotal to "Subtotal",
