@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.settings.details.security
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,9 +11,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,10 +36,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -54,9 +55,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosEmptyScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenu
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenuItem
@@ -80,9 +81,17 @@ fun WooPosSettingsSecurityScreen(
 ) {
     when (state) {
         WooPosSettingsSecurityState.Loading, WooPosSettingsSecurityState.Restricted -> Unit
-        WooPosSettingsSecurityState.Off -> CenteredContent {
-            AccessControlSetup(onGetStartedClicked = { onSetUpPIN(WooPosLocalRole.ADMIN) })
-        }
+        WooPosSettingsSecurityState.Off -> WooPosEmptyScreen(
+            modifier = Modifier
+                .fillMaxSize()
+                .navigationBarsPadding()
+                .padding(WooPosSpacing.Large.value),
+            title = stringResource(R.string.woopos_security_setup),
+            message = stringResource(R.string.woopos_security_description),
+            icon = ImageVector.vectorResource(R.drawable.woopos_access_control),
+            bottomActionLabel = stringResource(R.string.woopos_security_get_started),
+            onActionClicked = { onSetUpPIN(WooPosLocalRole.ADMIN) },
+        )
         WooPosSettingsSecurityState.Unavailable -> CenteredContent {
             WooPosText(
                 text = stringResource(R.string.woopos_lock_unavailable),
@@ -424,42 +433,6 @@ private fun inactivityLabel(minutes: Int): String = when (minutes) {
     else -> pluralStringResource(R.plurals.woopos_security_minutes, minutes, minutes)
 }
 
-@Composable
-private fun AccessControlSetup(onGetStartedClicked: () -> Unit) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XLarge.value),
-    ) {
-        Image(painter = painterResource(R.drawable.woopos_access_control), contentDescription = null)
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
-        ) {
-            WooPosText(
-                text = stringResource(R.string.woopos_security_setup),
-                style = WooPosTypography.BodyXLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.semantics { heading() },
-            )
-            WooPosText(
-                text = stringResource(R.string.woopos_security_description),
-                style = WooPosTypography.BodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
-        }
-        WooPosButton(
-            text = stringResource(R.string.woopos_security_get_started),
-            onClick = onGetStartedClicked,
-            modifier = Modifier
-                .widthIn(max = BUTTON_MAX_WIDTH)
-                .fillMaxWidth(),
-        )
-    }
-}
-
 @WooPosPreview
 @Composable
 fun WooPosSettingsSecurityScreenPreview() {
@@ -490,8 +463,6 @@ private fun SecurityScreenPreview(state: WooPosSettingsSecurityState) {
         )
     }
 }
-
-private val BUTTON_MAX_WIDTH = 612.dp
 
 private val ROW_MIN_WIDTH = 300.dp
 private val INACTIVITY_OPTIONS = listOf(0, 1, 2, 5, 10, 15)
