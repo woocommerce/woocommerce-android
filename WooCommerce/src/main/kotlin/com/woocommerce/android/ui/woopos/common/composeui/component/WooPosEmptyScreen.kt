@@ -70,35 +70,56 @@ private fun WooPosItemsEmptyListInternal(
     modifier: Modifier = Modifier,
     title: String,
     message: String,
-    contentDescription: String,
+    contentDescription: String?,
     icon: ImageVector = WooPosIcons.NotFound,
     actionLabel: String?,
     onActionClicked: (() -> Unit)? = null,
+    useIntrinsicIconSize: Boolean = false,
+    isTitleHeading: Boolean = false,
 ) {
     Box(
         modifier = modifier.verticalScroll(rememberScrollState()),
         contentAlignment = Alignment.Center
     ) {
-        WooPosEmptyContent(
-            title = title,
-            message = message,
-            image = {
-                Image(
-                    modifier = Modifier.size(WooPosComponentSize.Small.value),
-                    imageVector = icon,
-                    contentDescription = contentDescription,
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(
+                modifier = if (useIntrinsicIconSize) Modifier else Modifier.size(WooPosComponentSize.Small.value),
+                imageVector = icon,
+                contentDescription = contentDescription,
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+
+            WooPosText(
+                text = title,
+                modifier = if (isTitleHeading) Modifier.semantics { heading() } else Modifier,
+                style = WooPosTypography.Heading,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            WooPosText(
+                text = message,
+                style = WooPosTypography.BodyLarge,
+                fontWeight = FontWeight.Normal,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+
+            if (onActionClicked != null && actionLabel != null) {
+                WooPosButton(
+                    text = actionLabel,
+                    onClick = onActionClicked,
+                    modifier = Modifier.wooPosFullScreenActionButton()
                 )
-            },
-            action = {
-                if (onActionClicked != null && actionLabel != null) {
-                    WooPosButton(
-                        text = actionLabel,
-                        onClick = onActionClicked,
-                        modifier = Modifier.wooPosFullScreenActionButton()
-                    )
-                }
-            },
-        )
+            }
+        }
     }
 }
 
@@ -107,7 +128,7 @@ fun WooPosEmptyScreen(
     modifier: Modifier = Modifier,
     title: String,
     message: String,
-    image: @Composable () -> Unit,
+    icon: ImageVector,
     bottomActionLabel: String,
     onActionClicked: () -> Unit,
 ) {
@@ -115,63 +136,21 @@ fun WooPosEmptyScreen(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState()),
-            contentAlignment = Alignment.Center,
-        ) {
-            WooPosEmptyContent(
-                title = title,
-                message = message,
-                image = image,
-                isTitleHeading = true,
-            )
-        }
+        WooPosItemsEmptyListInternal(
+            modifier = Modifier.weight(1f),
+            title = title,
+            message = message,
+            contentDescription = null,
+            icon = icon,
+            actionLabel = null,
+            useIntrinsicIconSize = true,
+            isTitleHeading = true,
+        )
         WooPosButton(
             text = bottomActionLabel,
             onClick = onActionClicked,
             modifier = Modifier.wooPosFullScreenActionButton(),
         )
-    }
-}
-
-@Composable
-private fun WooPosEmptyContent(
-    title: String,
-    message: String,
-    image: @Composable () -> Unit,
-    isTitleHeading: Boolean = false,
-    action: @Composable () -> Unit = {},
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        image()
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-
-        WooPosText(
-            text = title,
-            modifier = if (isTitleHeading) Modifier.semantics { heading() } else Modifier,
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
-        WooPosText(
-            text = message,
-            style = WooPosTypography.BodyLarge,
-            fontWeight = FontWeight.Normal,
-            textAlign = TextAlign.Center,
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-
-        action()
     }
 }
 

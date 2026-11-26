@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.DeviceConfigurationOverride
 import androidx.compose.ui.test.FontScale
@@ -23,7 +23,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Offset.offset
@@ -47,7 +47,7 @@ class WooPosEmptyScreenTest {
                             modifier = Modifier.fillMaxSize().testTag(WINDOW),
                             title = "Set up access control",
                             message = "PIN protection is off",
-                            image = { Box(Modifier.size(WooPosComponentSize.Small.value)) },
+                            icon = ImageVector.vectorResource(R.drawable.woopos_access_control),
                             bottomActionLabel = ACTION,
                             onActionClicked = { clicks++ },
                         )
