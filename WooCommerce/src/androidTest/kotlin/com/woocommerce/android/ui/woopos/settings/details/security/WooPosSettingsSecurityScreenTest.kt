@@ -6,6 +6,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.platform.WindowInfo
 import androidx.compose.ui.test.DarkMode
 import androidx.compose.ui.test.DeviceConfigurationOverride
 import androidx.compose.ui.test.FontScale
@@ -21,12 +24,16 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.then
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsCompat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,15 +47,18 @@ class WooPosSettingsSecurityScreenTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
     @Test
-    fun phoneInactivityPickerOpensFromItsTitleAtLargeText() = checkPicker(DpSize(412.dp, 915.dp), 2f, true)
+    fun phoneInactivityPickerOpensFromItsTitleAtLargeText() =
+        checkPicker(DpSize(412.dp, 915.dp), 2f, true, WooPosBreakpoint.Phone)
 
     @Test
-    fun phoneInactivityPickerOpensFromItsTitle() = checkPicker(DpSize(412.dp, 915.dp), 1f, true)
+    fun phoneInactivityPickerOpensFromItsTitle() =
+        checkPicker(DpSize(412.dp, 915.dp), 1f, true, WooPosBreakpoint.Phone)
 
     @Test
-    fun tabletInactivityPickerOpensFromItsTitle() = checkPicker(DpSize(1024.dp, 674.dp), 1f, false)
+    fun tabletInactivityPickerOpensFromItsTitle() =
+        checkPicker(DpSize(1024.dp, 674.dp), 1f, false, WooPosBreakpoint.SmallTablet)
 
-    private fun checkPicker(size: DpSize, fontScale: Float, dark: Boolean) {
+    private fun checkPicker(size: DpSize, fontScale: Float, dark: Boolean, breakpoint: WooPosBreakpoint) {
         composeTestRule.setContent {
             val configuration = DeviceConfigurationOverride.ForcedSize(size) then
                 DeviceConfigurationOverride.WindowSize(size) then
@@ -56,8 +66,20 @@ class WooPosSettingsSecurityScreenTest {
                 DeviceConfigurationOverride.FontScale(fontScale) then DeviceConfigurationOverride.DarkMode(dark)
             DeviceConfigurationOverride(configuration) {
                 val currentContext = LocalContext.current
-                val themedContext = remember(currentContext) { ContextThemeWrapper(currentContext, R.style.Theme_WooPos) }
-                CompositionLocalProvider(LocalContext provides themedContext) {
+                val themedContext = remember(currentContext) {
+                    ContextThemeWrapper(currentContext, R.style.Theme_WooPos)
+                }
+                val density = LocalDensity.current
+                val hostWindow = LocalWindowInfo.current
+                val pixels = with(density) { IntSize(size.width.roundToPx(), size.height.roundToPx()) }
+                val window = remember(hostWindow, pixels, size) {
+                    object : WindowInfo by hostWindow {
+                        override val containerSize = pixels
+                        override val containerDpSize = size
+                    }
+                }
+                CompositionLocalProvider(LocalContext provides themedContext, LocalWindowInfo provides window) {
+                    assertThat(currentWooPosBreakpoint()).isEqualTo(breakpoint)
                     WooPosTheme {
                         WooPosSettingsSecurityScreen(
                             state = WooPosSettingsSecurityState.Protected(hasCashierPIN = true, removalFailed = false),
