@@ -1316,6 +1316,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             val deletedItem = Order.Item.EMPTY.copy(productId = 555, name = "Beanie", quantity = 1f)
             whenever(createOrderItemUseCase.invoke(555, null)).thenReturn(deletedItem)
             whenever(getDeletedOrderItems.invoke(listOf(deletedItem))).thenReturn(listOf(deletedItem))
+            whenever(resourceProvider.getPluralString(R.plurals.order_sync_deleted_products_removed, 1, "Beanie"))
+                .thenReturn("Beanie was removed")
             createUpdateOrderUseCase = rejectingUnsyncedItems()
             createSut()
             var orderDraft: Order? = null
@@ -1326,9 +1328,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(555)))
 
             assertThat(orderDraft?.items).isEmpty()
-            assertThat(lastEvent).isEqualTo(
-                OnDeletedProductsRemoved(R.string.order_sync_deleted_product_removed, "Beanie")
-            )
+            assertThat(lastEvent).isEqualTo(OnDeletedProductsRemoved("Beanie was removed"))
             val viewState = sut.viewStateData.liveData.value!!
             assertThat(viewState.isUpdatingOrderDraft).isFalse
             assertThat(viewState.showOrderUpdateSnackbar).isFalse
@@ -1345,6 +1345,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             whenever(createOrderItemUseCase.invoke(666, null)).thenReturn(cap)
             whenever(createOrderItemUseCase.invoke(777, null)).thenReturn(hoodie)
             whenever(getDeletedOrderItems.invoke(listOf(beanie, cap, hoodie))).thenReturn(listOf(beanie, cap))
+            whenever(resourceProvider.getPluralString(R.plurals.order_sync_deleted_products_removed, 2, "Beanie, Cap"))
+                .thenReturn("Beanie, Cap were removed")
             createUpdateOrderUseCase = rejectingUnsyncedItems()
             createSut()
             var orderDraft: Order? = null
@@ -1361,9 +1363,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             )
 
             assertThat(orderDraft?.items?.map { it.productId }).containsExactly(777L)
-            assertThat(lastEvent).isEqualTo(
-                OnDeletedProductsRemoved(R.string.order_sync_deleted_products_removed, "Beanie, Cap")
-            )
+            assertThat(sut.pendingSelectedItems.value.map { it.id }).containsExactly(777L)
+            assertThat(lastEvent).isEqualTo(OnDeletedProductsRemoved("Beanie, Cap were removed"))
         }
 
     @Test
@@ -1378,6 +1379,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             )
             whenever(createOrderItemUseCase.invoke(1, 2)).thenReturn(deletedVariation)
             whenever(getDeletedOrderItems.invoke(listOf(deletedVariation))).thenReturn(listOf(deletedVariation))
+            whenever(
+                resourceProvider.getPluralString(R.plurals.order_sync_deleted_products_removed, 1, "Poster (Small)")
+            ).thenReturn("Poster (Small) was removed")
             createUpdateOrderUseCase = rejectingUnsyncedItems()
             createSut()
             var lastEvent: Event? = null
@@ -1385,9 +1389,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
             sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.ProductVariation(1, 2)))
 
-            assertThat(lastEvent).isEqualTo(
-                OnDeletedProductsRemoved(R.string.order_sync_deleted_product_removed, "Poster (Small)")
-            )
+            assertThat(lastEvent).isEqualTo(OnDeletedProductsRemoved("Poster (Small) was removed"))
         }
 
     @Test
