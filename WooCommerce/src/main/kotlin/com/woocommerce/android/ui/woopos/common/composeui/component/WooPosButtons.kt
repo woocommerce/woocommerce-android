@@ -121,6 +121,7 @@ fun WooPosOutlinedButton(
     state: WooPosButtonState = WooPosButtonState.ENABLED,
     maxLines: Int = Int.MAX_VALUE,
     textStyle: WooPosTypography = WooPosTypography.BodyLarge,
+    successContentDescription: String? = null,
     onClick: () -> Unit,
 ) {
     val borderColor = if (state == WooPosButtonState.DISABLED) {
@@ -143,6 +144,7 @@ fun WooPosOutlinedButton(
         ),
         state = state,
         maxLines = maxLines,
+        successContentDescription = successContentDescription,
         onClick = onClick,
     )
 }
@@ -268,6 +270,7 @@ private fun Button(
     border: BorderStroke? = null,
     state: WooPosButtonState = WooPosButtonState.ENABLED,
     maxLines: Int = Int.MAX_VALUE,
+    successContentDescription: String? = null,
     onClick: () -> Unit,
 ) {
     val onClickLocal = if (state == WooPosButtonState.ENABLED) {
@@ -315,7 +318,7 @@ private fun Button(
                 WooPosButtonState.SUCCESS -> {
                     Icon(
                         imageVector = WooPosIcons.Check,
-                        contentDescription = null,
+                        contentDescription = successContentDescription,
                         modifier = Modifier.size(loadingIndicatorSize),
                     )
                 }

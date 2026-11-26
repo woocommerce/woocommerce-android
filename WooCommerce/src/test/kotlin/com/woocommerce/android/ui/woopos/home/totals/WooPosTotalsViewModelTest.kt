@@ -87,9 +87,11 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
@@ -166,7 +168,7 @@ class WooPosTotalsViewModelTest {
         on { buttonState } doReturn MutableStateFlow(WooPosPrintReceiptButtonState.Idle)
     }
     private val printReceiptCoordinatorFactory: WooPosPrintReceiptCoordinator.Factory = mock {
-        on { create(any()) } doReturn printReceiptCoordinator
+        on { create(any(), any()) } doReturn printReceiptCoordinator
     }
     private val refreshProductsSignal: RefreshProductsSignal = mock()
     private val crashLogging: CrashLogging = mock()
@@ -1774,6 +1776,18 @@ class WooPosTotalsViewModelTest {
 
             // THEN
             verify(printReceiptCoordinator).onPrintReceiptClicked(CREATED_ORDER_ID)
+        }
+
+    @Test
+    fun `when an order is created, then the print coordinator follows its order id`() =
+        runTest {
+            // WHEN
+            createViewModelAndSetupForSuccessfulOrderCreation()
+
+            // THEN
+            val currentOrderId = argumentCaptor<Flow<Long>>()
+            verify(printReceiptCoordinatorFactory).create(any(), currentOrderId.capture())
+            assertThat(currentOrderId.firstValue.first()).isEqualTo(CREATED_ORDER_ID)
         }
 
     @Test

@@ -51,7 +51,7 @@ class WooPosPaymentSuccessViewModelTest {
         on { buttonState } doReturn printReceiptButtonState
     }
     private val printReceiptCoordinatorFactory: WooPosPrintReceiptCoordinator.Factory = mock {
-        on { create(any()) } doReturn printReceiptCoordinator
+        on { create(any(), any()) } doReturn printReceiptCoordinator
     }
 
     private fun createViewModel(

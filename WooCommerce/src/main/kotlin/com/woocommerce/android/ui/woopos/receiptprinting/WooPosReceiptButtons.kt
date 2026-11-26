@@ -87,6 +87,7 @@ private fun PrintReceiptButton(
             WooPosPrintReceiptButtonState.Success -> WooPosButtonState.SUCCESS
         },
         textStyle = textStyle,
+        successContentDescription = stringResource(R.string.woopos_print_receipt_success_content_description),
         onClick = onClick,
     )
 }
