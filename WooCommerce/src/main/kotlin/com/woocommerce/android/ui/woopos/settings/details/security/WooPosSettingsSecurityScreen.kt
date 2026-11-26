@@ -278,8 +278,8 @@ private fun SecurityToggle(
 @Composable
 private fun SecurityRow(
     title: String,
-    subtitle: String? = null,
     modifier: Modifier = Modifier,
+    subtitle: String? = null,
     action: @Composable (stacked: Boolean) -> Unit,
 ) {
     val fontScale = LocalDensity.current.fontScale
