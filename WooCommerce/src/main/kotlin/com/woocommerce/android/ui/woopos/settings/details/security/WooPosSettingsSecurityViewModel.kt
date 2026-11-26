@@ -76,15 +76,22 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
         removalJob = requestJob
         readJob?.cancel()
         val removed = persistRemoval(role, scope, requestJob)
-        currentCoroutineContext().ensureActive()
-        read()?.let { current ->
-            _state.value = if (!removed && isSelected(scope.siteId) && current is Protected) {
-                current.copy(removalFailed = true)
-            } else {
-                current
+        val protectionRemoved = removed && role == WooPosLocalRole.ADMIN
+        try {
+            currentCoroutineContext().ensureActive()
+            read()?.let { current ->
+                _state.value = if (!removed && isSelected(scope.siteId) && current is Protected) {
+                    current.copy(removalFailed = true)
+                } else {
+                    current
+                }
+            }
+            return removed && isSelected(scope.siteId)
+        } finally {
+            if (protectionRemoved && !requestJob.isActive && isSelected(scope.siteId)) {
+                withContext(NonCancellable) { accessSession.initialize() }
             }
         }
-        return removed && isSelected(scope.siteId)
     }
 
     private fun canRemovePINs(requestJob: Job): Boolean {
@@ -99,7 +106,7 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
     ): Boolean = withContext(NonCancellable) {
         store.removePIN(scope.siteId, role) {
             requestJob.isActive && accessSession.approvalScope() == scope && canManagePINs()
-        }.also { if (it.isSuccess && isSelected(scope.siteId)) accessSession.initialize() }.isSuccess
+        }.isSuccess
     }
 
     private suspend fun read(): WooPosSettingsSecurityState? {

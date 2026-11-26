@@ -20,6 +20,7 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -143,6 +144,25 @@ class WooPosLockScreenPresentationTest {
 
         // THEN
         composeTestRule.onNodeWithText("1").assertIsDisplayed().assertIsEnabled()
+    }
+
+    @Test
+    fun introKeepsTheCenteredLockVisibleBeforeContentIsRevealed() {
+        composeTestRule.mainClock.autoAdvance = false
+        setLockScreen(WooPosLockScreenState(isLocked = true), fixedSize = true)
+        composeTestRule.mainClock.advanceTimeBy(FRAME_MILLIS * 3)
+
+        // THEN
+        val pixels = composeTestRule.onRoot().captureToImage().toPixelMap()
+        var lockPixels = 0
+        for (y in 0 until pixels.height) {
+            for (x in 0 until pixels.width) {
+                val color = pixels[x, y]
+                if (color.blue > 0.45f && color.red > 0.25f && color.blue > color.green * 1.25f) lockPixels++
+            }
+        }
+        assertThat(lockPixels).isGreaterThan(100)
+        composeTestRule.onNodeWithText("1").assertDoesNotExist()
     }
 
     @Test

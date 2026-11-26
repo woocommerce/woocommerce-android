@@ -103,7 +103,7 @@ fun WooPosSettingsSecurityPINSetupDialog(
     isFullScreen: Boolean = currentWooPosBreakpoint() == WooPosBreakpoint.Phone,
     chooseTitle: String? = null,
     confirmTitle: String? = null,
-    savedActionLabel: String = stringResource(R.string.continue_button),
+    savedActionLabel: String,
 ) {
     val shouldDismiss = isVisible && state == AccessUnavailable
     LaunchedEffect(shouldDismiss) {
@@ -546,6 +546,7 @@ private fun PINSetupDialogPreview(state: WooPosSettingsSecurityPINSetupState) {
             isVisible = true,
             onUIEvent = {},
             onClose = {},
+            savedActionLabel = stringResource(R.string.continue_button),
         )
     }
 }

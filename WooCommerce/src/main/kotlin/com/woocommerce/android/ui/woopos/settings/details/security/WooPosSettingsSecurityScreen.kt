@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.woopos.settings.details.security
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -48,6 +49,7 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -58,6 +60,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlin
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenu
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenuItem
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -192,14 +195,18 @@ private fun SecurityCards(
                     CashierActions(stacked, { onChangePIN(WooPosLocalRole.CASHIER) }, onDeleteCashierPIN)
                 }
             }
+            SecurityDivider()
             TextButton(
                 onClick = {},
                 colors = securityTextButtonColors(),
-                contentPadding = PaddingValues(vertical = WooPosSpacing.Small.value),
+                shape = RoundedCornerShape(WooPosCornerRadius.None.value),
+                contentPadding = PaddingValues(WooPosSpacing.None.value),
             ) {
                 WooPosText(
                     text = stringResource(R.string.woopos_security_learn_more),
                     style = WooPosTypography.BodyMedium,
+                    textDecoration = TextDecoration.Underline,
+                    textAlign = TextAlign.Start,
                 )
             }
         }
@@ -272,10 +279,11 @@ private fun SecurityToggle(
 private fun SecurityRow(
     title: String,
     subtitle: String? = null,
+    modifier: Modifier = Modifier,
     action: @Composable (stacked: Boolean) -> Unit,
 ) {
     val fontScale = LocalDensity.current.fontScale
-    BoxWithConstraints(Modifier.fillMaxWidth()) {
+    BoxWithConstraints(modifier.fillMaxWidth()) {
         val stacked = maxWidth < ROW_MIN_WIDTH * fontScale
         if (stacked) {
             Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) {
@@ -301,11 +309,7 @@ private fun SecurityRowText(title: String, subtitle: String?, modifier: Modifier
             modifier = modifier,
             title = title,
             subtitle = subtitle,
-            subtitleColor = if (isSystemInDarkTheme()) {
-                WooPosTheme.colors.onSurfaceVariantHighest
-            } else {
-                WooPosTheme.colors.onSurfaceVariantLowest
-            },
+            subtitleColor = WooPosTheme.colors.secondaryText,
         )
     } else {
         WooPosText(title, style = WooPosTypography.BodyMedium, modifier = modifier)
@@ -318,7 +322,7 @@ private fun CashierActions(stacked: Boolean, onChange: () -> Unit, onDelete: () 
     val delete = stringResource(R.string.woopos_security_delete)
     val changeLabel = stringResource(R.string.woopos_security_change_cashier_pin)
     val deleteLabel = stringResource(R.string.woopos_security_delete_cashier_pin)
-    val deleteColor = if (isSystemInDarkTheme()) WooPosTheme.colors.errorLowest else MaterialTheme.colorScheme.error
+    val deleteColor = WooPosTheme.colors.onSurfaceError
     if (stacked) {
         FlowRow(horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) {
             WooPosOutlinedButtonSmall(
@@ -374,18 +378,33 @@ private fun LockSettingsCard(
             { value -> onChanged { it.copy(locksAfterSale = value) } },
         )
         SecurityDivider()
-        SecurityRow(stringResource(R.string.woopos_security_lock_after)) {
-            val selectionLabel = stringResource(
-                R.string.woopos_security_lock_after_selection,
-                inactivityLabel(inactivityTimeout),
-            )
+        val selectionLabel = stringResource(
+            R.string.woopos_security_lock_after_selection,
+            inactivityLabel(inactivityTimeout),
+        )
+        SecurityRow(
+            title = stringResource(R.string.woopos_security_lock_after),
+            modifier = Modifier.clickable(
+                role = Role.Button,
+                onClickLabel = selectionLabel,
+                onClick = { pickerOpen = true },
+            ).padding(vertical = WooPosSpacing.Small.value),
+        ) {
             Column {
-                TextButton(
-                    modifier = Modifier.semantics { contentDescription = selectionLabel },
-                    onClick = { pickerOpen = true },
-                    colors = securityTextButtonColors(),
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value),
                 ) {
-                    WooPosText(inactivityLabel(inactivityTimeout), style = WooPosTypography.BodyMedium)
+                    WooPosText(
+                        inactivityLabel(inactivityTimeout),
+                        style = WooPosTypography.BodyMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Icon(
+                        painter = painterResource(R.drawable.ic_arrow_drop_down),
+                        contentDescription = null,
+                        modifier = Modifier.size(WooPosIconSize.XSmall.value),
+                    )
                 }
                 DropdownMenu(
                     modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLowest),
@@ -405,7 +424,7 @@ private fun LockSettingsCard(
                                     Icon(
                                         imageVector = WooPosIcons.Check,
                                         contentDescription = null,
-                                        modifier = Modifier.size(WooPosIconSize.Small.value),
+                                        modifier = Modifier.size(WooPosIconSize.XSmall.value),
                                     )
                                 }
                             } else {
@@ -421,11 +440,7 @@ private fun LockSettingsCard(
 
 @Composable
 private fun securityTextButtonColors() = ButtonDefaults.textButtonColors(
-    contentColor = if (isSystemInDarkTheme()) {
-        MaterialTheme.colorScheme.secondary
-    } else {
-        MaterialTheme.colorScheme.primary
-    },
+    contentColor = WooPosTheme.colors.textLink,
 )
 
 @Composable

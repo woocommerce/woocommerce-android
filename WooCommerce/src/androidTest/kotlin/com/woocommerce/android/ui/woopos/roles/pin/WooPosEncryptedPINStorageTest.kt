@@ -114,7 +114,8 @@ class WooPosEncryptedPINStorageTest {
             if (staged.exists()) current = false
             KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
         }
-        WooPosLocalPINStore(storage, CoroutineDispatchers()).createPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+        WooPosLocalPINStore(storage, CoroutineDispatchers())
+            .createPIN(1, WooPosLocalRole.ADMIN, "1234", canCommit = { true }).getOrThrow()
         val original = record.readBytes()
         val store = WooPosLocalPINStore(guardedStorage, CoroutineDispatchers())
 
@@ -169,7 +170,7 @@ class WooPosEncryptedPINStorageTest {
         store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
         check(directory.setExecutable(false))
         try {
-            assertThat(store.removePIN(1, WooPosLocalRole.ADMIN).exceptionOrNull())
+            assertThat(store.removePIN(1, WooPosLocalRole.ADMIN, canCommit = { true }).exceptionOrNull())
                 .isEqualTo(WooPosPINError.StorageFailure)
             assertThat(store.getPINs(1).exceptionOrNull()).isEqualTo(WooPosPINError.StorageFailure)
         } finally {

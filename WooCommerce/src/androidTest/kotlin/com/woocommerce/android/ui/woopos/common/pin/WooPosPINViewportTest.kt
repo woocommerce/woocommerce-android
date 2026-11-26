@@ -214,6 +214,7 @@ class WooPosPINViewportTest {
                     isVisible = true,
                     onUIEvent = {},
                     onClose = {},
+                    savedActionLabel = context.getString(R.string.continue_button),
                 )
             }
             else -> {
