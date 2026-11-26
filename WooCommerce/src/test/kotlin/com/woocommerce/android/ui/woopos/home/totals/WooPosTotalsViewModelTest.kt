@@ -1889,7 +1889,7 @@ class WooPosTotalsViewModelTest {
             )
 
             // THEN
-            verify(printReceiptCoordinator).onPrintReceiptClicked(CREATED_ORDER_ID)
+            verify(printReceiptCoordinator).onPrintRetryClicked(CREATED_ORDER_ID)
         }
 
     @Test

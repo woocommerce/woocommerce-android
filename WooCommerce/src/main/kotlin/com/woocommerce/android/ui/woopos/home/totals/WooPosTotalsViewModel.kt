@@ -842,7 +842,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
                     is ParentToChildrenEvent.PrintReceiptFailureActionSelected -> when (event.action) {
                         WooPosPrintReceiptFailureAction.Retry ->
-                            printReceiptCoordinator.onPrintReceiptClicked(dataState.value.orderId)
+                            printReceiptCoordinator.onPrintRetryClicked(dataState.value.orderId)
 
                         WooPosPrintReceiptFailureAction.EmailReceipt -> handleEmailReceiptClicked()
                     }

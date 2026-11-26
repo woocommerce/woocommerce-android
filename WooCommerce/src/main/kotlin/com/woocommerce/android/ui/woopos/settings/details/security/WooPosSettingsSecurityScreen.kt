@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.settings.details.security
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,10 +35,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -89,9 +90,7 @@ fun WooPosSettingsSecurityScreen(
                 .padding(WooPosSpacing.Large.value),
             title = stringResource(R.string.woopos_security_setup),
             message = stringResource(R.string.woopos_security_description),
-            image = {
-                Image(painter = painterResource(R.drawable.woopos_access_control), contentDescription = null)
-            },
+            icon = ImageVector.vectorResource(R.drawable.woopos_access_control),
             bottomActionLabel = stringResource(R.string.woopos_security_get_started),
             onActionClicked = { onSetUpPIN(WooPosLocalRole.ADMIN) },
         )
