@@ -52,9 +52,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosEmptyScreen
@@ -62,6 +64,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlin
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenu
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenuItem
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.component.wooPosFullScreenActionButton
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
@@ -81,17 +84,28 @@ fun WooPosSettingsSecurityScreen(
 ) {
     when (state) {
         WooPosSettingsSecurityState.Loading, WooPosSettingsSecurityState.Restricted -> Unit
-        WooPosSettingsSecurityState.Off -> WooPosEmptyScreen(
+        WooPosSettingsSecurityState.Off -> Column(
             modifier = Modifier
                 .fillMaxSize()
                 .navigationBarsPadding()
                 .padding(WooPosSpacing.Large.value),
-            title = stringResource(R.string.woopos_security_setup),
-            message = stringResource(R.string.woopos_security_description),
-            icon = ImageVector.vectorResource(R.drawable.woopos_access_control),
-            bottomActionLabel = stringResource(R.string.woopos_security_get_started),
-            onActionClicked = { onSetUpPIN(WooPosLocalRole.ADMIN) },
-        )
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            val illustration = ImageVector.vectorResource(R.drawable.woopos_access_control)
+            WooPosEmptyScreen(
+                modifier = Modifier.weight(1f),
+                title = stringResource(R.string.woopos_security_setup),
+                message = stringResource(R.string.woopos_security_description),
+                contentDescription = null,
+                icon = illustration,
+                iconSize = DpSize(illustration.defaultWidth, illustration.defaultHeight),
+            )
+            WooPosButton(
+                text = stringResource(R.string.woopos_security_get_started),
+                onClick = { onSetUpPIN(WooPosLocalRole.ADMIN) },
+                modifier = Modifier.wooPosFullScreenActionButton(),
+            )
+        }
         WooPosSettingsSecurityState.Unavailable -> CenteredContent {
             WooPosText(
                 text = stringResource(R.string.woopos_lock_unavailable),

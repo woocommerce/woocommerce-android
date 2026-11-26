@@ -18,6 +18,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpSize
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
@@ -30,8 +31,9 @@ fun WooPosEmptyScreen(
     modifier: Modifier = Modifier,
     title: String,
     message: String,
-    contentDescription: String,
+    contentDescription: String?,
     icon: ImageVector = WooPosIcons.NotFound,
+    iconSize: DpSize = DpSize(WooPosComponentSize.Small.value, WooPosComponentSize.Small.value),
 ) {
     WooPosItemsEmptyListInternal(
         modifier = modifier,
@@ -40,7 +42,8 @@ fun WooPosEmptyScreen(
         contentDescription = contentDescription,
         icon = icon,
         actionLabel = null,
-        onActionClicked = null
+        onActionClicked = null,
+        iconSize = iconSize,
     )
 }
 
@@ -74,8 +77,7 @@ private fun WooPosItemsEmptyListInternal(
     icon: ImageVector = WooPosIcons.NotFound,
     actionLabel: String?,
     onActionClicked: (() -> Unit)? = null,
-    useIntrinsicIconSize: Boolean = false,
-    isTitleHeading: Boolean = false,
+    iconSize: DpSize = DpSize(WooPosComponentSize.Small.value, WooPosComponentSize.Small.value),
 ) {
     Box(
         modifier = modifier.verticalScroll(rememberScrollState()),
@@ -86,7 +88,7 @@ private fun WooPosItemsEmptyListInternal(
             verticalArrangement = Arrangement.Center
         ) {
             Image(
-                modifier = if (useIntrinsicIconSize) Modifier else Modifier.size(WooPosComponentSize.Small.value),
+                modifier = Modifier.size(width = iconSize.width, height = iconSize.height),
                 imageVector = icon,
                 contentDescription = contentDescription,
             )
@@ -95,7 +97,7 @@ private fun WooPosItemsEmptyListInternal(
 
             WooPosText(
                 text = title,
-                modifier = if (isTitleHeading) Modifier.semantics { heading() } else Modifier,
+                modifier = Modifier.semantics { heading() },
                 style = WooPosTypography.Heading,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
@@ -120,37 +122,6 @@ private fun WooPosItemsEmptyListInternal(
                 )
             }
         }
-    }
-}
-
-@Composable
-fun WooPosEmptyScreen(
-    modifier: Modifier = Modifier,
-    title: String,
-    message: String,
-    icon: ImageVector,
-    bottomActionLabel: String,
-    onActionClicked: () -> Unit,
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        WooPosItemsEmptyListInternal(
-            modifier = Modifier.weight(1f),
-            title = title,
-            message = message,
-            contentDescription = null,
-            icon = icon,
-            actionLabel = null,
-            useIntrinsicIconSize = true,
-            isTitleHeading = true,
-        )
-        WooPosButton(
-            text = bottomActionLabel,
-            onClick = onActionClicked,
-            modifier = Modifier.wooPosFullScreenActionButton(),
-        )
     }
 }
 
