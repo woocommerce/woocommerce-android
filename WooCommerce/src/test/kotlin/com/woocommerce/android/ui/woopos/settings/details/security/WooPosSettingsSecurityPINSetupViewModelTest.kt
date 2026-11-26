@@ -58,7 +58,9 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         on { allows(any()) }.thenAnswer { sessionState.value.allows(it.getArgument(0)) }
         on { approvalScope() }.thenReturn(WooPosAccessSession.ApprovalScope(1, 1))
     }
-    private val viewModel = WooPosSettingsSecurityPINSetupViewModel(selectedSite, store, session).apply { start(ADMIN) }
+    private val viewModel = WooPosSettingsSecurityPINSetupViewModel(selectedSite, store, session).apply {
+        start(ADMIN, changingPIN = false)
+    }
 
     @Test
     fun `given a Cashier change, when confirmed, then the replacement is written once`() = runTest {
@@ -386,7 +388,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
             gate.await()
             Result.success(Unit)
         }
-        viewModel.start(CASHIER)
+        viewModel.start(CASHIER, changingPIN = false)
         enter("5678")
         runCurrent()
 
@@ -410,7 +412,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
             gate.await()
             Result.success(Unit)
         }
-        viewModel.start(CASHIER)
+        viewModel.start(CASHIER, changingPIN = false)
         enter("5678")
         runCurrent()
 
@@ -558,7 +560,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
             // GIVEN
             givenAdminPIN()
             whenever(store.createPIN(eq(1), eq(CASHIER), eq("5678"), any())).thenReturn(Result.success(Unit))
-            viewModel.start(CASHIER)
+            viewModel.start(CASHIER, changingPIN = false)
 
             // WHEN
             chooseAndConfirm("5678")
@@ -580,7 +582,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
                 gate.await()
                 Result.success(Unit)
             }
-            viewModel.start(CASHIER)
+            viewModel.start(CASHIER, changingPIN = false)
             choose("5678")
             enter("5678")
 
@@ -601,7 +603,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         givenAdminPIN()
         whenever(store.validatePINUniqueness(1, CASHIER, "1234"))
             .thenReturn(Result.failure(WooPosPINError.MatchesOtherRole))
-        viewModel.start(CASHIER)
+        viewModel.start(CASHIER, changingPIN = false)
 
         // WHEN
         enter("1234")
@@ -621,7 +623,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         givenAdminPIN()
         whenever(store.createPIN(eq(1), eq(CASHIER), eq("1234"), any()))
             .thenReturn(Result.failure(WooPosPINError.MatchesOtherRole))
-        viewModel.start(CASHIER)
+        viewModel.start(CASHIER, changingPIN = false)
 
         // WHEN
         chooseAndConfirm("1234")
@@ -637,7 +639,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
             givenAdminPIN()
             whenever(store.createPIN(eq(1), eq(CASHIER), eq("9012"), any()))
                 .thenReturn(Result.failure(WooPosPINError.AlreadyExists))
-            viewModel.start(CASHIER)
+            viewModel.start(CASHIER, changingPIN = false)
 
             // WHEN
             chooseAndConfirm("9012")
@@ -653,7 +655,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         // GIVEN
         givenAdminPIN()
         sessionState.value = WooPosAccessSessionState.Unlocked(CASHIER)
-        viewModel.start(CASHIER)
+        viewModel.start(CASHIER, changingPIN = false)
 
         // WHEN
         enter("5678")
@@ -670,7 +672,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         // GIVEN
         givenAdminPIN()
         sessionState.value = WooPosAccessSessionState.Unlocked(ADMIN)
-        viewModel.start(CASHIER)
+        viewModel.start(CASHIER, changingPIN = false)
         choose("5678")
 
         // WHEN
@@ -689,7 +691,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         enter("1234")
 
         // WHEN
-        viewModel.start(CASHIER)
+        viewModel.start(CASHIER, changingPIN = false)
         advanceUntilIdle()
 
         // THEN
@@ -700,11 +702,11 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
     @Test
     fun `given a partial entry, when setup starts again for the same role, then the entry is kept`() = runTest {
         // GIVEN
-        viewModel.start(ADMIN)
+        viewModel.start(ADMIN, changingPIN = false)
         enter("12")
 
         // WHEN
-        viewModel.start(ADMIN)
+        viewModel.start(ADMIN, changingPIN = false)
 
         // THEN
         assertThat(viewModel.state.value).isEqualTo(Choose(ADMIN, enteredDigits = 2))
@@ -717,7 +719,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
         whenever(store.validatePINUniqueness(1, CASHIER, "5678")).thenReturn(Result.success(Unit))
         whenever(store.createPIN(eq(1), eq(CASHIER), eq("5678"), any()))
             .thenReturn(Result.failure(WooPosPINError.AdminRequired))
-        viewModel.start(CASHIER)
+        viewModel.start(CASHIER, changingPIN = false)
 
         // WHEN
         chooseAndConfirm("5678")
@@ -914,7 +916,7 @@ class WooPosSettingsSecurityPINSetupViewModelTest {
             sessionState.value = WooPosAccessSessionState.Unlocked(ADMIN)
         }
 
-        viewModel.start(ADMIN)
+        viewModel.start(ADMIN, changingPIN = false)
         chooseAndConfirm("1234")
 
         verify(store).createPIN(eq(2), eq(ADMIN), any(), any())

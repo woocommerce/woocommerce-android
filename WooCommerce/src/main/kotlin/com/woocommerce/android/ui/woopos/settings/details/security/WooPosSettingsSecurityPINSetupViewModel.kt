@@ -46,7 +46,7 @@ class WooPosSettingsSecurityPINSetupViewModel @Inject constructor(
     private var chosenPIN = ""
     private var job: Job? = null
 
-    fun start(role: WooPosLocalRole, changingPIN: Boolean = false) {
+    fun start(role: WooPosLocalRole, changingPIN: Boolean) {
         val siteId = selectedSite.getOrNull()?.id ?: return invalidate()
         if (editor?.let { it.role == role && it.changingPIN == changingPIN && it.siteId == siteId } == true) return
         restart(role)

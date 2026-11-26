@@ -31,14 +31,14 @@ class WooPosLocalPINStore @Inject constructor(
         localSiteId: Int,
         role: WooPosLocalRole,
         pin: String,
-        canCommit: () -> Boolean = { true },
+        canCommit: () -> Boolean,
     ): Result<Unit> = savePIN(localSiteId, role, pin, WriteMode.CREATE, canCommit)
 
     suspend fun replacePIN(
         localSiteId: Int,
         role: WooPosLocalRole,
         pin: String,
-        canCommit: () -> Boolean = { true },
+        canCommit: () -> Boolean,
     ): Result<Unit> = savePIN(localSiteId, role, pin, WriteMode.REPLACE, canCommit)
 
     suspend fun setPIN(
@@ -67,7 +67,7 @@ class WooPosLocalPINStore @Inject constructor(
     suspend fun removePIN(
         localSiteId: Int,
         role: WooPosLocalRole,
-        canCommit: () -> Boolean = { true },
+        canCommit: () -> Boolean,
     ): Result<Unit> = operation {
         require(localSiteId > 0)
         val updated = if (role == WooPosLocalRole.ADMIN) {

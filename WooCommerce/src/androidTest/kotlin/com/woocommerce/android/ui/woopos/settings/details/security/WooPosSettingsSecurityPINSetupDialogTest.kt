@@ -380,6 +380,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
                     isFullScreen = false,
                     onUIEvent = {},
                     onClose = {},
+                    savedActionLabel = context.getString(R.string.continue_button),
                 )
             }
         }
@@ -422,6 +423,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
                         confirmTitle = confirmTitle,
                         onUIEvent = {},
                         onClose = {},
+                        savedActionLabel = context.getString(R.string.continue_button),
                     )
                 }
             }
@@ -439,6 +441,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
                     isVisible = isVisible.value,
                     onUIEvent = { events += it },
                     onClose = { closeCount++ },
+                    savedActionLabel = context.getString(R.string.continue_button),
                 )
             }
         }
