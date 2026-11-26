@@ -1222,8 +1222,9 @@ class OrderCreateEditFormFragment :
             is VMKilledWhenScanningInProgress -> ToastUtils.showToast(context, event.message)
             is OnCouponRejectedByBackend -> uiMessageResolver.getSnack(stringResId = event.message).show()
             is OnDeletedProductsRemoved -> uiMessageResolver.getIndefiniteActionSnack(
-                message = event.message,
-                event.productNames,
+                // Passed as an argument, so a product name containing % isn't read as a format specifier
+                message = "%s",
+                event.message,
                 actionText = getString(R.string.dismiss),
                 actionListener = {}
             ).show()

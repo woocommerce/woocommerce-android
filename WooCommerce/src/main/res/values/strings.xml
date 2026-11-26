@@ -897,8 +897,10 @@
     <string name="order_editing_add_content_description">Add product</string>
     <string name="order_sync_failed">Unable to save changes</string>
     <string name="order_sync_coupon_removed">Coupon could not be applied and was removed from the order</string>
-    <string name="order_sync_deleted_product_removed">%1$s no longer exists in your store and was removed from the order</string>
-    <string name="order_sync_deleted_products_removed">%1$s no longer exist in your store and were removed from the order</string>
+    <plurals name="order_sync_deleted_products_removed">
+        <item quantity="one">%1$s no longer exists in your store and was removed from the order</item>
+        <item quantity="other">%1$s no longer exist in your store and were removed from the order</item>
+    </plurals>
     <!--
         Order Filters
     -->

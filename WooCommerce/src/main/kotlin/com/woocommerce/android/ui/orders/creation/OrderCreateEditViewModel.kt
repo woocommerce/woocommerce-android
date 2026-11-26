@@ -12,6 +12,7 @@ import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -1608,15 +1609,19 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             )
         }
-        val message = if (deletedItems.size == 1) {
-            string.order_sync_deleted_product_removed
-        } else {
-            string.order_sync_deleted_products_removed
-        }
+        _pendingSelectedItems.value = _orderDraft.value.selectedItems()
         val names = deletedItems.joinToString { item ->
             item.attributesDescription.takeIf { it.isNotEmpty() }?.let { "${item.name} ($it)" } ?: item.name
         }
-        triggerEvent(OnDeletedProductsRemoved(message, names))
+        triggerEvent(
+            OnDeletedProductsRemoved(
+                resourceProvider.getPluralString(
+                    R.plurals.order_sync_deleted_products_removed,
+                    deletedItems.size,
+                    names
+                )
+            )
+        )
         return true
     }
 
@@ -2228,10 +2233,7 @@ object OnCouponRejectedByBackend : Event() {
     val message: Int = string.order_sync_coupon_removed
 }
 
-data class OnDeletedProductsRemoved(
-    @StringRes val message: Int,
-    val productNames: String
-) : Event()
+data class OnDeletedProductsRemoved(val message: String) : Event()
 
 data class OnTotalsSectionHeightChanged(
     val newHeight: Int
