@@ -86,11 +86,21 @@ class WooPosBuildThermalReceipt @Inject constructor(
     private fun totals(order: Order): List<Row> = listOfNotNull(
         order.totalRow(R.string.woopos_receipt_subtotal, order.productsTotal),
         order.discountRow(),
-        order.totalRowIfNotZero(R.string.woopos_receipt_fees, order.feesTotal),
+    ) + order.feeRows() + listOfNotNull(
         order.totalRowIfNotZero(R.string.woopos_receipt_shipping, order.shippingTotal),
         order.totalRowIfNotZero(R.string.woopos_receipt_taxes, order.totalTax),
         order.totalRow(R.string.woopos_receipt_amount_paid, order.total),
     )
+
+    private fun Order.feeRows(): List<Row> = feesLines
+        .filter { it.total.signum() != 0 }
+        .map { fee ->
+            Row(
+                label = fee.name?.trim().nullIfBlank()
+                    ?: resourceProvider.getString(R.string.woopos_receipt_custom_amount),
+                amount = formatPrice(fee.total, currency),
+            )
+        }
 
     private fun Order.discountRow(): Row? {
         if (discountTotal.signum() == 0 && discountCodes.isEmpty()) return null

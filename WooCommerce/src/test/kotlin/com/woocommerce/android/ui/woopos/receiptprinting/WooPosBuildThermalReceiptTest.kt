@@ -114,7 +114,8 @@ class WooPosBuildThermalReceiptTest {
                 totals = listOf(
                     Row(label = "Subtotal", amount = "$62.00"),
                     Row(label = "Discount (SAVE10, VIP)", amount = "-$6.20"),
-                    Row(label = "Fees", amount = "$1.00"),
+                    Row(label = "Gift wrap", amount = "$0.60"),
+                    Row(label = "Service charge", amount = "$0.40"),
                     Row(label = "Shipping", amount = "$5.00"),
                     Row(label = "Taxes", amount = "$4.94"),
                     Row(label = "Amount Paid", amount = "$66.74"),
@@ -248,6 +249,59 @@ class WooPosBuildThermalReceiptTest {
                 Row(label = "Amount Paid", amount = "$62.00"),
             )
         }
+
+    @Test
+    fun `given fees without a name, when building the receipt, then they are labeled as custom amounts`() = runTest {
+        // GIVEN
+        whenever(totalsRepository.getOrderById(ORDER_ID, SITE)).thenReturn(
+            ORDER.copy(
+                feesLines = listOf(null, "", "  ").map {
+                    Order.FeeLine.EMPTY.copy(name = it, total = BigDecimal("3.00"))
+                }
+            )
+        )
+
+        // WHEN
+        val receipt = sut(ORDER_ID, null)
+
+        // THEN
+        assertThat(receipt?.totals?.filter { it.label == "Custom amount" }).hasSize(3)
+            .allMatch { it.amount == "$3.00" }
+    }
+
+    @Test
+    fun `given a fee name with surrounding spaces, when building the receipt, then the name is trimmed`() = runTest {
+        // GIVEN
+        whenever(totalsRepository.getOrderById(ORDER_ID, SITE)).thenReturn(
+            ORDER.copy(feesLines = listOf(Order.FeeLine.EMPTY.copy(name = " Gift wrap ", total = BigDecimal("5.00"))))
+        )
+
+        // WHEN
+        val receipt = sut(ORDER_ID, null)
+
+        // THEN
+        assertThat(receipt?.totals).contains(Row(label = "Gift wrap", amount = "$5.00"))
+    }
+
+    @Test
+    fun `given a fee with a zero total, when building the receipt, then only that fee is absent`() = runTest {
+        // GIVEN
+        whenever(totalsRepository.getOrderById(ORDER_ID, SITE)).thenReturn(
+            ORDER.copy(
+                feesLines = listOf(
+                    Order.FeeLine.EMPTY.copy(name = "Gift wrap", total = BigDecimal("0.00")),
+                    Order.FeeLine.EMPTY.copy(name = "Service charge", total = BigDecimal("4.00")),
+                )
+            )
+        )
+
+        // WHEN
+        val receipt = sut(ORDER_ID, null)
+
+        // THEN
+        assertThat(receipt?.totals).extracting("label").doesNotContain("Gift wrap")
+        assertThat(receipt?.totals).contains(Row(label = "Service charge", amount = "$4.00"))
+    }
 
     @Test
     fun `given attributes with HTML or missing parts, when building the receipt, then only complete ones print`() =
@@ -442,7 +496,7 @@ class WooPosBuildThermalReceiptTest {
             R.string.woopos_receipt_subtotal to "Subtotal",
             R.string.woopos_receipt_discount to "Discount",
             R.string.woopos_receipt_discount_with_coupons to "Discount (%1\$s)",
-            R.string.woopos_receipt_fees to "Fees",
+            R.string.woopos_receipt_custom_amount to "Custom amount",
             R.string.woopos_receipt_shipping to "Shipping",
             R.string.woopos_receipt_taxes to "Taxes",
             R.string.woopos_receipt_amount_paid to "Amount Paid",
@@ -489,8 +543,8 @@ class WooPosBuildThermalReceiptTest {
             discountTotal = BigDecimal("6.20"),
             discountCodes = "SAVE10, VIP",
             feesLines = listOf(
-                Order.FeeLine.EMPTY.copy(total = BigDecimal("0.60")),
-                Order.FeeLine.EMPTY.copy(total = BigDecimal("0.40")),
+                Order.FeeLine.EMPTY.copy(name = "Gift wrap", total = BigDecimal("0.60")),
+                Order.FeeLine.EMPTY.copy(name = "Service charge", total = BigDecimal("0.40")),
             ),
             shippingTotal = BigDecimal("5.00"),
             totalTax = BigDecimal("4.94"),
