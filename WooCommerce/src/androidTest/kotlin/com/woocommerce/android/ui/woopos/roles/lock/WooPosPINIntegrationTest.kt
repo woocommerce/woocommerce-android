@@ -26,6 +26,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -54,6 +55,9 @@ class WooPosPINIntegrationTest {
     lateinit var flags: FeatureFlagRepository
 
     @Inject
+    lateinit var keptStaff: WooPosKeptStaff
+
+    @Inject
     @AppCoroutineScope
     lateinit var appScope: CoroutineScope
 
@@ -77,7 +81,7 @@ class WooPosPINIntegrationTest {
     @Before
     fun setUp(): Unit = runBlocking {
         AppPrefs.init(context)
-        hiltRule.inject()
+        withContext(Dispatchers.Main) { hiltRule.inject() }
         flags.setFlagOverride(FeatureFlag.WOO_POS_ROLES, true)
         selectedSite = SelectedSite(context, siteStore).apply { set(SiteModel().apply { id = SITE_ID }) }
         encrypted.clearAll()
@@ -264,7 +268,7 @@ class WooPosPINIntegrationTest {
     }
 
     private fun createSession(limiter: WooPosLocalRateLimiter) =
-        WooPosAccessSession(flags, selectedSite, limiter, WooPosPendingPINRecovery())
+        WooPosAccessSession(flags, selectedSite, limiter, WooPosPendingPINRecovery(), keptStaff)
 
     @Suppress("DEPRECATION")
     private fun reportKeySecurity() {

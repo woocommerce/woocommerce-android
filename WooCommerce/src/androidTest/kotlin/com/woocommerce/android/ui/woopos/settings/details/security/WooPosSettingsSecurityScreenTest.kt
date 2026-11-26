@@ -4,7 +4,10 @@ import android.graphics.Bitmap
 import android.view.ContextThemeWrapper
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -34,6 +37,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockPreferences
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -84,12 +88,18 @@ class WooPosSettingsSecurityScreenTest {
                     val currentBreakpoint = currentWooPosBreakpoint()
                     SideEffect { observedBreakpoint = currentBreakpoint }
                     WooPosTheme {
+                        var preferences by remember { mutableStateOf(WooPosLockPreferences()) }
                         WooPosSettingsSecurityScreen(
-                            state = WooPosSettingsSecurityState.Protected(hasCashierPIN = true, removalFailed = false),
+                            state = WooPosSettingsSecurityState.Protected(
+                                hasCashierPIN = true,
+                                removalFailed = false,
+                                lockPreferences = preferences,
+                            ),
                             onSetUpPIN = {},
                             onProtectionTurnedOff = {},
                             onChangePIN = {},
                             onDeleteCashierPIN = {},
+                            onLockPreferencesChanged = { preferences = it(preferences) },
                         )
                     }
                 }

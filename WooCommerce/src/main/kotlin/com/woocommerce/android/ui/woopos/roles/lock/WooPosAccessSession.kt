@@ -25,6 +25,7 @@ class WooPosAccessSession @Inject constructor(
     private val selectedSite: SelectedSite,
     private val rateLimiter: WooPosLocalRateLimiter,
     private val recovery: WooPosPINRecovery,
+    private val keptStaff: WooPosKeptStaff,
 ) {
     private val flagEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ROLES)
     private val _state = MutableStateFlow<WooPosAccessSessionState>(
@@ -90,14 +91,26 @@ class WooPosAccessSession @Inject constructor(
             return
         }
         val protection = rateLimiter.isProtectionEnabled(id)
+        val resumedRole = if (protection.getOrNull() == true && _state.value is WooPosAccessSessionState.Locked) {
+            keptStaff.resume(id, initialLogoutVersion)
+        } else {
+            null
+        }
         if (!isCurrent(request, id)) return
         _state.value = when {
             protection.isFailure -> WooPosAccessSessionState.Locked(WooPosPINEntryStatus.StorageUnavailable)
             !protection.getOrThrow() -> WooPosAccessSessionState.Unprotected
             _state.value is WooPosAccessSessionState.Unlocked -> _state.value
+            resumedRole != null -> WooPosAccessSessionState.Unlocked(resumedRole)
             else -> WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Checking)
         }
         if (_state.value.isLocked) refreshWait()
+    }
+
+    fun end() {
+        val role = _state.value.activeRole ?: return
+        val id = localSiteId ?: return
+        if (isSessionCurrent) keptStaff.keep(id, role, initialLogoutVersion)
     }
 
     suspend fun lock() {

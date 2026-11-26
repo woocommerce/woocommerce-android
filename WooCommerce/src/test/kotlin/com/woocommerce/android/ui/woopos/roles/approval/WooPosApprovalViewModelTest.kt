@@ -3,7 +3,10 @@ package com.woocommerce.android.ui.woopos.roles.approval
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLock
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLocalRateLimiterTestFixture
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockPreferences
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockSettings
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosClearLocalPINData
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -14,6 +17,7 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
@@ -25,6 +29,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
@@ -41,7 +46,11 @@ class WooPosApprovalViewModelTest {
     }
     private val fixture = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
     private val rateLimiter = fixture.rateLimiter()
-    private val access = WooPosAccessSession(flags, site, rateLimiter, fixture.recovery)
+    private val autoLock: WooPosAutoLock = mock()
+    private val lockSettings: WooPosLockSettings = mock {
+        on { preferences(1) }.thenReturn(flowOf(WooPosLockPreferences()))
+    }
+    private val access = WooPosAccessSession(flags, site, rateLimiter, fixture.recovery, mock())
 
     @Test
     fun `given Admin is active, when Exit is requested, then the direct action runs without a prompt`() = runTest {
@@ -173,6 +182,20 @@ class WooPosApprovalViewModelTest {
             assertThat(access.state.value.status).isEqualTo(WooPosPINEntryStatus.Wait(30))
             assertThat(fixture.records[1]?.failures).isEqualTo(5L)
         }
+
+    @Test
+    fun `given an approval is open, when a digit is tapped, then auto-lock counts it as activity`() = runTest {
+        // GIVEN
+        val viewModel = signIn(CASHIER_PIN)
+        viewModel.requestApproval(WooPosApprovalAction.Exit, onAllowed = {})
+        runCurrent()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosApprovalUIEvent.DigitTapped(1))
+
+        // THEN
+        verify(autoLock).onUserActivity()
+    }
 
     @Test
     fun `given an approval is open, when a wrong PIN is entered, then it can be retried without executing`() = runTest {
@@ -423,7 +446,7 @@ class WooPosApprovalViewModelTest {
         runTest {
             // GIVEN
             val approval = signIn(ADMIN_PIN)
-            val security = WooPosSettingsSecurityViewModel(site, fixture.store, access)
+            val security = WooPosSettingsSecurityViewModel(site, fixture.store, access, lockSettings)
             val removal = CompletableDeferred<Unit>()
             whenever(fixture.store.removePIN(eq(1), eq(WooPosLocalRole.ADMIN), any())).doSuspendableAnswer {
                 removal.await()
@@ -462,7 +485,7 @@ class WooPosApprovalViewModelTest {
         runTest {
             // GIVEN
             val approval = signIn(ADMIN_PIN)
-            val security = WooPosSettingsSecurityViewModel(site, fixture.store, access)
+            val security = WooPosSettingsSecurityViewModel(site, fixture.store, access, lockSettings)
             val removal = CompletableDeferred<Unit>()
             whenever(fixture.store.removePIN(eq(1), eq(WooPosLocalRole.CASHIER), any())).doSuspendableAnswer {
                 removal.await()
@@ -490,7 +513,11 @@ class WooPosApprovalViewModelTest {
             assertThat(approval.state.value?.status).isEqualTo(WooPosPINEntryStatus.Idle)
             assertThat(openedEditor).isFalse()
             assertThat(security.state.value).isEqualTo(
-                WooPosSettingsSecurityState.Protected(hasCashierPIN = false, removalFailed = false),
+                WooPosSettingsSecurityState.Protected(
+                    hasCashierPIN = false,
+                    removalFailed = false,
+                    lockPreferences = WooPosLockPreferences(),
+                ),
             )
             approval.enter(ADMIN_PIN)
             runCurrent()
@@ -500,7 +527,7 @@ class WooPosApprovalViewModelTest {
     private suspend fun signIn(pin: String): WooPosApprovalViewModel {
         access.initialize()
         access.unlock(pin)
-        return WooPosApprovalViewModel(access)
+        return WooPosApprovalViewModel(access, autoLock)
     }
 
     private fun WooPosApprovalViewModel.enter(pin: String) {

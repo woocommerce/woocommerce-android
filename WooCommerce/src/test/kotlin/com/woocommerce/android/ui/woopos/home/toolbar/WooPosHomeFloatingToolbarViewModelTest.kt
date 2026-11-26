@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarS
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLock
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
@@ -52,6 +53,8 @@ class WooPosHomeFloatingToolbarViewModelTest {
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val accessState = MutableStateFlow<WooPosAccessSessionState>(WooPosAccessSessionState.Unprotected)
     private val accessSession: WooPosAccessSession = mock { on { state }.thenReturn(accessState) }
+    private val isPaymentInProgress = MutableStateFlow(false)
+    private val autoLock: WooPosAutoLock = mock { on { isPaymentInProgress }.thenReturn(isPaymentInProgress) }
     private val controller: WooPosCardReaderConnectionController = mock()
     private val controllerFactory: WooPosCardReaderConnectionControllerFactory = mock {
         on { create(any()) }.thenReturn(controller)
@@ -439,6 +442,21 @@ class WooPosHomeFloatingToolbarViewModelTest {
     }
 
     @Test
+    fun `given a payment in progress, when menu opens, then Lock POS is disabled`() = runTest {
+        // GIVEN
+        whenever(accessSession.isEnabled).thenReturn(true)
+        isPaymentInProgress.value = true
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked)
+
+        // THEN
+        val menu = viewModel.state.value.menu as WooPosHomeFloatingToolbarState.Menu.Visible
+        assertThat(menu.items.single { it.title == R.string.woopos_lock_pos }.enabled).isFalse()
+    }
+
+    @Test
     fun `given a Cashier unlock, when menu opens, then it shows the Cashier role`() = runTest {
         // GIVEN
         accessState.value = WooPosAccessSessionState.Unlocked(WooPosLocalRole.CASHIER)
@@ -495,7 +513,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
         )
 
         // THEN
-        verify(accessSession).lock()
+        verify(autoLock).lockManually()
         assertThat(viewModel.state.value.menu).isEqualTo(WooPosHomeFloatingToolbarState.Menu.Hidden)
         verify(childrenToParentEventSender, never()).sendToParent(any())
     }
@@ -509,5 +527,6 @@ class WooPosHomeFloatingToolbarViewModelTest {
         WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
         controllerFactory,
         accessSession,
+        autoLock,
     )
 }

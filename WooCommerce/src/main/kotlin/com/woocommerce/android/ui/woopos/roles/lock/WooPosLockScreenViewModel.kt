@@ -20,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPosLockScreenViewModel @Inject constructor(
     private val accessSession: WooPosAccessSession,
+    private val autoLock: WooPosAutoLock,
     selectedSite: SelectedSite,
 ) : ViewModel() {
     private val _state = MutableStateFlow(
@@ -47,6 +48,7 @@ class WooPosLockScreenViewModel @Inject constructor(
                 .distinctUntilChangedBy { it?.id }
                 .collectLatest { accessSession.initialize() }
         }
+        viewModelScope.launch { autoLock.lockAfterInactivity() }
         viewModelScope.launch {
             state.map { it.isLocked && it.status is WooPosPINEntryStatus.Wait }
                 .distinctUntilChanged()
@@ -59,6 +61,18 @@ class WooPosLockScreenViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    fun onAppForegrounded() {
+        viewModelScope.launch { autoLock.onAppForegrounded() }
+    }
+
+    fun onAppBackgrounded() {
+        viewModelScope.launch { autoLock.onAppBackgrounded() }
+    }
+
+    override fun onCleared() {
+        accessSession.end()
     }
 
     fun onUIEvent(event: WooPosLockScreenUIEvent) {

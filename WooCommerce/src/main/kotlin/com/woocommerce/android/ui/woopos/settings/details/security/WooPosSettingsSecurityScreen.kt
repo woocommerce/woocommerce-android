@@ -29,7 +29,6 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -69,6 +68,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosInactivityLockTimeout
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockPreferences
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItemInfo
 
 @Composable
@@ -78,6 +79,7 @@ fun WooPosSettingsSecurityScreen(
     onProtectionTurnedOff: () -> Unit,
     onChangePIN: (WooPosLocalRole) -> Unit,
     onDeleteCashierPIN: () -> Unit,
+    onLockPreferencesChanged: ((WooPosLockPreferences) -> WooPosLockPreferences) -> Unit,
 ) {
     when (state) {
         WooPosSettingsSecurityState.Loading, WooPosSettingsSecurityState.Restricted -> Unit
@@ -106,6 +108,7 @@ fun WooPosSettingsSecurityScreen(
             onProtectionTurnedOff,
             onChangePIN,
             onDeleteCashierPIN,
+            onLockPreferencesChanged,
         )
     }
 }
@@ -134,6 +137,7 @@ private fun SecurityCards(
     onProtectionTurnedOff: () -> Unit,
     onChangePIN: (WooPosLocalRole) -> Unit,
     onDeleteCashierPIN: () -> Unit,
+    onLockPreferencesChanged: ((WooPosLockPreferences) -> WooPosLockPreferences) -> Unit,
 ) {
     val changeAdminLabel = stringResource(R.string.woopos_security_change_admin_pin)
     val setUpCashierLabel = stringResource(R.string.woopos_security_set_up_cashier_pin)
@@ -205,7 +209,7 @@ private fun SecurityCards(
                 )
             }
         }
-        LockSettingsCard()
+        LockSettingsCard(state.lockPreferences, onLockPreferencesChanged)
         SecurityCard(stringResource(R.string.woopos_security_device_security)) {
             SecurityRow(
                 title = stringResource(R.string.woopos_security_app_pinning),
@@ -348,23 +352,34 @@ private fun CashierActions(stacked: Boolean, onChange: () -> Unit, onDelete: () 
 }
 
 @Composable
-private fun LockSettingsCard() {
-    // TODO WOOMOB-4603: Persist these choices and apply the lock triggers.
-    var onLaunch by rememberSaveable { mutableStateOf(true) }
-    var onBackground by rememberSaveable { mutableStateOf(true) }
-    var afterSale by rememberSaveable { mutableStateOf(false) }
-    var inactivityMinutes by rememberSaveable { mutableIntStateOf(5) }
+private fun LockSettingsCard(
+    preferences: WooPosLockPreferences,
+    onChanged: ((WooPosLockPreferences) -> WooPosLockPreferences) -> Unit,
+) {
     var pickerOpen by rememberSaveable { mutableStateOf(false) }
+    val inactivityTimeout = preferences.inactivityTimeout
     SecurityCard(stringResource(R.string.woopos_security_lock_settings)) {
-        SecurityToggle(stringResource(R.string.woopos_security_lock_on_launch), onLaunch, { onLaunch = it })
+        SecurityToggle(
+            stringResource(R.string.woopos_security_lock_on_launch),
+            preferences.locksWhenPOSOpens,
+            { value -> onChanged { it.copy(locksWhenPOSOpens = value) } },
+        )
         SecurityDivider()
-        SecurityToggle(stringResource(R.string.woopos_security_lock_on_background), onBackground, { onBackground = it })
+        SecurityToggle(
+            stringResource(R.string.woopos_security_lock_on_background),
+            preferences.locksInBackground,
+            { value -> onChanged { it.copy(locksInBackground = value) } },
+        )
         SecurityDivider()
-        SecurityToggle(stringResource(R.string.woopos_security_lock_after_sale), afterSale, { afterSale = it })
+        SecurityToggle(
+            stringResource(R.string.woopos_security_lock_after_sale),
+            preferences.locksAfterSale,
+            { value -> onChanged { it.copy(locksAfterSale = value) } },
+        )
         SecurityDivider()
         val selectionLabel = stringResource(
             R.string.woopos_security_lock_after_selection,
-            inactivityLabel(inactivityMinutes),
+            inactivityLabel(inactivityTimeout),
         )
         SecurityRow(
             title = stringResource(R.string.woopos_security_lock_after),
@@ -380,7 +395,7 @@ private fun LockSettingsCard() {
                     horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value),
                 ) {
                     WooPosText(
-                        inactivityLabel(inactivityMinutes),
+                        inactivityLabel(inactivityTimeout),
                         style = WooPosTypography.BodyMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -395,15 +410,15 @@ private fun LockSettingsCard() {
                     expanded = pickerOpen,
                     onDismissRequest = { pickerOpen = false },
                 ) {
-                    INACTIVITY_OPTIONS.forEach { minutes ->
+                    WooPosInactivityLockTimeout.entries.forEach { timeout ->
                         DropdownMenuItem(
-                            modifier = Modifier.semantics { selected = minutes == inactivityMinutes },
-                            text = { WooPosText(inactivityLabel(minutes), style = WooPosTypography.BodyMedium) },
+                            modifier = Modifier.semantics { selected = timeout == inactivityTimeout },
+                            text = { WooPosText(inactivityLabel(timeout), style = WooPosTypography.BodyMedium) },
                             onClick = {
-                                inactivityMinutes = minutes
+                                onChanged { it.copy(inactivityTimeout = timeout) }
                                 pickerOpen = false
                             },
-                            trailingIcon = if (minutes == inactivityMinutes) {
+                            trailingIcon = if (timeout == inactivityTimeout) {
                                 {
                                     Icon(
                                         imageVector = WooPosIcons.Check,
@@ -428,9 +443,9 @@ private fun securityTextButtonColors() = ButtonDefaults.textButtonColors(
 )
 
 @Composable
-private fun inactivityLabel(minutes: Int): String = when (minutes) {
-    0 -> stringResource(R.string.woopos_security_never)
-    else -> pluralStringResource(R.plurals.woopos_security_minutes, minutes, minutes)
+private fun inactivityLabel(timeout: WooPosInactivityLockTimeout): String = when (timeout) {
+    WooPosInactivityLockTimeout.NEVER -> stringResource(R.string.woopos_security_never)
+    else -> pluralStringResource(R.plurals.woopos_security_minutes, timeout.minutes, timeout.minutes)
 }
 
 @WooPosPreview
@@ -442,13 +457,25 @@ fun WooPosSettingsSecurityScreenPreview() {
 @WooPosPreview
 @Composable
 fun WooPosSettingsSecurityScreenProtectedPreview() {
-    SecurityScreenPreview(WooPosSettingsSecurityState.Protected(hasCashierPIN = false, removalFailed = false))
+    SecurityScreenPreview(
+        WooPosSettingsSecurityState.Protected(
+            hasCashierPIN = false,
+            removalFailed = false,
+            lockPreferences = WooPosLockPreferences(),
+        )
+    )
 }
 
 @WooPosPreview
 @Composable
 fun WooPosSettingsSecurityScreenCashierSetPreview() {
-    SecurityScreenPreview(WooPosSettingsSecurityState.Protected(hasCashierPIN = true, removalFailed = true))
+    SecurityScreenPreview(
+        WooPosSettingsSecurityState.Protected(
+            hasCashierPIN = true,
+            removalFailed = true,
+            lockPreferences = WooPosLockPreferences(),
+        )
+    )
 }
 
 @Composable
@@ -460,9 +487,9 @@ private fun SecurityScreenPreview(state: WooPosSettingsSecurityState) {
             onProtectionTurnedOff = {},
             onChangePIN = {},
             onDeleteCashierPIN = {},
+            onLockPreferencesChanged = {},
         )
     }
 }
 
 private val ROW_MIN_WIDTH = 300.dp
-private val INACTIVITY_OPTIONS = listOf(0, 1, 2, 5, 10, 15)

@@ -65,6 +65,7 @@ import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptCoord
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptEvent
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailure
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailureAction
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLock
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -205,6 +206,7 @@ class WooPosTotalsViewModelTest {
     }
 
     private val cardReaderFacade: WooPosCardReaderFacade = mock()
+    private val autoLock: WooPosAutoLock = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
@@ -513,6 +515,25 @@ class WooPosTotalsViewModelTest {
 
             // THEN
             verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OnNewTransactionStarted)
+        }
+
+    @Test
+    fun `when OnNewTransactionClicked, then auto-lock is told that a new order started`() =
+        runTest {
+            // GIVEN
+            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+                on { events }.thenReturn(mock())
+            }
+            val viewModel = createViewModel(
+                savedState = createMockSavedStateHandle(),
+                parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            )
+
+            // WHEN
+            viewModel.onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked)
+
+            // THEN
+            verify(autoLock).onNewOrderStarted()
         }
 
     @Test
@@ -3984,6 +4005,7 @@ class WooPosTotalsViewModelTest {
         builtInReaderConnector = builtInReaderConnector,
         remoteReaderPaymentFlow = remoteReaderPaymentFlow,
         effectiveReaderStatusProvider = WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
+        autoLock = autoLock,
         printReceiptCoordinatorFactory = printReceiptCoordinatorFactory,
     )
 }

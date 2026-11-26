@@ -7,6 +7,8 @@ import com.woocommerce.android.ui.woopos.roles.WooPosCapability
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockPreferences
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockSettings
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityState.Protected
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +19,8 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -27,6 +31,7 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val store: WooPosLocalPINStore,
     private val accessSession: WooPosAccessSession,
+    private val lockSettings: WooPosLockSettings,
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosSettingsSecurityState>(WooPosSettingsSecurityState.Loading)
     val state: StateFlow<WooPosSettingsSecurityState> = _state.asStateFlow()
@@ -40,6 +45,16 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
     fun refresh() {
         readJob?.cancel()
         readJob = viewModelScope.launch { read()?.let { _state.value = it } }
+    }
+
+    fun updateLockPreferences(change: (WooPosLockPreferences) -> WooPosLockPreferences) {
+        val id = selectedSite.getOrNull()?.id ?: return
+        if (_state.value !is Protected || !canManagePINs()) return
+        viewModelScope.launch {
+            lockSettings.update(id, change).onSuccess { saved ->
+                if (isSelected(id)) _state.update { (it as? Protected)?.copy(lockPreferences = saved) ?: it }
+            }
+        }
     }
 
     suspend fun removeProtection(): Boolean = removePIN(WooPosLocalRole.ADMIN)
@@ -98,6 +113,7 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
         if (!canManagePINs()) return WooPosSettingsSecurityState.Restricted
         val id = selectedSite.getOrNull()?.id ?: return WooPosSettingsSecurityState.Unavailable
         val pins = store.getPINs(id)
+        val lockPreferences = lockSettings.preferences(id).first()
         currentCoroutineContext().ensureActive()
         if (!isSelected(id)) return null
         val saved = pins.getOrNull()
@@ -105,7 +121,11 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
             !canManagePINs() -> WooPosSettingsSecurityState.Restricted
             saved == null -> WooPosSettingsSecurityState.Unavailable
             saved.isEmpty() -> WooPosSettingsSecurityState.Off
-            else -> Protected(hasCashierPIN = WooPosLocalRole.CASHIER in saved, removalFailed = false)
+            else -> Protected(
+                hasCashierPIN = WooPosLocalRole.CASHIER in saved,
+                removalFailed = false,
+                lockPreferences = lockPreferences,
+            )
         }
     }
 

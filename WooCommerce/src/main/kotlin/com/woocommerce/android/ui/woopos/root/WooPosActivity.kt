@@ -8,6 +8,7 @@ import androidx.core.view.WindowCompat
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.gesturesOrButtonsNavigationPadding
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLock
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEntryPointKeeper
 import com.woocommerce.android.ui.woopos.util.ext.lockWooPosOrientation
@@ -27,6 +28,9 @@ class WooPosActivity : AppCompatActivity() {
 
     @Inject
     lateinit var analyticsEntryPointKeeper: WooPosAnalyticsEntryPointKeeper
+
+    @Inject
+    lateinit var autoLock: WooPosAutoLock
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // POS is session-based: cart, product cache, order cache, and data source selection
@@ -52,6 +56,11 @@ class WooPosActivity : AppCompatActivity() {
                 WooPosRootScreen(modifier = Modifier.gesturesOrButtonsNavigationPadding())
             }
         }
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        autoLock.onUserActivity()
     }
 
     override fun onPause() {

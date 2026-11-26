@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.roles.approval
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLock
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLocalRateLimiterResult
 import com.woocommerce.android.ui.woopos.roles.pin.PIN_COUNTDOWN_INTERVAL_MILLIS
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
@@ -23,6 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPosApprovalViewModel @Inject constructor(
     private val accessSession: WooPosAccessSession,
+    private val autoLock: WooPosAutoLock,
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosApprovalState?>(null)
     internal val state = _state.asStateFlow()
@@ -80,6 +82,8 @@ class WooPosApprovalViewModel @Inject constructor(
     }
 
     internal fun onUIEvent(event: WooPosApprovalUIEvent) {
+        // The approval dialog has its own window, so Activity.onUserInteraction does not see its input.
+        autoLock.onUserActivity()
         when (event) {
             is WooPosApprovalUIEvent.DigitTapped -> onDigit(event.digit)
             WooPosApprovalUIEvent.DeleteTapped -> onDelete()

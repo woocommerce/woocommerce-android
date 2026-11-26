@@ -53,6 +53,7 @@ import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButto
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptCoordinator
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptEvent
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailureAction
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLock
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.FeatureFlag
@@ -69,6 +70,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -98,6 +101,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val builtInReaderConnector: WooPosBuiltInReaderConnector,
     private val remoteReaderPaymentFlow: WooPosRemoteReaderPaymentFlow,
     private val effectiveReaderStatusProvider: WooPosEffectiveReaderStatusProvider,
+    private val autoLock: WooPosAutoLock,
     printReceiptCoordinatorFactory: WooPosPrintReceiptCoordinator.Factory,
     savedState: SavedStateHandle,
 ) : ViewModel() {
@@ -179,6 +183,9 @@ class WooPosTotalsViewModel @Inject constructor(
         listenPrintReceiptEvents()
         observeCardReaderStatus()
         trackTapToPayUnavailableReasonIfNeeded()
+        viewModelScope.launch {
+            uiState.map { it.isPaymentInProgress }.distinctUntilChanged().collect(autoLock::onPaymentInProgressChanged)
+        }
     }
 
     private fun trackTapToPayUnavailableReasonIfNeeded() {
@@ -270,6 +277,7 @@ class WooPosTotalsViewModel @Inject constructor(
         when (event) {
             is WooPosTotalsUIEvent.OnNewTransactionClicked -> viewModelScope.launch {
                 childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
+                autoLock.onNewOrderStarted()
                 totalsAnalyticsTracker.trackCreateNewOrderTapped()
             }
 
@@ -1054,6 +1062,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     override fun onCleared() {
+        autoLock.onPaymentInProgressChanged(false)
         if (isTapToPayFlowActive()) builtInReaderConnector.disconnectInBackground()
         cardReaderPaymentController?.stop()
         cancelRemotePaymentAction()

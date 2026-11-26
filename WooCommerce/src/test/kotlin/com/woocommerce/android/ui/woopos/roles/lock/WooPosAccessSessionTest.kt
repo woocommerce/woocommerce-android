@@ -19,7 +19,10 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
@@ -27,6 +30,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 class WooPosAccessSessionTest {
     @get:Rule
     val coroutineRule = WooPosCoroutineTestRule()
+    private val keptStaff: WooPosKeptStaff = mock()
     private val flags: FeatureFlagRepository = mock {
         on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
     }
@@ -67,6 +71,46 @@ class WooPosAccessSessionTest {
         assertThat((session.state.value.status == WooPosPINEntryStatus.Idle)).isTrue()
         assertThat(session.state.value.activeRole).isNull()
         assertThat(session.isEnabled).isTrue()
+    }
+
+    @Test
+    fun `given staff kept from the last POS visit, when initializing, then POS opens unlocked for them`() = runTest {
+        // GIVEN
+        whenever(keptStaff.resume(1, 0)).thenReturn(WooPosLocalRole.CASHIER)
+        val session = session(fixture())
+
+        // WHEN
+        session.initialize()
+
+        // THEN
+        assertThat(session.state.value).isEqualTo(WooPosAccessSessionState.Unlocked(WooPosLocalRole.CASHIER))
+    }
+
+    @Test
+    fun `given an unlocked session, when it ends, then its staff is kept for the next POS visit`() = runTest {
+        // GIVEN
+        val session = session(fixture())
+        session.initialize()
+        session.unlock("5678")
+
+        // WHEN
+        session.end()
+
+        // THEN
+        verify(keptStaff).keep(1, WooPosLocalRole.CASHIER, 0)
+    }
+
+    @Test
+    fun `given a locked session, when it ends, then no staff is kept`() = runTest {
+        // GIVEN
+        val session = session(fixture())
+        session.initialize()
+
+        // WHEN
+        session.end()
+
+        // THEN
+        verify(keptStaff, never()).keep(any(), any(), any())
     }
 
     @Test
@@ -488,5 +532,6 @@ class WooPosAccessSessionTest {
         selectedSite,
         rateLimiter,
         fixture.recovery,
+        keptStaff,
     )
 }

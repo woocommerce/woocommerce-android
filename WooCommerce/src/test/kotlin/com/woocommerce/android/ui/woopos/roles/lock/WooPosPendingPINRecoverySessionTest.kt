@@ -29,7 +29,7 @@ class WooPosPendingPINRecoverySessionTest {
                 on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
             }
             val site: SelectedSite = mock { on { getOrNull() }.thenReturn(SiteModel().apply { id = 1 }) }
-            val session = WooPosAccessSession(flags, site, access, pending)
+            val session = WooPosAccessSession(flags, site, access, pending, mock())
             session.initialize()
             repeat(5) { session.unlock("0000") }
             assertThat(session.state.value.status).isEqualTo(WooPosPINEntryStatus.Wait(30))

@@ -5,6 +5,17 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 sealed class WooPosTotalsViewState : Parcelable {
+    val isPaymentInProgress: Boolean
+        get() = when (this) {
+            is Checkout ->
+                tapToPayProgress != null ||
+                    readerStatus is ReaderStatus.Preparing ||
+                    readerStatus is ReaderStatus.CheckingOrder ||
+                    readerStatus is ReaderStatus.ReadyForPayment
+            is PaymentInProgress -> true
+            else -> false
+        }
+
     data object Idle : WooPosTotalsViewState()
 
     data object Loading : WooPosTotalsViewState()
