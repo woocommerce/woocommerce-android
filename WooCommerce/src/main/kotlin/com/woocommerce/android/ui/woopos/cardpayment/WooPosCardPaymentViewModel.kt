@@ -18,7 +18,6 @@ import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPay
 import com.woocommerce.android.ui.woopos.home.totals.TTPPaymentProgressDelegate
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLock
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -32,8 +31,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -51,7 +48,6 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val priceFormat: WooPosFormatPrice,
     private val remoteReaderPaymentFlow: WooPosRemoteReaderPaymentFlow,
     private val effectiveReaderStatusProvider: WooPosEffectiveReaderStatusProvider,
-    private val autoLock: WooPosAutoLock,
 ) : ViewModel() {
 
     private val orderId: Long = requireNotNull(savedState[CARD_PAYMENT_ROUTE_ORDER_ID_KEY])
@@ -76,9 +72,6 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private var activePaymentMode: PaymentMode? = null
 
     init {
-        viewModelScope.launch {
-            state.map { it.isPaymentInProgress }.distinctUntilChanged().collect(autoLock::onPaymentInProgressChanged)
-        }
         viewModelScope.launch {
             val loaded = cardPaymentRepository.fetchOrGetOrder(orderId)
             if (loaded == null) {
@@ -432,7 +425,6 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     override fun onCleared() {
         cancelPayment()
-        autoLock.onPaymentInProgressChanged(false)
     }
 
     private enum class PaymentMode {

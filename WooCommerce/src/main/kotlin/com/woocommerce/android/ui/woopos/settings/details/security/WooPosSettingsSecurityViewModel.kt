@@ -47,12 +47,12 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
         readJob = viewModelScope.launch { read()?.let { _state.value = it } }
     }
 
-    fun updateLockPreferences(preferences: WooPosLockPreferences) {
+    fun updateLockPreferences(change: (WooPosLockPreferences) -> WooPosLockPreferences) {
         val id = selectedSite.getOrNull()?.id ?: return
         if (_state.value !is Protected || !canManagePINs()) return
         viewModelScope.launch {
-            if (lockSettings.update(id, preferences) && isSelected(id)) {
-                _state.update { (it as? Protected)?.copy(lockPreferences = preferences) ?: it }
+            lockSettings.update(id, change).onSuccess { saved ->
+                if (isSelected(id)) _state.update { (it as? Protected)?.copy(lockPreferences = saved) ?: it }
             }
         }
     }

@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPay
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLock
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
@@ -53,7 +52,6 @@ class WooPosCardPaymentViewModelTest {
     val coroutineTestRule = WooPosCoroutineTestRule()
 
     private val readerStatusFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock<CardReader>()))
-    private val autoLock: WooPosAutoLock = mock()
     private val cardReaderFacade: WooPosCardReaderFacade = mock {
         on { readerStatus }.thenReturn(readerStatusFlow)
     }
@@ -127,7 +125,6 @@ class WooPosCardPaymentViewModelTest {
             priceFormat = priceFormat,
             remoteReaderPaymentFlow = remoteReaderPaymentFlow,
             effectiveReaderStatusProvider = WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
-            autoLock = autoLock,
         )
     }
 
@@ -378,7 +375,6 @@ class WooPosCardPaymentViewModelTest {
             priceFormat = priceFormat,
             remoteReaderPaymentFlow = remoteReaderPaymentFlow,
             effectiveReaderStatusProvider = WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
-            autoLock = autoLock,
         )
         advanceUntilIdle()
 

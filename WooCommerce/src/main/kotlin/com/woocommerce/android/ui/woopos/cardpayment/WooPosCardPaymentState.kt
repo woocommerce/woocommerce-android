@@ -1,12 +1,6 @@
 package com.woocommerce.android.ui.woopos.cardpayment
 
 sealed class WooPosCardPaymentState {
-    val isPaymentInProgress: Boolean
-        get() = when (this) {
-            Initiating, is Collecting.Preparing, is Collecting.ReadyForPayment, is PaymentInProgress -> true
-            is Collecting.ReaderDisconnected, is PaymentFailed -> false
-        }
-
     data object Initiating : WooPosCardPaymentState()
 
     sealed class Collecting : WooPosCardPaymentState() {

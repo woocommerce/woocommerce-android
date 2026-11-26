@@ -1062,6 +1062,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     override fun onCleared() {
+        autoLock.onPaymentInProgressChanged(false)
         if (isTapToPayFlowActive()) builtInReaderConnector.disconnectInBackground()
         cardReaderPaymentController?.stop()
         cancelRemotePaymentAction()

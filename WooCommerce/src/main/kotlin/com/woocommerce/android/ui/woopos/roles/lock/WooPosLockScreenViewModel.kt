@@ -63,6 +63,10 @@ class WooPosLockScreenViewModel @Inject constructor(
         }
     }
 
+    fun onAppForegrounded() {
+        viewModelScope.launch { autoLock.onAppForegrounded() }
+    }
+
     fun onAppBackgrounded() {
         viewModelScope.launch { autoLock.onAppBackgrounded() }
     }

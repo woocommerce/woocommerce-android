@@ -35,6 +35,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosSettingsSecurityViewModelTest {
@@ -116,16 +117,15 @@ class WooPosSettingsSecurityViewModelTest {
         // GIVEN
         givenAdminSession(ADMIN)
         val changed = WooPosLockPreferences(locksAfterSale = true)
-        whenever(lockSettings.update(1, changed)).thenReturn(true)
+        whenever(lockSettings.update(eq(1), any())).thenReturn(Result.success(changed))
         val viewModel = createViewModel()
         advanceUntilIdle()
 
         // WHEN
-        viewModel.updateLockPreferences(changed)
+        viewModel.updateLockPreferences { it.copy(locksAfterSale = true) }
         advanceUntilIdle()
 
         // THEN
-        verify(lockSettings).update(1, changed)
         assertThat((viewModel.state.value as Protected).lockPreferences).isEqualTo(changed)
     }
 
@@ -133,12 +133,12 @@ class WooPosSettingsSecurityViewModelTest {
     fun `given saving fails, when a lock choice changes, then the saved choice stays shown`() = runTest {
         // GIVEN
         givenAdminSession(ADMIN)
-        whenever(lockSettings.update(any(), any())).thenReturn(false)
+        whenever(lockSettings.update(any(), any())).thenReturn(Result.failure(IOException()))
         val viewModel = createViewModel()
         advanceUntilIdle()
 
         // WHEN
-        viewModel.updateLockPreferences(WooPosLockPreferences(locksAfterSale = true))
+        viewModel.updateLockPreferences { it.copy(locksAfterSale = true) }
         advanceUntilIdle()
 
         // THEN
@@ -154,7 +154,7 @@ class WooPosSettingsSecurityViewModelTest {
         advanceUntilIdle()
 
         // WHEN
-        viewModel.updateLockPreferences(WooPosLockPreferences(locksAfterSale = true))
+        viewModel.updateLockPreferences { it.copy(locksAfterSale = true) }
         advanceUntilIdle()
 
         // THEN

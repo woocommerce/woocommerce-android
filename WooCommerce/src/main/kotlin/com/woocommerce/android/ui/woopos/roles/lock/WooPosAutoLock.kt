@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.roles.lock
 
 import androidx.annotation.MainThread
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosElapsedTime
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.NonCancellable
@@ -27,8 +28,10 @@ class WooPosAutoLock @Inject constructor(
     private val accessSession: WooPosAccessSession,
     private val lockSettings: WooPosLockSettings,
     private val selectedSite: SelectedSite,
+    private val clock: WooPosElapsedTime,
 ) {
     private val userActivity = MutableStateFlow(0L)
+    private var inactivityDeadline: Long? = null
     private val _isPaymentInProgress = MutableStateFlow(false)
     val isPaymentInProgress: StateFlow<Boolean> = _isPaymentInProgress.asStateFlow()
 
@@ -46,11 +49,22 @@ class WooPosAutoLock @Inject constructor(
                 }
             }
             .collectLatest { timeout ->
+                inactivityDeadline = timeout?.let { clock.milliseconds() + it.inWholeMilliseconds }
                 if (timeout == null) return@collectLatest
                 delay(timeout)
-                // Locking changes the state that restarts this timer, so it must finish first.
-                withContext(NonCancellable) { accessSession.lock() }
+                lockAfterDeadline()
             }
+    }
+
+    // The timer's delay pauses in deep sleep, so the deadline is checked again when the app returns.
+    suspend fun onAppForegrounded() {
+        if (inactivityDeadline?.let { clock.milliseconds() >= it } == true) lockAfterDeadline()
+    }
+
+    private suspend fun lockAfterDeadline() {
+        inactivityDeadline = null
+        // Locking changes the state that restarts the timer, so it must finish first.
+        withContext(NonCancellable) { accessSession.lock() }
     }
 
     fun onUserActivity() {

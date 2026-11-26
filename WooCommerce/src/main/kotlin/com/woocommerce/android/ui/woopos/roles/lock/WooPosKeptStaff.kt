@@ -21,11 +21,17 @@ class WooPosKeptStaff @Inject constructor(
     private val clock: WooPosElapsedTime,
 ) {
     private var kept: Kept? = null
+    private var isAppInBackground = false
 
     init {
         ProcessLifecycleOwner.get().lifecycle.addObserver(
             object : DefaultLifecycleObserver {
+                override fun onStart(owner: LifecycleOwner) {
+                    isAppInBackground = false
+                }
+
                 override fun onStop(owner: LifecycleOwner) {
+                    isAppInBackground = true
                     kept = kept?.copy(wasBackgrounded = true)
                 }
             }
@@ -33,7 +39,7 @@ class WooPosKeptStaff @Inject constructor(
     }
 
     fun keep(localSiteId: Int, role: WooPosLocalRole, logoutVersion: Long) {
-        kept = Kept(localSiteId, role, logoutVersion, endedAt = clock.milliseconds(), wasBackgrounded = false)
+        kept = Kept(localSiteId, role, logoutVersion, clock.milliseconds(), wasBackgrounded = isAppInBackground)
     }
 
     suspend fun resume(localSiteId: Int, logoutVersion: Long): WooPosLocalRole? {
@@ -42,12 +48,10 @@ class WooPosKeptStaff @Inject constructor(
         if (staff == null) return null
         val preferences = lockSettings.preferences(localSiteId).first()
         val timeout = preferences.inactivityTimeout.duration?.inWholeMilliseconds
-        val elapsed = clock.milliseconds() - staff.endedAt
-        return staff.role.takeUnless {
-            preferences.locksWhenPOSOpens ||
-                (staff.wasBackgrounded && preferences.locksInBackground) ||
-                (timeout != null && elapsed >= timeout)
-        }
+        val isWithinTimeout = timeout == null || clock.milliseconds() - staff.endedAt < timeout
+        val wasLockedInBackground = staff.wasBackgrounded && preferences.locksInBackground
+        val resumes = !preferences.locksWhenPOSOpens && !wasLockedInBackground && isWithinTimeout
+        return staff.role.takeIf { resumes }
     }
 
     private data class Kept(

@@ -4,6 +4,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosElapsedTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,7 +43,8 @@ class WooPosAutoLockTest {
         on { observe() }.thenReturn(flowOf(site))
         on { getOrNull() }.thenReturn(site)
     }
-    private val autoLock = WooPosAutoLock(accessSession, lockSettings, selectedSite)
+    private val clock: WooPosElapsedTime = mock { on { milliseconds() }.thenReturn(0) }
+    private val autoLock = WooPosAutoLock(accessSession, lockSettings, selectedSite, clock)
 
     @Test
     fun `given unlocked staff, when the timeout passes without activity, then POS locks`() = runTest {
@@ -88,6 +90,32 @@ class WooPosAutoLockTest {
             advanceTimeBy(ONE_MINUTE + 1)
             verify(accessSession).lock()
         }
+
+    @Test
+    fun `given the device slept past the timeout, when the app returns, then POS locks`() = runTest {
+        // GIVEN
+        startInactivityTimer()
+        whenever(clock.milliseconds()).thenReturn(ONE_MINUTE)
+
+        // WHEN
+        autoLock.onAppForegrounded()
+
+        // THEN
+        verify(accessSession).lock()
+    }
+
+    @Test
+    fun `given the timeout has not passed, when the app returns, then POS stays unlocked`() = runTest {
+        // GIVEN
+        startInactivityTimer()
+        whenever(clock.milliseconds()).thenReturn(ONE_MINUTE - 1)
+
+        // WHEN
+        autoLock.onAppForegrounded()
+
+        // THEN
+        verify(accessSession, never()).lock()
+    }
 
     @Test
     fun `given a payment in progress, when the timeout passes, then POS stays unlocked`() = runTest {

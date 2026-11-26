@@ -442,6 +442,21 @@ class WooPosHomeFloatingToolbarViewModelTest {
     }
 
     @Test
+    fun `given a payment in progress, when menu opens, then Lock POS is disabled`() = runTest {
+        // GIVEN
+        whenever(accessSession.isEnabled).thenReturn(true)
+        isPaymentInProgress.value = true
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked)
+
+        // THEN
+        val menu = viewModel.state.value.menu as WooPosHomeFloatingToolbarState.Menu.Visible
+        assertThat(menu.items.single { it.title == R.string.woopos_lock_pos }.enabled).isFalse()
+    }
+
+    @Test
     fun `given a Cashier unlock, when menu opens, then it shows the Cashier role`() = runTest {
         // GIVEN
         accessState.value = WooPosAccessSessionState.Unlocked(WooPosLocalRole.CASHIER)

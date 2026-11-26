@@ -106,6 +106,20 @@ class WooPosKeptStaffTest {
         }
 
     @Test
+    fun `given background locking is on, when POS closes while the app is in background, then no staff resumes`() =
+        runTest {
+            // GIVEN
+            processLifecycle.currentState = CREATED
+            keptStaff.keep(SITE_ID, WooPosLocalRole.CASHIER, LOGOUT_VERSION)
+
+            // WHEN
+            val role = keptStaff.resume(SITE_ID, LOGOUT_VERSION)
+
+            // THEN
+            assertThat(role).isNull()
+        }
+
+    @Test
     fun `given background locking is off, when the app went to background before reopening, then the staff resumes`() =
         runTest {
             // GIVEN

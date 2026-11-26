@@ -46,6 +46,7 @@ fun WooPosRootScreen(
     val approvalState by approvalViewModel.state.collectAsState()
 
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { approvalViewModel.dismiss() }
+    LifecycleEventEffect(Lifecycle.Event.ON_START, ProcessLifecycleOwner.get()) { lockViewModel.onAppForegrounded() }
     LifecycleEventEffect(Lifecycle.Event.ON_STOP, ProcessLifecycleOwner.get()) { lockViewModel.onAppBackgrounded() }
     DisposableEffect(rootController, approvalViewModel) {
         val listener = NavController.OnDestinationChangedListener { _, _, _ -> approvalViewModel.dismiss() }

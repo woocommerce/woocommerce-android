@@ -75,7 +75,7 @@ fun WooPosSettingsSecurityScreen(
     onProtectionTurnedOff: () -> Unit,
     onChangePIN: (WooPosLocalRole) -> Unit,
     onDeleteCashierPIN: () -> Unit,
-    onLockPreferencesChanged: (WooPosLockPreferences) -> Unit,
+    onLockPreferencesChanged: ((WooPosLockPreferences) -> WooPosLockPreferences) -> Unit,
 ) {
     when (state) {
         WooPosSettingsSecurityState.Loading, WooPosSettingsSecurityState.Restricted -> Unit
@@ -135,7 +135,7 @@ private fun SecurityCards(
     onProtectionTurnedOff: () -> Unit,
     onChangePIN: (WooPosLocalRole) -> Unit,
     onDeleteCashierPIN: () -> Unit,
-    onLockPreferencesChanged: (WooPosLockPreferences) -> Unit,
+    onLockPreferencesChanged: ((WooPosLockPreferences) -> WooPosLockPreferences) -> Unit,
 ) {
     val changeAdminLabel = stringResource(R.string.woopos_security_change_admin_pin)
     val setUpCashierLabel = stringResource(R.string.woopos_security_set_up_cashier_pin)
@@ -351,7 +351,7 @@ private fun CashierActions(stacked: Boolean, onChange: () -> Unit, onDelete: () 
 @Composable
 private fun LockSettingsCard(
     preferences: WooPosLockPreferences,
-    onChanged: (WooPosLockPreferences) -> Unit,
+    onChanged: ((WooPosLockPreferences) -> WooPosLockPreferences) -> Unit,
 ) {
     var pickerOpen by rememberSaveable { mutableStateOf(false) }
     val inactivityTimeout = preferences.inactivityTimeout
@@ -359,19 +359,19 @@ private fun LockSettingsCard(
         SecurityToggle(
             stringResource(R.string.woopos_security_lock_on_launch),
             preferences.locksWhenPOSOpens,
-            { onChanged(preferences.copy(locksWhenPOSOpens = it)) },
+            { value -> onChanged { it.copy(locksWhenPOSOpens = value) } },
         )
         SecurityDivider()
         SecurityToggle(
             stringResource(R.string.woopos_security_lock_on_background),
             preferences.locksInBackground,
-            { onChanged(preferences.copy(locksInBackground = it)) },
+            { value -> onChanged { it.copy(locksInBackground = value) } },
         )
         SecurityDivider()
         SecurityToggle(
             stringResource(R.string.woopos_security_lock_after_sale),
             preferences.locksAfterSale,
-            { onChanged(preferences.copy(locksAfterSale = it)) },
+            { value -> onChanged { it.copy(locksAfterSale = value) } },
         )
         SecurityDivider()
         SecurityRow(stringResource(R.string.woopos_security_lock_after)) {
@@ -397,7 +397,7 @@ private fun LockSettingsCard(
                             modifier = Modifier.semantics { selected = timeout == inactivityTimeout },
                             text = { WooPosText(inactivityLabel(timeout), style = WooPosTypography.BodyMedium) },
                             onClick = {
-                                onChanged(preferences.copy(inactivityTimeout = timeout))
+                                onChanged { it.copy(inactivityTimeout = timeout) }
                                 pickerOpen = false
                             },
                             trailingIcon = if (timeout == inactivityTimeout) {

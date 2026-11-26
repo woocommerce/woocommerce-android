@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.roles.approval
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAutoLock
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosLocalRateLimiterTestFixture
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosClearLocalPINData
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
@@ -20,6 +21,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
@@ -36,6 +38,7 @@ class WooPosApprovalViewModelTest {
     }
     private val fixture = WooPosLocalRateLimiterTestFixture(coroutineRule.testDispatchers)
     private val rateLimiter = fixture.rateLimiter()
+    private val autoLock: WooPosAutoLock = mock()
     private val access = WooPosAccessSession(flags, site, rateLimiter, fixture.recovery, mock())
 
     @Test
@@ -168,6 +171,20 @@ class WooPosApprovalViewModelTest {
             assertThat(access.state.value.status).isEqualTo(WooPosPINEntryStatus.Wait(30))
             assertThat(fixture.records[1]?.failures).isEqualTo(5L)
         }
+
+    @Test
+    fun `given an approval is open, when a digit is tapped, then auto-lock counts it as activity`() = runTest {
+        // GIVEN
+        val viewModel = signIn(CASHIER_PIN)
+        viewModel.requestApproval(WooPosApprovalAction.Exit, onAllowed = {})
+        runCurrent()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosApprovalUIEvent.DigitTapped(1))
+
+        // THEN
+        verify(autoLock).onUserActivity()
+    }
 
     @Test
     fun `given an approval is open, when a wrong PIN is entered, then it can be retried without executing`() = runTest {
@@ -416,7 +433,7 @@ class WooPosApprovalViewModelTest {
     private suspend fun signIn(pin: String): WooPosApprovalViewModel {
         access.initialize()
         access.unlock(pin)
-        return WooPosApprovalViewModel(access)
+        return WooPosApprovalViewModel(access, autoLock)
     }
 
     private fun WooPosApprovalViewModel.enter(pin: String) {

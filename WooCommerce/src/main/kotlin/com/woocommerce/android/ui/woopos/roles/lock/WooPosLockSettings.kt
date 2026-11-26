@@ -28,17 +28,22 @@ class WooPosLockSettings @Inject constructor(
         }
         .distinctUntilChanged()
 
-    suspend fun update(localSiteId: Int, preferences: WooPosLockPreferences): Boolean = try {
+    suspend fun update(
+        localSiteId: Int,
+        change: (WooPosLockPreferences) -> WooPosLockPreferences,
+    ): Result<WooPosLockPreferences> = try {
+        lateinit var saved: WooPosLockPreferences
         dataStore.edit {
-            it[locksWhenPOSOpensKey(localSiteId)] = preferences.locksWhenPOSOpens
-            it[locksInBackgroundKey(localSiteId)] = preferences.locksInBackground
-            it[locksAfterSaleKey(localSiteId)] = preferences.locksAfterSale
-            it[inactivityTimeoutKey(localSiteId)] = preferences.inactivityTimeout.minutes
+            saved = change(it.lockPreferences(localSiteId))
+            it[locksWhenPOSOpensKey(localSiteId)] = saved.locksWhenPOSOpens
+            it[locksInBackgroundKey(localSiteId)] = saved.locksInBackground
+            it[locksAfterSaleKey(localSiteId)] = saved.locksAfterSale
+            it[inactivityTimeoutKey(localSiteId)] = saved.inactivityTimeout.minutes
         }
-        true
+        Result.success(saved)
     } catch (e: IOException) {
         WooLog.e(WooLog.T.POS, "Unable to save POS lock settings: ${e.javaClass.simpleName}")
-        false
+        Result.failure(e)
     }
 
     private fun Preferences.lockPreferences(localSiteId: Int): WooPosLockPreferences {

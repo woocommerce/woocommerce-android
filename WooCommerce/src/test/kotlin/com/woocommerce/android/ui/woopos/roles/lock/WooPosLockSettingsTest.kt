@@ -50,12 +50,23 @@ class WooPosLockSettingsTest {
         )
 
         // WHEN
-        val result = lockSettings.update(SITE_ID, saved)
+        val result = lockSettings.update(SITE_ID) { saved }
 
         // THEN
-        assertThat(result).isTrue()
+        assertThat(result.getOrNull()).isEqualTo(saved)
         assertThat(lockSettings.preferences(SITE_ID).first()).isEqualTo(saved)
         assertThat(lockSettings.preferences(SITE_ID + 1).first()).isEqualTo(WooPosLockPreferences())
+    }
+
+    @Test
+    fun `given two quick changes, when both are saved, then each keeps the other`() = runTest {
+        // WHEN
+        lockSettings.update(SITE_ID) { it.copy(locksAfterSale = true) }
+        lockSettings.update(SITE_ID) { it.copy(locksInBackground = false) }
+
+        // THEN
+        assertThat(lockSettings.preferences(SITE_ID).first())
+            .isEqualTo(WooPosLockPreferences(locksAfterSale = true, locksInBackground = false))
     }
 
     @Test
