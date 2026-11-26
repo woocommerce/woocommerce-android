@@ -7,6 +7,8 @@ import com.woocommerce.android.ui.woopos.roles.lock.WooPosLocalRateLimiterTestFi
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosClearLocalPINData
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityState
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityViewModel
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -19,6 +21,9 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -412,6 +417,85 @@ class WooPosApprovalViewModelTest {
         assertThat(opened).isFalse()
         assertThat(viewModel.state.value).isNull()
     }
+
+    @Test
+    fun `given Security disables protection, when removal commits, then approval completes before session refresh`() =
+        runTest {
+            // GIVEN
+            val approval = signIn(ADMIN_PIN)
+            val security = WooPosSettingsSecurityViewModel(site, fixture.store, access)
+            val removal = CompletableDeferred<Unit>()
+            whenever(fixture.store.removePIN(eq(1), eq(WooPosLocalRole.ADMIN), any())).doSuspendableAnswer {
+                removal.await()
+                assertThat(it.getArgument<() -> Boolean>(2).invoke()).isTrue()
+                fixture.pins = Result.success(emptyMap())
+                Result.success(Unit)
+            }
+            var completed = false
+            approval.requestFreshApproval(WooPosApprovalAction.DisablePINProtection) {
+                security.removeProtection().also { completed = it }
+            }
+            runCurrent()
+
+            // WHEN
+            approval.enter(ADMIN_PIN)
+            runCurrent()
+
+            // THEN
+            assertThat(approval.state.value?.status).isEqualTo(WooPosPINEntryStatus.Checking)
+            assertThat(security.state.value).isInstanceOf(WooPosSettingsSecurityState.Protected::class.java)
+            assertThat(completed).isFalse()
+
+            // WHEN
+            removal.complete(Unit)
+            runCurrent()
+
+            // THEN
+            assertThat(completed).isTrue()
+            assertThat(approval.state.value).isNull()
+            assertThat(security.state.value).isEqualTo(WooPosSettingsSecurityState.Off)
+            assertThat(access.isEnabled).isFalse()
+        }
+
+    @Test
+    fun `given Cashier deletion is pending, when Admin change opens, then deletion keeps its approval open`() =
+        runTest {
+            // GIVEN
+            val approval = signIn(ADMIN_PIN)
+            val security = WooPosSettingsSecurityViewModel(site, fixture.store, access)
+            val removal = CompletableDeferred<Unit>()
+            whenever(fixture.store.removePIN(eq(1), eq(WooPosLocalRole.CASHIER), any())).doSuspendableAnswer {
+                removal.await()
+                assertThat(it.getArgument<() -> Boolean>(2).invoke()).isTrue()
+                fixture.pins = Result.success(fixture.pins.getOrThrow() - WooPosLocalRole.CASHIER)
+                Result.success(Unit)
+            }
+            security.deleteCashierPIN()
+            runCurrent()
+            val originalScope = access.approvalScope()
+            var openedEditor = false
+            approval.requestFreshApproval(WooPosApprovalAction.ChangeAdminPIN) {
+                openedEditor = true
+                true
+            }
+            runCurrent()
+
+            // WHEN
+            removal.complete(Unit)
+            runCurrent()
+
+            // THEN
+            assertThat(access.approvalScope()).isEqualTo(originalScope)
+            assertThat(approval.state.value?.action).isEqualTo(WooPosApprovalAction.ChangeAdminPIN)
+            assertThat(approval.state.value?.status).isEqualTo(WooPosPINEntryStatus.Idle)
+            assertThat(openedEditor).isFalse()
+            assertThat(security.state.value).isEqualTo(
+                WooPosSettingsSecurityState.Protected(hasCashierPIN = false, removalFailed = false),
+            )
+            approval.enter(ADMIN_PIN)
+            runCurrent()
+            assertThat(openedEditor).isTrue()
+        }
 
     private suspend fun signIn(pin: String): WooPosApprovalViewModel {
         access.initialize()

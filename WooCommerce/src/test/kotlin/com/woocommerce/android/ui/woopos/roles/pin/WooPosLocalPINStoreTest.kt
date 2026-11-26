@@ -69,12 +69,12 @@ class WooPosLocalPINStoreTest {
     @Test
     fun `given a saved PIN, when the same role is created again, then its PIN is preserved`() = runTest {
         // GIVEN
-        store.createPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
-        store.createPIN(1, WooPosLocalRole.CASHIER, "5678").getOrThrow()
+        store.createPIN(1, WooPosLocalRole.ADMIN, "1234", canCommit = { true }).getOrThrow()
+        store.createPIN(1, WooPosLocalRole.CASHIER, "5678", canCommit = { true }).getOrThrow()
 
         // WHEN
-        val admin = store.createPIN(1, WooPosLocalRole.ADMIN, "9012")
-        val cashier = store.createPIN(1, WooPosLocalRole.CASHIER, "3456")
+        val admin = store.createPIN(1, WooPosLocalRole.ADMIN, "9012", canCommit = { true })
+        val cashier = store.createPIN(1, WooPosLocalRole.CASHIER, "3456", canCommit = { true })
 
         // THEN
         assertThat(admin.exceptionOrNull()).isEqualTo(WooPosPINError.AlreadyExists)
@@ -88,12 +88,12 @@ class WooPosLocalPINStoreTest {
     @Test
     fun `given a missing role, when its PIN is replaced, then the stored records stay unchanged`() = runTest {
         // GIVEN
-        store.createPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
+        store.createPIN(1, WooPosLocalRole.ADMIN, "1234", canCommit = { true }).getOrThrow()
         val adminRecord = storage.entries.getValue(1).copyOf()
 
         // WHEN
-        val missingCashier = store.replacePIN(1, WooPosLocalRole.CASHIER, "5678")
-        val missingAdmin = store.replacePIN(2, WooPosLocalRole.ADMIN, "5678")
+        val missingCashier = store.replacePIN(1, WooPosLocalRole.CASHIER, "5678", canCommit = { true })
+        val missingAdmin = store.replacePIN(2, WooPosLocalRole.ADMIN, "5678", canCommit = { true })
 
         // THEN
         assertThat(missingCashier.exceptionOrNull()).isEqualTo(WooPosPINError.StaleRequest)
@@ -106,11 +106,11 @@ class WooPosLocalPINStoreTest {
     @Test
     fun `given both PINs, when Cashier PIN is replaced, then the Admin PIN is preserved`() = runTest {
         // GIVEN
-        store.createPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
-        store.createPIN(1, WooPosLocalRole.CASHIER, "5678").getOrThrow()
+        store.createPIN(1, WooPosLocalRole.ADMIN, "1234", canCommit = { true }).getOrThrow()
+        store.createPIN(1, WooPosLocalRole.CASHIER, "5678", canCommit = { true }).getOrThrow()
 
         // WHEN
-        store.replacePIN(1, WooPosLocalRole.CASHIER, "9012").getOrThrow()
+        store.replacePIN(1, WooPosLocalRole.CASHIER, "9012", canCommit = { true }).getOrThrow()
 
         // THEN
         val pins = store.getPINs(1).getOrThrow()
@@ -157,7 +157,7 @@ class WooPosLocalPINStoreTest {
             store.setPIN(1, role, "5678").getOrThrow()
 
             // WHEN
-            store.removePIN(1, role).getOrThrow()
+            store.removePIN(1, role, canCommit = { true }).getOrThrow()
 
             // THEN
             assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "1234").getOrThrow()).isNotNull()
@@ -174,7 +174,7 @@ class WooPosLocalPINStoreTest {
         store.setPIN(2, WooPosLocalRole.ADMIN, "0000").getOrThrow()
 
         // WHEN
-        store.removePIN(1, WooPosLocalRole.ADMIN).getOrThrow()
+        store.removePIN(1, WooPosLocalRole.ADMIN, canCommit = { true }).getOrThrow()
 
         // THEN
         assertThat(store.getPINs(1).getOrThrow()).isEmpty()
@@ -218,7 +218,7 @@ class WooPosLocalPINStoreTest {
             WooPosLocalRole.entries.forEach { role ->
                 assertThat(store.setPIN(siteId, role, "1234").exceptionOrNull())
                     .isEqualTo(WooPosPINError.StorageFailure)
-                assertThat(store.removePIN(siteId, role).exceptionOrNull())
+                assertThat(store.removePIN(siteId, role, canCommit = { true }).exceptionOrNull())
                     .isEqualTo(WooPosPINError.StorageFailure)
             }
         }
@@ -272,7 +272,7 @@ class WooPosLocalPINStoreTest {
         storage.entries[1] = byteArrayOf(1, 2, 3)
 
         // WHEN
-        store.removePIN(1, WooPosLocalRole.ADMIN).getOrThrow()
+        store.removePIN(1, WooPosLocalRole.ADMIN, canCommit = { true }).getOrThrow()
 
         // THEN
         assertThat(storage.entries).isEmpty()

@@ -193,7 +193,7 @@ class WooPosSettingsSecurityViewModelTest {
 
         // THEN
         verify(store).removePIN(eq(1), eq(ADMIN), any())
-        verify(session).initialize()
+        verify(session, never()).initialize()
         assertThat(viewModel.state.value).isEqualTo(WooPosSettingsSecurityState.Off)
     }
 
@@ -417,6 +417,7 @@ class WooPosSettingsSecurityViewModelTest {
         // THEN
         assertThat(viewModel.state.value).isEqualTo(Protected(hasCashierPIN = false, removalFailed = false))
         verify(store, never()).removePIN(eq(1), eq(ADMIN), any())
+        verify(session, never()).initialize()
     }
 
     private fun createViewModel() = WooPosSettingsSecurityViewModel(selectedSite, store, session)
