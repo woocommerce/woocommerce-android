@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.settings.details.security
 import android.graphics.Bitmap
 import android.view.ContextThemeWrapper
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -56,14 +57,15 @@ class WooPosSettingsSecurityScreenTest {
 
     @Test
     fun tabletInactivityPickerOpensFromItsTitle() =
-        checkPicker(DpSize(1024.dp, 674.dp), 1f, false, WooPosBreakpoint.SmallTablet)
+        checkPicker(DpSize(1024.dp, 680.dp), 1f, false, WooPosBreakpoint.SmallTablet)
 
     private fun checkPicker(size: DpSize, fontScale: Float, dark: Boolean, breakpoint: WooPosBreakpoint) {
+        var observedBreakpoint: WooPosBreakpoint? = null
         composeTestRule.setContent {
-            val configuration = DeviceConfigurationOverride.ForcedSize(size) then
-                DeviceConfigurationOverride.WindowSize(size) then
+            val configuration = DeviceConfigurationOverride.WindowSize(size) then
                 DeviceConfigurationOverride.WindowInsets(WindowInsetsCompat.CONSUMED) then
-                DeviceConfigurationOverride.FontScale(fontScale) then DeviceConfigurationOverride.DarkMode(dark)
+                DeviceConfigurationOverride.FontScale(fontScale) then DeviceConfigurationOverride.DarkMode(dark) then
+                DeviceConfigurationOverride.ForcedSize(size)
             DeviceConfigurationOverride(configuration) {
                 val currentContext = LocalContext.current
                 val themedContext = remember(currentContext) {
@@ -79,7 +81,8 @@ class WooPosSettingsSecurityScreenTest {
                     }
                 }
                 CompositionLocalProvider(LocalContext provides themedContext, LocalWindowInfo provides window) {
-                    assertThat(currentWooPosBreakpoint()).isEqualTo(breakpoint)
+                    val currentBreakpoint = currentWooPosBreakpoint()
+                    SideEffect { observedBreakpoint = currentBreakpoint }
                     WooPosTheme {
                         WooPosSettingsSecurityScreen(
                             state = WooPosSettingsSecurityState.Protected(hasCashierPIN = true, removalFailed = false),
@@ -92,6 +95,7 @@ class WooPosSettingsSecurityScreenTest {
                 }
             }
         }
+        composeTestRule.runOnIdle { assertThat(observedBreakpoint).isEqualTo(breakpoint) }
         saveImage("overview-${size.width.value}-$fontScale-$dark")
         val row = composeTestRule.onNodeWithText(context.getString(R.string.woopos_security_lock_after))
         row.performScrollTo().performClick()
