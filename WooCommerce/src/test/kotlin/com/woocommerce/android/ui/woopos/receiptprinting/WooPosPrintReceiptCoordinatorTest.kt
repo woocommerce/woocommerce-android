@@ -13,10 +13,13 @@ import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButto
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButtonState.Loading
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptButtonState.Success
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -31,10 +34,12 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -49,6 +54,7 @@ class WooPosPrintReceiptCoordinatorTest {
         on { connectionStatus } doReturn connectionStatus
     }
     private val logger: WooPosLogWrapper = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val isReceiptPrintingEnabled: WooPosReceiptPrintingEnabled = mock {
         on { invoke() } doReturn true
     }
@@ -454,6 +460,226 @@ class WooPosPrintReceiptCoordinatorTest {
             verify(receiptPrinterFacade, times(2)).printReceipt(ORDER_ID, CARD_DETAILS)
         }
 
+    @Test
+    fun `given a printer is connected, when print receipt is clicked and printing succeeds, then tapped and success are tracked`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).thenReturn(ReceiptPrinterResult.Success)
+            val sut = createCoordinator()
+
+            // WHEN
+            sut.onPrintReceiptClicked(ORDER_ID)
+            runCurrent()
+
+            // THEN
+            val inOrder = inOrder(analyticsTracker)
+            inOrder.verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ReceiptPrintTapped)
+            inOrder.verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ReceiptPrintSuccess)
+        }
+
+    @Test
+    fun `given no printer is connected, when print receipt is clicked, then only tapped is tracked`() = runTest {
+        // GIVEN
+        val sut = createCoordinator()
+
+        // WHEN
+        sut.onPrintReceiptClicked(ORDER_ID)
+        runCurrent()
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ReceiptPrintTapped)
+        verifyNoMoreInteractions(analyticsTracker)
+    }
+
+    @Test
+    fun `given the receipt is printing, when print receipt is clicked again, then tapped is tracked once`() = runTest {
+        // GIVEN
+        connectPrinter()
+        whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).doSuspendableAnswer { awaitCancellation() }
+        val sut = createCoordinator()
+        sut.onPrintReceiptClicked(ORDER_ID)
+        runCurrent()
+
+        // WHEN
+        sut.onPrintReceiptClicked(ORDER_ID)
+        runCurrent()
+
+        // THEN
+        verify(analyticsTracker, times(1)).track(WooPosAnalyticsEvent.Event.ReceiptPrintTapped)
+    }
+
+    @Test
+    fun `given setup reports a connected printer, when the receipt is printed, then success is tracked without tapped`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).thenReturn(ReceiptPrinterResult.Success)
+            val sut = createCoordinator()
+
+            // WHEN
+            sut.onPrinterConnected(ORDER_ID)
+            runCurrent()
+
+            // THEN
+            verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ReceiptPrintSuccess)
+            verifyNoMoreInteractions(analyticsTracker)
+        }
+
+    @Test
+    fun `given a printer is connected, when printing fails with no paper, then failed is tracked with its type`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null))
+                .thenReturn(ReceiptPrinterResult.Failure(ReceiptPrinterError.PaperEmpty))
+            val sut = createCoordinator()
+
+            // WHEN
+            sut.onPrintReceiptClicked(ORDER_ID)
+            runCurrent()
+
+            // THEN
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Error.ReceiptPrintFailed(
+                    errorContext = WooPosPrintReceiptCoordinator::class,
+                    errorType = "paper_empty",
+                    errorDescription = "paperEmpty",
+                )
+            )
+        }
+
+    @Test
+    fun `given a printer is connected, when printing fails because the connection was lost, then failed is tracked with the cause`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).thenReturn(
+                ReceiptPrinterResult.Failure(ReceiptPrinterError.ConnectionLost(IllegalStateException("Write failed")))
+            )
+            val sut = createCoordinator()
+
+            // WHEN
+            sut.onPrintReceiptClicked(ORDER_ID)
+            runCurrent()
+
+            // THEN
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Error.ReceiptPrintFailed(
+                    errorContext = WooPosPrintReceiptCoordinator::class,
+                    errorType = "connection_lost",
+                    errorDescription = "IllegalStateException: Write failed",
+                )
+            )
+        }
+
+    @Test
+    fun `given a printer is connected, when printing fails with a long message, then the description is cut to 100 characters`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).thenReturn(
+                ReceiptPrinterResult.Failure(ReceiptPrinterError.PrintFailed(IllegalStateException("x".repeat(200))))
+            )
+            val sut = createCoordinator()
+
+            // WHEN
+            sut.onPrintReceiptClicked(ORDER_ID)
+            runCurrent()
+
+            // THEN
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Error.ReceiptPrintFailed(
+                    errorContext = WooPosPrintReceiptCoordinator::class,
+                    errorType = "print_failed",
+                    errorDescription = "IllegalStateException: ${"x".repeat(77)}",
+                )
+            )
+        }
+
+    @Test
+    fun `given the receipt is printing, when email receipt is opened and printing fails, then failed is still tracked`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            val printResult = CompletableDeferred<ReceiptPrinterResult>()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).doSuspendableAnswer { printResult.await() }
+            val sut = createCoordinator()
+            sut.onPrintReceiptClicked(ORDER_ID)
+            runCurrent()
+
+            // WHEN
+            sut.ignorePendingFailure()
+            printResult.complete(ReceiptPrinterResult.Failure(ReceiptPrinterError.CoverOpen))
+            runCurrent()
+
+            // THEN
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Error.ReceiptPrintFailed(
+                    errorContext = WooPosPrintReceiptCoordinator::class,
+                    errorType = "cover_open",
+                    errorDescription = "coverOpen",
+                )
+            )
+        }
+
+    @Test
+    fun `given the receipt is being printed, when the scope is cancelled, then success is still tracked`() = runTest {
+        // GIVEN
+        connectPrinter()
+        val printMayFinish = CompletableDeferred<Unit>()
+        whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).doSuspendableAnswer {
+            printMayFinish.await()
+            ReceiptPrinterResult.Success
+        }
+        val scope = CoroutineScope(StandardTestDispatcher(testScheduler) + Job())
+        val sut = createCoordinator(scope)
+        sut.onPrintReceiptClicked(ORDER_ID)
+        runCurrent()
+
+        // WHEN
+        scope.cancel()
+        printMayFinish.complete(Unit)
+        runCurrent()
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ReceiptPrintSuccess)
+    }
+
+    @Test
+    fun `given a printer is connected, when retry is clicked, then retry is tracked instead of tapped and it is printed`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).thenReturn(ReceiptPrinterResult.Success)
+            val sut = createCoordinator()
+
+            // WHEN
+            sut.onPrintRetryClicked(ORDER_ID)
+            runCurrent()
+
+            // THEN
+            verify(receiptPrinterFacade).printReceipt(ORDER_ID, null)
+            verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ReceiptPrintRetryTapped)
+            verify(analyticsTracker, never()).track(WooPosAnalyticsEvent.Event.ReceiptPrintTapped)
+        }
+
+    @Test
+    fun `given no printer is connected, when retry is clicked, then setup is requested`() = runTest {
+        // GIVEN
+        val sut = createCoordinator()
+
+        sut.events.test {
+            // WHEN
+            sut.onPrintRetryClicked(ORDER_ID)
+            runCurrent()
+
+            // THEN
+            assertThat(awaitItem()).isEqualTo(WooPosPrintReceiptEvent.ShowPrinterSetup)
+            verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ReceiptPrintRetryTapped)
+        }
+    }
+
     private fun connectPrinter() {
         connectionStatus.value = ReceiptPrinterConnectionStatus.Connected(
             ReceiptPrinterDevice(id = "1", name = "Star mC-Print3")
@@ -463,6 +689,7 @@ class WooPosPrintReceiptCoordinatorTest {
     private fun TestScope.createCoordinator(scope: CoroutineScope = backgroundScope) = WooPosPrintReceiptCoordinator(
         receiptPrinterFacade = receiptPrinterFacade,
         logger = logger,
+        analyticsTracker = analyticsTracker,
         isReceiptPrintingEnabled = isReceiptPrintingEnabled,
         scope = scope,
     )

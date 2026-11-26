@@ -390,7 +390,7 @@ class WooPosPaymentSuccessViewModelTest {
 
             // THEN
             assertThat(viewModel.state.value.printReceiptFailure).isNull()
-            verify(printReceiptCoordinator).onPrintReceiptClicked(42L)
+            verify(printReceiptCoordinator).onPrintRetryClicked(42L)
         }
 
     @Test

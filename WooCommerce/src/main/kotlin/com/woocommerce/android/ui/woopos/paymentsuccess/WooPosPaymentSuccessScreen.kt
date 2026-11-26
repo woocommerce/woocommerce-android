@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.woopos.receiptprinting.WooPosPrintReceiptFailu
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptButtons
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterSetupDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ReceiptPrinterSetupSource
 
 @Composable
 fun WooPosPaymentSuccessScreen(
@@ -66,6 +67,7 @@ fun WooPosPaymentSuccessScreen(
 
     if (state.isReceiptPrinterSetupDialogVisible) {
         WooPosReceiptPrinterSetupDialog(
+            source = ReceiptPrinterSetupSource.PRINT_RECEIPT,
             onDismiss = viewModel::onReceiptPrinterSetupDialogDismissed,
             onConnectionSuccess = viewModel::onReceiptPrinterConnected,
         )
