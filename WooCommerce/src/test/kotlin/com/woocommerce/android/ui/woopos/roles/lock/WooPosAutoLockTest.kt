@@ -131,6 +131,48 @@ class WooPosAutoLockTest {
     }
 
     @Test
+    fun `given an almost expired timeout, when a payment ends, then a full interval starts`() = runTest {
+        // GIVEN
+        startInactivityTimer()
+        advanceTimeBy(ONE_MINUTE - 1_000)
+        autoLock.onPaymentInProgressChanged(true)
+        runCurrent()
+        advanceTimeBy(ONE_MINUTE * 2)
+        whenever(clock.milliseconds()).thenReturn(ONE_MINUTE * 3)
+        autoLock.onAppForegrounded()
+        verify(accessSession, never()).lock()
+
+        // WHEN
+        autoLock.onPaymentInProgressChanged(false)
+        runCurrent()
+        advanceTimeBy(ONE_MINUTE - 1)
+        runCurrent()
+
+        // THEN
+        verify(accessSession, never()).lock()
+        advanceTimeBy(1)
+        runCurrent()
+        verify(accessSession).lock()
+    }
+
+    @Test
+    fun `given a running timeout, when Never is selected, then its deadline no longer locks POS`() = runTest {
+        // GIVEN
+        startInactivityTimer()
+        advanceTimeBy(ONE_MINUTE - 1_000)
+
+        // WHEN
+        preferences.value = preferences.value.copy(inactivityTimeout = WooPosInactivityLockTimeout.NEVER)
+        runCurrent()
+        advanceTimeBy(ONE_MINUTE * 20)
+        whenever(clock.milliseconds()).thenReturn(ONE_MINUTE * 20)
+        autoLock.onAppForegrounded()
+
+        // THEN
+        verify(accessSession, never()).lock()
+    }
+
+    @Test
     fun `given the timeout is Never, when time passes, then POS stays unlocked`() = runTest {
         // GIVEN
         preferences.value = preferences.value.copy(inactivityTimeout = WooPosInactivityLockTimeout.NEVER)
