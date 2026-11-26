@@ -13,6 +13,7 @@ internal data class WooPosLockScreenLayout(
     val verticalPadding: Dp,
     val showsIllustration: Boolean,
     val statusHeight: Dp,
+    val titleHeight: Dp,
 ) {
     data class Metrics(
         val horizontalPadding: Dp,
@@ -69,6 +70,7 @@ internal data class WooPosLockScreenLayout(
                 verticalPadding = padding,
                 showsIllustration = showsIllustration,
                 statusHeight = statusHeight,
+                titleHeight = titleHeight,
             )
         }
 

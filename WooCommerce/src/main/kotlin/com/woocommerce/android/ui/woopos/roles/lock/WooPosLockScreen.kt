@@ -138,10 +138,7 @@ private fun BoxWithConstraintsScope.LockContent(
         translationY = intro.travel().y
     }
 
-    val density = LocalDensity.current
     val title = stringResource(R.string.woopos_lock_enter_pin)
-    val titleStyle = WooPosTypography.BodyXLarge.style.copy(fontWeight = FontWeight.Bold)
-    val measurer = rememberTextMeasurer()
     Box(
         Modifier
             .fillMaxSize()
@@ -153,62 +150,38 @@ private fun BoxWithConstraintsScope.LockContent(
             preferredSpacing = metrics.sectionSpacing,
             modifier = Modifier.fillMaxSize()
                 .padding(horizontal = metrics.horizontalPadding, vertical = layout.verticalPadding),
-            messageHeight = { width, spacing ->
-                val textWidth = min(CONTENT_MAX_WIDTH, width)
-                val textConstraints = Constraints(maxWidth = with(density) { textWidth.roundToPx() })
-                val titleHeight = with(density) {
-                    measurer.measure(title, titleStyle, constraints = textConstraints).size.height.toDp()
-                }
-                titleHeight + spacing +
-                    measureWooPosPINStatusHeight(measurer, textConstraints.maxWidth, STATUS_ROW_HEIGHT) +
+            messageHeight = { _, spacing ->
+                layout.titleHeight + spacing + layout.statusHeight +
                     if (layout.showsIllustration) metrics.illustrationSize + spacing else 0.dp
             },
             message = { spacing ->
-                val textWidth = min(CONTENT_MAX_WIDTH, maxWidth)
-                val statusHeight = measureWooPosPINStatusHeight(
-                    measurer,
-                    with(density) { textWidth.roundToPx() },
-                    STATUS_ROW_HEIGHT,
-                )
                 Column(
                     Modifier.widthIn(max = CONTENT_MAX_WIDTH).heightIn(max = maxHeight),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(spacing),
                 ) {
+                    if (layout.showsIllustration) {
+                        Box(
+                            Modifier.size(metrics.illustrationSize)
+                                .onGloballyPositioned { intro.animation.slot = it },
+                        )
+                    }
                     Column(
-                        modifier = Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()),
+                        modifier = Modifier.weight(1f, fill = false).then(contentModifier)
+                            .verticalScroll(rememberScrollState()),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(spacing),
                     ) {
-                        if (layout.showsIllustration) {
-                            Box(
-                                Modifier
-                                    .size(metrics.illustrationSize)
-                                    .onGloballyPositioned { intro.animation.slot = it },
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                LockIllustration(
-                                    shackleAngle = { intro.shackleAngle },
-                                    modifier = Modifier.graphicsLayer {
-                                        alpha = intro.illustrationAlpha
-                                        val travel = intro.travel()
-                                        translationX = travel.x
-                                        translationY = travel.y
-                                    },
-                                )
-                            }
-                        }
                         WooPosText(
                             text = title,
                             style = WooPosTypography.BodyXLarge,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.semantics { heading() }.then(contentModifier),
+                            modifier = Modifier.semantics { heading() },
                         )
                     }
                     Box(contentModifier) {
-                        WooPosPINEntryFeedback(state.status, state.enteredDigits, statusHeight)
+                        WooPosPINEntryFeedback(state.status, state.enteredDigits, layout.statusHeight)
                     }
                 }
             },
@@ -225,6 +198,19 @@ private fun BoxWithConstraintsScope.LockContent(
                 )
             },
         )
+        if (layout.showsIllustration) {
+            Box(
+                Modifier.size(metrics.illustrationSize).graphicsLayer {
+                    val position = intro.illustrationPosition()
+                    alpha = if (position == null) 0f else 1f
+                    translationX = position?.x ?: 0f
+                    translationY = position?.y ?: 0f
+                },
+                contentAlignment = Alignment.Center,
+            ) {
+                LockIllustration(shackleAngle = { intro.shackleAngle })
+            }
+        }
     }
 }
 
@@ -281,9 +267,14 @@ private class WooPosLockIntroAnimation {
 private class WooPosLockIntro(val isActive: Boolean, val animation: WooPosLockIntroAnimation) {
     val shackleAngle: Float get() = if (isActive) animation.shackle.value else 0f
     val contentAlpha: Float get() = if (isActive) animation.reveal.value else 1f
-    val illustrationAlpha: Float get() = if (isActive && slotTravel() == null) 0f else 1f
 
     fun travel(): Offset = if (isActive) (slotTravel() ?: Offset.Zero) * (1f - animation.reveal.value) else Offset.Zero
+
+    fun illustrationPosition(): Offset? {
+        val viewport = animation.viewport?.takeIf { it.isAttached } ?: return null
+        val slot = animation.slot?.takeIf { it.isAttached } ?: return null
+        return viewport.localPositionOf(slot, Offset.Zero) + travel()
+    }
 
     private fun slotTravel(): Offset? {
         val viewport = animation.viewport?.takeIf { it.isAttached } ?: return null
