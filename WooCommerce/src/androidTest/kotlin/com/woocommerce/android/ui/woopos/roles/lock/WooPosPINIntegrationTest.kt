@@ -26,6 +26,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -80,7 +81,7 @@ class WooPosPINIntegrationTest {
     @Before
     fun setUp(): Unit = runBlocking {
         AppPrefs.init(context)
-        hiltRule.inject()
+        withContext(Dispatchers.Main) { hiltRule.inject() }
         flags.setFlagOverride(FeatureFlag.WOO_POS_ROLES, true)
         selectedSite = SelectedSite(context, siteStore).apply { set(SiteModel().apply { id = SITE_ID }) }
         encrypted.clearAll()
