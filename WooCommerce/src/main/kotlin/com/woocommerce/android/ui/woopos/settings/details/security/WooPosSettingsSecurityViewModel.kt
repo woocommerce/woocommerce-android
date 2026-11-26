@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosCapability
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
+import com.woocommerce.android.ui.woopos.roles.approval.WooPosApprovalAction
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosLocalPINStore
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityState.Protected
@@ -41,22 +42,56 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
         readJob = viewModelScope.launch { read()?.let { _state.value = it } }
     }
 
-    fun onProtectionTurnedOff() {
-        if (removalJob?.isActive == true || _state.value !is Protected || !canManagePINs()) return
-        val id = selectedSite.getOrNull()?.id ?: return
+    suspend fun removeProtection(): Boolean = removePIN(WooPosLocalRole.ADMIN)
+
+    internal fun approvalForPINChange(role: WooPosLocalRole): WooPosApprovalAction? = when (role) {
+        WooPosLocalRole.ADMIN -> WooPosApprovalAction.ChangeAdminPIN
+        WooPosLocalRole.CASHIER -> null
+    }
+
+    fun deleteCashierPIN() {
+        if (removalJob?.isActive == true) return
+        removalJob = viewModelScope.launch { removePIN(WooPosLocalRole.CASHIER) }
+    }
+
+    private suspend fun removePIN(role: WooPosLocalRole): Boolean {
+        val scope = accessSession.approvalScope() ?: return false
+        val requestJob = currentCoroutineContext()[Job] ?: return false
+        if (!canRemovePINs(requestJob)) return false
+        removalJob = requestJob
         readJob?.cancel()
-        removalJob = viewModelScope.launch {
-            val removed = withContext(NonCancellable) {
-                store.removePIN(id, WooPosLocalRole.ADMIN).also { if (isSelected(id)) accessSession.initialize() }
-            }.isSuccess
+        val removed = persistRemoval(role, scope, requestJob)
+        val protectionRemoved = removed && role == WooPosLocalRole.ADMIN
+        try {
             currentCoroutineContext().ensureActive()
-            val current = read() ?: return@launch
-            _state.value = if (!removed && isSelected(id) && current is Protected) {
-                current.copy(removalFailed = true)
-            } else {
-                current
+            read()?.let { current ->
+                _state.value = if (!removed && isSelected(scope.siteId) && current is Protected) {
+                    current.copy(removalFailed = true)
+                } else {
+                    current
+                }
+            }
+            return removed && isSelected(scope.siteId)
+        } finally {
+            if (protectionRemoved && !requestJob.isActive && isSelected(scope.siteId)) {
+                withContext(NonCancellable) { accessSession.initialize() }
             }
         }
+    }
+
+    private fun canRemovePINs(requestJob: Job): Boolean {
+        val anotherRemovalPending = removalJob?.isActive == true && removalJob !== requestJob
+        return _state.value is Protected && canManagePINs() && !anotherRemovalPending
+    }
+
+    private suspend fun persistRemoval(
+        role: WooPosLocalRole,
+        scope: WooPosAccessSession.ApprovalScope,
+        requestJob: Job,
+    ): Boolean = withContext(NonCancellable) {
+        store.removePIN(scope.siteId, role) {
+            requestJob.isActive && accessSession.approvalScope() == scope && canManagePINs()
+        }.isSuccess
     }
 
     private suspend fun read(): WooPosSettingsSecurityState? {
@@ -74,7 +109,7 @@ class WooPosSettingsSecurityViewModel @Inject constructor(
         }
     }
 
-    private fun canManagePINs() = accessSession.state.value.allows(WooPosCapability.MANAGE_STORE_SETTINGS)
+    private fun canManagePINs() = accessSession.allows(WooPosCapability.MANAGE_STORE_SETTINGS)
 
     private fun isSelected(localSiteId: Int) = localSiteId == selectedSite.getOrNull()?.id
 }

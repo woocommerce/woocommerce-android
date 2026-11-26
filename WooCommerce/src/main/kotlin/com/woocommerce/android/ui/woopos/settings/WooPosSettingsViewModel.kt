@@ -18,6 +18,8 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SettingsOpened
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.StoreDetailsTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +34,7 @@ class WooPosSettingsViewModel @Inject constructor(
     private val childToParentEventReceiver: WooPosChildrenToParentEventReceiver,
     private val parentToChildEventSender: WooPosParentToChildrenEventSender,
     savedState: SavedStateHandle,
+    featureFlagRepository: FeatureFlagRepository,
 ) : ViewModel() {
     private val _state: MutableStateFlow<WooPosSettingsState> = savedState.getStateFlow(
         scope = viewModelScope,
@@ -41,6 +44,12 @@ class WooPosSettingsViewModel @Inject constructor(
     val state: StateFlow<WooPosSettingsState> = _state
 
     init {
+        if (_state.value.currentDestination is WooPosSettingsDetailDestination.Security &&
+            !featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ROLES)
+        ) {
+            _state.value = WooPosSettingsState()
+        }
+        if (_state.value.dialogState is WooPosSettingsDialogState.PinSetupDialog) hideDialog()
         listenToChildEvents()
     }
 
@@ -122,8 +131,8 @@ class WooPosSettingsViewModel @Inject constructor(
         }
     }
 
-    fun showPinSetupDialog(role: WooPosLocalRole) {
-        _state.update { it.copy(dialogState = WooPosSettingsDialogState.PinSetupDialog(role)) }
+    fun showPinSetupDialog(role: WooPosLocalRole, changingPIN: Boolean) {
+        _state.update { it.copy(dialogState = WooPosSettingsDialogState.PinSetupDialog(role, changingPIN)) }
     }
 
     fun showProductInfoDialog() {

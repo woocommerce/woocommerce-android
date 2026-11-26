@@ -106,20 +106,62 @@ class WooPosEncryptedPINStorageTest {
     }
 
     @Test
+    fun expiredRequestDiscardsStagedReplacementAndPreservesTheCurrentPIN(): Unit = runBlocking {
+        val record = File(directory, "1.pins")
+        val staged = File(directory, "1.pins.new")
+        var current = true
+        val guardedStorage = WooPosEncryptedPINStorage(context, "woopos.pin-test") {
+            if (staged.exists()) current = false
+            KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
+        }
+        WooPosLocalPINStore(storage, CoroutineDispatchers())
+            .createPIN(1, WooPosLocalRole.ADMIN, "1234", canCommit = { true }).getOrThrow()
+        val original = record.readBytes()
+        val store = WooPosLocalPINStore(guardedStorage, CoroutineDispatchers())
+
+        val result = store.replacePIN(1, WooPosLocalRole.ADMIN, "5678") { current }
+
+        assertThat(result.exceptionOrNull()).isEqualTo(WooPosPINError.StaleRequest)
+        assertThat(record.readBytes()).isEqualTo(original)
+        assertThat(staged.exists()).isFalse()
+        assertThat(store.getPINs(1).getOrThrow().getValue(WooPosLocalRole.ADMIN).matches("1234")).isTrue()
+    }
+
+    @Test
+    fun interruptedLegacyWriteRecoversThePreviousRecordBeforeReplacingIt() {
+        val original = byteArrayOf(1)
+        val replacement = byteArrayOf(2)
+        storage.write(1, original)
+        val record = File(directory, "1.pins")
+        val backup = File(directory, "1.pins.bak")
+        check(record.renameTo(backup))
+        record.writeBytes(byteArrayOf(0))
+
+        assertThat(storage.write(1, replacement) { false }).isFalse()
+        assertThat(storage.read(1)).isEqualTo(original)
+        storage.write(1, replacement)
+        assertThat(storage.read(1)).isEqualTo(replacement)
+        assertThat(backup.exists()).isFalse()
+    }
+
+    @Test
     fun failedAtomicCommitDoesNotReportSuccessfulPINChange(): Unit = runBlocking {
         val store = WooPosLocalPINStore(storage, CoroutineDispatchers())
         store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
-        File(directory, "1.pins.new").writeBytes(byteArrayOf(0))
-        check(directory.setWritable(false))
+        var sawStagedFile = false
         try {
-            assertThat(store.setPIN(1, WooPosLocalRole.ADMIN, "5678").exceptionOrNull())
-                .isEqualTo(WooPosPINError.StorageFailure)
-            val authenticator = WooPosPINAuthenticator(CoroutineDispatchers())
-            assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "1234").getOrThrow()).isNotNull()
-            assertThat(authenticator.authenticate(store.getPINs(1).getOrThrow(), "5678").getOrThrow()).isNull()
+            val result = store.replacePIN(1, WooPosLocalRole.ADMIN, "5678") {
+                sawStagedFile = File(directory, "1.pins.new").isFile
+                directory.setWritable(false)
+            }
+            assertThat(sawStagedFile).isTrue()
+            assertThat(result.exceptionOrNull()).isEqualTo(WooPosPINError.StorageFailure)
         } finally {
             check(directory.setWritable(true))
         }
+        val saved = store.getPINs(1).getOrThrow().getValue(WooPosLocalRole.ADMIN)
+        assertThat(saved.matches("1234")).isTrue()
+        assertThat(saved.matches("5678")).isFalse()
     }
 
     @Test
@@ -128,7 +170,7 @@ class WooPosEncryptedPINStorageTest {
         store.setPIN(1, WooPosLocalRole.ADMIN, "1234").getOrThrow()
         check(directory.setExecutable(false))
         try {
-            assertThat(store.removePIN(1, WooPosLocalRole.ADMIN).exceptionOrNull())
+            assertThat(store.removePIN(1, WooPosLocalRole.ADMIN, canCommit = { true }).exceptionOrNull())
                 .isEqualTo(WooPosPINError.StorageFailure)
             assertThat(store.getPINs(1).exceptionOrNull()).isEqualTo(WooPosPINError.StorageFailure)
         } finally {

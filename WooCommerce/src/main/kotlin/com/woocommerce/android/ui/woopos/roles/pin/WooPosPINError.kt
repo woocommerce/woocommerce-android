@@ -5,5 +5,6 @@ sealed class WooPosPINError : Exception() {
     data object AdminRequired : WooPosPINError()
     data object AlreadyExists : WooPosPINError()
     data object MatchesOtherRole : WooPosPINError()
+    data object StaleRequest : WooPosPINError()
     data object StorageFailure : WooPosPINError()
 }

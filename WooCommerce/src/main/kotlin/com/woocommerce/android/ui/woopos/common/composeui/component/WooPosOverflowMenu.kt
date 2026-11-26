@@ -20,6 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -29,6 +31,7 @@ fun WooPosOverflowMenu(
     modifier: Modifier = Modifier,
     primaryAction: WooPosOverflowPrimaryAction? = null,
     items: List<WooPosOverflowMenuItem>,
+    contentDescription: String = stringResource(R.string.more_menu),
 ) {
     Row(
         modifier = modifier,
@@ -43,20 +46,20 @@ fun WooPosOverflowMenu(
         }
 
         if (items.isNotEmpty()) {
-            OverflowDropdown(items = items)
+            OverflowDropdown(items = items, contentDescription = contentDescription)
         }
     }
 }
 
 @Composable
-private fun OverflowDropdown(items: List<WooPosOverflowMenuItem>) {
+private fun OverflowDropdown(items: List<WooPosOverflowMenuItem>, contentDescription: String) {
     var showMenu by remember { mutableStateOf(false) }
 
     Box {
         IconButton(onClick = { showMenu = true }) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_menu_more_vert),
-                contentDescription = stringResource(R.string.more_menu),
+                contentDescription = contentDescription,
                 tint = MaterialTheme.colorScheme.onSurface
             )
         }
@@ -68,6 +71,9 @@ private fun OverflowDropdown(items: List<WooPosOverflowMenuItem>) {
         ) {
             items.forEach { item ->
                 DropdownMenuItem(
+                    modifier = Modifier.semantics {
+                        item.contentDescription?.let { this.contentDescription = it }
+                    },
                     text = {
                         WooPosText(
                             text = item.label,
@@ -93,5 +99,6 @@ data class WooPosOverflowPrimaryAction(
 data class WooPosOverflowMenuItem(
     val label: String,
     val color: Color = Color.Unspecified,
+    val contentDescription: String? = null,
     val onClick: () -> Unit,
 )
