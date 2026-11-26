@@ -10,12 +10,14 @@ import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -122,15 +124,22 @@ class WooPosApprovalViewModel @Inject constructor(
     }
 
     private suspend fun complete(request: PendingAction) {
-        if (request.action.requiresDurableCompletion) {
-            val completed = request.perform()
-            currentCoroutineContext().ensureActive()
-            if (pending === request) {
-                if (completed) clear() else show(request, WooPosPINEntryStatus.StorageUnavailable)
-            }
-        } else {
+        if (!request.action.requiresDurableCompletion) {
             clear()
             request.perform()
+            return
+        }
+        val completed = request.perform()
+        currentCoroutineContext().ensureActive()
+        if (pending !== request) return
+        if (!completed) {
+            show(request, WooPosPINEntryStatus.StorageUnavailable)
+            return
+        }
+        clear()
+        // Refreshing removed protection invalidates the scope of this completed approval.
+        if (request.action == WooPosApprovalAction.DisablePINProtection) {
+            withContext(NonCancellable) { accessSession.initialize() }
         }
     }
 
