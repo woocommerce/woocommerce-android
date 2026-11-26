@@ -4174,7 +4174,7 @@
     <string name="woopos_security_lock_on_launch">Require PIN to launch POS</string>
     <string name="woopos_security_lock_on_background">Lock POS when app goes to background</string>
     <string name="woopos_security_lock_after_sale">Lock POS after each sale</string>
-    <string name="woopos_security_lock_after">Lock POS after</string>
+    <string name="woopos_security_lock_after">After a period of inactivity</string>
     <string name="woopos_security_never">Never</string>
     <plurals name="woopos_security_minutes">
         <item quantity="one">%1$d minute</item>
