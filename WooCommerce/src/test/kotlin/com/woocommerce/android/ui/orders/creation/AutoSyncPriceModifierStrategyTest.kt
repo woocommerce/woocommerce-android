@@ -74,4 +74,27 @@ class AutoSyncPriceModifierStrategyTest : SyncStrategyTest() {
             ).createOrUpdateOrder(change, source = OrderCreationSource.STORE_MANAGEMENT)
             job.cancel()
         }
+
+    @Test
+    fun `given the draft was emptied, when the same item is added again, then the change is submitted again`() =
+        testBlocking {
+            val job = sut.syncOrderChanges(orderDraftChanges, retryTrigger)
+                .launchIn(this)
+            val change = order.copy(items = OrderTestUtils.generateTestOrderItems())
+            orderDraftChanges.value = change
+            advanceUntilIdle()
+            orderDraftChanges.value = change.copy(
+                items = emptyList(),
+                feesLines = emptyList(),
+                shippingLines = emptyList()
+            )
+            advanceUntilIdle()
+            orderDraftChanges.value = change
+            advanceUntilIdle()
+            verify(
+                orderCreateEditRepository,
+                times(2)
+            ).createOrUpdateOrder(change, source = OrderCreationSource.STORE_MANAGEMENT)
+            job.cancel()
+        }
 }
