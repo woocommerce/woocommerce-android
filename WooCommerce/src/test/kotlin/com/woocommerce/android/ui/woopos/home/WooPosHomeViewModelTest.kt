@@ -236,6 +236,21 @@ class WooPosHomeViewModelTest {
         }
 
     @Test
+    fun `given phone cart is open, when cart emptied, then products are shown`() = runTest {
+        // GIVEN
+        val eventsFlow = MutableSharedFlow<ChildToParentEvent>()
+        whenever(childrenToParentEventReceiver.events).thenReturn(eventsFlow)
+        val viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosHomeUIEvent.PhoneOpenCartClicked)
+
+        // WHEN
+        eventsFlow.emit(ChildToParentEvent.CartEmptied)
+
+        // THEN
+        assertThat(viewModel.state.value.screenPositionState).isEqualTo(WooPosHomeState.ScreenPositionState.Products)
+    }
+
+    @Test
     fun `when ExitPosClicked comes from the toolbar, then exit confirmation is shown`() =
         runTest {
             // GIVEN
