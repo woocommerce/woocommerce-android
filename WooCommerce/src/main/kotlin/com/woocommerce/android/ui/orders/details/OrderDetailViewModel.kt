@@ -122,6 +122,7 @@ class OrderDetailViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val refreshShippingMethods: RefreshShippingMethods,
     private val isStoreCurrencyMatch: IsStoreCurrencyMatch,
+    private val fetchMissingStateNames: FetchMissingStateNames,
     getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue,
 ) : ScopedViewModel(savedState) {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
@@ -798,9 +799,16 @@ class OrderDetailViewModel @Inject constructor(
         orderDetailsTransactionLauncher.onOrderFetched()
         if (fetchedOrder != null) {
             _order.value = fetchedOrder
+            loadMissingStateNames(fetchedOrder)
             fetchOrderProducts()
         } else {
             triggerEvent(ShowSnackbar(string.order_error_fetch_generic))
+        }
+    }
+
+    private fun loadMissingStateNames(order: Order) = launch {
+        if (fetchMissingStateNames(listOf(order.billingAddress, order.shippingAddress))) {
+            orderDetailRepository.getOrderById(navArgs.orderId)?.let { _order.value = it }
         }
     }
 

@@ -9,7 +9,10 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.GiftCardSummary
+import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
@@ -30,6 +33,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartWooShippingL
 import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
 import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
+import com.woocommerce.android.ui.orders.details.FetchMissingStateNames
 import com.woocommerce.android.ui.orders.details.GetOrderSubscriptions
 import com.woocommerce.android.ui.orders.details.GetShippingLabelSupport
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
@@ -192,6 +196,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue = mock()
     private val refreshShippingMethods: RefreshShippingMethods = mock()
     private val isStoreCurrencyMatch: IsStoreCurrencyMatch = mock()
+    private val fetchMissingStateNames: FetchMissingStateNames = mock()
 
     private fun createViewModel() {
         createViewModel(newSavedState = savedState)
@@ -223,6 +228,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 analyticsTracker,
                 refreshShippingMethods,
                 isStoreCurrencyMatch,
+                fetchMissingStateNames,
                 getShippingMethodsWithOtherValue,
             )
         )
@@ -484,6 +490,44 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(currentViewStateValue!!.orderInfo!!.isVirtualOrder).isFalse()
+        }
+
+    @Test
+    fun `given state names were fetched, when the order is fetched, then the order is reloaded with them`() =
+        testBlocking {
+            val sichuan = AmbiguousLocation.Defined(Location(code = "CN24", name = "Sichuan / 四川", parentCode = "CN"))
+            val china = Location(code = "CN", name = "China")
+            val fetchedOrder = order.copy(
+                customer = order.customer?.copy(
+                    billingAddress = Address.EMPTY.copy(country = china, state = AmbiguousLocation.Raw("CN24"))
+                )
+            )
+            val reloadedOrder = fetchedOrder.copy(
+                customer = fetchedOrder.customer?.copy(
+                    billingAddress = fetchedOrder.billingAddress.copy(state = sichuan)
+                )
+            )
+            doReturn(null, reloadedOrder).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(fetchedOrder).whenever(orderDetailRepository).fetchOrderById(any())
+            whenever(
+                fetchMissingStateNames(listOf(fetchedOrder.billingAddress, fetchedOrder.shippingAddress))
+            ).thenReturn(true)
+
+            viewModel.start()
+
+            assertThat(currentViewStateValue!!.orderInfo!!.order!!.billingAddress.state).isEqualTo(sichuan)
+        }
+
+    @Test
+    fun `given no state names were fetched, when the order is fetched, then the order is not reloaded`() =
+        testBlocking {
+            doReturn(null).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
+            whenever(fetchMissingStateNames(listOf(order.billingAddress, order.shippingAddress))).thenReturn(false)
+
+            viewModel.start()
+
+            verify(orderDetailRepository, times(1)).getOrderById(any())
         }
 
     @Test
