@@ -51,7 +51,7 @@ class WooPosPaymentSuccessViewModelTest {
         on { buttonState } doReturn printReceiptButtonState
     }
     private val printReceiptCoordinatorFactory: WooPosPrintReceiptCoordinator.Factory = mock {
-        on { create(any()) } doReturn printReceiptCoordinator
+        on { create(any(), any()) } doReturn printReceiptCoordinator
     }
 
     private fun createViewModel(
@@ -390,7 +390,7 @@ class WooPosPaymentSuccessViewModelTest {
 
             // THEN
             assertThat(viewModel.state.value.printReceiptFailure).isNull()
-            verify(printReceiptCoordinator).onPrintReceiptClicked(42L)
+            verify(printReceiptCoordinator).onPrintRetryClicked(42L)
         }
 
     @Test

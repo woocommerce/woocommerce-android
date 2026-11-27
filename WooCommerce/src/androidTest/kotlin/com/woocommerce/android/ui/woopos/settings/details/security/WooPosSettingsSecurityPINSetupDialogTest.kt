@@ -24,7 +24,6 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.then
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -361,10 +360,10 @@ class WooPosSettingsSecurityPINSetupDialogTest {
     }
 
     @Test
-    fun shortPhoneWithLargeTextCanScrollToTheBottomKeypadRow() {
+    fun shortPhoneWithLargeTextShowsTheBottomKeypadRowWithoutScrolling() {
         setPhoneDialog(Confirm(CASHIER), DpSize(800.dp, 320.dp), fontScale = 2f)
 
-        composeTestRule.onNodeWithText("0").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("0").assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(context.getString(R.string.woopos_lock_delete_digit))
             .assertIsDisplayed()
     }
@@ -381,6 +380,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
                     isFullScreen = false,
                     onUIEvent = {},
                     onClose = {},
+                    savedActionLabel = context.getString(R.string.continue_button),
                 )
             }
         }
@@ -423,6 +423,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
                         confirmTitle = confirmTitle,
                         onUIEvent = {},
                         onClose = {},
+                        savedActionLabel = context.getString(R.string.continue_button),
                     )
                 }
             }
@@ -440,6 +441,7 @@ class WooPosSettingsSecurityPINSetupDialogTest {
                     isVisible = isVisible.value,
                     onUIEvent = { events += it },
                     onClose = { closeCount++ },
+                    savedActionLabel = context.getString(R.string.continue_button),
                 )
             }
         }

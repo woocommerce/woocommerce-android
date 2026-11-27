@@ -31,7 +31,13 @@ class WooPosLockScreenLayoutTest {
 
         // THEN
         assertThat(layout).isEqualTo(
-            WooPosLockScreenLayout(90.dp, 40.dp, showsIllustration = true, statusHeight = 48.dp)
+            WooPosLockScreenLayout(
+                90.dp,
+                40.dp,
+                showsIllustration = true,
+                statusHeight = 48.dp,
+                titleHeight = 32.dp,
+            )
         )
     }
 
@@ -42,7 +48,13 @@ class WooPosLockScreenLayoutTest {
 
         // THEN
         assertThat(layout).isEqualTo(
-            WooPosLockScreenLayout(90.dp, 16.dp, showsIllustration = true, statusHeight = 48.dp)
+            WooPosLockScreenLayout(
+                90.dp,
+                16.dp,
+                showsIllustration = true,
+                statusHeight = 48.dp,
+                titleHeight = 32.dp,
+            )
         )
     }
 
@@ -59,7 +71,7 @@ class WooPosLockScreenLayoutTest {
 
         // THEN
         assertThat(layout).isEqualTo(
-            WooPosLockScreenLayout(72.dp, 8.dp, showsIllustration = false, statusHeight = 96.dp)
+            WooPosLockScreenLayout(72.dp, 8.dp, showsIllustration = false, statusHeight = 96.dp, titleHeight = 128.dp)
         )
     }
 

@@ -16,7 +16,7 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarS
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
 import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
@@ -460,7 +460,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
         viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked)
 
         // WHEN
-        accessState.value = WooPosAccessSessionState.Locked(WooPosLockScreenState.Status.Idle)
+        accessState.value = WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Idle)
 
         // THEN
         assertThat(viewModel.state.value.menu).isEqualTo(WooPosHomeFloatingToolbarState.Menu.Hidden)

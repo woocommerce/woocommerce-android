@@ -31,6 +31,9 @@ data class CustomColors(
 
     val onSurfaceVariantLowest: Color,
     val onSurfaceVariantHighest: Color,
+    val secondaryText: Color,
+    val textLink: Color,
+    val onSurfaceError: Color,
 
     val infoLowest: Color,
     val onInfoLowest: Color,
@@ -160,6 +163,9 @@ private val LightCustomColors = CustomColors(
 
     onSurfaceVariantLowest = WooPosColors.Gray30,
     onSurfaceVariantHighest = WooPosColors.Gray60,
+    secondaryText = WooPosColors.Gray30,
+    textLink = WooPosColors.WooPurple40,
+    onSurfaceError = WooPosColors.WooRed50,
 
     infoLowest = WooPosColors.Blue10,
     errorLowest = WooPosColors.WooRed0,
@@ -185,6 +191,9 @@ private val DarkCustomColors = CustomColors(
 
     onSurfaceVariantLowest = WooPosColors.Gray50,
     onSurfaceVariantHighest = WooPosColors.Gray20,
+    secondaryText = WooPosColors.Gray20,
+    textLink = WooPosColors.WooPurple10,
+    onSurfaceError = WooPosColors.WooRed10,
 
     infoLowest = WooPosColors.Blue20,
     errorLowest = WooPosColors.WooRed10,

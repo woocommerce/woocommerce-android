@@ -40,7 +40,7 @@ import com.woocommerce.android.ui.woopos.settings.details.hardware.receiptprinte
 import com.woocommerce.android.ui.woopos.settings.details.help.WooPosHelpDetailScreen
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSettingsLocalCatalogScreen
 import com.woocommerce.android.ui.woopos.settings.details.payments.WooPosSettingsPaymentsScreen
-import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityScreen
+import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityRoute
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityState
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityViewModel
 import com.woocommerce.android.ui.woopos.settings.details.store.WooPosSettingsStoreScreen
@@ -52,7 +52,7 @@ fun WooPosSettingsDetailPaneScreen(
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
-    onShowPinSetupDialog: (WooPosLocalRole) -> Unit,
+    onShowPinSetupDialog: (WooPosLocalRole, Boolean) -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -73,7 +73,9 @@ fun WooPosSettingsDetailPaneScreen(
     val securityState = securityViewModel?.state?.collectAsState()?.value
     val visibleSecurityState = when {
         securityState == null -> WooPosSettingsSecurityState.Loading
-        pinSetupRole == WooPosLocalRole.ADMIN && securityState is WooPosSettingsSecurityState.Protected ->
+        pinSetupRole == WooPosLocalRole.ADMIN &&
+            (state.dialogState as? WooPosSettingsDialogState.PinSetupDialog)?.changingPIN == false &&
+            securityState is WooPosSettingsSecurityState.Protected ->
             WooPosSettingsSecurityState.Off
         else -> securityState
     }
@@ -101,10 +103,9 @@ fun WooPosSettingsDetailPaneScreen(
         transition.AnimatedContent(transitionSpec = { settingsDetailTransition() }) { destination ->
             when (destination) {
                 is WooPosSettingsDetailDestination.Security.Overview -> {
-                    WooPosSettingsSecurityScreen(
+                    WooPosSettingsSecurityRoute(
                         state = visibleSecurityState,
-                        onSetUpPIN = onShowPinSetupDialog,
-                        onProtectionTurnedOff = { securityViewModel?.onProtectionTurnedOff() },
+                        onShowPINEditor = onShowPinSetupDialog,
                     )
                 }
 

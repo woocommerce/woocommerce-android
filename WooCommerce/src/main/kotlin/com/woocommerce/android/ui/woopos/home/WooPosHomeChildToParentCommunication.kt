@@ -80,7 +80,7 @@ sealed class ChildToParentEvent {
         data class ToEmailReceipt(val orderId: Long) : NavigationEvent()
         data class ToCustomAmount(val mode: WooPosCustomAmountFormState.Mode) : NavigationEvent()
         data object ReturnHomeFromCashWhenCardPaymentStarted : NavigationEvent()
-        data object ExitPos : NavigationEvent()
+        data object ExitConfirmed : NavigationEvent()
         data object ToSettings : NavigationEvent()
         data object ToOrders : NavigationEvent()
     }

@@ -17,6 +17,7 @@ class WooPosPINHash internal constructor(
 
     companion object {
         const val PIN_LENGTH = 4
+        internal val PIN_DIGIT_RANGE = 0..9
         internal const val ITERATIONS = 100_000
         internal const val SALT_BYTES = 16
         internal const val HASH_BYTES = 32

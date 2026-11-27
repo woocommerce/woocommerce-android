@@ -21,6 +21,7 @@ import com.woocommerce.android.model.Order.CouponLine
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundErrorMapper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundableChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -87,9 +88,11 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
@@ -106,6 +109,7 @@ import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.isA
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -166,7 +170,7 @@ class WooPosTotalsViewModelTest {
         on { buttonState } doReturn MutableStateFlow(WooPosPrintReceiptButtonState.Idle)
     }
     private val printReceiptCoordinatorFactory: WooPosPrintReceiptCoordinator.Factory = mock {
-        on { create(any()) } doReturn printReceiptCoordinator
+        on { create(any(), any()) } doReturn printReceiptCoordinator
     }
     private val refreshProductsSignal: RefreshProductsSignal = mock()
     private val crashLogging: CrashLogging = mock()
@@ -234,6 +238,7 @@ class WooPosTotalsViewModelTest {
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
         private const val CREATED_ORDER_ID = 23L
+        private const val NEXT_CREATED_ORDER_ID = 24L
         private const val PREVIOUS_ORDER_ID = 22L
         private const val COUPON_ID = 10L
     }
@@ -303,7 +308,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `given checkout state, when BackFromCheckoutToCartClicked, then state is idle`() = runTest {
+    fun `given checkout state, when BackFromCheckoutToCartClicked, then checkout state is kept`() = runTest {
         // GIVEN
         val events = MutableStateFlow<ParentToChildrenEvent>(
             ParentToChildrenEvent.CheckoutClicked(
@@ -322,7 +327,7 @@ class WooPosTotalsViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        assertThat(viewModel.state.value).isEqualTo(WooPosTotalsViewState.Idle)
+        assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Checkout::class.java)
     }
 
     @Test
@@ -1777,6 +1782,35 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
+    fun `given an order was created, when the next order is created, then the print coordinator follows its order id`() =
+        runTest {
+            // GIVEN
+            val itemClickedData = listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L))
+            val checkoutClicked = ParentToChildrenEvent.CheckoutClicked(itemClickedData)
+            val events = MutableStateFlow<ParentToChildrenEvent>(checkoutClicked)
+            createViewModelAndSetupForSuccessfulOrderCreation(
+                itemClickedData = itemClickedData,
+                parentToChildrenEventFlow = events,
+                orderItems = listOf(Order.Item.EMPTY.copy(productId = 1L, subtotal = BigDecimal("1.00"))),
+                nextOrderIds = listOf(NEXT_CREATED_ORDER_ID),
+            )
+            val currentOrderId = argumentCaptor<Flow<Long>>()
+            verify(printReceiptCoordinatorFactory).create(any(), currentOrderId.capture())
+            currentOrderId.firstValue.distinctUntilChanged().test {
+                assertThat(awaitItem()).isEqualTo(CREATED_ORDER_ID)
+
+                // WHEN
+                events.value = ParentToChildrenEvent.BackFromCheckoutToCartClicked
+                advanceUntilIdle()
+                events.value = checkoutClicked
+                advanceUntilIdle()
+
+                // THEN
+                assertThat(awaitItem()).isEqualTo(NEXT_CREATED_ORDER_ID)
+            }
+        }
+
+    @Test
     fun `when the coordinator asks for printer setup, then the parent is asked to show the setup dialog`() =
         runTest {
             // GIVEN
@@ -1868,7 +1902,7 @@ class WooPosTotalsViewModelTest {
             )
 
             // THEN
-            verify(printReceiptCoordinator).onPrintReceiptClicked(CREATED_ORDER_ID)
+            verify(printReceiptCoordinator).onPrintRetryClicked(CREATED_ORDER_ID)
         }
 
     @Test
@@ -2241,6 +2275,74 @@ class WooPosTotalsViewModelTest {
 
         // THEN
         verify(childrenToParentEventSender).sendToParent(ReturnedFromCardReaderPaymentToCheckout)
+    }
+
+    @Test
+    fun `given TTP connection pending, when checkout is left, then no payment starts after the connection completes`() =
+        runTest {
+            // GIVEN
+            val pending = givenTtpConnectionPending(readerStatus = MutableStateFlow(CardReaderStatus.NotConnected()))
+
+            // WHEN
+            pending.events.value = ParentToChildrenEvent.BackFromCheckoutToCartClicked
+            advanceUntilIdle()
+            pending.connection.complete(Result.success(Unit))
+            advanceUntilIdle()
+
+            // THEN
+            verify(builtInReaderConnector).disconnectIfConnected()
+            verify(pending.factory, never()).create(any(), any(), any(), eq(CardReaderType.BUILT_IN))
+        }
+
+    @Test
+    fun `given SDK still connecting when checkout is left, when the reader connects later, then it is disconnected`() =
+        runTest {
+            // GIVEN
+            val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connecting)
+            val pending = givenTtpConnectionPending(readerStatus = readerStatus)
+
+            // WHEN
+            pending.events.value = ParentToChildrenEvent.BackFromCheckoutToCartClicked
+            runCurrent()
+            verify(builtInReaderConnector, never()).disconnectIfConnected()
+            readerStatus.value = CardReaderStatus.Connected(mock())
+            runCurrent()
+
+            // THEN
+            verify(builtInReaderConnector).disconnectIfConnected()
+        }
+
+    private class TtpConnectionPending(
+        val events: MutableStateFlow<ParentToChildrenEvent>,
+        val connection: CompletableDeferred<Result<Unit>>,
+        val factory: WooPosCardReaderPaymentControllerFactory,
+    )
+
+    private suspend fun TestScope.givenTtpConnectionPending(
+        readerStatus: MutableStateFlow<CardReaderStatus>,
+    ): TtpConnectionPending {
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
+        val connection = CompletableDeferred<Result<Unit>>()
+        whenever(builtInReaderConnector.connect()).doSuspendableAnswer { connection.await() }
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
+        val events = MutableStateFlow<ParentToChildrenEvent>(
+            ParentToChildrenEvent.CheckoutClicked(
+                listOf(
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                )
+            )
+        )
+        val vm = createViewModelAndSetupForSuccessfulOrderCreation(
+            controllerFactory = factory,
+            parentToChildrenEventFlow = events,
+        )
+        advanceUntilIdle()
+        vm.onUIEvent(WooPosTotalsUIEvent.OnTapToPayClicked)
+        runCurrent()
+        return TtpConnectionPending(events, connection, factory)
     }
 
     @Test
@@ -3849,6 +3951,7 @@ class WooPosTotalsViewModelTest {
         datePaidOnServer: Date? = null,
         orderFetchFinished: Deferred<Unit> = CompletableDeferred(Unit),
         isFetchFailing: Boolean = false,
+        nextOrderIds: List<Long> = emptyList(),
     ): WooPosTotalsViewModel {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_error_reader_not_connected_title))
             .thenReturn("Reader not connected")
@@ -3887,11 +3990,13 @@ class WooPosTotalsViewModelTest {
             total = BigDecimal("5.00"),
             couponLines = couponLines,
         )
+        val nextOrders = nextOrderIds.map { order.copy(id = it) }
         val totalsRepository: WooPosTotalsRepository = mock {
             on {
                 createOrderFromCartItems(itemClickedData)
-            }.thenReturn(Result.success(order))
+            }.thenReturn(Result.success(order), *nextOrders.map { Result.success(it) }.toTypedArray())
         }
+        nextOrders.forEach { whenever(totalsRepository.getOrderById(it.id)).thenReturn(it) }
         val priceFormat: WooPosFormatPrice = mock {
             on { invoke(BigDecimal("1.00")) }.thenReturn("1.00$")
             on { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")

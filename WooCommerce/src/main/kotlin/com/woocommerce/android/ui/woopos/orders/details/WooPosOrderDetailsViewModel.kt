@@ -18,6 +18,9 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsVi
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
 import com.woocommerce.android.ui.woopos.orders.details.refund.RefundRowData
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
+import com.woocommerce.android.ui.woopos.roles.WooPosCapability
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSession
+import com.woocommerce.android.ui.woopos.roles.lock.WooPosAccessSessionState
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -31,6 +34,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
@@ -49,6 +53,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     private val formatPrice: WooPosFormatPrice,
     private val coordinator: WooPosOrdersCoordinator,
     private val networkStatus: WooPosNetworkStatus,
+    private val accessSession: WooPosAccessSession,
 ) : ViewModel() {
 
     private val singleOrderId: Long? = savedStateHandle.get<Long>(ORDERS_ROUTE_ORDER_ID_KEY)
@@ -68,6 +73,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     private var refreshOrderJob: Job? = null
     private var cachedRefundData: CachedRefundData? = null
     private var lastRequestedOrderId: Long? = null
+    private var approvedRefund: ApprovedRefund? = null
 
     init {
         if (singleOrderId != null) {
@@ -154,9 +160,32 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         }
     }
 
+    internal fun bindRefundToSession(orderId: Long) {
+        approvedRefund = accessSession.approvalScope()?.let { ApprovedRefund(orderId, it) }
+    }
+
+    internal fun activeRefundOrderId(orderId: Long?): Long? {
+        if (orderId == null) return null
+        val approval = approvedRefund
+        val isAuthorized = if (approval != null) {
+            approval.orderId == orderId && approval.scope == accessSession.approvalScope()
+        } else {
+            accessSession.state.value == WooPosAccessSessionState.Unprotected &&
+                accessSession.allows(WooPosCapability.ISSUE_REFUNDS)
+        }
+        return orderId.takeIf { isAuthorized }
+    }
+
+    internal suspend fun awaitRefundRetirement(orderId: Long) {
+        accessSession.approvalScopeChanges.first { activeRefundOrderId(orderId) == null }
+    }
+
     fun onBackFromIssueRefund(orderId: Long? = null) {
+        approvedRefund = null
         refreshOrderAfterIssueRefund(orderId)
     }
+
+    private data class ApprovedRefund(val orderId: Long, val scope: WooPosAccessSession.ApprovalScope)
 
     fun onRefundDetailsDialogDismissed() {
         val current = _state.value as? WooPosOrderDetailsState.Loaded ?: return

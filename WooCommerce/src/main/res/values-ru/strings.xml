@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-11-03 15:57:54+0000
+Translation-Revision-Date: 2026-11-18 15:58:32+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_payment_status_check_failed_message">Не удалось проверить статус платежа. Проверьте подключение к Интернету и повторите попытку.</string>
+    <string name="woopos_totals_payment_not_confirmed_check_status">Проверить статус платежа</string>
+    <string name="woopos_totals_payment_not_confirmed_message">Не удалось подтвердить платёж, возможно, с карты уже списаны средства. Проверьте статус платежа, прежде чем выбрать другой способ оплаты.</string>
+    <string name="woopos_totals_payment_not_confirmed_title">Платёж не подтверждён</string>
+    <string name="woopos_lock_digits_entered">Введены цифры: %1$d из %2$d</string>
+    <string name="woopos_lock_delete_digit">Удалить</string>
+    <string name="woopos_lock_enter_pin">Введите PIN-код, чтобы разблокировать POS</string>
+    <string name="woopos_lock_pos">Заблокировать POS</string>
+    <string name="woopos_custom_amount_edit_amount_title">Изменить сумму</string>
+    <string name="woopos_custom_amount_name_optional">Название (необязательно)</string>
+    <string name="woopos_custom_amount_details_title">Детали произвольных сумм</string>
+    <string name="ai_support_chat_ai_disclosure">Вы общаетесь с ИИ службы поддержки Woo.</string>
+    <string name="woopos_lock_pin_entry">Ввод PIN-кода</string>
+    <string name="card_reader_payment_failed_capture_outcome_unknown">Возможно, плата с карты уже списана. Повторите попытку, чтобы проверить статус платежа.</string>
+    <string name="card_reader_payment_not_confirmed_header">Платёж не подтверждён</string>
+    <string name="barcode_scanning_hardware_scanner_wrong_value">Отсканированный код не совпадает. Установите для сканера ту же раскладку клавиатуры, что и на устройстве.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_instruction">Отсканируйте штрихкод сканером.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_success">Ваш сканер работает</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_title">Проверить сканер</string>
+    <string name="barcode_scanning_hardware_scanner_info_usage">Сканируйте на экранах «Заказы» и «Товары» или при создании заказа. Вам не нужно открывать камеру.</string>
+    <string name="barcode_scanning_hardware_scanner_info_title">Использовать сканер через Bluetooth либо USB</string>
+    <string name="barcode_scanning_hardware_scanner_info_setup">Подключите сканер в настройках Bluetooth устройства или с помощью USB. Установите режим клавиатуры (HID).</string>
+    <string name="barcode_scanning_or">или</string>
+    <string name="barcode_scanning_hardware_scanner_info_link">Использовать внешний сканер</string>
+    <string name="login_site_credentials_web_authorization_site_mismatch">Эта страница подтверждения относится к другому сайту. В целях безопасности мы остановили вход.</string>
+    <string name="login_store_suggestion_unavailable">Не удалось подтвердить этот магазин по ссылке. Чтобы продолжить, введите адрес магазина.</string>
+    <string name="login_store_suggestion_redirected">Этот адрес ведёт на другой сайт. Продолжите, только если это ваш магазин.</string>
+    <string name="login_store_suggestion_use_different_store">Использовать другой магазин</string>
+    <string name="login_store_suggestion_log_in">Вход в этот магазин</string>
+    <string name="login_store_suggestion_description">Продолжите, только если это адрес вашего магазина.</string>
+    <string name="login_store_suggestion_title">Войти в этот магазин?</string>
     <string name="woo_shipping_labels_service_status_severity_info">Информация</string>
     <string name="woo_shipping_labels_service_status_severity_warning">Предупреждение</string>
     <string name="woo_shipping_labels_service_status_severity_error">Ошибка</string>
@@ -295,7 +326,6 @@ Language: ru
     <string name="login_qr_endpoint_missing_title">В этот магазин нельзя войти по QR-коду</string>
     <string name="login_qr_scanner_authenticating">Вход…</string>
     <string name="login_qr_scanner_visit_url">Перейти на %1$s</string>
-    <string name="login_qr_scanner_hint">Поместить QR-код в центр кадра</string>
     <string name="login_qr_prologue_camera_blocked_settings_button">Открыть настройки разрешений</string>
     <string name="login_qr_prologue_camera_blocked_body">Включите доступ к камере в настройках или нажмите «Отменить», чтобы войти по адресу магазина.</string>
     <string name="login_qr_prologue_camera_blocked_title">Доступ к камере отключён</string>
@@ -334,20 +364,14 @@ Language: ru
     <string name="woopos_mark_order_as_paid_confirm_button">Отметить как оплаченный</string>
     <string name="woopos_mark_order_as_paid_note_hint">Например, банковский перевод от Maria, ref 4827</string>
     <string name="woopos_mark_order_as_paid_title">Отметить заказ как оплаченный?</string>
-    <string name="woopos_custom_amount_dialog_cancel">Отмена</string>
     <string name="woopos_custom_amount_dialog_submit_edit">Обновить индивидуальную сумму</string>
     <string name="woopos_custom_amount_dialog_submit_add">Добавить индивидуальную сумму</string>
     <string name="woopos_custom_amount_dialog_charge_taxes">Удержать налоги</string>
     <string name="woopos_custom_amount_dialog_name_placeholder">Индивидуальная сумма</string>
     <string name="woopos_custom_amount_dialog_name_label">Имя</string>
     <string name="woopos_custom_amount_dialog_amount_label">Сумма</string>
-    <string name="woopos_custom_amount_form_title">Индивидуальная сумма</string>
-    <string name="woopos_custom_amount_dialog_title_edit">Изменить индивидуальную сумму</string>
-    <string name="woopos_custom_amount_dialog_title_add">Добавить индивидуальную сумму</string>
     <string name="woopos_custom_amount_entry_subtitle">Добавить разовый платёж</string>
     <string name="woopos_custom_amount_entry_title">Индивидуальная сумма</string>
-    <string name="woopos_cart_custom_amount_menu_remove">Удалить</string>
-    <string name="woopos_cart_custom_amount_menu_edit">Редактировать</string>
     <string name="woopos_cart_custom_amount_includes_tax">Включён налог</string>
     <string name="woopos_mark_order_as_paid_message">Заказ на сумму %1$s будет отмечен как выполненный. Пользуйтесь этой функцией, только если платёж уже был получен другим способом.</string>
     <string name="woopos_cart_custom_amount_edit_content_description">Изменить %s</string>
@@ -2040,8 +2064,8 @@ Language: ru
     <string name="blaze_campaign_list_title">Кампании Blaze</string>
     <string name="blaze_campaign_status_canceled">Отменено</string>
     <string name="blaze_campaign_status_scheduled">Запланировано</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Попробуйте оплатить %s банковской картой.\nПосле этого средства будут возвращены.</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find">Выберите «Оплата в касание» в опциях получения платежей в\nсведениях о заказе или разделе «Меню &gt; Платежи».</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Попробуйте оплатить через %s банковской картой.\nПлатёж будет возвращён после завершения; взимается комиссия за обработку.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">Просто, безопасно и конфиденциально.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Принимайте все виды очных платежей прямо\nна вашем телефоне. Дополнительное оборудование не требуется.</string>
     <string name="blaze_campaign_status_rejected">Отклонено</string>

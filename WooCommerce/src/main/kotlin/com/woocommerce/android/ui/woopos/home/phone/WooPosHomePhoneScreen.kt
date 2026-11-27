@@ -86,7 +86,7 @@ private fun WooPosHomePhoneContent(
         modifier = Modifier.wooPosHomeRootContainer(state, onHomeUIEvent)
     ) {
         AnimatedContent(
-            targetState = targetScreen,
+            targetState = phoneScreenFor(state.screenPositionState),
             transitionSpec = { screenTransitionFor(initialState, targetState) },
             modifier = Modifier.fillMaxSize(),
             label = "phone_screen_transition",
@@ -106,7 +106,6 @@ private fun WooPosHomePhoneContent(
                 WooPosHomeState.PhoneScreen.Checkout -> WooPosPhoneTotalsScreen(
                     onBack = { onHomeUIEvent(WooPosHomeUIEvent.PhoneBackFromCheckoutClicked) },
                     viewModel = totalsViewModel,
-                    isLeaving = isLeaving,
                 )
             }
         }

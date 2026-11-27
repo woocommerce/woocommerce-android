@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewModel
 @Composable
 fun WooPosPhoneTotalsScreen(
     onBack: () -> Unit,
-    isLeaving: Boolean,
     modifier: Modifier = Modifier,
     viewModel: WooPosTotalsViewModel = hiltViewModel(),
 ) {
@@ -29,7 +28,6 @@ fun WooPosPhoneTotalsScreen(
                 .background(MaterialTheme.colorScheme.surface),
             viewModel = viewModel,
             onPhoneBack = onBack,
-            isLeaving = isLeaving,
         )
     }
 }
@@ -38,6 +36,6 @@ fun WooPosPhoneTotalsScreen(
 @WooPosPreview
 fun WooPosPhoneTotalsScreenPreview() {
     WooPosTheme {
-        WooPosPhoneTotalsScreen(onBack = {}, isLeaving = false)
+        WooPosPhoneTotalsScreen(onBack = {})
     }
 }
