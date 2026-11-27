@@ -147,7 +147,7 @@ private fun WooPosPhoneProductsContent(
         }
 
         AnimatedVisibility(
-            visible = itemsState is WooPosItemsToolbarViewState.CouponList,
+            visible = itemsState is WooPosItemsToolbarViewState.CouponList && !itemsState.isSearchOpen,
             enter = scaleIn() + fadeIn(),
             exit = scaleOut() + fadeOut(),
             modifier = Modifier

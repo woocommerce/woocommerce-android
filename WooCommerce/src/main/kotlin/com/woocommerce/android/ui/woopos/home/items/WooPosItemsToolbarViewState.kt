@@ -8,6 +8,9 @@ sealed class WooPosItemsToolbarViewState(
     open val search: SearchState,
     open val backNavigation: Boolean = false,
 ) {
+    val isSearchOpen: Boolean
+        get() = (search as? SearchState.Visible)?.state is WooPosSearchInputState.Open
+
     data class ProductList(
         override val tabs: List<Tab>,
         override val search: SearchState,
