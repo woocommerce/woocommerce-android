@@ -11,6 +11,9 @@ data class WooPosHomeState(
     val screenPositionState: ScreenPositionState,
     val dialogState: DialogState = DialogState.Hidden,
 ) : Parcelable {
+    val isPhoneCartSheetVisible: Boolean
+        get() = screenPositionState == ScreenPositionState.Cart && dialogState == DialogState.Hidden
+
     @Parcelize
     sealed class ScreenPositionState : Parcelable {
         @Parcelize
