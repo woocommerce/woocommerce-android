@@ -35,6 +35,18 @@ class WooPosHomeStateTest {
     }
 
     @Test
+    fun `given Checkout position and no dialog, when checking phone cart sheet visibility, then visible`() {
+        // GIVEN
+        val state = WooPosHomeState(screenPositionState = ScreenPositionState.Checkout.CartWithTotals)
+
+        // WHEN
+        val result = state.isPhoneCartSheetVisible
+
+        // THEN
+        assertThat(result).isTrue()
+    }
+
+    @Test
     fun `given Cart position, when getting the phone screen, then Products`() {
         // GIVEN
         val state = WooPosHomeState(screenPositionState = ScreenPositionState.Cart)

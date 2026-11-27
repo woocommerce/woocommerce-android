@@ -16,9 +16,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -80,21 +77,18 @@ private fun WooPosHomePhoneContent(
         }
     }
 
-    val targetScreen = state.phoneScreen
-
     Box(
         modifier = Modifier.wooPosHomeRootContainer(state, onHomeUIEvent)
     ) {
         AnimatedContent(
-            targetState = phoneScreenFor(state.screenPositionState),
+            targetState = state.phoneScreen,
             transitionSpec = { screenTransitionFor(initialState, targetState) },
             modifier = Modifier.fillMaxSize(),
             label = "phone_screen_transition",
         ) { screen ->
-            val isLeaving = screen != targetScreen
             when (screen) {
                 WooPosHomeState.PhoneScreen.Products -> WooPosPhoneCartSheet(
-                    isVisible = rememberKeptWhile(isLeaving, state.isPhoneCartSheetVisible),
+                    isVisible = state.isPhoneCartSheetVisible,
                     cartState = cartState,
                     onOpenCartClick = { onHomeUIEvent(WooPosHomeUIEvent.PhoneOpenCartClicked) },
                     onDismissRequest = { onHomeUIEvent(WooPosHomeUIEvent.PhoneBackFromCartClicked) },
@@ -112,13 +106,6 @@ private fun WooPosHomePhoneContent(
 
         WooPosHomeDialogs(state.dialogState, onHomeUIEvent)
     }
-}
-
-@Composable
-private fun <T> rememberKeptWhile(isKept: Boolean, value: T): T {
-    var keptValue by remember { mutableStateOf(value) }
-    if (!isKept) keptValue = value
-    return keptValue
 }
 
 private fun AnimatedContentTransitionScope<WooPosHomeState.PhoneScreen>.screenTransitionFor(
