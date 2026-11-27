@@ -1,0 +1,2 @@
+26.1:
+Anpassade belopp i Woo POS öppnas nu på en egen skärm, så att du kan ställa in belopp, namn och moms innan du lägger till dem i varukorgen. Beställningar visar kundens leveranstelefonnummer tillsammans med leveransadressen, och långa produktnamn radbryts istället för att klippas av. Vi har dessutom korrigerat POS-kortbetalningar, produktbilder, statistik för anpassade datumintervall och inloggning.

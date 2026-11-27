@@ -1,0 +1,2 @@
+26.1:
+Woo POS'taki özel tutarlar artık kendi ekranlarında açılır, böylece bunları sepete eklemeden önce miktarı, adı ve vergileri ayarlayabilirsiniz. Siparişler müşterinin gönderim adresini içeren gönderim telefon numarasını gösterir ve uzun ürün adları kesilmek yerine alt satıra geçer. Ayrıca POS kart ödemeleri, ürün fotoğrafları, özel tarih aralığı istatistikleri ve oturum açma düzeltmeleri.

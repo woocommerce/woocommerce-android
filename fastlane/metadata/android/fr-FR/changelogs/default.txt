@@ -1,0 +1,2 @@
+26.1 :
+Les montants personnalisés dans Woo POS s’ouvrent désormais sur leur propre écran, vous pouvez donc définir le montant, le nom et les taxes avant de les ajouter au panier. Les commandes affichent le téléphone d’expédition du client avec l’adresse de livraison et les noms de produits longs s’affichent au lieu d’être coupés. Correctifs supplémentaires pour les paiements par carte PDV, les photos de produits, les statistiques de plage de dates personnalisées et la connexion.
