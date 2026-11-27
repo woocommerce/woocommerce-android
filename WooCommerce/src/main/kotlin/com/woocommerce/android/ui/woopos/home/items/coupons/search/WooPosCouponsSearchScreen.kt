@@ -25,8 +25,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosEmptyS
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsLoadingIndicator
@@ -155,6 +157,7 @@ private fun WooPosCouponsSearchContent(
     onUIEvent: (WooPosCouponsSearchUiEvent) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
+    val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
 
     LaunchedEffect(listState.isScrollInProgress) {
         if (listState.isScrollInProgress) {
@@ -169,6 +172,7 @@ private fun WooPosCouponsSearchContent(
         animateItems = false,
         onItemClicked = {
             if (it is WooPosItemSelectionViewState.Coupon) {
+                if (isPhone) focusManager.clearFocus()
                 onUIEvent(WooPosCouponsSearchUiEvent.OnCouponClicked(it))
             }
         },

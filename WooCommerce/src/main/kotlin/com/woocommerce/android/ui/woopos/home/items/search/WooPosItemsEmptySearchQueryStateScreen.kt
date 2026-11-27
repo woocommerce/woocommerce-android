@@ -19,8 +19,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.SectionHeader
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosRecentSearchesChips
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductCard
 
@@ -32,6 +34,7 @@ fun WooPosItemsEmptySearchQueryStateScreen(
 ) {
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
+    val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
     LaunchedEffect(scrollState.isScrollInProgress) {
         if (scrollState.isScrollInProgress) {
             focusManager.clearFocus()
@@ -63,6 +66,7 @@ fun WooPosItemsEmptySearchQueryStateScreen(
                 PopularItemsSection(
                     popularItems = state.popularItems,
                     onPopularItemClicked = { popularItem ->
+                        if (isPhone) focusManager.clearFocus()
                         onUIEvent(WooPosItemsSearchUiEvent.OnPopularItemClicked(popularItem))
                     }
                 )
