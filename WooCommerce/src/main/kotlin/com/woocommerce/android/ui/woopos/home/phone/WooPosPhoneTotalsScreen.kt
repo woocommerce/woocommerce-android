@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos.home.phone
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -21,7 +23,9 @@ fun WooPosPhoneTotalsScreen(
         WooPosTotalsScreenPreview(modifier.fillMaxSize())
     } else {
         WooPosTotalsScreen(
-            modifier = modifier.fillMaxSize(),
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface),
             viewModel = viewModel,
             onPhoneBack = onBack,
         )

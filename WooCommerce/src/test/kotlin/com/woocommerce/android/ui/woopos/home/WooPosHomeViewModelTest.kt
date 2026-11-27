@@ -97,6 +97,38 @@ class WooPosHomeViewModelTest {
         }
 
     @Test
+    fun `given state checkout, when PhoneBackFromCheckoutClicked passed, then back to Products with the cart closed`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(ChildToParentEvent.CheckoutClicked(emptyList()))
+            )
+            val viewModel = createViewModel()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosHomeUIEvent.PhoneBackFromCheckoutClicked)
+
+            // THEN
+            verify(parentToChildrenEventSender).sendToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
+            assertThat(viewModel.state.value.screenPositionState)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Products)
+        }
+
+    @Test
+    fun `given state is Products, when PhoneBackFromCheckoutClicked passed, then state does not change`() = runTest {
+        // GIVEN
+        whenever(childrenToParentEventReceiver.events).thenReturn(MutableSharedFlow())
+        val viewModel = createViewModel()
+        val stateBefore = viewModel.state.value
+
+        // WHEN
+        viewModel.onUIEvent(WooPosHomeUIEvent.PhoneBackFromCheckoutClicked)
+
+        // THEN
+        assertThat(viewModel.state.value).isEqualTo(stateBefore)
+    }
+
+    @Test
     fun `given home can go back, when SystemBackClicked passed, then exit confirmation is shown`() = runTest {
         // GIVEN
         val eventsFlow = MutableSharedFlow<ChildToParentEvent>()

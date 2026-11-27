@@ -84,7 +84,7 @@ private fun WooPosHomePhoneContent(
             WooPosHomeState.ScreenPositionState.Cart ->
                 onHomeUIEvent(WooPosHomeUIEvent.PhoneBackFromCartClicked)
             is WooPosHomeState.ScreenPositionState.Checkout ->
-                onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
+                onHomeUIEvent(WooPosHomeUIEvent.PhoneBackFromCheckoutClicked)
         }
     }
 

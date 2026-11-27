@@ -83,7 +83,7 @@ class WooPosHomeViewModel @Inject constructor(
                 )
             }
 
-            WooPosHomeUIEvent.PhoneBackFromCheckoutClicked -> handleSystemBackClicked()
+            WooPosHomeUIEvent.PhoneBackFromCheckoutClicked -> handlePhoneBackFromCheckout()
 
             WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> {
                 _state.value = _state.value.copy(
@@ -172,6 +172,17 @@ class WooPosHomeViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun handlePhoneBackFromCheckout() {
+        val screenPositionState = _state.value.screenPositionState
+        if (screenPositionState !is ScreenPositionState.Checkout) return
+
+        _state.value = _state.value.copy(screenPositionState = ScreenPositionState.Products)
+        sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
+        if (screenPositionState == ScreenPositionState.Checkout.CartWithTotals) {
+            viewModelScope.launch { analyticsTracker.track(BackToCartTapped) }
         }
     }
 

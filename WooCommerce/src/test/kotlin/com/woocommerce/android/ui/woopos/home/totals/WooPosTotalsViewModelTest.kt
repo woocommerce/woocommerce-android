@@ -308,7 +308,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `given checkout state, when BackFromCheckoutToCartClicked, then state is idle`() = runTest {
+    fun `given checkout state, when BackFromCheckoutToCartClicked, then checkout state is kept`() = runTest {
         // GIVEN
         val events = MutableStateFlow<ParentToChildrenEvent>(
             ParentToChildrenEvent.CheckoutClicked(
@@ -327,7 +327,7 @@ class WooPosTotalsViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        assertThat(viewModel.state.value).isEqualTo(WooPosTotalsViewState.Idle)
+        assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Checkout::class.java)
     }
 
     @Test
