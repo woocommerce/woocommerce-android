@@ -37,15 +37,13 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
     @Assisted currentOrderId: Flow<Long>,
 ) {
     private val isEnabled = isReceiptPrintingEnabled()
+    private val fallbackButtonState =
+        if (isEnabled) WooPosPrintReceiptButtonState.Idle else WooPosPrintReceiptButtonState.Hidden
     private val printState = MutableStateFlow<Print?>(null)
 
     val buttonState: StateFlow<WooPosPrintReceiptButtonState> = combine(currentOrderId, printState) { orderId, print ->
-        when {
-            !isEnabled -> WooPosPrintReceiptButtonState.Hidden
-            print?.orderId == orderId -> print.state
-            else -> WooPosPrintReceiptButtonState.Idle
-        }
-    }.stateIn(scope, SharingStarted.Eagerly, initialButtonState())
+        print?.takeIf { it.orderId == orderId }?.state ?: fallbackButtonState
+    }.stateIn(scope, SharingStarted.Eagerly, fallbackButtonState)
 
     private val _events = MutableSharedFlow<WooPosPrintReceiptEvent>(extraBufferCapacity = 1)
     val events: SharedFlow<WooPosPrintReceiptEvent> = _events.asSharedFlow()
@@ -119,9 +117,6 @@ class WooPosPrintReceiptCoordinator @AssistedInject constructor(
     private fun updatePrint(orderId: Long, transform: (Print) -> Print?) {
         printState.update { current -> if (current?.orderId == orderId) transform(current) else current }
     }
-
-    private fun initialButtonState() =
-        if (isEnabled) WooPosPrintReceiptButtonState.Idle else WooPosPrintReceiptButtonState.Hidden
 
     private suspend fun trackPrintResult(result: ReceiptPrinterResult) {
         val event = when (result) {
