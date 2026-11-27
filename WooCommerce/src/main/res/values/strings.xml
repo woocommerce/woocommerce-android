@@ -4675,7 +4675,6 @@
     <string name="woopos_receipt_subtotal">Subtotal</string>
     <string name="woopos_receipt_discount">Discount</string>
     <string name="woopos_receipt_discount_with_coupons">Discount (%1$s)</string>
-    <string name="woopos_receipt_fees">Fees</string>
     <string name="woopos_receipt_shipping">Shipping</string>
     <string name="woopos_receipt_taxes">Taxes</string>
     <string name="woopos_receipt_amount_paid">Amount Paid</string>
