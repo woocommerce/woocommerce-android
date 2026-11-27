@@ -147,6 +147,7 @@ class WooPosCartViewModel @Inject constructor(
                 _state.value = currentState.copy(
                     body = WooPosCartState.Body.Empty
                 )
+                sendEventToParent(ChildToParentEvent.CartEmptied)
             }
 
             is WooPosCartUIEvent.OnBarcodeEvent -> {
@@ -168,6 +169,7 @@ class WooPosCartViewModel @Inject constructor(
     ) {
         val currentState = _state.value
         _state.value = if (currentState.body.amountOfItems == items.size) {
+            sendEventToParent(ChildToParentEvent.CartEmptied)
             currentState.copy(body = WooPosCartState.Body.Empty)
         } else {
             currentState.copy(

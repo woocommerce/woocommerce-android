@@ -270,6 +270,21 @@ class WooPosCartViewModelTest {
         }
 
     @Test
+    fun `given cart with a product, when clear all clicked, then parent is told the cart is empty`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        sut.state.captureValues()
+        addProductToEmptyCart()
+
+        // WHEN
+        sut.onUIEvent(WooPosCartUIEvent.ClearAllClicked)
+        advanceUntilIdle()
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.CartEmptied)
+    }
+
+    @Test
     fun `given order response still pending, when the cart is cleared, then the response does not bring items back`() =
         runTest {
             // GIVEN

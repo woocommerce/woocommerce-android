@@ -70,9 +70,6 @@ internal fun WooPosPhoneCartSheet(
     SyncSheetWithVisibility(isVisible, sheetState, onDismissRequest)
 
     val isCartEmpty = cartState?.body?.amountOfItems == 0
-    LaunchedEffect(isVisible, isCartEmpty) {
-        if (isVisible && isCartEmpty) onDismissRequest()
-    }
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val halfHeightOffset = constraints.maxHeight - with(LocalDensity.current) { (maxHeight / 2).roundToPx() }

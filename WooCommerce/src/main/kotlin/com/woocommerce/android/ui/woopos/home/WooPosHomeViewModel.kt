@@ -194,6 +194,12 @@ class WooPosHomeViewModel @Inject constructor(
                         sendEventToChildren(CheckoutClicked(event.itemClickedDataList))
                     }
 
+                    is ChildToParentEvent.CartEmptied -> {
+                        if (_state.value.screenPositionState == ScreenPositionState.Cart) {
+                            _state.value = _state.value.copy(screenPositionState = ScreenPositionState.Products)
+                        }
+                    }
+
                     is ChildToParentEvent.BackFromCheckoutToCartClicked -> {
                         _state.value = _state.value.copy(
                             screenPositionState = ScreenPositionState.Cart
