@@ -1,0 +1,2 @@
+26.1:
+Os valores personalizados no Woo POS agora são abertos em sua própria tela. Dessa forma, você pode definir o valor, o nome e os impostos antes de adicioná-los ao carrinho. Os pedidos mostram o telefone de contato para entrega com o endereço de entrega, e os nomes longos dos produtos quebram em várias linhas, em vez de serem truncados. Correções adicionais para pagamentos com cartão de ponto de venda, fotos de produtos, estatísticas personalizadas de intervalo de datas e login.

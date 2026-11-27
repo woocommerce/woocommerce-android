@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-11-03 10:56:39+0000
+Translation-Revision-Date: 2026-11-17 11:54:42+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_payment_status_check_failed_message">我们无法查看付款状态。 请检查您的网络连接，然后重试。</string>
+    <string name="woopos_totals_payment_not_confirmed_check_status">查看付款状态</string>
+    <string name="woopos_totals_payment_not_confirmed_message">我们无法确认这笔付款，因此该银行卡可能已被扣款。 在采用另一种付款方式之前，请先查看付款状态。</string>
+    <string name="woopos_totals_payment_not_confirmed_title">付款未确认</string>
+    <string name="woopos_lock_digits_entered">已输入 %1$d/%2$d 位数字</string>
+    <string name="woopos_lock_pin_entry">PIN 输入</string>
+    <string name="woopos_lock_delete_digit">删除</string>
+    <string name="woopos_lock_enter_pin">输入您的 PIN 以解锁 POS</string>
+    <string name="woopos_lock_pos">锁定 POS</string>
+    <string name="woopos_custom_amount_edit_amount_title">编辑金额</string>
+    <string name="woopos_custom_amount_name_optional">名称（可选）</string>
+    <string name="woopos_custom_amount_details_title">自定义金额详情</string>
+    <string name="ai_support_chat_ai_disclosure">您正在与 Woo 支持部门的 AI 聊天。</string>
+    <string name="card_reader_payment_failed_capture_outcome_unknown">该银行卡可能已被扣款。 请重试以查看付款状态。</string>
+    <string name="card_reader_payment_not_confirmed_header">付款未确认</string>
+    <string name="barcode_scanning_hardware_scanner_wrong_value">扫描的条形码不匹配。 请将您的扫描仪设置为与您的设备相同的键盘布局。</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_instruction">请用您的扫描仪扫描此条形码。</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_success">您的扫描仪可以正常工作</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_title">测试您的扫描仪</string>
+    <string name="barcode_scanning_hardware_scanner_info_usage">在“订单”和“产品”屏幕中，或在创建订单时进行扫描。 您无需打开摄像头。</string>
+    <string name="barcode_scanning_hardware_scanner_info_setup">请在设备的蓝牙设置中与扫描仪配对，或通过 USB 连接扫描仪。 将其设置为键盘 (HID) 模式。</string>
+    <string name="barcode_scanning_hardware_scanner_info_title">使用蓝牙或 USB 扫描仪</string>
+    <string name="barcode_scanning_or">或</string>
+    <string name="barcode_scanning_hardware_scanner_info_link">使用外部扫描仪</string>
+    <string name="login_site_credentials_web_authorization_site_mismatch">此批准页面属于其他站点。 为了您的安全，我们已阻止登录。</string>
+    <string name="login_store_suggestion_unavailable">我们无法通过该链接确认此商店。 请输入您的商店地址以继续。</string>
+    <string name="login_store_suggestion_redirected">此地址指向其他站点。 只有当它是您的商店时，才请继续。</string>
+    <string name="login_store_suggestion_use_different_store">使用其他商店</string>
+    <string name="login_store_suggestion_log_in">登录此商店</string>
+    <string name="login_store_suggestion_description">仅当这是您商店的地址时，才请继续。</string>
+    <string name="login_store_suggestion_title">登录此商店？</string>
     <string name="woo_shipping_labels_service_status_severity_info">信息</string>
     <string name="woo_shipping_labels_service_status_severity_warning">警告</string>
     <string name="woo_shipping_labels_service_status_severity_error">错误</string>
@@ -295,7 +326,6 @@ Language: zh_CN
     <string name="login_qr_endpoint_missing_title">此商店无法完成二维码登录</string>
     <string name="login_qr_scanner_authenticating">正在为您登录…</string>
     <string name="login_qr_scanner_visit_url">访问 %1$s</string>
-    <string name="login_qr_scanner_hint">将二维码居中显示在框架中</string>
     <string name="login_qr_prologue_camera_blocked_settings_button">打开权限设置</string>
     <string name="login_qr_prologue_camera_blocked_body">请在“设置”中启用摄像头访问权限，或取消此操作并改用您的商店地址进行登录。</string>
     <string name="login_qr_prologue_camera_blocked_title">摄像头访问权限已关闭</string>
@@ -335,20 +365,14 @@ Language: zh_CN
     <string name="woopos_mark_order_as_paid_note_hint">例如，Maria 的银行转账，参考号 4827</string>
     <string name="woopos_mark_order_as_paid_message">这会将 %1$s 订单标记为已完成。 仅当您已通过其他方式收款时才使用此功能。</string>
     <string name="woopos_mark_order_as_paid_title">将订单标记为已付款？</string>
-    <string name="woopos_custom_amount_dialog_cancel">取消</string>
     <string name="woopos_custom_amount_dialog_submit_edit">更新自定义金额</string>
     <string name="woopos_custom_amount_dialog_submit_add">添加自定义金额</string>
     <string name="woopos_custom_amount_dialog_charge_taxes">收取税费</string>
     <string name="woopos_custom_amount_dialog_name_placeholder">自定义金额</string>
     <string name="woopos_custom_amount_dialog_name_label">姓名</string>
     <string name="woopos_custom_amount_dialog_amount_label">金额</string>
-    <string name="woopos_custom_amount_form_title">自定义金额</string>
-    <string name="woopos_custom_amount_dialog_title_edit">编辑自定义金额</string>
-    <string name="woopos_custom_amount_dialog_title_add">添加自定义金额</string>
     <string name="woopos_custom_amount_entry_subtitle">添加一笔一次性费用</string>
     <string name="woopos_custom_amount_entry_title">自定义金额</string>
-    <string name="woopos_cart_custom_amount_menu_remove">移除</string>
-    <string name="woopos_cart_custom_amount_menu_edit">编辑</string>
     <string name="woopos_cart_custom_amount_includes_tax">含税</string>
     <string name="woopos_cart_custom_amount_edit_content_description">编辑 %s</string>
     <string name="woopos_cart_item_custom_amount_content_description">自定义金额 %1$s，%2$s</string>
@@ -2041,7 +2065,7 @@ Language: zh_CN
     <string name="blaze_campaign_status_canceled">已取消</string>
     <string name="blaze_campaign_status_scheduled">已预发布</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find">在“订单详细信息”或“菜单 &gt; 付款”中的\n“收款”选项中选择“点按付款”。</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">尝试通过借记卡或信用卡完成一次 %s 付款。\n完成后将退款。</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">请尝试使用您的借记卡或信用卡进行一次 %s 实时付款。\n在您完成操作后，款项将予以退还；需收取手续费。</string>
     <string name="card_reader_tap_to_pay_explanation_easy">整个过程简单、安全且私密。</string>
     <string name="card_reader_tap_to_pay_explanation_ready">您可以直接在手机上\n接受所有类型的现场付款。 无需额外的硬件。</string>
     <string name="blaze_campaign_status_rejected">已拒绝</string>
