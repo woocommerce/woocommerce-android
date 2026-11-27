@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-11-04 09:56:46+0000
+Translation-Revision-Date: 2026-11-18 15:55:24+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_payment_status_check_failed_message">לא הצלחנו לבדוק את סטטוס התשלום. יש לבדוק את החיבור לאינטרנט ולנסות שוב.</string>
+    <string name="woopos_totals_payment_not_confirmed_check_status">בסיקת סטטוס התשלום</string>
+    <string name="woopos_totals_payment_not_confirmed_message">לא הצלחנו לאשר את התשלום, ולכן ייתכן שהכרטיס כבר חויב. יש לבדוק את סטטוס התשלום לפני בחירה בשיטת תשלום אחרת.</string>
+    <string name="woopos_lock_pin_entry">הזנת קוד PIN</string>
+    <string name="woopos_custom_amount_name_optional">שם (אופציונלי)</string>
+    <string name="woopos_totals_payment_not_confirmed_title">התשלום לא אושר</string>
+    <string name="woopos_lock_digits_entered">הוזנו ⁦%1$d⁩ ספרות מתוך ⁦%2$d⁩</string>
+    <string name="woopos_lock_delete_digit">מחיקה</string>
+    <string name="woopos_lock_enter_pin">יש להזין את קוד ה-PIN כדי לבטל את הנעילה של POS</string>
+    <string name="woopos_lock_pos">נעילת POS</string>
+    <string name="woopos_custom_amount_edit_amount_title">עריכת סכום</string>
+    <string name="woopos_custom_amount_details_title">פרטי סכום בהתאמה אישית</string>
+    <string name="ai_support_chat_ai_disclosure">צ\'אט עם בינה מלאכותית מתמיכת Woo.</string>
+    <string name="card_reader_payment_failed_capture_outcome_unknown">ייתכן שהכרטיס כבר חויב. יש לנסות שוב כדי לבדוק את סטטוס התשלום.</string>
+    <string name="card_reader_payment_not_confirmed_header">התשלום לא אושר</string>
+    <string name="barcode_scanning_hardware_scanner_wrong_value">הקוד שנסרק אינו תואם. יש להגדיר בסורק את אותה פריסת מקלדת שמוגדרת במכשיר שלך.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_success">הסורק שלך עובד</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_instruction">יש לסרוק את הברקוד הזה באמצעות הסורק שלך.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_title">בדיקת הסורק שלך</string>
+    <string name="barcode_scanning_hardware_scanner_info_usage">אפשר לסרוק במסכי ההזמנות והמוצרים, או במהלך יצירת הזמנה. אין צורך לפתוח את המצלמה.</string>
+    <string name="barcode_scanning_hardware_scanner_info_title">שימוש בסורק Bluetooth או USB</string>
+    <string name="barcode_scanning_hardware_scanner_info_setup">יש לבצע צימוד של הסורק בהגדרות ה-Bluetooth של המכשיר, או לחבר אותו באמצעות USB. יש להגדירו למצב מקלדת (HID).</string>
+    <string name="barcode_scanning_or">או</string>
+    <string name="barcode_scanning_hardware_scanner_info_link">שימוש בסורק חיצוני</string>
+    <string name="login_site_credentials_web_authorization_site_mismatch">עמוד האישור הזה שייך לאתר אחר. למען אבטחתך, עצרנו את הכניסה.</string>
+    <string name="login_store_suggestion_unavailable">לא הצלחנו לאשר את החנות הזו מהקישור. יש להזין את כתובת החנות שלך כדי להמשיך.</string>
+    <string name="login_store_suggestion_redirected">הכתובת הזאת מובילה לאתר אחר. יש להמשיך רק אם זו החנות שלך.</string>
+    <string name="login_store_suggestion_use_different_store">שימוש בחנות אחרת</string>
+    <string name="login_store_suggestion_description">יש להמשיך רק אם זו הכתובת של החנות שלך.</string>
+    <string name="login_store_suggestion_log_in">ביצוע כניסה לחנות זו</string>
+    <string name="login_store_suggestion_title">האם לבצע כניסה לחנות זו?</string>
     <string name="woo_shipping_labels_service_status_severity_info">מידע</string>
     <string name="woo_shipping_labels_service_status_severity_warning">אזהרה</string>
     <string name="woo_shipping_labels_service_status_severity_error">שגיאה</string>
@@ -295,7 +326,6 @@ Language: he_IL
     <string name="login_qr_endpoint_missing_title">חנות זו אינה יכולה להשלים כניסה באמצעות קוד QR</string>
     <string name="login_qr_scanner_authenticating">מבצעת כניסה…</string>
     <string name="login_qr_scanner_visit_url">מעבר אל ⁦%1$s⁩</string>
-    <string name="login_qr_scanner_hint">יש למרכז את קוד ה-QR בתוך המסגרת</string>
     <string name="login_qr_prologue_camera_blocked_settings_button">פתיחת הגדרות ההרשאות</string>
     <string name="login_qr_prologue_camera_blocked_body">יש לאפשר גישה למצלמה בהגדרות, או לבטל כדי להיכנס באמצעות כתובת החנות שלך במקום זאת.</string>
     <string name="login_qr_prologue_camera_blocked_title">הגישה למצלמה כבויה</string>
@@ -335,20 +365,14 @@ Language: he_IL
     <string name="woopos_mark_order_as_paid_note_hint">לדוגמה, העברה בנקאית ממריה, אסמכתא 4827</string>
     <string name="woopos_mark_order_as_paid_message">פעולה זו תסמן את ההזמנה ⁦%1$s⁩ כ\'הושלמה\'. יש להשתמש באפשרות זו רק אם כבר גבית תשלום בדרך אחרת.</string>
     <string name="woopos_mark_order_as_paid_title">האם לסמן את ההזמנה כ\'שולמה\'?</string>
-    <string name="woopos_custom_amount_dialog_cancel">ביטול</string>
     <string name="woopos_custom_amount_dialog_submit_edit">עדכון סכום בהתאמה אישית</string>
     <string name="woopos_custom_amount_dialog_submit_add">הוספת סכום בהתאמה אישית</string>
     <string name="woopos_custom_amount_dialog_charge_taxes">גביית מיסים</string>
     <string name="woopos_custom_amount_dialog_name_placeholder">סכום בהתאמה אישית</string>
     <string name="woopos_custom_amount_dialog_name_label">שם</string>
     <string name="woopos_custom_amount_dialog_amount_label">סכום</string>
-    <string name="woopos_custom_amount_form_title">סכום בהתאמה אישית</string>
-    <string name="woopos_custom_amount_dialog_title_edit">עריכת סכום בהתאמה אישית</string>
-    <string name="woopos_custom_amount_dialog_title_add">הוספת סכום בהתאמה אישית</string>
     <string name="woopos_custom_amount_entry_subtitle">הוספת חיוב חד פעמי</string>
     <string name="woopos_custom_amount_entry_title">סכום בהתאמה אישית</string>
-    <string name="woopos_cart_custom_amount_menu_remove">הסרה</string>
-    <string name="woopos_cart_custom_amount_menu_edit">עריכה</string>
     <string name="woopos_cart_custom_amount_includes_tax">כולל מיסים</string>
     <string name="woopos_cart_custom_amount_edit_content_description">עריכת %s</string>
     <string name="woopos_cart_item_custom_amount_content_description">סכום בהתאמה אישית ⁦%1$s⁩, %2$s</string>
@@ -623,6 +647,7 @@ Language: he_IL
     <string name="woopos_card_reader_grant_permission_button">הענקת הרשאה</string>
     <string name="woopos_card_reader_bluetooth_permission_message">נדרשת ההרשאה \'Bluetooth\' כדי להתחבר לקורא כרטיסים.</string>
     <string name="woopos_card_reader_bluetooth_permission_title">נדרשת ההרשאה \'Bluetooth\'</string>
+    <string name="woopos_card_reader_update_progress">%d%% הושלמו</string>
     <string name="woopos_card_reader_location_permission_message">נדרשת ההרשאה \'מיקום\' כדי להתחבר לקורא כרטיסים באמצעות Bluetooth.</string>
     <string name="woopos_card_reader_location_permission_title">נדרשת ההרשאה \'מיקום\'</string>
     <string name="woopos_card_reader_enable_location_button">אפשר \'מיקום\'</string>
@@ -2039,7 +2064,7 @@ Language: he_IL
     <string name="blaze_campaign_status_canceled">בוטל</string>
     <string name="blaze_campaign_status_scheduled">מתוזמן לפרסום</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find">לבחור את Tap To Pay מהאפשרויות של \'לגבות תשלום\' בתוך \nפרטי הזמנה או תפריט &gt; תשלומים.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">לנסות תשלום של %s באמצעות כרטיס החיוב או כרטיס האשראי.\nהתשלום יוחזר בסיום.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">לנסות תשלום בזמן אמת של %s באמצעות כרטיס החיוב או כרטיס האשראי.\nהתשלום יוחזר בסיום; יחולו עמלות עיבוד.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">התהליך קל, מאובטח ופרטי.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">לקבל את כל הסוגים של תשלומים באופן אישי, ישר\nבטלפון. ללא צורך בחומרה נוספת.</string>
     <string name="blaze_campaign_status_rejected">נדחה</string>

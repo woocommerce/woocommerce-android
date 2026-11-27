@@ -8,8 +8,10 @@ import android.security.keystore.KeyProperties
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
-import java.io.IOException
 import java.io.InputStream
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption.ATOMIC_MOVE
+import java.nio.file.StandardCopyOption.REPLACE_EXISTING
 import java.security.KeyStore
 import javax.crypto.AEADBadTagException
 import javax.crypto.Cipher
@@ -44,7 +46,8 @@ class WooPosEncryptedPINStorage internal constructor(
     override fun read(localSiteId: Int): ByteArray? = reporting("read") { readRecord(localSiteId) }
 
     @Synchronized
-    override fun write(localSiteId: Int, bytes: ByteArray?) = reporting("write") { writeRecord(localSiteId, bytes) }
+    override fun write(localSiteId: Int, bytes: ByteArray?, canCommit: () -> Boolean): Boolean =
+        reporting("write") { writeRecord(localSiteId, bytes, canCommit) }
 
     @Synchronized
     override fun clearAll() = reporting("clearAll") {
@@ -78,13 +81,17 @@ class WooPosEncryptedPINStorage internal constructor(
         }
     }
 
-    private fun writeRecord(localSiteId: Int, bytes: ByteArray?) {
-        val file = files.file(localSiteId)
+    private fun writeRecord(localSiteId: Int, bytes: ByteArray?, canCommit: () -> Boolean): Boolean {
+        files.checkDirectoryAccess()
+        val record = files.file(localSiteId).baseFile
+        val backup = File(record.path + ".bak")
+        if (backup.exists()) Files.move(backup.toPath(), record.toPath(), ATOMIC_MOVE, REPLACE_EXISTING)
+        val staged = File(record.path + ".new")
         if (bytes == null) {
-            files.checkDirectoryAccess()
-            file.delete()
-            check(!files.exists(file))
-            return
+            Files.deleteIfExists(staged.toPath())
+            if (!canCommit()) return false
+            Files.deleteIfExists(record.toPath())
+            return true
         }
         require(bytes.size <= WooPosPINStorage.MAX_RECORD_BYTES)
         check(directory.isDirectory || directory.mkdirs())
@@ -94,18 +101,21 @@ class WooPosEncryptedPINStorage internal constructor(
             cipher.updateAAD(localSiteId.toString().toByteArray(Charsets.UTF_8))
             cipher.iv + cipher.doFinal(bytes)
         }
-        // Decrypting before commit catches devices that can encrypt but not decrypt, without replacing the record.
-        check(decrypt(localSiteId, encrypted).contentEquals(bytes))
-        val stream = file.startWrite()
+        var committed = false
         try {
-            stream.write(encrypted)
-            stream.fd.sync()
-            file.finishWrite(stream)
-        } catch (e: IOException) {
-            file.failWrite(stream)
-            throw e
+            staged.outputStream().use {
+                it.write(encrypted)
+                it.fd.sync()
+            }
+            val stagedCiphertext = staged.inputStream().use { it.readBytesBounded() }
+            check(decrypt(localSiteId, stagedCiphertext).contentEquals(bytes))
+            if (!canCommit()) return false
+            Files.move(staged.toPath(), record.toPath(), ATOMIC_MOVE, REPLACE_EXISTING)
+            committed = true
+            return true
+        } finally {
+            if (!committed) staged.delete()
         }
-        check(file.openRead().use { it.readBytesBounded() }.contentEquals(encrypted))
     }
 
     @Suppress("TooGenericExceptionCaught")

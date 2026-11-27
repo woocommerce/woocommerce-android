@@ -6,10 +6,13 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventReceiver
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventSender
+import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -39,6 +42,9 @@ class WooPosSettingsViewModelTest {
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val childToParentEventReceiver: WooPosChildrenToParentEventReceiver = mock()
     private val parentToChildEventSender: WooPosParentToChildrenEventSender = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock {
+        on { isEnabled(FeatureFlag.WOO_POS_ROLES) }.thenReturn(true)
+    }
 
     @Test
     fun `when ShowSyncErrorDialog event collected, then dialog state is shown`() = runTest {
@@ -353,12 +359,52 @@ class WooPosSettingsViewModelTest {
             assertThat(restoredViewModel.state.value.showingDetail).isTrue()
         }
 
+    @Test
+    fun `given an approved Admin change, when Settings is recreated after process death, then the editor is closed`() =
+        runTest {
+            // GIVEN
+            whenever(childToParentEventReceiver.events).thenReturn(emptyFlow())
+            val savedState = SavedStateHandle()
+            val firstViewModel = createViewModel(savedState)
+            firstViewModel.onCategorySelected(WooPosSettingsCategory.SECURITY)
+            firstViewModel.showPinSetupDialog(WooPosLocalRole.ADMIN, changingPIN = true)
+            advanceUntilIdle()
+
+            // WHEN
+            val restoredViewModel = createViewModel(savedState)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(restoredViewModel.state.value.dialogState).isEqualTo(WooPosSettingsDialogState.Hidden)
+            assertThat(restoredViewModel.state.value.currentDestination)
+                .isEqualTo(WooPosSettingsDetailDestination.Security.Overview)
+        }
+
+    @Test
+    fun `given Security was saved, when Roles is disabled on recreation, then Settings restores its default page`() =
+        runTest {
+            // GIVEN
+            whenever(childToParentEventReceiver.events).thenReturn(emptyFlow())
+            val savedState = SavedStateHandle()
+            createViewModel(savedState).onCategorySelected(WooPosSettingsCategory.SECURITY)
+            advanceUntilIdle()
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ROLES)).thenReturn(false)
+
+            // WHEN
+            val restored = createViewModel(savedState)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(restored.state.value).isEqualTo(WooPosSettingsState())
+        }
+
     private fun createViewModel(savedState: SavedStateHandle = SavedStateHandle()): WooPosSettingsViewModel {
         return WooPosSettingsViewModel(
             analyticsTracker = analyticsTracker,
             childToParentEventReceiver = childToParentEventReceiver,
             parentToChildEventSender = parentToChildEventSender,
             savedState = savedState,
+            featureFlagRepository = featureFlagRepository,
         )
     }
 

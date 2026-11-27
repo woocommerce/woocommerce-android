@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.root.navigation
 
-import androidx.activity.ComponentActivity
 import androidx.navigation.NavHostController
 import com.woocommerce.android.ui.woopos.cardpayment.navigateToCardPaymentScreen
 import com.woocommerce.android.ui.woopos.cashpayment.navigateToCashPaymentScreen
@@ -24,12 +23,11 @@ import com.woocommerce.android.ui.woopos.splash.navigateToSplashScreen
 @Suppress("CyclomaticComplexMethod")
 fun NavHostController.handleNavigationEvent(
     event: WooPosNavigationEvent,
-    activity: ComponentActivity,
+    onExitRequested: (WooPosNavigationEvent.Exit) -> Unit,
 ) {
     when (event) {
         is WooPosNavigationEvent.OpenSplashScreen -> navigateToSplashScreen()
-        is WooPosNavigationEvent.ExitPosClicked,
-        is WooPosNavigationEvent.BackFromSplashClicked -> activity.finish()
+        is WooPosNavigationEvent.Exit -> onExitRequested(event)
 
         is WooPosNavigationEvent.OpenHomeFromSplash -> navigateToHomeScreen()
         is WooPosNavigationEvent.OpenCashPayment -> navigateToCashPaymentScreen(event.orderId)

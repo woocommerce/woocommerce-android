@@ -4,7 +4,7 @@ import com.woocommerce.android.ui.woopos.roles.WooPosCapability
 import com.woocommerce.android.ui.woopos.roles.WooPosCapability.MANAGE_STORE_SETTINGS
 import com.woocommerce.android.ui.woopos.roles.WooPosCapability.PROCESS_SALES
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -28,7 +28,7 @@ class WooPosAccessSessionStateTest {
     @Test
     fun `when locked, then no capability is allowed`() {
         WooPosCapability.entries.forEach {
-            assertThat(WooPosAccessSessionState.Locked(Status.Idle).allows(it)).isFalse()
+            assertThat(WooPosAccessSessionState.Locked(WooPosPINEntryStatus.Idle).allows(it)).isFalse()
         }
     }
 }

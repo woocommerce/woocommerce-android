@@ -6,6 +6,8 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.receiptprinting.WooPosReceiptPrinterFacade
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -19,6 +21,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 
 @ExperimentalCoroutinesApi
 class WooPosSettingsHardwareReceiptPrinterViewModelTest {
@@ -34,6 +37,7 @@ class WooPosSettingsHardwareReceiptPrinterViewModelTest {
         on { connectionStatus }.thenReturn(connectionStatus)
     }
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     @Test
     fun `given no printer connected, when created, then state is disconnected`() = runTest {
@@ -126,9 +130,37 @@ class WooPosSettingsHardwareReceiptPrinterViewModelTest {
         verify(receiptPrinterFacade).disconnect()
     }
 
+    @Test
+    fun `when disconnect clicked, then disconnect tapped is tracked`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onDisconnectClicked()
+        advanceUntilIdle()
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ReceiptPrinterDisconnectTapped)
+    }
+
+    @Test
+    fun `when a connected printer disconnects by itself, then disconnect tapped is not tracked`() = runTest {
+        // GIVEN
+        connectionStatus.value = ReceiptPrinterConnectionStatus.Connected(PRINTER)
+        createViewModel()
+
+        // WHEN
+        connectionStatus.value = ReceiptPrinterConnectionStatus.Disconnected
+        advanceUntilIdle()
+
+        // THEN
+        verifyNoInteractions(analyticsTracker)
+    }
+
     private fun TestScope.createViewModel() = WooPosSettingsHardwareReceiptPrinterViewModel(
         receiptPrinterFacade = receiptPrinterFacade,
         childrenToParentEventSender = childrenToParentEventSender,
+        analyticsTracker = analyticsTracker,
     ).also { viewModel ->
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
     }

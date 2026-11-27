@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import app.cash.turbine.test
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
-import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.ExitPosClicked
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
@@ -130,7 +129,7 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
-    fun `given state is Cart, when SystemBackClicked passed, then should show exit confirmation dialog`() = runTest {
+    fun `given home can go back, when SystemBackClicked passed, then exit confirmation is shown`() = runTest {
         // GIVEN
         val eventsFlow = MutableSharedFlow<ChildToParentEvent>()
         whenever(childrenToParentEventReceiver.events).thenReturn(eventsFlow)
@@ -140,9 +139,7 @@ class WooPosHomeViewModelTest {
         viewModel.onUIEvent(SystemBackClicked)
 
         // THEN
-        assertThat(viewModel.state.value.dialogState).isEqualTo(
-            WooPosHomeState.DialogState.ExitConfirmationDialog
-        )
+        assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.ExitConfirmationDialog)
     }
 
     @Test
@@ -232,14 +229,14 @@ class WooPosHomeViewModelTest {
             val viewModel = createViewModel()
 
             // WHEN
-            viewModel.onUIEvent(ExitPosClicked)
+            viewModel.onExitConfirmed()
 
             // THEN
             verify(analyticsTracker).track(ExitConfirmed)
         }
 
     @Test
-    fun `given state is Cart NotEmpty, when ExitPosClicked passed, then exit confirmation dialog should be shown`() =
+    fun `when ExitPosClicked comes from the toolbar, then exit confirmation is shown`() =
         runTest {
             // GIVEN
             val eventsFlow = MutableSharedFlow<ChildToParentEvent>()
@@ -250,9 +247,27 @@ class WooPosHomeViewModelTest {
             eventsFlow.emit(ChildToParentEvent.ExitPosClicked)
 
             // THEN
-            assertThat(viewModel.state.value.dialogState).isEqualTo(
-                WooPosHomeState.DialogState.ExitConfirmationDialog
-            )
+            assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.ExitConfirmationDialog)
+        }
+
+    @Test
+    fun `given exit confirmation is visible, when Exit is pressed twice, then one exit confirmation is sent`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(MutableSharedFlow<ChildToParentEvent>())
+            val viewModel = createViewModel()
+            viewModel.onUIEvent(SystemBackClicked)
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(WooPosHomeUIEvent.ExitPosClicked)
+                viewModel.onUIEvent(WooPosHomeUIEvent.ExitPosClicked)
+
+                // THEN
+                assertThat(awaitItem()).isEqualTo(ChildToParentEvent.NavigationEvent.ExitConfirmed)
+                assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.Hidden)
+                expectNoEvents()
+            }
         }
 
     @Test
@@ -503,7 +518,7 @@ class WooPosHomeViewModelTest {
         val events = MutableSharedFlow<ChildToParentEvent>()
         whenever(childrenToParentEventReceiver.events).thenReturn(events)
         val viewModel = createViewModel()
-        events.emit(ChildToParentEvent.ExitPosClicked)
+        viewModel.onUIEvent(SystemBackClicked)
         assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.ExitConfirmationDialog)
 
         // WHEN

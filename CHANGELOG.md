@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 26.2
+Refund amounts now come from your store on WooCommerce 11.1 and up, so what you see is what gets refunded. New orders no longer make your orders list jump, and you can use an external barcode scanner without camera access. Plus fixes for Tap to Pay and checkout in POS, and for orders missing products after turning off tax plugins like AvaTax.
+
 ## 26.1
 Custom amounts in Woo POS now open on their own screen, so you can set the amount, name, and taxes before adding them to the cart. Orders show the customer's shipping phone with the shipping address, and long product names wrap instead of being cut off. Plus fixes for POS card payments, product photos, custom date range stats, and sign-in.
 
