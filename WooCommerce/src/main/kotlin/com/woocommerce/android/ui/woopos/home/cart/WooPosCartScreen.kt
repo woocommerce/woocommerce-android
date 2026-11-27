@@ -99,12 +99,11 @@ import java.math.BigDecimal
 
 @Composable
 fun WooPosCartScreen(
-    checkoutSlot: WooPosCartCheckoutButtonSlot,
     modifier: Modifier = Modifier,
     viewModel: WooPosCartViewModel = hiltViewModel(),
 ) {
     viewModel.state.observeAsState().value?.let { state ->
-        WooPosCartScreen(modifier, state, viewModel::onUIEvent, checkoutSlot = checkoutSlot)
+        WooPosCartScreen(modifier, state, viewModel::onUIEvent, presentation = WooPosCartPresentation.Pane)
     }
 }
 
@@ -114,8 +113,7 @@ fun WooPosCartScreen(
     modifier: Modifier = Modifier,
     state: WooPosCartState,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
-    onPhoneBack: (() -> Unit)? = null,
-    checkoutSlot: WooPosCartCheckoutButtonSlot,
+    presentation: WooPosCartPresentation,
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -133,7 +131,7 @@ fun WooPosCartScreen(
             toolbar = state.toolbar,
             onClearAllClicked = { onUIEvent(WooPosCartUIEvent.ClearAllClicked) },
             onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) },
-            onPhoneBack = onPhoneBack,
+            presentation = presentation,
         )
 
         when (state.body) {
@@ -168,8 +166,8 @@ fun WooPosCartScreen(
             }
         }
 
-        when (checkoutSlot) {
-            WooPosCartCheckoutButtonSlot.Inline -> {
+        when (presentation) {
+            WooPosCartPresentation.Pane -> {
                 AnimatedVisibility(
                     visible = state.checkoutButtonState != WooPosCartState.CheckoutButtonState.Invisible,
                     enter = fadeIn(animationSpec = tween(300)),
@@ -203,9 +201,15 @@ fun WooPosCartScreen(
                     }
                 }
             }
-            WooPosCartCheckoutButtonSlot.External -> Unit
+            is WooPosCartPresentation.PhoneSheet -> Unit
         }
     }
+}
+
+sealed interface WooPosCartPresentation {
+    data object Pane : WooPosCartPresentation
+
+    data class PhoneSheet(val isFullScreen: Boolean, val onBack: () -> Unit) : WooPosCartPresentation
 }
 
 @Composable
@@ -355,14 +359,23 @@ private fun CartToolbar(
     toolbar: WooPosCartState.Toolbar,
     onClearAllClicked: () -> Unit,
     onBackClicked: () -> Unit,
-    onPhoneBack: (() -> Unit)? = null,
+    presentation: WooPosCartPresentation,
 ) {
+    val isBackIconVisible = when (presentation) {
+        WooPosCartPresentation.Pane -> toolbar.backIconVisible
+        is WooPosCartPresentation.PhoneSheet -> presentation.isFullScreen
+    }
     val iconSize = 28.dp
     val iconTitlePadding = WooPosSpacing.Medium.value
     val titleOffset by animateDpAsState(
-        targetValue = if (toolbar.backIconVisible) iconSize + iconTitlePadding else 0.dp,
+        targetValue = if (isBackIconVisible) iconSize + iconTitlePadding else 0.dp,
         animationSpec = tween(durationMillis = 300),
         label = "titleOffset"
+    )
+    val phoneTitleMargin by animateDpAsState(
+        targetValue = if (isBackIconVisible) WooPosSpacing.Small.value else WooPosSpacing.Medium.value,
+        animationSpec = tween(durationMillis = 300),
+        label = "phoneTitleMargin"
     )
 
     ConstraintLayout(
@@ -373,9 +386,9 @@ private fun CartToolbar(
     ) {
         val (backButton, title, spacer, itemsCount, clearAllButton) = createRefs()
 
-        when (onPhoneBack) {
-            null -> AnimatedVisibility(
-                visible = toolbar.backIconVisible,
+        when (presentation) {
+            WooPosCartPresentation.Pane -> AnimatedVisibility(
+                visible = isBackIconVisible,
                 enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(),
                 exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally()
             ) {
@@ -392,19 +405,26 @@ private fun CartToolbar(
                         .offset(y = 4.dp)
                 ) { onBackClicked() }
             }
-            else -> WooPosBackButton(
-                modifier = Modifier
-                    .constrainAs(backButton) {
-                        start.linkTo(parent.start)
-                        centerVerticallyTo(parent)
-                    }
-                    .padding(start = WooPosSpacing.Small.value),
-                contentDescription = stringResource(R.string.woopos_cart_back_content_description),
-                onClick = onPhoneBack,
-            )
+            is WooPosCartPresentation.PhoneSheet -> Box(
+                modifier = Modifier.constrainAs(backButton) {
+                    start.linkTo(parent.start)
+                    centerVerticallyTo(parent)
+                }
+            ) {
+                AnimatedVisibility(
+                    visible = isBackIconVisible,
+                    enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(animationSpec = tween(300)),
+                    exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally(animationSpec = tween(300)),
+                ) {
+                    WooPosBackButton(
+                        modifier = Modifier.padding(start = WooPosSpacing.Small.value),
+                        contentDescription = stringResource(R.string.woopos_cart_back_content_description),
+                        onClick = presentation.onBack,
+                    )
+                }
+            }
         }
 
-        val titleStartMargin = WooPosSpacing.Small.value
         WooPosText(
             text = stringResource(R.string.woopos_cart_title),
             style = WooPosTypography.Heading,
@@ -412,16 +432,16 @@ private fun CartToolbar(
             maxLines = 1,
             modifier = Modifier
                 .constrainAs(title) {
-                    when (onPhoneBack) {
-                        null -> start.linkTo(parent.start, margin = titleOffset)
-                        else -> start.linkTo(backButton.end, margin = titleStartMargin)
+                    when (presentation) {
+                        WooPosCartPresentation.Pane -> start.linkTo(parent.start, margin = titleOffset)
+                        is WooPosCartPresentation.PhoneSheet -> start.linkTo(backButton.end, margin = phoneTitleMargin)
                     }
                     centerVerticallyTo(parent)
                 }
                 .padding(
-                    start = when (onPhoneBack) {
-                        null -> WooPosSpacing.Medium.value
-                        else -> 0.dp
+                    start = when (presentation) {
+                        WooPosCartPresentation.Pane -> WooPosSpacing.Medium.value
+                        is WooPosCartPresentation.PhoneSheet -> 0.dp
                     },
                     end = WooPosSpacing.XSmall.value,
                 )
@@ -1076,7 +1096,7 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Enabled
             ),
             onUIEvent = {},
-            checkoutSlot = WooPosCartCheckoutButtonSlot.Inline,
+            presentation = WooPosCartPresentation.Pane,
         )
     }
 }
@@ -1151,7 +1171,7 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                 isCustomAmountDiscountNotAppliedNoteVisible = true,
             ),
             onUIEvent = {},
-            checkoutSlot = WooPosCartCheckoutButtonSlot.Inline,
+            presentation = WooPosCartPresentation.Pane,
         )
     }
 }
@@ -1173,7 +1193,7 @@ fun WooPosCartScreenEmptyPreview(modifier: Modifier = Modifier) {
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Invisible
             ),
             onUIEvent = {},
-            checkoutSlot = WooPosCartCheckoutButtonSlot.Inline,
+            presentation = WooPosCartPresentation.Pane,
         )
     }
 }
@@ -1211,12 +1231,7 @@ fun WooPosCartScreenErrorLoadingPreview(modifier: Modifier = Modifier) {
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Disabled
             ),
             onUIEvent = {},
-            checkoutSlot = WooPosCartCheckoutButtonSlot.Inline,
+            presentation = WooPosCartPresentation.Pane,
         )
     }
-}
-
-enum class WooPosCartCheckoutButtonSlot {
-    Inline,
-    External,
 }

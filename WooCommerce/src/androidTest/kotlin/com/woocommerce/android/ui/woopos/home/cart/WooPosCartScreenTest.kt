@@ -55,7 +55,7 @@ class WooPosCartScreenTest {
                         checkoutButtonState = WooPosCartState.CheckoutButtonState.Invisible,
                     ),
                     onUIEvent = {},
-                    checkoutSlot = WooPosCartCheckoutButtonSlot.External,
+                    presentation = WooPosCartPresentation.PhoneSheet(isFullScreen = false, onBack = {}),
                 )
             }
         }

@@ -9,7 +9,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartCheckoutButtonSlot
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartPresentation
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenProductsPreview
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
@@ -25,13 +25,12 @@ fun WooPosPhoneCartScreen(
         return
     }
     val state by viewModel.state.observeAsState()
-    state?.let { rawState ->
+    state?.let {
         WooPosCartScreen(
             modifier = modifier.fillMaxSize(),
-            state = rawState.copy(toolbar = rawState.toolbar.copy(backIconVisible = true)),
+            state = it,
             onUIEvent = viewModel::onUIEvent,
-            onPhoneBack = onBack,
-            checkoutSlot = WooPosCartCheckoutButtonSlot.External,
+            presentation = WooPosCartPresentation.PhoneSheet(isFullScreen = true, onBack = onBack),
         )
     }
 }
