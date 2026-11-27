@@ -20,24 +20,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 
@@ -52,12 +47,64 @@ fun WooPosDialogWrapper(
     isVisible: Boolean,
     dialogBackgroundContentDescription: String,
     widthFraction: Float = DEFAULT_WIDTH_FRACTION,
+    phoneStyle: WooPosPhoneModalStyle = WooPosPhoneModalStyle.Dialog,
     onCloseClick: (() -> Unit)? = null,
     onDismissRequest: () -> Unit,
     content: @Composable AnimatedVisibilityScope.() -> Unit
 ) {
-    val closeContentDescription = stringResource(R.string.close)
     val breakpoint = currentWooPosBreakpoint()
+    when (val style = phoneStyle.resolveFor(breakpoint)) {
+        WooPosPhoneModalStyle.Dialog -> WooPosCenterDialog(
+            modifier = modifier,
+            isVisible = isVisible,
+            breakpoint = breakpoint,
+            dialogBackgroundContentDescription = dialogBackgroundContentDescription,
+            widthFraction = widthFraction,
+            onCloseClick = onCloseClick,
+            onDismissRequest = onDismissRequest,
+            content = content,
+        )
+
+        WooPosPhoneModalStyle.BottomSheet -> WooPosBottomSheet(
+            modifier = modifier,
+            isVisible = isVisible,
+            onDismissRequest = onDismissRequest,
+        ) {
+            Column(
+                modifier = Modifier.padding(
+                    start = WooPosSpacing.XLarge.value,
+                    end = WooPosSpacing.XLarge.value,
+                    bottom = WooPosSpacing.XLarge.value,
+                )
+            ) {
+                content()
+            }
+        }
+
+        is WooPosPhoneModalStyle.FullScreen -> WooPosFullScreenModal(
+            modifier = modifier,
+            isVisible = isVisible,
+            title = style.title,
+            onDismissRequest = onDismissRequest,
+            onBackClick = style.onBackClick,
+            onCloseClick = onCloseClick,
+            content = content,
+        )
+    }
+}
+
+@Composable
+private fun WooPosCenterDialog(
+    modifier: Modifier,
+    isVisible: Boolean,
+    breakpoint: WooPosBreakpoint,
+    dialogBackgroundContentDescription: String,
+    widthFraction: Float,
+    onCloseClick: (() -> Unit)?,
+    onDismissRequest: () -> Unit,
+    content: @Composable AnimatedVisibilityScope.() -> Unit
+) {
+    val closeContentDescription = stringResource(R.string.close)
     val adaptiveWidthFraction = when (breakpoint) {
         WooPosBreakpoint.Phone -> PHONE_WIDTH_FRACTION
         WooPosBreakpoint.SmallTablet,
@@ -121,20 +168,14 @@ fun WooPosDialogWrapper(
                 ) {
                     if (onCloseClick != null) {
                         Box(modifier = Modifier.fillMaxWidth()) {
-                            IconButton(
+                            WooPosCloseButton(
+                                contentDescription = closeContentDescription,
                                 onClick = onCloseClick,
-                                modifier = Modifier.align(Alignment.TopEnd)
-                            ) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                                    contentDescription = closeContentDescription,
-                                    modifier = Modifier.size(WooPosIconSize.Large.value),
-                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                                )
-                            }
+                                modifier = Modifier.align(Alignment.TopEnd),
+                            )
                         }
 
-                        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value))
+                        Spacer(modifier = Modifier.size(WooPosSpacing.Large.value))
                     }
 
                     content()

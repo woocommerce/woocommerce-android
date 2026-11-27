@@ -41,6 +41,21 @@ fun WooPosBackButton(
     }
 }
 
+@Composable
+fun WooPosCloseButton(
+    contentDescription: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    WooPosBackButton(
+        modifier = modifier,
+        iconRes = R.drawable.ic_close_24dp,
+        contentDescription = contentDescription,
+        iconModifier = Modifier.size(32.dp.toAdaptiveIconSize()),
+        onClick = onClick,
+    )
+}
+
 @WooPosPreview
 @Composable
 fun WooPosBackButtonPreview() {
