@@ -91,7 +91,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
@@ -236,6 +236,7 @@ class WooPosTotalsViewModelTest {
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
         private const val CREATED_ORDER_ID = 23L
+        private const val NEXT_CREATED_ORDER_ID = 24L
         private const val PREVIOUS_ORDER_ID = 22L
         private const val COUPON_ID = 10L
     }
@@ -1779,15 +1780,32 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `when an order is created, then the print coordinator follows its order id`() =
+    fun `given an order was created, when the next order is created, then the print coordinator follows its order id`() =
         runTest {
-            // WHEN
-            createViewModelAndSetupForSuccessfulOrderCreation()
-
-            // THEN
+            // GIVEN
+            val itemClickedData = listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L))
+            val checkoutClicked = ParentToChildrenEvent.CheckoutClicked(itemClickedData)
+            val events = MutableStateFlow<ParentToChildrenEvent>(checkoutClicked)
+            createViewModelAndSetupForSuccessfulOrderCreation(
+                itemClickedData = itemClickedData,
+                parentToChildrenEventFlow = events,
+                orderItems = listOf(Order.Item.EMPTY.copy(productId = 1L, subtotal = BigDecimal("1.00"))),
+                nextOrderIds = listOf(NEXT_CREATED_ORDER_ID),
+            )
             val currentOrderId = argumentCaptor<Flow<Long>>()
             verify(printReceiptCoordinatorFactory).create(any(), currentOrderId.capture())
-            assertThat(currentOrderId.firstValue.first()).isEqualTo(CREATED_ORDER_ID)
+            currentOrderId.firstValue.distinctUntilChanged().test {
+                assertThat(awaitItem()).isEqualTo(CREATED_ORDER_ID)
+
+                // WHEN
+                events.value = ParentToChildrenEvent.BackFromCheckoutToCartClicked
+                advanceUntilIdle()
+                events.value = checkoutClicked
+                advanceUntilIdle()
+
+                // THEN
+                assertThat(awaitItem()).isEqualTo(NEXT_CREATED_ORDER_ID)
+            }
         }
 
     @Test
@@ -3863,6 +3881,7 @@ class WooPosTotalsViewModelTest {
         datePaidOnServer: Date? = null,
         orderFetchFinished: Deferred<Unit> = CompletableDeferred(Unit),
         isFetchFailing: Boolean = false,
+        nextOrderIds: List<Long> = emptyList(),
     ): WooPosTotalsViewModel {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_error_reader_not_connected_title))
             .thenReturn("Reader not connected")
@@ -3901,11 +3920,13 @@ class WooPosTotalsViewModelTest {
             total = BigDecimal("5.00"),
             couponLines = couponLines,
         )
+        val nextOrders = nextOrderIds.map { order.copy(id = it) }
         val totalsRepository: WooPosTotalsRepository = mock {
             on {
                 createOrderFromCartItems(itemClickedData)
-            }.thenReturn(Result.success(order))
+            }.thenReturn(Result.success(order), *nextOrders.map { Result.success(it) }.toTypedArray())
         }
+        nextOrders.forEach { whenever(totalsRepository.getOrderById(it.id)).thenReturn(it) }
         val priceFormat: WooPosFormatPrice = mock {
             on { invoke(BigDecimal("1.00")) }.thenReturn("1.00$")
             on { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
