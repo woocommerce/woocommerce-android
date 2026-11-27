@@ -402,7 +402,7 @@ private fun CouponInfo(name: String, summary: String, expiredState: Coupon.Expir
             text = name,
             style = WooPosTypography.BodyLarge,
             fontWeight = FontWeight.Bold,
-            maxLines = 1,
+            maxLines = wooPosItemCardTextMaxLines(),
             overflow = TextOverflow.Ellipsis,
             color = if (expiredState is Coupon.ExpiredState.Expired) {
                 WooPosTheme.colors.onDisabledContainer
@@ -415,7 +415,7 @@ private fun CouponInfo(name: String, summary: String, expiredState: Coupon.Expir
 
         WooPosText(
             text = summary,
-            maxLines = 1,
+            maxLines = wooPosItemCardTextMaxLines(),
             overflow = TextOverflow.Ellipsis,
             style = WooPosTypography.BodyLarge,
             color = if (expiredState is Coupon.ExpiredState.Expired) {
@@ -431,7 +431,8 @@ private fun CouponInfo(name: String, summary: String, expiredState: Coupon.Expir
                 text = expiredState.formattedDate?.let {
                     stringResource(R.string.woopos_coupon_item_expired_label, it)
                 } ?: stringResource(R.string.coupon_list_item_label_expired),
-                maxLines = 1,
+                maxLines = wooPosItemCardTextMaxLines(),
+                overflow = TextOverflow.Ellipsis,
                 style = WooPosTypography.BodyLarge,
                 color = WooPosTheme.colors.onDisabledContainer
             )
