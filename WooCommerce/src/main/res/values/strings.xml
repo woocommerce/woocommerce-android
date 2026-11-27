@@ -4631,8 +4631,8 @@
     <string name="woopos_receipt_printer_setup_open_bluetooth_settings_button">Open Bluetooth settings</string>
     <string name="woopos_receipt_printer_setup_discovery_failed_title">Couldn\'t search for printers</string>
     <string name="woopos_receipt_printer_setup_discovery_failed_message">Make sure Bluetooth is on, then search again.</string>
-    <string name="woopos_receipt_printer_setup_connection_failed_title">Something went wrong</string>
-    <string name="woopos_receipt_printer_setup_connection_failed_message">We couldn\'t connect to your printer. Please try again.</string>
+    <string name="woopos_receipt_printer_setup_connection_failed_title">Can\'t connect to your printer</string>
+    <string name="woopos_receipt_printer_setup_connection_failed_message">Make sure your printer is on and nearby with Bluetooth turned on, then try again.</string>
     <string name="woopos_receipt_printer_setup_bluetooth_off_title">Bluetooth is off</string>
     <string name="woopos_receipt_printer_setup_bluetooth_off_message">Turn on Bluetooth to find and connect to your receipt printer.</string>
     <string name="woopos_receipt_printer_setup_turn_on_bluetooth_button">Turn on Bluetooth</string>
