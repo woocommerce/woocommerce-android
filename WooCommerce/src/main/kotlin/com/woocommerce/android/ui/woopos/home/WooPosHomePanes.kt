@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartCheckoutButtonSlot
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenProductsPreview
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
@@ -38,7 +37,6 @@ fun WooPosHomeCartPane(
         WooPosCartScreen(
             modifier = modifier,
             viewModel = viewModel,
-            checkoutSlot = WooPosCartCheckoutButtonSlot.Inline,
         )
     }
 }
