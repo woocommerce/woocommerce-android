@@ -496,7 +496,7 @@ class WooPosBuildThermalReceiptTest {
             R.string.woopos_receipt_subtotal to "Subtotal",
             R.string.woopos_receipt_discount to "Discount",
             R.string.woopos_receipt_discount_with_coupons to "Discount (%1\$s)",
-            R.string.woopos_receipt_custom_amount to "Custom amount",
+            R.string.woopos_custom_amount_dialog_name_placeholder to "Custom amount",
             R.string.woopos_receipt_shipping to "Shipping",
             R.string.woopos_receipt_taxes to "Taxes",
             R.string.woopos_receipt_amount_paid to "Amount Paid",

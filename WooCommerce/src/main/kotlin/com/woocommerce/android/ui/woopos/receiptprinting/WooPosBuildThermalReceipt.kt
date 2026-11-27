@@ -97,7 +97,7 @@ class WooPosBuildThermalReceipt @Inject constructor(
         .map { fee ->
             Row(
                 label = fee.name?.trim().nullIfBlank()
-                    ?: resourceProvider.getString(R.string.woopos_receipt_custom_amount),
+                    ?: resourceProvider.getString(R.string.woopos_custom_amount_dialog_name_placeholder),
                 amount = formatPrice(fee.total, currency),
             )
         }
