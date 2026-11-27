@@ -49,7 +49,10 @@ fun WooPosBottomSheet(
 
     if (isSheetShown) {
         ModalBottomSheet(
-            onDismissRequest = onDismissRequest,
+            onDismissRequest = {
+                isSheetShown = false
+                onDismissRequest()
+            },
             modifier = modifier,
             sheetState = sheetState,
             shape = RoundedCornerShape(
