@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-11-05 10:55:44+0000
+Translation-Revision-Date: 2026-11-17 15:56:39+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_payment_status_check_failed_message">Vi kunde inte kontrollera betalningsstatusen. Kontrollera din internetanslutning och försök igen.</string>
+    <string name="woopos_totals_payment_not_confirmed_check_status">Kontrollera betalningsstatus</string>
+    <string name="woopos_totals_payment_not_confirmed_message">Vi kunde inte bekräfta denna betalning, så kortet kan redan ha debiterats. Kontrollera betalningsstatusen innan du tar en annan betalningsmetod.</string>
+    <string name="woopos_totals_payment_not_confirmed_title">Betalning ej bekräftad</string>
+    <string name="woopos_lock_digits_entered">%1$d av %2$d angivna siffror</string>
+    <string name="woopos_lock_pin_entry">PIN-inmatning</string>
+    <string name="woopos_lock_delete_digit">Ta bort</string>
+    <string name="woopos_lock_enter_pin">Ange din PIN-kod för att låsa upp POS</string>
+    <string name="woopos_lock_pos">Lås POS</string>
+    <string name="woopos_custom_amount_edit_amount_title">Redigera belopp</string>
+    <string name="woopos_custom_amount_name_optional">Namn (valfritt)</string>
+    <string name="woopos_custom_amount_details_title">Information om anpassat belopp</string>
+    <string name="ai_support_chat_ai_disclosure">Du chattar med AI från Woo-supporten.</string>
+    <string name="card_reader_payment_failed_capture_outcome_unknown">Kortet kan redan ha debiterats. Försök igen för att kontrollera betalningsstatusen.</string>
+    <string name="card_reader_payment_not_confirmed_header">Betalning ej bekräftad</string>
+    <string name="barcode_scanning_hardware_scanner_wrong_value">Den skannade koden matchar inte. Ställ in din skanner till samma tangentbordslayout som din enhet.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_instruction">Skanna denna streckkod med din skanner.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_success">Din skanner fungerar</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_title">Testa din skanner</string>
+    <string name="barcode_scanning_hardware_scanner_info_usage">Skanna på skärmarna Beställningar och Produkter eller medan du skapar en beställning. Du behöver inte öppna kameran.</string>
+    <string name="barcode_scanning_hardware_scanner_info_setup">Parkoppla din skanner till din enhets Bluetooth-inställningar eller anslut den via USB. Ställ in det på tangentbordsläge (HID).</string>
+    <string name="barcode_scanning_hardware_scanner_info_title">Använd en Bluetooth- eller USB-skanner</string>
+    <string name="barcode_scanning_or">eller</string>
+    <string name="barcode_scanning_hardware_scanner_info_link">Använd en extern skanner</string>
+    <string name="login_site_credentials_web_authorization_site_mismatch">Denna godkännandesida tillhör en annan webbplats. För din säkerhet stoppade vi inloggningen.</string>
+    <string name="login_store_suggestion_unavailable">Vi kunde inte bekräfta denna butik från länken. Ange din butiksadress för att fortsätta.</string>
+    <string name="login_store_suggestion_redirected">Denna adress leder till en annan webbplats. Fortsätt endast om det är din butik.</string>
+    <string name="login_store_suggestion_use_different_store">Använd en annan butik</string>
+    <string name="login_store_suggestion_log_in">Logga in i denna butik</string>
+    <string name="login_store_suggestion_description">Fortsätt endast om detta är din butiksadress.</string>
+    <string name="login_store_suggestion_title">Logga in i den här butiken?</string>
     <string name="woo_shipping_labels_service_status_severity_info">Information</string>
     <string name="woo_shipping_labels_service_status_severity_warning">Varning</string>
     <string name="woo_shipping_labels_service_status_severity_error">Fel</string>
@@ -295,7 +326,6 @@ Language: sv_SE
     <string name="login_qr_endpoint_missing_title">Denna butik kan inte slutföra QR-inloggning</string>
     <string name="login_qr_scanner_authenticating">Loggar in dig …</string>
     <string name="login_qr_scanner_visit_url">Besök %1$s</string>
-    <string name="login_qr_scanner_hint">Centrera QR-koden i ramen</string>
     <string name="login_qr_prologue_camera_blocked_settings_button">Öppna behörighetsinställningar</string>
     <string name="login_qr_prologue_camera_blocked_body">Aktivera kameraåtkomst i Inställningar eller avbryt för att logga in med din butiksadress istället.</string>
     <string name="login_qr_prologue_camera_blocked_title">Kameraåtkomst är avstängd</string>
@@ -335,20 +365,14 @@ Language: sv_SE
     <string name="woopos_mark_order_as_paid_note_hint">t.ex. banköverföring från Maria, ref 4827</string>
     <string name="woopos_mark_order_as_paid_message">Detta kommer att markera beställningen av %1$s som slutförd. Använd endast detta om du redan har tagit emot betalning på ett annat sätt.</string>
     <string name="woopos_mark_order_as_paid_title">Markera beställningen som betald?</string>
-    <string name="woopos_custom_amount_dialog_cancel">Avbryt</string>
     <string name="woopos_custom_amount_dialog_submit_edit">Uppdatera anpassat belopp</string>
     <string name="woopos_custom_amount_dialog_submit_add">Lägg till anpassat belopp</string>
     <string name="woopos_custom_amount_dialog_charge_taxes">Debitera moms</string>
     <string name="woopos_custom_amount_dialog_name_placeholder">Anpassat belopp</string>
     <string name="woopos_custom_amount_dialog_name_label">Namn</string>
     <string name="woopos_custom_amount_dialog_amount_label">Belopp</string>
-    <string name="woopos_custom_amount_form_title">Anpassat belopp</string>
-    <string name="woopos_custom_amount_dialog_title_edit">Redigera anpassat belopp</string>
-    <string name="woopos_custom_amount_dialog_title_add">Lägg till anpassat belopp</string>
     <string name="woopos_custom_amount_entry_subtitle">Lägg till en engångsavgift</string>
     <string name="woopos_custom_amount_entry_title">Anpassat belopp</string>
-    <string name="woopos_cart_custom_amount_menu_remove">Ta bort</string>
-    <string name="woopos_cart_custom_amount_menu_edit">Redigera</string>
     <string name="woopos_cart_custom_amount_includes_tax">Moms inkluderat</string>
     <string name="woopos_cart_custom_amount_edit_content_description">Redigera %s</string>
     <string name="woopos_cart_item_custom_amount_content_description">Anpassat belopp%1$s, %2$s</string>
@@ -2041,7 +2065,7 @@ Language: sv_SE
     <string name="blaze_campaign_status_canceled">Avbruten</string>
     <string name="blaze_campaign_status_scheduled">Tidsinställd</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find">Välj Tryck för att betala från alternativen för Ta emot betalning i\nBeställningsinformation eller Meny &gt; Betalningar.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Prova att genomföra en %s-betalning med ditt betal- eller kreditkort.\nBetalningen kommer att återbetalas när du är klar.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Prova att genomföra en live-betalning på %s med ditt betal- eller kreditkort.\nBetalningen kommer att återbetalas när du är klar. Behandlingsavgifter tillämpas.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">Det är enkelt, säkert och privat.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Ta emot alla typer av personliga betalningar, direkt\ni din telefon. Ingen extra hårdvara behövs.</string>
     <string name="blaze_campaign_status_rejected">Avvisad</string>

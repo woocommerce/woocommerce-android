@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-11-04 17:54:41+0000
+Translation-Revision-Date: 2026-11-18 15:58:09+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_payment_status_check_failed_message">No hemos podido comprobar el estado del pago. Comprueba tu conexión a Internet e inténtalo de nuevo.</string>
+    <string name="woopos_totals_payment_not_confirmed_check_status">Comprobar el estado del pago</string>
+    <string name="woopos_totals_payment_not_confirmed_message">No hemos podido confirmar este pago, por lo que es posible que ya se haya realizado el cargo en la tarjeta. Comprueba el estado del pago antes de utilizar otro método de pago.</string>
+    <string name="woopos_totals_payment_not_confirmed_title">Pago no confirmado</string>
+    <string name="woopos_lock_digits_entered">Dígitos introducidos: %1$d de %2$d</string>
+    <string name="woopos_lock_pin_entry">Entrada de PIN</string>
+    <string name="woopos_lock_delete_digit">Eliminar</string>
+    <string name="woopos_lock_enter_pin">Introduce tu PIN para desbloquear el TPV</string>
+    <string name="woopos_lock_pos">Bloquear TPV</string>
+    <string name="woopos_custom_amount_edit_amount_title">Editar importe</string>
+    <string name="woopos_custom_amount_name_optional">Nombre (opcional)</string>
+    <string name="woopos_custom_amount_details_title">Detalles de importes personalizados</string>
+    <string name="ai_support_chat_ai_disclosure">Estás chateando con la IA de Asistencia de Woo.</string>
+    <string name="card_reader_payment_failed_capture_outcome_unknown">Es posible que ya se haya efectuado el cargo en la tarjeta. Inténtalo de nuevo para comprobar el estado del pago.</string>
+    <string name="card_reader_payment_not_confirmed_header">Pago no confirmado</string>
+    <string name="barcode_scanning_hardware_scanner_wrong_value">El código explorado no coincide. Configura el escáner con la misma disposición de teclado que tu dispositivo.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_instruction">Explora este código de barras con tu escáner.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_success">Tu escáner funciona</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_title">Prueba tu escáner</string>
+    <string name="barcode_scanning_hardware_scanner_info_usage">Escanear en las pantallas de pedidos y productos, o mientras se crea un pedido. No es necesario que abras la cámara.</string>
+    <string name="barcode_scanning_hardware_scanner_info_setup">Empareja el escáner en los ajustes de Bluetooth de tu dispositivo o conéctalo con USB. Configúralo en modo teclado (HID).</string>
+    <string name="barcode_scanning_hardware_scanner_info_title">Usar un escáner Bluetooth o USB</string>
+    <string name="barcode_scanning_or">o</string>
+    <string name="barcode_scanning_hardware_scanner_info_link">Usar un escáner externo</string>
+    <string name="login_site_credentials_web_authorization_site_mismatch">Esta página de aprobación pertenece a otro sitio. Por motivos de seguridad, hemos cancelado el acceso.</string>
+    <string name="login_store_suggestion_unavailable">No hemos podido verificar esta tienda mediante el enlace. Introduce la dirección de tu tienda para continuar.</string>
+    <string name="login_store_suggestion_use_different_store">Usar una tienda diferente</string>
+    <string name="login_store_suggestion_redirected">Esta dirección lleva a un sitio diferente. Continúa únicamente si es tu tienda.</string>
+    <string name="login_store_suggestion_title">¿Quieres acceder a esta tienda?</string>
+    <string name="login_store_suggestion_log_in">Acceder a esta tienda</string>
+    <string name="login_store_suggestion_description">Continúa únicamente si esta es la dirección de tu tienda.</string>
     <string name="woo_shipping_labels_service_status_severity_info">Información</string>
     <string name="woo_shipping_labels_service_status_severity_warning">Advertencia</string>
     <string name="woo_shipping_labels_service_status_severity_error">Error</string>
@@ -293,7 +324,6 @@ Language: es
     <string name="login_qr_endpoint_missing_enter_url">Introduce la URL del sitio</string>
     <string name="login_qr_endpoint_missing_body">Tu plugin de WooCommerce no admite el acceso con QR. Actualiza WooCommerce en tu tienda e inténtalo de nuevo, o accede introduciendo la URL de tu sitio.</string>
     <string name="login_qr_scanner_visit_url">Visitar %1$s</string>
-    <string name="login_qr_scanner_hint">Centra el código QR en el marco</string>
     <string name="login_qr_prologue_camera_blocked_settings_button">Abrir los ajustes de permisos</string>
     <string name="login_qr_endpoint_missing_title">Esta tienda no puede completar el acceso con QR</string>
     <string name="login_qr_scanner_authenticating">Iniciando sesión…</string>
@@ -333,20 +363,14 @@ Language: es
     <string name="woopos_mark_order_as_paid_error_message">No se ha podido actualizar el pedido. Inténtalo de nuevo.</string>
     <string name="woopos_mark_order_as_paid_confirm_button">Marcar como pagado</string>
     <string name="woopos_mark_order_as_paid_note_hint">p. ej. transferencia bancaria de María, ref 4827</string>
-    <string name="woopos_custom_amount_dialog_cancel">Cancelar</string>
     <string name="woopos_custom_amount_dialog_submit_edit">Actualizar cantidad personalizada</string>
     <string name="woopos_custom_amount_dialog_submit_add">Añadir cantidad personalizada</string>
     <string name="woopos_custom_amount_dialog_charge_taxes">Cobrar impuestos</string>
     <string name="woopos_custom_amount_dialog_name_placeholder">Cantidad personalizada</string>
     <string name="woopos_custom_amount_dialog_name_label">Nombre</string>
     <string name="woopos_custom_amount_dialog_amount_label">Cantidad</string>
-    <string name="woopos_custom_amount_form_title">Cantidad personalizada</string>
-    <string name="woopos_custom_amount_dialog_title_edit">Editar cantidad personalizada</string>
-    <string name="woopos_custom_amount_dialog_title_add">Añadir cantidad personalizada</string>
     <string name="woopos_custom_amount_entry_subtitle">Añadir un cargo único</string>
     <string name="woopos_custom_amount_entry_title">Cantidad personalizada</string>
-    <string name="woopos_cart_custom_amount_menu_remove">Eliminar</string>
-    <string name="woopos_cart_custom_amount_menu_edit">Editar</string>
     <string name="woopos_cart_custom_amount_includes_tax">Impuestos incluidos</string>
     <string name="woopos_mark_order_as_paid_message">Esto marcará el pedido %1$s como completado. Utiliza esta opción solo si ya has cobrado el pago de otra manera.</string>
     <string name="woopos_mark_order_as_paid_title">¿Marcar el pedido como pagado?</string>
@@ -2041,7 +2065,7 @@ Language: es
     <string name="blaze_campaign_status_canceled">Cancelada</string>
     <string name="blaze_campaign_status_scheduled">Programada</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find">Elige la opción Tap to Pay en las opciones de Recibir pagos en\nDetalles del pedido o Menú &gt; Pagos.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Haz un pago de %s con tu tarjeta de débito o crédito.\nEl pago se te reembolsará cuando hayas terminado.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Haz un %s pago en tiempo real con tu tarjeta de débito o crédito.\nEl pago se te reembolsará cuando hayas terminado, aunque se aplicarán las comisiones de procesamiento.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">Es fácil, seguro y privado.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Acepta todo tipo de pagos en persona, directamente\nen tu teléfono. No se necesita ningún hardware adicional.</string>
     <string name="blaze_campaign_status_rejected">Rechazada</string>

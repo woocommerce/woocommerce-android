@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-11-03 15:57:52+0000
+Translation-Revision-Date: 2026-11-17 11:57:21+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_payment_status_check_failed_message">Ödeme durumunu kontrol edemedik. İnternet bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="woopos_totals_payment_not_confirmed_check_status">Ödeme durumunu kontrol et</string>
+    <string name="woopos_totals_payment_not_confirmed_message">Bu ödemeyi onaylayamadık, bu nedenle karttan zaten ödeme yapılmış olabilir. Başka bir ödeme yöntemi almadan önce ödeme durumunu kontrol edin.</string>
+    <string name="woopos_totals_payment_not_confirmed_title">Ödeme onaylanmadı</string>
+    <string name="woopos_lock_digits_entered">%1$d/%2$d rakam girildi</string>
+    <string name="woopos_lock_pin_entry">PIN girdisi</string>
+    <string name="woopos_lock_delete_digit">Sil</string>
+    <string name="woopos_lock_enter_pin">POS\'un kilidini açmak için PIN\'inizi girin</string>
+    <string name="woopos_lock_pos">POS\'u kilitle</string>
+    <string name="woopos_custom_amount_edit_amount_title">Tutarı düzenle</string>
+    <string name="woopos_custom_amount_name_optional">İsim (isteğe bağlı)</string>
+    <string name="woopos_custom_amount_details_title">Özel tutar ayrıntıları</string>
+    <string name="ai_support_chat_ai_disclosure">Woo Destek\'ten yapay zeka ile sohbet ediyorsunuz.</string>
+    <string name="card_reader_payment_failed_capture_outcome_unknown">Karttan ücret zaten alınmış olabilir. Ödeme durumunu kontrol etmek için tekrar deneyin.</string>
+    <string name="card_reader_payment_not_confirmed_header">Ödeme onaylanmadı</string>
+    <string name="barcode_scanning_hardware_scanner_wrong_value">Taranan kod eşleşmiyor. Tarayıcınızı cihazınızla aynı klavye düzenine ayarlayın.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_instruction">Tarayıcınızla bu barkodu tarayın.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_success">Tarayıcınız çalışır</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_title">Tarayıcınızı test edin</string>
+    <string name="barcode_scanning_hardware_scanner_info_usage">Siparişler ve Ürünler ekranlarında veya sipariş oluştururken tarama yapın. Kamerayı açmanıza gerek yok.</string>
+    <string name="barcode_scanning_hardware_scanner_info_setup">Tarayıcınızı cihazınızın Bluetooth ayarlarında eşleştirin veya USB ile bağlayın. Klavye (HID) moduna ayarlayın.</string>
+    <string name="barcode_scanning_hardware_scanner_info_title">Bluetooth veya USB tarayıcı kullanın</string>
+    <string name="barcode_scanning_or">veya</string>
+    <string name="barcode_scanning_hardware_scanner_info_link">Harici bir tarayıcı kullanın</string>
+    <string name="login_site_credentials_web_authorization_site_mismatch">Bu onay sayfası farklı bir siteye ait. Güvenliğiniz için oturum açmayı durdurduk.</string>
+    <string name="login_store_suggestion_unavailable">Bu mağazayı bağlantıdan onaylayamadık. Devam etmek için mağaza adresinizi girin.</string>
+    <string name="login_store_suggestion_redirected">Bu adres başka bir siteye yönlendirir. Yalnızca sizin mağazanızsa devam edin.</string>
+    <string name="login_store_suggestion_use_different_store">Farklı bir mağaza kullanın</string>
+    <string name="login_store_suggestion_log_in">Bu mağazada oturum açın</string>
+    <string name="login_store_suggestion_description">Yalnızca bu, mağazanızın adresiyse devam edin.</string>
+    <string name="login_store_suggestion_title">Bu mağazada oturum açılsın mı?</string>
     <string name="woo_shipping_labels_service_status_severity_info">Bilgi</string>
     <string name="woo_shipping_labels_service_status_severity_warning">Uyarı</string>
     <string name="woo_shipping_labels_service_status_severity_error">Hata</string>
@@ -292,7 +323,6 @@ Language: tr
     <string name="login_qr_match_countdown">%1$d s. içinde süresi dolacak</string>
     <string name="login_qr_match_account_label">Şu olarak oturum açıyorsunuz:</string>
     <string name="login_qr_scanner_visit_url">%1$s sitesini ziyaret edin</string>
-    <string name="login_qr_scanner_hint">QR kodunu çerçevede ortalayın</string>
     <string name="login_qr_prologue_camera_blocked_settings_button">İzin Ayarlarını Aç</string>
     <string name="login_qr_endpoint_missing_title">Bu mağaza QR oturum açma işlemini tamamlayamıyor</string>
     <string name="login_qr_scanner_authenticating">Oturumunuz açılıyor…</string>
@@ -334,20 +364,14 @@ Language: tr
     <string name="woopos_mark_order_as_paid_note_hint">ör. Maria\'dan banka transferi, ref 4827</string>
     <string name="woopos_mark_order_as_paid_message">Bu, %1$s siparişini tamamlandı olarak işaretler. Bunu yalnızca ödemeyi başka bir şekilde zaten aldıysanız kullanın.</string>
     <string name="woopos_mark_order_as_paid_title">Sipariş ödendi olarak işaretlensin mi?</string>
-    <string name="woopos_custom_amount_dialog_cancel">İptal Et</string>
     <string name="woopos_custom_amount_dialog_submit_edit">Özel tutarı güncelle</string>
     <string name="woopos_custom_amount_dialog_submit_add">Özel tutar ekle</string>
     <string name="woopos_custom_amount_dialog_charge_taxes">Vergileri al</string>
     <string name="woopos_custom_amount_dialog_name_placeholder">Özel tutar</string>
     <string name="woopos_custom_amount_dialog_name_label">Ad</string>
     <string name="woopos_custom_amount_dialog_amount_label">Tutar</string>
-    <string name="woopos_custom_amount_form_title">Özel tutar</string>
-    <string name="woopos_custom_amount_dialog_title_edit">Özel tutarı düzenle</string>
-    <string name="woopos_custom_amount_dialog_title_add">Özel tutar ekle</string>
     <string name="woopos_custom_amount_entry_subtitle">Bir kerelik ücret ekleyin</string>
     <string name="woopos_custom_amount_entry_title">Özel tutar</string>
-    <string name="woopos_cart_custom_amount_menu_remove">Kaldır</string>
-    <string name="woopos_cart_custom_amount_menu_edit">Düzenle</string>
     <string name="woopos_cart_custom_amount_includes_tax">Vergi dahil</string>
     <string name="woopos_cart_custom_amount_edit_content_description">Düzenle: %s</string>
     <string name="woopos_cart_item_custom_amount_content_description">Özel tutar %1$s, %2$s</string>
@@ -2039,7 +2063,7 @@ Language: tr
     <string name="blaze_campaign_status_canceled">İptal edildi</string>
     <string name="blaze_campaign_status_scheduled">Zamanlandı</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find">Sipariş Ayrıntıları veya Menü &gt; Ödemeler bölümünde\nÖdeme Alma seçeneklerinden Tap to Pay\'i seçin.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Banka veya kredi kartınızla bir %s ödemesi yapmayı deneyin.\nÖdeme, işiniz bittiğinde iade edilir.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Banka veya kredi kartınızla bir  canlı ödemesi yapmayı deneyin.%s\nÖdeme, işiniz bittiğinde iade edilir, işlem ücretleri geçerlidir.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">Kolay, güvenli ve gizlidir.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Doğrudan telefonunuzdan her türde şahsen ödemeyi\nkabul edin. Ekstra donanım gerektirmez.</string>
     <string name="blaze_campaign_status_rejected">Reddedildi</string>

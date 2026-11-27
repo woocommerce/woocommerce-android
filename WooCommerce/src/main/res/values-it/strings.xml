@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-11-03 10:55:34+0000
+Translation-Revision-Date: 2026-11-17 11:56:53+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_payment_status_check_failed_message">Impossibile verificare lo stato del pagamento. Controlla la tua connessione a Internet e riprova.</string>
+    <string name="woopos_totals_payment_not_confirmed_check_status">Verifica lo stato del pagamento</string>
+    <string name="woopos_totals_payment_not_confirmed_message">Non è stato possibile confermare questo pagamento, quindi la carta potrebbe essere già stata addebitata. Verifica lo stato del pagamento prima di scegliere un altro metodo di pagamento.</string>
+    <string name="woopos_totals_payment_not_confirmed_title">Pagamento non confermato</string>
+    <string name="woopos_lock_digits_entered">%1$d di %2$d cifre inserite</string>
+    <string name="woopos_lock_pin_entry">Voce PIN</string>
+    <string name="woopos_lock_delete_digit">Elimina</string>
+    <string name="woopos_lock_enter_pin">Inserisci il PIN per sbloccare POS</string>
+    <string name="woopos_lock_pos">Blocca POS</string>
+    <string name="woopos_custom_amount_edit_amount_title">Modifica importo</string>
+    <string name="woopos_custom_amount_name_optional">Nome (opzionale)</string>
+    <string name="woopos_custom_amount_details_title">Dettagli importi personalizzati</string>
+    <string name="ai_support_chat_ai_disclosure">Stai chattando con l\'IA del supporto Woo.</string>
+    <string name="card_reader_payment_failed_capture_outcome_unknown">La carta potrebbe essere già stata addebitata. Riprova a verificare lo stato del pagamento.</string>
+    <string name="card_reader_payment_not_confirmed_header">Pagamento non confermato</string>
+    <string name="barcode_scanning_hardware_scanner_wrong_value">Il codice scansionato non corrisponde. Imposta lo scanner allo stesso layout di tastiera del dispositivo.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_instruction">Scansiona questo codice a barre con il tuo scanner.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_success">Lo scanner funziona</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_title">Testa lo scanner</string>
+    <string name="barcode_scanning_hardware_scanner_info_usage">Scansiona nelle schermate Ordini e Prodotti o durante la creazione di un ordine. Non è necessario aprire la fotocamera.</string>
+    <string name="barcode_scanning_hardware_scanner_info_setup">Associa lo scanner dalle impostazioni Bluetooth del dispositivo o collegalo tramite USB. Impostalo in modalità tastiera (HID).</string>
+    <string name="barcode_scanning_hardware_scanner_info_title">Usa uno scanner Bluetooth o USB</string>
+    <string name="barcode_scanning_or">o</string>
+    <string name="barcode_scanning_hardware_scanner_info_link">Usa uno scanner esterno</string>
+    <string name="login_site_credentials_web_authorization_site_mismatch">Questa pagina di approvazione appartiene a un sito diverso. Per tua sicurezza, abbiamo interrotto l\'accesso.</string>
+    <string name="login_store_suggestion_unavailable">Non è stato possibile confermare questo negozio dal link. Inserisci l\'indirizzo del tuo negozio per continuare.</string>
+    <string name="login_store_suggestion_redirected">Questo indirizzo porta a un sito diverso. Continua solo se è il tuo negozio.</string>
+    <string name="login_store_suggestion_use_different_store">Usa un negozio diverso</string>
+    <string name="login_store_suggestion_log_in">Accedi a questo negozio</string>
+    <string name="login_store_suggestion_description">Continua solo se questo è l\'indirizzo del tuo negozio.</string>
+    <string name="login_store_suggestion_title">Accedere a questo negozio?</string>
     <string name="woo_shipping_labels_service_status_severity_info">Informazioni</string>
     <string name="woo_shipping_labels_service_status_severity_warning">Attenzione</string>
     <string name="woo_shipping_labels_service_status_severity_error">Errore</string>
@@ -295,7 +326,6 @@ Language: it
     <string name="login_qr_endpoint_missing_title">Questo negozio non può completare l\'accesso tramite QR</string>
     <string name="login_qr_scanner_authenticating">Accesso in corso…</string>
     <string name="login_qr_scanner_visit_url">Visita %1$s</string>
-    <string name="login_qr_scanner_hint">Centra il codice QR nel riquadro</string>
     <string name="login_qr_prologue_camera_blocked_settings_button">Apri le impostazioni dei permessi</string>
     <string name="login_qr_prologue_camera_blocked_body">Abilita l\'accesso alla fotocamera nelle impostazioni oppure annulla per accedere con l\'indirizzo del tuo negozio.</string>
     <string name="login_qr_prologue_camera_blocked_title">L\'accesso alla fotocamera è disattivato</string>
@@ -332,20 +362,14 @@ Language: it
     <string name="woopos_mark_order_as_paid_order_not_found">Impossibile caricare l\'ordine. Torna indietro e riprova.</string>
     <string name="woopos_mark_order_as_paid_error_message">Impossibile aggiornare l\'ordine. Riprova.</string>
     <string name="woopos_mark_order_as_paid_confirm_button">Contrassegna come Pagato</string>
-    <string name="woopos_custom_amount_dialog_cancel">Annulla</string>
     <string name="woopos_custom_amount_dialog_submit_edit">Aggiorna importo personalizzato</string>
     <string name="woopos_custom_amount_dialog_submit_add">Aggiungi importo personalizzato</string>
     <string name="woopos_custom_amount_dialog_charge_taxes">Modifica le imposte</string>
     <string name="woopos_custom_amount_dialog_name_placeholder">Importo personalizzato</string>
     <string name="woopos_custom_amount_dialog_name_label">Nome</string>
     <string name="woopos_custom_amount_dialog_amount_label">Importo</string>
-    <string name="woopos_custom_amount_form_title">Importo personalizzato</string>
-    <string name="woopos_custom_amount_dialog_title_edit">Modifica importo personalizzato</string>
-    <string name="woopos_custom_amount_dialog_title_add">Aggiungi importo personalizzato</string>
     <string name="woopos_custom_amount_entry_subtitle">Aggiungi un addebito una tantum</string>
     <string name="woopos_custom_amount_entry_title">Importo personalizzato</string>
-    <string name="woopos_cart_custom_amount_menu_remove">Rimuovi</string>
-    <string name="woopos_cart_custom_amount_menu_edit">Modifica</string>
     <string name="woopos_mark_order_as_paid_note_hint">ad es., bonifico bancario da Maria, rif. 4827</string>
     <string name="woopos_mark_order_as_paid_message">Questo contrassegnerà l\'ordine %1$s come completato. Usa questa opzione solo se hai già ricevuto il pagamento in un altro modo.</string>
     <string name="woopos_mark_order_as_paid_title">Contrassegnare l\'ordine come Pagato?</string>
@@ -1817,8 +1841,8 @@ Language: it
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">Parametri URL</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">URL di destinazione</string>
     <string name="blaze_campaign_creation_location_search_message">Inizia a digitare il Paese, lo Stato o la città per visualizzare le opzioni disponibili</string>
-    <string name="blaze_campaign_payment_summary_terms_and_conditions">Facendo clic su \"Invia campagna\" accetti i &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Termini di servizio&lt;/u&gt;&lt;/a&gt; e la &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;Politica sulla pubblicità&lt;/u&gt;&lt;/a&gt; e autorizzi gli addebiti tramite il tuo metodo di pagamento per il budget e la durata scelti. &lt;a href=\'learnMore\'&gt;&lt;u&gt;Scopri di più&lt;/u&gt;&lt;/a&gt; sui budget e sui pagamenti per il lavoro legato ad Articoli promossi.</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Inserisci manualmente</string>
+    <string name="blaze_campaign_payment_summary_terms_and_conditions">Facendo clic su \"Invia campagna\" accetti i &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Termini di servizio&lt;/u&gt;&lt;/a&gt; e la &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;Politica sulla pubblicità&lt;/u&gt;&lt;/a&gt; e autorizzi gli addebiti tramite il tuo metodo di pagamento per il budget e la durata scelti. &lt;a href=\'learnMore\'&gt;&lt;u&gt;Scopri di più&lt;/u&gt;&lt;/a&gt; sui budget e sui pagamenti per il lavoro legato ad Articoli promossi.</string>
     <string name="blaze_campaign_creation_location_search_failed_message">Ricerca non riuscita.\nRiprova</string>
     <string name="blaze_campaign_payment_summary_submit_campaign">Invia campagna</string>
     <string name="blaze_campaign_payment_summary_add_payment_method">Aggiungi un metodo di pagamento</string>
@@ -2041,7 +2065,7 @@ Language: it
     <string name="blaze_campaign_status_canceled">Annullata</string>
     <string name="blaze_campaign_status_scheduled">Pianificata</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find">Scegli Tocca per pagare dalle opzioni di Ricevi pagamenti in\nDettagli dell\'ordine o Menu &gt; Pagamenti.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Prova un pagamento di %s con la tua carta di debito o di credito:\nti verrà rimborsato quando hai terminato.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Prova un pagamento di %s con la tua carta di debito o di credito.\nIl pagamento ti verrà rimborsato al termine della procedura; sono previste commissioni di elaborazione.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">È facile, sicuro e privato.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Accetta tutti i tipi di pagamenti di persona direttamente\ndal tuo telefono. Non è necessario alcun hardware aggiuntivo.</string>
     <string name="blaze_campaign_status_rejected">Rifiutata</string>

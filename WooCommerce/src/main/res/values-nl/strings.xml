@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-11-03 15:57:13+0000
+Translation-Revision-Date: 2026-11-17 15:58:19+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_payment_status_check_failed_message">We konden de betalingsstatus niet controleren. Controleer je internetverbinding en probeer het nogmaals.</string>
+    <string name="woopos_totals_payment_not_confirmed_check_status">Betalingsstatus controleren</string>
+    <string name="woopos_totals_payment_not_confirmed_message">We konden deze betaling niet bevestigen, dus het kan zijn dat het bedrag al van je kaart is afgeschreven. Controleer de betalingsstatus voordat je een andere betaalmethode gebruikt.</string>
+    <string name="woopos_totals_payment_not_confirmed_title">Betaling niet bevestigd</string>
+    <string name="woopos_lock_digits_entered">%1$d van %2$d cijfers ingevoerd</string>
+    <string name="woopos_lock_pin_entry">Invoer pincode</string>
+    <string name="woopos_lock_delete_digit">Verwijderen</string>
+    <string name="woopos_lock_enter_pin">Voer je pincode in om POS te ontgrendelen</string>
+    <string name="woopos_lock_pos">POS vergrendelen</string>
+    <string name="woopos_custom_amount_edit_amount_title">Bedrag bewerken</string>
+    <string name="woopos_custom_amount_name_optional">Naam (optioneel)</string>
+    <string name="woopos_custom_amount_details_title">Details van aangepast bedrag</string>
+    <string name="ai_support_chat_ai_disclosure">Je bent aan het chatten met de AI van Woo-ondersteuning.</string>
+    <string name="card_reader_payment_failed_capture_outcome_unknown">Het bedrag is mogelijk al afgeschreven van je kaart. Probeer het opnieuw om de betalingsstatus te controleren.</string>
+    <string name="card_reader_payment_not_confirmed_header">Betaling niet bevestigd</string>
+    <string name="barcode_scanning_hardware_scanner_wrong_value">De gescande code komt niet overeen. Stel je scanner in op dezelfde toetsenbordindeling als je apparaat.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_instruction">Scan deze barcode met je scanner.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_success">Je scanner werkt</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_title">Test je scanner</string>
+    <string name="barcode_scanning_hardware_scanner_info_usage">Scan op het scherm Bestellingen en producten, of tijdens het aanmaken van een bestelling. Je hoeft de camera niet te openen.</string>
+    <string name="barcode_scanning_hardware_scanner_info_setup">Koppel je scanner in de Bluetooth-instellingen van je apparaat of verbind deze via USB. Stel het in op de toetsenbordmodus (HID).</string>
+    <string name="barcode_scanning_hardware_scanner_info_title">Gebruik een Bluetooth- of USB-scanner</string>
+    <string name="barcode_scanning_or">of</string>
+    <string name="barcode_scanning_hardware_scanner_info_link">Gebruik een externe scanner</string>
+    <string name="login_site_credentials_web_authorization_site_mismatch">Deze goedkeuringspagina hoort bij een andere site. Voor je veiligheid hebben we het inloggen gestopt.</string>
+    <string name="login_store_suggestion_unavailable">We konden deze winkel niet bevestigen via de link. Voer het e-mailadres van je winkel in om door te gaan:</string>
+    <string name="login_store_suggestion_redirected">Dit adres leidt naar een andere site. Ga alleen verder als het jouw winkel is.</string>
+    <string name="login_store_suggestion_use_different_store">Een andere winkel gebruiken</string>
+    <string name="login_store_suggestion_log_in">Log in bij deze winkel</string>
+    <string name="login_store_suggestion_description">Ga alleen verder als dit het adres van je winkel is.</string>
+    <string name="login_store_suggestion_title">Inloggen bij deze winkel?</string>
     <string name="woo_shipping_labels_service_status_severity_info">Informatie</string>
     <string name="woo_shipping_labels_service_status_severity_warning">Waarschuwing</string>
     <string name="woo_shipping_labels_service_status_severity_error">Fout</string>
@@ -295,7 +326,6 @@ Language: nl
     <string name="login_qr_endpoint_missing_title">Deze winkel kan de QR-login niet voltooien</string>
     <string name="login_qr_scanner_authenticating">Aanmelden …</string>
     <string name="login_qr_scanner_visit_url">Ga naar %1$s</string>
-    <string name="login_qr_scanner_hint">De QR-code in het frame centreren</string>
     <string name="login_qr_prologue_camera_blocked_settings_button">Open toestemmingsinstellingen</string>
     <string name="login_qr_prologue_camera_blocked_body">Schakel cameratoegang in Instellingen in of annuleer om in plaats daarvan in te loggen met je winkeladres.</string>
     <string name="login_qr_prologue_camera_blocked_title">Toegang tot camera is uitgeschakeld</string>
@@ -332,20 +362,14 @@ Language: nl
     <string name="woopos_mark_order_as_paid_order_not_found">De bestelling kon niet worden geladen. Ga terug en probeer het opnieuw.</string>
     <string name="woopos_mark_order_as_paid_error_message">De bestelling kon niet bijgewerkt worden. Probeer het opnieuw.</string>
     <string name="woopos_mark_order_as_paid_confirm_button">Markeren als betaald</string>
-    <string name="woopos_custom_amount_dialog_cancel">Annuleren</string>
     <string name="woopos_custom_amount_dialog_submit_edit">Aangepast bedrag bijwerken</string>
     <string name="woopos_custom_amount_dialog_submit_add">Aangepast bedrag toevoegen</string>
     <string name="woopos_custom_amount_dialog_charge_taxes">Btw rekenen</string>
     <string name="woopos_custom_amount_dialog_name_placeholder">Aangepast bedrag</string>
     <string name="woopos_custom_amount_dialog_name_label">Naam</string>
     <string name="woopos_custom_amount_dialog_amount_label">Bedrag</string>
-    <string name="woopos_custom_amount_form_title">Aangepast bedrag</string>
-    <string name="woopos_custom_amount_dialog_title_edit">Aangepast bedrag bewerken</string>
-    <string name="woopos_custom_amount_dialog_title_add">Aangepast bedrag toevoegen</string>
     <string name="woopos_custom_amount_entry_subtitle">Voeg een eenmalige toeslag toe</string>
     <string name="woopos_custom_amount_entry_title">Aangepast bedrag</string>
-    <string name="woopos_cart_custom_amount_menu_remove">Verwijderen</string>
-    <string name="woopos_cart_custom_amount_menu_edit">Bewerken</string>
     <string name="woopos_cart_custom_amount_includes_tax">Inclusief btw</string>
     <string name="woopos_mark_order_as_paid_note_hint">bijv. Bankoverschrijving van Maria, ref 4827</string>
     <string name="woopos_mark_order_as_paid_message">Hiermee wordt de %1$s-bestelling gemarkeerd als voltooid. Gebruik dit alleen als je de betaling al op een andere manier hebt ontvangen.</string>
@@ -2041,7 +2065,7 @@ Language: nl
     <string name="blaze_campaign_status_canceled">Geannuleerd</string>
     <string name="blaze_campaign_status_scheduled">Gepland</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find">Kies Tap to Pay uit de opties voor Betalingen ontvangen in\nBestelgegevens of Menu &gt; Betalingen.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Probeer een %s-betaling met je betaal- of creditcard.\nJe zal het terugbetaald krijgen zodra je klaar bent.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Probeer een %s live betaling met je betaal- of creditcard.\nDe betaling wordt terugbetaald zodra je klaar bent. Er worden verwerkingskosten in rekening gebracht.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">Het is eenvoudig, veilig en privé.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Accepteer alle typen fysieke betalingen, direct\nop je telefoon. Geen extra hardware nodig.</string>
     <string name="blaze_campaign_status_rejected">Afgewezen</string>

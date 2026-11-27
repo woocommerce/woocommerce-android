@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-11-03 15:54:38+0000
+Translation-Revision-Date: 2026-11-17 18:58:48+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_payment_status_check_failed_message">Nous n’avons pas pu vérifier l’état du paiement. Vérifiez votre connexion Internet puis réessayez.</string>
+    <string name="woopos_totals_payment_not_confirmed_check_status">Vérifiez l’état du paiement</string>
+    <string name="woopos_totals_payment_not_confirmed_message">Nous n’avons pas pu confirmer ce paiement, la carte a peut-être déjà été débitée. Vérifiez l’état du paiement avant d’utiliser un autre moyen de paiement.</string>
+    <string name="woopos_totals_payment_not_confirmed_title">Paiement non confirmé</string>
+    <string name="woopos_lock_digits_entered">%1$d sur %2$d chiffres saisis</string>
+    <string name="woopos_lock_pin_entry">Entrée PIN</string>
+    <string name="woopos_lock_delete_digit">Supprimer</string>
+    <string name="woopos_lock_enter_pin">Saisir votre code PIN pour déverrouiller le PDV</string>
+    <string name="woopos_lock_pos">Verrouiller le PDV</string>
+    <string name="woopos_custom_amount_edit_amount_title">Modifier le montant</string>
+    <string name="woopos_custom_amount_name_optional">Nom (facultatif)</string>
+    <string name="woopos_custom_amount_details_title">Détails du montant personnalisé</string>
+    <string name="ai_support_chat_ai_disclosure">Vous discutez avec l’IA de l’assistance Woo.</string>
+    <string name="card_reader_payment_failed_capture_outcome_unknown">La carte peut avoir déjà été débitée. Réessayez pour vérifier l’état du paiement.</string>
+    <string name="card_reader_payment_not_confirmed_header">Paiement non confirmé</string>
+    <string name="barcode_scanning_hardware_scanner_wrong_value">Le code scanné ne correspond pas. Définissez votre scanner sur la même disposition de clavier que votre appareil.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_instruction">Scannez le code-barres avec votre scanner.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_success">Votre scanner fonctionne</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_title">Tester votre scanner</string>
+    <string name="barcode_scanning_hardware_scanner_info_usage">Scanner sur les écrans Commandes et Produits ou lors de la création d’une commande. Inutile d’ouvrir l’appareil photo.</string>
+    <string name="barcode_scanning_hardware_scanner_info_setup">Associez votre scanner dans les réglages Bluetooth de votre appareil ou connectez-le avec un port USB. Définir sur le mode clavier (HID).</string>
+    <string name="barcode_scanning_hardware_scanner_info_title">Utiliser un scanner Bluetooth ou USB</string>
+    <string name="barcode_scanning_or">ou</string>
+    <string name="barcode_scanning_hardware_scanner_info_link">Utiliser un scanner externe</string>
+    <string name="login_site_credentials_web_authorization_site_mismatch">Cette page d’approbation appartient à un site différent. Pour votre sécurité, nous avons interrompu la connexion.</string>
+    <string name="login_store_suggestion_unavailable">Nous n’avons pas pu confirmer cette boutique à partir du lien. Veuillez saisir l’adresse de votre boutique pour continuer.</string>
+    <string name="login_store_suggestion_redirected">Cette adresse mène à un site différent. Continuer uniquement si c’est votre boutique.</string>
+    <string name="login_store_suggestion_use_different_store">Utiliser une autre boutique</string>
+    <string name="login_store_suggestion_log_in">Se connecter à cette boutique</string>
+    <string name="login_store_suggestion_description">Continuer uniquement s’il s’agit de l’adresse de votre boutique.</string>
+    <string name="login_store_suggestion_title">Se connecter à cette boutique ?</string>
     <string name="woo_shipping_labels_service_status_severity_info">Informations</string>
     <string name="woo_shipping_labels_service_status_severity_warning">Attention</string>
     <string name="woo_shipping_labels_service_status_severity_error">Erreur</string>
@@ -294,7 +325,6 @@ Language: fr
     <string name="login_qr_endpoint_missing_title">Cette boutique ne peut pas effectuer de connexion par code QR</string>
     <string name="login_qr_scanner_authenticating">Connexion en cours…</string>
     <string name="login_qr_scanner_visit_url">Consulter %1$s</string>
-    <string name="login_qr_scanner_hint">Centrer le code QR dans l’image</string>
     <string name="login_qr_prologue_camera_blocked_settings_button">Ouvrir les réglages des permissions</string>
     <string name="login_qr_prologue_camera_blocked_body">Activez l’accès à l’appareil photo dans les réglages ou annulez pour vous connecter avec l’adresse de votre boutique à la place.</string>
     <string name="login_qr_prologue_camera_blocked_title">L’accès à la caméra est désactivé</string>
@@ -334,20 +364,14 @@ Language: fr
     <string name="woopos_mark_order_as_paid_note_hint">Par exemple, Virement bancaire de Maria, réf 4827</string>
     <string name="woopos_mark_order_as_paid_message">Cela marquera la commande %1$s comme terminée. Utilisez cette option uniquement si vous avez déjà perçu le paiement d’une autre manière.</string>
     <string name="woopos_mark_order_as_paid_title">Marquer la commande comme payée ?</string>
-    <string name="woopos_custom_amount_dialog_cancel">Annuler</string>
     <string name="woopos_custom_amount_dialog_submit_edit">Mettre à jour le montant personnalisé</string>
     <string name="woopos_custom_amount_dialog_submit_add">Ajouter un montant personnalisé</string>
     <string name="woopos_custom_amount_dialog_charge_taxes">Facturer les taxes</string>
     <string name="woopos_custom_amount_dialog_name_placeholder">Montant personnalisé</string>
     <string name="woopos_custom_amount_dialog_name_label">Nom</string>
     <string name="woopos_custom_amount_dialog_amount_label">Montant</string>
-    <string name="woopos_custom_amount_form_title">Montant personnalisé</string>
-    <string name="woopos_custom_amount_dialog_title_edit">Modifier le montant personnalisé</string>
-    <string name="woopos_custom_amount_dialog_title_add">Ajouter un montant personnalisé</string>
     <string name="woopos_custom_amount_entry_subtitle">Ajouter des frais ponctuels</string>
     <string name="woopos_custom_amount_entry_title">Montant personnalisé</string>
-    <string name="woopos_cart_custom_amount_menu_remove">Supprimer</string>
-    <string name="woopos_cart_custom_amount_menu_edit">Modifier</string>
     <string name="woopos_cart_custom_amount_includes_tax">Taxes comprises</string>
     <string name="woopos_cart_custom_amount_edit_content_description">Modifier %s</string>
     <string name="woopos_cart_item_custom_amount_content_description">Montant personnalisé%1$s, %2$s</string>
@@ -2040,7 +2064,7 @@ Language: fr
     <string name="blaze_campaign_status_canceled">Annulée</string>
     <string name="blaze_campaign_status_scheduled">Planifiée</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find">Sélectionnez « Appuyer pour payer » dans les options de perception des paiements dans\nDétails de la commande ou Menu &gt; Paiements.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Essayez de procéder à un paiement %s avec votre carte de débit ou de crédit.\nLe paiement sera remboursé lorsque vous aurez terminé.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Essayez de procéder à un paiement en direct %s avec votre carte de débit ou de crédit.\nLe paiement sera remboursé lorsque vous aurez terminé (des frais de traitement s’appliquent).</string>
     <string name="card_reader_tap_to_pay_explanation_easy">C’est facile, sûr et privé.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Acceptez tous les types de paiements en personne directement\nsur votre téléphone. Aucun matériel supplémentaire nécessaire.</string>
     <string name="blaze_campaign_status_rejected">Refusée</string>
