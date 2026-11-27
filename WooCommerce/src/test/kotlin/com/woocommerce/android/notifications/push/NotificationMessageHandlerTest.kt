@@ -78,8 +78,12 @@ class NotificationMessageHandlerTest {
     }
     private val notificationsParser: NotificationsParser = NotificationsParser(jvmBase64Decoder)
     private lateinit var getWooVisibleSites: GetWooVisibleSites
+    private val defaultJetpackSite: SiteModel = mock {
+        on { origin } doReturn SiteModel.ORIGIN_WPCOM_REST
+        on { isJetpackConnected } doReturn true
+    }
     private val selectedSite: SelectedSite = mock {
-        on { exists() }.thenReturn(true)
+        on { getIfExists() } doReturn defaultJetpackSite
     }
 
     private val orderNotificationPayload = NotificationTestUtils.generateTestNewOrderNotificationPayload(
@@ -143,6 +147,15 @@ class NotificationMessageHandlerTest {
         createNotificationMessageHandler(mockNotificationsParser)
     }
 
+    private fun givenApplicationPasswordsSite(): SiteModel {
+        val site = mock<SiteModel> {
+            on { siteId } doReturn 0L
+            on { origin } doReturn SiteModel.ORIGIN_WPAPI
+        }
+        whenever(selectedSite.getIfExists()).thenReturn(site)
+        return site
+    }
+
     @Before
     fun setUp() {
         val visibleSites = listOf(
@@ -178,7 +191,7 @@ class NotificationMessageHandlerTest {
     @Test
     fun `given site is not selected, when new message received, then do not process the incoming notification`() = runTest {
         doReturn(false).whenever(accountStore).hasAccessToken()
-        doReturn(false).whenever(selectedSite).exists()
+        doReturn(null).whenever(selectedSite).getIfExists()
 
         notificationMessageHandler.onNewMessageReceived(emptyMap())
 
@@ -216,6 +229,95 @@ class NotificationMessageHandlerTest {
         verifyNoInteractions(dispatcher)
         verifyNoInteractions(notificationBuilder)
     }
+
+    @Test
+    fun `given saved blog id matches, when app passwords push received, then process the notification`() = runTest {
+        val site = givenApplicationPasswordsSite()
+        doReturn(false).whenever(accountStore).hasAccessToken()
+        givenWooDrivenOrderNotification(orderId = 4321L)
+        whenever(pushNotificationRepository.getWooPushRegistration(site)).thenReturn(
+            givenWooPushRegistration(orderNotification.remoteSiteId)
+        )
+
+        notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
+
+        verify(workManagerScheduler).scheduleOrderUpdate(eq(orderNotification.remoteSiteId), any())
+        verify(notificationBuilder).buildAndDisplayWooNotification(any(), any(), any(), any(), any())
+    }
+
+    @Test
+    fun `given saved blog id differs, when app passwords push received, then skip the notification`() = runTest {
+        val site = givenApplicationPasswordsSite()
+        doReturn(false).whenever(accountStore).hasAccessToken()
+        givenWooDrivenOrderNotification(orderId = 4321L)
+        whenever(pushNotificationRepository.getWooPushRegistration(site)).thenReturn(
+            givenWooPushRegistration(OTHER_SITE_ID)
+        )
+
+        notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
+
+        verify(workManagerScheduler, never()).scheduleOrderUpdate(any(), any())
+        verifyNoInteractions(notificationBuilder)
+    }
+
+    @Test
+    fun `given no saved blog id and registration exists, when app passwords push received, then process it`() = runTest {
+        val site = givenApplicationPasswordsSite()
+        doReturn(false).whenever(accountStore).hasAccessToken()
+        givenWooDrivenOrderNotification(orderId = 4321L)
+        whenever(pushNotificationRepository.getWooPushRegistration(site)).thenReturn(
+            givenWooPushRegistration(null)
+        )
+
+        notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
+
+        verify(workManagerScheduler).scheduleOrderUpdate(eq(orderNotification.remoteSiteId), any())
+        verify(notificationBuilder).buildAndDisplayWooNotification(any(), any(), any(), any(), any())
+    }
+
+    @Test
+    fun `given no woo registration, when app passwords push received, then skip the notification`() =
+        runTest {
+            val site = givenApplicationPasswordsSite()
+            doReturn(false).whenever(accountStore).hasAccessToken()
+            givenWooDrivenOrderNotification(orderId = 4321L)
+            whenever(pushNotificationRepository.getWooPushRegistration(site)).thenReturn(null)
+
+            notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
+
+            verify(workManagerScheduler, never()).scheduleOrderUpdate(any(), any())
+            verifyNoInteractions(notificationBuilder)
+        }
+
+    @Test
+    fun `given app passwords site, when wpcom push received, then skip without checking woo registration`() = runTest {
+        val site = givenApplicationPasswordsSite()
+
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+
+        verify(wooLog).w(
+            eq(WooLog.T.NOTIFICATIONS),
+            eq("Skipping non-Woo notification for site-credentials login")
+        )
+        verify(pushNotificationRepository, never()).getWooPushRegistration(site)
+        verifyNoInteractions(dispatcher)
+    }
+
+    @Test
+    fun `given app passwords site with wpcom access, when matching woo push received, then process notification`() =
+        runTest {
+            val site = givenApplicationPasswordsSite()
+            givenWooDrivenOrderNotification(orderId = 4321L)
+            whenever(pushNotificationRepository.getWooPushRegistration(site)).thenReturn(
+                givenWooPushRegistration(orderNotification.remoteSiteId)
+            )
+            whenever(getWooVisibleSites.invoke()).thenReturn(emptyList())
+
+            notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
+
+            verify(dispatcher, atLeastOnce()).dispatch(any())
+            verify(notificationBuilder).buildAndDisplayWooNotification(any(), any(), any(), any(), any())
+        }
 
     @Test
     fun `when the user id does not match, then do not process the notification`() = runTest {
@@ -337,6 +439,15 @@ class NotificationMessageHandlerTest {
         }
         createNotificationMessageHandler(mockParser)
     }
+
+    private fun givenWooPushRegistration(blogId: Long?): PushNotificationPreferences.WooPushRegistrationData =
+        PushNotificationPreferences.WooPushRegistrationData(
+            tokenId = "token-id",
+            token = "token",
+            locale = "en_US",
+            deviceUuid = null,
+            blogId = blogId
+        )
 
     @Test
     fun `given store stock notification, when notification received, then process it as stock`() =
@@ -846,4 +957,8 @@ class NotificationMessageHandlerTest {
         analyticsId = remoteNoteId.takeIf { it != 0L }?.toString(),
         isGroupSummary = isGroupSummary
     )
+
+    private companion object {
+        const val OTHER_SITE_ID = 456L
+    }
 }

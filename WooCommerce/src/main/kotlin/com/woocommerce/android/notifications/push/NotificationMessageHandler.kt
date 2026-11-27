@@ -17,6 +17,8 @@ import com.woocommerce.android.notifications.NotificationSource
 import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.notifications.WooNotificationType
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionTypeOrNull
 import com.woocommerce.android.ui.sitepicker.sitevisibility.GetWooVisibleSites
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog
@@ -25,6 +27,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationPayload
@@ -71,7 +74,7 @@ class NotificationMessageHandler @Inject constructor(
 
     @Suppress("ReturnCount", "ComplexMethod")
     suspend fun onNewMessageReceived(messageData: Map<String, String>) {
-        if (!selectedSite.exists()) {
+        val currentSite = selectedSite.getIfExists() ?: run {
             wooLog.e(NOTIFICATIONS, "User has no site selected!")
             return
         }
@@ -97,8 +100,13 @@ class NotificationMessageHandler @Inject constructor(
         val pushUserId = messageData[PUSH_ARG_USER]
         val hasWpComAccessToken = accountStore.hasAccessToken()
 
-        if (hasWpComAccessToken && !isWooSiteVisible(notification.remoteSiteId)) {
-            wooLog.w(NOTIFICATIONS, "Skipping notification, site ${notification.remoteSiteId} is not visible")
+        if (!shouldProcessNotification(
+                currentSite,
+                notificationSource,
+                notification.remoteSiteId,
+                hasWpComAccessToken
+            )
+        ) {
             return
         }
 
@@ -139,6 +147,33 @@ class NotificationMessageHandler @Inject constructor(
 
     private suspend fun isWooSiteVisible(siteId: Long): Boolean =
         getWooVisibleSites().any { it.siteId == siteId }
+
+    private suspend fun shouldProcessNotification(
+        site: SiteModel,
+        source: NotificationSource,
+        remoteSiteId: Long,
+        hasWpComAccessToken: Boolean
+    ): Boolean {
+        if (site.connectionTypeOrNull == SiteConnectionType.ApplicationPasswords) {
+            if (source != NotificationSource.WOO_DRIVEN) {
+                wooLog.w(NOTIFICATIONS, "Skipping non-Woo notification for site-credentials login")
+                return false
+            }
+            if (!isFromSelectedSite(site, remoteSiteId)) {
+                wooLog.w(NOTIFICATIONS, "Skipping notification, site $remoteSiteId isn't the selected site")
+                return false
+            }
+        } else if (hasWpComAccessToken && !isWooSiteVisible(remoteSiteId)) {
+            wooLog.w(NOTIFICATIONS, "Skipping notification, site $remoteSiteId is not visible")
+            return false
+        }
+        return true
+    }
+
+    private suspend fun isFromSelectedSite(site: SiteModel, remoteSiteId: Long): Boolean {
+        val registration = pushNotificationRepository.getWooPushRegistration(site) ?: return false
+        return registration.blogId == null || registration.blogId == remoteSiteId
+    }
 
     private fun dispatchBackgroundEvents(notificationModel: NotificationModel) {
         // Save temporary notification to the database.

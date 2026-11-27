@@ -51,7 +51,7 @@ class WooPushNotificationsStore @Inject internal constructor(
         deviceUuid: String,
         deviceLocale: String,
         metadata: Map<String, String> = emptyMap()
-    ): WooResult<String> =
+    ): WooResult<RegisteredPushToken> =
         coroutineEngine.withDefaultContext(T.API, this, "registerWooPushToken") {
             val origin = if (BuildConfig.DEBUG) ORIGIN_DEV else ORIGIN
             val request = PushNotificationsRestClient.PushTokenRegistrationRequest(
@@ -66,7 +66,12 @@ class WooPushNotificationsStore @Inject internal constructor(
             if (payload.isError || payload.result == null) {
                 WooResult(payload.error)
             } else {
-                WooResult(payload.result.id)
+                WooResult(
+                    RegisteredPushToken(
+                        tokenId = payload.result.id,
+                        blogId = payload.result.blogId
+                    )
+                )
             }
         }
 
@@ -74,6 +79,8 @@ class WooPushNotificationsStore @Inject internal constructor(
         coroutineEngine.withDefaultContext(T.API, this, "deleteWooPushToken") {
             pushNotificationsRestClient.deletePushToken(site, pushTokenId).asWooResult()
         }
+
+    data class RegisteredPushToken(val tokenId: String, val blogId: Long?)
 
     companion object {
         private const val ORIGIN = "com.woocommerce.android"
