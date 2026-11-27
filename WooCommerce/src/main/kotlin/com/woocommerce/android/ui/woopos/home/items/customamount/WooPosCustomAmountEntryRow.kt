@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
+import com.woocommerce.android.ui.woopos.home.items.wooPosItemCardTextMaxLines
 
 @Composable
 fun WooPosCustomAmountEntryRow(
@@ -95,7 +96,7 @@ fun WooPosCustomAmountEntryRow(
             ) {
                 WooPosText(
                     text = title,
-                    maxLines = 1,
+                    maxLines = wooPosItemCardTextMaxLines(),
                     style = WooPosTypography.BodyLarge,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
@@ -106,7 +107,7 @@ fun WooPosCustomAmountEntryRow(
                     text = subtitle,
                     style = WooPosTypography.BodyLarge,
                     color = WooPosTheme.colors.onSurfaceVariantHighest,
-                    maxLines = 1,
+                    maxLines = wooPosItemCardTextMaxLines(),
                     overflow = TextOverflow.Ellipsis,
                 )
             }
