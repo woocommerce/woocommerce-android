@@ -84,10 +84,10 @@ private fun PrintReceiptButton(
             WooPosPrintReceiptButtonState.Idle -> WooPosButtonState.ENABLED
 
             WooPosPrintReceiptButtonState.Loading -> WooPosButtonState.LOADING
-            WooPosPrintReceiptButtonState.Success -> WooPosButtonState.SUCCESS
+            WooPosPrintReceiptButtonState.Success ->
+                WooPosButtonState.Success(stringResource(R.string.woopos_print_receipt_success_content_description))
         },
         textStyle = textStyle,
-        successContentDescription = stringResource(R.string.woopos_print_receipt_success_content_description),
         onClick = onClick,
     )
 }
