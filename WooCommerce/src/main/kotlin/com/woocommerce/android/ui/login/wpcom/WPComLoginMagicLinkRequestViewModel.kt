@@ -9,6 +9,7 @@ import com.gravatar.AvatarQueryOptions
 import com.gravatar.AvatarUrl
 import com.gravatar.DefaultAvatarOption
 import com.gravatar.types.Email
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -35,7 +36,8 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
     private val wpComLoginRepository: WPComLoginRepository,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
 
     private val navArgs: WPComLoginMagicLinkRequestFragmentArgs by savedStateHandle.navArgs()
@@ -114,6 +116,7 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
             isSignup = navArgs.isNewWpComAccount
         ).fold(
             onSuccess = {
+                appPrefsWrapper.jetpackSetupMagicLinkRequestedAt = System.currentTimeMillis()
                 _viewState.value = ViewState.MagicLinkSentState(
                     isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
                     email = navArgs.emailOrUsername.takeIf { it.isAnEmail() },

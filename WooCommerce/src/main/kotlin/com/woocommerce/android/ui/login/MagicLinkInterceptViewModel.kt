@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
@@ -11,10 +12,11 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T.LOGIN
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -24,6 +26,7 @@ import javax.inject.Inject
 class MagicLinkInterceptViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val magicLinkInterceptRepository: MagicLinkInterceptRepository,
+    private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
     private val fetchJetpackStatus: FetchJetpackStatus,
     private val loginAnalyticsListener: LoginAnalyticsListener
@@ -31,12 +34,30 @@ class MagicLinkInterceptViewModel @Inject constructor(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _showRetryOption = SingleLiveEvent<Boolean>()
+    private val _showRetryOption = MutableLiveData<Boolean>()
     val showRetryOption: LiveData<Boolean> = _showRetryOption
 
     private var flow: MagicLinkFlow? = null
+    private var hasHandledMagicLink = false
 
     fun handleMagicLink(authToken: String, flow: MagicLinkFlow?) {
+        if (hasHandledMagicLink) return
+        hasHandledMagicLink = true
+
+        val jetpackSetupRequestAge = System.currentTimeMillis() - appPrefsWrapper.jetpackSetupMagicLinkRequestedAt
+        appPrefsWrapper.removeJetpackSetupMagicLinkRequestedAt()
+        val isMagicLinkAllowed = when {
+            selectedSite.connectionType == SiteConnectionType.ApplicationPasswords ->
+                jetpackSetupRequestAge in 0..JETPACK_SETUP_MAGIC_LINK_VALIDITY_MS
+            magicLinkInterceptRepository.hasWpComToken() -> false
+            else -> true
+        }
+        if (!isMagicLinkAllowed) {
+            WooLog.w(LOGIN, "Magic link ignored: user is already logged in or did not request Jetpack setup link")
+            triggerEvent(IgnoreMagicLink)
+            return
+        }
+
         this.flow = flow
         launch {
             _isLoading.value = true
@@ -130,9 +151,14 @@ class MagicLinkInterceptViewModel @Inject constructor(
 
     object OpenSitePicker : MultiLiveEvent.Event()
     object OpenLogin : MultiLiveEvent.Event()
+    object IgnoreMagicLink : MultiLiveEvent.Event()
     data class ContinueJetpackActivation(
         val jetpackStatus: JetpackStatus,
         val siteUrl: String
     ) : MultiLiveEvent.Event()
     data object CancelJetpackActivation : MultiLiveEvent.Event()
+
+    companion object {
+        private const val JETPACK_SETUP_MAGIC_LINK_VALIDITY_MS = 15 * 60 * 1000L
+    }
 }

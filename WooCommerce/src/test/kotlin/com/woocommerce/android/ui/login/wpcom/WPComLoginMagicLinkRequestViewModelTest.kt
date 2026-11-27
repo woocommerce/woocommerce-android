@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.wpcom
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
@@ -12,9 +13,12 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.whenever
 import org.wordpress.android.login.MagicLinkFallbackButton
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -33,6 +37,7 @@ class WPComLoginMagicLinkRequestViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val wpComLoginRepository: WPComLoginRepository = mock()
     private val resourceProvider: ResourceProvider = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     private lateinit var viewModel: WPComLoginMagicLinkRequestViewModel
 
@@ -51,7 +56,8 @@ class WPComLoginMagicLinkRequestViewModelTest : BaseUnitTest() {
             ).toSavedStateHandle(),
             resourceProvider,
             wpComLoginRepository,
-            analyticsTrackerWrapper
+            analyticsTrackerWrapper,
+            appPrefsWrapper
         )
     }
 
@@ -92,6 +98,42 @@ class WPComLoginMagicLinkRequestViewModelTest : BaseUnitTest() {
                 isSignup = false
             )
         }
+
+    @Test
+    fun `given request succeeds, when requesting magic link, then save request time`() = testBlocking {
+        setup(MagicLinkFallbackButton.None, requestEmailAtStart = false)
+        whenever(
+            wpComLoginRepository.requestMagicLink(
+                emailOrUsername = EMAIL,
+                flow = MagicLinkFlow.JetpackConnection,
+                isSignup = false
+            )
+        ).thenReturn(Result.success(Unit))
+        val beforeRequest = System.currentTimeMillis()
+
+        viewModel.onRequestMagicLinkClick()
+
+        val afterRequest = System.currentTimeMillis()
+        val requestedAt = argumentCaptor<Long>()
+        verify(appPrefsWrapper).jetpackSetupMagicLinkRequestedAt = requestedAt.capture()
+        assertThat(requestedAt.firstValue).isBetween(beforeRequest, afterRequest)
+    }
+
+    @Test
+    fun `given request fails, when requesting magic link, then do not save request time`() = testBlocking {
+        setup(MagicLinkFallbackButton.None, requestEmailAtStart = false)
+        whenever(
+            wpComLoginRepository.requestMagicLink(
+                emailOrUsername = EMAIL,
+                flow = MagicLinkFlow.JetpackConnection,
+                isSignup = false
+            )
+        ).thenReturn(Result.failure(Exception()))
+
+        viewModel.onRequestMagicLinkClick()
+
+        verifyNoInteractions(appPrefsWrapper)
+    }
 
     @Test
     fun `when open email client is clicked, then trigger open email client event`() {

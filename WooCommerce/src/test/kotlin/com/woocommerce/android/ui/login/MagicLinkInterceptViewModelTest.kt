@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
@@ -15,11 +16,16 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.Mockito.lenient
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginAnalyticsListener
 
@@ -29,6 +35,7 @@ class MagicLinkInterceptViewModelTest : BaseUnitTest() {
         url = "https://woocommerce.com/"
     }
     private val magicLinkInterceptRepository: MagicLinkInterceptRepository = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val selectedSite: SelectedSite = mock {
         on { get() } doReturn site
     }
@@ -43,6 +50,7 @@ class MagicLinkInterceptViewModelTest : BaseUnitTest() {
         viewModel = MagicLinkInterceptViewModel(
             savedState = SavedStateHandle(),
             magicLinkInterceptRepository = magicLinkInterceptRepository,
+            appPrefsWrapper = appPrefsWrapper,
             selectedSite = selectedSite,
             fetchJetpackStatus = fetchJetpackStatus,
             loginAnalyticsListener = loginAnalyticsListener
@@ -53,6 +61,7 @@ class MagicLinkInterceptViewModelTest : BaseUnitTest() {
     fun `given jetpack connection, when account info is fetched, then fetch jetpack status`() = testBlocking {
         setup {
             givenAuthTokenUpdateResult(RequestResult.SUCCESS)
+            givenJetpackSetupRequestAt(System.currentTimeMillis() - ONE_MINUTE_MS)
             given(selectedSite.connectionType).willReturn(SiteConnectionType.ApplicationPasswords)
             givenJetpackStatusFetchResult(
                 Result.success(
@@ -86,6 +95,7 @@ class MagicLinkInterceptViewModelTest : BaseUnitTest() {
             )
             setup {
                 givenAuthTokenUpdateResult(RequestResult.SUCCESS)
+                givenJetpackSetupRequestAt(System.currentTimeMillis() - ONE_MINUTE_MS)
                 given(selectedSite.connectionType).willReturn(SiteConnectionType.ApplicationPasswords)
                 givenJetpackStatusFetchResult(
                     Result.success(FetchJetpackStatus.JetpackStatusFetchResponse.Success(jetpackStatus))
@@ -104,6 +114,7 @@ class MagicLinkInterceptViewModelTest : BaseUnitTest() {
         testBlocking {
             setup {
                 givenAuthTokenUpdateResult(RequestResult.SUCCESS)
+                givenJetpackSetupRequestAt(System.currentTimeMillis() - ONE_MINUTE_MS)
                 given(selectedSite.connectionType).willReturn(SiteConnectionType.ApplicationPasswords)
                 givenJetpackStatusFetchResult(Result.failure(Exception()))
             }
@@ -120,6 +131,7 @@ class MagicLinkInterceptViewModelTest : BaseUnitTest() {
         testBlocking {
             setup {
                 givenAuthTokenUpdateResult(RequestResult.SUCCESS)
+                givenJetpackSetupRequestAt(System.currentTimeMillis() - ONE_MINUTE_MS)
                 given(selectedSite.connectionType).willReturn(SiteConnectionType.ApplicationPasswords)
                 givenJetpackStatusFetchResult(
                     Result.success(FetchJetpackStatus.JetpackStatusFetchResponse.ConnectionForbidden)
@@ -166,11 +178,117 @@ class MagicLinkInterceptViewModelTest : BaseUnitTest() {
         verifyNoInteractions(loginAnalyticsListener)
     }
 
+    @Test
+    fun `given wpcom token, when handling link, then ignore even with recent jetpack request`() = testBlocking {
+        setup {
+            given(magicLinkInterceptRepository.hasWpComToken()).willReturn(true)
+            givenJetpackSetupRequestAt(System.currentTimeMillis() - ONE_MINUTE_MS)
+        }
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.handleMagicLink("authToken", MagicLinkFlow.JetpackConnection)
+        }.last()
+
+        assertThat(event).isEqualTo(MagicLinkInterceptViewModel.IgnoreMagicLink)
+        verify(magicLinkInterceptRepository, never()).updateMagicLinkAuthToken(any())
+    }
+
+    @Test
+    fun `given site credentials and no request, when handling link, then ignore`() = testBlocking {
+        setup {
+            given(selectedSite.connectionType).willReturn(SiteConnectionType.ApplicationPasswords)
+        }
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.handleMagicLink("authToken", flow = null)
+        }.last()
+
+        assertThat(event).isEqualTo(MagicLinkInterceptViewModel.IgnoreMagicLink)
+        verify(magicLinkInterceptRepository, never()).updateMagicLinkAuthToken(any())
+    }
+
+    @Test
+    fun `given site credentials and expired request, when handling link, then ignore`() = testBlocking {
+        setup {
+            given(selectedSite.connectionType).willReturn(SiteConnectionType.ApplicationPasswords)
+            givenJetpackSetupRequestAt(System.currentTimeMillis() - 16 * ONE_MINUTE_MS)
+        }
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.handleMagicLink("authToken", flow = null)
+        }.last()
+
+        assertThat(event).isEqualTo(MagicLinkInterceptViewModel.IgnoreMagicLink)
+        verify(magicLinkInterceptRepository, never()).updateMagicLinkAuthToken(any())
+    }
+
+    @Test
+    fun `given site credentials and future request, when handling link, then ignore`() = testBlocking {
+        setup {
+            given(selectedSite.connectionType).willReturn(SiteConnectionType.ApplicationPasswords)
+            givenJetpackSetupRequestAt(System.currentTimeMillis() + ONE_MINUTE_MS)
+        }
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.handleMagicLink("authToken", flow = null)
+        }.last()
+
+        assertThat(event).isEqualTo(MagicLinkInterceptViewModel.IgnoreMagicLink)
+        verify(magicLinkInterceptRepository, never()).updateMagicLinkAuthToken(any())
+    }
+
+    @Test
+    fun `given logged out, when handling link, then update token and clear request timestamp`() = testBlocking {
+        setup {
+            givenAuthTokenUpdateResult(RequestResult.SUCCESS)
+        }
+
+        viewModel.handleMagicLink("authToken", flow = null)
+
+        verify(magicLinkInterceptRepository).updateMagicLinkAuthToken("authToken")
+        verify(appPrefsWrapper).removeJetpackSetupMagicLinkRequestedAt()
+    }
+
+    @Test
+    fun `given wpcom token and site credentials with recent jetpack request, when handling link, then update token`() =
+        testBlocking {
+            setup {
+                lenient().doReturn(true).whenever(magicLinkInterceptRepository).hasWpComToken()
+                given(selectedSite.connectionType).willReturn(SiteConnectionType.ApplicationPasswords)
+                givenJetpackSetupRequestAt(System.currentTimeMillis() - ONE_MINUTE_MS)
+                givenAuthTokenUpdateResult(RequestResult.SUCCESS)
+            }
+
+            viewModel.handleMagicLink("authToken", flow = MagicLinkFlow.JetpackConnection)
+
+            verify(magicLinkInterceptRepository).updateMagicLinkAuthToken("authToken")
+        }
+
+    @Test
+    fun `when link is handled twice, then update token once`() = testBlocking {
+        setup {
+            givenAuthTokenUpdateResult(RequestResult.SUCCESS)
+        }
+
+        viewModel.handleMagicLink("authToken", flow = null)
+        viewModel.handleMagicLink("authToken", flow = null)
+
+        verify(magicLinkInterceptRepository, times(1)).updateMagicLinkAuthToken("authToken")
+    }
+
     private suspend fun givenAuthTokenUpdateResult(result: RequestResult) {
         given(magicLinkInterceptRepository.updateMagicLinkAuthToken("authToken")).willReturn(result)
     }
 
     private suspend fun givenJetpackStatusFetchResult(result: Result<FetchJetpackStatus.JetpackStatusFetchResponse>) {
         given(fetchJetpackStatus.invoke(site, useApplicationPasswords = true)).willReturn(result)
+    }
+
+    private fun givenJetpackSetupRequestAt(timestamp: Long) {
+        whenever(appPrefsWrapper.jetpackSetupMagicLinkRequestedAt).thenReturn(timestamp)
+    }
+
+    private companion object {
+        const val ONE_MINUTE_MS = 60 * 1000L
     }
 }

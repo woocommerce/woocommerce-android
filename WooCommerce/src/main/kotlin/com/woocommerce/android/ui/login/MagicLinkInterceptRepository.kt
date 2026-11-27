@@ -44,7 +44,7 @@ class MagicLinkInterceptRepository @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    fun userIsLoggedIn() = accountStore.hasAccessToken()
+    fun hasWpComToken() = accountStore.hasAccessToken()
 
     /**
      * Update magic link auth token to the FluxC cache and verify if the user is logged in.
@@ -67,7 +67,7 @@ class MagicLinkInterceptRepository @Inject constructor(
                 // This means a login via magic link was performed, and the access token was just updated
                 // In this case, we need to fetch account details and the site list, and finally notify the view
                 // In all other login cases, this logic is handled by the login library
-                if (authTokenUpdatedResult && userIsLoggedIn()) {
+                if (authTokenUpdatedResult && hasWpComToken()) {
                     // Track magic link login success
                     loginAnalyticsListener.trackLoginMagicLinkSucceeded()
 

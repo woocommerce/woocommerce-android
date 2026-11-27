@@ -241,6 +241,10 @@ open class AppPrefsWrapper @Inject constructor() {
 
     fun removeLoginSiteAddress() = AppPrefs.removeLoginSiteAddress()
 
+    var jetpackSetupMagicLinkRequestedAt by AppPrefs::jetpackSetupMagicLinkRequestedAt
+
+    fun removeJetpackSetupMagicLinkRequestedAt() = AppPrefs.removeJetpackSetupMagicLinkRequestedAt()
+
     fun getLoginSiteAddress() = AppPrefs.getLoginSiteAddress().takeIf { it.isNotEmpty() }
 
     fun setWcShippingBannerDismissed(dismissed: Boolean, currentSiteId: Int) {

@@ -82,6 +82,7 @@ object AppPrefs {
         SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
         LOGIN_SITE_ADDRESS,
+        JETPACK_SETUP_MAGIC_LINK_REQUESTED_AT,
         SITE_PICKER_ERROR_MESSAGE,
         DATABASE_DOWNGRADED,
         ORDER_SUMMARY_MIGRATED,
@@ -783,6 +784,14 @@ object AppPrefs {
 
     fun removeLoginSiteAddress() {
         remove(DeletablePrefKey.LOGIN_SITE_ADDRESS)
+    }
+
+    var jetpackSetupMagicLinkRequestedAt: Long
+        get() = getLong(DeletablePrefKey.JETPACK_SETUP_MAGIC_LINK_REQUESTED_AT, 0L)
+        set(value) = setLong(DeletablePrefKey.JETPACK_SETUP_MAGIC_LINK_REQUESTED_AT, value)
+
+    fun removeJetpackSetupMagicLinkRequestedAt() {
+        remove(DeletablePrefKey.JETPACK_SETUP_MAGIC_LINK_REQUESTED_AT)
     }
 
     fun setLoginUserBypassedJetpackRequired(bypassedLogin: Boolean = true) {
