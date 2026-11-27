@@ -29,8 +29,8 @@ fun WooPosCouponsEmptySearchQueryStateScreen(
     state: WooPosCouponsSearchViewState.EmptySearchQuery,
     onUIEvent: (WooPosCouponsSearchUiEvent) -> Unit
 ) {
-    if (state.recentSearches.isEmpty()) {
-        WooPosEmptyScreen(
+    when (state) {
+        WooPosCouponsSearchViewState.EmptySearchQuery.NoRecentSearches -> WooPosEmptyScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(horizontal = WooPosSpacing.Medium.value),
@@ -41,8 +41,8 @@ fun WooPosCouponsEmptySearchQueryStateScreen(
             ),
             icon = WooPosIcons.CouponsEmpty,
         )
-    } else {
-        WooPosCouponsRecentSearches(
+
+        is WooPosCouponsSearchViewState.EmptySearchQuery.RecentSearches -> WooPosCouponsRecentSearches(
             modifier = modifier,
             recentSearches = state.recentSearches,
             onUIEvent = onUIEvent,
@@ -91,7 +91,7 @@ fun WooPosCouponsEmptySearchQueryStatePreview() {
                 .padding(WooPosSpacing.Medium.value)
         ) {
             WooPosCouponsEmptySearchQueryStateScreen(
-                state = WooPosCouponsSearchViewState.EmptySearchQuery(
+                state = WooPosCouponsSearchViewState.EmptySearchQuery.RecentSearches(
                     recentSearches = listOf("SUMMER", "DISCOUNT", "SALE", "WINTER"),
                 ),
                 onUIEvent = { },
@@ -105,7 +105,7 @@ fun WooPosCouponsEmptySearchQueryStatePreview() {
 fun WooPosCouponsEmptySearchQueryStateNoRecentSearchesPreview() {
     WooPosTheme {
         WooPosCouponsEmptySearchQueryStateScreen(
-            state = WooPosCouponsSearchViewState.EmptySearchQuery(recentSearches = emptyList()),
+            state = WooPosCouponsSearchViewState.EmptySearchQuery.NoRecentSearches,
             onUIEvent = { },
         )
     }

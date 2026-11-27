@@ -36,7 +36,7 @@ class WooPosCouponsSearchViewModel @Inject constructor(
         .stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = WooPosCouponsSearchViewState.EmptySearchQuery(emptyList()),
+            initialValue = WooPosCouponsSearchViewState.EmptySearchQuery.NoRecentSearches,
         )
 
     init {
@@ -133,7 +133,7 @@ class WooPosCouponsSearchViewModel @Inject constructor(
 
         return when {
             currentQuery.isNullOrBlank() -> {
-                WooPosCouponsSearchViewState.EmptySearchQuery(viewStateManager.getRecentSearches())
+                emptySearchQueryState(viewStateManager.getRecentSearches())
             }
 
             this is WooPosCouponsViewState.Loading -> WooPosCouponsSearchViewState.Loading
@@ -148,7 +148,14 @@ class WooPosCouponsSearchViewModel @Inject constructor(
             this is WooPosCouponsViewState.Error.CouponsDisabledError -> WooPosCouponsSearchViewState.Error(
                 currentQuery
             )
-            else -> WooPosCouponsSearchViewState.EmptySearchQuery(emptyList())
+            else -> WooPosCouponsSearchViewState.EmptySearchQuery.NoRecentSearches
         }
     }
+
+    private fun emptySearchQueryState(recentSearches: List<String>) =
+        if (recentSearches.isEmpty()) {
+            WooPosCouponsSearchViewState.EmptySearchQuery.NoRecentSearches
+        } else {
+            WooPosCouponsSearchViewState.EmptySearchQuery.RecentSearches(recentSearches)
+        }
 }

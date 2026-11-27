@@ -63,7 +63,7 @@ class WooPosCouponsSearchViewModelTest {
     }
 
     @Test
-    fun `given view model initialization, when view model created, then initial state is EmptySearchQuery with recent searches`() = runTest {
+    fun `given recent searches, when view model created, then state is RecentSearches with them`() = runTest {
         // GIVEN
         val recentSearches = listOf("SUMMER", "DISCOUNT")
         whenever(mockViewStateManager.getRecentSearches()).thenReturn(recentSearches)
@@ -75,16 +75,16 @@ class WooPosCouponsSearchViewModelTest {
         // THEN
         viewModel.viewState.test {
             val value = awaitItem()
-            assertThat(value).isInstanceOf(WooPosCouponsSearchViewState.EmptySearchQuery::class.java)
-            val emptyState = value as WooPosCouponsSearchViewState.EmptySearchQuery
-            assertThat(emptyState.recentSearches).isEqualTo(recentSearches)
+            assertThat(value).isEqualTo(
+                WooPosCouponsSearchViewState.EmptySearchQuery.RecentSearches(recentSearches)
+            )
         }
 
         verify(mockViewStateManager).setRecentSearches(recentSearches)
     }
 
     @Test
-    fun `given empty state repository returns empty list, when view model is created, then initial state is empty search query`() = runTest {
+    fun `given no recent searches, when view model is created, then state is NoRecentSearches`() = runTest {
         // GIVEN
         whenever(mockEmptyStateRepository.getLastSearches()).thenReturn(emptyList())
 
@@ -94,9 +94,7 @@ class WooPosCouponsSearchViewModelTest {
         // THEN
         viewModel.viewState.test {
             val value = awaitItem()
-            assertThat(value).isInstanceOf(WooPosCouponsSearchViewState.EmptySearchQuery::class.java)
-            val emptyState = value as WooPosCouponsSearchViewState.EmptySearchQuery
-            assertThat(emptyState.recentSearches).isEmpty()
+            assertThat(value).isEqualTo(WooPosCouponsSearchViewState.EmptySearchQuery.NoRecentSearches)
         }
     }
 
