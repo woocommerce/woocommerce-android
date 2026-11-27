@@ -80,7 +80,7 @@ private fun WooPosHomePhoneContent(
         }
     }
 
-    val targetScreen = phoneScreenFor(state.screenPositionState)
+    val targetScreen = state.phoneScreen
 
     Box(
         modifier = Modifier.wooPosHomeRootContainer(state, onHomeUIEvent)
@@ -93,7 +93,7 @@ private fun WooPosHomePhoneContent(
         ) { screen ->
             val isLeaving = screen != targetScreen
             when (screen) {
-                WooPosPhoneScreen.Products -> WooPosPhoneCartSheet(
+                WooPosHomeState.PhoneScreen.Products -> WooPosPhoneCartSheet(
                     isVisible = rememberKeptWhile(isLeaving, state.isPhoneCartSheetVisible),
                     cartState = cartState,
                     onOpenCartClick = { onHomeUIEvent(WooPosHomeUIEvent.PhoneOpenCartClicked) },
@@ -103,7 +103,7 @@ private fun WooPosHomePhoneContent(
                     WooPosPhoneProductsScreen(itemsViewModel = itemsViewModel)
                 }
 
-                WooPosPhoneScreen.Checkout -> WooPosPhoneTotalsScreen(
+                WooPosHomeState.PhoneScreen.Checkout -> WooPosPhoneTotalsScreen(
                     onBack = { onHomeUIEvent(WooPosHomeUIEvent.PhoneBackFromCheckoutClicked) },
                     viewModel = totalsViewModel,
                     isLeaving = isLeaving,
@@ -122,25 +122,15 @@ private fun <T> rememberKeptWhile(isKept: Boolean, value: T): T {
     return keptValue
 }
 
-internal enum class WooPosPhoneScreen { Products, Checkout }
-
-internal fun phoneScreenFor(
-    state: WooPosHomeState.ScreenPositionState,
-): WooPosPhoneScreen = when (state) {
-    WooPosHomeState.ScreenPositionState.Products,
-    WooPosHomeState.ScreenPositionState.Cart -> WooPosPhoneScreen.Products
-    is WooPosHomeState.ScreenPositionState.Checkout -> WooPosPhoneScreen.Checkout
-}
-
-private fun AnimatedContentTransitionScope<WooPosPhoneScreen>.screenTransitionFor(
-    from: WooPosPhoneScreen,
-    to: WooPosPhoneScreen,
+private fun AnimatedContentTransitionScope<WooPosHomeState.PhoneScreen>.screenTransitionFor(
+    from: WooPosHomeState.PhoneScreen,
+    to: WooPosHomeState.PhoneScreen,
 ): ContentTransform {
     return when {
-        from == WooPosPhoneScreen.Products && to == WooPosPhoneScreen.Checkout ->
+        from == WooPosHomeState.PhoneScreen.Products && to == WooPosHomeState.PhoneScreen.Checkout ->
             slideInHorizontally { it } togetherWith slideOutHorizontally { -it }
 
-        from == WooPosPhoneScreen.Checkout && to == WooPosPhoneScreen.Products ->
+        from == WooPosHomeState.PhoneScreen.Checkout && to == WooPosHomeState.PhoneScreen.Products ->
             slideInHorizontally { -it } togetherWith slideOutHorizontally { it }
 
         else -> fadeIn() togetherWith fadeOut()

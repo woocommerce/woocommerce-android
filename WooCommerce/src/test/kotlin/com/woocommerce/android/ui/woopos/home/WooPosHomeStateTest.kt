@@ -33,4 +33,28 @@ class WooPosHomeStateTest {
         // THEN
         assertThat(result).isFalse()
     }
+
+    @Test
+    fun `given Cart position, when getting the phone screen, then Products`() {
+        // GIVEN
+        val state = WooPosHomeState(screenPositionState = ScreenPositionState.Cart)
+
+        // WHEN
+        val result = state.phoneScreen
+
+        // THEN
+        assertThat(result).isEqualTo(WooPosHomeState.PhoneScreen.Products)
+    }
+
+    @Test
+    fun `given Checkout position, when getting the phone screen, then Checkout`() {
+        // GIVEN
+        val state = WooPosHomeState(screenPositionState = ScreenPositionState.Checkout.CartWithTotals)
+
+        // WHEN
+        val result = state.phoneScreen
+
+        // THEN
+        assertThat(result).isEqualTo(WooPosHomeState.PhoneScreen.Checkout)
+    }
 }
