@@ -4,6 +4,7 @@
 
 26.3
 -----
+- [*] [POS] Coupon search now shows a hint before you type, when there are no recent searches [https://github.com/woocommerce/woocommerce-android/pull/16940]
 
 
 26.2

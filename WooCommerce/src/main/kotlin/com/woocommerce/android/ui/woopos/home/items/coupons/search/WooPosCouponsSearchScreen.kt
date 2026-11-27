@@ -71,7 +71,8 @@ private fun WooPosCouponsSearchScreen(
             label = "WooPosCouponsSearchScreenCrossfade"
         ) { currentStateClass ->
             when (currentStateClass) {
-                WooPosCouponsSearchViewState.EmptySearchQuery::class.java -> {
+                WooPosCouponsSearchViewState.EmptySearchQuery.NoRecentSearches::class.java,
+                WooPosCouponsSearchViewState.EmptySearchQuery.RecentSearches::class.java -> {
                     if (state is WooPosCouponsSearchViewState.EmptySearchQuery) {
                         WooPosCouponsEmptySearchQueryStateScreen(
                             modifier = Modifier.imePadding(),

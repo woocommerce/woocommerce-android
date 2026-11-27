@@ -14,8 +14,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosEmptyScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosRecentSearchesChips
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 
@@ -23,6 +27,33 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 fun WooPosCouponsEmptySearchQueryStateScreen(
     modifier: Modifier = Modifier,
     state: WooPosCouponsSearchViewState.EmptySearchQuery,
+    onUIEvent: (WooPosCouponsSearchUiEvent) -> Unit
+) {
+    when (state) {
+        WooPosCouponsSearchViewState.EmptySearchQuery.NoRecentSearches -> WooPosEmptyScreen(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(horizontal = WooPosSpacing.Medium.value),
+            title = stringResource(id = R.string.woopos_search_coupons_pre_search_title),
+            message = stringResource(id = R.string.woopos_search_coupons_pre_search_description),
+            contentDescription = stringResource(
+                id = R.string.woopos_search_coupons_pre_search_image_content_description
+            ),
+            icon = WooPosIcons.CouponsEmpty,
+        )
+
+        is WooPosCouponsSearchViewState.EmptySearchQuery.RecentSearches -> WooPosCouponsRecentSearches(
+            modifier = modifier,
+            recentSearches = state.recentSearches,
+            onUIEvent = onUIEvent,
+        )
+    }
+}
+
+@Composable
+private fun WooPosCouponsRecentSearches(
+    modifier: Modifier,
+    recentSearches: List<String>,
     onUIEvent: (WooPosCouponsSearchUiEvent) -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -39,14 +70,12 @@ fun WooPosCouponsEmptySearchQueryStateScreen(
             .padding(top = WooPosSpacing.XSmall.value)
             .verticalScroll(scrollState)
     ) {
-        if (state.recentSearches.isNotEmpty()) {
-            WooPosRecentSearchesChips(
-                recentSearches = state.recentSearches,
-                onRecentSearchClicked = { recentSearch ->
-                    onUIEvent(WooPosCouponsSearchUiEvent.OnRecentSearchClicked(recentSearch))
-                }
-            )
-        }
+        WooPosRecentSearchesChips(
+            recentSearches = recentSearches,
+            onRecentSearchClicked = { recentSearch ->
+                onUIEvent(WooPosCouponsSearchUiEvent.OnRecentSearchClicked(recentSearch))
+            }
+        )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Gigantic.value))
     }
@@ -62,12 +91,23 @@ fun WooPosCouponsEmptySearchQueryStatePreview() {
                 .padding(WooPosSpacing.Medium.value)
         ) {
             WooPosCouponsEmptySearchQueryStateScreen(
-                state = WooPosCouponsSearchViewState.EmptySearchQuery(
+                state = WooPosCouponsSearchViewState.EmptySearchQuery.RecentSearches(
                     recentSearches = listOf("SUMMER", "DISCOUNT", "SALE", "WINTER"),
                 ),
                 onUIEvent = { },
             )
         }
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosCouponsEmptySearchQueryStateNoRecentSearchesPreview() {
+    WooPosTheme {
+        WooPosCouponsEmptySearchQueryStateScreen(
+            state = WooPosCouponsSearchViewState.EmptySearchQuery.NoRecentSearches,
+            onUIEvent = { },
+        )
     }
 }
 

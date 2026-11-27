@@ -51,10 +51,6 @@ fun WooPosItemsToolbar(
     leadingContent: (@Composable () -> Unit)? = null,
     showAddCouponButton: Boolean = true,
 ) {
-    val isSearchOpen = (state.search as? SearchState.Visible)?.let {
-        it.state is WooPosSearchInputState.Open
-    } == true
-
     val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
     val tabsTextStyle = if (isPhone) WooPosTypography.BodyLarge else WooPosTypography.Heading
 
@@ -63,7 +59,7 @@ fun WooPosItemsToolbar(
             .fillMaxWidth()
             .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT)
     ) {
-        when (isSearchOpen) {
+        when (state.isSearchOpen) {
             true -> WooPosSearchInput(
                 state = (state.search as SearchState.Visible).state,
                 onEvent = onSearchEvent,
