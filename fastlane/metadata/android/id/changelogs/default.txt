@@ -1,2 +1,0 @@
-26.1:
-Jumlah kustom di Woo POS kini terbuka di layarnya sendiri, sehingga Anda dapat menentukan jumlah, nama, dan pajak sebelum menambahkannya ke keranjang. Pesanan akan menampilkan nomor ponsel pengiriman dan alamat pengiriman pelanggan. Selain itu, nama produk yang panjang akan pindah ke baris baru, tidak lagi terpotong. Plus perbaikan untuk pembayaran dengan kartu di POS, foto produk, statistik rentang tanggal khusus, dan fitur login.

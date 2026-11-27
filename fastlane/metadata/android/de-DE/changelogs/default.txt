@@ -1,2 +1,0 @@
-26.1:
-Individuelle Beträge in Woo POS werden jetzt in einem separaten Bildschirm geöffnet, sodass du vor dem Hinzufügen zum Warenkorb die Summe, den Namen und die Steuern festlegen kannst. Bei Bestellungen wird die Telefonnummer des Kunden mit der Lieferadresse angezeigt, und lange Produktnamen werden auf die nächste Zeile umgebrochen und nicht mehr abgeschnitten. Außerdem: Fehlerbehebungen für POS-Kartenzahlungen, Produktfotos, Statistiken zum angepassten Zeitraum und Anmeldung.
