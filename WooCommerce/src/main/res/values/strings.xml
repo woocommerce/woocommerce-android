@@ -4477,6 +4477,9 @@
     <string name="woopos_search_recent_searches_title">Recent searches</string>
     <string name="woopos_search_items_empty_title">No products found</string>
     <string name="woopos_search_coupons_empty_title">No coupons found</string>
+    <string name="woopos_search_coupons_pre_search_title">Find a coupon</string>
+    <string name="woopos_search_coupons_pre_search_description">Type a coupon code to search.</string>
+    <string name="woopos_search_coupons_pre_search_image_content_description">Coupon</string>
     <string name="woopos_search_empty_description">We couldn\'t find any matching products. Try adjusting your search term.</string>
     <string name="woopos_search_empty_coupons_description">We couldn\'t find any matching coupons. Try adjusting your search term.</string>
     <string name="woopos_search_orders_empty_title">No orders found</string>
