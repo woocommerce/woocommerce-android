@@ -54,6 +54,7 @@ class WooPosPrintReceiptCoordinatorTest {
         on { connectionStatus } doReturn connectionStatus
     }
     private val logger: WooPosLogWrapper = mock()
+    private val currentOrderId = MutableStateFlow(ORDER_ID)
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val isReceiptPrintingEnabled: WooPosReceiptPrintingEnabled = mock {
         on { invoke() } doReturn true
@@ -182,6 +183,97 @@ class WooPosPrintReceiptCoordinatorTest {
         // THEN
         assertThat(sut.buttonState.value).isEqualTo(Loading)
     }
+
+    @Test
+    fun `given the receipt is printing, when a new order starts, then the button is idle`() = runTest {
+        // GIVEN
+        connectPrinter()
+        whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).doSuspendableAnswer {
+            CompletableDeferred<ReceiptPrinterResult>().await()
+        }
+        val sut = createCoordinator()
+        sut.onPrintReceiptClicked(ORDER_ID)
+        runCurrent()
+
+        // WHEN
+        currentOrderId.value = OTHER_ORDER_ID
+        runCurrent()
+
+        // THEN
+        assertThat(sut.buttonState.value).isEqualTo(Idle)
+    }
+
+    @Test
+    fun `given a new order started while printing, when the earlier receipt is printed, then the button stays idle`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            val printResult = CompletableDeferred<ReceiptPrinterResult>()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).doSuspendableAnswer { printResult.await() }
+            val sut = createCoordinator()
+            sut.onPrintReceiptClicked(ORDER_ID)
+            runCurrent()
+            currentOrderId.value = OTHER_ORDER_ID
+
+            // WHEN
+            printResult.complete(ReceiptPrinterResult.Success)
+            runCurrent()
+
+            // THEN
+            assertThat(sut.buttonState.value).isEqualTo(Idle)
+        }
+
+    @Test
+    fun `given a new order started while printing, when print receipt is clicked, then the new order is printed`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).doSuspendableAnswer {
+                CompletableDeferred<ReceiptPrinterResult>().await()
+            }
+            whenever(receiptPrinterFacade.printReceipt(OTHER_ORDER_ID, null)).doSuspendableAnswer {
+                CompletableDeferred<ReceiptPrinterResult>().await()
+            }
+            val sut = createCoordinator()
+            sut.onPrintReceiptClicked(ORDER_ID)
+            runCurrent()
+            currentOrderId.value = OTHER_ORDER_ID
+
+            // WHEN
+            sut.onPrintReceiptClicked(OTHER_ORDER_ID)
+            runCurrent()
+
+            // THEN
+            verify(receiptPrinterFacade).printReceipt(OTHER_ORDER_ID, null)
+            assertThat(sut.buttonState.value).isEqualTo(Loading)
+        }
+
+    @Test
+    fun `given the new order is printing, when the earlier receipt is printed, then the button stays loading`() =
+        runTest {
+            // GIVEN
+            connectPrinter()
+            val earlierPrintResult = CompletableDeferred<ReceiptPrinterResult>()
+            whenever(receiptPrinterFacade.printReceipt(ORDER_ID, null)).doSuspendableAnswer {
+                earlierPrintResult.await()
+            }
+            whenever(receiptPrinterFacade.printReceipt(OTHER_ORDER_ID, null)).doSuspendableAnswer {
+                CompletableDeferred<ReceiptPrinterResult>().await()
+            }
+            val sut = createCoordinator()
+            sut.onPrintReceiptClicked(ORDER_ID)
+            runCurrent()
+            currentOrderId.value = OTHER_ORDER_ID
+            sut.onPrintReceiptClicked(OTHER_ORDER_ID)
+            runCurrent()
+
+            // WHEN
+            earlierPrintResult.complete(ReceiptPrinterResult.Success)
+            advanceTimeBy(3_000)
+
+            // THEN
+            assertThat(sut.buttonState.value).isEqualTo(Loading)
+        }
 
     @Test
     fun `given the receipt is printing, when print receipt is clicked again, then it is printed once`() = runTest {
@@ -692,6 +784,7 @@ class WooPosPrintReceiptCoordinatorTest {
         analyticsTracker = analyticsTracker,
         isReceiptPrintingEnabled = isReceiptPrintingEnabled,
         scope = scope,
+        currentOrderId = currentOrderId,
     )
 
     private companion object {

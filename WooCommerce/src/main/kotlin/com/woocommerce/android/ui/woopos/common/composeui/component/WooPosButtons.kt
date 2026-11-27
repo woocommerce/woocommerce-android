@@ -34,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -301,7 +302,9 @@ private fun Button(
                 maxLines = maxLines,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.alpha(if (isTextVisible) 1f else 0f)
+                modifier = Modifier
+                    .alpha(if (isTextVisible) 1f else 0f)
+                    .then(if (state is WooPosButtonState.Success) Modifier.clearAndSetSemantics {} else Modifier)
             )
             when (state) {
                 WooPosButtonState.ENABLED,
@@ -312,10 +315,10 @@ private fun Button(
                     ButtonsLoadingIndicator(size = loadingIndicatorSize, isOutlined = border != null)
                 }
 
-                WooPosButtonState.SUCCESS -> {
+                is WooPosButtonState.Success -> {
                     Icon(
                         imageVector = WooPosIcons.Check,
-                        contentDescription = null,
+                        contentDescription = state.contentDescription,
                         modifier = Modifier.size(loadingIndicatorSize),
                     )
                 }
@@ -387,7 +390,7 @@ fun WooPosButtonsPreview() {
             )
             WooPosOutlinedButton(
                 text = "Button Outlined",
-                state = WooPosButtonState.SUCCESS,
+                state = WooPosButtonState.Success(contentDescription = "Done"),
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {}
             )
@@ -502,6 +505,9 @@ fun WooPosSmallButtonsPreview() {
     }
 }
 
-enum class WooPosButtonState {
-    ENABLED, DISABLED, LOADING, SUCCESS
+sealed interface WooPosButtonState {
+    data object ENABLED : WooPosButtonState
+    data object DISABLED : WooPosButtonState
+    data object LOADING : WooPosButtonState
+    data class Success(val contentDescription: String) : WooPosButtonState
 }

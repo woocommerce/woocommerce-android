@@ -72,6 +72,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.parcelize.Parcelize
@@ -128,9 +129,6 @@ class WooPosTotalsViewModel @Inject constructor(
     private val _screenEvents = MutableSharedFlow<WooPosTotalsScreenEvent>(extraBufferCapacity = 1)
     val screenEvents: SharedFlow<WooPosTotalsScreenEvent> = _screenEvents.asSharedFlow()
 
-    private val printReceiptCoordinator = printReceiptCoordinatorFactory.create(viewModelScope)
-    val printReceiptButtonState: StateFlow<WooPosPrintReceiptButtonState> = printReceiptCoordinator.buttonState
-
     private var createDraftOrderJob: Job? = null
     private var leaveFailedPaymentJob: Job? = null
     private var newOrder: Order? = null
@@ -141,6 +139,10 @@ class WooPosTotalsViewModel @Inject constructor(
         initialValue = TotalsDataState(),
         key = KEY_STATE,
     )
+
+    private val printReceiptCoordinator =
+        printReceiptCoordinatorFactory.create(viewModelScope, dataState.map { it.orderId })
+    val printReceiptButtonState: StateFlow<WooPosPrintReceiptButtonState> = printReceiptCoordinator.buttonState
 
     // Persisted hook handed to `CardReaderPaymentController` so the SDK-overlay-up state survives
     // process death — the controller flips this when the Stripe overlay opens/closes.

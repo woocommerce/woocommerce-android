@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -52,7 +53,7 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
     private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
-    private val printReceiptCoordinator = printReceiptCoordinatorFactory.create(viewModelScope)
+    private val printReceiptCoordinator = printReceiptCoordinatorFactory.create(viewModelScope, flowOf(orderId))
     val printReceiptButtonState: StateFlow<WooPosPrintReceiptButtonState> = printReceiptCoordinator.buttonState
 
     init {
