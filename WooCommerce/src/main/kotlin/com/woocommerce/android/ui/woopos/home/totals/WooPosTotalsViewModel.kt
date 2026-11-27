@@ -829,7 +829,6 @@ class WooPosTotalsViewModel @Inject constructor(
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
                         cancelPaymentAction()
                         cancelCreateOrderDraftAction()
-                        uiState.value = InitialState
                     }
 
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> {
