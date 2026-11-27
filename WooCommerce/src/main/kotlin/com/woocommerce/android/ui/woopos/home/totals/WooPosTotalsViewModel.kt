@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardDetails
@@ -62,6 +63,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,8 +71,10 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import java.math.BigDecimal
@@ -108,6 +112,7 @@ class WooPosTotalsViewModel @Inject constructor(
         private const val KEY_STATE = "woo_pos_totals_data_state"
         private const val KEY_IS_TAP_TO_PAY_PAYMENT = "woo_pos_is_tap_to_pay_payment"
         private const val TAP_TO_PAY_SOURCE = "woo_pos_checkout"
+        private const val TAP_TO_PAY_CONNECT_SETTLE_TIMEOUT_MS = 30_000L
         private val InitialState = WooPosTotalsViewState.Idle
         private val DISCOUNTED_LINE_TOLERANCE = BigDecimal("0.005")
     }
@@ -145,6 +150,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private var cardReaderPaymentController: CardReaderPaymentController? = null
     private var remotePaymentJob: Job? = null
+    private var tapToPayConnectJob: Job? = null
     private var paymentAnalyticsJob: Job? = null
     private var activePaymentMode: PaymentMode? = null
 
@@ -261,6 +267,19 @@ class WooPosTotalsViewModel @Inject constructor(
         resetTapToPayProgress()
         cancelRemotePaymentAction()
         activePaymentMode = null
+        cancelTapToPayConnect()
+    }
+
+    private fun cancelTapToPayConnect() {
+        val connectJob = tapToPayConnectJob ?: return
+        tapToPayConnectJob = null
+        connectJob.cancel()
+        viewModelScope.launch {
+            withTimeoutOrNull(TAP_TO_PAY_CONNECT_SETTLE_TIMEOUT_MS) {
+                cardReaderFacade.readerStatus.first { it !is CardReaderStatus.Connecting }
+            }
+            if (!isTapToPayPayment) builtInReaderConnector.disconnectIfConnected()
+        }
     }
 
     private fun cancelCreateOrderDraftAction() {
@@ -411,7 +430,12 @@ class WooPosTotalsViewModel @Inject constructor(
             resetTapToPayProgress()
             return
         }
-        builtInReaderConnector.connect().fold(
+        val connection = viewModelScope.async { builtInReaderConnector.connect() }
+        tapToPayConnectJob = connection
+        val result = connection.await()
+        if (tapToPayConnectJob !== connection) return
+        tapToPayConnectJob = null
+        result.fold(
             onSuccess = {
                 activePaymentMode = PaymentMode.BLUETOOTH
                 createCardReaderPaymentController(orderId, CardReaderType.BUILT_IN)

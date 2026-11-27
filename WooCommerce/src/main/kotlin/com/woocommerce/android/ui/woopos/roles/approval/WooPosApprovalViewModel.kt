@@ -10,12 +10,14 @@ import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -58,8 +60,20 @@ class WooPosApprovalViewModel @Inject constructor(
             onAllowed()
             return
         }
+        beginApproval(action) {
+            onAllowed()
+            true
+        }
+    }
+
+    internal fun requestFreshApproval(action: WooPosApprovalAction, onApproved: suspend () -> Boolean) {
+        if (pending != null || !accessSession.allows(action.capability)) return
+        beginApproval(action, onApproved)
+    }
+
+    private fun beginApproval(action: WooPosApprovalAction, perform: suspend () -> Boolean) {
         val scope = accessSession.approvalScope() ?: return
-        val request = PendingAction(scope, action, onAllowed)
+        val request = PendingAction(scope, action, perform)
         pending = request
         _state.value = WooPosApprovalState(action, WooPosPINEntryStatus.Initializing)
         job = viewModelScope.launch { refreshWait(request) }
@@ -94,8 +108,7 @@ class WooPosApprovalViewModel @Inject constructor(
             }
             when (result) {
                 is WooPosLocalRateLimiterResult.Authenticated -> {
-                    clear()
-                    request.perform()
+                    complete(request)
                 }
                 is WooPosLocalRateLimiterResult.Incorrect ->
                     if (result.remainingSeconds > 0) {
@@ -107,6 +120,26 @@ class WooPosApprovalViewModel @Inject constructor(
                 WooPosLocalRateLimiterResult.ProtectionOff,
                 WooPosLocalRateLimiterResult.Unavailable -> show(request, WooPosPINEntryStatus.StorageUnavailable)
             }
+        }
+    }
+
+    private suspend fun complete(request: PendingAction) {
+        if (!request.action.requiresDurableCompletion) {
+            clear()
+            request.perform()
+            return
+        }
+        val completed = request.perform()
+        currentCoroutineContext().ensureActive()
+        if (pending !== request) return
+        if (!completed) {
+            show(request, WooPosPINEntryStatus.StorageUnavailable)
+            return
+        }
+        clear()
+        // Refreshing removed protection invalidates the scope of this completed approval.
+        if (request.action == WooPosApprovalAction.DisablePINProtection) {
+            withContext(NonCancellable) { accessSession.initialize() }
         }
     }
 
@@ -163,7 +196,7 @@ class WooPosApprovalViewModel @Inject constructor(
     private class PendingAction(
         val scope: WooPosAccessSession.ApprovalScope,
         val action: WooPosApprovalAction,
-        val perform: () -> Unit,
+        val perform: suspend () -> Boolean,
     )
 }
 

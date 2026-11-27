@@ -21,6 +21,7 @@ import com.woocommerce.android.model.Order.CouponLine
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundErrorMapper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundableChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -108,6 +109,7 @@ import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.isA
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -2273,6 +2275,74 @@ class WooPosTotalsViewModelTest {
 
         // THEN
         verify(childrenToParentEventSender).sendToParent(ReturnedFromCardReaderPaymentToCheckout)
+    }
+
+    @Test
+    fun `given TTP connection pending, when checkout is left, then no payment starts after the connection completes`() =
+        runTest {
+            // GIVEN
+            val pending = givenTtpConnectionPending(readerStatus = MutableStateFlow(CardReaderStatus.NotConnected()))
+
+            // WHEN
+            pending.events.value = ParentToChildrenEvent.BackFromCheckoutToCartClicked
+            advanceUntilIdle()
+            pending.connection.complete(Result.success(Unit))
+            advanceUntilIdle()
+
+            // THEN
+            verify(builtInReaderConnector).disconnectIfConnected()
+            verify(pending.factory, never()).create(any(), any(), any(), eq(CardReaderType.BUILT_IN))
+        }
+
+    @Test
+    fun `given SDK still connecting when checkout is left, when the reader connects later, then it is disconnected`() =
+        runTest {
+            // GIVEN
+            val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connecting)
+            val pending = givenTtpConnectionPending(readerStatus = readerStatus)
+
+            // WHEN
+            pending.events.value = ParentToChildrenEvent.BackFromCheckoutToCartClicked
+            runCurrent()
+            verify(builtInReaderConnector, never()).disconnectIfConnected()
+            readerStatus.value = CardReaderStatus.Connected(mock())
+            runCurrent()
+
+            // THEN
+            verify(builtInReaderConnector).disconnectIfConnected()
+        }
+
+    private class TtpConnectionPending(
+        val events: MutableStateFlow<ParentToChildrenEvent>,
+        val connection: CompletableDeferred<Result<Unit>>,
+        val factory: WooPosCardReaderPaymentControllerFactory,
+    )
+
+    private suspend fun TestScope.givenTtpConnectionPending(
+        readerStatus: MutableStateFlow<CardReaderStatus>,
+    ): TtpConnectionPending {
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
+        val connection = CompletableDeferred<Result<Unit>>()
+        whenever(builtInReaderConnector.connect()).doSuspendableAnswer { connection.await() }
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
+        val events = MutableStateFlow<ParentToChildrenEvent>(
+            ParentToChildrenEvent.CheckoutClicked(
+                listOf(
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                )
+            )
+        )
+        val vm = createViewModelAndSetupForSuccessfulOrderCreation(
+            controllerFactory = factory,
+            parentToChildrenEventFlow = events,
+        )
+        advanceUntilIdle()
+        vm.onUIEvent(WooPosTotalsUIEvent.OnTapToPayClicked)
+        runCurrent()
+        return TtpConnectionPending(events, connection, factory)
     }
 
     @Test

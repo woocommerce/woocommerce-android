@@ -27,35 +27,56 @@ class WooPosLocalPINStore @Inject constructor(
         load(localSiteId).requireUniquePIN(role, pin)
     }
 
-    suspend fun createPIN(localSiteId: Int, role: WooPosLocalRole, pin: String): Result<Unit> =
-        savePIN(localSiteId, role, pin, createOnly = true)
+    suspend fun createPIN(
+        localSiteId: Int,
+        role: WooPosLocalRole,
+        pin: String,
+        canCommit: () -> Boolean,
+    ): Result<Unit> = savePIN(localSiteId, role, pin, WriteMode.CREATE, canCommit)
 
-    suspend fun setPIN(localSiteId: Int, role: WooPosLocalRole, pin: String): Result<Unit> =
-        savePIN(localSiteId, role, pin, createOnly = false)
+    suspend fun replacePIN(
+        localSiteId: Int,
+        role: WooPosLocalRole,
+        pin: String,
+        canCommit: () -> Boolean,
+    ): Result<Unit> = savePIN(localSiteId, role, pin, WriteMode.REPLACE, canCommit)
+
+    suspend fun setPIN(
+        localSiteId: Int,
+        role: WooPosLocalRole,
+        pin: String,
+    ): Result<Unit> = savePIN(localSiteId, role, pin, WriteMode.UPSERT) { true }
 
     private suspend fun savePIN(
         localSiteId: Int,
         role: WooPosLocalRole,
         pin: String,
-        createOnly: Boolean,
+        mode: WriteMode,
+        canCommit: () -> Boolean,
     ): Result<Unit> = operation {
         if (!WooPosPINHash.isValidPIN(pin)) throw WooPosPINError.InvalidFormat
         val pins = load(localSiteId).toMutableMap()
-        if (createOnly && role in pins) throw WooPosPINError.AlreadyExists
+        if (mode == WriteMode.CREATE && role in pins) throw WooPosPINError.AlreadyExists
+        if (mode == WriteMode.REPLACE && role !in pins) throw WooPosPINError.StaleRequest
         if (role != WooPosLocalRole.ADMIN && WooPosLocalRole.ADMIN !in pins) throw WooPosPINError.AdminRequired
         pins.requireUniquePIN(role, pin)
         pins[role] = WooPosPINHash.create(pin)
-        storage.write(localSiteId, codec.encode(pins))
+        if (!storage.write(localSiteId, codec.encode(pins), canCommit)) throw WooPosPINError.StaleRequest
     }
 
-    suspend fun removePIN(localSiteId: Int, role: WooPosLocalRole): Result<Unit> = operation {
+    suspend fun removePIN(
+        localSiteId: Int,
+        role: WooPosLocalRole,
+        canCommit: () -> Boolean,
+    ): Result<Unit> = operation {
         require(localSiteId > 0)
-        if (role == WooPosLocalRole.ADMIN) {
-            storage.write(localSiteId, null)
+        val updated = if (role == WooPosLocalRole.ADMIN) {
+            null
         } else {
             val pins = load(localSiteId) - role
-            storage.write(localSiteId, pins.takeIf { it.isNotEmpty() }?.let(codec::encode))
+            pins.takeIf { it.isNotEmpty() }?.let(codec::encode)
         }
+        if (!storage.write(localSiteId, updated, canCommit)) throw WooPosPINError.StaleRequest
     }
 
     suspend fun clearAll(): Result<Unit> = operation { storage.clearAll() }
@@ -86,4 +107,6 @@ class WooPosLocalPINStore @Inject constructor(
             }
         }
     }
+
+    private enum class WriteMode { CREATE, REPLACE, UPSERT }
 }

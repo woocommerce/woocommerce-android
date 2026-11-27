@@ -10,10 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -71,6 +68,7 @@ import com.woocommerce.android.ui.woopos.common.pin.PIN_PAD_PHONE_KEY_SIZE
 import com.woocommerce.android.ui.woopos.common.pin.PIN_PAD_TABLET_KEY_SIZE
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINEntryFeedback
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPad
+import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPadLayout
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPadStyle
 import com.woocommerce.android.ui.woopos.common.pin.measureWooPosPINStatusHeight
 import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
@@ -130,7 +128,7 @@ private fun BoxWithConstraintsScope.LockContent(
     state: WooPosLockScreenState,
     onUIEvent: (WooPosLockScreenUIEvent) -> Unit,
 ) {
-    val isCompactHeight = maxHeight < COMPACT_HEIGHT && maxWidth > maxHeight
+    val isCompactHeight = maxHeight < COMPACT_HEIGHT
     val metrics = lockMetrics(isCompactHeight)
     val layout = calculateLockLayout(metrics, isCompactHeight)
     val intro = rememberLockIntro(animates = layout.showsIllustration)
@@ -140,69 +138,77 @@ private fun BoxWithConstraintsScope.LockContent(
         translationY = intro.travel().y
     }
 
+    val title = stringResource(R.string.woopos_lock_enter_pin)
     Box(
         Modifier
             .fillMaxSize()
             .onGloballyPositioned { intro.animation.viewport = it }
-            .then(if (intro.isActive) Modifier.clearAndSetSemantics {} else Modifier)
-            .verticalScroll(rememberScrollState(), enabled = !intro.isActive)
+            .then(if (intro.isActive) Modifier.clearAndSetSemantics {} else Modifier),
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = this@LockContent.maxHeight)
+        WooPosPINPadLayout(
+            preferredKeySize = layout.keySize,
+            preferredSpacing = metrics.sectionSpacing,
+            modifier = Modifier.fillMaxSize()
                 .padding(horizontal = metrics.horizontalPadding, vertical = layout.verticalPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(metrics.sectionSpacing, Alignment.CenterVertically),
-        ) {
-            Column(Modifier.widthIn(max = CONTENT_MAX_WIDTH), horizontalAlignment = Alignment.CenterHorizontally) {
-                if (layout.showsIllustration) {
-                    Box(
-                        Modifier
-                            .size(metrics.illustrationSize)
-                            .onGloballyPositioned { intro.animation.slot = it },
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        LockIllustration(
-                            shackleAngle = { intro.shackleAngle },
-                            modifier = Modifier.graphicsLayer {
-                                alpha = intro.illustrationAlpha
-                                val travel = intro.travel()
-                                translationX = travel.x
-                                translationY = travel.y
-                            },
+            messageHeight = { _, spacing ->
+                layout.titleHeight + spacing + layout.statusHeight +
+                    if (layout.showsIllustration) metrics.illustrationSize + spacing else 0.dp
+            },
+            message = { spacing ->
+                Column(
+                    Modifier.widthIn(max = CONTENT_MAX_WIDTH).heightIn(max = maxHeight),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(spacing),
+                ) {
+                    if (layout.showsIllustration) {
+                        Box(
+                            Modifier.size(metrics.illustrationSize)
+                                .onGloballyPositioned { intro.animation.slot = it },
                         )
                     }
-                    Spacer(Modifier.height(metrics.sectionSpacing))
+                    Column(
+                        modifier = Modifier.weight(1f, fill = false).then(contentModifier)
+                            .verticalScroll(rememberScrollState()),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        WooPosText(
+                            text = title,
+                            style = WooPosTypography.BodyXLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.semantics { heading() },
+                        )
+                    }
+                    Box(contentModifier) {
+                        WooPosPINEntryFeedback(state.status, state.enteredDigits, layout.statusHeight)
+                    }
                 }
-                WooPosText(
-                    text = stringResource(R.string.woopos_lock_enter_pin),
-                    style = WooPosTypography.BodyXLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .semantics { heading() }
-                        .then(contentModifier),
-                )
-            }
-            Column(
-                modifier = Modifier
-                    .widthIn(max = CONTENT_MAX_WIDTH)
-                    .then(contentModifier),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(metrics.sectionSpacing),
-            ) {
-                WooPosPINEntryFeedback(state.status, state.enteredDigits, layout.statusHeight)
+            },
+            keypad = { keySize ->
                 // TODO WOOMOB-4606: Show Forgot PIN once PIN recovery is available.
                 WooPosPINPad(
                     enteredDigits = state.enteredDigits,
                     enabled = state.canEnterPIN && !intro.isActive,
                     onDigit = { onUIEvent(WooPosLockScreenUIEvent.DigitTapped(it)) },
                     onDelete = { onUIEvent(WooPosLockScreenUIEvent.DeleteTapped) },
-                    keySize = layout.keySize,
+                    keySize = keySize,
                     style = if (showsBlockedPINPad) WooPosPINPadStyle.BLOCKED else WooPosPINPadStyle.STANDARD,
+                    modifier = contentModifier,
                 )
+            },
+        )
+        if (layout.showsIllustration) {
+            Box(
+                Modifier.size(metrics.illustrationSize).graphicsLayer {
+                    val position = intro.illustrationPosition()
+                    alpha = if (position == null) 0f else 1f
+                    translationX = position?.x ?: 0f
+                    translationY = position?.y ?: 0f
+                },
+                contentAlignment = Alignment.Center,
+            ) {
+                LockIllustration(shackleAngle = { intro.shackleAngle })
             }
         }
     }
@@ -210,7 +216,7 @@ private fun BoxWithConstraintsScope.LockContent(
 
 @Composable
 private fun lockMetrics(isCompactHeight: Boolean) = WooPosLockScreenLayout.Metrics(
-    horizontalPadding = WooPosSpacing.XXLarge.value,
+    horizontalPadding = if (isCompactHeight) WooPosSpacing.Small.value else WooPosSpacing.XXLarge.value,
     verticalPadding = if (isCompactHeight) WooPosSpacing.Small.value else WooPosSpacing.XXLarge.value,
     reducedVerticalPadding = if (isCompactHeight) WooPosSpacing.Small.value else WooPosSpacing.Medium.value,
     sectionSpacing = if (isCompactHeight) WooPosSpacing.Medium.value else WooPosSpacing.XLarge.value,
@@ -261,9 +267,14 @@ private class WooPosLockIntroAnimation {
 private class WooPosLockIntro(val isActive: Boolean, val animation: WooPosLockIntroAnimation) {
     val shackleAngle: Float get() = if (isActive) animation.shackle.value else 0f
     val contentAlpha: Float get() = if (isActive) animation.reveal.value else 1f
-    val illustrationAlpha: Float get() = if (isActive && slotTravel() == null) 0f else 1f
 
     fun travel(): Offset = if (isActive) (slotTravel() ?: Offset.Zero) * (1f - animation.reveal.value) else Offset.Zero
+
+    fun illustrationPosition(): Offset? {
+        val viewport = animation.viewport?.takeIf { it.isAttached } ?: return null
+        val slot = animation.slot?.takeIf { it.isAttached } ?: return null
+        return viewport.localPositionOf(slot, Offset.Zero) + travel()
+    }
 
     private fun slotTravel(): Offset? {
         val viewport = animation.viewport?.takeIf { it.isAttached } ?: return null

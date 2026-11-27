@@ -14,7 +14,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -58,7 +57,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -82,6 +80,7 @@ import com.woocommerce.android.ui.woopos.common.pin.PIN_PHONE_COMPACT_BODY_HEIGH
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDotShake
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDots
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPad
+import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPadLayout
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPhoneLayout
 import com.woocommerce.android.ui.woopos.roles.WooPosLocalRole
 import com.woocommerce.android.ui.woopos.settings.details.security.WooPosSettingsSecurityPINSetupState.AccessUnavailable
@@ -104,6 +103,7 @@ fun WooPosSettingsSecurityPINSetupDialog(
     isFullScreen: Boolean = currentWooPosBreakpoint() == WooPosBreakpoint.Phone,
     chooseTitle: String? = null,
     confirmTitle: String? = null,
+    savedActionLabel: String,
 ) {
     val shouldDismiss = isVisible && state == AccessUnavailable
     LaunchedEffect(shouldDismiss) {
@@ -121,20 +121,38 @@ fun WooPosSettingsSecurityPINSetupDialog(
             if (shown.canGoBack) goBack() else close()
         }
         AnimatedVisibility(visible = isVisible, enter = fadeIn(), exit = fadeOut()) {
+            val shownSavedActionLabel = remember { savedActionLabel }
             Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceBright) {
-                PINSetupPhoneContent(shown, resolvedChooseTitle, resolvedConfirmTitle, sendEvent, close)
+                PINSetupPhoneContent(
+                    shown,
+                    resolvedChooseTitle,
+                    resolvedConfirmTitle,
+                    shownSavedActionLabel,
+                    sendEvent,
+                    close,
+                )
             }
         }
     } else {
         WooPosDialogWrapper(
-            modifier = Modifier.widthIn(max = DIALOG_MAX_WIDTH),
+            modifier = Modifier.widthIn(
+                max = DIALOG_MAX_WIDTH * LocalDensity.current.fontScale.coerceAtLeast(1f),
+            ),
             widthFraction = 1f,
             isVisible = isVisible,
             dialogBackgroundContentDescription = stringResource(R.string.woopos_security_setup),
             onDismissRequest = close,
         ) {
+            val shownSavedActionLabel = remember { savedActionLabel }
             BackHandler(enabled = isVisible && shown.canGoBack, onBack = goBack)
-            PINSetupDialogContent(shown, resolvedChooseTitle, resolvedConfirmTitle, sendEvent, close)
+            PINSetupDialogContent(
+                shown,
+                resolvedChooseTitle,
+                resolvedConfirmTitle,
+                shownSavedActionLabel,
+                sendEvent,
+                close,
+            )
         }
     }
 }
@@ -144,6 +162,7 @@ private fun PINSetupPhoneContent(
     state: WooPosSettingsSecurityPINSetupState,
     chooseTitle: String,
     confirmTitle: String,
+    savedActionLabel: String,
     onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
     onClose: () -> Unit,
 ) {
@@ -153,7 +172,7 @@ private fun PINSetupPhoneContent(
             is Entry -> PINSetupPhoneEntry(state, chooseTitle, confirmTitle, onUIEvent)
             is Saving, AccessUnavailable -> PINSetupProgress()
             is Saved -> Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-                PINSetupSaved(state.role, onContinue = onClose, minHeight = bodyHeight)
+                PINSetupSaved(state.role, savedActionLabel, onContinue = onClose, minHeight = bodyHeight)
             }
         }
     }
@@ -166,25 +185,54 @@ private fun BoxWithConstraintsScope.PINSetupPhoneEntry(
     confirmTitle: String,
     onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
 ) {
-    val titleHeight = pinSetupTitleHeight(maxWidth, chooseTitle, confirmTitle)
     val isShort = maxHeight < PIN_PHONE_COMPACT_BODY_HEIGHT
-    val spacing = if (isShort) WooPosSpacing.Small.value else WooPosSpacing.Large.value
-    val minStatusHeight = if (isShort) PHONE_COMPACT_STATUS_HEIGHT else PHONE_STATUS_HEIGHT
-    val statusLayout = pinSetupStatusLayout(maxWidth, minStatusHeight)
-    val keySpacing = WooPosSpacing.Small.value
-    val keypadHeight = maxHeight - titleHeight - statusLayout.height - spacing * 2
-    val keySize = ((keypadHeight - keySpacing * (KEYPAD_ROWS - 1)) / KEYPAD_ROWS)
-        .coerceIn(PHONE_MIN_KEY_SIZE, PIN_PAD_PHONE_KEY_SIZE)
-    Column(
-        modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(spacing),
-    ) {
-        Box(Modifier.heightIn(min = titleHeight), contentAlignment = Alignment.BottomCenter) {
-            PINSetupTitle(if (state.page == Page.CONFIRM) confirmTitle else chooseTitle)
-        }
-        PINEntry(state, onUIEvent, keySize, statusLayout, spacing)
-    }
+    PINSetupEntryLayout(
+        state,
+        chooseTitle,
+        confirmTitle,
+        PIN_PAD_PHONE_KEY_SIZE,
+        if (isShort) PHONE_COMPACT_STATUS_HEIGHT else PHONE_STATUS_HEIGHT,
+        onUIEvent,
+    )
+}
+
+@Composable
+private fun PINSetupEntryLayout(
+    entry: Entry,
+    chooseTitle: String,
+    confirmTitle: String,
+    preferredKeySize: Dp,
+    minimumStatusHeight: Dp,
+    onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    WooPosPINPadLayout(
+        preferredKeySize = preferredKeySize,
+        preferredSpacing = WooPosSpacing.Large.value,
+        modifier = modifier.fillMaxWidth(),
+        messageHeight = { width, spacing ->
+            pinSetupTitleHeight(width, chooseTitle, confirmTitle) +
+                pinSetupStatusLayout(width, minimumStatusHeight).height + spacing
+        },
+        message = { spacing ->
+            val titleHeight = pinSetupTitleHeight(maxWidth, chooseTitle, confirmTitle)
+            val statusLayout = pinSetupStatusLayout(maxWidth, minimumStatusHeight)
+            Column(
+                modifier = Modifier.heightIn(max = maxHeight),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(spacing),
+            ) {
+                Box(
+                    Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()).heightIn(min = titleHeight),
+                    contentAlignment = Alignment.BottomCenter,
+                ) {
+                    PINSetupTitle(if (entry.page == Page.CONFIRM) confirmTitle else chooseTitle)
+                }
+                PINSetupStatus(entry, statusLayout)
+            }
+        },
+        keypad = { keySize -> PINSetupKeypad(entry, onUIEvent, keySize) },
+    )
 }
 
 @Composable
@@ -192,40 +240,40 @@ private fun PINSetupDialogContent(
     state: WooPosSettingsSecurityPINSetupState,
     chooseTitle: String,
     confirmTitle: String,
+    savedActionLabel: String,
     onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
     onClose: () -> Unit,
 ) {
     val density = LocalDensity.current
     // Loading and success keep the height the entry had, so the dialog does not resize between steps.
     var entryHeight by rememberSaveable { mutableFloatStateOf(0f) }
-    BoxWithConstraints(contentAlignment = Alignment.Center) {
-        val titleWidth = maxWidth - WooPosIconSize.XLarge.value * 2
-        val titleHeight = pinSetupTitleHeight(titleWidth, chooseTitle, confirmTitle)
-        val statusLayout = pinSetupStatusLayout(maxWidth, STATUS_MIN_HEIGHT)
-        val title = when ((state as? Entry)?.page) {
-            Page.CHOOSE -> chooseTitle
-            Page.CONFIRM -> confirmTitle
-            null -> null
-        }
+    Box(contentAlignment = Alignment.Center) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState()),
+            modifier = Modifier.fillMaxWidth().then(
+                if (state is Entry) Modifier else Modifier.verticalScroll(rememberScrollState()),
+            ),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value),
         ) {
-            PINSetupHeader(state, onUIEvent, onClose, title, titleHeight)
+            PINSetupHeader(state, onUIEvent, onClose)
             when (state) {
-                is Entry -> PINEntry(
+                is Entry -> PINSetupEntryLayout(
                     entry = state,
+                    chooseTitle = chooseTitle,
+                    confirmTitle = confirmTitle,
+                    preferredKeySize = PIN_PAD_TABLET_KEY_SIZE,
+                    minimumStatusHeight = STATUS_MIN_HEIGHT,
                     onUIEvent = onUIEvent,
-                    keySize = PIN_PAD_TABLET_KEY_SIZE,
-                    statusLayout = statusLayout,
-                    spacing = WooPosSpacing.Large.value,
-                    modifier = Modifier.onSizeChanged { entryHeight = with(density) { it.height.toDp().value } },
+                    modifier = Modifier.weight(1f, fill = false).onSizeChanged {
+                        entryHeight = with(density) { it.height.toDp().value }
+                    },
                 )
                 is Saving, AccessUnavailable -> Spacer(Modifier.height(entryHeight.dp))
-                is Saved -> PINSetupSaved(state.role, onContinue = onClose, minHeight = entryHeight.dp)
+                is Saved -> PINSetupSaved(
+                    state.role,
+                    savedActionLabel,
+                    onContinue = onClose,
+                    minHeight = entryHeight.dp,
+                )
             }
         }
         if (state is Saving || state == AccessUnavailable) PINSetupProgress()
@@ -246,13 +294,11 @@ private fun PINSetupHeader(
     state: WooPosSettingsSecurityPINSetupState,
     onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
     onClose: () -> Unit,
-    title: String? = null,
-    minTitleHeight: Dp = 0.dp,
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = maxOf(WooPosIconSize.XLarge.value, minTitleHeight)),
+            .heightIn(min = WooPosIconSize.XLarge.value),
     ) {
         if ((state as? Entry)?.page == Page.CONFIRM) {
             WooPosBackButton(
@@ -260,14 +306,6 @@ private fun PINSetupHeader(
                 contentDescription = stringResource(R.string.back),
                 enabled = state.canGoBack,
                 onClick = { onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.BackTapped) },
-            )
-        }
-        if (title != null) {
-            PINSetupTitle(
-                title = title,
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = WooPosIconSize.XLarge.value),
             )
         }
         if (state is Entry) {
@@ -298,28 +336,18 @@ private fun PINSetupTitle(title: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun PINEntry(
+private fun PINSetupKeypad(
     entry: Entry,
     onUIEvent: (WooPosSettingsSecurityPINSetupUIEvent) -> Unit,
     keySize: Dp,
-    statusLayout: PINSetupStatusLayout,
-    spacing: Dp,
-    modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(spacing),
-    ) {
-        PINSetupStatus(entry, statusLayout)
-        WooPosPINPad(
-            enteredDigits = entry.enteredDigits,
-            enabled = entry.canEnterDigits,
-            onDigit = { onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DigitTapped(it)) },
-            onDelete = { onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DeleteTapped) },
-            keySize = keySize,
-        )
-    }
+    WooPosPINPad(
+        enteredDigits = entry.enteredDigits,
+        enabled = entry.canEnterDigits,
+        onDigit = { onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DigitTapped(it)) },
+        onDelete = { onUIEvent(WooPosSettingsSecurityPINSetupUIEvent.DeleteTapped) },
+        keySize = keySize,
+    )
 }
 
 @Composable
@@ -433,7 +461,7 @@ private val Error.messageRes: Int
     }
 
 @Composable
-private fun PINSetupSaved(role: WooPosLocalRole, onContinue: () -> Unit, minHeight: Dp) {
+private fun PINSetupSaved(role: WooPosLocalRole, actionLabel: String, onContinue: () -> Unit, minHeight: Dp) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -449,7 +477,7 @@ private fun PINSetupSaved(role: WooPosLocalRole, onContinue: () -> Unit, minHeig
                 .semantics { liveRegion = LiveRegionMode.Polite }
         )
         WooPosButton(
-            text = stringResource(R.string.continue_button),
+            text = actionLabel,
             onClick = onContinue,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -518,6 +546,7 @@ private fun PINSetupDialogPreview(state: WooPosSettingsSecurityPINSetupState) {
             isVisible = true,
             onUIEvent = {},
             onClose = {},
+            savedActionLabel = stringResource(R.string.continue_button),
         )
     }
 }
@@ -538,10 +567,8 @@ private const val PAGE_MILLIS = 300
 private const val PAGE_TRAVEL = 1.27f
 private const val MESSAGE_FADE_MILLIS = 120
 private const val MISMATCH_MESSAGE_DELAY_MILLIS = 500L
-private const val KEYPAD_ROWS = 4
 private val DIALOG_MAX_WIDTH = 520.dp
 private val STATUS_MIN_HEIGHT = 84.dp
-private val PHONE_MIN_KEY_SIZE = 48.dp
 private val PHONE_COMPACT_STATUS_HEIGHT = 28.dp
 private val PHONE_STATUS_HEIGHT = 48.dp
 private val DOT_TRACK_PADDING = 10.dp
