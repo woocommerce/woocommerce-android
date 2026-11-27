@@ -33,8 +33,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -89,8 +91,11 @@ fun WooPosTotalsScreen(
     modifier: Modifier = Modifier,
     viewModel: WooPosTotalsViewModel = hiltViewModel(),
     onPhoneBack: (() -> Unit)? = null,
+    isLeaving: Boolean = false,
 ) {
-    val state = viewModel.state.collectAsState().value
+    val liveState = viewModel.state.collectAsState().value
+    var state by remember { mutableStateOf(liveState) }
+    if (!isLeaving) state = liveState
     val printReceiptButtonState by viewModel.printReceiptButtonState.collectAsState()
     val onUIEvent = rememberUpdatedState(viewModel::onUIEvent)
     val fineLocationPermissionLauncher = rememberLauncherForActivityResult(
