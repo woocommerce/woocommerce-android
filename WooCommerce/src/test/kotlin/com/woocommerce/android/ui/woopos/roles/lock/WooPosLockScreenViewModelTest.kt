@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.roles.lock
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.roles.WooPosCapability
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -34,7 +35,7 @@ class WooPosLockScreenViewModelTest {
         // THEN
         assertThat(viewModel.state.value.isLocked).isTrue()
         assertThat(viewModel.state.value.canEnterPIN).isFalse()
-        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Initializing)
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosPINEntryStatus.Initializing)
 
         // WHEN
         fixture.pinReadGate?.complete(Unit)
@@ -51,7 +52,7 @@ class WooPosLockScreenViewModelTest {
             pinReadGate = CompletableDeferred()
         }
         val (viewModel, _) = viewModel(fixture)
-        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Initializing)
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosPINEntryStatus.Initializing)
         viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(1))
         assertThat(viewModel.state.value.enteredDigits).isZero()
 
@@ -61,7 +62,7 @@ class WooPosLockScreenViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value.isLocked).isTrue()
-        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Idle)
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosPINEntryStatus.Idle)
         assertThat(viewModel.state.value.canEnterPIN).isTrue()
     }
 
@@ -73,7 +74,7 @@ class WooPosLockScreenViewModelTest {
             pinReadGate = CompletableDeferred()
         }
         val (viewModel, _) = viewModel(fixture)
-        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Initializing)
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosPINEntryStatus.Initializing)
 
         // WHEN
         fixture.pinReadGate?.complete(Unit)
@@ -81,7 +82,7 @@ class WooPosLockScreenViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value.isLocked).isTrue()
-        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosPINEntryStatus.StorageUnavailable)
         assertThat(viewModel.state.value.canEnterPIN).isFalse()
     }
 
@@ -104,7 +105,7 @@ class WooPosLockScreenViewModelTest {
         repeat(5) {
             repeat(4) { viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(0)) }
         }
-        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Wait(30))
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosPINEntryStatus.Wait(30))
 
         // WHEN
         val readsBeforeTick = fixture.attemptReads
@@ -117,7 +118,7 @@ class WooPosLockScreenViewModelTest {
         assertThat(fixture.attemptReads).isEqualTo(readsBeforeTick + 1)
 
         // THEN
-        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Wait(29))
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosPINEntryStatus.Wait(29))
         assertThat(viewModel.state.value.isLocked).isTrue()
 
         // WHEN
@@ -126,7 +127,7 @@ class WooPosLockScreenViewModelTest {
         runCurrent()
 
         // THEN
-        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Idle)
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosPINEntryStatus.Idle)
         assertThat(viewModel.state.value.canEnterPIN).isTrue()
     }
 
@@ -158,12 +159,12 @@ class WooPosLockScreenViewModelTest {
             // THEN
             assertThat(viewModel.state.value.isLocked).isTrue()
             assertThat(session.state.value.activeRole).isNull()
-            assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Wait(30))
+            assertThat(viewModel.state.value.status).isEqualTo(WooPosPINEntryStatus.Wait(30))
             assertThat(viewModel.state.value.canEnterPIN).isFalse()
             repeat(4) { viewModel.onUIEvent(WooPosLockScreenUIEvent.DigitTapped(0)) }
             assertThat(viewModel.state.value.enteredDigits).isZero()
             assertThat(fixture.records).isEqualTo(attempts)
-            assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Wait(30))
+            assertThat(viewModel.state.value.status).isEqualTo(WooPosPINEntryStatus.Wait(30))
 
             // WHEN
             fixture.elapsed += 30_000
@@ -171,7 +172,7 @@ class WooPosLockScreenViewModelTest {
             runCurrent()
 
             // THEN
-            assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Idle)
+            assertThat(viewModel.state.value.status).isEqualTo(WooPosPINEntryStatus.Idle)
             assertThat(viewModel.state.value.canEnterPIN).isTrue()
         }
 
@@ -230,7 +231,7 @@ class WooPosLockScreenViewModelTest {
         runCurrent()
 
         // THEN
-        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Checking)
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosPINEntryStatus.Checking)
         assertThat(viewModel.state.value.enteredDigits).isEqualTo(4)
         assertThat(viewModel.state.value.canEnterPIN).isFalse()
         assertThat(fixture.pinReads).isEqualTo(readsBeforeSubmission + 1)
@@ -240,7 +241,7 @@ class WooPosLockScreenViewModelTest {
         runCurrent()
 
         // THEN
-        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Incorrect)
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosPINEntryStatus.Incorrect)
         assertThat(viewModel.state.value.enteredDigits).isZero()
         assertThat(viewModel.state.value.canEnterPIN).isTrue()
         assertThat(fixture.records.getValue(1).failures).isEqualTo(1)
@@ -261,7 +262,7 @@ class WooPosLockScreenViewModelTest {
         viewModel.onUIEvent(WooPosLockScreenUIEvent.DeleteTapped)
 
         // THEN
-        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.Checking)
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosPINEntryStatus.Checking)
         assertThat(viewModel.state.value.enteredDigits).isEqualTo(4)
         gate.complete(Unit)
         runCurrent()
@@ -337,7 +338,7 @@ class WooPosLockScreenViewModelTest {
         // THEN
         assertThat(session.state.value.activeRole).isNull()
         assertThat(viewModel.state.value.isLocked).isTrue()
-        assertThat(viewModel.state.value.status).isEqualTo(WooPosLockScreenState.Status.StorageUnavailable)
+        assertThat(viewModel.state.value.status).isEqualTo(WooPosPINEntryStatus.StorageUnavailable)
     }
 
     private fun viewModel(

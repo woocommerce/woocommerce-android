@@ -102,13 +102,11 @@ private fun WooPosHomePhoneContent(
         cartState = cartState,
     )
 
-    val targetScreen = phoneScreenFor(state.screenPositionState)
-
     Box(
         modifier = Modifier.wooPosHomeRootContainer(state, onHomeUIEvent)
     ) {
         AnimatedContent(
-            targetState = targetScreen,
+            targetState = phoneScreenFor(state.screenPositionState),
             transitionSpec = { screenTransitionFor(initialState, targetState) },
             modifier = Modifier.fillMaxSize(),
             label = "phone_screen_transition",
@@ -126,7 +124,6 @@ private fun WooPosHomePhoneContent(
                     WooPosPhoneTotalsScreen(
                         onBack = { onHomeUIEvent(WooPosHomeUIEvent.PhoneBackFromCheckoutClicked) },
                         viewModel = totalsViewModel,
-                        isLeaving = screen != targetScreen,
                     )
             }
         }

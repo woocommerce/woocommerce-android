@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-11-03 10:57:23+0000
+Translation-Revision-Date: 2026-11-17 09:57:45+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_payment_status_check_failed_message">Kami tidak dapat memeriksa status pembayaran. Periksa koneksi internet Anda dan coba lagi.</string>
+    <string name="woopos_totals_payment_not_confirmed_check_status">Periksa status pembayaran</string>
+    <string name="woopos_totals_payment_not_confirmed_message">Kami tidak dapat mengonfirmasi pembayaran ini, jadi mungkin tagihan sudah dipotong dari kartu Anda. Periksa status pembayaran sebelum memilih metode pembayaran lain.</string>
+    <string name="woopos_totals_payment_not_confirmed_title">Pembayaran tidak terkonfirmasi</string>
+    <string name="woopos_lock_digits_entered">%1$d dari %2$d digit yang dimasukkan</string>
+    <string name="woopos_lock_pin_entry">Entri PIN</string>
+    <string name="woopos_lock_delete_digit">Hapus</string>
+    <string name="woopos_lock_enter_pin">Masukkan PIN untuk membuka kunci POS</string>
+    <string name="woopos_lock_pos">Kunci POS</string>
+    <string name="woopos_custom_amount_edit_amount_title">Edit jumlah</string>
+    <string name="woopos_custom_amount_name_optional">Nama (opsional)</string>
+    <string name="woopos_custom_amount_details_title">Detail jumlah kustom</string>
+    <string name="ai_support_chat_ai_disclosure">Anda sedang mengobrol dengan AI dari Dukungan Woo.</string>
+    <string name="card_reader_payment_failed_capture_outcome_unknown">Tagihan mungkin sudah dipotong dari kartu Anda. Coba lagi untuk memeriksa status pembayaran.</string>
+    <string name="card_reader_payment_not_confirmed_header">Pembayaran tidak terkonfirmasi</string>
+    <string name="barcode_scanning_hardware_scanner_wrong_value">Kode yang dipindai tidak cocok. Setel tata letak keyboard pemindai agar sama dengan perangkat Anda.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_instruction">Pindai barcode dengan pemindai.</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_success">Pemindai Anda berfungsi</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_title">Uji pemindai Anda</string>
+    <string name="barcode_scanning_hardware_scanner_info_usage">Pindai di layar Pesanan dan Produk, atau saat membuat pesanan. Anda tidak perlu membuka kamera.</string>
+    <string name="barcode_scanning_hardware_scanner_info_setup">Pasangkan pemindai di pengaturan Bluetooth perangkat Anda, atau hubungkan pemindai dengan USB. Atur ke mode keyboard (HID).</string>
+    <string name="barcode_scanning_hardware_scanner_info_title">Gunakan pemindai Bluetooth atau USB</string>
+    <string name="barcode_scanning_or">atau</string>
+    <string name="barcode_scanning_hardware_scanner_info_link">Gunakan pemindai eksternal</string>
+    <string name="login_site_credentials_web_authorization_site_mismatch">Halaman persetujuan ini milik situs lain. Demi keamanan Anda, kami menghentikan proses login.</string>
+    <string name="login_store_suggestion_unavailable">Kami tidak dapat mengonfirmasi toko ini dari tautan. Masukkan alamat toko Anda untuk melanjutkan.</string>
+    <string name="login_store_suggestion_redirected">Alamat ini mengarah ke situs yang berbeda. Hanya lanjutkan jika itu adalah toko Anda.</string>
+    <string name="login_store_suggestion_use_different_store">Gunakan toko lain</string>
+    <string name="login_store_suggestion_log_in">Login ke toko ini</string>
+    <string name="login_store_suggestion_description">Hanya lanjutkan jika ini adalah alamat toko Anda.</string>
+    <string name="login_store_suggestion_title">Login ke toko ini?</string>
     <string name="woo_shipping_labels_service_status_severity_info">Informasi</string>
     <string name="woo_shipping_labels_service_status_severity_warning">Peringatan</string>
     <string name="woo_shipping_labels_service_status_severity_error">Error</string>
@@ -295,7 +326,6 @@ Language: id
     <string name="login_qr_endpoint_missing_title">Toko ini tidak dapat menyelesaikan login QR</string>
     <string name="login_qr_scanner_authenticating">Sedang login…</string>
     <string name="login_qr_scanner_visit_url">Kunjungi %1$s</string>
-    <string name="login_qr_scanner_hint">Tengahkan kode QR dalam bingkai</string>
     <string name="login_qr_prologue_camera_blocked_settings_button">Buka Pengaturan Izin</string>
     <string name="login_qr_prologue_camera_blocked_body">Aktifkan akses kamera di Pengaturan atau batalkan untuk login dengan alamat toko Anda.</string>
     <string name="login_qr_prologue_camera_blocked_title">Akses kamera dinonaktifkan</string>
@@ -335,20 +365,14 @@ Language: id
     <string name="woopos_mark_order_as_paid_note_hint">mis. Transfer bank dari Maria, ref 4827</string>
     <string name="woopos_mark_order_as_paid_message">Ini akan menandai pesanan %1$s selesai. Hanya gunakan ini jika Anda telah menerima pembayaran dengan cara lain.</string>
     <string name="woopos_mark_order_as_paid_title">Tandai pesanan sebagai dibayar?</string>
-    <string name="woopos_custom_amount_dialog_cancel">Batalkan</string>
     <string name="woopos_custom_amount_dialog_submit_edit">Perbarui jumlah kustom</string>
     <string name="woopos_custom_amount_dialog_submit_add">Tambahkan jumlah kustom</string>
     <string name="woopos_custom_amount_dialog_charge_taxes">Kenakan pajak</string>
     <string name="woopos_custom_amount_dialog_name_placeholder">Jumlah kustom</string>
     <string name="woopos_custom_amount_dialog_name_label">Nama</string>
     <string name="woopos_custom_amount_dialog_amount_label">Jumlah</string>
-    <string name="woopos_custom_amount_form_title">Jumlah kustom</string>
-    <string name="woopos_custom_amount_dialog_title_edit">Sunting jumlah kustom</string>
-    <string name="woopos_custom_amount_dialog_title_add">Tambahkan jumlah kustom</string>
     <string name="woopos_custom_amount_entry_subtitle">Tambahkan biaya satu kali</string>
     <string name="woopos_custom_amount_entry_title">Jumlah kustom</string>
-    <string name="woopos_cart_custom_amount_menu_remove">Hapus</string>
-    <string name="woopos_cart_custom_amount_menu_edit">Sunting</string>
     <string name="woopos_cart_custom_amount_includes_tax">Termasuk pajak</string>
     <string name="woopos_cart_custom_amount_edit_content_description">Sunting %s</string>
     <string name="woopos_cart_item_custom_amount_content_description">Jumlah kustom %1$s, %2$s</string>
@@ -1845,8 +1869,8 @@ Language: id
     <string name="blaze_campaign_budget_update_button">Perbarui</string>
     <string name="blaze_campaign_budget_edit_duration_button">Edit</string>
     <string name="blaze_campaign_budget_reach_forecast">Estimasi orang yang dijangkau per hari</string>
-    <string name="blaze_campaign_budget_impressions_info">Tayangan menunjukkan frekuensi iklan ditampilkan kepada calon pembeli.\n\n\n        Meskipun jumlah persisnya tidak dapat dijamin karena fluktuasi lalu lintas online dan perilaku pengguna, kami berupaya agar tayangan aktual iklan Anda sedekat mungkin dengan jumlah yang Anda targetkan.\n\n\n        Jangan lupa, tayangan berhubungan dengan visibilitas, bukan tindakan yang dilakukan pembaca.</string>
     <string name="blaze_campaign_budget_days_duration">selama %1$s hari</string>
+    <string name="blaze_campaign_budget_impressions_info">Tayangan menunjukkan frekuensi iklan ditampilkan kepada calon pembeli.\n\n\n        Meskipun jumlah persisnya tidak dapat dijamin karena fluktuasi lalu lintas online dan perilaku pengguna, kami berupaya agar tayangan aktual iklan Anda sedekat mungkin dengan jumlah yang Anda targetkan.\n\n\n        Jangan lupa, tayangan berhubungan dengan visibilitas, bukan tindakan yang dilakukan pembaca.</string>
     <string name="blaze_campaign_budget_toolbar_title">Tentukan anggaran</string>
     <string name="blaze_campaign_preview_target_default_value">Semua</string>
     <string name="blaze_campaign_preview_days_duration">%1$s hari sejak %2$s</string>
@@ -2041,7 +2065,7 @@ Language: id
     <string name="blaze_campaign_status_canceled">Dibatalkan</string>
     <string name="blaze_campaign_status_scheduled">Terjadwal</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find">Pilih Ketuk untuk Bayar dari opsi Terima Pembayaran di\nDetail Pesanan atau Menu &gt; Pembayaran.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Coba lakukan pembayaran %s dengan kartu debit atau kredit Anda.\nDana akan dikembalikan saat selesai.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Coba lakukan pembayaran %s riil dengan kartu debit atau kredit Anda.\nDana akan dikembalikan saat selesai; biaya pemrosesan berlaku.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">Mudah, aman, privasi terjaga.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Terima semua jenis pembayaran fisik, langsung\ndari ponsel. Tidak perlu alat tambahan.</string>
     <string name="blaze_campaign_status_rejected">Ditolak</string>

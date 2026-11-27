@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListProductType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSourceType
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ReceiptPrinterSetupSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundFlow
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundPreconditionReason
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncErrorType
@@ -41,6 +42,14 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val errorDescription: String?,
         ) : Error() {
             override val name: String = "order_creation_failed"
+        }
+
+        data class ReceiptPrintFailed(
+            override val errorContext: KClass<out Any>,
+            override val errorType: String?,
+            override val errorDescription: String?,
+        ) : Error() {
+            override val name: String = "receipt_print_failed"
         }
     }
 
@@ -217,6 +226,38 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                     )
                 )
             }
+        }
+
+        data object ReceiptPrintTapped : Event() {
+            override val name: String = "receipt_print_tapped"
+        }
+
+        data object ReceiptPrintSuccess : Event() {
+            override val name: String = "receipt_print_success"
+        }
+
+        data object ReceiptPrintRetryTapped : Event() {
+            override val name: String = "receipt_print_retry_tapped"
+        }
+
+        data class ReceiptPrinterSetupStarted(val source: ReceiptPrinterSetupSource) : Event() {
+            override val name: String = "receipt_printer_setup_started"
+
+            init {
+                addProperties(mapOf(ReceiptPrinterSetupSource.SOURCE to source.value))
+            }
+        }
+
+        data class ReceiptPrinterConnected(val source: ReceiptPrinterSetupSource) : Event() {
+            override val name: String = "receipt_printer_connected"
+
+            init {
+                addProperties(mapOf(ReceiptPrinterSetupSource.SOURCE to source.value))
+            }
+        }
+
+        data object ReceiptPrinterDisconnectTapped : Event() {
+            override val name: String = "receipt_printer_disconnect_tapped"
         }
 
         data class TabVisibilityChecked(val isVisible: Result<Boolean>) : Event() {

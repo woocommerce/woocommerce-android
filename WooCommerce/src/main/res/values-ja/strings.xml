@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-11-04 09:56:17+0000
+Translation-Revision-Date: 2026-11-17 09:58:39+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_payment_status_check_failed_message">支払い状況を確認できませんでした。 インターネット接続を確認して、もう一度お試しください。</string>
+    <string name="woopos_totals_payment_not_confirmed_check_status">支払いステータスを確認</string>
+    <string name="woopos_totals_payment_not_confirmed_message">この支払いを確認できなかったため、すでにカードに請求が行われている可能性があります。 別の支払い方法を選択する前に、支払いステータスを確認してください。</string>
+    <string name="woopos_totals_payment_not_confirmed_title">支払いが未確認</string>
+    <string name="woopos_lock_digits_entered">%1$d/%2$d個の数字が入力済み</string>
+    <string name="woopos_lock_pin_entry">PIN 入力</string>
+    <string name="woopos_lock_delete_digit">削除</string>
+    <string name="woopos_lock_enter_pin">PIN を入力して POS のロックを解除</string>
+    <string name="woopos_lock_pos">POS をロック</string>
+    <string name="woopos_custom_amount_edit_amount_title">金額を編集</string>
+    <string name="woopos_custom_amount_name_optional">名前 (オプション)</string>
+    <string name="woopos_custom_amount_details_title">カスタム金額の詳細</string>
+    <string name="ai_support_chat_ai_disclosure">Woo サポートの AI とチャットしています。</string>
+    <string name="card_reader_payment_failed_capture_outcome_unknown">すでにカードに請求が行われている可能性があります。 支払いステータスを確認するには、もう一度お試しください。</string>
+    <string name="card_reader_payment_not_confirmed_header">支払いが未確認</string>
+    <string name="barcode_scanning_hardware_scanner_wrong_value">スキャンしたコードが一致しません。 スキャナーを端末と同じキーボードレイアウトに設定します。</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_instruction">スキャナーでこのバーコードをスキャンします。</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_success">スキャナーは動作しています</string>
+    <string name="barcode_scanning_hardware_scanner_info_test_title">スキャナーをテスト</string>
+    <string name="barcode_scanning_hardware_scanner_info_usage">「注文」と「商品」の画面で、または注文の作成中に、スキャンします。 カメラを開く必要はありません。</string>
+    <string name="barcode_scanning_hardware_scanner_info_setup">端末の Bluetooth 設定でスキャナーをペアリングするか、USB で接続します。 キーボード (HID) モードに設定します。</string>
+    <string name="barcode_scanning_hardware_scanner_info_title">Bluetooth または USB スキャナーを使用</string>
+    <string name="barcode_scanning_or">または</string>
+    <string name="barcode_scanning_hardware_scanner_info_link">外部スキャナーを使用</string>
+    <string name="login_site_credentials_web_authorization_site_mismatch">この承認ページは別のサイトに属しています。 安全のため、ログインを停止しました。</string>
+    <string name="login_store_suggestion_unavailable">リンクからこのストアを確認できませんでした。 続行するには、ストアのアドレスを入力してください。</string>
+    <string name="login_store_suggestion_redirected">このアドレスは別のサイトにつながります。 あなたのストアの場合のみ続行してください。</string>
+    <string name="login_store_suggestion_use_different_store">別のストアを使用</string>
+    <string name="login_store_suggestion_log_in">このストアにログイン</string>
+    <string name="login_store_suggestion_description">これがあなたのストアのアドレスである場合にのみ続行してください。</string>
+    <string name="login_store_suggestion_title">このストアにログインしますか ?</string>
     <string name="woo_shipping_labels_service_status_severity_info">情報</string>
     <string name="woo_shipping_labels_service_status_severity_warning">警告</string>
     <string name="woo_shipping_labels_service_status_severity_error">エラー</string>
@@ -295,7 +326,6 @@ Language: ja_JP
     <string name="login_qr_endpoint_missing_title">このストアでは QR コードでのログインを完了できません</string>
     <string name="login_qr_scanner_authenticating">ログインしています…</string>
     <string name="login_qr_scanner_visit_url">%1$s へ移動</string>
-    <string name="login_qr_scanner_hint">QR コードをフレームの中央に配置します</string>
     <string name="login_qr_prologue_camera_blocked_settings_button">パーミッション設定を開く</string>
     <string name="login_qr_prologue_camera_blocked_body">設定でカメラへのアクセスを有効にするか、キャンセルしてストアアドレスでログインしてください。</string>
     <string name="login_qr_prologue_camera_blocked_title">カメラへのアクセスが無効になっています</string>
@@ -335,20 +365,14 @@ Language: ja_JP
     <string name="woopos_mark_order_as_paid_note_hint">例: Mariaからの銀行振込 (ref 4827)</string>
     <string name="woopos_mark_order_as_paid_message">これにより、%1$s の注文が完了としてマークされます。 別の方法ですでに支払いを受領している場合にのみ、これを使用してください。</string>
     <string name="woopos_mark_order_as_paid_title">注文を支払い済みとしてマークしますか ?</string>
-    <string name="woopos_custom_amount_dialog_cancel">キャンセル</string>
     <string name="woopos_custom_amount_dialog_submit_edit">カスタム金額を更新</string>
     <string name="woopos_custom_amount_dialog_submit_add">カスタム金額を追加</string>
     <string name="woopos_custom_amount_dialog_charge_taxes">税金を請求</string>
     <string name="woopos_custom_amount_dialog_name_placeholder">カスタム金額</string>
     <string name="woopos_custom_amount_dialog_name_label">名前</string>
     <string name="woopos_custom_amount_dialog_amount_label">合計</string>
-    <string name="woopos_custom_amount_form_title">カスタム金額</string>
-    <string name="woopos_custom_amount_dialog_title_edit">カスタム金額を編集</string>
-    <string name="woopos_custom_amount_dialog_title_add">カスタム金額を追加</string>
     <string name="woopos_custom_amount_entry_subtitle">1回限りの料金を追加</string>
     <string name="woopos_custom_amount_entry_title">カスタム金額</string>
-    <string name="woopos_cart_custom_amount_menu_remove">削除</string>
-    <string name="woopos_cart_custom_amount_menu_edit">編集</string>
     <string name="woopos_cart_custom_amount_includes_tax">税込み</string>
     <string name="woopos_cart_custom_amount_edit_content_description">%s を編集</string>
     <string name="woopos_cart_item_custom_amount_content_description">カスタム金額%1$s、%2$s</string>
@@ -2041,7 +2065,7 @@ Language: ja_JP
     <string name="blaze_campaign_status_canceled">キャンセル済み</string>
     <string name="blaze_campaign_status_scheduled">予約済み</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find">「支払いを受け取る」オプションから「Tap to Pay」を選択するには、\n「注文の詳細」または「メニュー」&gt;「支払い」の順に移動します。</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">デビットカードまたはクレジットカードで %s の支払いを試します。\n完了したら返金されます。</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">デビットカードまたはクレジットカードで %s の実際の支払いを試します。\n完了したら返金されます。手数料が適用されます。</string>
     <string name="card_reader_tap_to_pay_explanation_easy">簡単、安全でプライバシーは保護されます。</string>
     <string name="card_reader_tap_to_pay_explanation_ready">あらゆる種類のオフラインでの支払いを\nスマートフォンで受け取れます。 追加のハードウェアは不要です。</string>
     <string name="blaze_campaign_status_rejected">却下</string>

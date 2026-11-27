@@ -1,10 +1,7 @@
 package com.woocommerce.android.ui.woopos.roles.lock
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,10 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -30,14 +24,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.MotionDurationScale
@@ -46,26 +37,18 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
@@ -81,14 +64,14 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
-import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDotShake
-import com.woocommerce.android.ui.woopos.common.pin.WooPosPINDots
+import com.woocommerce.android.ui.woopos.common.pin.PIN_PAD_PHONE_KEY_SIZE
+import com.woocommerce.android.ui.woopos.common.pin.PIN_PAD_TABLET_KEY_SIZE
+import com.woocommerce.android.ui.woopos.common.pin.WooPosPINEntryFeedback
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPad
+import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPadLayout
 import com.woocommerce.android.ui.woopos.common.pin.WooPosPINPadStyle
-import com.woocommerce.android.ui.woopos.roles.lock.WooPosLockScreenState.Status
-import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINHash
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import com.woocommerce.android.ui.woopos.common.pin.measureWooPosPINStatusHeight
+import com.woocommerce.android.ui.woopos.roles.pin.WooPosPINEntryStatus
 
 @Composable
 fun WooPosLockScreenDialog(
@@ -122,7 +105,7 @@ fun WooPosLockScreen(
     onUIEvent: (WooPosLockScreenUIEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (state.status == Status.Initializing) {
+    if (state.status == WooPosPINEntryStatus.Initializing) {
         WooPosLoadingScreen(
             modifier = modifier
                 .background(MaterialTheme.colorScheme.surface)
@@ -145,81 +128,87 @@ private fun BoxWithConstraintsScope.LockContent(
     state: WooPosLockScreenState,
     onUIEvent: (WooPosLockScreenUIEvent) -> Unit,
 ) {
-    val isCompactHeight = maxHeight < COMPACT_HEIGHT && maxWidth > maxHeight
+    val isCompactHeight = maxHeight < COMPACT_HEIGHT
     val metrics = lockMetrics(isCompactHeight)
     val layout = calculateLockLayout(metrics, isCompactHeight)
     val intro = rememberLockIntro(animates = layout.showsIllustration)
-    val feedback = rememberLockPINFeedback(state)
-    val showsBlockedPINPad = state.isLocked &&
-        (state.status is Status.Wait || state.status == Status.StorageUnavailable)
+    val showsBlockedPINPad = state.isLocked && state.status.showsBlockedPINPad
     val contentModifier = Modifier.graphicsLayer {
         alpha = intro.contentAlpha
         translationY = intro.travel().y
     }
 
+    val title = stringResource(R.string.woopos_lock_enter_pin)
     Box(
         Modifier
             .fillMaxSize()
             .onGloballyPositioned { intro.animation.viewport = it }
-            .then(if (intro.isActive) Modifier.clearAndSetSemantics {} else Modifier)
-            .verticalScroll(rememberScrollState(), enabled = !intro.isActive)
+            .then(if (intro.isActive) Modifier.clearAndSetSemantics {} else Modifier),
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = this@LockContent.maxHeight)
+        WooPosPINPadLayout(
+            preferredKeySize = layout.keySize,
+            preferredSpacing = metrics.sectionSpacing,
+            modifier = Modifier.fillMaxSize()
                 .padding(horizontal = metrics.horizontalPadding, vertical = layout.verticalPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(metrics.sectionSpacing, Alignment.CenterVertically),
-        ) {
-            Column(Modifier.widthIn(max = CONTENT_MAX_WIDTH), horizontalAlignment = Alignment.CenterHorizontally) {
-                if (layout.showsIllustration) {
-                    Box(
-                        Modifier
-                            .size(metrics.illustrationSize)
-                            .onGloballyPositioned { intro.animation.slot = it },
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        LockIllustration(
-                            shackleAngle = { intro.shackleAngle },
-                            modifier = Modifier.graphicsLayer {
-                                alpha = intro.illustrationAlpha
-                                val travel = intro.travel()
-                                translationX = travel.x
-                                translationY = travel.y
-                            },
+            messageHeight = { _, spacing ->
+                layout.titleHeight + spacing + layout.statusHeight +
+                    if (layout.showsIllustration) metrics.illustrationSize + spacing else 0.dp
+            },
+            message = { spacing ->
+                Column(
+                    Modifier.widthIn(max = CONTENT_MAX_WIDTH).heightIn(max = maxHeight),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(spacing),
+                ) {
+                    if (layout.showsIllustration) {
+                        Box(
+                            Modifier.size(metrics.illustrationSize)
+                                .onGloballyPositioned { intro.animation.slot = it },
                         )
                     }
-                    Spacer(Modifier.height(metrics.sectionSpacing))
+                    Column(
+                        modifier = Modifier.weight(1f, fill = false).then(contentModifier)
+                            .verticalScroll(rememberScrollState()),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        WooPosText(
+                            text = title,
+                            style = WooPosTypography.BodyXLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.semantics { heading() },
+                        )
+                    }
+                    Box(contentModifier) {
+                        WooPosPINEntryFeedback(state.status, state.enteredDigits, layout.statusHeight)
+                    }
                 }
-                WooPosText(
-                    text = stringResource(R.string.woopos_lock_enter_pin),
-                    style = WooPosTypography.BodyXLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .semantics { heading() }
-                        .then(contentModifier),
-                )
-            }
-            Column(
-                modifier = Modifier
-                    .widthIn(max = CONTENT_MAX_WIDTH)
-                    .then(contentModifier),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(metrics.sectionSpacing),
-            ) {
-                LockStatus(state, feedback, statusHeight = layout.statusHeight)
+            },
+            keypad = { keySize ->
                 // TODO WOOMOB-4606: Show Forgot PIN once PIN recovery is available.
                 WooPosPINPad(
                     enteredDigits = state.enteredDigits,
                     enabled = state.canEnterPIN && !intro.isActive,
                     onDigit = { onUIEvent(WooPosLockScreenUIEvent.DigitTapped(it)) },
                     onDelete = { onUIEvent(WooPosLockScreenUIEvent.DeleteTapped) },
-                    keySize = layout.keySize,
+                    keySize = keySize,
                     style = if (showsBlockedPINPad) WooPosPINPadStyle.BLOCKED else WooPosPINPadStyle.STANDARD,
+                    modifier = contentModifier,
                 )
+            },
+        )
+        if (layout.showsIllustration) {
+            Box(
+                Modifier.size(metrics.illustrationSize).graphicsLayer {
+                    val position = intro.illustrationPosition()
+                    alpha = if (position == null) 0f else 1f
+                    translationX = position?.x ?: 0f
+                    translationY = position?.y ?: 0f
+                },
+                contentAlignment = Alignment.Center,
+            ) {
+                LockIllustration(shackleAngle = { intro.shackleAngle })
             }
         }
     }
@@ -227,7 +216,7 @@ private fun BoxWithConstraintsScope.LockContent(
 
 @Composable
 private fun lockMetrics(isCompactHeight: Boolean) = WooPosLockScreenLayout.Metrics(
-    horizontalPadding = WooPosSpacing.XXLarge.value,
+    horizontalPadding = if (isCompactHeight) WooPosSpacing.Small.value else WooPosSpacing.XXLarge.value,
     verticalPadding = if (isCompactHeight) WooPosSpacing.Small.value else WooPosSpacing.XXLarge.value,
     reducedVerticalPadding = if (isCompactHeight) WooPosSpacing.Small.value else WooPosSpacing.Medium.value,
     sectionSpacing = if (isCompactHeight) WooPosSpacing.Medium.value else WooPosSpacing.XLarge.value,
@@ -243,25 +232,20 @@ private fun BoxWithConstraintsScope.calculateLockLayout(
     val density = LocalDensity.current
     val title = stringResource(R.string.woopos_lock_enter_pin)
     val titleStyle = WooPosTypography.BodyXLarge.style.copy(fontWeight = FontWeight.Bold)
-    val statusStyle = WooPosTypography.BodySmall.style
-    val statusMessages = listOf(
-        stringResource(
-            R.string.woopos_lock_wait,
-            String.format(LocalConfiguration.current.locales[0], "%d:%02d", LONGEST_WAIT_MINUTES, LONGEST_WAIT_SECONDS),
-        ),
-        stringResource(R.string.woopos_lock_incorrect),
-        stringResource(R.string.woopos_lock_unavailable),
-    )
     val textMeasurer = rememberTextMeasurer()
     val contentWidth = maxWidth - metrics.horizontalPadding * 2
     val textWidth = min(CONTENT_MAX_WIDTH, contentWidth)
     val textConstraints = Constraints(maxWidth = with(density) { textWidth.roundToPx() }.coerceAtLeast(0))
-    fun measure(text: String, style: TextStyle) =
-        with(density) { textMeasurer.measure(text, style, constraints = textConstraints).size.height.toDp() }
-    val titleHeight = measure(title, titleStyle)
+    val titleHeight = with(density) {
+        textMeasurer.measure(title, titleStyle, constraints = textConstraints).size.height.toDp()
+    }
     // Reserves the longest status message so the keys keep their size when it replaces the dots.
-    val statusHeight = statusMessages.maxOf { measure(it, statusStyle) }.coerceAtLeast(STATUS_ROW_HEIGHT)
-    val preferredKeySize = if (currentWooPosBreakpoint() == WooPosBreakpoint.Phone) PHONE_KEY_SIZE else KEY_SIZE
+    val statusHeight = measureWooPosPINStatusHeight(textMeasurer, textConstraints.maxWidth, STATUS_ROW_HEIGHT)
+    val preferredKeySize = if (currentWooPosBreakpoint() == WooPosBreakpoint.Phone) {
+        PIN_PAD_PHONE_KEY_SIZE
+    } else {
+        PIN_PAD_TABLET_KEY_SIZE
+    }
     return WooPosLockScreenLayout.calculate(
         viewport = DpSize(maxWidth, maxHeight),
         preferredKeySize = preferredKeySize,
@@ -283,9 +267,14 @@ private class WooPosLockIntroAnimation {
 private class WooPosLockIntro(val isActive: Boolean, val animation: WooPosLockIntroAnimation) {
     val shackleAngle: Float get() = if (isActive) animation.shackle.value else 0f
     val contentAlpha: Float get() = if (isActive) animation.reveal.value else 1f
-    val illustrationAlpha: Float get() = if (isActive && slotTravel() == null) 0f else 1f
 
     fun travel(): Offset = if (isActive) (slotTravel() ?: Offset.Zero) * (1f - animation.reveal.value) else Offset.Zero
+
+    fun illustrationPosition(): Offset? {
+        val viewport = animation.viewport?.takeIf { it.isAttached } ?: return null
+        val slot = animation.slot?.takeIf { it.isAttached } ?: return null
+        return viewport.localPositionOf(slot, Offset.Zero) + travel()
+    }
 
     private fun slotTravel(): Offset? {
         val viewport = animation.viewport?.takeIf { it.isAttached } ?: return null
@@ -340,102 +329,6 @@ private fun LockIllustration(shackleAngle: () -> Float, modifier: Modifier = Mod
     }
 }
 
-@Stable
-private class WooPosLockPINFeedback {
-    var heldDigits by mutableIntStateOf(0)
-    val shake = WooPosPINDotShake()
-}
-
-@Composable
-private fun rememberLockPINFeedback(state: WooPosLockScreenState): WooPosLockPINFeedback {
-    val feedback = remember { WooPosLockPINFeedback() }
-    val currentState by rememberUpdatedState(state)
-    LaunchedEffect(feedback) {
-        var previous = currentState
-        var shakeJob: Job? = null
-        snapshotFlow { currentState }.collect { current ->
-            val rejected = (current.status == Status.Incorrect || current.status is Status.Wait) &&
-                current.enteredDigits == 0 && previous.enteredDigits > 0
-            if (rejected) {
-                shakeJob?.cancel()
-                shakeJob = launch {
-                    try {
-                        feedback.heldDigits = WooPosPINHash.PIN_LENGTH
-                        feedback.shake.play()
-                    } finally {
-                        feedback.heldDigits = 0
-                    }
-                }
-            } else if (current.enteredDigits > 0 || !current.isLocked) {
-                shakeJob?.cancel()
-            }
-            previous = current
-        }
-    }
-    return feedback
-}
-
-private enum class WooPosLockMessage { INCORRECT, WAIT, UNAVAILABLE }
-
-@Composable
-private fun LockStatus(state: WooPosLockScreenState, feedback: WooPosLockPINFeedback, statusHeight: Dp) {
-    val message = if (feedback.heldDigits > 0) {
-        null
-    } else {
-        when (state.status) {
-            Status.Initializing, Status.Idle, Status.Checking -> null
-            Status.Incorrect -> if (state.enteredDigits == 0) WooPosLockMessage.INCORRECT else null
-            is Status.Wait -> WooPosLockMessage.WAIT
-            Status.StorageUnavailable -> WooPosLockMessage.UNAVAILABLE
-        }
-    }
-    val feedbackSpec = tween<Float>(FEEDBACK_MILLIS, easing = LinearOutSlowInEasing)
-    val dotsAlpha by animateFloatAsState(if (message == null) 1f else 0f, feedbackSpec, label = "lockDots")
-    Box(Modifier.heightIn(min = statusHeight), contentAlignment = Alignment.Center) {
-        // The dots stay composed under messages so the next digit still pops in.
-        WooPosPINDots(
-            enteredDigits = feedback.heldDigits.takeIf { it > 0 } ?: state.enteredDigits,
-            isHidden = message != null,
-            modifier = Modifier.graphicsLayer {
-                alpha = dotsAlpha
-                translationX = if (feedback.heldDigits > 0) feedback.shake.offset.toPx() else 0f
-            },
-        )
-        Crossfade(targetState = message, animationSpec = feedbackSpec, label = "lockStatus") { shown ->
-            if (shown != null) LockMessageText(shown, (state.status as? Status.Wait)?.remainingSeconds ?: 0L)
-        }
-    }
-}
-
-@Composable
-private fun LockMessageText(message: WooPosLockMessage, remainingSeconds: Long) {
-    val locale = LocalConfiguration.current.locales[0]
-    val text = when (message) {
-        WooPosLockMessage.INCORRECT -> AnnotatedString(stringResource(R.string.woopos_lock_incorrect))
-        WooPosLockMessage.UNAVAILABLE -> AnnotatedString(stringResource(R.string.woopos_lock_unavailable))
-        WooPosLockMessage.WAIT -> {
-            val minutes = remainingSeconds / SECONDS_PER_MINUTE
-            val seconds = remainingSeconds % SECONDS_PER_MINUTE
-            val duration = String.format(locale, "%d:%02d", minutes, seconds)
-            val full = stringResource(R.string.woopos_lock_wait, duration)
-            buildAnnotatedString {
-                append(full)
-                val start = full.indexOf(duration)
-                if (start >= 0) addStyle(SpanStyle(fontWeight = FontWeight.SemiBold), start, start + duration.length)
-            }
-        }
-    }
-    WooPosText(
-        text = text,
-        style = WooPosTypography.BodySmall,
-        color = MaterialTheme.colorScheme.error,
-        textAlign = TextAlign.Center,
-        modifier = Modifier
-            .widthIn(max = CONTENT_MAX_WIDTH)
-            .semantics { liveRegion = LiveRegionMode.Polite },
-    )
-}
-
 @WooPosPreview
 @Composable
 fun WooPosLockScreenPreview() {
@@ -449,7 +342,7 @@ fun WooPosLockScreenPreview() {
 fun WooPosLockScreenIncorrectPreview() {
     WooPosTheme {
         WooPosLockScreen(
-            state = WooPosLockScreenState(isLocked = true, status = Status.Incorrect),
+            state = WooPosLockScreenState(isLocked = true, status = WooPosPINEntryStatus.Incorrect),
             onUIEvent = {},
         )
     }
@@ -459,7 +352,10 @@ fun WooPosLockScreenIncorrectPreview() {
 @Composable
 fun WooPosLockScreenWaitPreview() {
     WooPosTheme {
-        WooPosLockScreen(state = WooPosLockScreenState(isLocked = true, status = Status.Wait(30)), onUIEvent = {})
+        WooPosLockScreen(
+            state = WooPosLockScreenState(isLocked = true, status = WooPosPINEntryStatus.Wait(30)),
+            onUIEvent = {},
+        )
     }
 }
 
@@ -468,7 +364,7 @@ fun WooPosLockScreenWaitPreview() {
 fun WooPosLockScreenUnavailablePreview() {
     WooPosTheme {
         WooPosLockScreen(
-            state = WooPosLockScreenState(isLocked = true, status = Status.StorageUnavailable),
+            state = WooPosLockScreenState(isLocked = true, status = WooPosPINEntryStatus.StorageUnavailable),
             onUIEvent = {},
         )
     }
@@ -478,17 +374,11 @@ private const val INTRO_HOLD_MILLIS = 400
 private const val INTRO_CLOSE_MILLIS = 200
 private const val INTRO_REVEAL_MILLIS = 280
 private const val LOCK_OPEN_ANGLE = 30f
-private const val FEEDBACK_MILLIS = 120
-private const val LONGEST_WAIT_MINUTES = 59L
-private const val LONGEST_WAIT_SECONDS = 59L
-private const val SECONDS_PER_MINUTE = 60
 
 private val LOCK_ARTWORK_WIDTH = 60.456.dp
 private val LOCK_ARTWORK_HEIGHT = 80.dp
 private val LOCK_HINGE = TransformOrigin(pivotFractionX = 45.7003f / 60.456f, pivotFractionY = 27.785f / 80f)
 private val ILLUSTRATION_SIZE = 88.dp
-private val KEY_SIZE = 90.dp
-private val PHONE_KEY_SIZE = 72.dp
 private val CONTENT_MAX_WIDTH = 420.dp
 private val COMPACT_HEIGHT = 480.dp
 private val STATUS_ROW_HEIGHT = 24.dp
