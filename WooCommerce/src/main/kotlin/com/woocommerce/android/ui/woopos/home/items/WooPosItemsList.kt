@@ -49,6 +49,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemIm
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
@@ -56,6 +57,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Coupon
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
@@ -317,7 +319,7 @@ private fun ProductInfo(modifier: Modifier, item: Product) {
             text = title,
             style = WooPosTypography.BodyLarge,
             fontWeight = FontWeight.Bold,
-            maxLines = 1,
+            maxLines = wooPosItemCardTextMaxLines(),
             overflow = TextOverflow.Ellipsis
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
@@ -484,7 +486,7 @@ private fun VariationSearchResultDetails(item: Product.VariationSearchResult) {
         text = item.name,
         style = WooPosTypography.BodyLarge,
         color = WooPosTheme.colors.onSurfaceVariantHighest,
-        maxLines = 1,
+        maxLines = wooPosItemCardTextMaxLines(),
         overflow = TextOverflow.Ellipsis
     )
     Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
@@ -494,6 +496,10 @@ private fun VariationSearchResultDetails(item: Product.VariationSearchResult) {
         color = WooPosTheme.colors.onSurfaceVariantHighest,
     )
 }
+
+@Composable
+internal fun wooPosItemCardTextMaxLines(): Int =
+    if (currentWooPosBreakpoint() == WooPosBreakpoint.Phone) 2 else 1
 
 @Composable
 fun WooPosItemsLoadingIndicator(
