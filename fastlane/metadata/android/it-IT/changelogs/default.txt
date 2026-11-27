@@ -1,2 +1,0 @@
-26.1:
-Gli importi personalizzati in Woo POS ora si aprono in una schermata dedicata, così puoi impostare importo, nome e imposte prima di aggiungerli al carrello. Gli ordini mostrano il numero di telefono di spedizione del cliente insieme all'indirizzo di spedizione e i nomi lunghi dei prodotti vanno a capo anziché essere troncati. In più, correzioni per i pagamenti con carta su POS, le foto dei prodotti, le statistiche per intervalli di date personalizzati e l'accesso.

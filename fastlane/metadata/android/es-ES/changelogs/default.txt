@@ -1,2 +1,0 @@
-26.1:
-Los importes personalizados en Woo POS ahora se muestran en una pantalla independiente, donde puedes configurar el importe, el nombre y los impuestos antes de añadirlos al carrito. Los pedidos muestran el teléfono y la dirección de envío del cliente y los nombres largos de los productos se ajustan en varias líneas en lugar de cortarse. Además, se corrigen errores en los pagos con tarjeta, las fotos de productos, las estadísticas por rangos de fechas personalizados y el inicio de sesión.
