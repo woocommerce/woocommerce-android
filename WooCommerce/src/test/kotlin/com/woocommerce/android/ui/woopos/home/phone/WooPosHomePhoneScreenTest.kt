@@ -16,12 +16,12 @@ class WooPosHomePhoneScreenTest {
     }
 
     @Test
-    fun `given Cart position, when mapping screen, then Cart`() {
+    fun `given Cart position, when mapping screen, then Products`() {
         // WHEN
         val result = phoneScreenFor(ScreenPositionState.Cart)
 
         // THEN
-        assertThat(result).isEqualTo(WooPosPhoneScreen.Cart)
+        assertThat(result).isEqualTo(WooPosPhoneScreen.Products)
     }
 
     @Test
