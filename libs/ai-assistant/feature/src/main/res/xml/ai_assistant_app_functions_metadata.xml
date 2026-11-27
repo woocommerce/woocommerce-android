@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AppFunctionAppMetadata xmlns:appfn="http://schemas.android.com/apk/androidx.appfunctions"
+    appfn:displayDescription="@string/ai_assistant_app_functions_display_description"
+    appfn:instructions="WooCommerce lets a merchant manage one store at a time. All functions use the store that is open in the WooCommerce app, and the merchant chooses it there. Find and get results name the store. The confirmation and order screens show the store. requestStockChange only prepares a change: the merchant confirms it in the app before anything changes. Refunds, payments and order status changes are not available as functions; use openOrderInApp so the merchant can do them in the app." />

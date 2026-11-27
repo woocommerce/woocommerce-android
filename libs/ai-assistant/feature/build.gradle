@@ -38,6 +38,8 @@ android {
 
     tasks.withType(Test).configureEach {
         systemProperty "wooAiSmokeRunLive", project.findProperty("wooAiSmokeRunLive")?.toString() ?: "false"
+        // Coroutine stack-trace recovery reflects over an extension-library class absent from the JVM.
+        systemProperty "kotlinx.coroutines.stacktrace.recovery", "false"
     }
 
     sourceSets {
@@ -68,6 +70,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.core)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.appfunctions.main)
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
@@ -79,6 +83,7 @@ dependencies {
     implementation(libs.google.dagger.hilt.android.main)
 
     ksp(libs.google.dagger.hilt.compiler)
+    ksp(libs.androidx.appfunctions.compiler)
 
     debugImplementation(libs.androidx.compose.ui.tooling.main)
 

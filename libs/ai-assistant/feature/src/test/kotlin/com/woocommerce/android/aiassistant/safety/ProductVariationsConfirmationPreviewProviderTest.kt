@@ -72,6 +72,33 @@ class ProductVariationsConfirmationPreviewProviderTest {
         }
 
     @Test
+    fun `given stock update for unmanaged variation, when preview is built, then management changes from off to on`() =
+        runTest {
+            val dataSource: AIProductVariationsDataSource = mock()
+            whenever(dataSource.getVariation(7L, 8L)).thenReturn(
+                Result.success(variation(manageStock = false)),
+            )
+
+            val preview = preview(
+                arguments = buildJsonObject {
+                    put("product_id", 7)
+                    put("id", 8)
+                    put("stock_quantity", 8)
+                },
+                dataSource = dataSource,
+            )
+
+            assertThat(preview.fields.last()).isEqualTo(
+                ConfirmationPreviewField(
+                    name = "manage_stock",
+                    value = string(R.string.ai_assistant_confirmation_field_value_on),
+                    label = label(R.string.ai_assistant_confirmation_field_manage_stock),
+                    beforeValue = string(R.string.ai_assistant_confirmation_field_value_off),
+                ),
+            )
+        }
+
+    @Test
     fun `given variation lookup fails, when preview is built, then title is id only and fields remain`() =
         runTest {
             val dataSource: AIProductVariationsDataSource = mock()
@@ -283,6 +310,7 @@ class ProductVariationsConfirmationPreviewProviderTest {
         regularPrice: String = "19.99",
         salePrice: String = "",
         stockQuantity: Double = 3.5,
+        manageStock: Boolean = false,
         stockStatus: String = "instock",
         status: String = "publish",
         attributes: String = "",
@@ -293,6 +321,7 @@ class ProductVariationsConfirmationPreviewProviderTest {
         regularPrice = regularPrice,
         salePrice = salePrice,
         stockQuantity = stockQuantity,
+        manageStock = manageStock,
         stockStatus = stockStatus,
         status = status,
         attributes = attributes,
@@ -322,6 +351,11 @@ class ProductVariationsConfirmationPreviewProviderTest {
             name = "stock_quantity",
             value = raw("3"),
             label = label(R.string.ai_assistant_confirmation_field_stock_quantity),
+        ),
+        ConfirmationPreviewField(
+            name = "manage_stock",
+            value = string(R.string.ai_assistant_confirmation_field_value_on),
+            label = label(R.string.ai_assistant_confirmation_field_manage_stock),
         ),
         ConfirmationPreviewField(
             name = "stock_status",

@@ -40,6 +40,7 @@ import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.tracker.TrackStoreSnapshot
 import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
+import com.woocommerce.android.ui.aiassistant.appfunctions.WooAppFunctionsAccess
 import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.blaze.notification.BlazeCampaignsObserver
 import com.woocommerce.android.ui.common.RefreshWPSettings
@@ -186,6 +187,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var appShortcutsHandler: AppShortcutsHandler
 
+    @Inject lateinit var appFunctionsAccess: WooAppFunctionsAccess
+
     @Inject lateinit var crashReportingSettingSync: Lazy<CrashReportingSettingSync>
 
     private var connectionReceiverRegistered = false
@@ -287,6 +290,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         observeSiteChangesForCatalogSync()
 
         appShortcutsHandler.init()
+        appFunctionsAccess.init()
     }
 
     @Suppress("DEPRECATION")

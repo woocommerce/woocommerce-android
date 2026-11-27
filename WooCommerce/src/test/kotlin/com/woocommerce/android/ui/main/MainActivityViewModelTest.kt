@@ -254,6 +254,19 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when an AppFunctions order is requested, then order details open for that order`() {
+        val orderId = 123L
+        var event: ViewOrderDetail? = null
+        viewModel.event.observeForever {
+            if (it is ViewOrderDetail) event = it
+        }
+
+        viewModel.onAppFunctionsOrderRequested(orderId)
+
+        assertThat(event).isEqualTo(ViewOrderDetail(orderId))
+    }
+
+    @Test
     fun `when a new review notification is clicked, then the review detail screen for that review is opened`() {
         val localPushId = 1001
         var event: ViewReviewDetail? = null
