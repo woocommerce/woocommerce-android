@@ -4,6 +4,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CATEGORY
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -28,6 +29,9 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.store.WCProductStore.OnVariationChanged
+import org.wordpress.android.fluxc.store.WCProductStore.ProductError
+import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
@@ -61,13 +65,13 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: EditShippingLabelPackagesViewModel
 
-    suspend fun setup(currentPackages: Array<ShippingLabelPackage>) {
+    suspend fun setup(currentPackages: Array<ShippingLabelPackage>, order: Order = testOrder) {
         val savedState = EditShippingLabelPackagesFragmentArgs(
             orderId = ORDER_ID,
             shippingLabelPackages = currentPackages
         ).toSavedStateHandle()
         whenever(shippingLabelRepository.getShippingPackages()).thenReturn(WooResult(availablePackages))
-        whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(testOrder)
+        whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(order)
         whenever(orderDetailRepository.getOrderRefunds(any())).thenReturn(emptyList())
         whenever(productDetailRepository.getProduct(any())).thenReturn(testProduct)
         viewModel = EditShippingLabelPackagesViewModel(
@@ -109,6 +113,21 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         verify(orderDetailRepository, never()).getOrderById(any())
         verify(shippingLabelRepository, never()).getAccountSettings()
         assertThat(viewState!!.packages).isEqualTo(currentShippingPackages.toList())
+    }
+
+    @Test
+    fun `given an order item's variation was deleted, when opening the screen, then leave it out`() = testBlocking {
+        val deletedVariation = testOrder.items.first().copy(itemId = 99, productId = 15, variationId = 16)
+        val order = testOrder.copy(items = testOrder.items + deletedVariation)
+        whenever(variationDetailRepository.fetchVariation(15, 16)).thenReturn(
+            OnVariationChanged().apply { error = ProductError(ProductErrorType.INVALID_PRODUCT_ID) }
+        )
+
+        setup(emptyArray(), order)
+        var viewState: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> viewState = new }
+
+        assertThat(viewState!!.packages.first().items.map { it.productId }).doesNotContain(deletedVariation.uniqueId)
     }
 
     @Test

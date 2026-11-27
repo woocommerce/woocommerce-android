@@ -61,8 +61,10 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -74,6 +76,7 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -1304,6 +1307,124 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         with(lastReceivedEvent) {
             this == OnCouponRejectedByBackend
+        }
+    }
+
+    @Test
+    fun `given a newly added product was deleted, when the store rejects it, then remove it and name it`() =
+        testBlocking {
+            val deletedItem = Order.Item.EMPTY.copy(productId = 555, name = "Beanie", quantity = 1f)
+            whenever(createOrderItemUseCase.invoke(555, null)).thenReturn(deletedItem)
+            whenever(getDeletedOrderItems.invoke(listOf(deletedItem))).thenReturn(listOf(deletedItem))
+            whenever(resourceProvider.getPluralString(R.plurals.order_sync_deleted_products_removed, 1, "Beanie"))
+                .thenReturn("Beanie was removed")
+            createUpdateOrderUseCase = rejectingUnsyncedItems()
+            createSut()
+            var orderDraft: Order? = null
+            sut.orderDraft.observeForever { orderDraft = it }
+            var lastEvent: Event? = null
+            sut.event.observeForever { lastEvent = it }
+
+            sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(555)))
+
+            assertThat(orderDraft?.items).isEmpty()
+            assertThat(lastEvent).isEqualTo(OnDeletedProductsRemoved("Beanie was removed"))
+            val viewState = sut.viewStateData.liveData.value!!
+            assertThat(viewState.isUpdatingOrderDraft).isFalse
+            assertThat(viewState.showOrderUpdateSnackbar).isFalse
+            assertThat(viewState.isEditable).isTrue
+        }
+
+    @Test
+    fun `given several new products were deleted, when the store rejects them, then remove only those`() =
+        testBlocking {
+            val beanie = Order.Item.EMPTY.copy(productId = 555, name = "Beanie", quantity = 1f)
+            val cap = Order.Item.EMPTY.copy(productId = 666, name = "Cap", quantity = 1f)
+            val hoodie = Order.Item.EMPTY.copy(productId = 777, name = "Hoodie", quantity = 1f)
+            whenever(createOrderItemUseCase.invoke(555, null)).thenReturn(beanie)
+            whenever(createOrderItemUseCase.invoke(666, null)).thenReturn(cap)
+            whenever(createOrderItemUseCase.invoke(777, null)).thenReturn(hoodie)
+            whenever(getDeletedOrderItems.invoke(listOf(beanie, cap, hoodie))).thenReturn(listOf(beanie, cap))
+            whenever(resourceProvider.getPluralString(R.plurals.order_sync_deleted_products_removed, 2, "Beanie, Cap"))
+                .thenReturn("Beanie, Cap were removed")
+            createUpdateOrderUseCase = rejectingUnsyncedItems()
+            createSut()
+            var orderDraft: Order? = null
+            sut.orderDraft.observeForever { orderDraft = it }
+            var lastEvent: Event? = null
+            sut.event.observeForever { lastEvent = it }
+
+            sut.onProductsSelected(
+                setOf(
+                    ProductSelectorViewModel.SelectedItem.Product(555),
+                    ProductSelectorViewModel.SelectedItem.Product(666),
+                    ProductSelectorViewModel.SelectedItem.Product(777)
+                )
+            )
+
+            assertThat(orderDraft?.items?.map { it.productId }).containsExactly(777L)
+            assertThat(sut.pendingSelectedItems.value.map { it.id }).containsExactly(777L)
+            assertThat(lastEvent).isEqualTo(OnDeletedProductsRemoved("Beanie, Cap were removed"))
+        }
+
+    @Test
+    fun `given a newly added variation was deleted, when the store rejects it, then name it with its attributes`() =
+        testBlocking {
+            val deletedVariation = Order.Item.EMPTY.copy(
+                productId = 1,
+                variationId = 2,
+                name = "Poster",
+                quantity = 1f,
+                attributesList = listOf(Order.Item.Attribute("size", "Small"))
+            )
+            whenever(createOrderItemUseCase.invoke(1, 2)).thenReturn(deletedVariation)
+            whenever(getDeletedOrderItems.invoke(listOf(deletedVariation))).thenReturn(listOf(deletedVariation))
+            whenever(
+                resourceProvider.getPluralString(R.plurals.order_sync_deleted_products_removed, 1, "Poster (Small)")
+            ).thenReturn("Poster (Small) was removed")
+            createUpdateOrderUseCase = rejectingUnsyncedItems()
+            createSut()
+            var lastEvent: Event? = null
+            sut.event.observeForever { lastEvent = it }
+
+            sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.ProductVariation(1, 2)))
+
+            assertThat(lastEvent).isEqualTo(OnDeletedProductsRemoved("Poster (Small) was removed"))
+        }
+
+    @Test
+    fun `given deleted products can't be identified, when the store rejects a product, then show sync failure`() =
+        testBlocking {
+            val newItem = Order.Item.EMPTY.copy(productId = 555, name = "Beanie", quantity = 1f)
+            whenever(createOrderItemUseCase.invoke(555, null)).thenReturn(newItem)
+            whenever(getDeletedOrderItems.invoke(listOf(newItem))).thenReturn(null)
+            createUpdateOrderUseCase = rejectingUnsyncedItems()
+            createSut()
+            var orderDraft: Order? = null
+            sut.orderDraft.observeForever { orderDraft = it }
+
+            sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(555)))
+
+            assertThat(orderDraft?.items?.map { it.productId }).contains(555L)
+            assertThat(sut.viewStateData.liveData.value?.showOrderUpdateSnackbar).isTrue
+        }
+
+    private fun rejectingUnsyncedItems(): CreateUpdateOrder = mock {
+        on { invoke(any(), any()) } doAnswer { invocation ->
+            invocation.getArgument<Flow<Order>>(0).transform { order ->
+                emit(Ongoing)
+                if (order.items.any { !it.isSynced() }) {
+                    emit(
+                        Failed(
+                            WooException(
+                                WooError(WooErrorType.INVALID_PRODUCT_ID, BaseRequest.GenericErrorType.UNKNOWN)
+                            )
+                        )
+                    )
+                } else {
+                    emit(Succeeded(order))
+                }
+            }
         }
     }
 

@@ -12,6 +12,7 @@ import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -216,6 +217,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val wooPosSurveysNotificationScheduler: WooPosSurveysNotificationScheduler,
     private val isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported,
     private val isStoreCurrencyMatch: IsStoreCurrencyMatch,
+    private val getDeletedOrderItems: GetDeletedOrderItems,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -1496,11 +1498,15 @@ class OrderCreateEditViewModel @Inject constructor(
                             )
 
                         is OrderUpdateStatus.Failed -> {
-                            if (updateStatus.isInvalidCouponFailure()) {
-                                _orderDraft.update { currentDraft -> currentDraft.copy(couponLines = emptyList()) }
-                                triggerEvent(OnCouponRejectedByBackend)
-                            } else {
-                                viewState = viewState.copy(
+                            when {
+                                updateStatus.isInvalidCouponFailure() -> {
+                                    _orderDraft.update { currentDraft -> currentDraft.copy(couponLines = emptyList()) }
+                                    triggerEvent(OnCouponRejectedByBackend)
+                                }
+
+                                updateStatus.isInvalidProductFailure() && handleDeletedProductsFailure() -> Unit
+
+                                else -> viewState = viewState.copy(
                                     isUpdatingOrderDraft = false,
                                     showOrderUpdateSnackbar = true,
                                     isRecalculateNeeded = viewState.isTwoPaneLayout
@@ -1578,6 +1584,46 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun OrderUpdateStatus.Failed.isInvalidCouponFailure() =
         (this.throwable as? WooException)?.error?.type == WooErrorType.INVALID_COUPON
+
+    private fun OrderUpdateStatus.Failed.isInvalidProductFailure() =
+        (this.throwable as? WooException)?.error?.type == WooErrorType.INVALID_PRODUCT_ID
+
+    // The store rejects new items whose product was deleted without saying which one, and the user can't remove
+    // items that aren't synced yet, so find the deleted ones and remove them here. The store only checks new items,
+    // so with none left the failure is from an older draft. Returns false when the failure is unexplained.
+    private suspend fun handleDeletedProductsFailure(): Boolean {
+        val newItems = _orderDraft.value.items.filterNot { it.isSynced() }
+        val deletedItems = if (newItems.isEmpty()) emptyList() else getDeletedOrderItems(newItems) ?: return false
+        if (newItems.isNotEmpty() && deletedItems.isEmpty()) return false
+
+        viewState = viewState.copy(
+            isUpdatingOrderDraft = false,
+            isEditable = (_orderDraft.value.isEditable || mode is Mode.Creation) && !isEditingBlockedByCurrency
+        )
+        if (deletedItems.isEmpty()) return true
+
+        _orderDraft.update { draft ->
+            draft.updateItems(
+                draft.items.filterNot { item ->
+                    !item.isSynced() && deletedItems.any { it.uniqueId == item.uniqueId }
+                }
+            )
+        }
+        _pendingSelectedItems.value = _orderDraft.value.selectedItems()
+        val names = deletedItems.joinToString { item ->
+            item.attributesDescription.takeIf { it.isNotEmpty() }?.let { "${item.name} ($it)" } ?: item.name
+        }
+        triggerEvent(
+            OnDeletedProductsRemoved(
+                resourceProvider.getPluralString(
+                    R.plurals.order_sync_deleted_products_removed,
+                    deletedItems.size,
+                    names
+                )
+            )
+        )
+        return true
+    }
 
     private fun isOrderEditable(updateStatus: OrderUpdateStatus.Succeeded) =
         (updateStatus.order.isEditable || mode is Mode.Creation) && !isEditingBlockedByCurrency
@@ -2186,6 +2232,8 @@ object OnCouponRejectedByBackend : Event() {
     @StringRes
     val message: Int = string.order_sync_coupon_removed
 }
+
+data class OnDeletedProductsRemoved(val message: String) : Event()
 
 data class OnTotalsSectionHeightChanged(
     val newHeight: Int

@@ -1221,6 +1221,13 @@ class OrderCreateEditFormFragment :
             is OpenBarcodeScanningFragment -> navigateToBarcodeScanning()
             is VMKilledWhenScanningInProgress -> ToastUtils.showToast(context, event.message)
             is OnCouponRejectedByBackend -> uiMessageResolver.getSnack(stringResId = event.message).show()
+            is OnDeletedProductsRemoved -> uiMessageResolver.getIndefiniteActionSnack(
+                // Passed as an argument, so a product name containing % isn't read as a format specifier
+                message = "%s",
+                event.message,
+                actionText = getString(R.string.dismiss),
+                actionListener = {}
+            ).show()
             is OnTotalsSectionHeightChanged -> updateScrollViewPadding(binding, event.newHeight)
             is OnSelectedProductsSyncRequested -> syncSelectedProducts()
             is ShowCustomAmountBottomSheet -> displayCustomAmountTypeBottomSheet()

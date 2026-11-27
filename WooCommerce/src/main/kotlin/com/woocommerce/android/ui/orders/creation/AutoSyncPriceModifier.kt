@@ -71,8 +71,9 @@ class AutoSyncPriceModifier @Inject constructor(val createUpdateOrderUseCase: Cr
     ): Flow<CreateUpdateOrder.OrderUpdateStatus> {
         return createUpdateOrderUseCase(
             changes
-                .filter { it.containsPriceModifiers() }
-                .distinctUntilChanged(::arePriceModifiersEquivalent),
+                // Dedupe before filtering, so re-adding an item after the draft was emptied still syncs
+                .distinctUntilChanged(::arePriceModifiersEquivalent)
+                .filter { it.containsPriceModifiers() },
             retryTrigger
         )
     }

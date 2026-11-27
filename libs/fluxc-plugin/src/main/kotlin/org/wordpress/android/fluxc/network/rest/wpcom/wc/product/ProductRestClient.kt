@@ -2252,8 +2252,7 @@ class ProductRestClient @Inject constructor(
 
     private fun wpAPINetworkErrorToProductError(wpAPINetworkError: WPAPINetworkError): ProductError {
         val productErrorType = when {
-            wpAPINetworkError.errorCode == "woocommerce_rest_product_invalid_id" ->
-                ProductErrorType.INVALID_PRODUCT_ID
+            wpAPINetworkError.errorCode in INVALID_PRODUCT_ID_ERROR_CODES -> ProductErrorType.INVALID_PRODUCT_ID
 
             wpAPINetworkError.errorCode == "rest_invalid_param" -> ProductErrorType.INVALID_PARAM
             wpAPINetworkError.errorCode == "woocommerce_rest_review_invalid_id" ->
@@ -2277,5 +2276,12 @@ class ProductRestClient @Inject constructor(
             else -> ProductErrorType.fromString(wpAPINetworkError.errorCode.orEmpty())
         }
         return ProductError(productErrorType, wpAPINetworkError.combinedErrorMessage)
+    }
+
+    private companion object {
+        val INVALID_PRODUCT_ID_ERROR_CODES = setOf(
+            "woocommerce_rest_product_invalid_id",
+            "woocommerce_rest_product_variation_invalid_id"
+        )
     }
 }
